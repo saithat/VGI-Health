@@ -44,6 +44,13 @@ def macroTargetsValid (p : Program) : Bool :=
 def commitsPresent (sp : Spec) (p : Program) : Bool :=
   sp.commits.all fun k => (components p).any fun c =>
     match c.kind with | .button (.commit id) => id == k.id | _ => false
+/-- A record prefill names exactly the source declared by its element. -/
+def recordSourcesValid (sp : Spec) (p : Program) : Bool := (components p).all fun c =>
+  match c.kind with
+  | .field e _ (.fromRecord source) => (sp.element? e).any fun el =>
+      el.prefill != .never && !el.humanOnly && el.recordFact? == some source
+  | _ => true
+
 #guard Specs.V1.allDistinct (components canonicalV1 |>.map (·.id))
 #guard Specs.V1.allDistinct (canonicalV1.screens.map (·.id))
 #guard Specs.V1.allDistinct (canonicalV1.macros.map (·.id))
@@ -53,4 +60,9 @@ def commitsPresent (sp : Spec) (p : Program) : Bool :=
 #guard canonicalV1.inCatalog Specs.V1.specV1
 #guard canonicalV1.screens.all fun s => (reachable canonicalV1 "home").contains s.id
 #guard canonicalV1.screens.all fun s => (reachable canonicalV1 s.id).contains "home"
+#guard recordSourcesValid Specs.V1.specV1 canonicalV1
+-- Every workflow target carries its passive rule inline, outside tabs/groups.
+#guard Specs.V1.specV1.alerts.all fun a => a.tier != .passive ||
+  canonicalV1.screens.all fun s => !a.screens.contains s.workflow ||
+    s.components.any fun c => c.kind == .alert a.id false && c.parent? == none
 end Ehr.Canonical

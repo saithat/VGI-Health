@@ -156,12 +156,6 @@ def sign : Screen :=
       alertC s "alert.interaction" "interactionOrder" "Severe interaction" (popup := false),
       alertC s "alert.doseRange" "doseRangeOrder" "Dose out of range" (popup := false),
       alertC s "alert.weightLb" "weightInLb" "Weight entered in pounds" (popup := false),
-      alertC s "alert.drugAllergyPreOp" "drugAllergyPreOp" "Drug–allergy match (pre-op)"
-        (popup := false),
-      alertC s "alert.interactionPreOp" "interactionPreOp" "Severe interaction (pre-op)"
-        (popup := false),
-      alertC s "alert.doseRangePreOp" "doseRangePreOp" "Dose out of range (pre-op)"
-        (popup := false),
       alertC s "alert.highAlert" "highAlertOrderNotice" "High-alert medication ordered"
         (popup := true),
       group s "weights" "Weights",
@@ -169,7 +163,6 @@ def sign : Screen :=
       field s "dosingWeight" "dosingWeight" "Dosing weight (kg)" (parent := some "weights")] ++
       controlledFields s ++ [
       field s "patientIdReentry" "patientIdReentry" "Re-enter patient ID (initials/sex/age)",
-      commitBtn s "signPreOpOrders" "Sign pre-op orders",
       commitBtn s "signOrders" "Sign orders" (hotkey := none),
       goto s "edit" "w6Orders" "Edit orders",
       goto s "toOpNote" "w6OpNote" "Op note"

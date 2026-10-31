@@ -239,6 +239,13 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             else none
           | none => none
         | _ => none },
+    { property := "capturesAllOnce", passes := recordSourcesDeclared spec prog
+      explain := fun _ => compFinding "capturesAllOnce" prog false fun scr c =>
+        match fieldOf? c.kind with
+        | some (e, _, .fromRecord fact) =>
+          if (spec.element? e).any (fun el => el.recordFact? == some fact) then none
+          else some s!"field {c.id} on {scr.id} uses undeclared record source {fact} for {e}"
+        | _ => none },
     -- 2. captures all, once (auto-linked elements)
     { property := "capturesAllOnce", passes := decide (LinkedNotRetyped spec prog)
       explain := fun _ => compFinding "capturesAllOnce" prog false fun scr c =>
@@ -289,15 +296,19 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       explain := fun _ =>
         spec.alerts.findSome? fun al =>
           if al.tier != .passive then none
-          else al.screens.findSome? fun z =>
-            match prog.screen? z with
-            | none => if (canonical.screen? z).isSome then
-                some { property := "alertsFire", message := s!"A1: the passive alert {al.id} must be shown on screen {z}, which this program removed" }
-              else none
-            | some scr =>
-              if scr.components.any (fun c => (alertOf? c.kind).any (·.1 == al.id) && fixedShown scr.components c) then none
-              else some { property := "alertsFire", message := s!"A1: the passive alert {al.id} is not always shown inline on screen {z}"
-                          screen? := some z } },
+          else
+            match prog.screens.findSome? (fun scr =>
+                if !al.targetsScreen scr || scr.components.any (fun c =>
+                    (alertOf? c.kind).any (·.1 == al.id) && fixedShown scr.components c) then none
+                else some { property := "alertsFire"
+                            message := s!"A1: passive alert {al.id} is not always shown inline on {scr.id} (workflow {scr.workflow})"
+                            screen? := some scr.id }) with
+            | some finding => some finding
+            | none => canonical.screens.findSome? fun scr =>
+                if al.targetsScreen scr && !prog.screens.any (·.workflow == scr.workflow) then
+                  some { property := "alertsFire"
+                         message := s!"A1: passive alert {al.id}'s workflow {scr.workflow} was removed" }
+                else none },
     -- 8. budgets
     { property := "budgets"
       passes := decide (popupRequestCount prog (prog.screens.map (·.id)) ≤

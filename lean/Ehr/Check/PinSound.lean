@@ -60,21 +60,19 @@ theorem landmarksPinned_sound (ep : Episode)
 
 /-- Passive alert pins refer to the actual view, including its condition. -/
 theorem passivePinned_sound (ep : Episode)
-    (hstart : (ep.prog.screen? ep.prog.start).isSome = true)
     (h : passivePinned ep.spec ep.prog = true) : PassiveShownInline ep := by
-  intro s hs al hal ht hz hh
-  have hscreen := (reachable_screenNames ep hstart s hs).1
+  intro s _ al hal ht htarget hh
   have hr := List.all_eq_true.mp h al hal
-  simp only [passivePinned] at h
   change (al.tier != Tier.passive || _) = true at hr
   simp only [ht, bne_self_eq_false, Bool.false_or] at hr
-  have hz' := List.all_eq_true.mp hr s.screen hz
   cases hf : ep.prog.screen? s.screen with
-  | none =>
-    simp [hf] at hscreen
+  | none => simp [hf] at htarget
   | some scr =>
-    simp only [hf, List.any_eq_true, Bool.and_eq_true] at hz'
-    obtain ⟨c, hc, ha, hv⟩ := hz'
+    have hz := List.all_eq_true.mp hr scr (List.mem_of_find?_eq_some hf)
+    simp only [hf, Option.any_some] at htarget
+    simp only [htarget, Bool.not_true, Bool.false_or, List.any_eq_true,
+      Bool.and_eq_true] at hz
+    obtain ⟨c, hc, ha, hv⟩ := hz
     cases hk : c.kind <;> simp [alertOf?, hk] at ha
     rename_i a popup
     subst a

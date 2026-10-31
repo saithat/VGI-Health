@@ -66,7 +66,7 @@ theorem accepted_structural (sp : Spec) (prev : Option Program) (can p : Program
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
   rcases hall with ⟨hcat, hids, hpi, href, hw, hpassive, hrepeat, hint, hal, hhuman,
-    hu, hlink, _, _, _, _, _, _, hstable⟩
+    hu, _, hlink, _, _, _, _, _, _, hstable⟩
   exact ⟨(inCatalog_iff sp p).mp hcat, of_decide_eq_true hids,
     of_decide_eq_true hpi, of_decide_eq_true href, of_decide_eq_true hw,
     of_decide_eq_true hpassive, of_decide_eq_true hrepeat, of_decide_eq_true hint, of_decide_eq_true hal,

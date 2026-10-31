@@ -1,5 +1,5 @@
 import Ehr.Check.PinSound
-import Ehr.Check.BadProofs
+import Ehr.Check.SeedTests
 import Ehr.Props.Examples
 
 namespace Ehr.Check.Tests
@@ -12,7 +12,7 @@ open Ehr Ehr.Check Ehr.Props Ehr.Examples.Tiny Ehr.Props.Examples
 
 /-- CR-1 lets a current-slot composer add lines without stranding unfinished ones. -/
 def withAddLine : Program :=
-  { goodProgram with screens := [roomingScreen, orderScreen, goodSignScreen] }
+  { goodProgram with screens := [roomingScreen, orderScreen, goodSignScreen].map pinTinyAlerts }
 
 #guard check spec none withAddLine withAddLine == .ok
 

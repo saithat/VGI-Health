@@ -50,9 +50,15 @@ def goodMacro : Macro where
   label := "Amoxicillin 500 mg"
   steps := [.setValue "drugField" "amoxicillin", .setValue "doseField" "500", .goto "sign"]
 
+/-- Core targets passive alerts by workflow, so every W1 screen needs the pin. -/
+def pinTinyAlerts (scr : Screen) : Screen :=
+  if scr.components.any (fun c => c.kind == .alert "careGap" false) then scr
+  else { scr with components := scr.components ++
+    [{ id := "careGapAlert", kind := .alert "careGap" false, label := "Care gap" }] }
+
 /-- The fixed tiny program. -/
 def goodProgram : Program :=
-  { program with screens := [roomingScreen, goodOrderScreen, goodSignScreen], macros := [goodMacro] }
+  { program with screens := [roomingScreen, goodOrderScreen, goodSignScreen].map pinTinyAlerts, macros := [goodMacro] }
 
 /-- An episode of the good program for the tiny patient and physician. -/
 def goodEp : Episode := ⟨spec, goodProgram, facts, user⟩

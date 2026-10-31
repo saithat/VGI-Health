@@ -95,25 +95,28 @@ def landmarksPinned (spec : Spec) (prog : Program) : Bool :=
     spec.design.landmarks.all fun l =>
       scr.components.any fun c => showsInfo l c.kind && fixedShown scr.components c
 
-/-- Rule for A1 (passive): on each screen a passive alert lists, if the
-program has that screen, an alert component for it is fixed-shown. -/
+/-- Every candidate screen of a targeted workflow pins the passive alert. -/
 def passivePinned (spec : Spec) (prog : Program) : Bool :=
   spec.alerts.all fun al =>
-    al.tier != .passive ||
-      al.screens.all fun z =>
-        match prog.screen? z with
-        | none => true
-        | some scr => scr.components.any fun c =>
-            (match alertOf? c.kind with
-             | some a => a.1 == al.id
-             | none => false) && fixedShown scr.components c
+    al.tier != .passive || prog.screens.all fun scr =>
+      !al.targetsScreen scr || scr.components.any fun c =>
+        (match alertOf? c.kind with
+         | some a => a.1 == al.id
+         | none => false) && fixedShown scr.components c
 
-/-- Extra rule (CR-3): each screen a passive alert lists that the canonical
-program has, the candidate has too. -/
+/-- A targeted canonical workflow cannot disappear by renaming its screens. -/
 def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
   spec.alerts.all fun al =>
-    al.tier != .passive ||
-      al.screens.all fun z => (canonical.screen? z).isNone || (prog.screen? z).isSome
+    al.tier != .passive || canonical.screens.all fun scr =>
+      !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
+
+/-- Every record prefill names the source declared by that spec element. -/
+def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
+  (allComps prog).all fun sc =>
+    match fieldOf? sc.2.kind with
+    | some (e, _, .fromRecord fact) =>
+      (spec.element? e).any (fun el => el.recordFact? == some fact)
+    | _ => true
 
 /-! ## Completability rules -/
 

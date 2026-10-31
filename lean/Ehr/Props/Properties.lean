@@ -319,10 +319,12 @@ def InterruptiveHandled (ep : Episode) : Prop :=
     ∀ al ∈ ep.spec.alerts, al.commit = c → al.tier = .interruptive →
       ∀ k ∈ alertKeys ep.facts s al.cond, (al.id, k) ∈ s.acked
 
-/-- In every reachable state on a screen listed by a passive alert, if the
-alert's condition holds, the alert is shown inline. Needs the checker. -/
+/-- In every reachable state whose screen has a workflow targeted by a passive
+alert, if its condition holds, the alert is shown inline. Needs the checker.
+`targetsScreen` is the interpreter's workflow-tag matching rule. -/
 def PassiveShownInline (ep : Episode) : Prop :=
-  Always ep fun s => ∀ al ∈ ep.spec.alerts, al.tier = .passive → s.screen ∈ al.screens →
+  Always ep fun s => ∀ al ∈ ep.spec.alerts, al.tier = .passive →
+    (ep.prog.screen? s.screen).any al.targetsScreen = true →
     alertHolds ep.spec ep.facts s al.id = true → AlertShownInline ep s al.id
 
 /-- No macro step clicks or types into an alert component. Needs the checker. -/
