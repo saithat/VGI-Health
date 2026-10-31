@@ -242,7 +242,7 @@ export const evaluatedCandidateSchema = z.object({
 export const certAttemptSchema = z.object({
   attempt: nat,
   candidateIds: z.array(str),
-  source: z.enum(['merged', 'repair', 'migration', 'migration-fallback', 'recertify']),
+  source: z.enum(['merged', 'repair', 'migration', 'migration-fallback', 'recertify', 'screen-check']),
   patch: jsonPatchSchema,
   check: checkResultSchema,
 });
@@ -268,8 +268,19 @@ export const llmCallRefSchema = z.object({
   file: str,
 });
 
+/** Offline per-version screen check (render-screens + app screen-check); see screencheck.ts. */
+export const screenCheckResultSchema = z.object({
+  status: z.enum(['pass', 'fail']),
+  mode: z.enum(['real', 'fake']),
+  bundles: z.array(str),
+  pages: nat,
+  failingScreens: z.array(str),
+  failingFiles: z.array(str),
+  message: str,
+});
+
 export const outcomeSchema = z.enum([
-  'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'validation-rejected',
+  'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
   'user-reverted', 'migrated', 'migration-fallback', 'recertified', 'surfaced', 'not-surfaced',
   'break-attempt-rejected', 'break-attempt-passed',
 ]);
@@ -325,6 +336,8 @@ export const decisionRecordSchema = z.object({
     reason: str,
   }),
   certificate: certificateSchema.nullable(),
+  /** Offline screen check of the version that was about to deploy (null if none got that far). */
+  screenCheck: screenCheckResultSchema.nullable(),
   deployed: z.object({ version: nat, program: str, certificate: str }).nullable(),
   outcome: outcomeSchema,
   release: z.object({
@@ -363,6 +376,7 @@ export type CertAttempt = z.infer<typeof certAttemptSchema>;
 export type ReplayDay = z.infer<typeof replayDaySchema>;
 export type LlmCallRef = z.infer<typeof llmCallRefSchema>;
 export type Outcome = z.infer<typeof outcomeSchema>;
+export type ScreenCheckResult = z.infer<typeof screenCheckResultSchema>;
 export type DecisionRecord = z.infer<typeof decisionRecordSchema>;
 
 /** Decode an LLM wire candidate into a validated Candidate (throws with a readable message). */

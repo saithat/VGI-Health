@@ -7,7 +7,9 @@
  * not the verified checker, proves nothing, and its certificates say
  * `checkerVersion: "FAKE"`. Never deploy anything it approves.
  */
-import type { CheckInput, DeployInput, DeployResult, EhrClient, MinClicksInput, SimulateInput } from '../ehr.js';
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import type { CheckInput, DeployInput, DeployResult, EhrClient, MinClicksInput, RenderInput, SimulateInput } from '../ehr.js';
 import {
   type Component, type DayResult, type DaySchedule, type ElementSpec, type Event, type MinClicksResult, type PersonaParams,
   type Program, type Screen, type Spec, type TaskMetrics, type TraceEvent, type Verdict,
@@ -28,6 +30,7 @@ export function createFakeEhr(): EhrClient {
     minClicks: async (i) => fakeMinClicks(i),
     deploy: async (i) => fakeDeploy(i),
     runBatch: async (cases) => cases.map((_, i) => ({ case: i, fake: true })),
+    renderScreens: async (i) => fakeRenderScreens(i),
     specExport: async (v) => fakeSpec(v),
   };
 }
@@ -495,6 +498,23 @@ export function fakeDeploy(i: DeployInput): DeployResult {
       time: new Date(0).toISOString(),
     },
   };
+}
+
+/** Crude page trees (Lean Html JSON shape): one file per screen, shown components only. */
+export async function fakeRenderScreens(i: RenderInput): Promise<string[]> {
+  await mkdir(i.outDir, { recursive: true });
+  const text = (s: string) => ({ text: { s } });
+  const node = (tag: string, attrs: { name: string; value: string }[], children: unknown[]) => ({ node: { tag, attrs, children } });
+  const files: string[] = [];
+  for (const s of i.program.screens) {
+    const items = s.components.filter((comp) => isShown(comp, s)).map((comp) =>
+      node('div', [{ name: 'class', value: `ehr-${kindTag(comp.kind)}` }, { name: 'data-comp-id', value: comp.id }], [text(comp.label)]));
+    const tree = node('div', [{ name: 'class', value: 'ehr-main' }], [node('h1', [{ name: 'class', value: 'ehr-screen-title' }], [text(s.title)]), ...items]);
+    const file = path.join(i.outDir, `${s.id}.json`);
+    await writeFile(file, JSON.stringify(tree));
+    files.push(file);
+  }
+  return files;
 }
 
 export { fakeCanonical, fakeSpec };

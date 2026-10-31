@@ -15,9 +15,9 @@ const cand = (id: string, moveType: LlmCandidate['moveType'], summary: string, p
   id, summary, moveType, rationale: `scripted: ${summary}`, targets: [], patch, predicted: { clicks: 3, keystrokes: 6, scrolls: 0, klmDeciSec: klm },
 });
 
-const macroCandidate = (id: string, screen: string, target: string, fields: string[]): LlmCandidate => cand(id, 'macro',
+const macroCandidate = (id: string, screen: string, target: string, fields: string[], label = 'Usual order'): LlmCandidate => cand(id, 'macro',
   `Macro on ${screen}: pre-set ${fields.join(', ')} and jump to ${target}`, [
-    op('add', `/screens/[id=${screen}]/components/-`, comp(`${id}-btn`, { macro: { id: `${id}-m` } }, { label: 'Usual order', hotkey: 'Alt+U' })),
+    op('add', `/screens/[id=${screen}]/components/-`, comp(`${id}-btn`, { macro: { id: `${id}-m` } }, { label, hotkey: 'Alt+U' })),
     op('add', '/macros/-', { id: `${id}-m`, label: 'Usual order', steps: [...fields.map((f) => ({ setValue: { comp: f, value: 'usual' } })), { goto: { screen: target } }] }),
   ], 150);
 
@@ -63,7 +63,8 @@ function nightly(persona: string): LlmProposal {
     case 'P4':
       return {
         hypothesis, decision: 'change', candidates: [
-          macroCandidate('p4-macro', 'w5-growth', 'w5-dosing', ['w5-drug', 'w5-dose']),
+          // The label overflows at 390px: passes the checker, fails the (fake) offline screen check.
+          macroCandidate('p4-macro', 'w5-growth', 'w5-dosing', ['w5-drug', 'w5-dose'], 'Usual pediatric order: amoxicillin 45 mg/kg/day in two doses for ten days, weight confirmed today'),
           cand('p4-compact', 'reorder', 'Compact the growth chart', [op('replace', '/screens/[id=w5-growth]/components/[id=w5-growth-trend]/size', 'compact')], 5),
           cand('p4-hide-dosecheck', 'collapseOptional', 'Collapse the dose check', [op('replace', '/screens/[id=w5-dosing]/components/[id=w5-dosecheck]/size', 'tiny')], 20),
         ],

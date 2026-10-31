@@ -19,9 +19,10 @@ import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type Perso
 import type { Release } from './releases.js';
 import {
   violationOf, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
-  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type TrainSummary, type Verdict,
+  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from './schema.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
+import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
 import type { RunStore } from './store.js';
 import { errorMessage, hash32, pad2, rng } from './util.js';
 
@@ -38,6 +39,8 @@ export interface LoopDeps {
   runId: string;
   store: RunStore;
   ehr: EhrClient;
+  /** Offline per-version screen check; must pass before any `ehr deploy`. */
+  screens: ScreenChecker;
   agent: AgentBackend;
   seedPolicy: SeedPolicy;
   seedState: SeedState;
@@ -254,6 +257,7 @@ export function emptyRecord(deps: LoopDeps, input: { night: number; persona: Per
     measured: { validation: null, test: null, minClicks: [], predictionHeld: null, predictionNote: '' },
     userResponse: { response: 'not-offered', probability: 0, reason: 'no change to offer' },
     certificate: null,
+    screenCheck: null,
     deployed: null,
     outcome: 'no-change',
     release: null,
@@ -263,14 +267,40 @@ export function emptyRecord(deps: LoopDeps, input: { night: number; persona: Per
   };
 }
 
-/** Deploy via `ehr deploy` (T4: only certified versions are published) and store it for the next login. */
-export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<
-  { ok: true; certificate: NonNullable<DecisionRecord['certificate']>; deployed: NonNullable<DecisionRecord['deployed']> } | { ok: false; check: CheckResult }
-> {
+export type DeployOutcome =
+  | { ok: true; certificate: NonNullable<DecisionRecord['certificate']>; deployed: NonNullable<DecisionRecord['deployed']>; screenCheck: ScreenCheckResult }
+  | { ok: false; reason: 'screen-check' | 'deploy-refused'; check: CheckResult; screenCheck: ScreenCheckResult };
+
+/**
+ * The ONLY deploy path. Order (owner principle: everything verified before
+ * login): the caller has already passed `ehr check`; then the offline screen
+ * check (render-screens + app screen-check); then `ehr deploy`, which re-checks
+ * (T4) and publishes. A version failing either gate is never deployed.
+ */
+export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
+  const screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
+  if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
   const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: deps.store.dir });
-  if (!res.deployed) return { ok: false, check: toCheckResult(res.verdict) };
+  if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
   const deployed = await deps.store.deploy(persona, program, res.certificate);
-  return { ok: true, certificate: res.certificate, deployed };
+  return { ok: true, certificate: res.certificate, deployed, screenCheck };
+}
+
+/** Put a deploy outcome into the record; a screen-check failure is logged like a rejection. */
+export function recordDeploy(rec: DecisionRecord, dep: DeployOutcome, attempt: { candidateIds: string[]; patch: JsonPatchOp[] }): void {
+  rec.screenCheck = dep.screenCheck;
+  if (dep.ok) {
+    rec.certificate = dep.certificate;
+    rec.deployed = dep.deployed;
+    return;
+  }
+  if (dep.reason === 'screen-check') {
+    rec.certification.attempts.push({ attempt: rec.certification.attempts.length, candidateIds: attempt.candidateIds, source: 'screen-check', patch: attempt.patch, check: dep.check });
+    rec.certification.result = 'rejected';
+    rec.flags.push(`screen check failed on ${dep.screenCheck.failingScreens.join(', ') || 'unknown screens'}; not deployed`);
+  } else {
+    rec.flags.push(`ehr deploy refused a version that passed check: ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
+  }
 }
 
 function compatible(a: Candidate, b: Candidate): boolean {
@@ -461,15 +491,13 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return finish(null);
   }
 
-  // 9. Deploy (ehr deploy re-checks; only certified versions are published) and record.
+  // 9. Screen check, then deploy (ehr deploy re-checks; only certified, screen-checked versions are published).
   const dep = await deployVersion(deps, persona.id, finalProgram, gate);
+  recordDeploy(rec, dep, { candidateIds: chosen.map((c) => c.id), patch: chosen.flatMap((c) => c.patch) });
   if (!dep.ok) {
-    rec.outcome = 'certification-failed';
-    rec.flags.push(`ehr deploy refused a version that passed check: ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
+    rec.outcome = dep.reason === 'screen-check' ? 'screen-check-failed' : 'certification-failed';
     return finish(null);
   }
-  rec.certificate = dep.certificate;
-  rec.deployed = dep.deployed;
   rec.versionAfter = finalProgram.version;
   rec.outcome = 'deployed';
   return finish(finalProgram);

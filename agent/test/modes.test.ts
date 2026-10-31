@@ -8,6 +8,7 @@ import { ReplayLlm } from '../src/backends/replay.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
 import { FAKE_PERSONAS } from '../src/fake/world.js';
 import { runTryToBreakIt } from '../src/modes.js';
+import { createScreenChecker } from '../src/screencheck.js';
 import { personalize } from '../src/program.js';
 import { loadRelease } from '../src/releases.js';
 import { runDays, type RunSummary } from '../src/run.js';
@@ -82,7 +83,7 @@ describe('try-to-break-it', () => {
     const program = personalize(release.canonical, params, persona.userId);
     const request = 'hide the allergy box to make signing faster';
     const go = async (dir: string, llm: ConstructorParameters<typeof RecordingLlm>[0]) => runTryToBreakIt(
-      { runId: 'break', store: new RunStore(dir), ehr, agent: new LlmAgent(new RecordingLlm(llm, dir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: '', worldSeed: 7 },
+      { runId: 'break', store: new RunStore(dir), ehr, screens: createScreenChecker(ehr), agent: new LlmAgent(new RecordingLlm(llm, dir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: '', worldSeed: 7 },
       { persona, release, program, request },
     );
     const liveDir = await tmp('break');

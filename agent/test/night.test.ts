@@ -113,6 +113,28 @@ describe('rejections are logged with counterexamples', () => {
   });
 });
 
+describe('offline screen check gates deploy', () => {
+  it('a certified, validated version that fails the screen check is not deployed and is logged like a rejection', () => {
+    const r = record(replayed, 1, 'P4');
+    expect(r.outcome).toBe('screen-check-failed');
+    expect(r.screenCheck).toMatchObject({ status: 'fail', mode: 'fake', failingScreens: ['w5-growth'] });
+    const attempt = r.certification.attempts.find((a) => a.source === 'screen-check');
+    expect(attempt?.check).toMatchObject({ status: 'fail', property: 'ScreenCheck', screens: ['w5-growth'] });
+    expect(r.certification.result).toBe('rejected');
+    expect(r.deployed).toBeNull();
+    expect(r.certificate).toBeNull();
+    expect(r.versionAfter).toBe(r.versionBefore);
+    expect(replayed.rejections.some((x) => x.persona === 'P4' && x.property === 'ScreenCheck')).toBe(true);
+  });
+
+  it('deployed versions carry a passing screen-check result next to the certificate', () => {
+    const r = record(replayed, 1, 'P1');
+    expect(r.outcome).toBe('deployed');
+    expect(r.screenCheck?.status).toBe('pass');
+    expect(r.certificate?.verdict).toBe('ok');
+  });
+});
+
 describe('evaluation integrity: no validation or test data in prompts', () => {
   it.each([['recorded'], ['replayed']])('%s run: night-d prompts mention only days <= d', (which) => {
     const run = which === 'recorded' ? recorded : replayed;

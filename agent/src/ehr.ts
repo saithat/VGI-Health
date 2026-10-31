@@ -15,6 +15,10 @@
  *                 stdout: { tasks: [{ task, workflow?, clicks, keystrokes }] }
  *   ehr deploy    --spec <ver> --program P.json --prev PREV.json --canonical C.json --out <dir>
  *                 stdout: Certificate (exit 0) | Verdict (exit 1, refused; T4)
+ *   ehr render-screens --spec <ver> --program P.json --fhir <bundle.json> --out <dir>
+ *                 writes one page-tree JSON (Html) per screen/state into <dir>,
+ *                 named <screenId>.json or <screenId>__<state>.json; exit 0 = ok
+ *                 (input to the offline screen check, src/screencheck.ts)
  *
  * IMPLEMENTED by lane/lean-core (lean/Main.lean, M3), matched here:
  *   ehr run-batch <file.jsonl>   one BatchCase {spec, program, facts, user, events} per line
@@ -30,7 +34,7 @@
  */
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { z } from 'zod';
@@ -53,6 +57,7 @@ export interface SimulateInput {
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
 export interface DeployInput extends CheckInput { outDir: string }
+export interface RenderInput { specVersion: string; program: Program; fhir: string; outDir: string }
 export type DeployResult = { deployed: true; certificate: Certificate } | { deployed: false; verdict: Verdict };
 
 export interface EhrClient {
@@ -62,6 +67,8 @@ export interface EhrClient {
   simulate(input: SimulateInput): Promise<DayResult>;
   minClicks(input: MinClicksInput): Promise<MinClicksResult>;
   deploy(input: DeployInput): Promise<DeployResult>;
+  /** `ehr render-screens`: page trees for every screen of the program; returns the files written. */
+  renderScreens(input: RenderInput): Promise<string[]>;
   /** `ehr run-batch`: cases in, one output object per event (JSONL parsed). */
   runBatch(cases: readonly unknown[]): Promise<unknown[]>;
   specExport(specVersion: string): Promise<Spec>;
@@ -162,6 +169,15 @@ class CliEhr implements EhrClient {
       ]);
       if (res.code === 0) return { deployed: true, certificate: parseOut('deploy', res, certificateSchema) };
       return { deployed: false, verdict: parseOut('deploy', res, verdictSchema) };
+    });
+  }
+
+  renderScreens(i: RenderInput): Promise<string[]> {
+    return this.withFiles({ program: i.program }, async (p) => {
+      await mkdir(i.outDir, { recursive: true });
+      const res = await run(this.binary, ['render-screens', '--spec', i.specVersion, '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
+      if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+      return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });
   }
 

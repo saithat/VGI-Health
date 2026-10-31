@@ -20,7 +20,7 @@ import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
 import {
   MAX_REPAIRS, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
-  noteRejections, predictionVerdict, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
+  noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
 import path from 'node:path';
@@ -70,15 +70,13 @@ async function finishRecord(deps: LoopDeps, rec: DecisionRecord, calls: LlmCallR
 
 async function deployInto(deps: LoopDeps, rec: DecisionRecord, persona: string, program: Program, gate: Gate): Promise<boolean> {
   const dep = await deployVersion(deps, persona, program, gate);
-  if (!dep.ok) {
-    rec.flags.push(`ehr deploy refused: ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
-    return false;
-  }
-  rec.certificate = dep.certificate;
-  rec.deployed = dep.deployed;
-  rec.versionAfter = program.version;
-  return true;
+  recordDeploy(rec, dep, { candidateIds: rec.chosen?.candidateIds ?? [], patch: [] });
+  if (dep.ok) rec.versionAfter = program.version;
+  return dep.ok;
 }
+
+/** Outcome when deployInto returned false: a screen-check failure is distinguished from a refused deploy. */
+const failOutcome = (rec: DecisionRecord): DecisionRecord['outcome'] => (rec.screenCheck?.status === 'fail' ? 'screen-check-failed' : 'certification-failed');
 
 // ---------------------------------------------------------------- surface-feature (v1.1)
 export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput): Promise<NightResult> {
@@ -96,7 +94,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
     rec.certification = { attempts: [{ attempt: 0, candidateIds: [], source: 'recertify', patch: [], check: re.check }], result: 'certified' };
     rec.validation.reason = reason;
     const ok = await deployInto(deps, rec, persona.id, re.program, re.gate);
-    rec.outcome = ok ? 'not-surfaced' : 'certification-failed';
+    rec.outcome = ok ? 'not-surfaced' : failOutcome(rec);
     return finishRecord(deps, rec, calls, ok ? re.program : null);
   };
 
@@ -171,7 +169,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   }
   const ok = await deployInto(deps, rec, persona.id, certified.program, gate);
   if (rec.release) rec.release.surfaced = ok;
-  rec.outcome = ok ? 'surfaced' : 'certification-failed';
+  rec.outcome = ok ? 'surfaced' : failOutcome(rec);
   return finishRecord(deps, rec, calls, ok ? certified.program : null);
 }
 
@@ -195,7 +193,7 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
     rec.measured.validation = replay;
     rec.measured.minClicks = await minClicksByWorkflow(deps, next.specVersion, input.current, program, input.train[input.train.length - 1]);
     const ok = await deployInto(deps, rec, persona.id, program, gate);
-    rec.outcome = ok ? outcome : 'certification-failed';
+    rec.outcome = ok ? outcome : failOutcome(rec);
     return finishRecord(deps, rec, calls, ok ? program : null);
   };
 

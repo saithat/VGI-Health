@@ -4,7 +4,7 @@
  *   pnpm --filter agent run-days --days 10 --backend claude|codex|replay --world runs/world/<seed>
  *        [--replay-from runs/<run-id>] [--run-id ID] [--personas P1,P3] [--model M]
  *        [--seed-policy until-each-rejected|every-night|none] [--runs-root DIR]
- *        [--v1.1-day 4] [--v2-day 7]
+ *        [--v1.1-day 4] [--v2-day 7] [--fhir sample1.json,sample2.json]   (screen-check bundles; else EHR_SAMPLE_FHIR)
  *
  *   pnpm --filter agent try-to-break-it --persona P1 --request "hide the allergy box to make signing faster"
  *        --backend claude|codex|replay (--run runs/<run-id> | --world runs/world/<seed>)
@@ -33,6 +33,7 @@ import { personalize } from './program.js';
 import { loadRelease } from './releases.js';
 import { runDays } from './run.js';
 import { SEED_POLICIES, type SeedPolicy } from './seeded.js';
+import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
 import { loadWorld } from './world.js';
@@ -65,7 +66,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     options: {
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
       'run-id': { type: 'string' }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
-      model: { type: 'string' }, 'v1.1-day': { type: 'string' }, 'v2-day': { type: 'string' },
+      model: { type: 'string' }, 'v1.1-day': { type: 'string' }, 'v2-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
   if (!values.world) throw new Error('--world runs/world/<seed> is required');
@@ -79,6 +80,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     ...(values.personas ? { personas: values.personas.split(',').map((s) => s.trim()) } : {}),
     seedPolicy: seedPolicyArg(values['seed-policy']),
     releaseDays: { v1_1: intArg(values['v1.1-day'], 'v1.1-day', 4), v2: intArg(values['v2-day'], 'v2-day', 7) },
+    ...(values.fhir ? { fhirBundles: values.fhir.split(',').map((f) => resolveUserPath(f.trim())) } : {}),
     log: (line) => console.log(line),
   });
   console.log(`\nrun ${summary.runId} -> ${summary.dir}`);
@@ -116,7 +118,7 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
   const store = new RunStore(outDir);
   const res = await runTryToBreakIt(
-    { runId: path.basename(outDir), store, ehr, agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
+    { runId: path.basename(outDir), store, ehr, screens: createScreenChecker(ehr), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
     { persona, release, program, request: values.request },
   );
   console.log(JSON.stringify({

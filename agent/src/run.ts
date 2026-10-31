@@ -17,7 +17,8 @@ import { RecordingLlm } from './backends/recording.js';
 import type { JsonLlm } from './backends/types.js';
 import { createEhr, type EhrClient } from './ehr.js';
 import { runMigration, runSurfaceFeature } from './modes.js';
-import { daySeed, makeHoldout, replayDay, runNight, type LoopDeps, type NightResult } from './night.js';
+import { daySeed, deployVersion, makeHoldout, replayDay, runNight, type LoopDeps, type NightResult } from './night.js';
+import { createScreenChecker, type ScreenChecker } from './screencheck.js';
 import type { TrainDay } from './observe.js';
 import { personalize } from './program.js';
 import type { HistoryItem, PersonaView } from './prompts.js';
@@ -39,6 +40,10 @@ export interface RunOptions {
   /** Day on which each release takes effect at login. */
   releaseDays?: { v1_1: number; v2: number };
   ehr?: EhrClient;
+  /** Offline screen check (default: fake under EHR_FAKE=1, else render-screens + app screen-check). */
+  screens?: ScreenChecker;
+  /** Sample FHIR bundles for render-screens (default: EHR_SAMPLE_FHIR). */
+  fhirBundles?: string[];
   log?: (line: string) => void;
 }
 
@@ -89,8 +94,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const store = new RunStore(dir);
   const recorder = new RecordingLlm(opts.llm, dir);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
+  const screens = opts.screens ?? createScreenChecker(ehr, opts.fhirBundles ? { bundles: opts.fhirBundles } : {});
   const deps: LoopDeps = {
-    runId, store, ehr, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
+    runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
   };
   await writeJson(path.join(dir, 'manifest.json'), {
@@ -123,9 +129,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
     const v0 = personalize(inForce.canonical, params, view.userId);
-    const dep = await ehr.deploy({ specVersion: inForce.specVersion, program: v0, prev: v0, canonical: inForce.canonical, outDir: dir });
-    if (!dep.deployed) throw new Error(`canonical program does not certify for ${id}: ${JSON.stringify(dep.verdict)}`);
-    await store.deploy(id, v0, dep.certificate);
+    const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: inForce.canonical, nextVersion: 0 });
+    if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
     programs.set(id, new Map([[0, v0]]));
     train.set(id, []);
     history.set(id, []);
@@ -194,9 +199,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId,
     dir,
     timelines: [...timelines.values()],
-    rejections: records.flatMap((r) => r.candidates.filter((e) => e.check.status !== 'pass').map((e) => ({
-      night: r.night, persona: r.persona, candidate: e.candidate.id, seeded: e.candidate.seeded, property: e.check.property, message: e.check.message,
-    }))),
+    rejections: records.flatMap((r) => [
+      ...r.candidates.filter((e) => e.check.status !== 'pass').map((e) => ({
+        night: r.night, persona: r.persona, candidate: e.candidate.id, seeded: e.candidate.seeded, property: e.check.property, message: e.check.message,
+      })),
+      ...r.certification.attempts.filter((a) => a.source === 'screen-check').map((a) => ({
+        night: r.night, persona: r.persona, candidate: a.candidateIds.join('+'), seeded: false, property: a.check.property, message: `${(a.check.screens ?? []).join(', ')}: ${a.check.message ?? ''}`,
+      })),
+    ]),
     seededRejectedKinds: [...seedState.rejected],
   };
   await writeJson(path.join(dir, 'summary.json'), summary);

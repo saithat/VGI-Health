@@ -22,6 +22,7 @@ import type { TrainDay } from './observe.js';
 import type { HistoryItem } from './prompts.js';
 import { loadRelease } from './releases.js';
 import { historyItem } from './run.js';
+import { createScreenChecker, type ScreenChecker } from './screencheck.js';
 import { dayResultSchema, type Program } from './schema.js';
 import { RunStore } from './store.js';
 import { pad2, readJson } from './util.js';
@@ -38,7 +39,7 @@ const manifestSchema = z.object({
 });
 
 export async function rerunNight(args: {
-  runDir: string; persona: string; night: number; llm: JsonLlm; ehr: EhrClient; mode?: NightMode; outDir?: string;
+  runDir: string; persona: string; night: number; llm: JsonLlm; ehr: EhrClient; mode?: NightMode; outDir?: string; screens?: ScreenChecker;
 }): Promise<{ result: NightResult; outDir: string }> {
   const manifest = await readJson(path.join(args.runDir, 'manifest.json'), manifestSchema);
   const world = await loadWorld(manifest.world);
@@ -78,7 +79,7 @@ export async function rerunNight(args: {
   const outDir = args.outDir ?? path.join(args.runDir, 'adhoc', `night-${pad2(args.night)}-${args.persona}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
   const store = new RunStore(outDir);
   const deps: LoopDeps = {
-    runId: `${manifest.runId}/adhoc`, store, ehr: args.ehr, agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
+    runId: `${manifest.runId}/adhoc`, store, ehr: args.ehr, screens: args.screens ?? createScreenChecker(args.ehr), agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
     seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,
   };
   const input = {
