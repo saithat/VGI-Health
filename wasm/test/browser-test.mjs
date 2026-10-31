@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { writeFileSync } from 'node:fs';
 
 // Optional verification dependency, kept outside the project/package lockfiles.
-// npm install --prefix .tools/browser --cache .tools/npm-cache --no-save playwright
+// npm install --prefix .tools/browser --cache .tools/npm-cache --no-save playwright@1.64.1
 // PLAYWRIGHT_BROWSERS_PATH="$PWD/.tools/browser/browsers" \
 //   .tools/browser/node_modules/.bin/playwright install chromium
 const { chromium } = await import('../../.tools/browser/node_modules/playwright/index.mjs');
@@ -38,10 +38,16 @@ try {
   });
   assert.equal(JSON.parse(benchmark.result).counter, 42);
   assert.equal(benchmark.crossOriginIsolated, false, 'no COOP/COEP headers required');
+  const initOnly = await page.evaluate(async () => {
+    const { default: createInit } = await import('../dist/ehr-init.mjs');
+    const { wrapEhr } = await import('../dist/ehr.js');
+    return wrapEhr(await createInit()).step('hello 🩺');
+  });
+  assert.equal(initOnly, 'hello 🩺 (Lean Init/WASM)');
   assert.ok(responses.some(x => x.url.endsWith('/ehr.wasm') && x.status === 200));
   assert.deepEqual(errors, []);
   await page.screenshot({ path: new URL('../.build/browser.png', import.meta.url).pathname, fullPage: true });
-  const result = { browser: await browser.version(), first, benchmark, responses, errors };
+  const result = { browser: await browser.version(), first, benchmark, initOnly, responses, errors };
   writeFileSync(new URL('../.build/browser-result.json', import.meta.url), JSON.stringify(result, null, 2) + '\n');
   console.log(JSON.stringify(result, null, 2));
 } finally {

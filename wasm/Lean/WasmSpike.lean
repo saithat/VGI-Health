@@ -17,4 +17,5 @@ def step (input : String) : String :=
         ("items", Lean.toJson [counter, counter + 1, counter + 2]),
         ("input", value)]).compress
 
-#guard (Lean.Json.parse (step "{\"counter\":41}" )).isOk
+#guard (Lean.Json.parse (step "{\"counter\":41}") >>= fun j =>
+  j.getObjValAs? Nat "counter").toOption == some 42

@@ -187,6 +187,10 @@ def main():
         path.mkdir(parents=True, exist_ok=True)
     if run(["git", "-C", ROOT / ".tools/lean4", "rev-parse", "HEAD"]).strip() != "eb6cafb7290e8bd5f2937522d8d804f58f02bafc":
         raise RuntimeError("Lean runtime checkout does not match installed compiler")
+    if run(["git", "-C", ROOT / ".tools/libuv", "rev-parse", "HEAD"]).strip() != "1cfa32ff59c076ffb6ed735bbc8c18361558661f":
+        raise RuntimeError("libuv headers must be v1.52.1")
+    run(["git", "-C", ROOT / ".tools/lean4", "diff", "--exit-code", "--", "src"])
+    run(["git", "-C", ROOT / ".tools/libuv", "diff", "--exit-code", "--", "include"])
     prepare_headers()
     print(f"[runtime] {len(runtime_sources())} sources, {JOBS} jobs, wasm32 / no GMP / no threads", flush=True)
     with futures.ThreadPoolExecutor(max_workers=JOBS) as pool:
@@ -194,6 +198,7 @@ def main():
     variants = ["init", "json"] if args.variant == "both" else [args.variant]
     results = [build(variant, runtime_objects) for variant in variants]
     shutil.copyfile(WASM / "ehr.js", WASM / "dist/ehr.js")
+    shutil.copyfile(WASM / "ehr.d.ts", WASM / "dist/ehr.d.ts")
     summary = {"lean": "4.35.0", "emscripten": run(["emcc", "--version"]).splitlines()[0],
                "elapsedSeconds": time.monotonic() - started, "results": results}
     (BUILD / "build-result.json").write_text(json.dumps(summary, indent=2) + "\n")
