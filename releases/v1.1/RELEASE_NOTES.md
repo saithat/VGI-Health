@@ -21,3 +21,5 @@ The interpreter now recognizes imaging/procedure service slots (`orderKind`, `or
 Generated `spec.json` and `canonical.json` come from `cd lean && lake exe export-content`. Source audit and primary-source links: [docs/regulations.md](../../docs/regulations.md#5-release-motivation-text-exact-phrasing-to-use). These files describe demo policy, not legal or clinical advice.
 
 `canonical.json` is the full W1–W7 authoring template. The five role-specific deployment candidates are `personas/P1.json` … `personas/P5.json`; certify the matching candidate before deployment. These exports do not themselves carry a checker certificate.
+
+Prior-auth requests retain the never-prefill policy: enter the request field as a human. The convenience action cannot forge that capture and preserves any confirmed request.

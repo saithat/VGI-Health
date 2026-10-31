@@ -9,9 +9,9 @@ def optionalRelease : State := run w1Path canonicalV1_1 adult physician specV1_1
 /-- A human requests prior auth on an existing order. -/
 def pa : State × StepResult := one
   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Orders",
-    .enter "w1Orders.drug" (.code "lisinopril")] canonicalV1_1 adult physician specV1_1)
+    .enter "w1Orders.drug" (.code "lisinopril"), .enter "w1Orders.priorAuthRequest" (.flag true)] canonicalV1_1 adult physician specV1_1)
   (.click "w1Orders.requestPriorAuth") canonicalV1_1 adult physician specV1_1
-#guard pa.2 == .ok
+#guard pa.2 == .ignored
 #guard (cap pa.1 "priorAuthRequest").map (·.value) == some (.flag true)
 #guard pa.1.commits == []
 #guard !canonicalV1_1.inCatalog specV1
@@ -19,10 +19,10 @@ def pa : State × StepResult := one
 /-- Actual imaging-only order: no drug is needed to request prior auth. -/
 def servicePa : State × StepResult := one
   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Labs",
-    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551"), .enter "w1Labs.priorAuthRequest" (.flag true)]
     canonicalV1_1 adult physician specV1_1)
   (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
-#guard servicePa.2 == .ok
+#guard servicePa.2 == .ignored
 #guard (cap servicePa.1 "priorAuthRequest").map (·.value) == some (.flag true)
 #guard orderLines servicePa.1 == []
 #guard (popupCandidates specV1_1 canonicalV1_1 adult servicePa.1 "signOrders").isEmpty
@@ -32,14 +32,21 @@ def servicePa : State × StepResult := one
 both orders distinct rather than attaching a service code to the drug line. -/
 def mixedServicePa : State × StepResult := one
   (more optionalRelease [.click "w1Sign.nav.w1Labs", .click "w1Labs.newServiceOrder",
-    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551"), .enter "w1Labs.priorAuthRequest" (.flag true)]
     canonicalV1_1 adult physician specV1_1)
   (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
-#guard mixedServicePa.2 == .ok
+#guard mixedServicePa.2 == .ignored
 #guard mixedServicePa.1.currentSlot == 1
 #guard serviceOrderAt mixedServicePa.1 1
 #guard (orderLines mixedServicePa.1).length == 1
 #guard (cap mixedServicePa.1 "priorAuthRequest" 1).map (·.value) == some (.flag true)
+
+-- A request click cannot forge the never-policy human entry.
+#guard reason (one (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Labs",
+  .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+  canonicalV1_1 adult physician specV1_1) (.click "w1Labs.requestServicePriorAuth")
+  canonicalV1_1 adult physician specV1_1).2 == "human entry required: priorAuthRequest"
+#guard (cap servicePa.1 "priorAuthRequest").any (·.byHuman)
 
 -- v2 has teeth: the old UI still reaches sign, but cannot meet the new entry.
 #guard reason (one (run amoxPath canonicalV1_1 adult physician specV2)

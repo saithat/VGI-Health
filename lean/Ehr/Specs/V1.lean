@@ -1417,6 +1417,30 @@ def refillNote : ElementSpec where
   friction := .accidental
   fhirTarget := "MedicationRequest.note"
 
+/-- Vaccine manufacturer. 42 USC 300aa-25(a)(2) requires it in the record;
+this field's inventory default and human confirmation are our implementation.
+Source audit: docs/regulations.md E11. -/
+def vaccineManufacturer : ElementSpec where
+  id := "vaccineManufacturer"
+  label := "Vaccine manufacturer"
+  kind := .text
+  enteredBy := vaccinators
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "Immunization.manufacturer"
+
+/-- Identity of the administering provider, recorded under 42 USC
+300aa-25(a)(3). This demo captures the provider display/identifier; address and
+full legal record completeness remain outside the model (regulations.md E11). -/
+def vaccineProvider : ElementSpec where
+  id := "vaccineProvider"
+  label := "Administering provider"
+  kind := .text
+  enteredBy := vaccinators
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "Immunization.performer.actor"
+
 /-- Every data element in spec v1. -/
 def elements : List ElementSpec := [
   -- safety checks
@@ -1449,6 +1473,7 @@ def elements : List ElementSpec := [
   handoffBackground, handoffAssessment, handoffRecommendation,
   -- immunizations
   vaccine, vaccineLot, vaccineSite, vaccineRoute, visGiven, visEditionDate,
+  vaccineManufacturer, vaccineProvider,
   -- surgery
   surgeryDecision, hpUpdate, medsToHold, npoStatus, opPreopDiagnosis, opPostopDiagnosis,
   opProcedure, opSurgeons, opAnesthesia, opFindings, opEbl, opSpecimens, opDrains,
@@ -1692,11 +1717,12 @@ def chartAssessmentEntries : List EntryReq :=
 
 /-- Recording a vaccine needs the vaccine, lot, site, route, and the VIS.
 
-42 USC 300aa-25(a) covers record content and 300aa-26(d) VIS before administration. Site/route gating is our policy; this demo does not model all statutory fields or establish VIS timing (docs/regulations.md E11). -/
+42 USC 300aa-25(a) covers record content and 300aa-26(d) VIS before administration. Site/route gating is our policy. The VIS edition date, manufacturer and provider are now required; this demo still does not model every statutory field or establish actual VIS delivery timing (docs/regulations.md E11). -/
 def recordImmunizationEntries : List EntryReq :=
   [requires recordImmunization vaccine, requires recordImmunization vaccineLot,
    requires recordImmunization vaccineSite, requires recordImmunization vaccineRoute,
-   requires recordImmunization visGiven]
+   requires recordImmunization visGiven, requires recordImmunization visEditionDate,
+   requires recordImmunization vaccineManufacturer, requires recordImmunization vaccineProvider]
 
 /-- The brief op note needs the diagnoses, procedure, anesthesia, findings,
 blood loss, specimens, complications, and condition.
@@ -1758,12 +1784,13 @@ def curesReview (c : CommitSpec) : ReviewReq :=
 (shown, or reviewed by a prescriber in the last 4 hours), the dose check
 (shown for weight-based orders), and, for controlled substances, the CURES report.
 
-45 CFR 170.315(a)(4) requires automatic drug checks in certified technology, not these list displays. List display, roles and receipt windows are our design. Dose display follows ISMP kg guidance; no-receipt is our choice (docs/regulations.md R2–3). -/
+45 CFR 170.315(a)(4) requires automatic drug checks in certified technology, not these list displays. List display, roles and receipt windows are our design. Dose display follows ISMP kg guidance; no-receipt is our choice (docs/regulations.md R2–3). Controlled-prescription details remain displayed during signing under 21 CFR 1311.140(a)(3)–(4); applying this no-receipt gate to every controlled order, including facility orders, is our stricter demo policy. -/
 def orderSigningReviews (c : CommitSpec) : List ReviewReq :=
   [showOrReceipt c allergyList 240 prescribers,
    showOrReceipt c currentMeds 240 prescribers,
    mustShow c doseCheck (.weightBased),
-   curesReview c]
+   curesReview c,
+   mustShow c orderSummary (.orderClass "controlled-II-IV")]
 
 /-- Before signing pre-op orders: also the anticoagulant list, always shown.
 

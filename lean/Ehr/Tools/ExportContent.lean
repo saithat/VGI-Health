@@ -60,7 +60,7 @@ def exportAll (root : System.FilePath) : IO Unit := do
       writeJson root s!"releases/{v}/personas/{persona}.json" (forPersona sp p persona role)
   for (name, p) in Bad.programs do writeJson root s!"programs/bad/{name}.json" p
   IO.FS.writeFile (root / "programs/canonical/STATS.md") stats
-  IO.println "Exported canonical v1, v1.1, v2; 15 persona canonicals; 14 bad programs; specs; statistics."
+  IO.println "Exported canonical v1, v1.1, v2; 15 persona canonicals; 16 bad programs; specs; statistics."
 end Ehr.Tools.ExportContent
 
 /-- Repository root defaults to the parent of the lean directory. -/

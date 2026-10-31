@@ -120,6 +120,8 @@ def immunizations : Screen :=
       group s "record" "Vaccine given",
       field s "vaccine" "vaccine" "Vaccine" (parent := some "record"),
       field s "vaccineLot" "vaccineLot" "Lot number" (parent := some "record"),
+      field s "vaccineManufacturer" "vaccineManufacturer" "Manufacturer" (parent := some "record"),
+      field s "vaccineProvider" "vaccineProvider" "Administering provider" (parent := some "record"),
       field s "vaccineSite" "vaccineSite" "Site" (parent := some "record"),
       field s "vaccineRoute" "vaccineRoute" "Route" (parent := some "record"),
       field s "visGiven" "visGiven" "VIS given" (parent := some "record"),

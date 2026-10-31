@@ -183,4 +183,14 @@ def missingPain : State := run ((adminPath "oxycodone").filter fun e => match e 
   | .enter "w4Admin.painScore" _ => false | _ => true) (f := adminFacts "oxycodone") (u := nurse)
 #guard reason (one missingPain (.click "w4Admin.commit.administerMed")
   (f := adminFacts "oxycodone") (u := nurse)).2 == "entry required: painScore"
+
+-- 15: EPCS signing details are no-receipt information, even with a CURES report.
+#guard reason (one (run (opioidPath) Bad.hiddenControlledDetails)
+  (.click "w1Sign.commit.signOrders") Bad.hiddenControlledDetails).2 ==
+  "review required: orderSummary must be shown"
+#guard (finish (run (opioidPath) Bad.hiddenControlledDetails) "w1Sign" "signOrders"
+  Bad.hiddenControlledDetails).commits == []
+-- 16: A generic constrained-refills runtime regression remains blocked on the
+-- core value-constraint request in changes-requests.md; no false passing test.
+
 end Ehr.Canonical.Tests

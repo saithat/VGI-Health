@@ -296,3 +296,20 @@ EntryReq/ValueKind types.
 **Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
 never-policy human request field and preserving the policy. Tests check that
 convenience clicks neither forge nor overwrite the human capture.
+
+## New BRIEF immunization integration
+
+Content now requires `visEditionDate`, `vaccineManufacturer`, and
+`vaccineProvider` as well as the existing vaccine, lot, route/site and VIS flag.
+The W5 UI exposes all fields and its interpreter test records them. World/sim
+and FHIR write adapters must supply the actual vaccine inventory manufacturer,
+administering provider and VIS edition date. The entry guard establishes their
+capture, not actual prior delivery of the VIS or full statutory record content.
+
+## World regression from core albuterol-cap merge
+
+`pnpm --filter world test` now runs 92 tests: 91 pass, one fails in
+`world/test/synthea.test.ts:114`. Lean albuterol `maxDoseMgTenths = 50`, while
+world's FORMULARY still gives `maxDoseTenths = 0`. Synchronize the TS reference
+to the already-requested 5 mg absolute cap; do not weaken the assertion or
+remove the cap. World typecheck and lint pass. Content did not edit world files.
