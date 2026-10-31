@@ -57,6 +57,7 @@ theorem prefillRecord_element {facts : Facts} {s : State} {e : ElementId} {el : 
     {n : Nat} {pf : Prefill} {x : Captured} (h : prefillRecord facts s e el n pf = some x) :
     x.element = e := by
   cases pf <;> simp [prefillRecord] at h
+  case fromRecord => obtain ⟨_, _, _, rfl⟩ := h; rfl
   all_goals (obtain ⟨_, _, rfl⟩ := h; rfl)
 
 /-- Prefilling one field changes only `captured`, and adds no human-only value. -/

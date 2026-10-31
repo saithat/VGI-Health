@@ -464,6 +464,8 @@ structure FactsContext where
   medToGive? : Option String := none
   /-- Prior review receipts (from Provenance records). -/
   receipts : List Receipt := []
+  /-- Episode kind supplied by the caller, e.g. "preop". -/
+  encounterKind? : Option String := none
   /-- Extra named record values, added after the ones derived from the bundle. -/
   record : List (String × String) := []
   deriving DecidableEq, Repr, Inhabited

@@ -112,6 +112,8 @@ structure ElementSpec where
   humanOnly : Bool := false
   /-- The element this one is copied from, for `autoLinked`. -/
   linkedFrom? : Option ElementId := none
+  /-- The sole named record fact a fromRecord prefill may use. None forbids it. -/
+  recordFact? : Option String := none
   /-- Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`. -/
   fhirTarget : String
   deriving DecidableEq, Repr, Inhabited
@@ -144,6 +146,10 @@ inductive When
   | highAlertMed
   /-- The patient has an abnormal result. -/
   | abnormalResult
+  /-- Episode encounter kind, e.g. "preop" (not a historical encounter). -/
+  | encounter (kind : String)
+  /-- Some order drug has a nonzero weight-based dose range. -/
+  | weightBased
   /-- Naloxone should be offered (CA B&P Code §741): some order line's drug is
   an opioid, and the patient takes a benzodiazepine or the line's daily MME is
   90 or more (an unknown dose, frequency, or MME factor counts as a risk). -/
@@ -209,7 +215,8 @@ structure AlertSpec where
   tier : Tier
   /-- The commit this alert concerns. -/
   commit : CommitId
-  /-- Screens where a passive alert must be shown inline. -/
+  /-- Workflow tags whose screens must show this passive alert inline.
+  These are Screen.workflow values, never program-specific screen IDs. -/
   screens : List String := []
   deriving DecidableEq, Repr, Inhabited
 
@@ -429,6 +436,8 @@ structure Facts where
   /-- Other record values a field may prefill from, by name
   (e.g. `("visitDiagnosis", "J18.9")`). -/
   record : List (String × String) := []
+  /-- Kind of this episode, e.g. "preop". Absent means no encounter-kind match. -/
+  encounterKind? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/

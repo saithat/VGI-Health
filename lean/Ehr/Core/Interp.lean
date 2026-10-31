@@ -49,6 +49,7 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
     Prefill → Option Captured
   | .none => none
   | .fromRecord f =>
+    if el.recordFact? != some f then none else
     (recordValue facts el.kind f).map fun v =>
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
         provenance? := some ("record:" ++ f) }

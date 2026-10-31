@@ -146,6 +146,7 @@ def weight : ElementSpec where
   kind := .quantity .kg
   enteredBy := allClinicians
   prefill := .recordConfirm
+  recordFact? := some "weightToday"
   friction := .compliance
   fhirTarget := "Observation.valueQuantity"
 
@@ -260,6 +261,7 @@ def chiefComplaint : ElementSpec where
   kind := .text
   enteredBy := allClinicians
   prefill := .recordConfirm
+  recordFact? := some "appointmentReason"
   friction := .compliance
   fhirTarget := "Encounter.reasonCode"
 
@@ -583,6 +585,7 @@ def pharmacy : ElementSpec where
   kind := .coded "pharmacy"
   enteredBy := prescribers
   prefill := .recordConfirm
+  recordFact? := some "preferredPharmacy"
   friction := .compliance
   fhirTarget := "MedicationRequest.dispenseRequest.performer"
 
@@ -1349,6 +1352,7 @@ def refillPharmacy : ElementSpec where
   kind := .coded "pharmacy"
   enteredBy := [.physician, .np]
   prefill := .recordConfirm
+  recordFact? := some "requestPharmacy"
   friction := .compliance
   fhirTarget := "MedicationRequest.dispenseRequest.performer"
 
@@ -1826,19 +1830,19 @@ def highAlertAdminAlert : AlertSpec :=
 adult rooming. -/
 def careGapsInlineAlert : AlertSpec :=
   { id := "careGapsInline", label := "Care gaps due", cond := .careGap, tier := .passive,
-    commit := signNote.id, screens := ["w1Rooming"] }
+    commit := signNote.id, screens := ["W1"] }
 
 /-- Passive: an ordered drug duplicates a current therapy (low severity).
 Shown inline in the adult order composer. -/
 def duplicateTherapyInlineAlert : AlertSpec :=
   { id := "duplicateTherapyInline", label := "Possible duplicate therapy",
     cond := .duplicateTherapy, tier := .passive, commit := signOrders.id,
-    screens := ["w1Orders"] }
+    screens := ["W1"] }
 
 /-- Passive: vaccines are due. Shown inline on the pediatric immunization screen. -/
 def immunizationsDueInlineAlert : AlertSpec :=
   { id := "immunizationsDueInline", label := "Immunizations due", cond := .careGap,
-    tier := .passive, commit := recordImmunization.id, screens := ["w5Immunizations"] }
+    tier := .passive, commit := recordImmunization.id, screens := ["W5"] }
 
 /-- Removable: a "health maintenance reminder" popup when closing a visit with
 care gaps. The same gaps are already shown inline. -/
