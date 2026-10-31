@@ -1,0 +1,191 @@
+import Ehr.Check.Graph
+import Ehr.Props.Properties
+
+/-!
+# Checker rules that go beyond the property text
+
+Some properties quantify over every reachable state (for example "whenever the
+sign button is shown, the allergy list is shown too"). The checker cannot run
+every state, so it tests a simple fact about the program text that is enough:
+the information is *pinned* on the screen, meaning no click can hide it. T1
+proves that each such rule implies its property.
+
+- `fixedShown`: a component no click can hide: not tiny, always visible, and
+  every ancestor a non-collapsible group with the same property.
+- `pinnedForReview`: a component that keeps a review requirement met on its
+  screen: it displays the info, is not tiny, every ancestor is a
+  non-collapsible group that is fixed-shown, and it is either always visible,
+  or hidden only by a receipt that also counts for this requirement.
+-/
+
+namespace Ehr.Check
+
+open Ehr Ehr.Props
+
+/-- A non-collapsible group: it is always open. -/
+def isOpenGroup : Kind → Bool
+  | .group false _ => true
+  | _ => false
+
+/-- A component no click can hide (with the interpreter's step bound). -/
+def fixedShownAux (comps : List Component) : Nat → Component → Bool
+  | 0, _ => false
+  | fuel + 1, c =>
+    c.size != .tiny && c.visibility == .always &&
+      match c.parent? with
+      | none => true
+      | some pid =>
+        match comps.find? (·.id == pid) with
+        | none => false
+        | some p => isOpenGroup p.kind && fixedShownAux comps fuel p
+
+/-- A component no click can hide. -/
+def fixedShown (comps : List Component) (c : Component) : Bool :=
+  fixedShownAux comps (comps.length + 1) c
+
+/-- Every ancestor of `c` is a non-collapsible group that no click can hide. -/
+def parentsFixed (comps : List Component) (c : Component) : Bool :=
+  match c.parent? with
+  | none => true
+  | some pid =>
+    match comps.find? (·.id == pid) with
+    | none => false
+    | some p => isOpenGroup p.kind && fixedShownAux comps comps.length p
+
+/-- A receipt that hides info `rq.info` (valid for *some* receipt-accepting
+requirement on that info) also counts for `rq`: `rq` accepts receipts, and
+every receipt-accepting requirement on the same info has a window no longer
+and roles no wider than `rq`'s. -/
+def receiptHideSafe (spec : Spec) (rq : ReviewReq) : Bool :=
+  match rq.mode with
+  | .shownOnCommit => false
+  | .shownOrReceipt w roles =>
+    spec.reviews.all fun rq' =>
+      rq'.info != rq.info ||
+        match rq'.mode with
+        | .shownOnCommit => true
+        | .shownOrReceipt w' roles' => decide (w' ≤ w) && roles'.all (roles.contains ·)
+
+/-- The component keeps review requirement `rq` met on its screen. -/
+def pinnedForReview (spec : Spec) (comps : List Component) (rq : ReviewReq) (c : Component) : Bool :=
+  showsInfo rq.info c.kind && c.size != .tiny && parentsFixed comps c &&
+    match c.visibility with
+    | .always => true
+    | .unlessReceipt i => i == rq.info && receiptHideSafe spec rq
+
+/-- Every review requirement for commit `c` has a pinned component on `scr`. -/
+def reviewsPinnedOn (spec : Spec) (scr : Screen) (c : CommitId) : Bool :=
+  spec.reviews.all fun rq => rq.commit != c || scr.components.any (pinnedForReview spec scr.components rq)
+
+/-- Rule for property 4: every screen with a commit button pins every review
+requirement of that commit. -/
+def reviewsPinned (spec : Spec) (prog : Program) : Bool :=
+  prog.screens.all fun scr =>
+    scr.components.all fun comp =>
+      match commitOf? comp.kind with
+      | some c => reviewsPinnedOn spec scr c
+      | none => true
+
+/-- Rule for landmarks: every screen has a fixed-shown component for each
+landmark. -/
+def landmarksPinned (spec : Spec) (prog : Program) : Bool :=
+  prog.screens.all fun scr =>
+    spec.design.landmarks.all fun l =>
+      scr.components.any fun c => showsInfo l c.kind && fixedShown scr.components c
+
+/-- Rule for A1 (passive): on each screen a passive alert lists, if the
+program has that screen, an alert component for it is fixed-shown. -/
+def passivePinned (spec : Spec) (prog : Program) : Bool :=
+  spec.alerts.all fun al =>
+    al.tier != .passive ||
+      al.screens.all fun z =>
+        match prog.screen? z with
+        | none => true
+        | some scr => scr.components.any fun c =>
+            (match alertOf? c.kind with
+             | some a => a.1 == al.id
+             | none => false) && fixedShown scr.components c
+
+/-- Extra rule (CR-3): each screen a passive alert lists that the canonical
+program has, the candidate has too. -/
+def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
+  spec.alerts.all fun al =>
+    al.tier != .passive ||
+      al.screens.all fun z => (canonical.screen? z).isNone || (prog.screen? z).isSome
+
+/-! ## Completability rules -/
+
+/-- Screens with a commit button for `c` that can always be made shown. -/
+def commitScreens (prog : Program) (c : CommitId) : List ScreenId :=
+  prog.screens.filterMap fun scr =>
+    if scr.components.any (fun comp => commitOf? comp.kind == some c && revealable scr.components comp)
+    then some scr.id else none
+
+/-- Screens reachable from `a` by "go to" buttons that can always be made shown
+(including `a`). -/
+def openReach (prog : Program) (a : ScreenId) : List ScreenId :=
+  (bfs prog (openGotoEdges prog) a).map (·.1)
+
+/-- The program has an "add order line" button. -/
+def hasNewLine (prog : Program) : Bool :=
+  (allComps prog).any fun sc => sc.2.kind == .button .newOrderLine
+
+/-- The order-line slot a field binds to when there is no "add order line"
+button (`current` is then always 0). -/
+def fixedSlot : Slot → Nat
+  | .fixed n => n
+  | .current => 0
+
+/-- The slots that can hold an order line: those of the drug fields. -/
+def lineSlots (prog : Program) : List Nat :=
+  ((allComps prog).filterMap fun sc =>
+    match fieldOf? sc.2.kind with
+    | some f => if f.1 == drugElement then some (fixedSlot f.2.1) else none
+    | none => none).eraseDups
+
+/-- A field for element `e` that can always be made shown, on one of
+`screens`, bound to a slot accepted by `slotOk`. -/
+def openFieldOn (prog : Program) (screens : List ScreenId) (e : ElementId)
+    (slotOk : Slot → Bool) : Bool :=
+  prog.screens.any fun scr =>
+    screens.contains scr.id &&
+      scr.components.any fun c =>
+        match fieldOf? c.kind with
+        | some f => f.1 == e && slotOk f.2.1 && revealable scr.components c
+        | none => false
+
+/-- Why commit `c` might not stay reachable, or `none` if the program passes
+the completability rules for `c` with commit screen `s`:
+- every screen reaches `s` by buttons the user can always show;
+- each entry requirement of `c` has a field reachable from `s`;
+- per-order-line requirements: no "add order line" button (CR-1), and every
+  order-line slot has a field for each per-line element, reachable from `s`. -/
+def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
+  match prog.screens.find? (fun x => !(openReach prog x.id).contains s) with
+  | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
+  | none =>
+    let fromS := openReach prog s
+    let reqs := spec.entries.filter (·.commit == c)
+    match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
+    | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
+    | none =>
+      let perLine := reqs.filter (·.perOrderLine)
+      if !perLine.isEmpty && hasNewLine prog then
+        some (s, s!"commit {c}: the \"add order line\" button can leave an order line unfinished, " ++
+          "and no field can reach it again (see CR-1)")
+      else
+        match (lineSlots prog).findSome? (fun k =>
+            (perLine.find? fun rq => !openFieldOn prog fromS rq.element (fun sl => fixedSlot sl == k)).map (k, ·)) with
+        | some (k, rq) => some (s, s!"commit {c}: order line {k} has no field the user can reach for {rq.element}")
+        | none => none
+
+/-- The completability rules for commit `c`: some commit screen passes
+`completeVia`. Returns the first failure if none does. -/
+def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
+  match commitScreens prog c with
+  | [] => some (none, s!"commit {c}: no button for it that the user can always see")
+  | s :: rest =>
+    if (s :: rest).any (fun x => (completeVia spec prog c x).isNone) then none
+    else (completeVia spec prog c s).map fun p => (some p.1, p.2)
+
+end Ehr.Check
