@@ -237,6 +237,11 @@ For every commit (sign orders, sign note, approve refill, acknowledge result, ad
 - **Human-only acknowledgment:** interaction warnings, the high-alert double check by a second nurse, consent verification, and signing.
 - **Shown on the commit screen, with no receipt allowed:** the weight-based dose check, and the trend for an abnormal result before acknowledging it.
 
+### Real California rules (owner decision, Oct 31)
+- **CURES review (CA Health & Safety Code §11165.4):** before signing a first Schedule II–IV prescription, the prescriber reviews the patient's CURES report within the last 24 hours, or documents the statutory reason it wasn't consulted. Modeled as a review requirement (`curesReport`, shown or a receipt within 1,440 minutes) that a human-entered exemption reason can waive (`waivedBy`).
+- **Naloxone offer (CA Business & Professions Code §741):** for opioid orders at ≥90 MME/day, or with a concurrent benzodiazepine, the prescriber records offering naloxone (an entry requirement under the condition `naloxoneRisk`).
+- **Grounding:** `docs/regulations.md` maps every spec rule to its real source (federal law, California law, accreditation standard, best practice, or our own design choice), with citations. Spec docstrings cite them.
+
 ### Alert rules
 Each alert has a **trigger condition** over FHIR facts and a **tier**. Example conditions: drug–allergy match, drug–drug interaction, duplicate therapy, dose out of range for the recorded weight, weight entered in lb, care gap, required field missing. The tiers:
 - **Interruptive:** it pops up and must be handled before the commit it concerns (for example drug–allergy, severe interaction, dose out of range).
@@ -364,6 +369,8 @@ Each one is stated in plain words and quantifies over **all** specs and programs
 10. A2: a "dose out of range" popup on every order, regardless of the dose.
 11. A3: the same interaction alert interrupting twice in one encounter.
 12. A4: the passive care-gap reminder turned into a popup.
+13. CURES: the CURES panel and the exemption picker both missing from the sign-orders path (commit unreachable for controlled orders).
+14. Naloxone: the naloxone offer pre-filled by a macro.
 
 Each one gets a `¬ Satisfies` lemma, a checker rejection with a replayable counterexample, and an app test showing the hard stop blocks the commit.
 
@@ -615,6 +622,7 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 - [ ] The app's screen logic is the Lean interpreter compiled to WASM (or option B, if the owner approved it). Native and WASM builds agree on thousands of random programs and click sequences.
 - [ ] Seeded bad programs 9–12 (alerts) fail with counterexamples. A1–A4 hold for every deployed version.
 - [ ] W7 (refill requests) is built and used in P1's simulated days.
+- [ ] The CURES and naloxone rules are in spec v1 with citations; bad programs 13–14 are rejected; `docs/regulations.md` maps every spec rule to its source.
 - [ ] Release v1.1: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
 - [ ] The per-version screen check passes for every deployed version, and runs offline before deploy (a failing version is never deployed).
 - [ ] EHR screens are drawn by the generic painter from Lean's page tree; T10 and T11 are proven.
