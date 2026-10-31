@@ -1,0 +1,272 @@
+{
+ "resourceType": "Bundle",
+ "type": "collection",
+ "entry": [
+  {
+   "fullUrl": "urn:uuid:p05-warfarin",
+   "resource": {
+    "resourceType": "Patient",
+    "id": "p05-warfarin",
+    "name": [
+     {
+      "use": "official",
+      "given": [
+       "Harold"
+      ],
+      "family": "Becker"
+     }
+    ],
+    "gender": "male",
+    "birthDate": "1949-02-11",
+    "identifier": [
+     {
+      "system": "https://github.com/synthetichealth/synthea",
+      "value": "p05-warfarin"
+     }
+    ]
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-cond-1",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p05-warfarin-cond-1",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "49436004",
+       "display": "Atrial fibrillation (disorder)"
+      }
+     ],
+     "text": "Atrial fibrillation (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "onsetDateTime": "2018-10-01"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-cond-2",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p05-warfarin-cond-2",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "59621000",
+       "display": "Essential hypertension (disorder)"
+      }
+     ],
+     "text": "Essential hypertension (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "onsetDateTime": "2005-01-01"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-med-1",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p05-warfarin-med-1",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "855332",
+       "display": "warfarin sodium 5 MG Oral Tablet"
+      }
+     ],
+     "text": "warfarin sodium 5 MG Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "authoredOn": "2026-09-15"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-med-2",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p05-warfarin-med-2",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "314076",
+       "display": "lisinopril 10 MG Oral Tablet"
+      }
+     ],
+     "text": "lisinopril 10 MG Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "authoredOn": "2026-09-15"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-obs-1",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p05-warfarin-obs-1",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "vital-signs"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "29463-7",
+       "display": "Body weight"
+      }
+     ],
+     "text": "Body weight"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "effectiveDateTime": "2026-09-15T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 84.0,
+     "unit": "kg",
+     "system": "http://unitsofmeasure.org",
+     "code": "kg"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-obs-2",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p05-warfarin-obs-2",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "6301-6",
+       "display": "INR in Platelet poor plasma by Coagulation assay"
+      }
+     ],
+     "text": "INR in Platelet poor plasma by Coagulation assay"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "effectiveDateTime": "2026-10-20T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 2.4,
+     "unit": "{INR}",
+     "system": "http://unitsofmeasure.org",
+     "code": "{INR}"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-obs-3",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p05-warfarin-obs-3",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "2160-0",
+       "display": "Creatinine [Mass/volume] in Serum or Plasma"
+      }
+     ],
+     "text": "Creatinine [Mass/volume] in Serum or Plasma"
+    },
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "effectiveDateTime": "2026-09-15T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 1.12,
+     "unit": "mg/dL",
+     "system": "http://unitsofmeasure.org",
+     "code": "mg/dL"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p05-warfarin-enc-1",
+   "resource": {
+    "resourceType": "Encounter",
+    "id": "p05-warfarin-enc-1",
+    "status": "finished",
+    "class": {
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+     "code": "AMB"
+    },
+    "type": [
+     {
+      "text": "Anticoagulation visit"
+     }
+    ],
+    "subject": {
+     "reference": "Patient/p05-warfarin"
+    },
+    "period": {
+     "start": "2026-10-20T09:00:00-08:00",
+     "end": "2026-10-20T09:30:00-08:00"
+    }
+   }
+  }
+ ]
+}

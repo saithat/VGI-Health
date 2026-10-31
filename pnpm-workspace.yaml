@@ -3,3 +3,5 @@ packages:
   - "agent"
   - "world"
   - "infra/scripts"
+allowBuilds:
+  esbuild: true

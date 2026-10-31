@@ -1,0 +1,24 @@
+{
+  "name": "world",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Living-world generator: Synthea patients -> per-persona daily schedules (DaySchedule JSON)",
+  "type": "module",
+  "scripts": {
+    "gen": "tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test"
+  },
+  "dependencies": {
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "eslint": "^9.39.0",
+    "tsx": "^4.20.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.0"
+  }
+}
