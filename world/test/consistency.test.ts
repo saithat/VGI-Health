@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { PERSONAS } from "../src/schema";
-import { DAYS, run, schedule, stateOf } from "./helpers";
+import { DAYS, FIXTURE_INDEX, SYNTHEA_INDEX, run, schedule, stateOf } from "./helpers";
 
-const SEEDS = [1, 2, 3];
+const CASES = [
+  ...[1, 2, 3].map((seed) => ({ seed, index: FIXTURE_INDEX })),
+  { seed: 1, index: SYNTHEA_INDEX },
+];
 
-describe.each(SEEDS)("cross-persona consistency (seed %i)", (seed) => {
-  const r = run(seed);
+describe.each(CASES)("cross-persona consistency ($index, seed $seed)", ({ seed, index }) => {
+  const r = run(seed, index);
 
   it("every admitted patient is on P3's census the next day, with ward tasks", () => {
     let checked = 0;
