@@ -1,4 +1,5 @@
 import Ehr.Core.View
+import Ehr.Props.Defs
 
 /-!
 # Frame lemmas

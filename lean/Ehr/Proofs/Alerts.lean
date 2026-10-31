@@ -18,7 +18,7 @@ import Ehr.Proofs.T0
 
 namespace Ehr.Proofs
 
-open Ehr
+open Ehr Ehr.Props
 
 /-! ## A2 in the view -/
 
@@ -273,11 +273,6 @@ theorem A2_popup_holds (sp : Spec) (prog : Program) (facts : Facts) (user : User
     exact ⟨al, hal, hid, hk, hna⟩
 
 /-! ## A4 -/
-
-/-- The open popup, if any, belongs to an alert rule (looked up by ID) that is
-not passive. -/
-def PopupNotPassive (sp : Spec) (s : State) : Prop :=
-  ∀ a k, s.popup? = some (a, k) → ∃ al, sp.alert? a = some al ∧ al.tier ≠ .passive
 
 /-- The initial state has no popup. -/
 theorem init_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User) :

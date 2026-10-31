@@ -23,28 +23,7 @@ or captures a human-only value (`T6_macro_run_safe`).
 
 namespace Ehr.Proofs
 
-open Ehr
-
-/-- What one macro step does, through the public interface: `setValue` and
-`click` send an event to `step` as `Actor.macro`; `goto` moves to the screen
-(refused while a popup is open). -/
-def macroAct (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State) :
-    MacroStep → State × StepResult
-  | .setValue cid str => step sp prog facts user .«macro» s (.enter cid (macroValue sp prog facts s cid str))
-  | .click cid => step sp prog facts user .«macro» s (.click cid)
-  | .goto t => if s.popup?.isSome then (s, .blocked "popup: acknowledge the alert first")
-               else goTo sp prog facts s t
-
-/-- The reference: fold `macroAct` over the steps, stopping at the first step
-that is not `ok`. Returns the final state and, if it stopped, the index of the
-step and its result. `i` is the index of the first step. -/
-def foldMacro (sp : Spec) (prog : Program) (facts : Facts) (user : User) :
-    Nat → State → List MacroStep → State × Option (Nat × StepResult)
-  | _, s, [] => (s, none)
-  | i, s, st :: rest =>
-    match macroAct sp prog facts user s st with
-    | (s', .ok) => foldMacro sp prog facts user (i + 1) s' rest
-    | (s', r) => (s', some (i, r))
+open Ehr Ehr.Props
 
 /-- A step with `actor := macro` is `stepCore` (macros never start macros). -/
 theorem step_macro (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)

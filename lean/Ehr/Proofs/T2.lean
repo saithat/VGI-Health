@@ -17,19 +17,7 @@ must be shown (`T2_shownOnCommit_shown`).
 
 namespace Ehr.Proofs
 
-open Ehr
-
-/-- A valid receipt for review requirement `rq`, in plain logic. -/
-def ValidReceiptFor (sp : Spec) (facts : Facts) (s : State) (rq : ReviewReq) : Prop :=
-  ∃ w roles, rq.mode = .shownOrReceipt w roles ∧
-    ∃ r ∈ s.receipts, r.info = rq.info ∧ infoVersion sp facts rq.info = some r.dataVersion ∧
-      r.time ≤ nowMin facts s ∧ nowMin facts s - r.time ≤ w ∧ r.role ∈ roles
-
-/-- A human-entered waiver for review requirement `rq`, in plain logic. -/
-def HumanWaiverFor (s : State) (rq : ReviewReq) : Prop :=
-  ∃ e, rq.waivedBy? = some e ∧
-    ∃ x ∈ s.captured, x.element = e ∧ x.byHuman = true ∧ x.confirmed = true ∧
-      x.value.nonEmpty = true
+open Ehr Ehr.Props
 
 /-- A met review requirement that applies, with its info not shown, has a valid
 receipt or a human waiver. -/

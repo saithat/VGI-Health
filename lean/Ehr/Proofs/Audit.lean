@@ -50,6 +50,8 @@ elab "#spec_surface " id:ident : command => do
 
 namespace Ehr.Proofs
 
+open Ehr.Props
+
 /-! ## Axioms -/
 
 #print axioms T0_commit_needs_guard
