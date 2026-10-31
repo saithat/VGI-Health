@@ -57,6 +57,12 @@ open Ehr.Props
 #print axioms T0_commit_needs_guard
 #print axioms T0_entry_values
 #print axioms commitGuard_iff
+#print axioms entryMet_iff_values
+#print axioms entryValueAllowed_iff
+#print axioms capturedSatisfies_values
+#print axioms commitGuard_iff_values
+#print axioms T0_entry_values_allowed
+#print axioms T0_entry_values_perLine
 #print axioms T2_receipts_sound
 #print axioms T2_shownOnCommit_shown
 #print axioms T3_macro_step

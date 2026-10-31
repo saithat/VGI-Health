@@ -140,6 +140,9 @@ inductive When
   | always
   /-- Some order line's drug is in this class. -/
   | orderClass (cls : String)
+  /-- Some medication order line's drug is in this class (alias of orderClass).
+  Per-order-line requirements test only that line's drug. -/
+  | drugClass (cls : String)
   /-- The medication being given is in this class. -/
   | medClass (cls : String)
   /-- A high-alert medication is involved. -/
@@ -163,6 +166,9 @@ structure EntryReq where
   when : When := .always
   /-- Required for each order line that matches `when`. -/
   perOrderLine : Bool := false
+  /-- Allowed values, parsed using the element's kind. None adds no constraint;
+  some [] permits no value. For numeric refills, some ["0"] permits only zero. -/
+  allowed? : Option (List String) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- How a review requirement can be met. -/

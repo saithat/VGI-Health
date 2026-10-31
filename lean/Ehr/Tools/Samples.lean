@@ -1,4 +1,5 @@
 import Ehr.Examples.TinyTests
+import Ehr.Core.Tests
 import Ehr.Render.Json
 
 /-!
@@ -44,6 +45,8 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "scheduleIIRefillsRequirement" "EntryReq" Ehr.CoreTests.ScheduleII.zeroRefills,
+  mk "scheduleIIRefillsSpec" "Spec" Ehr.CoreTests.ScheduleII.constrainedSpec,
   mk "sampleDisplay" "Display" Ehr.Render.Display.empty,
   mk "samplePage" "PageNode" samplePage,
   mk "sampleRenderInput" "RenderInput"
