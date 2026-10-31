@@ -114,11 +114,38 @@
                 "field": {
                   "element": "indication",
                   "slot": "current",
-                  "prefill": "none"
+                  "prefill": {
+                    "default": {
+                      "value": "Visit diagnosis · infection"
+                    }
+                  }
                 }
               },
               "label": "Indication from visit diagnosis; clinician confirms.",
               "tag": "indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/1/components/2",
+            "value": {
+              "id": "work-indication",
+              "kind": {
+                "field": {
+                  "element": "indication",
+                  "slot": "current",
+                  "prefill": {
+                    "default": {
+                      "value": "Visit diagnosis · infection"
+                    }
+                  }
+                }
+              },
+              "label": "Indication from visit diagnosis; clinician confirms.",
+              "tag": "work-indication",
               "tab": 0,
               "visibility": "always",
               "size": "normal"
@@ -213,11 +240,38 @@
                 "field": {
                   "element": "indication",
                   "slot": "current",
-                  "prefill": "none"
+                  "prefill": {
+                    "default": {
+                      "value": "Visit diagnosis · infection"
+                    }
+                  }
                 }
               },
               "label": "Indication from visit diagnosis; clinician confirms.",
               "tag": "indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/1/components/2",
+            "value": {
+              "id": "work-indication",
+              "kind": {
+                "field": {
+                  "element": "indication",
+                  "slot": "current",
+                  "prefill": {
+                    "default": {
+                      "value": "Visit diagnosis · infection"
+                    }
+                  }
+                }
+              },
+              "label": "Indication from visit diagnosis; clinician confirms.",
+              "tag": "work-indication",
               "tab": 0,
               "visibility": "always",
               "size": "normal"
@@ -421,8 +475,8 @@
     "specVersion": "v2",
     "recheck": {
       "status": "fail",
-      "property": "reviewsBeforeCommit",
-      "message": "The antibiotic indication must be shown before administration. A closed Details drawer does not count.",
+      "property": "entriesBeforeCommit",
+      "message": "A confirmed indication must be captured for each antibiotic before signing orders.",
       "counterexample": [
         {
           "click": {
@@ -441,8 +495,8 @@
       ],
       "verdict": {
         "violation": {
-          "property": "reviewsBeforeCommit",
-          "message": "The antibiotic indication must be shown before administration. A closed Details drawer does not count.",
+          "property": "entriesBeforeCommit",
+          "message": "A confirmed indication must be captured for each antibiotic before signing orders.",
           "counterexample": [
             {
               "click": {

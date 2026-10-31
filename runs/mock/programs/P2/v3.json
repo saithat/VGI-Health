@@ -95,6 +95,21 @@
           "tag": "drug"
         },
         {
+          "id": "work-indication",
+          "kind": {
+            "field": {
+              "element": "indication",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Indication picker inside the ED order-set macro.",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "work-indication"
+        },
+        {
           "id": "dose",
           "kind": {
             "field": {

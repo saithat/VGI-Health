@@ -95,6 +95,19 @@
           "tag": "drug"
         },
         {
+          "id": "work-indication",
+          "kind": {
+            "panel": {
+              "info": "mockIndication"
+            }
+          },
+          "label": "Antibiotic indication",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "work-indication"
+        },
+        {
           "id": "dose",
           "kind": {
             "field": {
@@ -186,13 +199,11 @@
         {
           "id": "indication",
           "kind": {
-            "field": {
-              "element": "indication",
-              "slot": "current",
-              "prefill": "none"
+            "panel": {
+              "info": "mockIndication"
             }
           },
-          "label": "Indication · visible beside dose",
+          "label": "Antibiotic indication · beside dose",
           "tab": 0,
           "visibility": "always",
           "size": "normal",

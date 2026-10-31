@@ -95,6 +95,21 @@
           "tag": "drug"
         },
         {
+          "id": "work-indication",
+          "kind": {
+            "field": {
+              "element": "indication",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Indication field on the weight-based dosing screen.",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "work-indication"
+        },
+        {
           "id": "dose",
           "kind": {
             "field": {

@@ -558,14 +558,17 @@ function CostCurves({ run }: { run: RunData }) {
       const value =
         key === "floorClicks"
           ? (floor?.clicks ?? null)
-          : key === "floorKeys" ? (floor?.keystrokes ?? null)
-          : key === "floorScrolls" ? (floor?.scrolls ?? null)
-          : key === "floorKlm" ? (floor?.klmDeciSec ?? null)
-          : key === "popups"
-            ? point.after.popups / Math.max(1, point.after.tasks)
-            : point.after[key] /
-              Math.max(1, point.after.tasks) /
-              (key === "klmDeciSec" ? 10 : 1);
+          : key === "floorKeys"
+            ? (floor?.keystrokes ?? null)
+            : key === "floorScrolls"
+              ? (floor?.scrolls ?? null)
+              : key === "floorKlm"
+                ? (floor?.klmDeciSec ?? null)
+                : key === "popups"
+                  ? point.after.popups / Math.max(1, point.after.tasks)
+                  : point.after[key] /
+                    Math.max(1, point.after.tasks) /
+                    (key === "klmDeciSec" ? 10 : 1);
       return { day: point.day, load: point.load, value };
     }),
   }));

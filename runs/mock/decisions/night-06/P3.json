@@ -111,14 +111,29 @@
             "value": {
               "id": "indication",
               "kind": {
-                "field": {
-                  "element": "indication",
-                  "slot": "current",
-                  "prefill": "none"
+                "panel": {
+                  "info": "mockIndication"
                 }
               },
-              "label": "Indication · visible beside dose",
+              "label": "Antibiotic indication · beside dose",
               "tag": "indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/1/components/2",
+            "value": {
+              "id": "work-indication",
+              "kind": {
+                "panel": {
+                  "info": "mockIndication"
+                }
+              },
+              "label": "Antibiotic indication",
+              "tag": "work-indication",
               "tab": 0,
               "visibility": "always",
               "size": "normal"
@@ -410,14 +425,29 @@
             "value": {
               "id": "indication",
               "kind": {
-                "field": {
-                  "element": "indication",
-                  "slot": "current",
-                  "prefill": "none"
+                "panel": {
+                  "info": "mockIndication"
                 }
               },
-              "label": "Indication · visible beside dose",
+              "label": "Antibiotic indication · beside dose",
               "tag": "indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/1/components/2",
+            "value": {
+              "id": "work-indication",
+              "kind": {
+                "panel": {
+                  "info": "mockIndication"
+                }
+              },
+              "label": "Antibiotic indication",
+              "tag": "work-indication",
               "tab": 0,
               "visibility": "always",
               "size": "normal"
@@ -673,9 +703,7 @@
       "composeTaskView",
       "Focused task layout"
     ],
-    "customizationsDropped": [
-      "Collapsed indication drawer (rejected proposal)"
-    ],
+    "customizationsDropped": [],
     "fallback": false,
     "flaggedUser": false
   },

@@ -95,6 +95,25 @@
           "tag": "drug"
         },
         {
+          "id": "work-indication",
+          "kind": {
+            "field": {
+              "element": "indication",
+              "slot": "current",
+              "prefill": {
+                "default": {
+                  "value": "Surgical prophylaxis"
+                }
+              }
+            }
+          },
+          "label": "Surgical prophylaxis default with explicit surgeon confirmation.",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "work-indication"
+        },
+        {
           "id": "dose",
           "kind": {
             "field": {
@@ -202,7 +221,11 @@
             "field": {
               "element": "indication",
               "slot": "current",
-              "prefill": "none"
+              "prefill": {
+                "default": {
+                  "value": "Surgical prophylaxis"
+                }
+              }
             }
           },
           "label": "Surgical prophylaxis default with explicit surgeon confirmation.",

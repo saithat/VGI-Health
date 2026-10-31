@@ -18,7 +18,7 @@ export function runsPlugin(): Plugin {
     ).flat();
   }
   async function index() {
-    const all = await files(root);
+    const all = (await files(root)).filter(file => file.endsWith(".json"));
     return all
       .filter((file) => file.endsWith("/manifest.json"))
       .map((file) => ({
@@ -66,6 +66,13 @@ export function runsPlugin(): Plugin {
       await writeFile(
         resolve(output, "index.json"),
         JSON.stringify(await index()),
+      );
+      // Directory index also supports static hosts without an SPA rewrite.
+      const dashboard = resolve(import.meta.dirname, "../dist/dashboard");
+      await mkdir(dashboard, { recursive: true });
+      await cp(
+        resolve(output, "../index.html"),
+        resolve(dashboard, "index.html"),
       );
     },
   };

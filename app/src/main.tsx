@@ -25,7 +25,11 @@ createRoot(root).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
       <MedplumProvider medplum={medplum}>
-        {window.location.pathname === "/dashboard" ? <Dashboard /> : <App />}
+        {window.location.pathname.replace(/\/$/, "") === "/dashboard" ? (
+          <Dashboard />
+        ) : (
+          <App />
+        )}
       </MedplumProvider>
     </MantineProvider>
   </React.StrictMode>,

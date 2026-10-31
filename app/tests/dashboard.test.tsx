@@ -63,7 +63,10 @@ describe("recorded dashboard data", () => {
   it("rejects corrupt nested records, incorrect run ids, and traversal", async () => {
     const corrupt: ReadJson = async (path) =>
       path.includes("decisions/")
-          ? { ...decisionRecordSchema.parse(await read(path)), candidates: [{ candidate: {} }] }
+        ? {
+            ...decisionRecordSchema.parse(await read(path)),
+            candidates: [{ candidate: {} }],
+          }
         : read(path);
     await expect(loadRun("mock", files, corrupt)).rejects.toThrow();
     const wrong: ReadJson = async (path) =>
@@ -184,14 +187,14 @@ describe("Interp replay and painter integration", () => {
     expect(
       traceCounters(
         [
-          { t: 20, ops: ["click", "point"] },
-          { t: 28, ops: ["key", "key", "scroll"] },
+          { klmDeciSec: 20, ops: ["click", "point"] },
+          { klmDeciSec: 28, ops: ["key", "key", "scroll"] },
         ],
         1,
       ),
     ).toEqual({ clicks: 1, keystrokes: 0, scrolls: 0, seconds: 2 });
     expect(
-      traceCounters([{ t: 28, ops: ["key", "key", "scroll"] }], 100),
+      traceCounters([{ klmDeciSec: 28, ops: ["key", "key", "scroll"] }], 100),
     ).toEqual({ clicks: 0, keystrokes: 2, scrolls: 1, seconds: 2.8 });
   });
 });

@@ -12,27 +12,27 @@
 .dashboard * {
   box-sizing: border-box;
 }
-.dashboard button,
-.dashboard select,
-.dashboard textarea,
-.dashboard input {
+.dashboard button:not(.ehr-shell button),
+.dashboard select:not(.ehr-shell select),
+.dashboard textarea:not(.ehr-shell textarea),
+.dashboard input:not(.ehr-shell input) {
   font: inherit;
 }
-.dashboard button,
-.dashboard select {
+.dashboard button:not(.ehr-shell button),
+.dashboard select:not(.ehr-shell select) {
   border: 1px solid #becfc7;
   background: #fff;
   color: #183631;
   border-radius: 6px;
   padding: 7px 12px;
 }
-.dashboard button {
+.dashboard button:not(.ehr-shell button) {
   cursor: pointer;
 }
-.dashboard button:hover {
+.dashboard button:not(.ehr-shell button):hover {
   background: #e5eee8;
 }
-.dashboard button:disabled {
+.dashboard button:not(.ehr-shell button):disabled {
   opacity: 0.5;
   cursor: default;
 }
@@ -40,10 +40,10 @@
   outline: 3px solid #00796b;
   outline-offset: 3px;
 }
-.dashboard a {
+.dashboard a:not(.ehr-shell a) {
   color: #006c5c;
 }
-.dashboard label {
+.dashboard label:not(.ehr-shell label) {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -151,15 +151,15 @@
   letter-spacing: -0.6px;
   margin: 0;
 }
-.dashboard h3 {
+.dashboard h3:not(.ehr-shell h3) {
   font-size: 17px;
   line-height: 1.5;
 }
-.dashboard h4 {
+.dashboard h4:not(.ehr-shell h4) {
   font-size: 14px;
   margin: 8px 0;
 }
-.dashboard p {
+.dashboard p:not(.ehr-shell p) {
   margin: 10px 0;
 }
 .dash-badge {
@@ -263,13 +263,13 @@
   font-size: 12px;
   margin-top: 6px;
 }
-.dashboard details {
+.dashboard details:not(.ehr-shell details) {
   margin: 10px 0;
 }
-.dashboard summary {
+.dashboard summary:not(.ehr-shell summary) {
   cursor: pointer;
 }
-.dashboard pre {
+.dashboard pre:not(.ehr-shell pre) {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-size: 12px;
@@ -327,27 +327,27 @@
   overflow-x: auto;
   margin: 20px 0;
 }
-.dashboard table {
+.dashboard table:not(.ehr-shell table) {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   background: #fff;
 }
-.dashboard th,
-.dashboard td {
+.dashboard th:not(.ehr-shell th),
+.dashboard td:not(.ehr-shell td) {
   padding: 12px 16px;
   border-bottom: 1px solid #dce4dc;
   vertical-align: top;
 }
-.dashboard th {
+.dashboard th:not(.ehr-shell th) {
   font-weight: 650;
 }
-.dashboard thead th {
+.dashboard thead th:not(.ehr-shell th) {
   font-size: 12px;
   color: #4a6357;
   background: #eaf0e9;
 }
-.dashboard caption {
+.dashboard caption:not(.ehr-shell caption) {
   text-align: left;
   padding: 10px 0;
   font-weight: 600;
@@ -461,7 +461,7 @@
   gap: 15px;
   margin: 20px 0;
 }
-.dashboard textarea {
+.dashboard textarea:not(.ehr-shell textarea) {
   width: min(100%, 800px);
   padding: 12px;
   border: 1px solid #a9c0b2;
@@ -485,7 +485,7 @@
   .dash-header .dash-eyebrow {
     display: none;
   }
-  .dashboard select {
+  .dashboard select:not(.ehr-shell select) {
     max-width: 100%;
   }
   .dash-tabs {
@@ -494,8 +494,8 @@
   .dash-content {
     padding: 24px 16px;
   }
-  .dashboard th,
-  .dashboard td {
+  .dashboard th:not(.ehr-shell th),
+  .dashboard td:not(.ehr-shell td) {
     padding: 10px;
   }
 }

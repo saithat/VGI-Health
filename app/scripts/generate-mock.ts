@@ -119,7 +119,7 @@ const trace = (version: number) => {
           ? ["scroll"]
           : ["point", "click"];
     t += ops.length * 2 + 12;
-    return { event, ops, t };
+    return { event, ops, t, klmDeciSec: t };
   });
 };
 const comp = (id: string, kind: unknown, label: string, extra = {}) => ({
@@ -256,12 +256,64 @@ for (const [i, p] of personas.entries()) {
                 {
                   op: "add",
                   path: "/screens/2/components/2",
-                  value: field(
-                    "indication",
+                  value:
                     p.id === "P3"
-                      ? "Indication · visible beside dose"
-                      : p.migration,
-                  ),
+                      ? panel(
+                          "indication",
+                          "mockIndication",
+                          "Antibiotic indication · beside dose",
+                        )
+                      : {
+                          ...field("indication", p.migration),
+                          kind: {
+                            field: {
+                              element: "indication",
+                              slot: "current",
+                              prefill:
+                                p.id === "P1" || p.id === "P5"
+                                  ? {
+                                      default: {
+                                        value:
+                                          p.id === "P5"
+                                            ? "Surgical prophylaxis"
+                                            : "Visit diagnosis · infection",
+                                      },
+                                    }
+                                  : "none",
+                            },
+                          },
+                        },
+                },
+                {
+                  op: "add",
+                  path: "/screens/1/components/2",
+                  value:
+                    p.id === "P3"
+                      ? panel(
+                          "work-indication",
+                          "mockIndication",
+                          "Antibiotic indication",
+                        )
+                      : {
+                          ...field("work-indication", p.migration),
+                          kind: {
+                            field: {
+                              element: "indication",
+                              slot: "current",
+                              prefill:
+                                p.id === "P1" || p.id === "P5"
+                                  ? {
+                                      default: {
+                                        value:
+                                          p.id === "P5"
+                                            ? "Surgical prophylaxis"
+                                            : "Visit diagnosis · infection",
+                                      },
+                                    }
+                                  : "none",
+                            },
+                          },
+                        },
                 },
               ]
             : [
@@ -315,14 +367,18 @@ for (const [i, p] of personas.entries()) {
       "allergyHidden";
     const unsafe = night === 2 || (migrate && p.id === "P3");
     const property = migrate
-      ? "reviewsBeforeCommit"
+      ? p.id === "P3"
+        ? "reviewsBeforeCommit"
+        : "entriesBeforeCommit"
       : kind === "allergyHidden"
         ? "reviewsBeforeCommit"
         : kind === "idReentryPrefilled"
           ? "humanOnly"
           : "unitSafety";
     const message = migrate
-      ? "The antibiotic indication must be shown before administration. A closed Details drawer does not count."
+      ? p.id === "P3"
+        ? "The antibiotic indication must be shown before administration. A closed Details drawer does not count."
+        : "A confirmed indication must be captured for each antibiotic before signing orders."
       : kind === "allergyHidden"
         ? "Allergies must be visible before signing; hiding the panel removes the required review."
         : kind === "idReentryPrefilled"
@@ -598,10 +654,7 @@ for (const [i, p] of personas.entries()) {
                 : ["R2-1", "R2-2", "R2-3", "R2-4"],
               surfaced: surface ? show : null,
               customizationsKept: [p.move, "Focused task layout"],
-              customizationsDropped:
-                migrate && p.id === "P3"
-                  ? ["Collapsed indication drawer (rejected proposal)"]
-                  : [],
+              customizationsDropped: [],
               fallback: false,
               flaggedUser: false,
             }

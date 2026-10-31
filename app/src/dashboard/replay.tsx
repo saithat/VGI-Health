@@ -6,78 +6,12 @@ import {
   type Program,
   type JsonPatchOp,
 } from "../../../agent/src/schema";
-import { createMockInterp, type Interp } from "../core/interp";
-import { screenViewSchema } from "../core/types";
+import type { Interp } from "../core/interp";
+import { mockReplayInterp } from "../mock/replay";
 import { paint } from "../ehr/painter";
 import type { Html } from "../ehr/html";
-import { mockFacts } from "../mock/workflow";
 import { programAt, type RunData, type Replay } from "./data";
 
-/** Explicit MOCK adapter. All EHR component interpretation stays in the existing mock. */
-export function mockReplayInterp(program: Program): Interp {
-  const views = program.screens.map((screen) =>
-    screenViewSchema.parse({
-      screen: screen.id,
-      title: screen.title,
-      items: screen.components.map((component) => ({
-        component: {
-          ...component,
-          parent: component.parent ?? null,
-          hotkey: component.hotkey ?? null,
-          copyOf: component.copyOf ?? null,
-        },
-        shown: true,
-        depth: component.parent ? 1 : 0,
-        expanded:
-          typeof component.kind === "object" &&
-          "group" in component.kind &&
-          typeof component.kind.group === "object" &&
-          component.kind.group !== null &&
-          "startCollapsed" in component.kind.group &&
-          !component.kind.group.startCollapsed,
-        selectedTab: 0,
-        bound: null,
-        alertActive: false,
-      })),
-      enabled: screen.components
-        .filter((c) => c.id !== "commit-action")
-        .map((c) => c.id),
-      blocked: [
-        [
-          "commit-action",
-          "MOCK: no clinical writes; recorded checker results are illustrative.",
-        ],
-      ],
-      popup: null,
-    }),
-  );
-  const interp = createMockInterp(views, mockFacts);
-  // Legacy fixture interpreter requires explicit null Option keys. This adapter
-  // is never applied to WASM input or output.
-  const legacy = (raw: string) => {
-    const p = programSchema.parse(JSON.parse(raw));
-    return JSON.stringify({
-      ...p,
-      screens: p.screens.map((s) => ({
-        ...s,
-        components: s.components.map((c) => ({
-          ...c,
-          parent: c.parent ?? null,
-          hotkey: c.hotkey ?? null,
-          copyOf: c.copyOf ?? null,
-        })),
-      })),
-    });
-  };
-  return {
-    init: (s, p, b, u) => interp.init(s, legacy(p), b, u),
-    step: (s, p, b, u, state, event) =>
-      interp.step(s, legacy(p), b, u, state, event),
-    view: (s, p, b, u, state) => interp.view(s, legacy(p), b, u, state),
-    render: (s, p, b, u, state) => interp.render(s, legacy(p), b, u, state),
-    facts: (b) => interp.facts(b),
-  };
-}
 export type InterpFactory = (program: Program) => Interp;
 
 export function renderReplay(
@@ -183,7 +117,10 @@ export function ReplayScreen({
 }
 
 type Op = Replay["tasks"][number]["before"]["trace"][number]["ops"][number];
-export function traceCounters(trace: { t: number; ops: Op[] }[], step: number) {
+export function traceCounters(
+  trace: { klmDeciSec: number; ops: Op[] }[],
+  step: number,
+) {
   const prefix = trace.slice(0, step);
   const count = (op: Op) =>
     prefix.reduce(
@@ -194,6 +131,6 @@ export function traceCounters(trace: { t: number; ops: Op[] }[], step: number) {
     clicks: count("click"),
     keystrokes: count("key"),
     scrolls: count("scroll"),
-    seconds: (prefix.at(-1)?.t ?? 0) / 10,
+    seconds: (prefix.at(-1)?.klmDeciSec ?? 0) / 10,
   };
 }

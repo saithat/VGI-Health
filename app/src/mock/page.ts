@@ -91,6 +91,8 @@ function trend(items: Observation[], label: string): Html {
 function info(id: string, data: ChartData): Html {
   const r = data.resources;
   switch (id) {
+    case "mockIndication":
+      return table(["Medication", "Dose", "Indication"], [["MOCK antibiotic", "500 mg", "Infection · prescriber-confirmed (fixture)"]]);
     case "priorAuth":
       return table(["Order", "Prior authorization", "Action"], [["MOCK elective imaging", "Pending payer review", "Request prior authorization (fixture)"]]);
     case "allergyList":

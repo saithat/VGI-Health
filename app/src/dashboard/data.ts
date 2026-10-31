@@ -28,7 +28,7 @@ const sideSchema = z.object({
       ops: z.array(
         z.enum(["click", "key", "scroll", "scan", "point", "think", "wait"]),
       ),
-      t: z.number().nonnegative(),
+      klmDeciSec: z.number().nonnegative(),
     }),
   ),
 });

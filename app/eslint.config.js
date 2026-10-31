@@ -8,7 +8,7 @@ const boundary = {
     schema: [],
     messages: {
       network:
-        "Only src/data/medplum.ts may use fetch or import @medplum/core.",
+        "Medplum access belongs in src/data/medplum.ts; only dashboard/data.ts may additionally fetch constrained /runs/ JSON.",
     },
   },
   create(context) {
@@ -35,7 +35,12 @@ const boundary = {
           context.report({ node, messageId: "network" });
       },
       Identifier(node) {
-        if (node.name === "fetch" && !context.filename.replaceAll("\\", "/").endsWith("/src/dashboard/data.ts"))
+        if (
+          node.name === "fetch" &&
+          !context.filename
+            .replaceAll("\\", "/")
+            .endsWith("/src/dashboard/data.ts")
+        )
           context.report({ node, messageId: "network" });
       },
       MemberExpression(node) {
@@ -63,7 +68,10 @@ const boundary = {
 export default tseslint.config(
   { ignores: ["dist/**", "node_modules/**"] },
   js.configs.recommended,
-  { files: ["scripts/*.mjs"], languageOptions: { globals: { process: "readonly" } } },
+  {
+    files: ["scripts/*.mjs"],
+    languageOptions: { globals: { process: "readonly" } },
+  },
   ...tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx,js,mjs}"],
