@@ -12,3 +12,4 @@ import Ehr.Examples.Tiny
 import Ehr.Examples.TinyTests
 import Ehr.Examples.ApiTests
 import Ehr.Specs.V1
+import Ehr.Canonical.Program

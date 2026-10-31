@@ -74,8 +74,9 @@ def alertC (s : ScreenId) (name : String) (alert : AlertId) (label : String)
 
 /-- A button. -/
 def button (s : ScreenId) (name : String) (action : Action) (label : String)
-    (parent : Option String := none) (hotkey : Option String := none) : Component :=
-  mk s name (.button action) label parent (hotkey := hotkey)
+    (parent : Option String := none) (hotkey : Option String := none) (tab : Nat := 0) :
+    Component :=
+  mk s name (.button action) label parent tab (hotkey := hotkey)
 
 /-- A button that goes to another screen. -/
 def goto (s : ScreenId) (name : String) (target : ScreenId) (label : String)
@@ -89,8 +90,8 @@ def commitBtn (s : ScreenId) (commit : CommitId) (label : String)
 
 /-- A "mark as reviewed" button (creates a review receipt). -/
 def reviewBtn (s : ScreenId) (info : InfoId) (label : String)
-    (parent : Option String := none) : Component :=
-  button s ("review." ++ info) (.markReviewed info) label parent
+    (parent : Option String := none) (tab : Nat := 0) : Component :=
+  button s ("review." ++ info) (.markReviewed info) label parent (tab := tab)
 
 /-- A group. Collapsible and open by default. -/
 def group (s : ScreenId) (name : String) (label : String) (collapsible : Bool := true)
@@ -154,7 +155,7 @@ tab 0 is open at first. -/
 def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Block) :
     List Component :=
   tabsC s name label ::
-    (List.range blocks.length).zip blocks |>.map fun (i, look, info, lbl) =>
+    ((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
       showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)
 
 /-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
@@ -171,6 +172,46 @@ def shell (s : ScreenId) (nav : List (ScreenId × String)) (side : List Block)
    button s "back" .back "Back", goto s "home" "home" "Patient workspace"] ++
   navigator s nav ++ sidebar s side ++ tabStrip s "chart" "Chart review" chart
 
+/-! ## Medication order lines -/
+
+/-- The fields of one medication order line, in three sections (medication,
+dispense, and pharmacy and diagnosis). Component names start with `pre` and
+section groups are named `pre ++ "medication"` and so on. `slot` is
+`Slot.current` in the composer and a fixed line number in order-set rows. -/
+def lineFields (s : ScreenId) (pre : String) (slot : Slot) (parent : Option String := none)
+    (pharmacyPrefill : Prefill := .none) : List Component :=
+  let g := fun (n l : String) => group s (pre ++ n) l (parent := parent)
+  let f := fun (sec n e l : String) =>
+    field s (pre ++ n) e l (parent := some (pre ++ sec)) (slot := slot)
+  [g "medication" "Medication",
+   f "medication" "drug" "drug" "Medication",
+   f "medication" "dose" "dose" "Dose (mg)",
+   f "medication" "doseUnit" "doseUnit" "Dose unit",
+   f "medication" "route" "route" "Route",
+   f "medication" "freq" "freq" "Frequency",
+   f "medication" "prn" "prn" "As needed (PRN)",
+   g "dispense" "Dispense",
+   f "dispense" "duration" "duration" "Duration",
+   f "dispense" "quantity" "quantity" "Dispense quantity",
+   f "dispense" "refills" "refills" "Refills",
+   f "dispense" "substitution" "substitution" "Generic substitution allowed",
+   g "dx" "Pharmacy and diagnosis",
+   field s (pre ++ "pharmacy") "pharmacy" "Pharmacy" (parent := some (pre ++ "dx"))
+     (slot := slot) (prefill := pharmacyPrefill),
+   f "dx" "indication" "indication" "Indication",
+   f "dx" "orderDiagnosis" "orderDiagnosis" "Associated diagnosis (ICD-10)"]
+
+/-- The controlled-substance section of a composer: the CURES exemption picker
+and the naloxone offer and education (California). Bound to line 0: they are
+asked once per signing. -/
+def controlledFields (s : ScreenId) : List Component :=
+  [group s "controlled" "Controlled substances (CURES / naloxone)",
+   field s "curesExemptionReason" "curesExemptionReason" "CURES not checked: exemption"
+     (parent := some "controlled"),
+   field s "naloxoneOffer" "naloxoneOffer" "Naloxone offered" (parent := some "controlled"),
+   field s "naloxoneEducation" "naloxoneEducation" "Overdose and naloxone education given"
+     (parent := some "controlled")]
+
 /-! ## Medication order composer -/
 
 /-- Options for one order composer. -/
@@ -181,6 +222,10 @@ structure ComposerOptions where
   weightBased : Bool := false
   /-- Ask for today's weight in the composer too (screens without rooming). -/
   askWeight : Bool := false
+  /-- Ask for the dosing weight in the composer (otherwise the sign screen asks). -/
+  askDosingWeight : Bool := true
+  /-- Show the controlled-substance section (otherwise the sign screen has it). -/
+  askControlled : Bool := true
   /-- Pre-fill for the pharmacy field. -/
   pharmacyPrefill : Prefill := .none
   /-- Inline (passive) alerts to show at the top: local name, alert id, label. -/
@@ -192,8 +237,10 @@ structure ComposerOptions where
 
 /-- The medication order composer for the current order line. It is long on
 purpose, like a production composer: a preference list, the dosing weight,
-then medication, dispense, pharmacy, and diagnosis sections, a collapsed
-"additional" section, the pending-orders list, and the buttons. -/
+the order line (medication, dispense, pharmacy and diagnosis), the
+controlled-substance section, a collapsed "additional" section, an order-info
+tab strip whose second tab holds the CURES report, the pending-orders list, and
+the buttons. -/
 def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
   [searchC s "orderSearch" "formulary" "Search medications"] ++
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
@@ -202,44 +249,49 @@ def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
   [group s "dosing" "Dosing"] ++
   (if o.askWeight then [field s "weight" "weight" "Weight today (kg)" (parent := some "dosing")]
    else []) ++
-  [field s "dosingWeight" "dosingWeight" "Dosing weight (kg)" (parent := some "dosing")] ++
+  (if o.askDosingWeight then
+    [field s "dosingWeight" "dosingWeight" "Dosing weight (kg)" (parent := some "dosing")]
+   else []) ++
   (if o.weightBased then
     [lineField s "doseMgPerKg" "doseMgPerKg" "Dose (mg/kg)" (parent := some "dosing"),
      panel s "dosePreview" "doseCheck" "Calculated dose and range" (parent := some "dosing")]
    else []) ++
-  [group s "medication" "Medication",
-   lineField s "drug" "drug" "Medication" (parent := some "medication"),
-   lineField s "dose" "dose" "Dose (mg)" (parent := some "medication"),
-   lineField s "doseUnit" "doseUnit" "Dose unit" (parent := some "medication"),
-   lineField s "route" "route" "Route" (parent := some "medication"),
-   lineField s "freq" "freq" "Frequency" (parent := some "medication"),
-   lineField s "prn" "prn" "As needed (PRN)" (parent := some "medication"),
-   group s "dispense" "Dispense",
-   lineField s "duration" "duration" "Duration" (parent := some "dispense"),
-   lineField s "quantity" "quantity" "Dispense quantity" (parent := some "dispense"),
-   lineField s "refills" "refills" "Refills" (parent := some "dispense"),
-   lineField s "substitution" "substitution" "Generic substitution allowed"
-     (parent := some "dispense"),
-   group s "pharmacyGroup" "Pharmacy",
-   lineField s "pharmacy" "pharmacy" "Pharmacy" (parent := some "pharmacyGroup")
-     (prefill := o.pharmacyPrefill),
-   group s "dx" "Diagnosis association",
-   lineField s "indication" "indication" "Indication" (parent := some "dx"),
-   lineField s "orderDiagnosis" "orderDiagnosis" "Associated diagnosis (ICD-10)"
-     (parent := some "dx"),
-   group s "more" "Additional" (startCollapsed := true),
+  lineFields s "" .current (pharmacyPrefill := o.pharmacyPrefill) ++
+  (if o.askControlled then controlledFields s else []) ++
+  [group s "more" "Additional" (startCollapsed := true),
    lineField s "orderComment" "orderComment" "Note to pharmacy" (parent := some "more"),
    field s "allergyReconfirmOrdering" "allergyReconfirmOrdering"
-     "I have reviewed the patient's allergies" (parent := some "more"),
+     "I have reviewed the patient's allergies" (parent := some "more")] ++
+  tabStrip s "orderInfo" "Order information"
+    [(.table, "currentMeds", "Current meds"), (.panel, "curesReport", "CURES report"),
+     (.table, "labResults", "Recent labs")] ++
+  [reviewBtn s "curesReport" "Mark CURES report reviewed" (parent := some "orderInfo") (tab := 1),
    table s "pending" "orderSummary" "Pending orders",
    button s "newLine" .newOrderLine "Accept and add another order",
    goto s "toSign" o.signScreen "Review and sign"] ++
   o.extraNav.map fun (t, l) => goto s ("to." ++ t) t l
 
+/-! ## Order-set rows
+
+An order set shows each of its orders as a row on fixed order lines, so the
+clinician can confirm every value a macro filled in. Rows use order lines 10
+and up, so they never collide with lines started in the composer (0, 1, …). -/
+
+/-- The name prefix of the order-set row on order line `n`. -/
+def rowPrefix (n : Nat) : String := "row" ++ toString n ++ "."
+
+/-- Order-set rows on the given order lines, each in its own group. -/
+def orderSetRows (s : ScreenId) (lines : List Nat) : List Component :=
+  lines.flatMap fun n =>
+    group s ("row" ++ toString n) ("Order set line " ++ toString (n - 9)) ::
+      lineFields s (rowPrefix n) (.fixed n) (parent := some ("row" ++ toString n))
+
 /-! ## Macros that fill order lines -/
 
 /-- One complete order line, as an order set or preference list fills it.
-Numbers are in the element's unit (mg for the dose). -/
+Numbers are in the element's unit (mg for the dose). Frequencies use the codes
+the interpreter understands (`daily`, `bid`, `tid`, `qid`, `q4h`, `q6h`,
+`q8h`, `q12h`). -/
 structure OrderLine where
   drug : String
   dose : String
@@ -255,33 +307,36 @@ structure OrderLine where
   prn : Bool := false
   diagnosis : String
 
-/-- The steps that fill every element of `o` on the current line of the composer
-on screen `s`. -/
-def fillLine (s : ScreenId) (o : OrderLine) : List MacroStep :=
-  [.setValue (cid s "drug") o.drug, .setValue (cid s "dose") o.dose,
-   .setValue (cid s "doseUnit") o.doseUnit, .setValue (cid s "route") o.route,
-   .setValue (cid s "freq") o.freq, .setValue (cid s "prn") (toString o.prn),
-   .setValue (cid s "duration") o.duration, .setValue (cid s "quantity") o.quantity,
-   .setValue (cid s "refills") o.refills,
-   .setValue (cid s "substitution") (toString o.substitution),
-   .setValue (cid s "pharmacy") o.pharmacy, .setValue (cid s "indication") o.indication,
-   .setValue (cid s "orderDiagnosis") o.diagnosis]
+/-- The steps that fill every element of `o` into the fields named with prefix
+`pre` on screen `s`. -/
+def fillLine (s : ScreenId) (pre : String) (o : OrderLine) : List MacroStep :=
+  let c := fun n => cid s (pre ++ n)
+  [.setValue (c "drug") o.drug, .setValue (c "dose") o.dose,
+   .setValue (c "doseUnit") o.doseUnit, .setValue (c "route") o.route,
+   .setValue (c "freq") o.freq, .setValue (c "prn") (toString o.prn),
+   .setValue (c "duration") o.duration, .setValue (c "quantity") o.quantity,
+   .setValue (c "refills") o.refills, .setValue (c "substitution") (toString o.substitution),
+   .setValue (c "pharmacy") o.pharmacy, .setValue (c "indication") o.indication,
+   .setValue (c "orderDiagnosis") o.diagnosis]
 
-/-- An order-set macro: fills each line in turn, starting a new line between
-them. It never signs. -/
-def orderSet (id : MacroId) (label : String) (s : ScreenId) (lines : List OrderLine) : Macro :=
+/-- An order-set macro: goes to screen `s` and fills the rows on order lines
+10, 11, … with `lines`. The clinician then confirms each value. It never signs. -/
+def orderSet (id : MacroId) (label : String) (s : ScreenId) (lines : List OrderLine)
+    (extra : List MacroStep := []) : Macro :=
   { id, label,
-    steps := (lines.map (fillLine s)).intersperse [.click (cid s "newLine")] |>.flatten }
+    steps := [.goto s] ++ extra ++
+      (((List.range lines.length).zip lines).flatMap fun (i, o) => fillLine s (rowPrefix (10 + i)) o) }
 
-/-- A preference-list macro: fills only the clinical part of one line (drug,
-dose, unit, route, frequency, duration, quantity, refills). The clinician still
-fills the pharmacy, indication, diagnosis, substitution, and PRN fields. -/
+/-- A preference-list macro: fills the clinical part of the current line in the
+composer on screen `s` (drug, dose, unit, route, frequency, duration, quantity,
+refills). The clinician confirms these and fills the rest. -/
 def preference (id : MacroId) (label : String) (s : ScreenId) (o : OrderLine) : Macro :=
+  let c := cid s
   { id, label,
-    steps := [.setValue (cid s "drug") o.drug, .setValue (cid s "dose") o.dose,
-              .setValue (cid s "doseUnit") o.doseUnit, .setValue (cid s "route") o.route,
-              .setValue (cid s "freq") o.freq, .setValue (cid s "duration") o.duration,
-              .setValue (cid s "quantity") o.quantity, .setValue (cid s "refills") o.refills] }
+    steps := [.setValue (c "drug") o.drug, .setValue (c "dose") o.dose,
+              .setValue (c "doseUnit") o.doseUnit, .setValue (c "route") o.route,
+              .setValue (c "freq") o.freq, .setValue (c "duration") o.duration,
+              .setValue (c "quantity") o.quantity, .setValue (c "refills") o.refills] }
 
 /-- A macro that types text into fields (templates and copy-forward). -/
 def textMacro (id : MacroId) (label : String) (values : List (CompId × String)) : Macro :=
