@@ -1,0 +1,2227 @@
+{
+  "day": 3,
+  "persona": "P1",
+  "load": "normal",
+  "tasks": [
+    {
+      "id": "d03-P1-W2-020",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "ab39897f-f620-c7eb-f22f-04f77dfbd982",
+      "startMin": 0,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0004-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2345-7",
+                "display": "Glucose [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Glucose [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/ab39897f-f620-c7eb-f22f-04f77dfbd982"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 133,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 70,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 99,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W2-021",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "114be8bf-c178-1c85-11c6-fa38a6f24403",
+      "startMin": 4,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0007-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "3016-3",
+                "display": "Thyrotropin [Units/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Thyrotropin [Units/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/114be8bf-c178-1c85-11c6-fa38a6f24403"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 6.69,
+            "unit": "m[IU]/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "m[IU]/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.4,
+                "unit": "m[IU]/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "m[IU]/L"
+              },
+              "high": {
+                "value": 4,
+                "unit": "m[IU]/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "m[IU]/L"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-022",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "fd6d8cf8-a088-7ab5-f416-00e91bf809d4",
+      "startMin": 8,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0020-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/fd6d8cf8-a088-7ab5-f416-00e91bf809d4"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 7.8,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W2-023",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+      "startMin": 12,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0024-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "718-7",
+                "display": "Hemoglobin [Mass/volume] in Blood"
+              }
+            ],
+            "text": "Hemoglobin [Mass/volume] in Blood"
+          },
+          "subject": {
+            "reference": "Patient/c61efda8-512e-c6b3-4fba-676206c5894f"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "L",
+                  "display": "Low"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 9.4,
+            "unit": "g/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "g/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 12,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              },
+              "high": {
+                "value": 17.5,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-024",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "7295032f-0d3f-f22a-08e5-cfbe08fd8d4b",
+      "startMin": 16,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0034-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "18262-6",
+                "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+              }
+            ],
+            "text": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+          },
+          "subject": {
+            "reference": "Patient/7295032f-0d3f-f22a-08e5-cfbe08fd8d4b"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 137,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 99,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-025",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "2de88cde-f517-979f-28be-ed7f8fe51e88",
+      "startMin": 20,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0036-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/2de88cde-f517-979f-28be-ed7f8fe51e88"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 8.4,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-001",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "6a17f89c-1abb-945b-1d2c-39204cc9f73b",
+      "startMin": 30,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d03-P1-W1-002",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "821f791b-23b1-9f65-5837-3656996634dd",
+      "startMin": 50,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-003",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "90c116d0-3817-1d6e-f52e-49e7e6490cb8",
+      "startMin": 70,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d03-P1-W1-004",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+      "startMin": 90,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W1-005",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "3c4cf4b1-d2cc-2bec-cb9a-167f9cddaf5a",
+      "startMin": 110,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W1-006",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "3adc2c09-cd62-73e9-8329-edcd8b58b688",
+      "startMin": 130,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "depressionScreen",
+          "careGaps"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-007",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "c7498976-7160-5bb2-4222-6acecdcccee0",
+      "startMin": 150,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "anticoagulationReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-008",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+      "startMin": 170,
+      "choices": {
+        "orders": [
+          {
+            "drug": "lisinopril",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W1-009",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "67727e50-d536-37b0-b30b-04c20a2ad9a0",
+      "startMin": 190,
+      "choices": {
+        "orders": [
+          {
+            "drug": "hydrocodone-acetaminophen",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "painAgreementReview",
+          "functionalAssessment",
+          "supplyDays:hydrocodone-acetaminophen:30"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W1-010",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 210,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-011",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "c6f7c26f-4757-4f0e-8e6b-d96c398e2616",
+      "startMin": 230,
+      "choices": {
+        "orders": [
+          {
+            "drug": "atorvastatin",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-012",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "650dbb71-dd80-a1d6-acbd-c2c86120c4cc",
+      "startMin": 250,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-026",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "48757e0d-fc63-1cbe-bde5-176712642965",
+      "startMin": 272,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0040-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "18262-6",
+                "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+              }
+            ],
+            "text": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+          },
+          "subject": {
+            "reference": "Patient/48757e0d-fc63-1cbe-bde5-176712642965"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 177,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 99,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W7-027",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "8d1c4fc1-daf6-9ab6-de7a-c8b68639104e",
+      "startMin": 276,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0030-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+              },
+              "authoredOn": "2026-09-29T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "authoredOn": "2026-11-04T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0030-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "effectiveDateTime": "2026-06-18T08:00:00-08:00",
+          "issued": "2026-06-18T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0030-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "effectiveDateTime": "2026-09-28T08:00:00-08:00",
+          "issued": "2026-09-28T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.93,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W7-028",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "67aaee92-f974-4c17-53a8-6c2d2af2234e",
+      "startMin": 280,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0031-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "435",
+                    "display": "albuterol"
+                  }
+                ],
+                "text": "albuterol"
+              },
+              "subject": {
+                "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+              },
+              "authoredOn": "2026-09-28T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "albuterol 180 mcg INH q4h PRN",
+                  "route": {
+                    "text": "INH"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q4h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 180,
+                        "unit": "mcg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: albuterol 180 mcg q4h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+          },
+          "authoredOn": "2026-11-04T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W7-029",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2",
+      "startMin": 284,
+      "choices": {
+        "orders": [
+          {
+            "drug": "metformin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "modifyReason:a1c-above-goal",
+          "patientMessage"
+        ],
+        "refill": "modify"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0032-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "6809",
+                    "display": "metformin"
+                  }
+                ],
+                "text": "metformin"
+              },
+              "subject": {
+                "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+              },
+              "authoredOn": "2026-09-17T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "metformin 500 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 500,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: metformin 500 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "authoredOn": "2026-11-04T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0032-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "effectiveDateTime": "2026-09-22T08:00:00-08:00",
+          "issued": "2026-09-22T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 9.5,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0032-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "effectiveDateTime": "2026-06-29T08:00:00-08:00",
+          "issued": "2026-06-29T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.73,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-030",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "669a8933-462a-3896-6874-e0d7c4a00c07",
+      "startMin": 288,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0016-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/669a8933-462a-3896-6874-e0d7c4a00c07"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.2,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W2-031",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "0b08d61c-27f1-501b-86a5-e5be9e8216a2",
+      "startMin": 292,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0017-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/0b08d61c-27f1-501b-86a5-e5be9e8216a2"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-013",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "5416064f-0ad9-68a0-6291-1585026dc101",
+      "startMin": 330,
+      "choices": {
+        "orders": [
+          {
+            "drug": "lisinopril",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-014",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2",
+      "startMin": 350,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "depressionScreen"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-015",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "77b3ce36-f538-8782-d41e-72fcf0bd3163",
+      "startMin": 370,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "footExam"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-016",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf",
+      "startMin": 390,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W1-017",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "be8fbcad-42e9-f95c-d628-fafcfaa71aed",
+      "startMin": 410,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-018",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "cc995869-355c-edf7-8a3e-4c0f6e0be9b2",
+      "startMin": 430,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "lifestyleCounseling"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W1-019",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "732cdc7f-9ce5-c808-8fff-1777f491e16e",
+      "startMin": 450,
+      "choices": {
+        "orders": [
+          {
+            "drug": "albuterol",
+            "doseTenths": 1800,
+            "unit": "mcg",
+            "route": "INH",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W2-032",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "78e5b04f-7d5c-4e06-ed9a-2ac3bfc8a6f1",
+      "startMin": 590,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0021-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/78e5b04f-7d5c-4e06-ed9a-2ac3bfc8a6f1"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.1,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-033",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+      "startMin": 594,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0023-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/c61efda8-512e-c6b3-4fba-676206c5894f"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4.5,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d03-P1-W2-034",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "59d46478-c3c7-adaa-916e-c8f62ec56846",
+      "startMin": 598,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0032-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "18262-6",
+                "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+              }
+            ],
+            "text": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+          },
+          "subject": {
+            "reference": "Patient/59d46478-c3c7-adaa-916e-c8f62ec56846"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 84,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 99,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d03-P1-W2-035",
+      "day": 3,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "671121d8-379a-1160-e7ec-68dd86f6c53a",
+      "startMin": 602,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0038-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "3016-3",
+                "display": "Thyrotropin [Units/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Thyrotropin [Units/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/671121d8-379a-1160-e7ec-68dd86f6c53a"
+          },
+          "effectiveDateTime": "2026-11-04T07:15:00-08:00",
+          "issued": "2026-11-04T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.64,
+            "unit": "m[IU]/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "m[IU]/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.4,
+                "unit": "m[IU]/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "m[IU]/L"
+              },
+              "high": {
+                "value": 4,
+                "unit": "m[IU]/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "m[IU]/L"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
@@ -10,6 +11,23 @@ import { generateWorld } from "../src/world";
 const root = resolve(__dirname, "../..");
 const population = loadPopulation(join(root, "fixtures/synthea/index.json"));
 const run = generateWorld(1, 10, population.patients);
+
+it("keeps the committed seed-1 replay identical to the generator and below 15 MB", () => {
+  const dir = join(root, "runs/world/1");
+  const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
+  const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
+  expect(manifest.seed).toBe(1);
+  expect(manifest.days).toBe(10);
+  expect(manifest.files.reduce((bytes, file) => bytes + statSync(join(dir, file)).size, 0)).toBeLessThan(15_000_000);
+  expect(read("state-day-0.json")).toEqual(run.initial);
+  for (const d of run.days) {
+    expect(read(`state-day-${d.state.day}.json`)).toEqual(d.state);
+    for (const p of PERSONAS) {
+      expect(read(`day-${d.state.day}-${p}.json`)).toEqual(d.schedules[p]);
+      expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(d.schedules[p]);
+    }
+  }
+});
 
 describe("real Synthea population", () => {
   it("is deterministic on the full population and independent of the horizon", () => {

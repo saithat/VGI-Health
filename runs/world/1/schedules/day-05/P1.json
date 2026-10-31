@@ -1,0 +1,1057 @@
+{
+  "day": 5,
+  "persona": "P1",
+  "load": "busy",
+  "tasks": [
+    {
+      "id": "d05-P1-W1-001",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "d48f8d60-13c5-55dc-5b46-d2fd6547b796",
+      "startMin": 30,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "TID",
+            "prn": false,
+            "indication": "cellulitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-002",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2",
+      "startMin": 67,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "imagingReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-003",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "84478aa5-be3c-9e30-8b91-6519e1c61fed",
+      "startMin": 98,
+      "choices": {
+        "orders": [
+          {
+            "drug": "albuterol",
+            "doseTenths": 1800,
+            "unit": "mcg",
+            "route": "INH",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-004",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "2d3cc918-81e0-ae8e-4042-dc8e409e501d",
+      "startMin": 135,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false,
+            "indication": "strep-pharyngitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-005",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "13a729a9-d1af-6380-3d0d-fd4b78a27678",
+      "startMin": 162,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 8750,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false,
+            "indication": "acute-sinusitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-006",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "9a2e8b17-59a6-ac87-e652-f4bdda835f29",
+      "startMin": 199,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-007",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "2d3cc918-81e0-ae8e-4042-dc8e409e501d",
+      "startMin": 232,
+      "choices": {
+        "orders": [
+          {
+            "drug": "hydrocodone-acetaminophen",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "supplyDays:hydrocodone-acetaminophen:3",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-008",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "d48f8d60-13c5-55dc-5b46-d2fd6547b796",
+      "startMin": 265,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "imagingReview",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-009",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "84478aa5-be3c-9e30-8b91-6519e1c61fed",
+      "startMin": 293,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-010",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "b9dfc685-e57f-6298-5446-18da43697abe",
+      "startMin": 329,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d05-P1-W1-011",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "732cdc7f-9ce5-c808-8fff-1777f491e16e",
+      "startMin": 362,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 8750,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false,
+            "indication": "acute-sinusitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-012",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "2d3cc918-81e0-ae8e-4042-dc8e409e501d",
+      "startMin": 395,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 8750,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false,
+            "indication": "acute-sinusitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-013",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "d48f8d60-13c5-55dc-5b46-d2fd6547b796",
+      "startMin": 430,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "imagingReview",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-014",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+      "startMin": 462,
+      "choices": {
+        "orders": [
+          {
+            "drug": "hydrocodone-acetaminophen",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "supplyDays:hydrocodone-acetaminophen:3"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W1-015",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "84478aa5-be3c-9e30-8b91-6519e1c61fed",
+      "startMin": 494,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-016",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "9a2e8b17-59a6-ac87-e652-f4bdda835f29",
+      "startMin": 523,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "procedureNote",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d05-P1-W1-017",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "9a2e8b17-59a6-ac87-e652-f4bdda835f29",
+      "startMin": 561,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage",
+          "pmh",
+          "medRec"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W1-018",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "71f7765f-adc9-3eb0-4ff8-60162d121cac",
+      "startMin": 590,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "urgentCareTriage"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d05-P1-W2-019",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "e458dd47-cfac-0c89-3206-150c3cfed809",
+      "startMin": 630,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0012-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "600-7",
+                "display": "Bacteria identified in Blood by Culture"
+              }
+            ],
+            "text": "Bacteria identified in Blood by Culture"
+          },
+          "subject": {
+            "reference": "Patient/e458dd47-cfac-0c89-3206-150c3cfed809"
+          },
+          "effectiveDateTime": "2026-11-06T07:15:00-08:00",
+          "issued": "2026-11-06T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "A",
+                  "display": "Abnormal"
+                }
+              ]
+            }
+          ],
+          "valueString": "Staphylococcus aureus"
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W2-020",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W2",
+      "patientId": "03746a88-d6dc-b6f1-f2e1-5f7487b91ec0",
+      "startMin": 634,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0047-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "718-7",
+                "display": "Hemoglobin [Mass/volume] in Blood"
+              }
+            ],
+            "text": "Hemoglobin [Mass/volume] in Blood"
+          },
+          "subject": {
+            "reference": "Patient/03746a88-d6dc-b6f1-f2e1-5f7487b91ec0"
+          },
+          "effectiveDateTime": "2026-11-06T07:15:00-08:00",
+          "issued": "2026-11-06T08:15:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "L",
+                  "display": "Low"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 10,
+            "unit": "g/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "g/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 12,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              },
+              "high": {
+                "value": 17.5,
+                "unit": "g/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "g/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W7-021",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+      "startMin": 638,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "supplyDays:oxycodone:30"
+        ],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0046-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "7804",
+                    "display": "oxycodone"
+                  }
+                ],
+                "text": "oxycodone"
+              },
+              "subject": {
+                "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+              },
+              "authoredOn": "2026-09-24T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "oxycodone 10 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: oxycodone 10 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W7-022",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "41497fe0-70ed-2932-21b9-873707cd7580",
+      "startMin": 642,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "denyReason:early-refill",
+          "patientMessage"
+        ],
+        "refill": "deny"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0047-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "214182",
+                    "display": "hydrocodone-acetaminophen"
+                  }
+                ],
+                "text": "hydrocodone-acetaminophen"
+              },
+              "subject": {
+                "reference": "Patient/41497fe0-70ed-2932-21b9-873707cd7580"
+              },
+              "authoredOn": "2026-10-15T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "hydrocodone-acetaminophen 5 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 5,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: hydrocodone-acetaminophen 5 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/41497fe0-70ed-2932-21b9-873707cd7580"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d05-P1-W7-023",
+      "day": 5,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "50d2c695-5faa-dfae-da75-4b182154a1ea",
+      "startMin": 646,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "supplyDays:oxycodone:30"
+        ],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0048-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "7804",
+                    "display": "oxycodone"
+                  }
+                ],
+                "text": "oxycodone"
+              },
+              "subject": {
+                "reference": "Patient/50d2c695-5faa-dfae-da75-4b182154a1ea"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "oxycodone 10 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: oxycodone 10 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/50d2c695-5faa-dfae-da75-4b182154a1ea"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    }
+  ]
+}
