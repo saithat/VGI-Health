@@ -1997,5 +1997,981 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 lacks controlled-prescription summary info."
+  },
+  {
+    "id": "federal-rx-1311-120-display-strength",
+    "title": "Show product strength for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "dosage strength",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the dosage strength for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-form",
+    "title": "Show dosage form for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "form",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the dosage form for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-quantity",
+    "title": "Show quantity for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "quantity prescribed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribed quantity for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-directions",
+    "title": "Show use directions for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "directions for use",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display directions for use for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-refills",
+    "title": "Show authorized refills for Schedule III–V signing",
+    "citation": "21 CFR §1311.120(b)(9)(v)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "number of refills authorized",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the authorized number of refills, where applicable, for review and approval while signing a Schedule III–V electronic prescription.",
+    "specMapping": {
+      "element": "refills",
+      "info": null,
+      "when": "Schedule III–V electronic prescription with applicable refills",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-earliest-fill",
+    "title": "Show earliest fill date for multiple Schedule II signing",
+    "citation": "21 CFR §1311.120(b)(9)(vi)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "earliest date",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display each prescription’s earliest fill date for review and approval while signing a multiple-Schedule-II series under §1306.12(b).",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "multiple Schedule II electronic prescriptions under §1306.12(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-name",
+    "title": "Show prescriber name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s name for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-address",
+    "title": "Show prescriber address for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "address",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s address for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-dea",
+    "title": "Show prescriber DEA number for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "DEA registration number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s DEA registration number for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 lacks the controlled-prescription summary review requirement even where an entry element exists."
+  },
+  {
+    "id": "federal-rx-1311-140-signing-notice",
+    "title": "Display legal signing notice with controlled Rx",
+    "citation": "21 CFR §1311.140(a)(3)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.140",
+    "quote": "legally signing the prescription(s)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the required legal signing-and-transmission notice, or its substantial equivalent, with the controlled-prescription details while the prescriber completes two-factor authentication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "EPCS legal signing notice info on authenticated signing screen",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The notice must also explain that only the practitioner whose name and DEA number appear may complete the protocol. See paragraph (a)(4) for continuous display."
+  },
+  {
+    "id": "federal-rx-1311-140-label-sign",
+    "title": "Clearly label the controlled Rx signing function",
+    "citation": "21 CFR §1311.140(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.140",
+    "quote": "clearly label as the signing function",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Clearly identify the action that invokes the prescriber’s two-factor authentication as the prescription signing function.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "semantic label requirement for authenticated EPCS signing control",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-120-audit-time",
+    "title": "EPCS audit record includes date and time",
+    "citation": "21 CFR §1311.120(b)(24)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "date and time of the event",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the event date and time in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-type",
+    "title": "EPCS audit record includes event type",
+    "citation": "21 CFR §1311.120(b)(24)(ii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "type of event",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the event type in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-actor",
+    "title": "EPCS audit record identifies actor where applicable",
+    "citation": "21 CFR §1311.120(b)(24)(iii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "identity of the person",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the identity of the acting person in each EPCS audit record where applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-outcome",
+    "title": "EPCS audit record includes success or failure",
+    "citation": "21 CFR §1311.120(b)(24)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "success or failure",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record whether the event succeeded or failed in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-immutable",
+    "title": "EPCS audit records cannot be modified",
+    "citation": "21 CFR §1311.120(b)(26)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "prevent modifications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Prevent modifications to stored EPCS audit records.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "stored EPCS audit records",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "immutable persistent audit records",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Unauthorized deletion protection is another requirement of this paragraph; this row captures modification prevention only."
+  },
+  {
+    "id": "federal-rx-1311-150-daily-audit",
+    "title": "Analyze EPCS audit trail every calendar day",
+    "citation": "21 CFR §1311.150(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.150",
+    "quote": "at least once every calendar day",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Analyze the EPCS audit trail at least once per calendar day.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "operating EPCS application",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "scheduled daily security-audit analysis",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The same paragraph also requires an incident report identifying each auditable event; daily analysis is the atomic requirement captured here."
+  },
+  {
+    "id": "federal-rx-1311-305-retention",
+    "title": "Retain EPCS records electronically for two years",
+    "citation": "21 CFR §1311.305(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.305",
+    "quote": "two years",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Retain required EPCS records electronically for at least two years from creation or receipt, while honoring any longer applicable retention rule.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital retains records required by EPCS subpart",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "durable electronic EPCS retention policy",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This is not a blanket two-year hospital medical-record retention limit. Longer federal/state requirements are not preempted."
+  },
+  {
+    "id": "federal-rx-300aa-25-date",
+    "title": "Vaccine record includes administration date",
+    "citation": "42 U.S.C. §300aa-25(a)(1)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "date of administration",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the date of each administration of a Vaccine Injury Table vaccine in the permanent record or permitted permanent log.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "vaccine administration-date entry distinct from record creation time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item."
+  },
+  {
+    "id": "federal-rx-300aa-25-manufacturer",
+    "title": "Vaccine record includes manufacturer",
+    "citation": "42 U.S.C. §300aa-25(a)(2)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "vaccine manufacturer",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the manufacturer of each Vaccine Injury Table vaccine administered.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "vaccine manufacturer element",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item."
+  },
+  {
+    "id": "federal-rx-300aa-25-lot",
+    "title": "Vaccine record includes lot number",
+    "citation": "42 U.S.C. §300aa-25(a)(2)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "lot number",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the lot number of each Vaccine Injury Table vaccine administered.",
+    "specMapping": {
+      "element": "vaccineLot",
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 expressly requires vaccineLot at recordImmunization."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-name",
+    "title": "Vaccine record identifies administering provider",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "the name",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the name of the health care provider administering each Vaccine Injury Table vaccine.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "administering-provider identity capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-address",
+    "title": "Vaccine record includes provider address",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "address",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the address of the health care provider administering each Vaccine Injury Table vaccine.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "administering-provider address capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-title",
+    "title": "Vaccine record includes provider title when appropriate",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "the title",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the administering health care provider’s title when appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "conditional administering-provider title capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item."
+  },
+  {
+    "id": "federal-rx-300aa-26-vis-before-dose",
+    "title": "Provide VIS before each covered vaccination",
+    "citation": "42 U.S.C. §300aa-26(d)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-26.pdf",
+    "quote": "prior to the administration",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Provide the appropriate vaccine information materials to the child’s legal representative or adult recipient before administering the covered vaccine.",
+    "specMapping": {
+      "element": "visGiven",
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "VIS-delivery timestamp ordered before actual vaccine-administration event",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code opened and corroborated against current LII (last listed amendment 1993). V1 requires visGiven before recordImmunization, but does not model actual administration or enforce prior delivery. Applies to covered vaccines at any recipient age, not every vaccine product."
   }
 ]
