@@ -904,5 +904,935 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.22-c5i-hp-qualified-author",
+    "title": "H&P is completed by a qualified licensed individual",
+    "citation": "42 CFR §482.22(c)(5)(i)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.22",
+    "quote": "other qualified licensed individual in accordance with State law and hospital policy",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require the H&P author to satisfy the federally permitted practitioner categories, state law and hospital policy.",
+    "specMapping": {
+      "element": "hpUpdate",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Qualified H&P author and author identity; H&P-specific completion event",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A generic surgeon role or hpUpdate field does not prove qualification of the original H&P author. Timing is cataloged separately under §482.24."
+  },
+  {
+    "id": "cms-482.22-c6-individual-privileges",
+    "title": "Apply individual practitioner privileging criteria",
+    "citation": "42 CFR §482.22(c)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.22",
+    "quote": "criteria for determining the privileges to be granted to individual practitioners",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Bind relevant clinical actions to individual hospital-granted privileges derived under medical staff bylaws.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Individual privilege roster and action-to-privilege authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 role permissions are not individual privileges. Telemedicine-specific additional requirements remain applicable."
+  },
+  {
+    "id": "cms-482.23-c4-blood-policy",
+    "title": "Blood administration follows law and approved policy",
+    "citation": "42 CFR §482.23(c)(4)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Blood transfusions",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Require the blood-administration workflow to follow applicable state law and approved medical staff transfusion policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Policy-specific blood or IV administration workflow",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. The federal text does not itself require barcode scanning or a universal independent second-nurse check. Related earlier research: R2-20."
+  },
+  {
+    "id": "cms-482.23-c4-iv-policy",
+    "title": "IV administration follows law and approved policy",
+    "citation": "42 CFR §482.23(c)(4)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "intravenous medications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Require the IV-medication workflow to follow applicable state law and approved medical staff IV policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Policy-specific blood or IV administration workflow",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. The federal text does not itself require barcode scanning or a universal independent second-nurse check. Related earlier research: R2-20."
+  },
+  {
+    "id": "cms-482.23-b4-nursing-plan-goals",
+    "title": "Keep an individualized nursing care plan current",
+    "citation": "42 CFR §482.23(b)(4)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "develops and keeps current a nursing care plan for each patient that reflects the patient's goals",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Maintain a current nursing care plan reflecting patient goals and the nursing care needed; it may be interdisciplinary.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Longitudinal nursing care plan, goals and currency",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. nursingAssessment is a narrative assessment, not a required current care plan."
+  },
+  {
+    "id": "cms-482.23-c3-authorized-drug-order",
+    "title": "Medication orders are documented and signed by an authorized practitioner",
+    "citation": "42 CFR §482.23(c)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "documented and signed by a practitioner who is authorized to write orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Before an order is treated as authorized, preserve a documented signature by a responsible practitioner allowed by state law and hospital policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Responsible-practitioner identity, authorization and authenticated signature",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Influenza/pneumococcal vaccine policy exception applies after contraindication assessment. V1 signOrders has role permissions but no responsible-practitioner identity or signed-order provenance. Earlier research E2/R2-07."
+  },
+  {
+    "id": "cms-482.23-c6iA-self-order",
+    "title": "Order hospital-issued medication self-administration",
+    "citation": "42 CFR §482.23(c)(6)(i)(A)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "has issued an order, consistent with hospital policy, permitting self-administration",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require a responsible practitioner order permitting the specified hospital-issued medication to be self-administered.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iB-self-capacity",
+    "title": "Assess capacity for hospital-issued self-administration",
+    "citation": "42 CFR §482.23(c)(6)(i)(B)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Assess the capacity of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Record assessment of patient or appropriate caregiver capacity to self-administer the specified hospital-issued medication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iC-self-instruction",
+    "title": "Teach hospital-issued medication self-administration",
+    "citation": "42 CFR §482.23(c)(6)(i)(C)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Instruct the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record instruction of the patient or appropriate caregiver in safe, accurate administration of the specified hospital-issued medication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iD-self-security",
+    "title": "Address security of self-administered hospital medication",
+    "citation": "42 CFR §482.23(c)(6)(i)(D)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Address the security of the medication(s) for each patient.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document the medication-security arrangements for each patient allowed to self-administer hospital-issued medications.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iE-self-record-dose",
+    "title": "Record each reported self-administered hospital dose",
+    "citation": "42 CFR §482.23(c)(6)(i)(E)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Document the administration of each medication",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record each hospital-issued medication administration reported by the patient or appropriate caregiver in the medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iiC-own-med-identify",
+    "title": "Identify patient-owned medications before self-administration",
+    "citation": "42 CFR §482.23(c)(6)(ii)(C)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "Identify the specified medication(s)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Identify the patient-owned medications to be self-administered under the hospital policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.23-c6iiC-own-med-integrity",
+    "title": "Visually evaluate patient-owned medication integrity",
+    "citation": "42 CFR §482.23(c)(6)(ii)(C)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.23",
+    "quote": "visually evaluate the medication(s) for integrity",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Record visual evaluation of the integrity of the patient-owned medications to be self-administered.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital permits the specified self-administration pathway",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Self-administration policy branch, medication-specific authorization and documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Conditional hospital-policy duty, not a general entitlement to self-administration. V1 administerMed is an RN commit, so it cannot stand in for patient self-administration. Earlier research R2-21."
+  },
+  {
+    "id": "cms-482.24-c1-legible",
+    "title": "Medical record entries are legible",
+    "citation": "42 CFR §482.24(c)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "must be legible",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Ensure each patient medical record entry remains legible.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Rendered record legibility and persistent-record validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+  },
+  {
+    "id": "cms-482.24-c1-dated",
+    "title": "Medical record entries are dated",
+    "citation": "42 CFR §482.24(c)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "dated",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Preserve the date of each patient medical record entry.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Entry provenance with immutable date",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+  },
+  {
+    "id": "cms-482.24-c1-timed",
+    "title": "Medical record entries are timed",
+    "citation": "42 CFR §482.24(c)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "timed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Preserve the time of each patient medical record entry.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Entry provenance with immutable time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+  },
+  {
+    "id": "cms-482.24-c1-responsible-authentication",
+    "title": "Responsible service provider authenticates the entry",
+    "citation": "42 CFR §482.24(c)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "by the person responsible for providing or evaluating the service provided",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Authenticate each record entry by the person responsible for providing or evaluating the service, consistent with hospital policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Authenticated author identity and responsibility binding",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+  },
+  {
+    "id": "cms-482.24-c4ii-admitting-diagnosis",
+    "title": "Record the admitting diagnosis",
+    "citation": "42 CFR §482.24(c)(4)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "Admitting diagnosis.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Include the admitting diagnosis in the hospital medical record when appropriate.",
+    "specMapping": {
+      "element": "visitDiagnosis",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iii-consult-evaluations",
+    "title": "Record consultative evaluation results",
+    "citation": "42 CFR §482.24(c)(4)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "Results of all consultative evaluations of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include results of all consultative evaluations in the hospital record when appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iv-complications",
+    "title": "Record clinical complications",
+    "citation": "42 CFR §482.24(c)(4)(iv)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "Documentation of complications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Document complications in the hospital medical record when appropriate.",
+    "specMapping": {
+      "element": "opComplications",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iv-hospital-infections",
+    "title": "Record hospital-acquired infections",
+    "citation": "42 CFR §482.24(c)(4)(iv)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "hospital acquired infections",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document hospital-acquired infections in the hospital medical record when appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iv-drug-reactions",
+    "title": "Record unfavorable drug reactions",
+    "citation": "42 CFR §482.24(c)(4)(iv)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "unfavorable reactions to drugs",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document unfavorable reactions to drugs in the hospital medical record when appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iv-anesthesia-reactions",
+    "title": "Record unfavorable anesthesia reactions",
+    "citation": "42 CFR §482.24(c)(4)(iv)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "drugs and anesthesia",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Document unfavorable reactions to anesthesia in the hospital medical record when appropriate.",
+    "specMapping": {
+      "element": "opComplications",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level completeness, applicability and dedicated clinical content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4viii-final-diagnosis",
+    "title": "Record the final diagnosis",
+    "citation": "42 CFR §482.24(c)(4)(viii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "Final diagnosis",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include the final diagnosis in the hospital medical record.",
+    "specMapping": {
+      "element": "dischargeDiagnosis",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 dischargeDiagnosis is required at discharge. "
+  },
+  {
+    "id": "cms-482.24-c4viii-complete-30days",
+    "title": "Complete the record within 30 days after discharge",
+    "citation": "42 CFR §482.24(c)(4)(viii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "completion of medical records within 30 days following discharge",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Track completion of the medical record no later than 30 days after discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Post-discharge completion obligation and 30-day clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
   }
 ]
