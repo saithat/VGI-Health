@@ -2973,5 +2973,965 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31. Official 2024 U.S. Code opened and corroborated against current LII (last listed amendment 1993). V1 requires visGiven before recordImmunization, but does not model actual administration or enforce prior delivery. Applies to covered vaccines at any recipient age, not every vaccine product."
+  },
+  {
+    "id": "federal-rx-cdc-vis-edition",
+    "title": "Document the VIS edition date",
+    "citation": "CDC, About VISs, Other provider responsibilities (2024-08-02)",
+    "url": "https://www.cdc.gov/vaccines/hcp/vis/about/facts-vis.html",
+    "quote": "The edition date of the VIS",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Document the edition date of the VIS used for the vaccine dose.",
+    "specMapping": {
+      "element": "visEditionDate",
+      "info": null,
+      "when": "VIS provided for vaccination",
+      "prefill": "recordConfirm",
+      "friction": "accidental",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "require visEditionDate for covered vaccinations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. CDC official instructions describe provider documentation responsibilities. This row cites guidance rather than attributing these words to §300aa-25. V1 does not require the edition date or a distinct delivery date."
+  },
+  {
+    "id": "federal-rx-cdc-vis-delivery-date",
+    "title": "Document the date the VIS was given",
+    "citation": "CDC, About VISs, Other provider responsibilities (2024-08-02)",
+    "url": "https://www.cdc.gov/vaccines/hcp/vis/about/facts-vis.html",
+    "quote": "The date the VIS is provided",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Document the date the VIS was provided to the recipient or legal representative.",
+    "specMapping": {
+      "element": "visGiven",
+      "info": null,
+      "when": "VIS provided for vaccination",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "VIS delivery-date capture separate from boolean attestation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. CDC official instructions describe provider documentation responsibilities. This row cites guidance rather than attributing these words to §300aa-25. V1 does not require the edition date or a distinct delivery date."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-med",
+    "title": "Certified medication CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(1)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "record, change, and access medication orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access medication orders.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-lab",
+    "title": "Certified laboratory CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(2)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "record, change, and access laboratory orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access laboratory orders.",
+    "specMapping": {
+      "element": "labTest",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-imaging",
+    "title": "Certified imaging CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(3)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "record, change, and access diagnostic imaging orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access diagnostic imaging orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria."
+  },
+  {
+    "id": "federal-rx-170-315-allergy-alert",
+    "title": "Automatically indicate drug–allergy contraindications before order completion",
+    "citation": "45 CFR §170.315(a)(4)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "drug-allergy contraindications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Automatically indicate drug–allergy contraindications from the patient’s medication-allergy list before the medication order is completed and acted on.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 drugAllergyOrder and drugAllergyPreOp alerts cover the corresponding ordering commits. V1 uses interruptive alerts; ONC does not mandate that tier or an independent allergy re-confirmation checkbox. Retained unchanged by HTI-5."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-alert",
+    "title": "Automatically indicate drug–drug contraindications before order completion",
+    "citation": "45 CFR §170.315(a)(4)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "drug-drug",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Automatically indicate drug–drug contraindications based on the patient’s medication list before the medication order is completed and acted on.",
+    "specMapping": {
+      "element": null,
+      "info": "currentMeds",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "validated medication-list interaction engine and complete contraindication coverage",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 interactionOrder/interactionPreOp/interactionRefill represent severe interactions only; full criterion conformance is not established. Retained unchanged by HTI-5. No blanket federal hard-stop or tier requirement is inferred."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-severity",
+    "title": "Allow drug interaction severity settings",
+    "citation": "45 CFR §170.315(a)(4)(ii)(A)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "severity level",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable adjustment of the severity level of drug–drug interaction interventions.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "configurable drug–drug intervention severity",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 alert tiers are fixed spec content, not configurable user severity thresholds. Retained unchanged by HTI-5."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-access",
+    "title": "Restrict who may adjust drug interaction severity",
+    "citation": "45 CFR §170.315(a)(4)(ii)(B)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Limit the ability",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Restrict drug–drug severity adjustment to identified users or to a system administrative function.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "role/user authorization for interaction-severity configuration",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. The two listed mechanisms are alternatives; both are not mandatory. HTI-5 retains this criterion unchanged."
+  },
+  {
+    "id": "federal-rx-170-315-preferred-language",
+    "title": "Support coded preferred language and declination",
+    "citation": "45 CFR §170.315(a)(5)(i)(B)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Preferred language",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable recording of preferred language using §170.207(g)(2), including a patient’s decision not to specify a language.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "coded preferred-language capture and explicit declination state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A preferred-language banner does not demonstrate coded capture or declination. This data item is not within the cited 2025 enforcement-discretion carve-outs. HTI-5 retains (a)(5)."
+  },
+  {
+    "id": "federal-rx-170-315-birth-date",
+    "title": "Support patient date-of-birth record management",
+    "citation": "45 CFR §170.315(a)(5)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "date of birth",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable a user to record, change, and access the patient’s date of birth.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "date-of-birth editing and persistence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 declares a patient banner but no date-of-birth entry/edit capability. HTI-5 retains (a)(5)."
+  },
+  {
+    "id": "federal-rx-170-315-implant-udi",
+    "title": "Record each implantable device UDI",
+    "citation": "45 CFR §170.315(a)(14)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Record Unique Device Identifiers",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable recording of Unique Device Identifiers associated with the patient’s implantable devices.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured implant UDI list rather than optional free text",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 opImplants is optional text. HTI-5 final rule expressly retains the implantable device list criterion despite proposing its removal."
+  },
+  {
+    "id": "federal-rx-170-315-implant-lot",
+    "title": "Parse implant UDI lot or batch",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(1)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "lot or batch",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the lot or batch identifier from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14)."
+  },
+  {
+    "id": "federal-rx-170-315-implant-serial",
+    "title": "Parse implant UDI serial number",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "serial number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the device serial number from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14)."
+  },
+  {
+    "id": "federal-rx-170-315-implant-expiry",
+    "title": "Parse implant UDI expiration date",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(3)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "expiration date",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the device expiration date from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14)."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-meds",
+    "title": "Create a single reconciled medication list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Medications;",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled medication list from transition-of-care data.",
+    "specMapping": {
+      "element": "medRecDecision",
+      "info": "currentMeds",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-allergies",
+    "title": "Create a single reconciled allergy and intolerance list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Allergies and Intolerances;",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled allergy and intolerance list from transition-of-care data.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-problems",
+    "title": "Create a single reconciled problem list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "problems.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled problem list from transition-of-care data.",
+    "specMapping": {
+      "element": null,
+      "info": "problemList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction."
+  },
+  {
+    "id": "federal-rx-170-315-toc-assessment-plan",
+    "title": "Transition summary includes assessment and plan",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Assessment and plan of treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing the assessment and plan of treatment.",
+    "specMapping": {
+      "element": "assessmentPlan",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026."
+  },
+  {
+    "id": "federal-rx-170-315-toc-goals",
+    "title": "Transition summary includes goals",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(ii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Goals",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing goals.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026."
+  },
+  {
+    "id": "federal-rx-170-315-toc-concerns",
+    "title": "Transition summary includes health concerns",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(iii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "Health concerns",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing health concerns.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026."
+  },
+  {
+    "id": "federal-rx-170-315-erx-newrx",
+    "title": "Support electronic new prescriptions",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "New prescriptions (NewRx)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable NewRx transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions."
+  },
+  {
+    "id": "federal-rx-170-315-erx-cancelrx",
+    "title": "Support electronic prescription cancellation",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(iii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "CancelRx, CancelRxResponse",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable CancelRx and CancelRxResponse transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions."
+  },
+  {
+    "id": "federal-rx-170-315-erx-renewal",
+    "title": "Support electronic prescription renewal transactions",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(iv)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "RxRenewalRequest, RxRenewalResponse",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable RxRenewalRequest and RxRenewalResponse transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions."
+  },
+  {
+    "id": "federal-rx-170-315-oral-liquids-ml",
+    "title": "Prescribe oral liquid medications only in mL",
+    "citation": "45 CFR §170.315(b)(3)(ii)(E)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-45/section-170.315",
+    "quote": "only metric standard units of mL",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Limit oral-liquid prescribing units to mL; do not allow cc or household volume units.",
+    "specMapping": {
+      "element": "doseUnit",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "oral-liquid medication predicate and mL-only value constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. The oral-liquid volume rule does not require all patient weights in kg or all doses in mg. V1 allows a general doseUnit value set without this conditional constraint. Retained by HTI-5."
   }
 ]
