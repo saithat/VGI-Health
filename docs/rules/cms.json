@@ -982,7 +982,7 @@
     "title": "Blood administration follows law and approved policy",
     "citation": "42 CFR §482.23(c)(4)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.23",
-    "quote": "Blood transfusions",
+    "quote": "Blood transfusions and intravenous medications must be administered in accordance with State law and approved medical staff policies and procedures.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1016,7 +1016,7 @@
     "title": "IV administration follows law and approved policy",
     "citation": "42 CFR §482.23(c)(4)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.23",
-    "quote": "intravenous medications",
+    "quote": "Blood transfusions and intravenous medications must be administered in accordance with State law and approved medical staff policies and procedures.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1360,7 +1360,7 @@
     "title": "Medical record entries are legible",
     "citation": "42 CFR §482.24(c)(1)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "must be legible",
+    "quote": "All patient medical record entries must be legible, complete, dated, timed, and authenticated in written or electronic form",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1404,7 +1404,7 @@
     "title": "Medical record entries are dated",
     "citation": "42 CFR §482.24(c)(1)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "dated",
+    "quote": "All patient medical record entries must be legible, complete, dated, timed, and authenticated in written or electronic form",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1448,7 +1448,7 @@
     "title": "Medical record entries are timed",
     "citation": "42 CFR §482.24(c)(1)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "timed",
+    "quote": "All patient medical record entries must be legible, complete, dated, timed, and authenticated in written or electronic form",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1612,7 +1612,7 @@
     "title": "Record clinical complications",
     "citation": "42 CFR §482.24(c)(4)(iv)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "Documentation of complications",
+    "quote": "Documentation of complications, hospital acquired infections, and unfavorable reactions to drugs and anesthesia.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1650,7 +1650,7 @@
     "title": "Record hospital-acquired infections",
     "citation": "42 CFR §482.24(c)(4)(iv)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "hospital acquired infections",
+    "quote": "Documentation of complications, hospital acquired infections, and unfavorable reactions to drugs and anesthesia.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1688,7 +1688,7 @@
     "title": "Record unfavorable drug reactions",
     "citation": "42 CFR §482.24(c)(4)(iv)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "unfavorable reactions to drugs",
+    "quote": "Documentation of complications, hospital acquired infections, and unfavorable reactions to drugs and anesthesia.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -1726,7 +1726,7 @@
     "title": "Record unfavorable anesthesia reactions",
     "citation": "42 CFR §482.24(c)(4)(iv)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.24",
-    "quote": "drugs and anesthesia",
+    "quote": "Documentation of complications, hospital acquired infections, and unfavorable reactions to drugs and anesthesia.",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -2900,7 +2900,7 @@
     "title": "Describe operative techniques",
     "citation": "42 CFR §482.51(b)(6)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.51",
-    "quote": "techniques",
+    "quote": "An operative report describing techniques, findings, and tissues removed or altered",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -2924,17 +2924,17 @@
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": "New operative-report content element",
+    "needsCoreFeature": null,
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy."
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy. Adding the missing entry field is a spec-content change; timing/signature semantics are cataloged separately."
   },
   {
     "id": "cms-482.51-b6-findings",
     "title": "Describe operative findings",
     "citation": "42 CFR §482.51(b)(6)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.51",
-    "quote": "findings",
+    "quote": "An operative report describing techniques, findings, and tissues removed or altered",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -2968,7 +2968,7 @@
     "title": "Describe tissues removed or altered",
     "citation": "42 CFR §482.51(b)(6)",
     "url": "https://www.ecfr.gov/current/title-42/section-482.51",
-    "quote": "tissues removed or altered",
+    "quote": "An operative report describing techniques, findings, and tissues removed or altered",
     "type": "federal-regulation",
     "binding": true,
     "jurisdiction": "US",
@@ -2992,10 +2992,10 @@
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": "New operative-report content element",
+    "needsCoreFeature": null,
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy."
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy. Adding the missing entry field is a spec-content change; timing/signature semantics are cataloged separately."
   },
   {
     "id": "cms-482.51-b6-immediate-report",
@@ -3608,5 +3608,685 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. Required postanesthesia clinical assessment by a qualified anesthesia provider; a generic vitals panel or RN assessment does not prove the anesthesia evaluation."
+  },
+  {
+    "id": "cms-482.52-b3-post-mental",
+    "title": "Postanesthesia evaluation documents mental status",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Mental status;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document mental status in the postanesthesia evaluation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia evaluation event, qualified evaluator role and distinct content fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 has similarly named vital/pain fields for RN assessments but no qualified anesthesia evaluation event. P5 is the related surgical workflow persona, not a representation of all anesthesia providers."
+  },
+  {
+    "id": "cms-482.52-b3-post-temperature",
+    "title": "Postanesthesia evaluation documents temperature",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Temperature;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document temperature in the postanesthesia evaluation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia evaluation event, qualified evaluator role and distinct content fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 has similarly named vital/pain fields for RN assessments but no qualified anesthesia evaluation event. P5 is the related surgical workflow persona, not a representation of all anesthesia providers."
+  },
+  {
+    "id": "cms-482.52-b3-post-pain",
+    "title": "Postanesthesia evaluation documents pain",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Pain;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document pain in the postanesthesia evaluation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia evaluation event, qualified evaluator role and distinct content fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 has similarly named vital/pain fields for RN assessments but no qualified anesthesia evaluation event. P5 is the related surgical workflow persona, not a representation of all anesthesia providers."
+  },
+  {
+    "id": "cms-482.52-b3-post-nausea",
+    "title": "Postanesthesia evaluation documents nausea and vomiting",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Nausea and vomiting;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document nausea and vomiting in the postanesthesia evaluation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia evaluation event, qualified evaluator role and distinct content fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 has similarly named vital/pain fields for RN assessments but no qualified anesthesia evaluation event. P5 is the related surgical workflow persona, not a representation of all anesthesia providers."
+  },
+  {
+    "id": "cms-482.52-b3-post-hydration",
+    "title": "Postanesthesia evaluation documents hydration",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Postoperative hydration.",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document postoperative hydration in the postanesthesia evaluation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia evaluation event, qualified evaluator role and distinct content fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 has similarly named vital/pain fields for RN assessments but no qualified anesthesia evaluation event. P5 is the related surgical workflow persona, not a representation of all anesthesia providers."
+  },
+  {
+    "id": "cms-482.55-c1-emergency-protocols",
+    "title": "Use evidence-based emergency care protocols",
+    "citation": "42 CFR §482.55(c)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.55",
+    "quote": "Protocols must be consistent with nationally recognized and evidence-based guidelines",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Maintain emergency protocols consistent with nationally recognized evidence-based guidelines, including obstetrical emergencies, complications and immediate post-delivery care.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned approved emergency protocols and clinical guideline conformance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Effective July 1, 2025 under §482.55(c). Supports governing ED order sets; the regulation does not prescribe a particular electronic sepsis or obstetrical checklist."
+  },
+  {
+    "id": "cms-489.24-a1i-medical-screening",
+    "title": "Provide an appropriate medical screening examination",
+    "citation": "42 CFR §489.24(a)(1)(i)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "Provide an appropriate medical screening examination",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "humanOnly",
+    "proposedRule": "For an individual within EMTALA applicability, provide an appropriate medical screening examination within ED capability, including routinely available ancillary services, by hospital-designated qualified personnel.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Arrival/request trigger, medical-screening completion event and qualified examiner",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Applies regardless of Medicare eligibility or ability to pay. Triage alone is not necessarily the MSE. Disposition gating is a local safeguard; the duty begins on presentation/request, not only when disposition is attempted. V1 triageSummary/visit note is not proof of MSE completion."
+  },
+  {
+    "id": "cms-489.24-d1-stabilization",
+    "title": "Provide necessary stabilizing treatment or appropriate transfer",
+    "citation": "42 CFR §489.24(d)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "to stabilize the medical condition",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "When the hospital identifies an emergency medical condition, provide the further examination/treatment within available capabilities needed to stabilize it, or an appropriate transfer under paragraph (e).",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Clinical emergency/stability facts and care-delivery semantics",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. A proven UI checker cannot establish clinical stabilization from a checkbox. Good-faith inpatient admission to stabilize ends the EMTALA responsibility as described in (d)(2); inpatient CoPs continue. Transfer has the regulatory definition including discharge."
+  },
+  {
+    "id": "cms-489.24-d4i-no-payment-delay",
+    "title": "Payment inquiries cannot delay screening or stabilization",
+    "citation": "42 CFR §489.24(d)(4)(i)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "in order to inquire about the individual's method of payment or insurance status",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Keep insurance/payment inquiry from delaying the medical screening examination or required further examination and treatment.",
+    "specMapping": {
+      "element": null,
+      "info": "coverage",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Emergency screening/treatment path reachability without payment prerequisites and temporal care-delivery checks",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Reasonable registration inquiries remain permitted under (d)(4)(iv) when they do not delay care or unduly discourage remaining. coverage is optional information in v1, not an implemented no-delay guarantee."
+  },
+  {
+    "id": "cms-489.24-d3-treatment-refusal-record",
+    "title": "Describe refused emergency examination or treatment in the record",
+    "citation": "42 CFR §489.24(d)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "The medical record must contain a description of the examination, treatment, or both",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "When emergency examination/treatment is refused after being offered with risks and benefits explained, document what was refused.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient or person acting on behalf refuses the offered emergency examination/treatment",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Specific offered/refused services and refusal documentation branch",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. The hospital must also take all reasonable steps to secure written informed refusal. A missing patient signature is not an absolute discharge prohibition. This row is the atomic record-description duty; it does not claim to encode all elements of informed refusal."
+  },
+  {
+    "id": "cms-489.24-e1iiB-transfer-certification",
+    "title": "Physician certifies the benefit-risk basis for an unstabilized transfer",
+    "citation": "42 CFR §489.24(e)(1)(ii)(B)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "has signed a certification that",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "humanOnly",
+    "proposedRule": "For an unstabilized transfer using the physician-certification branch, require a signed certification that expected medical benefits outweigh transfer risks, including a summary of the risks and benefits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "unstabilized transfer uses the physician-certification branch",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Unstabilized-transfer predicate, physician identity/signature and certification artifact",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Not the only legal branch: paragraph (A) permits an informed written patient/legal-representative request; paragraph (C) permits a qualified medical person after physician consultation/agreement with subsequent physician countersignature. Appropriate-transfer requirements still apply to every branch."
+  },
+  {
+    "id": "cms-489.24-e2iiB-receiving-acceptance",
+    "title": "Receiving facility agrees to accept and treat the patient",
+    "citation": "42 CFR §489.24(e)(2)(ii)(B)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "Has agreed to accept transfer of the individual and to provide appropriate medical treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "For an EMTALA appropriate transfer, record receiving-facility agreement to accept the patient and provide appropriate treatment.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Receiving-facility identity, acceptance evidence and transfer predicate",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Paragraph (e)(2)(ii)(A) separately requires available space and qualified personnel. A dischargeDestination field alone proves neither acceptance nor capacity."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-history",
+    "title": "Send available history with the emergency transfer",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "available history",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send available patient history related to the emergency condition to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-signs",
+    "title": "Send observed signs and symptoms with the transfer",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "observations of signs or symptoms",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send available observations of signs or symptoms related to the emergency condition to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-diagnosis",
+    "title": "Send the preliminary diagnosis with the transfer",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "preliminary diagnosis",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send the available preliminary diagnosis related to the emergency condition to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-studies",
+    "title": "Send available diagnostic study and test results",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "results of diagnostic studies or telephone reports of the studies",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send available diagnostic study/test results, including telephone reports, related to the emergency condition to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-treatment",
+    "title": "Send treatment provided with the transfer",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "treatment provided",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send records of treatment provided for the emergency condition to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-consent-cert",
+    "title": "Send transfer consent or certification",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "the informed written consent or certification",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send the required informed written transfer consent or certification, or a copy, to the receiving facility at transfer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-failed-oncall",
+    "title": "Send identifying information for an on-call physician who failed to appear",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "the name and address of any on-call physician",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Send the name and address of an on-call physician who refused or failed to appear within a reasonable time to provide necessary stabilizing treatment.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "EMTALA appropriate transfer; item available/applicable",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
+  },
+  {
+    "id": "cms-489.24-e2iii-packet-late-records",
+    "title": "Forward records unavailable at transfer as soon as practicable",
+    "citation": "42 CFR §489.24(e)(2)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-489.24",
+    "quote": "must be sent as soon as practicable after transfer",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Forward other relevant records, including results not yet available or history not readily available at transfer, as soon as practicable afterward.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "relevant records become available after transfer",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer-related record selection, recipient-bound transmission and post-transfer outstanding-record obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=489. Atomic transfer-packet component. The overall duty is all available medical records related to the emergency condition, not merely this selected component. A record displayed in the UI is not evidence that it was sent. Do not block transfer waiting for a pending test; send late records as soon as practicable."
   }
 ]
