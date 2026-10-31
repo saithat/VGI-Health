@@ -3,3 +3,14 @@ packages:
   - "agent"
   - "world"
   - "infra/scripts"
+allowBuilds:
+  esbuild: true
+# @medplum/react imports react-router but omits it from its published manifest.
+packageExtensions:
+  '@medplum/react@5.2.13':
+    dependencies:
+      react-router: '^7.13.0'
+minimumReleaseAgeExclude:
+  - '@medplum/core@5.2.13'
+  - '@medplum/react-hooks@5.2.13'
+  - '@medplum/react@5.2.13'
