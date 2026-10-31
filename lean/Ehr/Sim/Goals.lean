@@ -72,7 +72,8 @@ def weightKgGoal (facts : Facts) : Option Value :=
 
 /-- Order-line element names. -/
 def orderElements : List ElementId :=
-  ["drug", "dose", "doseUnit", "unit", "route", "freq", "frequency", "indication", "abxIndication"]
+  ["drug", "dose", "doseUnit", "unit", "route", "freq", "frequency", "indication", "abxIndication", "duration", "quantity", "refills", "pharmacy",
+   "substitution", "prn", "orderDiagnosis"]
 
 /-- The chosen value of an order element for one order (`none`: no chosen value). -/
 def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
@@ -82,6 +83,7 @@ def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   else if e == "route" then some (.code o.route)
   else if e == "freq" || e == "frequency" then some (.code o.freq)
   else if e == "indication" || e == "abxIndication" then o.indication?.map .code
+  else if e == "prn" then some (.flag o.prn)
   else none
 
 /-- Elements filled once per immunization (slot = index). -/
@@ -105,7 +107,7 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
   | _ =>
     if el.id == weightElement then weightKgGoal facts
     else if el.id == "refillDecision" then choices.refill?.map .code
-    else if el.id == "disposition" then choices.disposition?.map .code
+    else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
     else if choices.noteSections.contains el.id then some (.text (noteText el.id))
     else match med? with
       | some m => orderValue el.id m
@@ -171,12 +173,12 @@ def entryGoals (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opt
   let lines := (List.range orders.length).zip orders
   if orderElements.contains el.id && !orders.isEmpty then
     lines.filterMap fun (i, o) =>
-      if (rq.perOrderLine && !lineMatches facts rq.when o.drug) ||
+      if (rq.perOrderLine && !lineMatches facts hyp rq.when i o.drug) ||
          (!rq.perOrderLine && !whenHolds facts hyp rq.when) then none
       else some { element := el.id, slot? := some i, value? := orderValue el.id o, commit := rq.commit }
   else if rq.perOrderLine then
     lines.filterMap fun (i, o) =>
-      if lineMatches facts rq.when o.drug then
+      if lineMatches facts hyp rq.when i o.drug then
         some { element := el.id, slot? := some i, value? := taskValue facts user choices med? el
                commit := rq.commit }
       else none
@@ -208,7 +210,10 @@ the episode's facts (e.g. `medToGive?` set for W4). -/
 def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choices : TaskChoices)
     (orders : List OrderChoice) (med? : Option OrderChoice) : Goals :=
   let commits := taskCommits sp wf choices
-  let hyp0 := hypothetical orders []
+  let orderGoals := (List.range orders.length).zip orders |>.flatMap fun (i, o) =>
+    orderElements.filterMap fun e => (orderValue e o).map fun v =>
+      { element := e, slot? := some i, value? := some v, commit := "" : ValueGoal }
+  let hyp0 := hypothetical orders orderGoals
   let raw := commits.flatMap fun c =>
     (sp.entries.filter (·.commit == c)).flatMap fun rq =>
       match sp.element? rq.element with

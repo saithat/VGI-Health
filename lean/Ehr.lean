@@ -23,3 +23,4 @@ import Ehr.Proofs.Audit
 import Ehr.Specs.V1
 import Ehr.Canonical.Program
 import Ehr.Render
+import Ehr.Sim.PolicyTests
