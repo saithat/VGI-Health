@@ -382,6 +382,7 @@
     "checkerVersion": "MOCK-not-a-checker",
     "time": "2026-10-31T12:00:00Z"
   },
+  "screenCheck": null,
   "deployed": {
     "version": 4,
     "program": "programs/P2/v4.json",

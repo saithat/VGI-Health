@@ -7,7 +7,7 @@ import "@mantine/notifications/styles.css";
 import "@medplum/react/styles.css";
 import { medplum } from "./data/medplum";
 import { App } from "./App";
-import { Dashboard } from "./dashboard/Dashboard";
+import { ReplayApp } from "./ReplayApp";
 import "./styles.css";
 import "./ehr.css";
 
@@ -26,9 +26,12 @@ createRoot(root).render(
     <MantineProvider theme={theme}>
       <MedplumProvider medplum={medplum}>
         {window.location.pathname.replace(/\/$/, "") === "/dashboard" ? (
-          <Dashboard />
-        ) : (
+          <ReplayApp dashboard />
+        ) : new URLSearchParams(window.location.search).get("mode") ===
+          "connected" ? (
           <App />
+        ) : (
+          <ReplayApp />
         )}
       </MedplumProvider>
     </MantineProvider>

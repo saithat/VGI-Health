@@ -396,6 +396,7 @@
     "reason": "MOCK clinician accepted the focused workflow."
   },
   "certificate": null,
+  "screenCheck": null,
   "deployed": null,
   "outcome": "break-attempt-rejected",
   "release": null,

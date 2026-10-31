@@ -8,7 +8,15 @@ pnpm --filter app lint
 pnpm --filter app test
 ```
 
-The default app uses an explicitly labeled, uncertified **MOCK** W1 outpatient
+`make run` opens recorded replay for the selected run (`/?persona=P1` through
+P5), with `/dashboard` for its decisions and task replays. Selection prefers the
+longest replayable real recording, then newest; `VGI_RUN=mock make run` overrides
+it. The current fallback is explicitly labeled authored mock data. The production
+preview includes the run index and default selection as static JSON. Real runs
+receive the committed WASM adapter; mock recordings use their explicit fixture
+adapter. Replay makes no clinical writes.
+
+The development workspace at `/?mode=connected` uses an explicitly labeled, uncertified **MOCK** W1 outpatient
 interpreter. It supports rooming, documentation, medication/lab ordering, review
 and sign navigation, plus eight chart activities. All P1–P5 development personas
 currently open this W1 fixture. The mock can navigate, select tabs, expand groups
@@ -170,7 +178,7 @@ task traces with the **same task and patient inputs**. Each side's
 not the agent trace's absolute shift timestamp `t`. Counters count recorded
 operators separately. No wall-clock or clinical cost model is inferred by the UI.
 
-When the WASM lane's adapter is ready, wire its Interp in the route:
+`ReplayApp` loads the WASM adapter and wires real recordings into the route:
 
 ```tsx
 <Dashboard interpFactory={() => wasmInterp} />

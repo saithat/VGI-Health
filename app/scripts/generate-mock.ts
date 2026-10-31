@@ -494,6 +494,7 @@ for (const [i, p] of personas.entries()) {
       },
     };
     const record = decisionRecordSchema.parse({
+      screenCheck: null,
       schemaVersion: 1,
       runId: "mock",
       night,

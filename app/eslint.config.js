@@ -66,7 +66,7 @@ const boundary = {
 };
 
 export default tseslint.config(
-  { ignores: ["dist/**", "node_modules/**"] },
+  { ignores: ["dist/**", "node_modules/**", "public/ehr/**"] },
   js.configs.recommended,
   {
     files: ["scripts/*.mjs"],

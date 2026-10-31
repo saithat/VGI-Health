@@ -45,6 +45,7 @@ export function ReplayScreen({
   patch = [],
   highlight = [],
   factory,
+  onEvent,
 }: {
   run: RunData;
   persona: string;
@@ -54,6 +55,7 @@ export function ReplayScreen({
   patch?: JsonPatchOp[];
   highlight?: string[];
   factory?: InterpFactory | undefined;
+  onEvent?: (event: Event) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const result = useMemo(() => {
@@ -110,7 +112,7 @@ export function ReplayScreen({
       {result.error ? (
         <p role="alert">{result.error}</p>
       ) : result.page ? (
-        paint(result.page, () => {})
+        paint(result.page, onEvent ?? (() => {}))
       ) : null}
     </div>
   );
