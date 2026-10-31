@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup fixtures
+.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup synthea fixtures
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 
@@ -35,3 +35,9 @@ infra-reset:
 # Idempotent first-boot setup: project, ClientApplication, persona Practitioners + users; writes .env.
 setup:
 	node infra/scripts/setup.mjs
+
+# Regenerate the raw Synthea population (needs Java 17+, ~200 MB download, ~3 min) and re-trim it
+# into the committed fixtures/synthea/. Not part of install.
+synthea:
+	infra/synthea/generate.sh
+	node infra/synthea/trim.mjs

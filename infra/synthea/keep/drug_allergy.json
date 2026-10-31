@@ -1,0 +1,52 @@
+{
+  "name": "keep_drug_allergy",
+  "remarks": [
+    "Keep patients with an active penicillin or sulfa drug allergy (codes from modules/allergies/drug_allergy_incidence.json).",
+    "Used with `-k` by infra/synthea/generate.sh: only patients reaching the Keep state are exported."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "conditional_transition": [
+        {
+          "transition": "Keep",
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Active Allergy",
+                "codes": [
+                  {
+                    "system": "RxNorm",
+                    "code": "7984",
+                    "display": "Penicillin V"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Allergy",
+                "codes": [
+                  {
+                    "system": "RxNorm",
+                    "code": "10831",
+                    "display": "Sulfamethoxazole / Trimethoprim"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Keep": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}
