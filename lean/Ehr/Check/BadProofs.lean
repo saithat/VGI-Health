@@ -60,6 +60,8 @@ private theorem macro_set_not_satisfies (p : Program) (mid cid screen value eid 
   exact (h.2 _ hm _ hst _ hc).1 (by simp [setTarget?, hid])
     (eid, slot, pf) (by simp [hf]) el (by simp [hel]) hh
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad04_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroOverride :=
   macro_click_not_satisfies _ "badOverride" "w3Sign.commit.signOrders" "w3Sign" "signOrders"
     (by decide) (by decide) (by decide) (by decide) (by decide)
@@ -67,6 +69,8 @@ theorem bad04_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroOverride
 theorem bad05_not_satisfies : ¬ Satisfies specV1 none canonicalV1 selfCosign :=
   rejects_human _ (by decide)
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad06_not_satisfies : ¬ Satisfies specV1 none canonicalV1 staleWeight := by
   intro hs
   exact (by decide : ¬ QuantityPrefillsKeepUnits specV1 staleWeight) hs.2.2.2.2.2.2.1.1
@@ -75,6 +79,8 @@ theorem bad06_not_satisfies : ¬ Satisfies specV1 none canonicalV1 staleWeight :
 def refillKept : List ScreenId :=
   (unreachableRefill.screens.map (·.id)).filter (· != "w7Decision")
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRefill := by
   intro hs
   have hd := hs.1.2.2.2.2.1 "approveRefill" (by decide)
@@ -87,15 +93,21 @@ theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRe
   rw [hid] at hz
   exact (by decide : "w7Decision" ∉ refillKept) hz
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad08_not_satisfies : ¬ Satisfies specV1 none canonicalV1 forgedConsent :=
   macro_set_not_satisfies _ "badConsent" "w6PreOp.consentVerified" "w6PreOp" "true"
     "consentVerified" (by decide) (by decide) (by decide) (by decide)
     ⟨.fixed 0, .none, by decide⟩ consentVerified (by decide) (by decide)
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad09_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergyAlert :=
   macro_click_not_satisfies _ "badQuickAmox" "w1Sign.commit.signOrders" "w1Sign" "signOrders"
     (by decide) (by decide) (by decide) (by decide) (by decide)
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad10_not_satisfies : ¬ Satisfies specV1 none canonicalV1 inventedAlert := by
   intro hs
   exact (by decide : ¬ ReferencesResolve specV1 inventedAlert) hs.1.2.2.2.1
@@ -114,6 +126,8 @@ theorem bad12_not_satisfies : ¬ Satisfies specV1 none canonicalV1 passivePopup 
   intro hs
   exact (by decide : ¬ NoPassivePopupRequests specV1 passivePopup) hs.2.2.2.2.2.2.2.2.2.2.2.1
 
+-- Kernel reduction includes the role projection and spec-driven link normalization.
+set_option maxHeartbeats 1200000 in
 theorem bad14_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroNaloxone :=
   macro_set_not_satisfies _ "badNaloxone" "w1Orders.naloxoneOffer" "w1Orders" "offered"
     "naloxoneOffer" (by decide) (by decide) (by decide) (by decide)

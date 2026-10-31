@@ -1,4 +1,5 @@
 import Ehr.Check.PinSound
+import Ehr.Check.ReleaseChecks
 import Ehr.Check.SeedTests
 import Ehr.Props.Examples
 

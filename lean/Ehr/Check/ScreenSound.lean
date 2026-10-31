@@ -54,11 +54,18 @@ theorem requestPriorAuth_names (sp p u actor s) (h : ScreenNames p s) :
   unfold requestPriorAuth
   repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
 
+theorem clickAlert_names (sp p f s a) (h : ScreenNames p s) :
+    ScreenNames p (clickAlert sp p f s a).1 := by
+  unfold clickAlert
+  repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
+
 theorem clickCore_names (sp p f u actor s c) (h : ScreenNames p s) :
     ScreenNames p (clickCore sp p f u actor s c).1 := by
   unfold clickCore
   split
-  · cases actor <;> exact h
+  · cases actor
+    · exact clickAlert_names _ _ _ _ _ h
+    · exact h
   · exact goTo_names _ _ _ _ _ h
   · exact goBack_names _ _ _ _ h
   · cases actor

@@ -95,6 +95,7 @@ are accepted; spec-level alert IDs must remain unique.
 
 The v1 catalog blocks the action, so this does not affect canonical v1.
 
+
 ---
 
 # Content lane requests and integration status
@@ -171,6 +172,49 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
 ---
 
 ## Core implementation status and integration requests (Oct 31)
+
+---
+
+## Release integration requests (other lanes)
+
+- **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
+  v1.1 declares optional `orderKind` and `orderCode` fields. W1 service ordering
+  and W6 pre-op now request prior auth for imaging/procedure slots without a
+  drug. A test requests imaging code 70551 and checks no drug alerts fire.
+- **CR-10 — antibiotic indication data rows (render/app/world).** Content now
+  declares element/info `abxIndication`, the per-line coded value written to
+  `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
+  each captured antibiotic line's indication in the sign summary, and the
+  active medication's indication from the FHIR order on the MAR. Test facts
+  use `Facts.record[("abxIndication", "surgical-prophylaxis")]`. Show the
+  actual value, not just a heading. Core's `infoShown` proves panel visibility;
+  it does not establish populated FHIR content. Preserve T11 fidelity.
+- **CR-11 — coded terminology membership (core/check).** `ValueKind.coded`
+  currently accepts any nonempty code. `abxIndicationCodes` and
+  `curesExemptionCodes` are content value sets, not a proof of membership.
+  For full terminology enforcement, provide a generic spec value-set mapping
+  and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+- **CR-12 — agent prior-auth action schema (agent).** The real exported
+  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
+  `requestPriorAuth` action. The four request buttons fail at
+  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  action schema (and the `priorAuth` kind to the known union if desired), then
+  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  fields. This was found with actual exports; the existing 31 agent tests pass.
+- **CR-13 — pre-op encounter context (world/app/sim).** Set
+  `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
+  during pre-op ordering. Core passes `FactsContext.encounterKind` through
+  FHIR projection. Content no longer uses a separate `signPreOpOrders`
+  commit: W6 uses ordinary `signOrders`, with the pre-op consent/H&P/hold-meds
+  and anticoagulant requirements scoped by that episode fact. Test both
+  incomplete pre-op rejection and ordinary post-op success. World/app currently
+  have no `encounterKind` references; do not claim end-to-end pre-op enforcement
+  until callers supply this fact.
+
+
+## Core integration notes (historical checker request numbers above)
+
 
 The core queue is landing on `lane/lean-core`, one commit per item. See
 `docs/design/changes.md` for the full semantics and compatibility list.
@@ -288,3 +332,31 @@ harmless; status components still use the shared catalog. This prevents a
 known counterexample to T1. Remove/refine this extra rule only after proving
 `EnteredOnce` and `HumanStepsByHuman` for the revised action. No property was
 weakened. Prior-auth request certification remains unfinished, explicitly.
+
+---
+
+
+## Content response to checker acceptance requests
+
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.

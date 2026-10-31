@@ -1,4 +1,4 @@
-import Ehr.Canonical.Releases
+import Ehr.Canonical.Personas
 import Ehr.Canonical.BadTests
 namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1 Ehr.Specs.V1_1 Ehr.Specs.V2
@@ -15,6 +15,18 @@ def pa : State × StepResult := one
 #guard (cap pa.1 "priorAuthRequest").map (·.value) == some (.flag true)
 #guard pa.1.commits == []
 #guard !canonicalV1_1.inCatalog specV1
+
+/-- Actual imaging-only order: no drug is needed to request prior auth. -/
+def servicePa : State × StepResult := one
+  (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Labs",
+    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+    canonicalV1_1 adult physician specV1_1)
+  (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
+#guard servicePa.2 == .ok
+#guard (cap servicePa.1 "priorAuthRequest").map (·.value) == some (.flag true)
+#guard orderLines servicePa.1 == []
+#guard (popupCandidates specV1_1 canonicalV1_1 adult servicePa.1 "signOrders").isEmpty
+#guard infoShown specV1_1 canonicalV1_1 adult servicePa.1 "priorAuthStatus"
 
 -- v2 has teeth: the old UI still reaches sign, but cannot meet the new entry.
 #guard reason (one (run amoxPath canonicalV1_1 adult physician specV2)
@@ -80,4 +92,17 @@ def collapsedMar : Program := canonicalV2.updateScreen "w4Admin" fun s =>
 #guard reason (one (run (adminPath "cefazolin") collapsedMar antibioticAdminFacts nurse specV2)
   (.click "w4Admin.commit.administerMed") collapsedMar antibioticAdminFacts nurse specV2).2 ==
   "review required: abxIndication must be shown"
+
+-- Role projections retain complete paths for their actual users.
+#guard (finish (run w1Path (forPersona specV1 canonicalV1 "P1" .physician))
+  "w1Sign" "signOrders" (forPersona specV1 canonicalV1 "P1" .physician)).commits == ["signOrders"]
+#guard (finish (run (adminPath "insulin lispro" ++ [.enter "w4Admin.highAlertCosign" (.user "nurse2")])
+    (forPersona specV1 canonicalV1 "P3" .rn) (adminFacts "insulin lispro") nurse)
+  "w4Admin" "administerMed" (forPersona specV1 canonicalV1 "P3" .rn)
+  (adminFacts "insulin lispro") nurse).commits == ["administerMed"]
+#guard (finish (run w5Path (forPersona specV1 canonicalV1 "P4" .np) child np)
+  "w5Sign" "signOrders" (forPersona specV1 canonicalV1 "P4" .np) child np).commits == ["signOrders"]
+#guard (finish (run preOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
+  "w6Sign" "signOrders" (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon).commits == ["signOrders"]
+
 end Ehr.Canonical.Tests

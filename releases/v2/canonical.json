@@ -1894,7 +1894,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w1Orders.dosingWeight"},
     {"visibility": "always",
@@ -2048,7 +2048,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w1Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w1Orders.controlled",
@@ -2221,6 +2223,47 @@
      "label": "Patient banner",
      "kind": "banner",
      "id": "w1Labs.banner"},
+    {"visibility": "always",
+     "tag": "w1Labs.servicePriorAuth",
+     "tab": 0,
+     "size": "normal",
+     "label": "Imaging / procedure authorization",
+     "kind": {"group": {"startCollapsed": false, "collapsible": false}},
+     "id": "w1Labs.servicePriorAuth"},
+    {"visibility": "always",
+     "tag": "w1Labs.orderKind",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w1Labs.servicePriorAuth",
+     "label": "Kind: imaging / procedure",
+     "kind":
+     {"field": {"slot": "current", "prefill": "none", "element": "orderKind"}},
+     "id": "w1Labs.orderKind"},
+    {"visibility": "always",
+     "tag": "w1Labs.orderCode",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w1Labs.servicePriorAuth",
+     "label": "Service code",
+     "kind":
+     {"field": {"slot": "current", "prefill": "none", "element": "orderCode"}},
+     "id": "w1Labs.orderCode"},
+    {"visibility": "always",
+     "tag": "w1Labs.servicePriorAuthStatus",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w1Labs.servicePriorAuth",
+     "label": "Service prior-auth status",
+     "kind": {"priorAuth": {"info": "priorAuthStatus"}},
+     "id": "w1Labs.servicePriorAuthStatus"},
+    {"visibility": "always",
+     "tag": "w1Labs.requestServicePriorAuth",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w1Labs.servicePriorAuth",
+     "label": "Request service prior authorization",
+     "kind": {"button": {"action": "requestPriorAuth"}},
+     "id": "w1Labs.requestServicePriorAuth"},
     {"visibility": "always",
      "tag": "w1Labs.chartSearch",
      "tab": 0,
@@ -2456,7 +2499,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "labDiagnosis"}},
      "id": "w1Labs.labDiagnosis"},
     {"visibility": "always",
@@ -3358,7 +3401,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w1Close.claimDiagnosis"},
     {"visibility": "always",
@@ -5088,7 +5131,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -5267,7 +5310,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -5665,7 +5708,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w3Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w3Orders.more",
@@ -6035,7 +6080,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w3Sign.dosingWeight"},
     {"visibility": "always",
@@ -8403,7 +8448,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w5Orders.dosingWeight"},
     {"visibility": "always",
@@ -8572,7 +8617,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w5Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w5Orders.controlled",
@@ -9547,7 +9594,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w5Close.claimDiagnosis"},
     {"visibility": "always",
@@ -10138,7 +10185,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w6ConsultClose.claimDiagnosis"},
     {"visibility": "always",
@@ -10198,6 +10245,47 @@
      "label": "Patient banner",
      "kind": "banner",
      "id": "w6PreOp.banner"},
+    {"visibility": "always",
+     "tag": "w6PreOp.servicePriorAuth",
+     "tab": 0,
+     "size": "normal",
+     "label": "Imaging / procedure authorization",
+     "kind": {"group": {"startCollapsed": false, "collapsible": false}},
+     "id": "w6PreOp.servicePriorAuth"},
+    {"visibility": "always",
+     "tag": "w6PreOp.orderKind",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w6PreOp.servicePriorAuth",
+     "label": "Kind: imaging / procedure",
+     "kind":
+     {"field": {"slot": "current", "prefill": "none", "element": "orderKind"}},
+     "id": "w6PreOp.orderKind"},
+    {"visibility": "always",
+     "tag": "w6PreOp.orderCode",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w6PreOp.servicePriorAuth",
+     "label": "Service code",
+     "kind":
+     {"field": {"slot": "current", "prefill": "none", "element": "orderCode"}},
+     "id": "w6PreOp.orderCode"},
+    {"visibility": "always",
+     "tag": "w6PreOp.servicePriorAuthStatus",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w6PreOp.servicePriorAuth",
+     "label": "Service prior-auth status",
+     "kind": {"priorAuth": {"info": "priorAuthStatus"}},
+     "id": "w6PreOp.servicePriorAuthStatus"},
+    {"visibility": "always",
+     "tag": "w6PreOp.requestServicePriorAuth",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w6PreOp.servicePriorAuth",
+     "label": "Request service prior authorization",
+     "kind": {"button": {"action": "requestPriorAuth"}},
+     "id": "w6PreOp.requestServicePriorAuth"},
     {"visibility": "always",
      "tag": "w6PreOp.chartSearch",
      "tab": 0,
@@ -10849,7 +10937,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w6Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w6Orders.more",
@@ -11412,7 +11502,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -11591,7 +11681,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -11770,7 +11860,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 12}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row12.orderDiagnosis"},
     {"visibility": "always",
@@ -11949,7 +12039,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 13}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row13.orderDiagnosis"},
     {"visibility": "always",
@@ -12280,7 +12370,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w6Sign.dosingWeight"},
     {"visibility": "always",

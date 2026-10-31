@@ -15,7 +15,7 @@ import Ehr.Canonical.Builders
   instructions; discharge.
 Post-op clinic visits use the W1 screens (a W1 variant).
 
-Deliberate friction: weight and dosing weight are both asked on the sign
+Deliberate friction: weight and its linked dosing copy are both displayed on the sign
 screen; the consult diagnosis is typed again for billing; the post-op order set
 fills every value, and each still needs a confirm; inpatient orders still ask
 for dispense quantity, refills, and pharmacy.

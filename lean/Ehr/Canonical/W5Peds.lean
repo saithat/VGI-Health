@@ -8,7 +8,7 @@ reconciliation) → growth review → weight-based (mg/kg) orders with a dose
 check → sign orders → immunizations → visit close with anticipatory guidance
 (sign note).
 
-Deliberate friction: the dosing weight is typed again in the composer; the
+Deliberate friction: the dosing weight is displayed again in the composer (linked from weight); the
 dose is typed in mg after the mg/kg (the composer shows the calculation but
 does not fill it); the growth chart is reviewed on its own screen; the visit
 diagnosis is typed again for billing.
