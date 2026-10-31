@@ -141,7 +141,7 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
   | some el =>
     if !el.enteredBy.contains user.role then
       (s, .blocked s!"role: {user.role.name} may not enter {priorAuthElement}")
-    else if !(orderLines s).any (·.1 == s.currentSlot) then (s, .ignored)
+    else if !hasOrderAt s s.currentSlot then (s, .ignored)
     else
       match actor with
       | .«macro» =>

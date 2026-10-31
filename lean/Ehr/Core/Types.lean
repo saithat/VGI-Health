@@ -389,6 +389,8 @@ structure DrugInfo where
   /-- Usual dose range in tenths of mg per kg (`0`/`0` = no weight-based range). -/
   minMgPerKgTenths : Nat
   maxMgPerKgTenths : Nat
+  /-- Absolute per-dose maximum in tenths of mg; 0 means no cap specified. -/
+  maxDoseMgTenths : Nat := 0
   highAlert : Bool
   /-- Classes this drug interacts with. -/
   interactsWith : List String
@@ -629,14 +631,34 @@ inductive Workflow
   | W1 | W2 | W3 | W4 | W5 | W6 | W7
   deriving DecidableEq, Repr, Inhabited
 
+/-- Kind of order. Imaging and procedures use a service code, not a drug name. -/
+inductive OrderKind
+  | medication | imaging | procedure
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Surgical workflow step for this task. -/
+inductive W6Step
+  | consult | preop | postop | rounding | discharge
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A clinical decision, fixed per scenario (independent of the UI). -/
 structure OrderChoice where
   /-- Formulary name (lowercase generic), e.g. `"amoxicillin"`. -/
   drug : String
+  /-- Omitted means medication for compatibility with existing schedules. -/
+  kind? : Option OrderKind := none
+  /-- Service code (e.g. CPT) for imaging/procedure; drug is empty in that case. -/
+  code? : Option String := none
   doseTenths : Nat
   unit : UnitKind
   route : String
   freq : String
+  /-- Days supplied for this prescription. -/
+  supplyDays? : Option Nat := none
+  /-- Documented CURES exemption reason, if applicable to this prescription. -/
+  curesExemptReason? : Option String := none
+  /-- Reason this administration is held or refused. -/
+  holdReason? : Option String := none
   indication? : Option String := none
   prn : Bool := false
   deriving DecidableEq, Repr, Inhabited
@@ -657,6 +679,12 @@ structure TaskChoices where
   immunizations : List String := []
   /-- Documentation sections to complete. -/
   noteSections : List String := []
+  /-- Pain score for this task (0-10). -/
+  painScore? : Option Nat := none
+  /-- W6 stage; independent of free-text documentation. -/
+  w6Step? : Option W6Step := none
+  /-- Reason for a refill denial or modification. -/
+  refillReason? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Persona behavior (not clinical choices). -/
