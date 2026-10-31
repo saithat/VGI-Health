@@ -204,6 +204,8 @@ def orderScreenV1_1 : Screen :=
       if c.id == "toSign" then
         [{ id := "paStatus", kind := .priorAuth "priorAuthStatus", label := "Prior auth"
            tag := "paStatus" },
+         { id := "paField", kind := .field "priorAuthRequest" .current .none,
+           label := "Enter prior authorization request", tag := "paField" },
          { id := "paRequest", kind := .button .requestPriorAuth, label := "Request prior auth"
            tag := "paRequest" },
          c]

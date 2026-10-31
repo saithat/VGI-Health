@@ -16,7 +16,14 @@ def incomplete : State :=
 #guard (clickCore spec program facts user .human atSignAmox addLine).1.currentSlot == 1
 -- Inline alerts never acknowledge themselves; macros stop with a reason.
 def inlineAlert : Component := { id := "alert", kind := .alert "drugAllergy" false }
-#guard clickCore spec program facts user .human atSignAmox inlineAlert == (atSignAmox, .ignored)
+#guard (clickCore spec program facts user .human atSignAmox inlineAlert).1.popup? ==
+  some ("drugAllergy", "amoxicillin@3")
+#guard (clickCore spec program facts user .human atSignAmox inlineAlert).1.acked == atSignAmox.acked
+#guard (step spec program facts user .human atSignAmox (.click "drugAllergyAlert")).2 == .ok
+#guard (clickAlert spec program facts atSignTab "drugAllergy").2 == .ignored
+#guard (clickAlert spec program facts acked.1 "drugAllergy").2 == .ignored
+#guard (clickAlert spec program facts atOrder "careGap").2 == .ignored
+#guard (clickAlert spec program facts atOrder "unknown").2 == .ignored
 #guard clickCore spec program facts user .«macro» atSignAmox inlineAlert ==
   (atSignAmox, .blocked "human only: acknowledge")
 #guard (step spec program facts user .«macro» atSignAmox (.click "drugAllergyAlert")).2 ==
@@ -83,9 +90,8 @@ def serviceState : State :=
 #guard !hasOrderAt serviceState 1
 #guard orderLines serviceState == []
 #guard alertKeys facts serviceState .drugAllergy == []
-#guard (requestPriorAuth specV1_1 user .human serviceState).2 == .ok
-#guard (requestPriorAuth specV1_1 user .human serviceState).1.captured.any
-  (fun x => x.element == priorAuthElement && x.slot == 0 && x.value == .flag true)
+#guard (requestPriorAuth specV1_1 user .human serviceState).2 ==
+  .blocked "human entry required: priorAuthRequest"
 -- Services can be entered through the same public interpreter, when the
 -- release spec declares their fields; they are not just constructed states.
 def serviceSpec : Spec :=
@@ -106,8 +112,29 @@ def serviceProgram : Program :=
 def enteredService : State :=
   runAll serviceSpec serviceProgram facts user .human (init serviceSpec serviceProgram facts user)
     [.click "toOrder", .enter "kindField" (.code "procedure"),
-     .enter "codeField" (.code "47562"), .click "paRequest"]
+     .enter "codeField" (.code "47562"), .enter "paField" (.flag true), .click "paRequest"]
 #guard hasOrderAt enteredService 0
 #guard orderLines enteredService == []
 #guard (capturedAt? enteredService priorAuthElement 0).map (·.value) == some (.flag true)
+-- A request click preserves every confirmed capture, even a false flag or
+-- a value entered through another field; it cannot erase provenance.
+def confirmedRequest : State :=
+  { serviceState with captured := serviceState.captured ++
+    [{ element := priorAuthElement, slot := 0, value := .flag false,
+       byHuman := true, confirmed := true, provenance? := some "human field" }] }
+#guard requestPriorAuth specV1_1 user .human confirmedRequest == (confirmedRequest, .ignored)
+#guard requestPriorAuth specV1_1 user .«macro» confirmedRequest == (confirmedRequest, .ignored)
+#guard requestPriorAuth specV1_1 user .human afterPA.1 == (afterPA.1, .ignored)
+-- The convenience action remains usable for a spec that authorizes it.
+def actionRequestSpec : Spec :=
+  { version := "action-request", elements :=
+      [{ id := priorAuthElement, label := "Request", kind := .flag,
+         enteredBy := [.physician], prefill := .defaultConfirm,
+         friction := .compliance, fhirTarget := "ServiceRequest" }],
+    infos := [], commits := [], entries := [], reviews := [], alerts := [], design := spec.design }
+#guard (requestPriorAuth actionRequestSpec user .human serviceState).2 == .ok
+#guard (requestPriorAuth actionRequestSpec user .«macro» serviceState).2 == .ok
+#guard (capturedAt? (requestPriorAuth actionRequestSpec user .«macro» serviceState).1
+  priorAuthElement 0).map (·.confirmed) == some false
+#guard requestPriorAuth actionRequestSpec user .human confirmedRequest == (confirmedRequest, .ignored)
 end Ehr.CoreTests

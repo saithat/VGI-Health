@@ -146,8 +146,9 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
 - **CR-1 resolved:** `currentLineComplete` guards `newOrderLine` for humans
   and macros. Checker may replace its blanket rejection with this hard-stop
   semantics. No new action/event was needed.
-- **Alert clicks resolved:** human inline clicks are informational (`ignored`),
-  macro clicks are `blocked "human only: acknowledge"`. Only a human matching
+- **Alert clicks resolved:** human clicks open the clicked alert's first pending
+  popup candidate, never acknowledging it; passive alerts remain inline. Macro
+  clicks are `blocked "human only: acknowledge"`. Only a human matching
   `ack` on the current popup acknowledges it; removed inline alerts do not
   disable spec interruptive alerts.
 - **CR-2:** retain checker's conservative `unlessReceipt` pin rule. Core
@@ -201,3 +202,13 @@ remaining generic cap is currently 0 (unspecified). In the real seed-1 run,
 minimum. These are the same heavy-child absolute-cap cases addressed by
 fb1ed8c for the other pediatric drugs. Keep the mg/kg range and the 5 mg cap;
 do not raise their doses or weaken the rule to hide the mismatch.
+
+## Checker CR-6 resolution from core
+
+Confirmed priorAuthRequest captures on the current slot are preserved exactly
+by request clicks. For never/human-only elements a request click is blocked;
+only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
+field and retains its never policy. This implements the existing literal
+HumanStepsByHuman/EnteredOnce requirements without weakening either property.
+Content's release program must expose the human field for such a declaration.
+
