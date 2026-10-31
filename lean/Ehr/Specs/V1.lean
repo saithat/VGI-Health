@@ -48,6 +48,12 @@ Two rules come from California law (owner-approved):
   milligram equivalents a day, or an opioid with a benzodiazepine), the
   prescriber offers naloxone and gives overdose-prevention education.
 
+Source audit: `docs/regulations.md` (2026-10-31). Unless a docstring says
+otherwise, roles, optional fields, workflow gates, receipt windows and UI
+placement are hospital design choices, not claims of legal necessity. CURES
+and naloxone have statutory exceptions and schedules that this demo simplifies.
+Rules intentionally stricter than law are retained and labeled below.
+
 This is demo content for a hackathon, not clinical advice.
 -/
 
@@ -77,7 +83,9 @@ Each of these is done by a human, every time. -/
 
 /-- Patient-ID re-entry before signing orders. The clinician types the
 patient's initials, sex, and age, and the system checks them against the chart.
-Never pre-filled, never done by a macro. -/
+Never pre-filled, never done by a macro. 
+
+Evidence and our policy, not law: SAFER Patient Identification (2025), fallback re-entry; docs/regulations.md §3.1 E6 and §3.3 H2. -/
 def patientIdReentry : ElementSpec where
   id := "patientIdReentry"
   label := "Re-enter patient ID (initials / sex / age)"
@@ -89,7 +97,9 @@ def patientIdReentry : ElementSpec where
   fhirTarget := "Provenance.extension.identityCheck"
 
 /-- Scan of the patient's wristband before giving a medication (one of the
-"five rights"). -/
+"five rights"). 
+
+Best practice and our policy, not a scanning mandate: 21 CFR 201.25 binds drug labelers; docs/regulations.md §3.3 H3. -/
 def wristbandScan : ElementSpec where
   id := "wristbandScan"
   label := "Scan patient wristband"
@@ -100,7 +110,9 @@ def wristbandScan : ElementSpec where
   humanOnly := true
   fhirTarget := "MedicationAdministration.extension.wristbandScan"
 
-/-- Scan of the medication barcode before giving it. -/
+/-- Scan of the medication barcode before giving it. 
+
+Best practice and our policy, not law; 21 CFR 201.25 requires manufacturer barcodes, not hospital scanning (docs/regulations.md §3.3 H3). -/
 def medScan : ElementSpec where
   id := "medScan"
   label := "Scan medication barcode"
@@ -113,7 +125,9 @@ def medScan : ElementSpec where
 
 /-- Independent double check of a high-alert medication (insulin, heparin, …)
 by a second nurse. The value is the second nurse's user ID, and it must differ
-from the nurse giving the drug. -/
+from the nurse giving the drug. 
+
+ISMP independent double checks (2019) and High-Alert list (2024), not law. This model checks distinct users, not blinded independent work (docs/regulations.md §3.3 H5). -/
 def highAlertCosign : ElementSpec where
   id := "highAlertCosign"
   label := "Independent double check: second nurse"
@@ -125,7 +139,9 @@ def highAlertCosign : ElementSpec where
   fhirTarget := "MedicationAdministration.performer.actor"
 
 /-- The surgeon confirms that a signed consent for the procedure is on file,
-before pre-op orders are signed. -/
+before pre-op orders are signed. 
+
+42 CFR 482.51(b)(2), 482.24(c)(4)(v); 22 CCR 70223(d). These require consent before surgery. Gating pre-op signing is our stricter policy (docs/regulations.md §3.2 R6). -/
 def consentVerified : ElementSpec where
   id := "consentVerified"
   label := "Surgical consent verified"
@@ -139,7 +155,9 @@ def consentVerified : ElementSpec where
 /-! ## Data elements: vital signs and rooming -/
 
 /-- Body weight recorded today, in kilograms. It may be copied from today's
-vitals with its source shown, and a human confirms it. Pounds never count. -/
+vitals with its source shown, and a human confirms it. Pounds never count. 
+
+ISMP Targeted Medication Safety Best Practices 2026–2027, BP 3 (kg only); best practice, not law (docs/regulations.md §3.1 E5). -/
 def weight : ElementSpec where
   id := "weight"
   label := "Weight (kg)"
@@ -230,7 +248,9 @@ def spo2 : ElementSpec where
   fhirTarget := "Observation.valueQuantity"
 
 /-- Pain score (0–10) taken before a pain medication is given. The patient is
-asked each time, so it is human-only. -/
+asked each time, so it is human-only. 
+
+Per-dose pain scoring is our hospital policy; 22 CCR 70215(a)(1) requires a general RN assessment per shift, not per dose (docs/regulations.md §3.1 E13). -/
 def painScore : ElementSpec where
   id := "painScore"
   label := "Pain score (0–10)"
@@ -241,7 +261,9 @@ def painScore : ElementSpec where
   humanOnly := true
   fhirTarget := "Observation.valueInteger"
 
-/-- Pain score (0–10) taken again after a pain medication has had time to work. -/
+/-- Pain score (0–10) taken again after a pain medication has had time to work. 
+
+Hospital policy modeled on pain reassessment practice; the 2026 accreditation ID was not verified (docs/regulations.md §3.1 E13). -/
 def painReassessment : ElementSpec where
   id := "painReassessment"
   label := "Pain reassessment (0–10)"
@@ -284,7 +306,9 @@ def fallRiskScreen : ElementSpec where
   fhirTarget := "QuestionnaireResponse.item.answer"
 
 /-- Two-question depression screen (PHQ-2). Overdue screening also shows up as
-a care gap. -/
+a care gap. 
+
+Our realism choice; no legal mandate verified in docs/regulations.md §6. -/
 def depressionScreen : ElementSpec where
   id := "depressionScreen"
   label := "Depression screen (PHQ-2 score)"
@@ -586,21 +610,25 @@ def pharmacy : ElementSpec where
   friction := .compliance
   fhirTarget := "MedicationRequest.dispenseRequest.performer"
 
-/-- Whether the pharmacy may substitute a generic. -/
+/-- Whether the pharmacy may substitute a generic. 
+
+A required yes/no decision. Coded rather than a checked acknowledgment, so a confirmed no is valid; this representation is our design. -/
 def substitution : ElementSpec where
   id := "substitution"
   label := "Generic substitution allowed"
-  kind := .flag
+  kind := .coded "boolean"
   enteredBy := prescribers
   prefill := .defaultConfirm
   friction := .compliance
   fhirTarget := "MedicationRequest.substitution.allowedBoolean"
 
-/-- Whether the drug is taken only as needed (PRN). -/
+/-- Whether the drug is taken only as needed (PRN). 
+
+A required yes/no decision. Scheduled (false) and PRN (true) are both valid; this is not an acknowledgment checkbox. -/
 def prn : ElementSpec where
   id := "prn"
   label := "As needed (PRN)"
-  kind := .flag
+  kind := .coded "boolean"
   enteredBy := prescribers
   prefill := .defaultConfirm
   friction := .compliance
@@ -655,7 +683,7 @@ def orderComment : ElementSpec where
 
 /-! ## Data elements: controlled substances (California) -/
 
-/-- The statutory exemptions a prescriber may record instead of checking CURES
+/-- The supported exemption categories a prescriber may record instead of checking CURES
 (CA Health and Safety Code §11165.4(c)). Codes of the `"cures-exemption"`
 value set:
 - `"admin-in-facility"`: the drug is given to the patient while admitted to a
@@ -667,7 +695,10 @@ value set:
 - `"hospice"`: the patient is receiving hospice care;
 - `"cures-unavailable"`: CURES could not be accessed in a reasonable time
   (for example a system outage), and the reason is documented.
-To be checked against `docs/regulations.md` (regulations lane). -/
+Verified against docs/regulations.md §2.2. This is a subset, not a complete
+statutory exemption list. The surgical code deliberately accepts only five
+days; §11165.4(c)(4) permits seven. That stricter hospital policy is retained.
+ED buprenorphine and other statutory cases are not separately modeled. -/
 def curesExemptionCodes : List String :=
   ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"]
 
@@ -1593,7 +1624,9 @@ def orderLineElements : List ElementSpec :=
 `signPreOpOrders`): patient-ID re-entry, today's weight in kg, the dosing
 weight, and every order-line element on every line. When an opioid order
 carries a higher overdose risk, a naloxone offer and overdose education are
-also needed (CA Business and Professions Code §741). -/
+also needed (CA Business and Professions Code §741). 
+
+Order content: 22 CCR 70263(g), (h)(4); 42 CFR 482.24(c)(2), 482.23(c)(3). Re-entry and kg-only checks are our safety policy, not statutory fields. Our naloxone gate is stricter than B&P 741: facility-administered orders are exempt in law; our model also treats unknown dose/frequency as risk (docs/regulations.md §3.1, C2). -/
 def orderSigningEntries (c : CommitSpec) : List EntryReq :=
   [requires c patientIdReentry, requires c weight, requires c dosingWeight] ++
   orderLineElements.map (requiresPerLine c ·) ++
@@ -1601,7 +1634,9 @@ def orderSigningEntries (c : CommitSpec) : List EntryReq :=
    requires c naloxoneEducation (when := .naloxoneRisk)]
 
 /-- Pre-op orders also need consent verified by a human and an updated H&P,
-and a decision about which home medications to hold. -/
+and a decision about which home medications to hold. 
+
+Consent and H&P: 42 CFR 482.51(b)(1)–(2); 22 CCR 70223(d). The pre-op signing deadline and meds-to-hold field are our stricter policy (docs/regulations.md §3.2 R6). -/
 def preOpExtraEntries : List EntryReq :=
   [requires signPreOpOrders consentVerified,
    requires signPreOpOrders hpUpdate,
@@ -1609,7 +1644,9 @@ def preOpExtraEntries : List EntryReq :=
 
 /-- A signed visit or consult note needs the core note sections, the diagnosis
 (once for the visit and once for the claim), the level of service, follow-up,
-instructions, and at least the first medication-reconciliation decision. -/
+instructions, and at least the first medication-reconciliation decision. 
+
+Record authentication: 42 CFR 482.24(b), (c)(1); 22 CCR 70751(g). This precise section list, duplicate claim diagnosis and billing prompts are our design (docs/regulations.md E20, H1). -/
 def signNoteEntries : List EntryReq :=
   [requires signNote chiefComplaint, requires signNote hpi, requires signNote ros,
    requires signNote exam, requires signNote assessmentPlan,
@@ -1618,20 +1655,26 @@ def signNoteEntries : List EntryReq :=
    requires signNote patientInstructions, requires signNote medRecDecision]
 
 /-- Acknowledging a result needs a decision. For an abnormal result, the
-patient must also be sent a message. -/
+patient must also be sent a message. 
+
+CA H&S 123148(e) requires timely reporting; our abnormal-result message and acknowledgment gate are design choices. Special electronic-release restrictions in 123148(f) are not modeled (docs/regulations.md E19, R4). -/
 def ackResultEntries : List EntryReq :=
   [requires ackResult resultAction,
    requires ackResult patientMessage (when := .abnormalResult)]
 
 /-- A refill decision needs the decision, the quantity, the number of refills,
-the pharmacy, and the protocol check. -/
+the pharmacy, and the protocol check. 
+
+Our clinical protocol, not a legal lab/visit requirement (docs/regulations.md §3.1 E17). -/
 def approveRefillEntries : List EntryReq :=
   [requires approveRefill refillDecision, requires approveRefill refillQuantity,
    requires approveRefill refillRefills, requires approveRefill refillPharmacy,
    requires approveRefill refillProtocolMet]
 
 /-- Giving a medication needs both scans, the status and reason, a pain score
-before a pain medication, and a second nurse for a high-alert medication. -/
+before a pain medication, and a second nurse for a high-alert medication. 
+
+22 CCR 70749(a)(6)(C), 70263(g)(2) govern administration charting. Scans, per-dose pain scores, routine reason and double checks are our hospital policy (docs/regulations.md E12–13, H3, H5). -/
 def administerMedEntries : List EntryReq :=
   [requires administerMed wristbandScan, requires administerMed medScan,
    requires administerMed adminStatus, requires administerMed adminReason,
@@ -1639,21 +1682,27 @@ def administerMedEntries : List EntryReq :=
    requires administerMed highAlertCosign (when := .highAlertMed)]
 
 /-- Filing a nursing assessment needs a full set of vitals, the pain
-reassessment, and the written assessment. -/
+reassessment, and the written assessment. 
+
+22 CCR 70215(a)(1) requires shift RN assessment; this precise vital-sign list and pain reassessment gate are our policy (docs/regulations.md E13). -/
 def chartAssessmentEntries : List EntryReq :=
   [requires chartAssessment bpSystolic, requires chartAssessment bpDiastolic,
    requires chartAssessment heartRate, requires chartAssessment respRate,
    requires chartAssessment temperature, requires chartAssessment spo2,
    requires chartAssessment painReassessment, requires chartAssessment nursingAssessment]
 
-/-- Recording a vaccine needs the vaccine, lot, site, route, and the VIS. -/
+/-- Recording a vaccine needs the vaccine, lot, site, route, and the VIS. 
+
+42 USC 300aa-25(a) covers record content and 300aa-26(d) VIS before administration. Site/route gating is our policy; this demo does not model all statutory fields or establish VIS timing (docs/regulations.md E11). -/
 def recordImmunizationEntries : List EntryReq :=
   [requires recordImmunization vaccine, requires recordImmunization vaccineLot,
    requires recordImmunization vaccineSite, requires recordImmunization vaccineRoute,
    requires recordImmunization visGiven]
 
 /-- The brief op note needs the diagnoses, procedure, anesthesia, findings,
-blood loss, specimens, complications, and condition. -/
+blood loss, specimens, complications, and condition. 
+
+42 CFR 482.51(b)(6) requires the operative report and surgeon signature; 22 CCR 70749(a)(12) includes it in the record. This detailed field list is our implementation (docs/regulations.md E15). -/
 def signOpNoteEntries : List EntryReq :=
   [requires signOpNote opPreopDiagnosis, requires signOpNote opPostopDiagnosis,
    requires signOpNote opProcedure, requires signOpNote opAnesthesia,
@@ -1662,13 +1711,17 @@ def signOpNoteEntries : List EntryReq :=
    requires signOpNote opCondition]
 
 /-- Discharge needs the medication reconciliation, diagnosis, follow-up,
-instructions, condition, and destination. -/
+instructions, condition, and destination. 
+
+42 CFR 482.43, 482.24(c)(4)(vii); CA H&S 1262.5; 22 CCR 70707(b)(13). This demo models a subset of discharge duties (docs/regulations.md E16). -/
 def dischargeEntries : List EntryReq :=
   [requires discharge dischargeMedRec, requires discharge dischargeDiagnosis,
    requires discharge dischargeFollowUp, requires discharge dischargeInstructions,
    requires discharge dischargeCondition, requires discharge dischargeDestination]
 
-/-- The ED disposition needs the choice, the diagnosis, and the condition. -/
+/-- The ED disposition needs the choice, the diagnosis, and the condition. 
+
+Our ED workflow gate, modeled on discharge record requirements; no law mandates this exact screen or field list (docs/regulations.md E20). -/
 def dispositionEntries : List EntryReq :=
   [requires disposition dispositionChoice, requires disposition visitDiagnosis,
    requires disposition dispositionCondition]
@@ -1695,32 +1748,42 @@ def showOrReceipt (c : CommitSpec) (i : InfoSpec) (minutes : Nat) (roles : List 
 
 /-- Before signing a Schedule II–IV controlled substance: the CURES report,
 shown or reviewed by a prescriber in the last 24 hours, unless the prescriber
-records a statutory exemption (CA Health and Safety Code §11165.4). -/
+records a statutory exemption (CA Health and Safety Code §11165.4). 
+
+CA H&S 11165.4(a)(1)–(2), (c). Law requires first prescribing and six-month rechecks, with data obtained within 24 h or the previous business day. Our every-signing, 24 h-only, prescriber-only display/receipt gate is stricter and does not model delegation or all exemptions (docs/regulations.md §2.2, C1). -/
 def curesReview (c : CommitSpec) : ReviewReq :=
   { showOrReceipt c curesReport 1440 prescribers (when := .orderClass "controlled-II-IV") with
     waivedBy? := some curesExemptionReason.id }
 
 /-- Before signing medication orders: the allergy list and current medications
 (shown, or reviewed by a prescriber in the last 4 hours), the dose check
-(always shown), and, for controlled substances, the CURES report. -/
+(always shown), and, for controlled substances, the CURES report. 
+
+45 CFR 170.315(a)(4) requires automatic drug checks in certified technology, not these list displays. List display, roles and receipt windows are our design. Dose display follows ISMP kg guidance; no-receipt is our choice (docs/regulations.md R2–3). -/
 def orderSigningReviews (c : CommitSpec) : List ReviewReq :=
   [showOrReceipt c allergyList 240 prescribers,
    showOrReceipt c currentMeds 240 prescribers,
    mustShow c doseCheck,
    curesReview c]
 
-/-- Before signing pre-op orders: also the anticoagulant list, always shown. -/
+/-- Before signing pre-op orders: also the anticoagulant list, always shown. 
+
+TJC NPG anticoagulant protocols support review; sign-screen display is our policy, not law (docs/regulations.md R5). -/
 def preOpExtraReviews : List ReviewReq :=
   [mustShow signPreOpOrders anticoagulantList]
 
 /-- Before acknowledging a result: the result itself, and its trend when it is
-abnormal. Both shown on the screen; no receipt counts. -/
+abnormal. Both shown on the screen; no receipt counts. 
+
+SAFER Test Results supports acknowledgment; trend display and no-receipt are our choices. CLIA 42 CFR 493.1291(g) binds the lab, not this screen (docs/regulations.md R4). -/
 def ackResultReviews : List ReviewReq :=
   [mustShow ackResult resultDetail,
    mustShow ackResult resultTrend (when := .abnormalResult)]
 
 /-- Before a refill decision: the relevant labs (always shown), and the last
-visit and fill history (shown, or reviewed by a prescriber in the last 7 days). -/
+visit and fill history (shown, or reviewed by a prescriber in the last 7 days). 
+
+Our clinical protocol and receipt windows, not law (docs/regulations.md E17). -/
 def approveRefillReviews : List ReviewReq :=
   [mustShow approveRefill relevantLabs,
    showOrReceipt approveRefill lastVisit 10080 [.physician, .np],
@@ -1728,7 +1791,9 @@ def approveRefillReviews : List ReviewReq :=
 
 /-- Before giving a medication: the allergy list (shown, or reviewed by a nurse
 this 12-hour shift), the dose details (always shown), recent glucose before
-insulin, and coagulation labs before an anticoagulant. -/
+insulin, and coagulation labs before an anticoagulant. 
+
+Our hospital review policy; list display, glucose/coagulation display and the 12 h receipt window are not statutory mandates (docs/regulations.md R2, H3, H5). -/
 def administerMedReviews : List ReviewReq :=
   [showOrReceipt administerMed allergyList 720 nurses,
    mustShow administerMed marDoseDetails,
@@ -1736,23 +1801,31 @@ def administerMedReviews : List ReviewReq :=
    mustShow administerMed coagLabs (when := .medClass "anticoagulant")]
 
 /-- Before recording a vaccine: the allergy list and the immunization history
-(shown, or reviewed by a vaccinator in the last 12 hours). -/
+(shown, or reviewed by a vaccinator in the last 12 hours). 
+
+Our safety review and receipt policy, beyond the federal vaccine record and VIS duties (docs/regulations.md E11). -/
 def recordImmunizationReviews : List ReviewReq :=
   [showOrReceipt recordImmunization allergyList 720 vaccinators,
    showOrReceipt recordImmunization immunizationHistory 720 vaccinators]
 
 /-- Before signing the op note: the intra-op record (shown, or reviewed by a
-surgeon in the last 4 hours). -/
+surgeon in the last 4 hours). 
+
+Our review window, supporting the operative report duty in 42 CFR 482.51(b)(6); no law specifies this receipt (docs/regulations.md E15). -/
 def signOpNoteReviews : List ReviewReq :=
   [showOrReceipt signOpNote intraopRecord 240 surgeons]
 
 /-- Before discharge: the current medications (always shown, for discharge
-reconciliation) and the allergy list (shown, or reviewed in the last 4 hours). -/
+reconciliation) and the allergy list (shown, or reviewed in the last 4 hours). 
+
+Our display/receipt implementation of reconciliation and discharge duties; see CA H&S 1262.5 and TJC medication reconciliation (docs/regulations.md E10, E16). -/
 def dischargeReviews : List ReviewReq :=
   [mustShow discharge currentMeds,
    showOrReceipt discharge allergyList 240 [.surgeon, .physician, .np]]
 
-/-- Before the ED disposition: the latest vital signs, always shown. -/
+/-- Before the ED disposition: the latest vital signs, always shown. 
+
+Our commit-screen display policy, not a statutory UI requirement (docs/regulations.md E20). -/
 def dispositionReviews : List ReviewReq :=
   [mustShow disposition vitals]
 
@@ -1767,6 +1840,12 @@ def reviews : List ReviewReq :=
 
 Interruptive alerts pop up and must be acknowledged by a human before the
 commit they concern. Passive alerts are shown inline and never pop up.
+Sources: 45 CFR 170.315(a)(4) binds certified technology for drug–allergy
+and drug–drug checks. Human acknowledgments, exact tiers, repetition control
+and removable/passive choices are our design, informed by SAFER CPOE. Dose,
+kg and high-alert warnings follow ISMP best practice, not law. See
+`docs/regulations.md` §3.4 A-1–A-8 and A1–A4.
+
 Removable alerts are accidental friction: a program may pop them up, show them
 inline, or drop them. Every alert appears only when its trigger holds. -/
 
@@ -1894,7 +1973,9 @@ def catalog : List String :=
 - text smaller than 12 pt does not count as shown;
 - at most 8 components move per accepted version (copies are free);
 - the patient banner is on every screen;
-- only catalog components are used. -/
+- only catalog components are used. 
+
+All numeric limits, pinned placement, catalog enforcement and stability rules are our design. TJC NPG.01.01.01 supports two identifiers; SAFER supports visible photos/identifiers, not our exact layout (docs/regulations.md §3.2 R1, §3.5). -/
 def design : DesignRules where
   maxDepth := 8
   minTextSize := 12

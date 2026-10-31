@@ -58,6 +58,7 @@ theorem clickCore_names (sp p f u actor s c) (h : ScreenNames p s) :
     ScreenNames p (clickCore sp p f u actor s c).1 := by
   unfold clickCore
   split
+  · cases actor <;> exact h
   · exact goTo_names _ _ _ _ _ h
   · exact goBack_names _ _ _ _ h
   · cases actor
