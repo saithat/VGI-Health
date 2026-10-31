@@ -1,0 +1,131 @@
+# Medplum full stack for VGI Health (server :8103, admin app :3000, Postgres, Redis).
+#
+# Based on Medplum's official docker-compose.full-stack.yml
+# (https://www.medplum.com/docs/self-hosting/running-full-medplum-stack-in-docker,
+#  upstream commit 4d44449bd, 2026-09-10). Deviations from upstream, all deliberate:
+#   - every image tag is pinned (upstream uses :latest / major tags);
+#   - Postgres and Redis are NOT published on the host (avoids clashes with other
+#     local databases on 5432/6379); use `docker compose exec` to reach them;
+#   - MEDPLUM_MAX_JSON_SIZE is raised from 1mb to 16mb so per-patient Synthea
+#     transaction bundles can be POSTed synchronously;
+#   - healthchecks use start_period/start_interval so first boot is detected quickly;
+#   - the compose project is named `vgi-medplum` so it never collides with other stacks.
+#
+# Usage: make infra-up / make infra-down (see infra/README.md).
+name: vgi-medplum
+
+services:
+  postgres:
+    image: postgres:16.15
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=medplum
+      - POSTGRES_PASSWORD=medplum
+    volumes:
+      - medplum-postgres-data:/var/lib/postgresql/data
+    command:
+      - 'postgres'
+      - '-c'
+      - 'listen_addresses=*'
+      - '-c'
+      - 'statement_timeout=60000'
+      - '-c'
+      - 'default_transaction_isolation=REPEATABLE READ'
+      - '-c'
+      - 'shared_preload_libraries=pg_stat_statements,auto_explain'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U medplum']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      start_interval: 1s
+
+  redis:
+    image: redis:7.4.12
+    restart: unless-stopped
+    command: redis-server --requirepass medplum
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'medplum', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      start_interval: 1s
+
+  medplum-server:
+    image: medplum/medplum-server:5.2.13
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '8103:8103'
+    command: ['env']
+    environment:
+      MEDPLUM_PORT: 8103
+      MEDPLUM_BASE_URL: 'http://localhost:8103/'
+      MEDPLUM_APP_BASE_URL: 'http://localhost:3000/'
+      MEDPLUM_STORAGE_BASE_URL: 'http://localhost:8103/storage/'
+
+      MEDPLUM_DATABASE_HOST: 'postgres'
+      MEDPLUM_DATABASE_PORT: 5432
+      MEDPLUM_DATABASE_DBNAME: 'medplum'
+      MEDPLUM_DATABASE_USERNAME: 'medplum'
+      MEDPLUM_DATABASE_PASSWORD: 'medplum'
+
+      MEDPLUM_REDIS_HOST: 'redis'
+      MEDPLUM_REDIS_PORT: 6379
+      MEDPLUM_REDIS_PASSWORD: 'medplum'
+
+      MEDPLUM_BINARY_STORAGE: 'file:./binary/'
+      MEDPLUM_SUPPORT_EMAIL: '\"Medplum\" <support@medplum.com>'
+      MEDPLUM_GOOGLE_CLIENT_ID: '397236612778-c0b5tnjv98frbo1tfuuha5vkme3cmq4s.apps.googleusercontent.com'
+      MEDPLUM_GOOGLE_CLIENT_SECRET: ''
+      MEDPLUM_RECAPTCHA_SITE_KEY: '6LfHdsYdAAAAAC0uLnnRrDrhcXnziiUwKd8VtLNq'
+      MEDPLUM_RECAPTCHA_SECRET_KEY: '6LfHdsYdAAAAAH9dN154jbJ3zpQife3xaiTvPChL'
+      MEDPLUM_MAX_JSON_SIZE: '16mb'
+      MEDPLUM_MAX_BATCH_SIZE: '50mb'
+      MEDPLUM_BOT_LAMBDA_ROLE_ARN: ''
+      MEDPLUM_BOT_LAMBDA_LAYER_NAME: 'medplum-bot-layer'
+      MEDPLUM_VM_CONTEXT_BOTS_ENABLED: 'true'
+      MEDPLUM_DEFAULT_BOT_RUNTIME_VERSION: 'vmcontext'
+      MEDPLUM_ALLOWED_ORIGINS: '*'
+      MEDPLUM_INTROSPECTION_ENABLED: 'true'
+      MEDPLUM_SHUTDOWN_TIMEOUT_MILLISECONDS: 30000
+
+    healthcheck:
+      # The server image has no curl/wget, so use Node's fetch (as upstream does).
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          'fetch("http://localhost:8103/healthcheck").then(r => r.json()).then(j => { if (!j.ok) process.exit(1); }).catch(() => process.exit(1))',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 300s
+      start_interval: 3s
+
+  medplum-app:
+    image: medplum/medplum-app:5.2.13
+    restart: unless-stopped
+    depends_on:
+      medplum-server:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      start_interval: 2s
+
+volumes:
+  medplum-postgres-data:

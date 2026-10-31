@@ -1,5 +1,7 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down fixtures
+.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset fixtures
+
+COMPOSE := docker compose -f infra/docker-compose.yml
 
 install:
 	cd lean && lake build
@@ -13,8 +15,19 @@ run:
 check:
 	cd lean && lake build
 
+# Start the Medplum stack (server :8103, app :3000, Postgres, Redis) and block until healthy.
 infra-up:
-	@if [ -f infra/docker-compose.yml ]; then docker compose -f infra/docker-compose.yml up -d; fi
+	$(COMPOSE) up -d
+	node infra/scripts/wait-healthy.mjs
 
+# Block until the Medplum server healthcheck (and the app) respond.
+infra-wait:
+	node infra/scripts/wait-healthy.mjs
+
+# Stop the stack, keeping data volumes.
 infra-down:
-	@if [ -f infra/docker-compose.yml ]; then docker compose -f infra/docker-compose.yml down; fi
+	$(COMPOSE) down
+
+# Stop the stack AND delete all Medplum data (Postgres volume).
+infra-reset:
+	$(COMPOSE) down -v
