@@ -714,6 +714,16 @@ export interface ScreenView {
 }
 
 /**
+ * Input of `ehr init` (stdin).
+ */
+export interface InitInput {
+  spec: Spec;
+  program: Program;
+  facts: Facts;
+  user: User;
+}
+
+/**
  * Output of `step`.
  */
 export interface StepOutput {
