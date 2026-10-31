@@ -128,6 +128,34 @@ def markReviewed (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           [{ info := i, dataVersion := v, time := nowMin facts s, role := user.role, user := user.id }] },
        .ok)
 
+/-- Request prior authorization for the current order line (release v1.1).
+It writes only the `"priorAuthRequest"` element, on the current slot, under the
+same rules as entering a value: the element must be in the spec and the role
+must be allowed; a macro may not do it if the element is human-only or
+`never`-prefill, and a macro's request waits for a human confirm. Ignored if
+the current slot has no order. -/
+def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : State × StepResult :=
+  match sp.element? priorAuthElement with
+  | none => (s, .blocked s!"unknown element {priorAuthElement}")
+  | some el =>
+    if !el.enteredBy.contains user.role then
+      (s, .blocked s!"role: {user.role.name} may not enter {priorAuthElement}")
+    else if !(orderLines s).any (·.1 == s.currentSlot) then (s, .ignored)
+    else
+      match actor with
+      | .«macro» =>
+        if needsHuman el || el.prefill == .never then (s, .blocked s!"human only: {priorAuthElement}")
+        else
+          let x : Captured :=
+            { element := priorAuthElement, slot := s.currentSlot, value := .flag true
+              byHuman := false, confirmed := false, provenance? := some "macro" }
+          ({ s with captured := setCaptured s.captured x }, .ok)
+      | .human =>
+        let x : Captured :=
+          { element := priorAuthElement, slot := s.currentSlot, value := .flag true
+            byHuman := true, confirmed := true, provenance? := none }
+        ({ s with captured := setCaptured s.captured x }, .ok)
+
 /-- Open a closed group, or close an open one. -/
 def toggle (l : List CompId) (x : CompId) : List CompId :=
   if l.contains x then l.filter (· != x) else l ++ [x]
@@ -149,6 +177,7 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     | .«macro» => (s, .blocked "human only: review")
   | .button .newOrderLine =>
     (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
+  | .button .requestPriorAuth => requestPriorAuth sp user actor s
   | .group true _ => ({ s with expanded := toggle s.expanded c.id }, .ok)
   | .«macro» _ =>
     match actor with

@@ -18,6 +18,31 @@ namespace Ehr.Proofs
 
 open Ehr
 
+/-- A macro's prior-auth request captures only the (non-human-only) request
+element. -/
+theorem requestPriorAuth_macro_safe (sp : Spec) (user : User) (s : State) :
+    MacroSafe sp s (requestPriorAuth sp user .«macro» s).1 := by
+  unfold requestPriorAuth
+  split
+  · exact MacroSafe.refl _ _
+  · rename_i el hel
+    split
+    · exact MacroSafe.refl _ _
+    · split
+      · exact MacroSafe.refl _ _
+      · dsimp only
+        split
+        · exact MacroSafe.refl _ _
+        · rename_i hnh
+          refine ⟨rfl, rfl, rfl, ?_⟩
+          intro y hy hh
+          simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hy
+          rcases hy with ⟨hy, _⟩ | rfl
+          · exact hy
+          · exfalso
+            simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
+            simp [Spec.isHumanOnly, hel, hnh.1] at hh
+
 theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : Component) : MacroSafe sp s (clickCore sp prog facts user .«macro» s c).1 := by
   unfold clickCore
@@ -27,6 +52,7 @@ theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
   · exact MacroSafe.refl _ _
   · exact MacroSafe.refl _ _
   · exact prefillScreen_safe_of (MacroSafe.of_eq rfl rfl rfl rfl)
+  · exact requestPriorAuth_macro_safe ..
   · exact MacroSafe.of_eq rfl rfl rfl rfl
   · exact MacroSafe.refl _ _
   · exact MacroSafe.refl _ _

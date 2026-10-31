@@ -284,4 +284,49 @@ def withReason (byHuman : Bool) (reason : String := "CURES unavailable") : State
 -- Without `waivedBy`, a reason does nothing.
 #guard !reviewMet spec program facts (withReason true) { waivableReview with waivedBy? := none }
 
+/-! ## Release v1.1: prior authorization (BRIEF 9b) -/
+
+-- Catalog: the v1 program fits spec v1; the v1.1 program does not, but fits v1.1.
+#guard program.inCatalog spec
+#guard !programV1_1.inCatalog spec
+#guard programV1_1.inCatalog specV1_1
+#guard Kind.catalogTag (.button .requestPriorAuth) == "priorAuth"
+
+/-- On the v1.1 order screen with an order for amoxicillin. -/
+def atOrderPA : State :=
+  runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+    [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")]
+
+/-- The result of requesting prior auth. -/
+def afterPA : State × StepResult := step specV1_1 programV1_1 facts user .human atOrderPA (.click "paRequest")
+
+#guard afterPA.2 == .ok
+-- It writes only the request element, on the current order line.
+#guard afterPA.1.captured == atOrderPA.captured ++
+  [{ element := "priorAuthRequest", slot := 0, value := .flag true, byHuman := true, confirmed := true }]
+#guard afterPA.1.commits == atOrderPA.commits && afterPA.1.receipts == atOrderPA.receipts
+-- The status panel counts as showing its info, and shows the request.
+#guard infoShown specV1_1 programV1_1 facts atOrderPA "priorAuthStatus"
+#guard ((view specV1_1 programV1_1 facts user afterPA.1).items.find? (·.comp.id == "paStatus")).map
+  (fun i => (i.shown, i.value?)) == some (true, some (.flag true))
+-- Before any order on the line: ignored, and the view says why the button is blocked.
+#guard (step specV1_1 programV1_1 facts user .human
+          (runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+            [.click "toOrder"]) (.click "paRequest")).2 == .ignored
+-- Under spec v1 (no request element) the request is refused.
+#guard (step spec programV1_1 facts user .human
+          (runAll spec programV1_1 facts user .human (init spec programV1_1 facts user)
+            [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")])
+          (.click "paRequest")).2 == .blocked "unknown element priorAuthRequest"
+-- A macro may not request it (the element is `never`-prefill: a human must).
+#guard (step specV1_1 programV1_1 facts user .«macro» atOrderPA (.click "paRequest")).2 ==
+  .blocked "human only: priorAuthRequest"
+-- Signing works the same as in v1 (prior auth is never required).
+#guard (step specV1_1 programV1_1 facts user .human
+          (runAll specV1_1 programV1_1 facts user .human afterPA.1
+            [.enter "doseField" (.qty 5000 .mg), .click "toSign",
+             .enter "patientIdField" (.text "JD/F/34"), .selectTab "signTabs" 1,
+             .click "signButton", .ack "drugAllergy"])
+          (.click "signButton")).1.commits == ["signOrders"]
+
 end Ehr.Examples.TinyTests

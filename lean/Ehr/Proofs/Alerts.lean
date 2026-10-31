@@ -106,6 +106,11 @@ theorem markReviewed_popup (sp : Spec) (prog : Program) (facts : Facts) (user : 
   unfold markReviewed
   repeat' (first | rfl | split | dsimp only)
 
+theorem requestPriorAuth_popup (sp : Spec) (user : User) (actor : Actor) (s : State) :
+    (requestPriorAuth sp user actor s).1.popup? = s.popup? := by
+  unfold requestPriorAuth
+  repeat' (first | rfl | split | dsimp only)
+
 theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (actor : Actor) (s : State) (c : Component) :
     PopupFrom sp prog facts s (clickCore sp prog facts user actor s c).1 := by
@@ -120,6 +125,7 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     · exact PopupFrom.same (markReviewed_popup ..)
     · exact PopupFrom.same rfl
   · exact PopupFrom.same (prefillScreen_popup ..)
+  · exact PopupFrom.same (requestPriorAuth_popup ..)
   · exact PopupFrom.same rfl
   · cases actor <;> exact PopupFrom.same rfl
   · exact PopupFrom.same rfl
@@ -197,6 +203,7 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
         · rfl
         · rfl
         · exact prefillScreen_popup ..
+        · exact requestPriorAuth_popup ..
         · rfl
         · rfl
         · rfl

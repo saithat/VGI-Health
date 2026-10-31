@@ -333,7 +333,9 @@ export type Action =
   /** Records that the user reviewed this info (creates a receipt). */
   | { markReviewed: { info: InfoId } }
   /** Starts a new order line. */
-  | "newOrderLine";
+  | "newOrderLine"
+  /** Requests prior authorization for the current order line (release v1.1). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
+  | "requestPriorAuth";
 
 /**
  * When a component is visible. `unlessReceipt i`: only when there is no
@@ -374,7 +376,9 @@ export type Kind =
   | "tabs"
   /** A button that runs a macro. */
   | { macro: { id: MacroId } }
-  | { search: { scope: string } };
+  | { search: { scope: string } }
+  /** Prior-authorization status of the current order line (release v1.1; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
+  | { priorAuth: { info: InfoId } };
 
 /**
  * One component on a screen.
@@ -680,11 +684,13 @@ export interface ItemView {
    */
   selectedTab: number;
   /**
-   * For fields: the order line the field is bound to.
+   * For fields: the order line the field is bound to. For `priorAuth`: the
+   * current order line.
    */
   slot: number;
   /**
-   * For fields: the bound value, if any.
+   * For fields: the bound value, if any. For `priorAuth`: the request on the
+   * current order line (`flag true`), if any.
    */
   value?: Value;
   /**

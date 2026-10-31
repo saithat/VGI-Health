@@ -30,7 +30,7 @@ def readStdin : IO String := do
 
 /-- Specs available to `spec-export`, by name. -/
 def specRegistry : List (String × Spec) :=
-  [("tiny", Examples.Tiny.spec)]
+  [("tiny", Examples.Tiny.spec), ("tiny-1.1", Examples.Tiny.specV1_1)]
 
 /-- Usage text. -/
 def usage : String :=
