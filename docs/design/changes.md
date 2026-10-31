@@ -243,3 +243,26 @@ in the next core item.
 
 Minimal compatibility edits: add a state-preserving alert branch to T0/T3/Alerts
 frame proofs. The 18 Comparator theorem statements are unchanged.
+
+## Core requests: record source, episode conditions and passive workflows (CR-3)
+
+- `ElementSpec.recordFact?` is the sole permitted `fromRecord` source. Missing
+  or mismatched declarations cause no prefill. `weightToday` retains its unit.
+- `When.encounter kind` matches the optional `Facts.encounterKind?` for this
+  episode (absent or another kind is false). `FactsContext` passes it through
+  the FHIR projection. `When.weightBased` tests the formulary range, per drug
+  for per-line requirements and existentially over orders otherwise.
+- Passive-alert `screens` now contains workflow tags. `targetsScreen` compares
+  `Screen.workflow`, surviving arbitrary screen IDs. Enter-once remains a
+  checker responsibility per workflow path, as requested by content.
+
+Minimal compatibility edits: annotate Tiny's weight source and V1's weight,
+chiefComplaint, pharmacy and refillPharmacy sources; migrate the three passive
+V1 targets and Tiny's target to W1/W5. Add optional context plumbing in
+Render.Types/Fhir; adapt prefillRecord_element to the source check and the Alerts example
+target to W1. Preserve recordFact and accept the new When constructors in
+agent/src/lean-types.ts (its round-trip test would otherwise strip recordFact).
+No entry/review rule or theorem statement changed. Content
+must spread passive components to every relevant workflow screen, and checker
+must use workflow targets. Existing pre-op rules remain on signPreOpOrders;
+content can now migrate them using the encounter condition without core edits.

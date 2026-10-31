@@ -658,6 +658,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     abnormalResult := labs.any (·.abnormal)
     now := ctx.now
     medToGive? := ctx.medToGive?
+    encounterKind? := ctx.encounterKind?
     receipts := ctx.receipts
     record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++ ctx.record }
 
