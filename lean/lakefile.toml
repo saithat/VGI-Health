@@ -8,3 +8,7 @@ name = "Ehr"
 [[lean_exe]]
 name = "ehr"
 root = "Main"
+
+[[lean_exe]]
+name = "gents"
+root = "Ehr.Tools.GenTS"
