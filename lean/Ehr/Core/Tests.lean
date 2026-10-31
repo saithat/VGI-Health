@@ -55,6 +55,17 @@ def passive : AlertSpec :=
 #guard passive.targetsScreen { id := "renamed", title := "New layout", workflow := "W1", components := [] }
 #guard !passive.targetsScreen { id := "order", title := "Other", workflow := "W5", components := [] }
 -- Absolute caps prevent false low-dose alerts in heavy teenagers.
+#guard [525, 696, 714].all fun kgTenths =>
+  !doseOutOfRange { facts with weightToday? := some (kgTenths, .kg) }
+    (orderState "albuterol" 50 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := some (714, .kg) }
+  (orderState "albuterol" 51 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := some (714, .kg) }
+  (orderState "albuterol" 49 none) 0 "albuterol"
+#guard !doseOutOfRange { facts with weightToday? := some (200, .kg) }
+  (orderState "albuterol" 30 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := none }
+  (orderState "albuterol" 51 none) 0 "albuterol"
 #guard !doseOutOfRange { facts with weightToday? := some (1200, .kg) }
   (orderState "ibuprofen" 4000 none) 0 "ibuprofen"
 #guard doseOutOfRange { facts with weightToday? := some (1200, .kg) }
