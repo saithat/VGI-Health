@@ -1,0 +1,940 @@
+[
+  {
+    "id": "guidance-npg-id-no-room",
+    "title": "Exclude room identifiers",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.01.01 EP 1, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "room number",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Exclude room numbers from qualifying patient identifiers.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Validate identifier categories; banner content is not typed in v1.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Two-identifier banner exists; exclusion of location identifiers is not checked."
+  },
+  {
+    "id": "guidance-npg-specimen-bedside",
+    "title": "Label specimens at bedside",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.01.01 EP 2, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "presence",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Label specimen containers while the patient is present.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Specimen-label event and patient-presence attestation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Physical presence cannot be established by screen certification alone."
+  },
+  {
+    "id": "guidance-npg-newborn-id",
+    "title": "Distinguish newborn identities",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.01.01 EP 3, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "newborn",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W5"
+    ],
+    "personas": [
+      "P3",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use distinct newborn identification methods.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Newborn status and identifier/display validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Illustrative naming and banding methods are examples, not individually mandatory."
+  },
+  {
+    "id": "guidance-npg-critical-recipient",
+    "title": "Define critical-result recipients",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.02.01 EP 1, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "to whom",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "design",
+    "proposedRule": "Define authorized critical-result reporters and recipients.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Critical-result classification and recipient-routing policy.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic policy subitem of regulations.md R2-11; v1 acknowledgment is not evidence of delivery."
+  },
+  {
+    "id": "guidance-npg-alarm-disable",
+    "title": "Control alarm disabling",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.05.01 EP 2, p. 3",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "disabled",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Define when clinical alarms may be disabled.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Device alarm controls and policy conditions.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Clinical device alarms are distinct from the existing medication CDS alert tiers."
+  },
+  {
+    "id": "guidance-npg-alarm-off-authority",
+    "title": "Authorize alarm deactivation",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.05.01 EP 2, p. 3",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "off",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Define who may turn clinical alarms off.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Device-alarm authorization model.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A UI adaptation must preserve the authorized-role restriction if device controls are added."
+  },
+  {
+    "id": "guidance-npg-suicide-screen",
+    "title": "Use validated suicide screening",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 2, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "validated",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Screen eligible patients using a validated suicide tool.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "behavioral-health-primary and age >=12",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Eligibility predicate, validated questionnaire and screening result.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. Disposition gate is a proposed local implementation; depressionScreen/PHQ-2 is not equivalent."
+  },
+  {
+    "id": "guidance-npg-suicide-intent",
+    "title": "Assess suicidal intent",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 3, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "intent",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "humanOnly",
+    "proposedRule": "Directly assess suicidal intent after positive screening.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "positive-suicide-screen or expressed-suicidal-ideation",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Suicide assessment fields and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. This is one assessment component, not a complete assessment."
+  },
+  {
+    "id": "guidance-npg-suicide-risk-level",
+    "title": "Record suicide risk level",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 4, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "overall",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Document the overall suicide risk level.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "suicide-assessment-indicated",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Suicide risk assessment element and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. "
+  },
+  {
+    "id": "guidance-npg-suicide-mitigation",
+    "title": "Record suicide mitigation plan",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 4, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "mitigate",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Document the suicide risk mitigation plan.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "suicide-assessment-indicated",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Risk mitigation plan element and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. Do not equate a documented plan with completion of physical protective measures."
+  },
+  {
+    "id": "guidance-npg-label-name",
+    "title": "Include medication name",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "name",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include the drug or solution name on procedural labels.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-label-strength",
+    "title": "Include medication strength",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Strength",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include strength on procedural medication labels.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-label-diluent-name",
+    "title": "Include diluent name",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Diluent",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include diluent name unless apparent from the container.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-label-diluent-volume",
+    "title": "Include diluent volume",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "volume",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include diluent volume unless apparent from the container.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-label-expiry-date",
+    "title": "Include expiration date",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Expiration",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include expiration date unless the hospital-defined short-procedure exception applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-label-expiry-time",
+    "title": "Include expiration time",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "time",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include expiration time unless the hospital-defined short-procedure exception applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement."
+  },
+  {
+    "id": "guidance-npg-anticoag-reversal",
+    "title": "Use anticoagulant reversal protocols",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.04.01 EP 1, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "reversal",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Use approved evidence-based anticoagulant reversal protocols.",
+    "specMapping": {
+      "element": null,
+      "info": "coagLabs",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Therapeutic anticoagulation/bleeding predicate and protocol information.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Excludes routine short-term VTE prophylaxis. coagLabs is an adjacent v1 panel, not a reversal protocol; existingInSpec=false."
+  },
+  {
+    "id": "guidance-npg-medrec-written",
+    "title": "Provide written discharge medications",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.05.01 EP 4, p. 45",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "written",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Provide written medication information at discharge or outpatient encounter end.",
+    "specMapping": {
+      "element": "dischargeMedRec",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-facing medication-list delivery evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "dischargeMedRec is captured in v1; delivery of a written list is not established by that field alone."
+  },
+  {
+    "id": "guidance-tjc-prohibited-list",
+    "title": "Maintain prohibited abbreviation rules",
+    "citation": "Joint Commission public Do Not Use List page; IM.02.02.01 EPs 2–3; public explanation of IM.02.02.01",
+    "url": "https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/do-not-use-list-of-abbreviations",
+    "quote": "prohibited abbreviations",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Apply the hospital prohibited-abbreviation list to medication documentation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Related to R2-10; public landing page verified. Dynamic FAQ body did not render; individual examples below are verified from the official ISMP PDF."
+  },
+  {
+    "id": "guidance-ismp-abbrev-iu",
+    "title": "Spell out international units",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "IU",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Use international units instead of IU.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-abbrev-qd",
+    "title": "Spell out daily",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "QD",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Use daily instead of QD and its punctuation/case variants.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-abbrev-qod",
+    "title": "Spell out every other day",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "QOD",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Use every other day instead of QOD and its variants.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-abbrev-cc",
+    "title": "Use mL for volume",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "cc",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Use mL instead of cc.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-abbrev-microgram",
+    "title": "Spell microgram units safely",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "µg",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Use mcg instead of the microgram symbol.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-abbrev-dc",
+    "title": "Disambiguate discharge and discontinue",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "D/C",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Write discharge or discontinue explicitly instead of D/C.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  }
+]
