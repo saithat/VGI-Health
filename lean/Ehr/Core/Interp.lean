@@ -49,6 +49,7 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
     Prefill → Option Captured
   | .none => none
   | .fromRecord f =>
+    if el.recordFact? != some f then none else
     (recordValue facts el.kind f).map fun v =>
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
         provenance? := some ("record:" ++ f) }
@@ -156,6 +157,15 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
             byHuman := true, confirmed := true, provenance? := none }
         ({ s with captured := setCaptured s.captured x }, .ok)
 
+/-- The current drug line meets every applicable per-line requirement in the
+spec. Checks all signing commits, so moving forward cannot strand a line. -/
+def currentLineComplete (sp : Spec) (facts : Facts) (user : User) (s : State) : Bool :=
+  (orderLines s).all fun p => p.1 != s.currentSlot ||
+    sp.entries.all fun rq => !rq.perOrderLine || !lineMatches facts s rq.when p.1 p.2 ||
+      match sp.element? rq.element with
+      | none => false
+      | some el => hasGoodEntry facts user s el (some p.1)
+
 /-- Open a closed group, or close an open one. -/
 def toggle (l : List CompId) (x : CompId) : List CompId :=
   if l.contains x then l.filter (· != x) else l ++ [x]
@@ -165,6 +175,12 @@ may not start another macro. -/
 def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (c : Component) : State × StepResult :=
   match c.kind with
+  -- Inline alerts are informational. Acknowledgment is exclusively the
+  -- human `ack` event for the current popup; clicking cannot override it.
+  | .alert _ _ =>
+    match actor with
+    | .human => (s, .ignored)
+    | .«macro» => (s, .blocked "human only: acknowledge")
   | .button (.goto t) => goTo sp prog facts s t
   | .button .back => goBack sp prog facts s
   | .button (.commit cm) =>
@@ -176,7 +192,9 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     | .human => markReviewed sp prog facts user s i
     | .«macro» => (s, .blocked "human only: review")
   | .button .newOrderLine =>
-    (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
+    if currentLineComplete sp facts user s then
+      (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
+    else (s, .blocked "finish this order line first")
   | .button .requestPriorAuth => requestPriorAuth sp user actor s
   | .group true _ => ({ s with expanded := toggle s.expanded c.id }, .ok)
   | .«macro» _ =>

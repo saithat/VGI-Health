@@ -29,6 +29,7 @@ def spec : Spec where
   elements := [
     { id := "weight", label := "Weight (kg)", kind := .quantity .kg
       enteredBy := [.rn, .physician, .np, .surgeon], prefill := .recordConfirm
+      recordFact? := some "weightToday"
       friction := .compliance, fhirTarget := "Observation.valueQuantity" },
     { id := "patientIdReentry", label := "Re-enter patient ID", kind := .identity
       enteredBy := [.rn, .physician, .np, .surgeon], prefill := .never
@@ -68,7 +69,7 @@ def spec : Spec where
     { id := "drugAllergy", label := "Drug–allergy match", cond := .drugAllergy
       tier := .interruptive, commit := "signOrders" },
     { id := "careGap", label := "Care gap due", cond := .careGap
-      tier := .passive, commit := "signOrders", screens := ["order"] }
+      tier := .passive, commit := "signOrders", screens := ["W1"] }
   ]
   design := {
     maxDepth := 3, minTextSize := 12, stabilityBudget := 5

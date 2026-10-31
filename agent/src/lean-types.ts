@@ -43,16 +43,17 @@ const valueKindSchema: z.ZodType<L.ValueKind> = z.union([
   z.object({ coded: z.object({ valueSet: str }) }),
   z.object({ scan: z.object({ target: str }) }),
 ]);
-const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom'], z.object({
+const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 'recordFact'], z.object({
   id: str, label: str, kind: valueKindSchema, enteredBy: z.array(roleSchema),
   prefill: z.enum(['never', 'recordConfirm', 'defaultConfirm', 'autoLinked']),
   friction: z.enum(['safety', 'compliance', 'accidental']),
-  humanOnly: z.boolean(), linkedFrom: str.exactOptional(), fhirTarget: str,
+  humanOnly: z.boolean(), linkedFrom: str.exactOptional(), recordFact: str.exactOptional(), fhirTarget: str,
 }));
 const whenSchema: z.ZodType<L.When> = z.union([
-  z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk']),
+  z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk', 'weightBased']),
   z.object({ orderClass: z.object({ cls: str }) }),
   z.object({ medClass: z.object({ cls: str }) }),
+  z.object({ encounter: z.object({ kind: str }) }),
 ]);
 const reviewModeSchema: z.ZodType<L.ReviewMode> = z.union([
   z.literal('shownOnCommit'),
