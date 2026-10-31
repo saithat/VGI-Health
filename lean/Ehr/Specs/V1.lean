@@ -24,9 +24,9 @@ How to read the words used below:
   a default is allowed, and a human confirms it. `autoLinked`: copied from
   another element, so it is entered only once.
 - *Friction class.* `safety`: a clinical decision or a safety check; a human
-  does it. `compliance`: needed for policy, billing, or the record; a
-  pre-fill, a link, or a valid receipt may satisfy it. `accidental`: no rule
-  needs it; it may be removed.
+  does it. `compliance`: needed for law, policy, billing, or the record; where
+  the pre-fill policy allows, a pre-fill, a link, or a valid receipt may
+  satisfy it. `accidental`: no rule needs it; it may be removed.
 - *Human-only.* Done by a human, every time. Never pre-filled, never done by a
   macro.
 - *Per order line.* Needed once for every medication order being signed.
@@ -37,6 +37,16 @@ How to read the words used below:
 
 Elements that no commit requires are optional. The canonical UI still asks for
 some of them, as real EHRs do.
+
+Two rules come from California law (owner-approved):
+- **CURES** (CA Health and Safety Code §11165.4): before prescribing a
+  Schedule II–IV controlled substance, the prescriber checks the patient's
+  CURES report (the state's controlled-substance history), or records which
+  legal exemption applies.
+- **Naloxone** (CA Business and Professions Code §741): when an opioid
+  prescription puts the patient at higher overdose risk (90 or more morphine
+  milligram equivalents a day, or an opioid with a benzodiazepine), the
+  prescriber offers naloxone and gives overdose-prevention education.
 
 This is demo content for a hackathon, not clinical advice.
 -/
@@ -642,6 +652,61 @@ def orderComment : ElementSpec where
   prefill := .defaultConfirm
   friction := .accidental
   fhirTarget := "MedicationRequest.note"
+
+/-! ## Data elements: controlled substances (California) -/
+
+/-- The statutory exemptions a prescriber may record instead of checking CURES
+(CA Health and Safety Code §11165.4(c)). Codes of the `"cures-exemption"`
+value set:
+- `"admin-in-facility"`: the drug is given to the patient while admitted to a
+  licensed hospital, clinic, or other health facility;
+- `"ed-7-day"`: prescribed in an emergency department, nonrefillable, at most
+  a 7-day supply;
+- `"surgery-5-day"`: prescribed for a surgical procedure done in a licensed
+  facility, nonrefillable, at most a 5-day supply;
+- `"hospice"`: the patient is receiving hospice care;
+- `"cures-unavailable"`: CURES could not be accessed in a reasonable time
+  (for example a system outage), and the reason is documented.
+To be checked against `docs/regulations.md` (regulations lane). -/
+def curesExemptionCodes : List String :=
+  ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"]
+
+/-- Why CURES was not checked: one of the statutory exemptions in
+`curesExemptionCodes` (CA Health and Safety Code §11165.4(c)). A human
+records it; it is never pre-filled. When recorded, it meets the CURES review
+requirement instead of the report (see `orderSigningReviews`). -/
+def curesExemptionReason : ElementSpec where
+  id := "curesExemptionReason"
+  label := "CURES not checked: exemption"
+  kind := .coded "cures-exemption"
+  enteredBy := prescribers
+  prefill := .never
+  friction := .compliance
+  fhirTarget := "MedicationRequest.extension.curesExemption"
+
+/-- The naloxone offer for a higher-risk opioid prescription: `"prescribed"` or
+`"offered-declined"` (CA Business and Professions Code §741(a)). A human
+records it; it is never pre-filled. -/
+def naloxoneOffer : ElementSpec where
+  id := "naloxoneOffer"
+  label := "Naloxone offered"
+  kind := .coded "naloxone-offer"
+  enteredBy := prescribers
+  prefill := .never
+  friction := .compliance
+  fhirTarget := "MedicationRequest.extension.naloxoneOffer"
+
+/-- The patient (or caregiver) was educated about overdose prevention and how
+to use naloxone (CA Business and Professions Code §741(b)). A human records
+it; it is never pre-filled. -/
+def naloxoneEducation : ElementSpec where
+  id := "naloxoneEducation"
+  label := "Overdose and naloxone education given"
+  kind := .flag
+  enteredBy := prescribers
+  prefill := .never
+  friction := .compliance
+  fhirTarget := "Communication.payload.contentString"
 
 /-! ## Data elements: lab orders -/
 
@@ -1336,6 +1401,8 @@ def elements : List ElementSpec := [
   -- one medication order line
   drug, dose, doseUnit, route, freq, duration, quantity, refills, indication,
   pharmacy, substitution, prn, orderDiagnosis, dosingWeight, doseMgPerKg, orderComment,
+  -- controlled substances (California)
+  curesExemptionReason, naloxoneOffer, naloxoneEducation,
   -- lab orders
   labTest, labDiagnosis, labPriority, labFasting,
   -- results in-basket
@@ -1454,6 +1521,10 @@ def pendingResults : InfoSpec := { id := "pendingResults", label := "Pending res
 def edTrackBoard : InfoSpec := { id := "edTrackBoard", label := "ED track board", version := "" }
 /-- Open care gaps (screenings and vaccines due). -/
 def careGapList : InfoSpec := { id := "careGapList", label := "Care gaps", version := "" }
+/-- The patient's CURES report: Schedule II–V prescriptions filled in
+California, from the state's prescription drug monitoring program (CA Health
+and Safety Code §11165.4). -/
+def curesReport : InfoSpec := { id := "curesReport", label := "CURES report", version := "" }
 
 /-- Every piece of information in spec v1. -/
 def infos : List InfoSpec := [
@@ -1464,7 +1535,7 @@ def infos : List InfoSpec := [
   intraopRecord, priorNotes, encounterHistory, upcomingAppointments, openOrders,
   refillRequest, inbasketItems, triageSummary, consultRequest, consentDocument,
   socialHistory, familyHistory, surgicalHistory, coverage, prnHistory, pendingResults,
-  edTrackBoard, careGapList
+  edTrackBoard, careGapList, curesReport
 ]
 
 /-! ## Commits
@@ -1520,10 +1591,14 @@ def orderLineElements : List ElementSpec :=
 
 /-- What signing medication orders needs (used for `signOrders` and
 `signPreOpOrders`): patient-ID re-entry, today's weight in kg, the dosing
-weight, and every order-line element on every line. -/
+weight, and every order-line element on every line. When an opioid order
+carries a higher overdose risk, a naloxone offer and overdose education are
+also needed (CA Business and Professions Code §741). -/
 def orderSigningEntries (c : CommitSpec) : List EntryReq :=
   [requires c patientIdReentry, requires c weight, requires c dosingWeight] ++
-  orderLineElements.map (requiresPerLine c ·)
+  orderLineElements.map (requiresPerLine c ·) ++
+  [requires c naloxoneOffer (when := .naloxoneRisk),
+   requires c naloxoneEducation (when := .naloxoneRisk)]
 
 /-- Pre-op orders also need consent verified by a human and an updated H&P,
 and a decision about which home medications to hold. -/
@@ -1618,13 +1693,21 @@ def showOrReceipt (c : CommitSpec) (i : InfoSpec) (minutes : Nat) (roles : List 
     (when : When := .always) : ReviewReq :=
   { commit := c.id, info := i.id, mode := .shownOrReceipt minutes roles, when }
 
+/-- Before signing a Schedule II–IV controlled substance: the CURES report,
+shown or reviewed by a prescriber in the last 24 hours, unless the prescriber
+records a statutory exemption (CA Health and Safety Code §11165.4). -/
+def curesReview (c : CommitSpec) : ReviewReq :=
+  { showOrReceipt c curesReport 1440 prescribers (when := .orderClass "controlled-II-IV") with
+    waivedBy? := some curesExemptionReason.id }
+
 /-- Before signing medication orders: the allergy list and current medications
-(shown, or reviewed by a prescriber in the last 4 hours), and the dose check
-(always shown). -/
+(shown, or reviewed by a prescriber in the last 4 hours), the dose check
+(always shown), and, for controlled substances, the CURES report. -/
 def orderSigningReviews (c : CommitSpec) : List ReviewReq :=
   [showOrReceipt c allergyList 240 prescribers,
    showOrReceipt c currentMeds 240 prescribers,
-   mustShow c doseCheck]
+   mustShow c doseCheck,
+   curesReview c]
 
 /-- Before signing pre-op orders: also the anticoagulant list, always shown. -/
 def preOpExtraReviews : List ReviewReq :=
@@ -1858,6 +1941,11 @@ def allDistinct (xs : List String) : Bool :=
   | none => e.prefill != .autoLinked
 -- Human-only elements are never pre-filled.
 #guard specV1.elements.all fun e => !e.humanOnly || e.prefill == .never
+-- A waiver names a declared element.
+#guard specV1.reviews.all fun r =>
+  match r.waivedBy? with
+  | some e => specV1.elements.any (·.id == e)
+  | none => true
 -- Every commit has at least one requirement.
 #guard specV1.commits.all fun c =>
   specV1.entries.any (·.commit == c.id) || specV1.reviews.any (·.commit == c.id)
