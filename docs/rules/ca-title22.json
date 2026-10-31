@@ -59,14 +59,14 @@
     "specMapping": {
       "element": "nursingOrders",
       "info": null,
-      "when": "always",
+      "when": "inpatient nonmedication treatment order issued",
       "prefill": "defaultConfirm",
       "friction": "compliance",
       "tier": null,
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Nonmedication treatment-order lifecycle and applicability predicate",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. nursingOrders is optional in v1; the regulation does not require an arbitrary treatment on every encounter."
@@ -76,7 +76,7 @@
     "title": "Record diet orders",
     "citation": "22 CCR §70749(a)(4)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
-    "quote": "diet orders.",
+    "quote": "Order sheet including medication, treatment and diet orders.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -95,14 +95,14 @@
     "specMapping": {
       "element": "postOpDiet",
       "info": null,
-      "when": "always",
+      "when": "inpatient diet order issued",
       "prefill": "defaultConfirm",
       "friction": "compliance",
       "tier": null,
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Diet-order lifecycle and applicability predicate",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. postOpDiet exists but is optional; do not require every medication order to contain a diet order."
@@ -131,14 +131,14 @@
     "specMapping": {
       "element": "progressNote",
       "info": null,
-      "when": "always",
+      "when": "inpatient progress note signed",
       "prefill": "defaultConfirm",
       "friction": "compliance",
       "tier": null,
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Inpatient progress-note applicability and required diagnosis content validation",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. progressNote is optional; visitDiagnosis does not enforce diagnosis content in each progress note."
@@ -744,7 +744,7 @@
     "title": "Operative report describes technique",
     "citation": "22 CCR §70749(a)(12)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
-    "quote": "technique used",
+    "quote": "description of findings, technique used, tissue removed or altered, if surgery was performed.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -768,7 +768,7 @@
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Nonempty narrative validation; clinical accuracy still requires responsible clinician confirmation",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No technique element exists. opProcedure and opFindings do not establish technique content. Parent requirement is discussed in docs/regulations.md R2-02."
@@ -802,7 +802,7 @@
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Nonempty narrative validation; clinical accuracy still requires responsible clinician confirmation",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. opSpecimens is required, but lists specimens sent to pathology; it does not necessarily cover tissue altered or removed. Explicit none is a proposed local completion convention. docs/regulations.md R2-02 discusses the parent rule."
@@ -838,7 +838,7 @@
       "windowMin": null
     },
     "existingInSpec": false,
-    "needsCoreFeature": null,
+    "needsCoreFeature": "Nonempty narrative validation; clinical accuracy still requires responsible clinician confirmation",
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. dischargeDiagnosis, instructions and condition do not capture a hospital-course narrative. Parent rule appears in docs/regulations.md E16."
@@ -877,7 +877,7 @@
     "needsCoreFeature": null,
     "confidence": "medium",
     "verified": true,
-    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 dischargeEntries already requires dischargeCondition. The statute does not specify its coded representation. Parent rule appears in docs/regulations.md E16."
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 dischargeEntries already requires dischargeCondition. The regulation does not specify its coded representation. Parent rule appears in docs/regulations.md E16."
   },
   {
     "id": "ca-title22-70749-discharge-recommendations",
@@ -1101,7 +1101,7 @@
     ],
     "commit": null,
     "encoding": "not-encodable",
-    "proposedRule": "For an unemancipated minor, retain records until at least one year after age 18 and in every case at least seven years.",
+    "proposedRule": "For an unemancipated minor, retain records until at least one year after age 18 and in every case at least seven years following discharge.",
     "specMapping": {
       "element": null,
       "info": null,
@@ -1477,7 +1477,7 @@
     ],
     "commit": "chartAssessment",
     "encoding": "entry",
-    "proposedRule": "Permanently record information about the patient nursing diagnosis in the medical record.",
+    "proposedRule": "Permanently record information about the patient's nursing diagnosis in the medical record.",
     "specMapping": {
       "element": "nursingAssessment",
       "info": null,
@@ -1511,7 +1511,7 @@
     ],
     "commit": "chartAssessment",
     "encoding": "entry",
-    "proposedRule": "Permanently record information about the patient nursing plan in the medical record.",
+    "proposedRule": "Permanently record information about the patient's nursing plan in the medical record.",
     "specMapping": {
       "element": "nursingAssessment",
       "info": null,
@@ -1545,7 +1545,7 @@
     ],
     "commit": "chartAssessment",
     "encoding": "entry",
-    "proposedRule": "Permanently record information about the patient nursing intervention in the medical record.",
+    "proposedRule": "Permanently record information about the patient's nursing intervention in the medical record.",
     "specMapping": {
       "element": "nursingAssessment",
       "info": null,
@@ -1579,7 +1579,7 @@
     ],
     "commit": "chartAssessment",
     "encoding": "entry",
-    "proposedRule": "Permanently record information about the patient nursing evaluation in the medical record.",
+    "proposedRule": "Permanently record information about the patient's nursing evaluation in the medical record.",
     "specMapping": {
       "element": "nursingAssessment",
       "info": null,
@@ -2984,7 +2984,7 @@
     "title": "ED log includes arrival time",
     "citation": "22 CCR §70413(h)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
-    "quote": "time and means of arrival",
+    "quote": "name, date, time and means of arrival, age, sex, record number, nature of complaint, disposition and time of departure.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -3018,7 +3018,7 @@
     "title": "ED log includes means of arrival",
     "citation": "22 CCR §70413(h)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
-    "quote": "means of arrival",
+    "quote": "name, date, time and means of arrival, age, sex, record number, nature of complaint, disposition and time of departure.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -3052,7 +3052,7 @@
     "title": "ED log includes nature of complaint",
     "citation": "22 CCR §70413(h)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
-    "quote": "nature of complaint",
+    "quote": "name, date, time and means of arrival, age, sex, record number, nature of complaint, disposition and time of departure.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -3086,7 +3086,7 @@
     "title": "ED log includes disposition",
     "citation": "22 CCR §70413(h)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
-    "quote": "disposition",
+    "quote": "name, date, time and means of arrival, age, sex, record number, nature of complaint, disposition and time of departure.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -3120,7 +3120,7 @@
     "title": "ED log includes departure time",
     "citation": "22 CCR §70413(h)",
     "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
-    "quote": "time of departure.",
+    "quote": "name, date, time and means of arrival, age, sex, record number, nature of complaint, disposition and time of departure.",
     "type": "ca-regulation",
     "binding": true,
     "jurisdiction": "CA",
@@ -3608,5 +3608,711 @@
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The binding requirement is service/equipment capability. An EHR order/result path is an implementation proposal; this subsection does not define a per-transfusion check, universal double check, or blood-consent form."
+  },
+  {
+    "id": "ca-title22-70707-1-sterilization-minimum-wait",
+    "title": "Ordinary sterilization consent wait is at least 30 days",
+    "citation": "22 CCR §70707.1(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.1",
+    "quote": "At least 30 days, but not more than 180 days, have passed",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For sterilization outside the specified exceptions, require at least 30 days between informed consent and the procedure.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization without statutory waiting-period exception",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent-to-procedure calendar-day arithmetic and exception-specific facts",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Subsections (a)(4)(A)–(C) separately address emergency abdominal surgery, premature delivery and a voluntary written shorter-wait request, each retaining a 72-hour minimum and its own prerequisites. Medi-Cal disallows the elective shorter-wait request under §70707.6(a)(3). No generic emergency waiver is inferred. docs/regulations.md R2-24 discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70707-1-sterilization-maximum-wait",
+    "title": "Ordinary sterilization consent interval is at most 180 days",
+    "citation": "22 CCR §70707.1(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.1",
+    "quote": "but not more than 180 days",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For sterilization outside the specified exceptions, require that no more than 180 days have passed since informed consent.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization without statutory waiting-period exception",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent validity interval measured against actual procedure date",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is a consent-to-procedure interval, not a receipt freshness window or a universal expiration date for all surgical consents. Read all §70707.1(a)(4) exceptions before applying. docs/regulations.md R2-24 covers the parent rule."
+  },
+  {
+    "id": "ca-title22-70707-1-sterilization-understanding",
+    "title": "Confirm ability to understand sterilization consent",
+    "citation": "22 CCR §70707.1(a)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.1",
+    "quote": "The individual is able to understand the content and nature of the informed consent process",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before sterilization, establish that the individual can understand the content and nature of the specified informed-consent process.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Sterilization-specific consent understanding assessment",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is not a generic consent checkbox or a diagnosis-based incapacity rule. §70707.3(e) prohibits preventing consent for intellectual disability alone. docs/regulations.md R2-24 discusses the parent consent process."
+  },
+  {
+    "id": "ca-title22-70707-1-sterilization-emergency-72h",
+    "title": "Emergency abdominal surgery exception retains 72-hour wait",
+    "citation": "22 CCR §70707.1(a)(4)(A)2.",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.1",
+    "quote": "At least 72 hours have passed after written informed consent to be sterilized was given.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When using the emergency-abdominal-surgery exception, require at least 72 hours since written sterilization consent.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization during emergency abdominal surgery under §70707.1(a)(4)(A)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Exception-specific consent timestamps and intended sterilization date",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The additional prerequisite in (A)1 is written consent at least 30 days before the intended sterilization date. §70707.4(c)(4)(A) also requires physician certifications and description of the emergency. This row is only the atomic 72-hour floor, not the entire exception. docs/regulations.md R2-24 covers the parent requirement."
+  },
+  {
+    "id": "ca-title22-70707-6-medi-cal-sterilization-age",
+    "title": "Medi-Cal sterilization consent requires age at least 21",
+    "citation": "22 CCR §70707.6(a)(1)(A)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.6",
+    "quote": "The individual is at least twenty-one years old at the time consent is obtained.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When Medi-Cal funds are used for sterilization, require the individual to be at least 21 when consent is obtained.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "sterilization using Medi-Cal funds",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Payer-specific sterilization eligibility using age at consent date",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. §70707.1 has a different general age/status rule; do not substitute its adult/emancipation exceptions for this Medi-Cal threshold. Age is measured at consent, not surgery."
+  },
+  {
+    "id": "ca-title22-70707-6-medi-cal-no-elective-short-wait",
+    "title": "Medi-Cal does not allow voluntary elective shorter wait",
+    "citation": "22 CCR §70707.6(a)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.6",
+    "quote": "The hospital may not honor any request that the sterilization be performed earlier than 30 days",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For Medi-Cal sterilization, disallow the elective voluntary written shorter-than-30-day request allowed to non-Medi-Cal patients.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Medi-Cal sterilization with elective shorter-wait request",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Payer-aware sterilization waiting-period exception selection",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This targets the §70707.1(a)(4)(C)/§70707.4(c)(4)(C) patient-request exception. It does not abolish the separately qualified premature-delivery or emergency-abdominal-surgery exceptions."
+  },
+  {
+    "id": "ca-title22-70707-3-no-labor",
+    "title": "Do not obtain sterilization consent during labor",
+    "citation": "22 CCR §70707.3(b)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.3",
+    "quote": "In labor or within 24 hours postpartum or postabortion.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not obtain sterilization informed consent while the individual is in labor.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "obtaining sterilization consent",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent-obtaining event with labor/postpartum/postabortion timing",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This restricts when consent may be obtained, not whether a sterilization supported by earlier valid consent can occur then. No obstetric consent workflow exists in v1. docs/regulations.md R2-24 discusses the parent prohibition."
+  },
+  {
+    "id": "ca-title22-70707-3-no-postpartum-24h",
+    "title": "Do not obtain sterilization consent within 24 hours postpartum",
+    "citation": "22 CCR §70707.3(b)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.3",
+    "quote": "In labor or within 24 hours postpartum or postabortion.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not obtain sterilization informed consent within 24 hours postpartum.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "obtaining sterilization consent",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent-obtaining event with labor/postpartum/postabortion timing",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This restricts when consent may be obtained, not whether a sterilization supported by earlier valid consent can occur then. No obstetric consent workflow exists in v1. docs/regulations.md R2-24 discusses the parent prohibition."
+  },
+  {
+    "id": "ca-title22-70707-3-no-postabortion-24h",
+    "title": "Do not obtain sterilization consent within 24 hours postabortion",
+    "citation": "22 CCR §70707.3(b)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.3",
+    "quote": "In labor or within 24 hours postpartum or postabortion.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not obtain sterilization informed consent within 24 hours postabortion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "obtaining sterilization consent",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent-obtaining event with labor/postpartum/postabortion timing",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This restricts when consent may be obtained, not whether a sterilization supported by earlier valid consent can occur then. No obstetric consent workflow exists in v1. docs/regulations.md R2-24 discusses the parent prohibition."
+  },
+  {
+    "id": "ca-title22-70707-3-no-impaired-consent",
+    "title": "Do not obtain sterilization consent during substance-related impairment",
+    "citation": "22 CCR §70707.3(b)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.3",
+    "quote": "Under the influence of alcohol or other substances that affect the individual's state of awareness.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Do not obtain sterilization consent while alcohol or another substance affects the individual state of awareness.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent-time awareness assessment and consent eligibility gate",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A positive substance-use history alone is not the regulatory criterion; the source concerns effect on awareness at consent. docs/regulations.md R2-24 discusses the parent prohibition."
+  },
+  {
+    "id": "ca-title22-70707-3-sterilization-interpreter",
+    "title": "Provide interpreter when sterilization consent language is not understood",
+    "citation": "22 CCR §70707.3(a)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.3",
+    "quote": "did not understand the language used on the consent form or the language used by the person obtaining consent.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Provide an interpreter if the individual does not understand either the consent-form language or the language used by the person obtaining sterilization consent.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent language-understanding assessment and interpreter participation record",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Preferred language in patientBanner or optional interpreterNeeded does not establish provision of an interpreter. docs/regulations.md R2-24 discusses the consent process."
+  },
+  {
+    "id": "ca-title22-70707-4-sterilization-patient-signature",
+    "title": "Sterilization consent form signed and dated by patient",
+    "citation": "22 CCR §70707.4(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.4",
+    "quote": "Individual to be sterilized.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require the individual to sign and date the Department-approved sterilization Consent Form.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Department-approved sterilization form with separately attributable signatures and dates",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The lead-in (a) supplies the signed-and-dated requirement. v1 consentVerified cannot replace any required signer. Further certifications in (b)–(d) remain applicable; this catalog row covers the specific signer only. docs/regulations.md R2-24 discusses the parent form requirement."
+  },
+  {
+    "id": "ca-title22-70707-4-sterilization-interpreter-signature",
+    "title": "Sterilization interpreter signs and dates consent form",
+    "citation": "22 CCR §70707.4(a)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.4",
+    "quote": "Interpreter, if one is provided.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "When an interpreter is provided, require that interpreter to sign and date the Department-approved sterilization Consent Form.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization with interpreter",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Department-approved sterilization form with separately attributable signatures and dates",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The lead-in (a) supplies the signed-and-dated requirement. v1 consentVerified cannot replace any required signer. Further certifications in (b)–(d) remain applicable; this catalog row covers the specific signer only. docs/regulations.md R2-24 discusses the parent form requirement."
+  },
+  {
+    "id": "ca-title22-70707-4-sterilization-consent-taker-signature",
+    "title": "Sterilization consent obtainer signs and dates form",
+    "citation": "22 CCR §70707.4(a)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.4",
+    "quote": "Person who obtained the consent.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require the person who obtained consent to sign and date the Department-approved sterilization Consent Form.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Department-approved sterilization form with separately attributable signatures and dates",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The lead-in (a) supplies the signed-and-dated requirement. v1 consentVerified cannot replace any required signer. Further certifications in (b)–(d) remain applicable; this catalog row covers the specific signer only. docs/regulations.md R2-24 discusses the parent form requirement."
+  },
+  {
+    "id": "ca-title22-70707-4-sterilization-physician-signature",
+    "title": "Sterilization physician signs and dates consent form",
+    "citation": "22 CCR §70707.4(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.4",
+    "quote": "Physician who performed the sterilization procedure, or an alternate physician.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require the performing physician or an alternate physician to sign and date the Department-approved sterilization Consent Form.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "sterilization",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Department-approved sterilization form with separately attributable signatures and dates",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The lead-in (a) supplies the signed-and-dated requirement. v1 consentVerified cannot replace any required signer. Further certifications in (b)–(d) remain applicable; this catalog row covers the specific signer only. docs/regulations.md R2-24 discusses the parent form requirement."
+  },
+  {
+    "id": "ca-title22-70707-5-hysterectomy-acknowledgment",
+    "title": "Obtain written acknowledgment of permanent-sterility information",
+    "citation": "22 CCR §70707.5(a)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707.5",
+    "quote": "has signed a written acknowledgement of receipt of the information in (1).",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before hysterectomy for an individual not previously sterile, obtain the individual signed acknowledgment, and representative acknowledgment if any, of the permanent-sterility information.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "hysterectomy and not previously sterile",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hysterectomy-specific acknowledgment with patient/representative signatures",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Subsection (a)(1) requires oral and written information that the procedure renders the individual permanently sterile. Subsection (c) instead addresses previously sterile individuals; do not force this exact acknowledgment onto that exception."
+  },
+  {
+    "id": "ca-title22-70707-consent-risks",
+    "title": "Disclose medically significant treatment risks",
+    "citation": "22 CCR §70707(b)(5)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707",
+    "quote": "the medically significant risks involved in this treatment",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Except in emergencies, provide the medically significant risks of the proposed treatment as part of the information needed for informed consent or refusal.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Treatment-specific informed-consent/refusal discussion with emergency scope",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The legal duty is disclosure to the patient; a required local documentation step would support it but cannot prove patient understanding. consentVerified only verifies surgical consent documentation. docs/regulations.md R6 cites the parent right."
+  },
+  {
+    "id": "ca-title22-70707-consent-alternatives",
+    "title": "Explain treatment and nontreatment alternatives",
+    "citation": "22 CCR §70707(b)(5)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707",
+    "quote": "alternate courses of treatment or nontreatment and the risks involved in each",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Except in emergencies, provide alternative courses of treatment or nontreatment with their risks as part of informed consent/refusal information.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Treatment alternatives/nontreatment discussion documentation",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is a patient information right, not a statutory command to display an EHR panel before every order. v1 has no alternatives field. docs/regulations.md R6 discusses the parent right."
+  },
+  {
+    "id": "ca-title22-70707-treatment-refusal",
+    "title": "Respect the patient right to refuse treatment",
+    "citation": "22 CCR §70707(b)(6)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707",
+    "quote": "To the extent permitted by law, this includes the right to refuse treatment.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Allow the patient to refuse treatment to the extent permitted by law, and preserve a refused-treatment pathway in the UI.",
+    "specMapping": {
+      "element": "adminStatus",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Treatment consent/refusal state and lawful-exception handling across workflows",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. adminStatus offers refused for medication administration, but does not implement the right across all treatments or determine lawful exceptions. Do not turn this right into a mandatory extra refusal checkbox."
+  },
+  {
+    "id": "ca-title22-70707-discharge-information",
+    "title": "Inform patient of continuing care requirements",
+    "citation": "22 CCR §70707(b)(13)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70707",
+    "quote": "Be informed of continuing health care requirements following discharge from the hospital.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "humanOnly",
+    "proposedRule": "Ensure the patient is informed of continuing healthcare requirements after discharge.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-facing discharge instruction delivery/communication record",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires dischargeInstructions text but does not establish that it was communicated. This is distinct from the §70749 summary-content duty. docs/regulations.md E16 and R2 discharge discussion cite the right."
   }
 ]
