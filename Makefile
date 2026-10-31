@@ -3,11 +3,14 @@
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 
+# Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
+# setup (project, client, personas -> .env) and fixture load. Safe to re-run.
 install:
 	cd lean && lake build
 	pnpm install
 	$(MAKE) infra-up
-	@if [ -f infra/scripts/load.mjs ]; then node infra/scripts/load.mjs; fi
+	$(MAKE) setup
+	$(MAKE) load
 
 run:
 	@echo "TODO: start Medplum (if needed) and the app in replay mode"
