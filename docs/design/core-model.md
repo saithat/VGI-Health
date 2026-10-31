@@ -301,7 +301,7 @@ inductive Event
 - **`markReviewed i`:** adds a receipt with the current version, clock, and the user's role.
 - **Macros:** clicking a macro button runs its steps as `actor := macro` through `step`, stopping at the first step that is not `ok`.
 
-## 4. Screen view (what React paints)
+## 4. Screen view (input to the page renderer)
 
 `view : Spec → Program → Facts → User → State → ScreenView`, where:
 - `ScreenView` has `screen`, `title`, `items : List ItemView` (every component on the screen, in order, with `shown : Bool`, `depth`, `expanded`, `selectedTab`), `enabled : List CompId`, `blocked : List (CompId × String)`, and `popup`.
@@ -309,7 +309,7 @@ inductive Event
   - the component;
   - the bound value with its provenance and pending-confirm flag (for fields);
   - whether the alert condition holds (for alerts).
-- React renders info contents (allergy rows, med lists, trends) from FHIR by `InfoId`. Lean decides presence and visibility.
+- **Superseded by section 9.** Lean renders the whole page, including panel contents. React does not render info contents.
 
 ## 5. Interfaces
 - **WASM library (option A):** JSON in and JSON out, exporting:
@@ -415,3 +415,35 @@ structure DayResult where
 - **Certificate (Lean-owned):** `{ specVersion, specHash, programHash, verdict, checkerVersion, time }`, stored next to each deployed program.
 - **Candidate change:** an RFC 6902 JSON Patch over the Program JSON, with `{ id, summary, moveType, predicted : { clicks, keystrokes, scrolls, klmDeciSec } }`. Move types follow BRIEF section 9 (composeTaskView, copyToToolbar, reorder, merge, bringInfoForward, prefillWithProvenance, useReceipt, macro, defaultConfirm, shortcut, collapseOptional, surfaceFeature, migrate).
 - **Decision record:** owned by the agent loop (TypeScript + zod, `agent/src/schema.ts`). It is not safety-relevant, so it doesn't need to live in Lean. Fields follow BRIEF section 10.
+
+## 9. Page tree (Lean renders the page; owner decision, Oct 31)
+
+The principle: nothing is checked at runtime, and everything that could break for the clinician is proven for all inputs or tested offline before deploy.
+
+```lean
+inductive Tag | div | span | table | thead | tbody | tr | th | td | button | input | select | option
+              | label | h1 | h2 | h3 | ul | li | svg | polyline | dialog | form
+structure Attr where
+  name : String          -- whitelist: class, data-comp-id, data-event, aria-*, disabled, value,
+                         --            type, placeholder, title, role, points, viewBox
+  value : String
+inductive Html | text (s : String) | node (tag : Tag) (attrs : List Attr) (children : List Html)
+
+structure Display where  -- display projection of the patient's FHIR records (Lean, from the bundle)
+  banner : List (String × String)
+  allergies : List AllergyRow          -- substance, reaction, severity, status, recorded
+  meds : List MedRow
+  vitals : List VitalRow
+  labs : List LabRow                   -- with trend points per code
+  problems : List ProblemRow
+  immunizations : List ImmRow
+  encounters : List EncRow
+  growth : List GrowthPoint
+```
+
+- `render : Spec → Program → Facts → Display → User → State → Html`, Init-only (for WASM).
+- The app passes FHIR bundles to Lean. `Lean.Ehr.Fhir` parses them (Lean.Data.Json) into `Facts` and `Display`.
+- Class names come from one fixed stylesheet (`app/src/ehr.css`), reviewed, with no hiding rules.
+- **T10:** every shown component is in the tree, with text and no hidden ancestor; hidden ones are absent; the commit button is enabled iff the guard holds.
+- **T11:** every panel lists every relevant record (for example, all active AllergyIntolerance entries).
+- The WASM API gains `render(…) → htmlJson`. The generic painter maps it to the DOM.
