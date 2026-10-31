@@ -8,7 +8,15 @@ pnpm --filter app lint
 pnpm --filter app test
 ```
 
-The default app uses an explicitly labeled, uncertified **MOCK** W1 outpatient
+`make run` opens recorded replay for the selected run (`/?persona=P1` through
+P5), with `/dashboard` for its decisions and task replays. Selection prefers the
+longest replayable real recording, then newest; `VGI_RUN=mock make run` overrides
+it. The current fallback is explicitly labeled authored mock data. The production
+preview includes the run index and default selection as static JSON. Real runs
+receive the committed WASM adapter; mock recordings use their explicit fixture
+adapter. Replay makes no clinical writes.
+
+The development workspace at `/?mode=connected` uses an explicitly labeled, uncertified **MOCK** W1 outpatient
 interpreter. It supports rooming, documentation, medication/lab ordering, review
 and sign navigation, plus eight chart activities. All P1–P5 development personas
 currently open this W1 fixture. The mock can navigate, select tabs, expand groups
@@ -99,3 +107,92 @@ facts and display in production. `packageExtensions` repairs Medplum's undeclare
 
 This lane changes no Lean specs, properties or statements. See [STATUS.md](STATUS.md)
 for integration dependencies and test coverage.
+
+## Recorded-run demo dashboard
+
+Open **`/dashboard?run=mock`** after starting `pnpm --filter app dev`. The run
+selector discovers directories under repository `runs/`; no API keys, Medplum,
+LLM or checker service is needed to play a recorded run. The six requested
+views, cost curves and recorded break attempt work offline after the app is
+served locally. Built output includes `dist/runs/` and `dist/dashboard/index.html`
+for static hosting. The fixed EHR painter/styles are reused on every screen.
+
+```sh
+pnpm --filter app mock-run       # regenerate ONLY runs/mock (authored examples)
+pnpm --filter app test:smoke     # Chromium must already be installed
+# Optional when another lane has the default test port in use:
+APP_TEST_PORT=4187 pnpm --filter app test:smoke
+```
+
+`mock` is not a real agent run: all decisions, checker verdicts, certificates and
+savings are authored examples. The three injected unsafe candidates are labeled
+`seeded`. P3's failed v2 migration is a repair proposal, not a seeded attack.
+The break panel shows the recorded request beside its verdict and explicitly
+distinguishes it from text entered by an audience member. It never claims to
+have checked arbitrary text. Real recorded attempts in `break/*.json` use the
+agent's DecisionRecord schema too.
+
+The loader reads the agent's existing directory layout:
+
+```
+runs/<id>/manifest.json
+          programs/<P>/v<N>.json
+          certs/<P>/v<N>.json
+          decisions/night-<NN>/<P>.json
+          days/day-<NN>/<P>.json
+          llm/<call-id>.json
+          break/<record>.json                 (optional)
+          replay.json                         (app replay inputs)
+```
+
+The Vite plugin creates `/runs/index.json` from these directories. During build
+it copies the run files to static output. Rebuild after adding a recorded run to
+a static deployment. Metadata views work from agent files alone. EHR replay
+also needs opaque interpreter inputs, which the agent's decision records do not
+contain. Supply the app-only `replay.json` alongside them:
+
+```json
+{
+  "mode": "wasm",
+  "contexts": [
+    {"persona": "P1", "version": 0, "specVersion": "v1", "spec": {}, "bundle": {}, "user": {}}
+  ],
+  "tasks": [
+    {
+      "persona": "P1", "id": "same-patient-same-task", "title": "Repeat prescription",
+      "before": {"version": 0, "trace": [{"event": {"click": {"comp": "openOrders"}}, "ops": ["point", "click"], "klmDeciSec": 12}]},
+      "after": {"version": 5, "trace": [{"event": {"click": {"comp": "review"}}, "ops": ["point", "click"], "klmDeciSec": 12}]}
+    }
+  ]
+}
+```
+
+Replace `{}` with real spec, synthetic FHIR bundle and user JSON. Supply a
+context for each required persona/version/spec combination; `version` and
+`specVersion` can be omitted for a shared context. Counterexamples use the
+decision's spec (including v2 rechecking an older program). Candidate JSON
+patches are applied to the recorded `versionBefore` using the agent's own patch
+engine; migration screens replay the checker path up to the commit. Pair both
+task traces with the **same task and patient inputs**. Each side's
+`klmDeciSec` is cumulative KLM cost since task start, exported from the recording,
+not the agent trace's absolute shift timestamp `t`. Counters count recorded
+operators separately. No wall-clock or clinical cost model is inferred by the UI.
+
+`ReplayApp` loads the WASM adapter and wires real recordings into the route:
+
+```tsx
+<Dashboard interpFactory={() => wasmInterp} />
+```
+
+The factory can also select an adapter by its Program argument. It must implement
+the existing string-based `Interp` interface. Real runs require this injection;
+an absent adapter produces a visible error and never selects a mock. The mock
+adapter's legacy Option normalization and fixture ScreenViews are confined to
+`src/mock/replay.ts`. Opaque real state, bundle and output are forwarded directly.
+
+Cost points come from each decision's independent `measured.test` replay, using
+the tested version's `after` metrics and recorded workload. They are not general
+shift metrics or training curves; missing holdout/floor data stays unavailable.
+Raw validation/test before-and-after metrics, minimum-click comparisons and
+certificate hashes are available in Why. The trusted-base note is visible in the
+dashboard footer.

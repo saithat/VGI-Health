@@ -52,6 +52,8 @@ def specV1_1 : Spec :=
     infos := specV1.infos ++ [priorAuthStatus]
     design := { specV1.design with catalog := specV1.design.catalog ++ ["priorAuth"] } }
 
+-- This finite prefix check traverses the full hospital declaration list.
+set_option maxRecDepth 2048 in
 /-- Every v1 rule is preserved by the optional-feature release. -/
 theorem specV1_1_extends_specV1 : specV1_1.Extends specV1 := by decide
 #print axioms specV1_1_extends_specV1

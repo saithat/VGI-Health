@@ -214,6 +214,12 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         match popupTier spec c with
         | some (a, .interruptive) => some s!"A2: alert {c.id} on screen {scr.id} makes the interruptive alert {a} pop up on its own; it must pop up only when its condition holds, at its commit"
         | _ => none },
+    -- 5. human-only kept
+    { property := "humanOnlyKept", passes := decide (NoAutomationAttempts spec prog)
+      explain := fun _ =>
+        match compFinding "humanOnlyKept" prog false fun scr c => badHumanPrefill spec scr c with
+        | some f => some f
+        | none => macroFinding "humanOnlyKept" prog (badMacroStep spec prog) },
     -- 9. A1: no macro suppresses an alert
     { property := "alertsFire", passes := decide (NoAlertSuppression prog)
       explain := fun _ => macroFinding "alertsFire" prog fun m st =>
@@ -222,12 +228,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             some s!"A1: macro {m.id} clicks or types into alert {cid}, which would dismiss it without the human"
           else none
         | none => none },
-    -- 5. human-only kept
-    { property := "humanOnlyKept", passes := decide (NoAutomationAttempts spec prog)
-      explain := fun _ =>
-        match compFinding "humanOnlyKept" prog false fun scr c => badHumanPrefill spec scr c with
-        | some f => some f
-        | none => macroFinding "humanOnlyKept" prog (badMacroStep spec prog) },
     -- 7. units
     { property := "units", passes := decide (QuantityPrefillsKeepUnits spec prog)
       explain := fun _ => compFinding "units" prog false fun scr c =>

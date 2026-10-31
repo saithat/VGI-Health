@@ -46,7 +46,7 @@ def specV2 : Spec :=
     entries := specV1_1.entries ++ antibioticEntries
     reviews := specV1_1.reviews ++ antibioticReviews }
 
--- The finite prefix check traverses 124 element declarations and needs more
+-- The finite prefix check traverses the hospital element declarations and needs more
 -- elaborator recursion depth; the proof still uses kernel-checked decide.
 set_option maxRecDepth 2048 in
 /-- Every v1.1 rule remains unchanged in v2. New obligations still need checking. -/

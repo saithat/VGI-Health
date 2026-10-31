@@ -374,3 +374,249 @@ Standards and evidence:
 - SAFER Guides (2025): https://healthit.gov/clinical-quality-and-safety/safer-guides/
 - Pennsylvania Patient Safety Authority advisories on weight: https://patientsafety.pa.gov/ADVISORIES/Pages/200903_10.aspx , https://patientsafety.pa.gov/ADVISORIES/Pages/201606_50.aspx
 - Studies: PubMed IDs 16357358, 24166725, 29766382, 32706721, 28395667, 18952941, 22539083, 23011124, 22753810, 25534652, 31087021 (https://pubmed.ncbi.nlm.nih.gov/<PMID>/).
+
+## Round 2 candidate rules
+
+Research date: **2026-10-31**, after merging `origin/main`. Read against BRIEF §§5, 5a, 6, 7.5, 9a/9b and the now-present `lean/Ehr/Specs/V1.lean`. These are **proposals for owner review**, not implemented requirements. They add to, rather than re-propose, the approved CURES, naloxone, controlled-prescription display, Schedule II refill, and vaccine-record rules. Some develop round-1 candidates into implementable contracts.
+
+**Authority and verification.** Federal CoPs below bind participating hospitals, not every outpatient practice. California hospital rules apply to the licensed facility/service they specify; W1/W5/W7 clinic applicability is stated separately. Accreditation requirements bind accredited organizations. Guidance is not law. eCFR displayed currency through 2026-10-29. Leginfo reader pages blocked automated access, so California statutes were read from the Legislature's [official bulk database](https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip), `LAW_SECTION_TBL.dat` and its referenced LOB files; relevant HSC rows carry 2026-10-03 update timestamps, Family Code rows 2026-09-26. These timestamps are database metadata, not enactment dates. Reader links below point to the individual statutes. CCR wording was read on Cornell LII, a **quarterly updated mirror without a displayed through-date**; the official Westlaw text's currency remains unconfirmed. Accordingly CCR-dependent conclusions are MEDIUM overall, even where wording is clear. TJC sources are its public 2026 hospital chapter, crosswalk, and current official FAQ.
+
+**Encoding caveat discovered in V1.** The language has `EntryReq`, `ReviewReq` (`shownOnCommit`, `shownOrReceipt`, `waivedBy?`), `humanOnly`, three alert tiers, and `DesignRules`. However, `ValueKind.coded "set-name"` currently accepts **any nonempty code** (`Core/Basics.lean:valueAccepted`); it does not enforce membership. Text can also be empty. New allowed-value lists below therefore need a **finite-set/nonempty validator** before they can be claimed as checked. `When` has only `always`, order/medication class, high-alert, abnormal-result, and naloxone-risk cases; new predicates are core changes. Receipt age measures a **review**, not the age of an examination, consent, or order. Future deadlines, external delivery, signatures, and real bedside actions need their own evidence. Every proposed ID not explicitly called “existing” is new content. Adding a spec element/info/commit alone is not a new core-language feature.
+
+**Ranking method.** Rank balances demo value first, directness of authority second, then implementation cost; it is a judgment, not a legal risk score. Value: H/M. Authority: **B** binding law/regulation, **A** accreditation, **G** guidance. Cost: **L** fields/reviews in existing paths; **M** a predicate, validator, timestamp, or integration; **H** a new workflow, durable obligation, access-control model, or authentication service. Costs include faithful enforcement; a checkbox-only mock is cheaper but proves less.
+
+| Rank / ID | Candidate | Value | Authority | Cost |
+|---|---|---|---|---|
+| 1 / R2-01 | Pre-op interval H&P age | H | B | M |
+| 2 / R2-02 | Operative technique and tissue record | H | B | L–M |
+| 3 / R2-03 | Discharge information delivered to follow-up clinician | H | B | M |
+| 4 / R2-04 | Family caregiver designation and notification attempt | H | B | M |
+| 5 / R2-05 | RN assessment for each shift and transfer | H | B | M |
+| 6 / R2-06 | Automatic medication stop policy | H | B | M |
+| 7 / R2-07 | Verbal medication order countersign within 48 hours | H | B | M–H |
+| 8 / R2-08 | Sensitive-result electronic-release guard | H | B | M–H |
+| 9 / R2-09 | Housing inquiry and homeless discharge checklist | H | B | M |
+| 10 / R2-10 | Safe medication abbreviations and decimal formatting | H | A + G | M |
+| 11 / R2-11 | Critical-result reporting deadline and escalation | H | A | M–H |
+| 12 / R2-12 | Perioperative oral-anticoagulant plan | H | A | M |
+| 13 / R2-13 | Structured allergy capture | H | G | M |
+| 14 / R2-14 | Look-alike/sound-alike ordering precautions | H | A | M |
+| 15 / R2-15 | Surgical time-out at procedure start | H | A | H |
+| 16 / R2-16 | Opioid benefit/risk review at 50 MME/day | H | G | M |
+| 17 / R2-17 | Primary language/dialect and interpreter access | M | B | M |
+| 18 / R2-18 | POLST reconciliation | M | B | M–H |
+| 19 / R2-19 | Restraint/seclusion orders, renewal, assessment | M | B | H |
+| 20 / R2-20 | Transfusion information, consent and verification | M | B + local policy | H |
+| 21 / R2-21 | Patient-owned/self-administered medications | M | B | H |
+| 22 / R2-22 | Identity-proofed EPCS signing with two factors | M | B | H |
+| 23 / R2-23 | Minor consent and protected proxy access | M | B | H |
+| 24 / R2-24 | Sterilization-specific consent and waiting period | M | B | H |
+| 25 / R2-25 | Patient records request deadlines | M | B | H |
+
+### R2-01 — Pre-op interval H&P age
+
+- **Citation/type/quote:** California **regulation**, [22 CCR §70223(d)(1), (e)](https://www.law.cornell.edu/regulations/california/22-CCR-70223): “performed and recorded within the previous 24 hours.” Federal **regulation**, [42 CFR §482.51(b)(1)](https://www.ecfr.gov/current/title-42/section-482.51), separately addresses the original H&P, update, emergencies, and qualifying outpatient assessments.
+- **Workflow/persona:** W6 pre-op; P5 general surgeon. The California verification duty names the anesthesia provider, or surgeon when no general anesthetic is administered; an EHR surgeon checkbox cannot discharge someone else's duty.
+- **Proposed rule/encoding:** Before `signPreOpOrders`, show new `preOpExamRecord` and require existing `hpUpdate` plus human-only `intervalExamVerified` (flag **true**, `never`). Verify the interval examination itself was performed/documented within 1,440 minutes of procedure start. Emergency exception: human-entered `preOpEmergencyReason`, not an automatic waiver. **Entry + no-receipt review + human-only**. Gating order signing is a stricter local proxy for the legal pre-surgery gate.
+- **New core feature:** **Yes:** examination timestamps and procedure-start event, freshness predicate and scoped emergency waiver. A fresh review receipt of an old H&P is insufficient.
+- **Confidence:** **MEDIUM** (CCR currency caveat); federal wording HIGH. **Cost M.**
+
+### R2-02 — Operative technique and tissue record
+
+- **Citation/type/quote:** Federal **regulation**, [42 CFR §482.51(b)(6)](https://www.ecfr.gov/current/title-42/section-482.51): “written or dictated immediately following surgery and signed by the surgeon.” California **regulation**, [22 CCR §70749(a)(12)](https://www.law.cornell.edu/regulations/california/22-CCR-70749), also specifies technique and tissue removed/altered.
+- **Workflow/persona:** W6 op note; P5 general surgeon.
+- **Proposed rule/encoding:** Add `opTechnique` and `opTissueRemovedAltered` to `signOpNote` entries beside existing `opFindings`/`opSpecimens`. **Entry:** nonempty technique narrative; tissue narrative or explicit “none”; `defaultConfirm` permitted from a procedure template, with surgeon confirmation. Show existing `intraopRecord`. `opSpecimens` alone does not describe altered tissue or operative technique. Record report creation/dictation immediately after surgery and preserve human-only surgeon signing.
+- **New core feature:** **Yes** for nonempty validation and proving timing against surgery completion; **no** for adding the two fields/review. “Immediately” is not a federally specified number of minutes; any numerical deadline is local policy. Do not equate a brief note with a complete dictated report unless all required content is present.
+- **Confidence:** **HIGH** federal; MEDIUM additional CCR. **Cost L fields, M timing.**
+
+### R2-03 — Discharge handoff actually delivered
+
+- **Citation/type/quote:** Federal **regulation**, [42 CFR §482.43(b)](https://www.ecfr.gov/current/title-42/section-482.43): “at the time of discharge.” California **law**, [H&S §1262.5(f)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5), adds a physician-signed transfer summary and patient/representative copy for specified nursing-facility transfers.
+- **Workflow/persona:** W6 discharge and W3 transfer; P5 surgeon/P2 ED physician, with P1 PCP receiving follow-up information.
+- **Proposed rule/encoding:** On `discharge` (and transfer `disposition`), show `transitionPacket`: illness/treatment course, current reconciled meds, allergies, goals/preferences, and follow-up plan. Require `handoffRecipient` (verified clinician/facility destination; `recordConfirm`) and `handoffDelivery` (sent receipt or documented non-electronic delivery; `never` human attestation for the latter). Include the additional California summary fields and signature when applicable. **Review + entry**, with delivery evidence by discharge. A displayed summary is not transmission.
+- **New core feature:** **Yes:** transfer condition, delivery outcome and recipient binding, and atomic commit/side-effect evidence. Existing `currentMeds` and discharge fields supply content but no transmission proof. No universal “patient refused” waiver is supplied by §482.43(b).
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-04 — Family caregiver designation and attempted notification
+
+- **Citation/type/quote:** California **law**, [H&S §1262.5(c)–(e), (k)–(m)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5): “opportunity to identify one family caregiver”.
+- **Workflow/persona:** W3 inpatient admission, W4 discharge teaching, W6 discharge; P2 ED physician, P3 RN, P5 surgeon.
+- **Proposed rule/encoding:** At admission, require `caregiverDesignation` (**named / declined / temporarily incapacitated**, `never`, human-only), with name/contact if named. Carry the documented choice forward with `recordConfirm`. At `discharge`, require `caregiverNotification` (**notified / attempted-unreachable / no-designation / incapacity-process-documented**, `never`) and show the discharge teaching plan. Notify as soon as possible and no later than issuance of the discharge order; log attempts. The law expressly allows an appropriate discharge when contact fails, and preserves privacy/consent restrictions.
+- **New core feature:** **Yes:** admission trigger and incapacity follow-up, conditional required fields, finite sets, notification timing. **Entry + review + human-only**; failed contact must not become a hard stop requiring successful contact.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-05 — RN assessment for each shift and transfer
+
+- **Citation/type/quote:** California **regulation**, [22 CCR §70215(a)(1), (d)](https://www.law.cornell.edu/regulations/california/22-CCR-70215): “for each shift, and upon receipt of the patient”.
+- **Workflow/persona:** W4 shift assessment and arrival from W3/W6; P3 inpatient RN.
+- **Proposed rule/encoding:** Require existing `chartAssessment`/`nursingAssessment` for each patient-shift and on transfer arrival, with human-only `assessmentPerformed` (flag **true**, `never`); narrative may use `defaultConfirm`, but must describe current findings. Show new `lastAssessment` with actual assessment time and encounter/unit. A prior-unit receipt does not fulfill the new receiving-unit assessment. Do not make an overdue assessment prevent urgently needed medication administration.
+- **New core feature:** **Yes:** shift/transfer-triggered outstanding obligations, rather than only preconditions on a commit the user might never perform. Existing `chartAssessment` entries alone prove neither frequency nor completion for all assigned patients. **Entry + human-only**, with a **passive** overdue worklist indicator (tier is local design).
+- **Confidence:** **MEDIUM** (CCR mirror). **Cost M.**
+
+### R2-06 — Automatic medication stop policy
+
+- **Citation/type/quote:** Federal **regulation**, [42 CFR §482.25(b)(5)](https://www.ecfr.gov/current/title-42/section-482.25): “must automatically be stopped after a reasonable time”. California **regulation**, [22 CCR §70263(j)](https://www.law.cornell.edu/regulations/california/22-CCR-70263), requires hospital duration-limitation policies.
+- **Workflow/persona:** W3 inpatient orders, W4 MAR, W6 post-op orders; P2 physician, P3 RN, P5 surgeon.
+- **Proposed rule/encoding:** For hospital drugs/biologicals without a specified time/number of doses, derive `effectiveStopAt` from the approved medical-staff policy for the drug/class; show it in `orderSummary` and `marDoseDetails`. Existing `duration` may use `defaultConfirm`; allowed values become a positive time/dose count or a policy-linked stop rule, not an unconstrained “ongoing” bypass. At `administerMed`, an expired order cannot authorize a new dose; require a new authorized order. **Entry + review + design/commit guard.**
+- **New core feature:** **Yes:** policy lookup, stop timestamp/dose-count semantics and expiry validation. A required duration textbox is not automatic discontinuation. The hospital sets the interval; the cited law does not impose a universal antibiotic duration.
+- **Confidence:** **HIGH** federal; MEDIUM CCR support. **Cost M.**
+
+### R2-07 — Verbal medication order countersign deadline
+
+- **Citation/type/quote:** California **regulation**, [22 CCR §70263(g)](https://www.law.cornell.edu/regulations/california/22-CCR-70263): “The prescriber or furnisher shall countersign the order within 48 hours.” Federal **regulations**, [42 CFR §482.24(c)(2)](https://www.ecfr.gov/current/title-42/section-482.24) and [§482.23(c)(3)](https://www.ecfr.gov/current/title-42/section-482.23), require prompt authentication and restrict use/acceptance of verbal orders.
+- **Workflow/persona:** W3 ED, W4 MAR, W6 post-op; P2/P5 prescribers, P3 receiving RN.
+- **Proposed rule/encoding:** New `recordVerbalOrder` captures `verbalPrescriber` (authorized identity), receiver identity/signature, and actual received date/time; all `never` for the human action, with system identity/time linked as provenance. New human-only `countersignVerbalOrder` requires the named authorized prescriber/furnisher, deadline **2,880 minutes after receipt**. Show order details while countersigning. Flag overdue orders **interruptively** in the authentication work queue; any administration restriction requires clinical/local policy, not an invented legal ban on all care.
+- **New core feature:** **Yes:** order provenance, authorized identity binding, future deadlines and work-queue escalation. **Entry + review + human-only + alert**. Existing `signOrders` does not represent accepting a verbal order or later countersigning it.
+- **Confidence:** **MEDIUM** (California deadline from CCR mirror); federal HIGH. **Cost M–H.**
+
+### R2-08 — Sensitive-result electronic-release guard
+
+- **Citation/type/quote:** California **law**, [H&S §123148(f), (k)–(l)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123148): “has first discussed in person, by telephone, or by any other means of oral communication”.
+- **Workflow/persona:** W2 results and W6 follow-up results; P1 PCP/P5 surgeon (P4 NP when applicable).
+- **Proposed rule/encoding:** For §123148(f) results, before new `releaseResultElectronic`, require human-only `patientRequestedElectronic`, `clinicianApprovedElectronic`, and `oralDiscussionCompleted` (each **true**, `never`), and show existing `resultDetail`. Covered categories are positive HIV, hepatitis-infection antigens, drug-abuse results, and specified tissue/imaging results revealing new/recurrent malignancy; not all negative HIV tests or all hepatitis-related labs. Encode the specific anonymous-HIV and previously-informed HIV exceptions as separate documented branches, not a generic waiver. **Entry + review + human-only**.
+- **New core feature:** **Yes:** result-category/exception predicates and a separate release commit; `ackResult`/`patientMessage` is not necessarily portal publication. Record discussion participant/time. Consider applicable federal access/privacy rules when implementing; do not impose a blanket delay on every result.
+- **Confidence:** **HIGH. Cost M–H.** **Correction to round-1 C14:** the ordinary exception is conjunctive (request **and** appropriateness **and** oral discussion), not “discussion or request.”
+
+### R2-09 — Housing inquiry and homeless discharge checklist
+
+- **Citation/type/quote:** California **law**, [H&S §1262.5(n)–(q), (u)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5): “inquire about a patient’s housing status”.
+- **Workflow/persona:** W3 ED discharge and W6 inpatient discharge; P2 ED physician/P5 surgeon, P3 RN assisting.
+- **Proposed rule/encoding:** Require `housingInquiry` (**housed / homeless / asked-unable-to-determine**, `never`), without using housing status to deny care. For identified homeless patients, require `homelessDischargeChecklist` before `disposition` discharge/`discharge`: physician stability and medical/behavioral evaluation, communicated needs, meal offer, clothing if inadequate, indicated follow-up/prescription and available onsite-pharmacy supply, infectious screening offer/referral, indicated vaccine offer, insurance assistance, destination, and transport offer within the statute's 30-minute/30-mile criteria. Each applicable item records **completed/offered-declined/statutory-inapplicability**, with explanation; no blanket “N/A”. **Conditional entry + human-only physician stability confirmation**.
+- **New core feature:** **Yes:** housing/discharge predicates, conditional checklist validation and destination/log persistence. No requirement to accept a meal, shelter, vaccine or transport. Record the §1262.5(q) log; observe the state-hospital exclusion.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-10 — Safe medication abbreviations and decimals
+
+- **Citation/type/quote:** **Accreditation**, TJC [official terminology FAQ, updated April 21, 2026](https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/standards-faqs/000001229): “The prohibited list applies to all orders, preprinted forms, and medication-related documentation.” **Guidance**, [ISMP error-prone abbreviations list (2024), pp. 1–5](https://www.ismp.org/system/files/resources/2024-04/ISMP_ErrorProneAbbreviation_List.pdf): “They should NOT be used when communicating medical information”.
+- **Workflow/persona:** W1/W3/W5/W6/W7 order fields and labels, W4 MAR; all five personas.
+- **Proposed rule/encoding:** **Design rule:** generated/customizable medication labels, instructions, defaults and macro expansions use “units”, “daily”, “every other day”, a leading zero below 1, and no medication trailing zero. Reject medication tokens `U`, `IU`, `QD` (including case/punctuation variants), `QOD`, `MS`, `MSO4`, `MgSO4`; render `0.5 mg`, never `.5 mg` or `5.0 mg`. Apply the same validator to human text entries; prefill policies remain unchanged. Do not ban a letter inside an unrelated word or strip clinically significant precision from lab results. The TJC FAQ permits certain uneditable vendor/manufacturer content; this proposed rule is deliberately stricter for our generated content.
+- **New core feature:** **Yes:** context-sensitive lexical/decimal validation in the checker and render semantics; existing `DesignRules` has no text-safety field. **Confidence HIGH. Cost M.**
+
+### R2-11 — Critical-result reporting deadline and escalation
+
+- **Citation/type/quote:** **Accreditation**, [2026 hospital NPG.01.02.01, EPs 1–2, p. 1](https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9): “on a timely basis”. This is the successor to NPSG.02.03.01.
+- **Workflow/persona:** W2 in-basket, W3 ED, W4 inpatient, W6 post-op results; P1/P2/P5 physicians and P3 RN under the reporting policy.
+- **Proposed rule/encoding:** When a result meets the hospital's critical definition, show `criticalResultDeadline`/`resultDetail`, require `criticalResultReportedTo` (authorized recipient identity) and `criticalResultReportedAt` (actual report time; `never` human attestation or authenticated delivery evidence) before `ackResult` can mark it fully resolved. Receipt of review alone does not prove reporting. An outstanding report raises an **interruptive** alert/escalation to the responsible clinician when the local deadline is reached; do not wait for someone to open the item. Document failed contacts and escalate rather than marking done. **Entry + review + alert.**
+- **New core feature:** **Yes:** `criticalResult` distinct from `abnormalResult`, policy duration, time-triggered obligations/escalation and recipient evidence. There is **no universal TJC 30- or 60-minute limit** in this standard.
+- **Confidence:** **HIGH. Cost M–H.**
+
+### R2-12 — Perioperative oral-anticoagulant plan
+
+- **Citation/type/quote:** **Accreditation**, [2026 hospital NPG.14.04.01 EP 2, p. 44](https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9): “perioperative management”. **Numbering correction:** NPSG.03.05.01 is the old identifier; it is not NPG.03.05.01 in the verified 2026 hospital chapter.
+- **Workflow/persona:** W6 pre/post-op; P5 surgeon; P3 RN executes resulting orders.
+- **Proposed rule/encoding:** When the patient takes an oral anticoagulant in scope, retain existing no-receipt `anticoagulantList` review before `signPreOpOrders`; add `periopAnticoagPlan` (**continue / hold / bridge / restart plan**, `defaultConfirm` from an approved protocol, human confirms) with timing/dose details as applicable. Show the protocol and plan again with post-op `signOrders`. The standard requires approved protocols; displaying a list alone does not establish compliance. Routine short-term VTE prophylaxis is explicitly excluded from this standard's scope.
+- **New core feature:** **Yes:** patient-active-medication/perioperative predicate and finite-set/conditional detail validation; **no** for the added information panel. **Entry + review**. Exact hold/restart days must come from approved clinical protocols, not this standard.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-13 — Structured allergy capture
+
+- **Citation/type/quote:** Federal **guidance**, [ASTP/ONC 2025 SAFER CPOE Guide, RP 1.2, pp. 10–11](https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf): “entered and updated as structured data before order entry”. The 2025 guide file carries August 2024 worksheet footers; identify the edition by the official 2025 collection.
+- **Workflow/persona:** W1/W3/W5 rooming/order entry, W4 administration, W7 refills; all five personas.
+- **Proposed rule/encoding:** Add `allergyStatus` (**known allergies / no known allergies / unknown**, `recordConfirm`), with coded allergen, reaction, type and severity for known allergies. No default “no known allergies”; exceptional unavailable codes need explanatory text and review. Preserve existing `allergyList` reviews and invalidate its receipts when allergy content changes. **Entry/design rule:** static checks ensure the structured controls and value sets exist; record validation establishes patient-specific completeness. “Unknown” remains visible, rather than silently treated as no allergy.
+- **New core feature:** **Yes:** repeating allergy-entry rows, finite vocabularies, conditional completeness, and an allergy update/write action. Existing order-line repetition does not cover arbitrary AllergyIntolerance rows. This guidance does not itself impose a legal hard stop on all emergency prescribing.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-14 — Look-alike/sound-alike ordering precautions
+
+- **Citation/type/quote:** **Accreditation**, [2026 hospital crosswalk, MM.14.01.01 EP 3, p. 117](https://digitalassets.jointcommission.org/api/public/content/dda827b4b4904f52a53f48f102e1ca20?v=aecef335): “Precautions for ordering medications with look-alike or sound-alike names”. This is a medication-management standard, not a newly invented NPG number.
+- **Workflow/persona:** W1/W3/W5/W6/W7 medication selection; P1/P2/P4/P5, with P3 seeing MAR distinctions.
+- **Proposed rule/encoding:** For the hospital's maintained LASA pairs, **design rule** requires approved distinguishing text in search choices, `orderSummary`, and `marDoseDetails`: full drug name, strength/form, and relevant distinguishing attributes; apply approved Tall Man spelling where the hospital selects it. No ambiguous truncated choices. Optionally a **passive** inline LASA notice. Keep existing `drug` prefill `defaultConfirm`; this proposal adds no automatic substitute and no universal popup.
+- **New core feature:** **Yes:** LASA-pair metadata and static label/choice validation; new `AlertCond` only if an alert is used. The exact label format/Tall Man technique is our chosen implementation of the required hospital precautions, not mandated wording.
+- **Confidence:** **HIGH** for the official public crosswalk; exact local precaution remains a policy choice. **Cost M.**
+
+### R2-15 — Surgical time-out at procedure start
+
+- **Citation/type/quote:** **Accreditation**, [2026 hospital NPG.01.06.01–.03, especially .03 EPs 1–5, pp. 5–6](https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9): “immediately before starting the invasive procedure”. Former Universal Protocol UP.01.03.01 maps to NPG.01.06.03.
+- **Workflow/persona:** W6 OR boundary; P5 surgeon and the immediate procedure team. This boundary is not currently a V1 commit.
+- **Proposed rule/encoding:** New `startProcedure` requires human-only `timeOutCompleted` (**true**, `never`), identifying patient, procedure/site, team participants and actual completion time; show the verified procedure/consent/site record. Capture the team's agreement and documentation; repeat before another procedure if the performer changes as specified. **Human-only entry + no-receipt review**. A surgeon ticking a box at pre-op order signing or afterwards at `signOpNote` does not prove the team time-out happened at incision.
+- **New core feature:** **Yes:** procedure-start event, procedure/team identity, temporal order and re-performance on changed procedure/performer. Offline checking can preserve the human step but cannot observe the team's physical discussion.
+- **Confidence:** **HIGH. Cost H** (new clinical boundary).
+
+### R2-16 — Opioid benefit/risk review at 50 MME/day
+
+- **Citation/type/quote:** Federal **guidance**, [CDC opioid guideline 2022, Recommendation 4](https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm): “pause and carefully reassess evidence of individual benefits and risks”. California **guidance**, [Medical Board pain guidelines, July 2023, pp. 9–11](https://www.mbc.ca.gov/Download/Publications/pain-guidelines.pdf): “Use of a pain management agreement is strongly recommended”.
+- **Workflow/persona:** W1/W7 adult outpatient opioids and qualifying W6 discharge prescriptions; P1 PCP/P5 surgeon. CDC scope is adults ≥18 in outpatient care; exclusions include sickle-cell disease, cancer-related pain, palliative and end-of-life care. Do not apply automatically to pediatric dosing or inpatient MAR.
+- **Proposed rule/encoding:** On a proposed increase to total **≥50 MME/day**, show new `opioidBenefitRisk` (all-source MME, benefits, harms, follow-up plan) before `signOrders`/`approveRefill`; human-only `opioidReassessment` (**continue-with-rationale / revise-plan**, `never`). **Review + entry**, optionally **passive** guidepost reminder. Surface pain-agreement status for chronic therapy; MBC recommends agreements for expected >3 months or chronic-pain opioid trials. This is additional to the approved CA naloxone rule, with a different threshold and source.
+- **New core feature:** **Yes:** summed MME, dose-change and scope predicates, uncertainty handling and finite decisions. Never encode 50 MME as an absolute prescribing ceiling, forced taper, or automatic denial.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-17 — Primary language/dialect and interpreter access
+
+- **Citation/type/quote:** California **law**, [H&S §1259(c)(2), (4)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1259): “Identify and record a patient’s primary language and dialect”.
+- **Workflow/persona:** Hospital W3/W4/W6; P2 ED physician, P3 RN, P5 surgeon. Extension to community W1/W5 is local policy under this citation, not §1259's hospital mandate.
+- **Proposed rule/encoding:** Require `primaryLanguage`/`dialect` (**coded language + dialect or explicitly unknown**, `recordConfirm`), show them in existing pinned `patientBanner`, and keep interpreter access visible. When a barrier is identified at consent/discharge teaching, capture human-only `languageAssistanceUsed` (**interpreter identity/mode / qualified bilingual staff / other lawful documented path**, `never`) before finalizing that teaching/consent documentation. Preferred language alone does not prove need was assessed or assistance delivered.
+- **New core feature:** **Yes:** conditional barrier predicate and value validation; **no** for a pinned language panel. **Entry + review/design rule**. §1259 has a 5% population definition for spoken-language barriers, addresses sign language, and describes hospital policy procedures “to the extent possible”; it is not an unconditional standalone per-encounter interpreter checkbox mandate. Any friend/family pathway must also satisfy applicable federal requirements, not merely this state provision.
+- **Confidence:** **HIGH. Cost M.**
+
+### R2-18 — POLST reconciliation
+
+- **Citation/type/quote:** California **law**, [Probate Code §4781.2(a)–(e)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4781.2): “shall treat an individual in accordance with a Physician Orders for Life Sustaining Treatment form.” [§4780(c)–(d)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4780) addresses completion, signatures and revocation.
+- **Workflow/persona:** W3 admit, W4 bedside, W6 perioperative/discharge; P2/P3/P5, with P1 follow-up.
+- **Proposed rule/encoding:** When a POLST is present, require no-receipt `polstDocument` review before a new `signCodeStatus` commit and show the reconciled order in `patientBanner`. Human-only `polstDisposition` (**consistent / patient-requested-change / evaluated-new-order / medically-ineffective-or-contrary-to-standards**, `never`), with specific supporting documentation for changes/exceptions. Do not infer code status from age, default DNR, or automatically suspend a POLST for surgery. **Review + entry + human-only**. The statute has defined exceptions; it is not a never-change rule.
+- **New core feature:** **Yes:** POLST authenticity/current-status facts, code-status write permission, revocation/change and exception predicates. A banner display alone cannot prove treatment followed the document.
+- **Confidence:** **HIGH. Cost M–H.**
+
+### R2-19 — Restraint/seclusion orders and timing
+
+- **Citation/type/quote:** Federal **regulation**, [42 CFR §482.13(e)(5)–(16)](https://www.ecfr.gov/current/title-42/section-482.13): “must never be written as a standing order or on an as needed basis (PRN).” California **regulations**, [22 CCR §70213(c)](https://www.law.cornell.edu/regulations/california/22-CCR-70213) (competency/policies) and [§70749(a)(6)(D)](https://www.law.cornell.edu/regulations/california/22-CCR-70749) (application/removal record), add context.
+- **Workflow/persona:** W3 ED/W4 inpatient; P2 physician and P3 RN.
+- **Proposed rule/encoding:** New `signRestraintOrder`: require nonempty reason/less-restrictive-measure documentation (`never`), type from the approved restraint vocabulary (`defaultConfirm`), and validated start/expiry; no PRN/standing option. Category is **violent/self-destructive / nonviolent**, human-confirmed. For **violent/self-destructive** use, renewal limits: **240 min age ≥18; 120 min ages 9–17; 60 min under 9**, up to 24 hours, then practitioner sees/assesses before a new order. Face-to-face assessment due within **60 minutes** of initiation; trained-RN assessment entails practitioner consultation. End at earliest safe time. **Entry + human-only + interruptive deadline alert**; record response and actual application/removal. Assessments/renewal attestations are `never`, human-only, with affirmative completion required.
+- **New core feature:** **Yes:** order category, age/time bounds, future assessment/renewal obligations and cessation. Nonviolent restraint renewal follows hospital policy; don't apply violent limits universally. More restrictive state rules prevail; do not import specialty psychiatric-facility CCR rules indiscriminately.
+- **Confidence:** **HIGH** federal; MEDIUM CCR. **Cost H.**
+
+### R2-20 — Transfusion information, consent and verification
+
+- **Citation/type/quote:** California **law**, [H&S §1645(a)–(d)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1645): “shall note on the patient’s medical record”. Federal **regulation**, [42 CFR §482.23(c)(4)](https://www.ecfr.gov/current/title-42/section-482.23): “approved medical staff policies and procedures”. California informed-consent right: [22 CCR §70707(b)(5)](https://www.law.cornell.edu/regulations/california/22-CCR-70707).
+- **Workflow/persona:** W6 surgery and W4 transfusion administration; P5 surgeon/P3 RN, P2 in ED.
+- **Proposed rule/encoding:** When the clinician determines transfusion is reasonably possible, before the procedure require `transfusionSummaryGiven` (**given / medical-contraindication / life-threatening-emergency**, `never`, human-only); document actual delivery of the state standardized summary and its version. This education record is **not itself informed consent**. At new `startTransfusion`, show the consent/order and patient/unit compatibility record; require human-only `bloodVerificationComplete` (**true**, `never`) under an approved local verification procedure, or a documented applicable emergency pathway. **Entry + review + human-only**.
+- **New core feature:** **Yes:** transfusion risk/exception predicates, unit-to-patient matching and a dedicated commit/consent record. §482.23(c)(4) does **not itself prescribe two nurses or two scans**; that exact mechanism remains local policy/UNVERIFIED as a universal mandate. Existing high-alert cosign is not proof of blood compatibility.
+- **Confidence:** **HIGH** statute/federal duty; MEDIUM general CCR consent grounding. **Cost H.**
+
+### R2-21 — Patient-owned and self-administered medication
+
+- **Citation/type/quote:** Federal **regulation**, [42 CFR §482.23(c)(6)(i)–(ii)](https://www.ecfr.gov/current/title-42/section-482.23): “Assess the capacity”. California **regulation**, [22 CCR §70263(l)–(m)](https://www.law.cornell.edu/regulations/california/22-CCR-70263), adds bedside storage restrictions and positive identification of brought-in drugs.
+- **Workflow/persona:** W4 MAR and W6 inpatient orders; P3 RN/P5 surgeon, P2 admission orders.
+- **Proposed rule/encoding:** Before new `authorizeSelfAdministration`, show the specific order; require human-only capacity **capable**, security **arranged**, and instruction **completed** (or assessed unnecessary where §482.23(c)(6)(ii) permits), plus identification/integrity **verified** when applicable. Failed checks route to staff administration. New `recordSelfAdministration` records actual drug/dose/time and patient/caregiver report, not an RN barcode scan falsely attributed to the patient. **Entry + review + human-only**; all assessments `never`, ongoing approved plan `recordConfirm`. For patient-owned drugs, California requires clearly labeled containers and physician/pharmacist positive identification after arrival. Bedside storage requires an order; Schedule II–IV drugs cannot be left at bedside under §70263(l).
+- **New core feature:** **Yes:** medication source/self-administration predicates, separate authorizer/reporter actions, pharmacist role or externally authenticated identification evidence, and typed status validation. This is optional only if hospital policy permits it; don't silently replace the existing RN `administerMed` safeguards.
+- **Confidence:** **HIGH** federal; MEDIUM California details. **Cost H.**
+
+### R2-22 — Identity-proofed EPCS signing with two factors
+
+- **Citation/type/quote:** Federal **regulation**, [21 CFR §1311.120(b)(5), (10)–(13)](https://www.ecfr.gov/current/title-21/chapter-II/part-1311/subpart-C/section-1311.120): “require its use for signing controlled substance prescriptions”. Credential identity proofing: [§1311.105](https://www.ecfr.gov/current/title-21/chapter-II/part-1311/subpart-C/section-1311.105); institutional route: [§1311.110](https://www.ecfr.gov/current/title-21/chapter-II/part-1311/subpart-C/section-1311.110).
+- **Workflow/persona:** W1/W5/W6 discharge/W7 controlled outpatient prescriptions; P1/P2/P4/P5 when legally authorized. This is not a new two-factor duty for every inpatient MAR order.
+- **Proposed rule/encoding:** Augment approved controlled-detail display with human-only `epcsAuthenticate`: actual verified two-factor success from an identity-proofed authorized prescriber, bound to the named DEA identity, patient and reviewed prescription version. Require individual readiness for each selected prescription; changes to DEA-required data invalidate readiness. Preserve the §1311.140 display through authentication. A typed user ID, second-nurse cosign or “2FA done” checkbox is not compliant authentication. **Human-only + design rule**; authentication proof is system-supplied, never a user-editable prefill.
+- **New core feature:** **Yes:** trusted authentication event, identity/credential/access-control facts, version-bound signing. Identity proofing is enrollment infrastructure, not something to repeat before every prescription. A single invocation may sign multiple individually readied prescriptions for one patient under the cited conditions.
+- **Confidence:** **HIGH. Cost H.**
+
+### R2-23 — Minor consent and protected proxy access
+
+- **Citation/type/quote:** California **law**, [Family Code §6925(a)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6925): “A minor may consent to medical care related to the prevention or treatment of pregnancy.” Also [§6926(a)–(b)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6926) and [H&S §123115(a)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123115).
+- **Workflow/persona:** W5 pediatric/adolescent visits, immunizations and results; P4 pediatric NP (P1/P2 if treating minors). Existing preschool fixtures do not exercise these adolescent branches.
+- **Proposed rule/encoding:** Capture human-only `consentBasis` (**parent/authorized guardian / minor-6925 / minor-6926 / other-cited-authority**, `never`) tied to the service. For ≥12, §6926 permits specified reportable-disease diagnosis/treatment and STI prevention; it does not authorize every vaccine/treatment. Do not require parental approval for care the minor may lawfully consent to. Before result/AVS disclosure, show recipient/access classification and prevent automatic proxy release of protected records under §123115. **Entry + review + access design rule**. §6925 does not authorize sterilization without parental consent.
+- **New core feature:** **Yes:** age/service predicates, consent capacity/authority and field/document-level proxy access controls. A hidden panel in the NP UI is not server-side access enforcement.
+- **Confidence:** **HIGH. Cost H.**
+
+### R2-24 — Sterilization-specific informed consent
+
+- **Citation/type/quote:** California **regulation**, [22 CCR §70707.1(a)(4)](https://www.law.cornell.edu/regulations/california/22-CCR-70707.1): “At least 30 days, but not more than 180 days”. Also [§70707.3](https://www.law.cornell.edu/regulations/california/22-CCR-70707.3) (process) and [§70707.4](https://www.law.cornell.edu/regulations/california/22-CCR-70707.4) (certifications).
+- **Workflow/persona:** A sterilization variant of W6; P5 surgeon. Ordinary appendectomy is not this procedure class.
+- **Proposed rule/encoding:** Before new `startProcedure` for sterilization, show the required signed form and consent date; require human-only `sterilizationConsentVerified` (**true**, `never`), confirming capacity/age or qualifying status, voluntary process, oral explanation, booklet/copy, and required signatures/interpreter. Enforce **30–180 days** ordinarily; encode each §70707.1 exception separately, including its **72-hour minimum** and written/certified facts. No generic emergency bypass; consent cannot be obtained in the prohibited labor/postpartum/postabortion/intoxication circumstances. **Review + entry + human-only**.
+- **New core feature:** **Yes:** procedure/eligibility predicates, interval bounds, multi-party signatures, exception certificates and consent-event states. Federal funding/Medi-Cal may add stricter eligibility; this California rule alone does not certify payer compliance.
+- **Confidence:** **MEDIUM** (CCR mirror). **Cost H.**
+
+### R2-25 — Patient records request deadlines
+
+- **Citation/type/quote:** California **law**, [H&S §123110(a), (b), (d)–(f), (i)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123110): “within five working days after receipt of the request”. Exceptions/representation limits: [§123115](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123115).
+- **Workflow/persona:** W2 in-basket request routing and W1/W5/W6 after-visit access; P1 PCP/P4 NP/P5 surgeon, with records staff executing fulfillment (not currently a persona).
+- **Proposed rule/encoding:** New `recordRecordsRequest` captures type (**inspection / ordinary copy / qualifying free benefit-or-immigration-support copy**), request time, authorized requester, scope and format; `never` for the received request, verified identity `recordConfirm`. Display due date and fulfillment state; **passive** due-soon and **interruptive** overdue escalation in the records queue. Inspection: **5 working days**; ordinary copies: **15 days**; qualifying §123110(d)/(e) free copies: **30 days** after written request. Capture delivery/inspection evidence before new `closeRecordsRequest`. No unpaid-care-bill blocker. **Entry + review + alerts/design rule**.
+- **New core feature:** **Yes:** working-day calendar, request categories, access exceptions, new task/fulfillment actions and deadline obligations. A result acknowledgment or prior-review receipt does not establish timely records access.
+- **Confidence:** **HIGH. Cost H** because the records-office workflow is additional scope.
+
+### Checks that should constrain implementation and demo claims
+
+- **Pain management:** Existing `painScore`/`painReassessment` fit nursing assessment duties, but no verified source here requires a universal 0–10 scale or a universal 30/60-minute reassessment interval. Do not present those as law. The [Medical Board guidance](https://www.mbc.ca.gov/Download/Publications/pain-guidelines.pdf) supports individualized treatment and documented monitoring. [H&S §124961(c)–(f)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=124961) protects specified chronic-intractable-pain options, permits clinician refusal with required information, and preserves other prescribing requirements; it is not an unconditional right to an opioid dose. Official bulk text checked.
+- **Weight units:** SAFER RP 2.2 discusses pediatric weight-based calculators and dose precision; the reviewed 2025 CPOE guide does not supply a metric-only-weight mandate. Keep the already researched **ISMP** grounding for kg-only weight rather than attributing it to SAFER or a statute.
+- **California restraints:** [22 CCR §77103](https://www.law.cornell.edu/regulations/california/22-CCR-77103) has specialty psychiatric-health-facility requirements, including 15-minute checks and 24-hour order limits. It is not a generic ED/medical-ward rule; its scope and current official currency must be checked before adopting it for a particular facility. R2-19 uses the verified federal general-hospital limits instead.
+- **“Physician's Statement”: UNVERIFIED as a uniquely identified general EHR requirement.** That label alone did not identify a single applicable California rule. Verified concrete duties include the §1645 transfusion-information chart notation (R2-20) and sterilization physician certifications in §70707.4 (R2-24). Do not invent a general form/signature mandate from the label.
+- **Blood verification:** Neither §482.23(c)(4) nor the reviewed 2026 NPG patient-identification text establishes a universal two-RN blood-check rule. Specific verification mechanics are **local policy / UNVERIFIED as a universal requirement** here. Preserve the distinction between education, informed consent, compatibility verification, and administration documentation.
+- **Proof boundary:** A UI contract can preserve an attestation, display, valid receipt, or authenticated event. It cannot establish that a clinician examined a patient, a team spoke, a patient understood, or external delivery succeeded without trusted evidence. Do not relabel a fresh review receipt as a fresh clinical event. No proposed change in this research edits V1, proof properties, data-format types, or the statements file.

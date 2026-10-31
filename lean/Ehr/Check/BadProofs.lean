@@ -20,11 +20,11 @@ private theorem rejects_human (p : Program) (h : ¬ NoAutomationAttempts specV1 
 -- The negative proofs below name the mutation's actual violated clause.
 -- They do not rely on the template's unrelated role-permission failure.
 theorem bad02_not_satisfies : ¬ Satisfies specV1 none canonicalV1 prefilledIdentity :=
-  rejects_human _ (by decide)
+  rejects_human _ (by decide +kernel)
 
 theorem bad03_not_satisfies : ¬ Satisfies specV1 none canonicalV1 poundsAsWeight := by
   intro hs
-  exact (by decide : ¬ DeclaredWritesInSpec specV1 poundsAsWeight) hs.2.2.1.1
+  exact (by decide +kernel : ¬ DeclaredWritesInSpec specV1 poundsAsWeight) hs.2.2.1.1
 
 /-- Lookups used only to name concrete regression witnesses. -/
 def compAt (p : Program) (screen id : String) : Screen × Component :=
@@ -60,78 +60,82 @@ private theorem macro_set_not_satisfies (p : Program) (mid cid screen value eid 
   exact (h.2 _ hm _ hst _ hc).1 (by simp [setTarget?, hid])
     (eid, slot, pf) (by simp [hf]) el (by simp [hel]) hh
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad04_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroOverride :=
   macro_click_not_satisfies _ "badOverride" "w3Sign.commit.signOrders" "w3Sign" "signOrders"
-    (by decide) (by decide) (by decide) (by decide) (by decide)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
 theorem bad05_not_satisfies : ¬ Satisfies specV1 none canonicalV1 selfCosign :=
-  rejects_human _ (by decide)
+  rejects_human _ (by decide +kernel)
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad06_not_satisfies : ¬ Satisfies specV1 none canonicalV1 staleWeight := by
   intro hs
-  exact (by decide : ¬ QuantityPrefillsKeepUnits specV1 staleWeight) hs.2.2.2.2.2.2.1.1
+  exact (by decide +kernel : ¬ QuantityPrefillsKeepUnits specV1 staleWeight) hs.2.2.2.2.2.2.1.1
 
 /-- Every goto from outside the deleted refill decision remains outside it. -/
 def refillKept : List ScreenId :=
   (unreachableRefill.screens.map (·.id)).filter (· != "w7Decision")
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRefill := by
   intro hs
-  have hd := hs.1.2.2.2.2.1 "approveRefill" (by decide)
-    (requires approveRefill refillDecision) (by decide) rfl
+  have hd := hs.1.2.2.2.2.1 "approveRefill" (by decide +kernel)
+    (requires approveRefill refillDecision) (by decide +kernel) rfl
   obtain ⟨sc, hsc, ⟨f, hf, hfid⟩, hops, hp, _⟩ := hd
-  have hfield : ∀ sc ∈ allComps unreachableRefill, ∀ f ∈ fieldOf? sc.2.kind,
-      f.1 = "refillDecision" → sc.1.id = "w7Decision" := by decide
-  have hid := hfield sc hsc f hf hfid
-  have hz := gotoPath_closed unreachableRefill refillKept (by decide) hp (by decide)
+  have hfields : (allComps unreachableRefill).all (fun sc =>
+      (fieldOf? sc.2.kind).all (fun f => f.1 != "refillDecision" || sc.1.id == "w7Decision")) = true := by
+    decide +kernel
+  have hid := List.all_eq_true.mp hfields sc hsc
+  have hfield : fieldOf? sc.2.kind = some f := by simpa using hf
+  change f.1 = "refillDecision" at hfid
+  simp only [hfield, Option.all_some, hfid, bne_self_eq_false, Bool.false_or, beq_iff_eq] at hid
+  have hz := gotoPath_closed unreachableRefill refillKept (by decide +kernel) hp (by decide +kernel)
   rw [hid] at hz
-  exact (by decide : "w7Decision" ∉ refillKept) hz
+  exact (by decide +kernel : "w7Decision" ∉ refillKept) hz
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad08_not_satisfies : ¬ Satisfies specV1 none canonicalV1 forgedConsent :=
   macro_set_not_satisfies _ "badConsent" "w6PreOp.consentVerified" "w6PreOp" "true"
-    "consentVerified" (by decide) (by decide) (by decide) (by decide)
-    ⟨.fixed 0, .none, by decide⟩ consentVerified (by decide) (by decide)
+    "consentVerified" (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    ⟨.fixed 0, .none, by decide +kernel⟩ consentVerified (by decide +kernel) (by decide +kernel)
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad09_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergyAlert :=
   macro_click_not_satisfies _ "badQuickAmox" "w1Sign.commit.signOrders" "w1Sign" "signOrders"
-    (by decide) (by decide) (by decide) (by decide) (by decide)
+    (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad10_not_satisfies : ¬ Satisfies specV1 none canonicalV1 inventedAlert := by
   intro hs
-  exact (by decide : ¬ ReferencesResolve specV1 inventedAlert) hs.1.2.2.2.1
+  exact (by decide +kernel : ¬ ReferencesResolve specV1 inventedAlert) hs.1.2.2.2.1
 
 theorem bad11_not_satisfies : ¬ Satisfies specV1 none canonicalV1 repeatedInteraction := by
   intro hs
   have h := hs.2.2.2.2.2.2.2.2.2.2.1.1
-    (compAt repeatedInteraction "w1Orders" "w1Orders.repeatInteraction") (by decide)
-    (compAt repeatedInteraction "w1Sign" "w1Sign.alert.interaction") (by decide)
-    ("interactionOrder", true) (by decide) ("interactionOrder", true) (by decide)
-    rfl rfl rfl (by decide)
-  exact (by decide : (compAt repeatedInteraction "w1Orders" "w1Orders.repeatInteraction").1.id ≠
+    (compAt repeatedInteraction "w1Orders" "w1Orders.repeatInteraction") (by decide +kernel)
+    (compAt repeatedInteraction "w1Sign" "w1Sign.alert.interaction") (by decide +kernel)
+    ("interactionOrder", true) (by decide +kernel) ("interactionOrder", true) (by decide +kernel)
+    rfl rfl rfl (by decide +kernel)
+  exact (by decide +kernel : (compAt repeatedInteraction "w1Orders" "w1Orders.repeatInteraction").1.id ≠
     (compAt repeatedInteraction "w1Sign" "w1Sign.alert.interaction").1.id) h
 
 theorem bad12_not_satisfies : ¬ Satisfies specV1 none canonicalV1 passivePopup := by
   intro hs
-  exact (by decide : ¬ NoPassivePopupRequests specV1 passivePopup) hs.2.2.2.2.2.2.2.2.2.2.2.1
+  exact (by decide +kernel : ¬ NoPassivePopupRequests specV1 passivePopup) hs.2.2.2.2.2.2.2.2.2.2.2.1
 
--- Kernel reduction includes the role projection and spec-driven link normalization.
+-- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
 theorem bad14_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroNaloxone :=
   macro_set_not_satisfies _ "badNaloxone" "w1Orders.naloxoneOffer" "w1Orders" "offered"
-    "naloxoneOffer" (by decide) (by decide) (by decide) (by decide)
-    ⟨.fixed 0, .none, by decide⟩ naloxoneOffer (by decide) (by decide)
+    "naloxoneOffer" (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel)
+    ⟨.fixed 0, .none, by decide +kernel⟩ naloxoneOffer (by decide +kernel) (by decide +kernel)
 
 /-- Seed 1 reaches a shown Sign button with its allergy review unmet. -/
 def hiddenEp : Episode := ⟨specV1, hiddenAllergies, replayFacts, replayUser hiddenAllergies⟩
@@ -143,10 +147,10 @@ theorem bad01_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergi
   intro hs
   have hr := (hs.2.2.2.1 replayFacts (replayUser hiddenAllergies) rfl).2
     hiddenAtSign (reachable_afterHuman hiddenEp hiddenPath hiddenEp.start .start)
-    "signOrders" (by decide) (showOrReceipt signOrders allergyList 240 prescribers)
-    (by decide) rfl rfl
+    "signOrders" (by decide +kernel) (showOrReceipt signOrders allergyList 240 prescribers)
+    (by decide +kernel) rfl rfl
   have hf : reviewMet specV1 hiddenAllergies replayFacts hiddenAtSign
-      (showOrReceipt signOrders allergyList 240 prescribers) = false := by decide
+      (showOrReceipt signOrders allergyList 240 prescribers) = false := by decide +kernel
   have ht := (reviewMet_iff hiddenEp hiddenAtSign _).mpr hr
   change reviewMet specV1 hiddenAllergies replayFacts hiddenAtSign _ = true at ht
   rw [hf] at ht

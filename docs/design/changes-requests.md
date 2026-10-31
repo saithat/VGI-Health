@@ -197,8 +197,8 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
   v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
-  `requestPriorAuth` action. The four request buttons fail at
-  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  `requestPriorAuth` action. The shared-composer and service request buttons fail at
+  their `components[*].kind` action. Add the real constructor to the
   action schema (and the `priorAuth` kind to the known union if desired), then
   parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.
@@ -336,6 +336,9 @@ weakened. Prior-auth request certification remains unfinished, explicitly.
 ---
 
 
+
+---
+
 ## Content response to checker acceptance requests
 
 - The all-workflows `canonical.json` remains a source template. Deployable
@@ -363,6 +366,32 @@ weakened. Prior-auth request certification remains unfinished, explicitly.
 
 ---
 
+
+---
+
+## World integration status
+
+Core fb1ed8c supplies the requested typed fields, service order kinds and generic
+absolute dose caps. World now emits the typed fields, imaging/procedure orders
+and structured FHIR clinical observations, and validates all schedules through
+Lean round trips.
+
+The real population also includes Humulin 70/30, hydrocodone-only extended-release,
+fentanyl, buprenorphine/naloxone and diazepam. World preserves these displays in
+`otherMedDisplays` without substituting a different ingredient. If alert facts
+need their classes or MME factors, lean-core/render should extend the authoritative
+formulary/FHIR mapping.
+
+
+## World follow-up: albuterol absolute cap (lean-core)
+
+Please add `maxDoseMgTenths := 50` for albuterol in `Ehr/Formulary.lean`.
+World's pediatric nebulizer regimen uses 0.15 mg/kg capped at 5 mg; the
+remaining generic cap is currently 0 (unspecified). In the real seed-1 run,
+52.5, 69.6 and 71.4 kg adolescents receive 5 mg, below the uncapped 0.1 mg/kg
+minimum. These are the same heavy-child absolute-cap cases addressed by
+fb1ed8c for the other pediatric drugs. Keep the mg/kg range and the 5 mg cap;
+do not raise their doses or weaken the rule to hide the mismatch.
 
 ## Checker CR-6 resolution from core
 
@@ -408,3 +437,40 @@ expect a click to create a never-policy capture. Please expose the ordinary
 then test the convenience click preserves that confirmed capture. Keep the
 never policy and safety properties; do not restore implicit capture on click.
 Checker request-action proofs now pass and the temporary rejection is gone.
+
+---
+
+
+## New BRIEF value-constraint request (content → core)
+
+**Schedule II zero refills (21 CFR 1306.12; new BRIEF requirement): pending core.**
+Please add a generic per-order-line value constraint usable by EntryReq (e.g.
+`constraint? = zeroQuantity`) and enforce it in guard/entry validation. Content
+will require zero refills on `signOrders` only when `.orderClass "controlled-II"`.
+Also tag actual Schedule II formulary drugs with `controlled-II`; the existing
+controlled-II-IV tag includes tramadol and benzodiazepines and cannot safely
+stand in for Schedule II. Do not force all prescriptions to zero refills.
+Seed 16 and its hard-stop regression will integrate this generic constraint.
+This cannot be implemented faithfully in content alone with the current core
+EntryReq/ValueKind types.
+
+**Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
+never-policy human request field and preserving the policy. Tests check that
+convenience clicks neither forge nor overwrite the human capture.
+
+## New BRIEF immunization integration
+
+Content now requires `visEditionDate`, `vaccineManufacturer`, and
+`vaccineProvider` as well as the existing vaccine, lot, route/site and VIS flag.
+The W5 UI exposes all fields and its interpreter test records them. World/sim
+and FHIR write adapters must supply the actual vaccine inventory manufacturer,
+administering provider and VIS edition date. The entry guard establishes their
+capture, not actual prior delivery of the VIS or full statutory record content.
+
+## World regression from core albuterol-cap merge
+
+`pnpm --filter world test` now runs 92 tests: 91 pass, one fails in
+`world/test/synthea.test.ts:114`. Lean albuterol `maxDoseMgTenths = 50`, while
+world's FORMULARY still gives `maxDoseTenths = 0`. Synchronize the TS reference
+to the already-requested 5 mg absolute cap; do not weaken the assertion or
+remove the cap. World typecheck and lint pass. Content did not edit world files.

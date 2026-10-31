@@ -1,6 +1,15 @@
 import Ehr.Check.PinSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.RequestSound
+import Ehr.Check.PartialSound
+import Ehr.Check.SeveritySound
+import Ehr.Check.BudgetSound
+import Ehr.Check.DomainObstruction
+import Ehr.Check.WritesSound
+import Ehr.Check.EnterOnceSound
+import Ehr.Check.HumanSound
+import Ehr.Check.HumanEventsSound
+import Ehr.Check.AlertSound
 import Ehr.Check.SeedTests
 import Ehr.Props.Examples
 

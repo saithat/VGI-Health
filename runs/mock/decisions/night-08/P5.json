@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "runId": "mock",
+  "night": 8,
+  "persona": "P5",
+  "owner": "P5",
+  "mode": "nightly",
+  "specVersion": "v2",
+  "versionBefore": 4,
+  "versionAfter": 5,
+  "backend": {
+    "name": "scripted",
+    "model": "MOCK-authored-fixture",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "fake",
+    "binary": null
+  },
+  "evidence": {
+    "persona": "P5",
+    "trainDays": [
+      1
+    ],
+    "programVersion": 4,
+    "totals": {
+      "tasks": 4,
+      "completed": 4,
+      "clicks": 40,
+      "keystrokes": 80,
+      "scrolls": 24,
+      "popups": 2,
+      "overrides": 1,
+      "searches": 2,
+      "backtracks": 1,
+      "klmDeciSec": 1000
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "normal",
+        "programVersion": 4,
+        "metrics": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 40,
+          "keystrokes": 80,
+          "scrolls": 24,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1000
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 90,
+      "keystrokes": 95,
+      "scrolls": 100,
+      "klmDeciSec": 93
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W1",
+        "tasks": 4,
+        "avgClicks": 10,
+        "avgKeystrokes": 20,
+        "avgScrolls": 6,
+        "avgKlmSec": 25
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "work",
+        "events": 18,
+        "klmSec": 60,
+        "share": 0.6
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [],
+    "buriedSearches": [],
+    "alertOverrides": [],
+    "totalOverrides": 1,
+    "backtracks": [],
+    "complaints": [
+      {
+        "text": "The same surgical prophylaxis choices recur between cases.",
+        "count": 3
+      }
+    ],
+    "orderMix": []
+  },
+  "hypothesis": "The same surgical prophylaxis choices recur between cases.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "P5-8-safe",
+        "summary": "The same surgical prophylaxis choices recur between cases.",
+        "moveType": "shortcut",
+        "rationale": "The same surgical prophylaxis choices recur between cases.",
+        "targets": [
+          "work",
+          "allergies"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "Post-op order set · personalized"
+          }
+        ],
+        "predicted": {
+          "clicks": 8,
+          "keystrokes": 12,
+          "scrolls": 4,
+          "klmDeciSec": 180
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1
+        ],
+        "before": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 40,
+          "keystrokes": 80,
+          "scrolls": 24,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1000
+        },
+        "after": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 36,
+          "keystrokes": 80,
+          "scrolls": 20,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 920
+        },
+        "saving": {
+          "clicks": 4,
+          "keystrokes": 0,
+          "scrolls": 4,
+          "klmDeciSec": 80
+        }
+      },
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "P5-8-safe"
+    ],
+    "rationale": "Preserve safety steps and reduce navigation; reject the unsafe shortcut.",
+    "rejectedAlternatives": [],
+    "choiceBy": "loop-fallback"
+  },
+  "predicted": {
+    "clicks": 8,
+    "keystrokes": 12,
+    "scrolls": 4,
+    "klmDeciSec": 180
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidateIds": [
+          "P5-8-safe"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "Post-op order set · personalized"
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 9,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        },
+        "after": {
+          "clicks": 30,
+          "keystrokes": 35,
+          "scrolls": 40,
+          "klmDeciSec": 33
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "MOCK validation accepted; values are illustrative."
+  },
+  "measured": {
+    "validation": {
+      "day": 9,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        },
+        "after": {
+          "clicks": 30,
+          "keystrokes": 35,
+          "scrolls": 40,
+          "klmDeciSec": 33
+        }
+      }
+    },
+    "test": {
+      "day": 10,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        },
+        "after": {
+          "clicks": 30,
+          "keystrokes": 35,
+          "scrolls": 40,
+          "klmDeciSec": 33
+        }
+      }
+    },
+    "minClicks": [
+      {
+        "workflow": "W1",
+        "before": 23,
+        "after": 6
+      }
+    ],
+    "predictionHeld": false,
+    "predictionNote": "Illustrative measured savings were below the prediction."
+  },
+  "userResponse": {
+    "response": "accepted",
+    "probability": 0.9,
+    "reason": "MOCK clinician accepted the focused workflow."
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "MOCK-spec-v2",
+    "programHash": "MOCK-P5-v5",
+    "verdict": "ok",
+    "checkerVersion": "MOCK-not-a-checker",
+    "time": "2026-10-31T12:00:00Z"
+  },
+  "screenCheck": null,
+  "deployed": {
+    "version": 5,
+    "program": "programs/P5/v5.json",
+    "certificate": "certs/P5/v5.json"
+  },
+  "outcome": "deployed",
+  "release": null,
+  "flags": [],
+  "llmCalls": [],
+  "createdAt": "2026-10-31T12:00:00Z"
+}

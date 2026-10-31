@@ -20,32 +20,32 @@ export function homeOrder(m: HomeMed): OrderChoice {
 
 export interface InpatientMeds {
   orders: OrderChoice[];
-  /** noteSections entries `hold:<drug>:<reason>` for home meds held on admission. */
-  holds: string[];
+  /** Held home orders are emitted as typed decisions, excluded from active regimens. */
+  holds: OrderChoice[];
 }
 
 /** Home meds continued, held, or substituted on admission. */
 export function inpatientHomeMeds(p: PatientProfile, weightKg: number, opts: { holdAnticoag: boolean; holdAntihypertensive: boolean }): InpatientMeds {
   const orders: OrderChoice[] = [];
-  const holds: string[] = [];
+  const holds: OrderChoice[] = [];
   for (const m of p.homeMeds) {
     switch (m.drug) {
       case "lisinopril":
-        if (opts.holdAntihypertensive) holds.push("hold:lisinopril:hypotension-risk");
+        if (opts.holdAntihypertensive) holds.push({ ...homeOrder(m), holdReason: "hypotension-risk" });
         else orders.push(order("lisinopril", m.dose, "mg", "PO", "daily"));
         break;
       case "atorvastatin":
         orders.push(order("atorvastatin", m.dose, "mg", "PO", "daily"));
         break;
       case "metformin":
-        holds.push("hold:metformin:inpatient");
+        holds.push({ ...homeOrder(m), holdReason: "inpatient" });
         break;
       case "insulin glargine":
         orders.push(order("insulin glargine", Math.max(6, Math.round(0.8 * Math.min(m.dose, weightKg * 0.4))), "units", "SC", "daily"));
         break;
       case "warfarin":
       case "apixaban":
-        if (opts.holdAnticoag) holds.push(`hold:${m.drug}:procedure-or-bleeding-risk`);
+        if (opts.holdAnticoag) holds.push({ ...homeOrder(m), holdReason: "procedure-or-bleeding-risk" });
         else orders.push(order(m.drug, m.dose, "mg", "PO", m.drug === "warfarin" ? "daily" : "BID"));
         break;
       case "albuterol":
@@ -128,5 +128,5 @@ export const peds = {
   acetaminophen: (kg: number): OrderChoice => order("acetaminophen", weightDose("acetaminophen", 15, kg, 10, 1000), "mg", "PO", "q6h", { prn: true }),
   ibuprofen: (kg: number): OrderChoice => order("ibuprofen", weightDose("ibuprofen", 10, kg, 10, 400), "mg", "PO", "q6h", { prn: true }),
   ondansetron: (kg: number): OrderChoice => order("ondansetron", weightDose("ondansetron", 0.15, kg, 0.5, 4), "mg", "PO", "once"),
-  albuterolNeb: (kg: number): OrderChoice => order("albuterol", kg < 10 ? 1.25 : kg < 20 ? 2.5 : 5, "mg", "INH", "q4h", { prn: true }),
+  albuterolNeb: (kg: number): OrderChoice => order("albuterol", weightDose("albuterol", 0.15, kg, 0.1, 5), "mg", "INH", "q4h", { prn: true }),
 };

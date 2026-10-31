@@ -7,15 +7,20 @@ Medication use anticipates the proposed drug rule; service controls below
 provide the final-rule imaging/procedure demonstration. -/
 def withPriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
   s.insertAfter (cid id "pending")
-    [mk id "priorAuthStatus" (.priorAuth "priorAuthStatus") "Prior-auth status",
+    [lineField id "priorAuthRequest" "priorAuthRequest" "Request authorization (human entry)",
+     mk id "priorAuthStatus" (.priorAuth "priorAuthStatus") "Prior-auth status",
      button id "requestPriorAuth" .requestPriorAuth "Request prior authorization"]
 
 /-- Imaging/procedure ordering with actual service-only prior-auth requests. -/
 def withServicePriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
   s.insertAfter (cid id "banner")
     [group id "servicePriorAuth" "Imaging / procedure authorization" (collapsible := false),
+     button id "newServiceOrder" .newOrderLine "Add imaging / procedure order"
+       (parent := some "servicePriorAuth"),
      lineField id "orderKind" "orderKind" "Kind: imaging / procedure" (parent := some "servicePriorAuth"),
      lineField id "orderCode" "orderCode" "Service code" (parent := some "servicePriorAuth"),
+     lineField id "priorAuthRequest" "priorAuthRequest" "Request authorization (human entry)"
+       (parent := some "servicePriorAuth"),
      mk id "servicePriorAuthStatus" (.priorAuth "priorAuthStatus") "Service prior-auth status"
        (parent := some "servicePriorAuth"),
      button id "requestServicePriorAuth" .requestPriorAuth "Request service prior authorization"

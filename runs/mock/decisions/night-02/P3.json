@@ -1,0 +1,530 @@
+{
+  "schemaVersion": 1,
+  "runId": "mock",
+  "night": 2,
+  "persona": "P3",
+  "owner": "P3",
+  "mode": "nightly",
+  "specVersion": "v1",
+  "versionBefore": 1,
+  "versionAfter": 2,
+  "backend": {
+    "name": "scripted",
+    "model": "MOCK-authored-fixture",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "fake",
+    "binary": null
+  },
+  "evidence": {
+    "persona": "P3",
+    "trainDays": [
+      1
+    ],
+    "programVersion": 1,
+    "totals": {
+      "tasks": 4,
+      "completed": 4,
+      "clicks": 48,
+      "keystrokes": 80,
+      "scrolls": 32,
+      "popups": 2,
+      "overrides": 1,
+      "searches": 2,
+      "backtracks": 1,
+      "klmDeciSec": 1160
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "normal",
+        "programVersion": 1,
+        "metrics": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 48,
+          "keystrokes": 80,
+          "scrolls": 32,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1160
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 90,
+      "keystrokes": 95,
+      "scrolls": 100,
+      "klmDeciSec": 93
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W4",
+        "tasks": 4,
+        "avgClicks": 12,
+        "avgKeystrokes": 20,
+        "avgScrolls": 8,
+        "avgKlmSec": 29
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "work",
+        "events": 18,
+        "klmSec": 60,
+        "share": 0.6
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [],
+    "buriedSearches": [],
+    "alertOverrides": [],
+    "totalOverrides": 1,
+    "backtracks": [],
+    "complaints": [
+      {
+        "text": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "count": 3
+      }
+    ],
+    "orderMix": []
+  },
+  "hypothesis": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "P3-2-safe",
+        "summary": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "moveType": "composeTaskView",
+        "rationale": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "targets": [
+          "work",
+          "allergies"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "MAR · Medication administration · focused"
+          }
+        ],
+        "predicted": {
+          "clicks": 8,
+          "keystrokes": 12,
+          "scrolls": 4,
+          "klmDeciSec": 180
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1
+        ],
+        "before": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 48,
+          "keystrokes": 80,
+          "scrolls": 32,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1160
+        },
+        "after": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 44,
+          "keystrokes": 80,
+          "scrolls": 28,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1080
+        },
+        "saving": {
+          "clicks": 4,
+          "keystrokes": 0,
+          "scrolls": 4,
+          "klmDeciSec": 80
+        }
+      },
+      "componentsMoved": 1
+    },
+    {
+      "candidate": {
+        "id": "P3-2-rejected",
+        "summary": "Accept weight in pounds",
+        "moveType": "composeTaskView",
+        "rationale": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "targets": [
+          "weight"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/components/3/label",
+            "value": "Weight · lb (unsafe proposal)"
+          }
+        ],
+        "predicted": {
+          "clicks": 8,
+          "keystrokes": 12,
+          "scrolls": 4,
+          "klmDeciSec": 180
+        },
+        "source": "seeded",
+        "seeded": true,
+        "seededKind": "lbWeightAccepted"
+      },
+      "check": {
+        "status": "fail",
+        "property": "unitSafety",
+        "message": "Weight in pounds cannot satisfy a kilogram dose check; capture and confirm a current kg weight.",
+        "counterexample": [
+          {
+            "click": {
+              "comp": "open-commit"
+            }
+          },
+          {
+            "click": {
+              "comp": "commit-action"
+            }
+          }
+        ],
+        "screens": [
+          "work",
+          "commit"
+        ],
+        "verdict": {
+          "violation": {
+            "property": "unitSafety",
+            "message": "Weight in pounds cannot satisfy a kilogram dose check; capture and confirm a current kg weight.",
+            "counterexample": [
+              {
+                "click": {
+                  "comp": "open-commit"
+                }
+              },
+              {
+                "click": {
+                  "comp": "commit-action"
+                }
+              }
+            ],
+            "screens": [
+              "work",
+              "commit"
+            ]
+          }
+        }
+      },
+      "trainEstimate": null,
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "P3-2-safe"
+    ],
+    "rationale": "Preserve safety steps and reduce navigation; reject the unsafe shortcut.",
+    "rejectedAlternatives": [
+      {
+        "id": "P3-2-rejected",
+        "reason": "Weight in pounds cannot satisfy a kilogram dose check; capture and confirm a current kg weight."
+      }
+    ],
+    "choiceBy": "loop-fallback"
+  },
+  "predicted": {
+    "clicks": 8,
+    "keystrokes": 12,
+    "scrolls": 4,
+    "klmDeciSec": 180
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidateIds": [
+          "P3-2-rejected"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/components/3/label",
+            "value": "Weight · lb (unsafe proposal)"
+          }
+        ],
+        "check": {
+          "status": "fail",
+          "property": "unitSafety",
+          "message": "Weight in pounds cannot satisfy a kilogram dose check; capture and confirm a current kg weight.",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "open-commit"
+              }
+            },
+            {
+              "click": {
+                "comp": "commit-action"
+              }
+            }
+          ],
+          "screens": [
+            "work",
+            "commit"
+          ],
+          "verdict": {
+            "violation": {
+              "property": "unitSafety",
+              "message": "Weight in pounds cannot satisfy a kilogram dose check; capture and confirm a current kg weight.",
+              "counterexample": [
+                {
+                  "click": {
+                    "comp": "open-commit"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "commit-action"
+                  }
+                }
+              ],
+              "screens": [
+                "work",
+                "commit"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "attempt": 2,
+        "candidateIds": [
+          "P3-2-safe"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "MAR · Medication administration · focused"
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 48,
+        "keystrokes": 80,
+        "scrolls": 32,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1160
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 44,
+        "keystrokes": 80,
+        "scrolls": 28,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1080
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 78,
+          "keystrokes": 83,
+          "scrolls": 88,
+          "klmDeciSec": 81
+        },
+        "after": {
+          "clicks": 66,
+          "keystrokes": 71,
+          "scrolls": 76,
+          "klmDeciSec": 69
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "MOCK validation accepted; values are illustrative."
+  },
+  "measured": {
+    "validation": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 48,
+        "keystrokes": 80,
+        "scrolls": 32,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1160
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 44,
+        "keystrokes": 80,
+        "scrolls": 28,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1080
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 78,
+          "keystrokes": 83,
+          "scrolls": 88,
+          "klmDeciSec": 81
+        },
+        "after": {
+          "clicks": 66,
+          "keystrokes": 71,
+          "scrolls": 76,
+          "klmDeciSec": 69
+        }
+      }
+    },
+    "test": {
+      "day": 4,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 48,
+        "keystrokes": 80,
+        "scrolls": 32,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1160
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 44,
+        "keystrokes": 80,
+        "scrolls": 28,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1080
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 78,
+          "keystrokes": 83,
+          "scrolls": 88,
+          "klmDeciSec": 81
+        },
+        "after": {
+          "clicks": 66,
+          "keystrokes": 71,
+          "scrolls": 76,
+          "klmDeciSec": 69
+        }
+      }
+    },
+    "minClicks": [
+      {
+        "workflow": "W4",
+        "before": 23,
+        "after": 6
+      }
+    ],
+    "predictionHeld": false,
+    "predictionNote": "Illustrative measured savings were below the prediction."
+  },
+  "userResponse": {
+    "response": "accepted",
+    "probability": 0.9,
+    "reason": "MOCK clinician accepted the focused workflow."
+  },
+  "certificate": {
+    "specVersion": "v1",
+    "specHash": "MOCK-spec-v1",
+    "programHash": "MOCK-P3-v2",
+    "verdict": "ok",
+    "checkerVersion": "MOCK-not-a-checker",
+    "time": "2026-10-31T12:00:00Z"
+  },
+  "screenCheck": null,
+  "deployed": {
+    "version": 2,
+    "program": "programs/P3/v2.json",
+    "certificate": "certs/P3/v2.json"
+  },
+  "outcome": "deployed",
+  "release": null,
+  "flags": [],
+  "llmCalls": [],
+  "createdAt": "2026-10-31T12:00:00Z"
+}

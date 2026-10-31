@@ -19,6 +19,22 @@ const META: Json = { tag: [{ system: "urn:vgi:world", code: "synthetic-today" }]
 
 const patientRef = (patientId: string): Json => ({ reference: `Patient/${patientId}` });
 
+/** Clinical facts without dedicated TaskChoices fields use structured FHIR,
+ * not encoded note-section IDs. These local codes describe synthetic events. */
+export type ClinicalObservation =
+  | { code: "naloxoneOffer"; value: "accepted" | "declined" }
+  | { code: "sedationScore"; value: number }
+  | { code: "prnReason"; value: "nausea" | "anxiety" };
+
+export function clinicalObservation(id: string, patientId: string, day: number, clock: number, fact: ClinicalObservation): Json {
+  return {
+    resourceType: "Observation", id, meta: META, status: "final",
+    code: { coding: [{ system: "urn:vgi:world:clinical", code: fact.code }] },
+    subject: patientRef(patientId), effectiveDateTime: dateTimeOf(day, clock),
+    ...(typeof fact.value === "number" ? { valueInteger: fact.value } : { valueCodeableConcept: { coding: [{ system: "urn:vgi:world:clinical", code: fact.value }] } }),
+  };
+}
+
 export function weightObservation(id: string, patientId: string, day: number, clock: number, value: number, unit: "kg" | "lb"): Json {
   return {
     resourceType: "Observation",
@@ -144,6 +160,7 @@ function medicationRequestJson(id: string, patientId: string, o: OrderChoice, rx
       },
     ],
   };
+  if (o.supplyDays !== undefined && o.supplyDays !== null) mr["dispenseRequest"] = { expectedSupplyDuration: { value: o.supplyDays, unit: "days", system: UCUM, code: "d" } };
   return mr;
 }
 

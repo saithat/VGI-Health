@@ -188,6 +188,8 @@ def w5 : State := run w5Path (f := child) (u := np)
 def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (u := np))
   ([.click "w5Sign.next"] ++ enter "w5Immunizations"
     [("vaccine", .code "150"), ("vaccineLot", .text "FLU24-0931"),
+     ("vaccineManufacturer", .text "Synthetic vaccine manufacturer"),
+     ("vaccineProvider", .text "np1"), ("visEditionDate", .text "2025-08-29"),
      ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)])
   (f := child) (u := np)
 #guard (finish vaccineState "w5Immunizations" "recordImmunization" (f := child) (u := np)).commits.contains "recordImmunization"

@@ -9,6 +9,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SIM_START_DATE } from "./calendar";
 import { loadPopulation } from "./patients";
+import { PERSONA_PARAMS } from "./personas";
 import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
 import { generateWorld } from "./world";
@@ -58,9 +59,20 @@ function main(): void {
 
   mkdirSync(outDir, { recursive: true });
   for (const f of readdirSync(outDir)) if (/^(state-day-\d+|day-\d+-P\d)\.json$/.test(f)) rmSync(join(outDir, f));
-  const write = (name: string, data: unknown) => writeFileSync(join(outDir, name), `${JSON.stringify(data, null, 2)}\n`);
+  for (const dir of ["schedules", "personas"]) rmSync(join(outDir, dir), { recursive: true, force: true });
+  const write = (name: string, data: unknown) => {
+    mkdirSync(dirname(join(outDir, name)), { recursive: true });
+    writeFileSync(join(outDir, name), `${JSON.stringify(data, null, 2)}\n`);
+  };
 
   const files: string[] = [];
+  write("world.json", { seed, days, personas: PERSONAS });
+  files.push("world.json");
+  for (const p of PERSONAS) {
+    const name = `personas/${p}.json`;
+    write(name, PERSONA_PARAMS[p]);
+    files.push(name);
+  }
   write("state-day-0.json", run.initial);
   files.push("state-day-0.json");
   for (const d of run.days) {
@@ -72,6 +84,9 @@ function main(): void {
       const name = `day-${d.state.day}-${p}.json`;
       write(name, d.schedules[p]);
       files.push(name);
+      const agentName = `schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`;
+      write(agentName, d.schedules[p]);
+      files.push(agentName);
     }
   }
   write("manifest.json", {
