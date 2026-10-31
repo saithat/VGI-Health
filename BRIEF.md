@@ -237,6 +237,11 @@ For every commit (sign orders, sign note, approve refill, acknowledge result, ad
 - **Human-only acknowledgment:** interaction warnings, the high-alert double check by a second nurse, consent verification, and signing.
 - **Shown on the commit screen, with no receipt allowed:** the weight-based dose check, and the trend for an abnormal result before acknowledging it.
 
+### Rule sources (owner decision, Oct 31)
+- **New rules come only from law:** federal or California statutes and regulations (`binding: true` in `docs/rules/`). Accreditation standards and guidance are not added as new rules.
+- **Existing hospital-policy rules stay, labeled "hospital policy (not law)"** in spec docstrings, the dashboard, and the demo. These are patient-ID re-entry, barcode scanning, the second-nurse double check, weight in kg only, and release v2's antibiotic indication (modeled on CDC stewardship guidance; stewardship programs themselves are required by 42 CFR §482.42 and H&S §1288.85).
+- **Product properties are not legal rules:** the alert-fatigue rules A1–A4, the budgets, and receipts are part of the product's design goals, and are labeled as such.
+
 ### Real California rules (owner decision, Oct 31)
 - **CURES review (CA Health & Safety Code §11165.4):** before signing a first Schedule II–IV prescription, the prescriber reviews the patient's CURES report within the last 24 hours, or documents the statutory reason it wasn't consulted. Modeled as a review requirement (`curesReport`, shown or a receipt within 1,440 minutes) that a human-entered exemption reason can waive (`waivedBy`).
 - **Naloxone offer (CA Business & Professions Code §741):** for opioid orders at ≥90 MME/day, or with a concurrent benzodiazepine, the prescriber records offering naloxone (an entry requirement under the condition `naloxoneRisk`).
