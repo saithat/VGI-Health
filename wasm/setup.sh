@@ -12,4 +12,8 @@ if [[ ! -d .tools/lean4/.git ]]; then
   git clone --depth 1 --branch v4.35.0 https://github.com/leanprover/lean4.git .tools/lean4
 fi
 test "$(git -C .tools/lean4 rev-parse HEAD)" = eb6cafb7290e8bd5f2937522d8d804f58f02bafc
+if [[ ! -d .tools/libuv/.git ]]; then
+  git clone --depth 1 --branch v1.52.1 https://github.com/libuv/libuv.git .tools/libuv
+fi
+test "$(git -C .tools/libuv rev-parse HEAD)" = 1cfa32ff59c076ffb6ed735bbc8c18361558661f
 echo 'Tooling ready. Run wasm/build.sh (no shell profile changes needed).'
