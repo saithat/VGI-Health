@@ -325,3 +325,93 @@ inductive Event
 - Use derived `ToJson`/`FromJson`. Enum constructors serialize as strings.
 - Programs live in `programs/<owner>/v<N>.json` and the canonical one in `programs/canonical/v<N>.json`. Specs are exported to `releases/<ver>/spec.json`.
 - TS types are generated from Lean (lane A emits a JSON Schema or a `.d.ts` via a small Lean generator). Hand-written TS mirrors are temporary and must be replaced.
+
+## 7. Simulation formats (Lean-owned; the world generator emits them)
+
+```lean
+inductive Workflow | W1 | W2 | W3 | W4 | W5 | W6 | W7   -- see BRIEF section 5
+
+structure OrderChoice where        -- a clinical decision, fixed per scenario (independent of the UI)
+  drug : String                    -- RxNorm code from the formulary
+  doseTenths : Nat
+  unit : UnitKind
+  route : String
+  freq : String
+  indication : Option String := none
+  prn : Bool := false
+
+structure TaskChoices where
+  orders : List OrderChoice := []          -- W1, W3, W5, W6 (pre-op/post-op), W7 (modify)
+  administer : List OrderChoice := []      -- W4: meds due this pass
+  ackResult : Bool := false                -- W2
+  refill : Option String := none           -- W7: "approve" | "deny" | "modify"
+  disposition : Option String := none      -- W3: "admit" | "discharge" | "consult"
+  immunizations : List String := []        -- W5: CVX codes
+  noteSections : List String := []         -- documentation sections to complete
+
+structure Task where
+  id : String
+  day : Nat
+  persona : String                 -- "P1" … "P5"
+  workflow : Workflow
+  patientId : String               -- Synthea/Medplum Patient id
+  startMin : Nat                   -- minutes since shift start
+  choices : TaskChoices
+  todayResources : List Lean.Json := []   -- synthetic FHIR for today (e.g. triage weight in lb)
+  interruptions : Nat := 0
+
+structure DaySchedule where
+  day : Nat
+  persona : String
+  load : String                    -- "quiet" | "normal" | "busy"
+  tasks : List Task
+
+structure PersonaParams where      -- behavior, not clinical choices
+  id : String
+  role : Role
+  keyboardShare : Nat              -- percent of entries done by keyboard shortcut when available
+  reviewsAllergiesEarly : Bool     -- creates receipts during rooming
+  scansSidebar : Bool
+  backtrackRate : Nat              -- per-mille chance of a detour per screen
+  searchWhenBuried : Bool
+  overrideRate : Nat               -- per-mille chance of overriding a removable alert vs reading it
+```
+
+`ehr simulate` input: spec, program, persona params, a day schedule, and the patients' FHIR bundles (or precomputed facts). It plays each task through the interpreter with a seeded policy and outputs:
+
+```lean
+inductive Op | click | key | scroll | scan | point | think | wait   -- KLM-style operators
+structure TraceEvent where
+  task : String
+  t : Nat                          -- deciseconds since shift start
+  screen : ScreenId
+  event : Event
+  ops : List Op                    -- operators charged for this event
+  result : StepResult
+structure TaskMetrics where
+  task : String
+  clicks : Nat
+  keystrokes : Nat
+  scrolls : Nat
+  popups : Nat
+  overrides : Nat
+  searches : Nat
+  backtracks : Nat
+  klmDeciSec : Nat
+  completed : Bool
+structure DayResult where
+  day : Nat
+  persona : String
+  programVersion : Nat
+  trace : List TraceEvent
+  tasks : List TaskMetrics
+  floor : List TaskMetrics         -- same tasks at the floor (human-only steps + clinical choices only)
+  complaints : List String         -- prompts a receipt could not satisfy, with reasons
+```
+
+## 8. Checker and agent-loop formats
+
+- **Verdict (Lean-owned):** `ok` or `violation { property : String, message : String, counterexample : List Event, screens : List ScreenId }`. `ehr check` prints the verdict JSON.
+- **Certificate (Lean-owned):** `{ specVersion, specHash, programHash, verdict, checkerVersion, time }`, stored next to each deployed program.
+- **Candidate change:** an RFC 6902 JSON Patch over the Program JSON, with `{ id, summary, moveType, predicted : { clicks, keystrokes, scrolls, klmDeciSec } }`. Move types follow BRIEF section 9 (composeTaskView, copyToToolbar, reorder, merge, bringInfoForward, prefillWithProvenance, useReceipt, macro, defaultConfirm, shortcut, collapseOptional, surfaceFeature, migrate).
+- **Decision record:** owned by the agent loop (TypeScript + zod, `agent/src/schema.ts`). It is not safety-relevant, so it doesn't need to live in Lean. Fields follow BRIEF section 10.
