@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup load synthea fixtures
+.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup load synthea fixtures wasm
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 
@@ -48,3 +48,7 @@ load:
 synthea:
 	infra/synthea/generate.sh
 	node infra/synthea/trim.mjs
+
+wasm:
+	wasm/build-ehr.sh
+	wasm/install-into-app.sh
