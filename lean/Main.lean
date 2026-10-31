@@ -1,5 +1,6 @@
 import Ehr
 import Ehr.Api
+import Ehr.Cli.Sim
 
 /-!
 # `ehr` command-line tool (native)
@@ -68,6 +69,8 @@ def runBatch (path : System.FilePath) : IO UInt32 := do
 /-- Entry point. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
+  | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView
