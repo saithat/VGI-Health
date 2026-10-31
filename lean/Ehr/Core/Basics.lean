@@ -21,6 +21,8 @@ def drugElement : ElementId := "drug"
 def doseElement : ElementId := "dose"
 /-- The element holding the patient's weight (required in kg). -/
 def weightElement : ElementId := "weight"
+/-- The element holding an order line's frequency, e.g. `"q6h"` or `"bid"`. -/
+def freqElement : ElementId := "freq"
 /-- The info the `banner` component shows. -/
 def bannerInfo : InfoId := "patientBanner"
 
@@ -125,18 +127,27 @@ def valueSatisfies (facts : Facts) (user : User) (k : ValueKind) (v : Value) : B
     | .flag, .flag b => b
     | _, _ => true
 
+/-- The value of a decimal digit character. -/
+def digitVal (c : Char) : Nat := c.toNat - '0'.toNat
+
+/-- Read decimal digits (all characters must be digits) after `acc`. -/
+def digitsVal : List Char → Nat → Option Nat
+  | [], acc => some acc
+  | c :: cs, acc => if c.isDigit then digitsVal cs (acc * 10 + digitVal c) else none
+
 /-- Parse a decimal with at most one digit after the point into tenths
-(`"72.5"` ↦ `725`, `"500"` ↦ `5000`). -/
-def parseTenths (s : String) : Option Nat :=
-  match s.splitOn "." with
-  | [w] => (w.toNat?).map (· * 10)
-  | [w, f] =>
-    if f.length == 1 then
-      match w.toNat?, f.toNat? with
-      | some a, some b => some (a * 10 + b)
-      | _, _ => none
-    else none
+(`"72.5"` ↦ `725`, `"500"` ↦ `5000`). Written over characters, with
+structural recursion, so the kernel can evaluate it. -/
+def parseTenthsChars (cs : List Char) : Option Nat :=
+  match cs.span (· != '.') with
+  | ([], _) => none
+  | (w, []) => (digitsVal w 0).map (· * 10)
+  | (w, ['.', f]) => if f.isDigit then (digitsVal w 0).map (· * 10 + digitVal f) else none
   | _ => none
+
+/-- Parse a decimal with at most one digit after the point into tenths. -/
+def parseTenths (s : String) : Option Nat :=
+  parseTenthsChars s.toList
 
 /-- Parse a string (a default, a record value, or a macro value) according to
 an element's kind. Quantities take the kind's unit. -/
@@ -210,6 +221,53 @@ def orderLines (s : State) : List (Nat × String) :=
       | _ => none
     else none
 
+/-- Doses per day for a frequency code (`q4h` 6, `q6h` 4, `q8h` 3, `q12h` 2,
+`daily` 1, `bid` 2, `tid` 3, `qid` 4; case does not matter). Unknown: none.
+Written over characters so the kernel can evaluate it. -/
+def freqPerDay (f : String) : Option Nat :=
+  match f.toList.map Char.toLower with
+  | ['q', '4', 'h'] => some 6
+  | ['q', '6', 'h'] => some 4
+  | ['q', '8', 'h'] => some 3
+  | ['q', '1', '2', 'h'] => some 2
+  | ['d', 'a', 'i', 'l', 'y'] => some 1
+  | ['b', 'i', 'd'] => some 2
+  | ['t', 'i', 'd'] => some 3
+  | ['q', 'i', 'd'] => some 4
+  | _ => none
+
+/-- The frequency (doses per day) captured on an order line, if known. -/
+def lineFreqPerDay? (s : State) (slot : Nat) : Option Nat :=
+  s.captured.findSome? fun x =>
+    if x.element == freqElement && x.slot == slot then
+      match x.value with
+      | .code f | .text f => freqPerDay f
+      | _ => none
+    else none
+
+/-- The dose (tenths of mg) captured on an order line, if any. -/
+def lineDoseMgTenths? (s : State) (slot : Nat) : Option Nat :=
+  s.captured.findSome? fun x =>
+    if x.element == doseElement && x.slot == slot then
+      match x.value with
+      | .qty d .mg => some d
+      | _ => none
+    else none
+
+/-- The order line's daily MME is 90 or more, or cannot be computed (unknown
+dose in mg, frequency, or MME factor: the stricter choice). In tenths:
+`dose × perDay × factor ≥ 9000`. -/
+def highMme (s : State) (slot : Nat) (d : String) : Bool :=
+  match lineDoseMgTenths? s slot, lineFreqPerDay? s slot with
+  | some dose, some perDay =>
+    mmeFactor d == 0 || decide (9000 ≤ dose * perDay * mmeFactor d)
+  | _, _ => true
+
+/-- The order line needs a naloxone offer: its drug is an opioid, and the
+patient takes a benzodiazepine or the line's daily MME is high (or unknown). -/
+def naloxoneLine (facts : Facts) (s : State) (slot : Nat) (d : String) : Bool :=
+  inClass d "opioid" && (facts.currentMedClasses.contains "benzodiazepine" || highMme s slot d)
+
 /-- Drugs in play: the order-line drugs plus the drug being given, if any. -/
 def drugsInPlay (facts : Facts) (s : State) : List String :=
   (orderLines s).map (·.2) ++ facts.medToGive?.toList
@@ -265,8 +323,15 @@ def depthAux (comps : List Component) : Nat → Component → Nat
       | some p => depthAux comps fuel p + 1
 
 #guard parseTenths "72.5" == some 725
+#guard freqPerDay "Q6H" == some 4 && freqPerDay "prn" == none
+
+-- The kernel can evaluate these (used by `decide` in examples).
+example : parseTenths "72.5" = some 725 := by decide
+example : freqPerDay "QID" = some 4 := by decide
 #guard parseTenths "500" == some 5000
 #guard parseTenths "7.25" == none
+#guard parseTenths "" == none && parseTenths ".5" == none && parseTenths "5." == none
+#guard parseTenths "12a" == none
 #guard identityText { initials := "JD", sex := "F", ageYears := 34 } == "JD/F/34"
 
 end Ehr
