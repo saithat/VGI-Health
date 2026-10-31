@@ -1,5 +1,5 @@
 import Ehr.Core.Json
-import Ehr.Canonical.Releases
+import Ehr.Canonical.Personas
 import Ehr.Canonical.BadPrograms
 
 /-! Reproducible, pretty JSON exports from Lean-owned content. Run from lean/:
@@ -56,9 +56,11 @@ def exportAll (root : System.FilePath) : IO Unit := do
       ("v1.1", Specs.V1_1.specV1_1, canonicalV1_1), ("v2", Specs.V2.specV2, canonicalV2)] do
     writeJson root s!"releases/{v}/spec.json" sp
     writeJson root s!"releases/{v}/canonical.json" p
+    for (persona, role) in personaRoles do
+      writeJson root s!"releases/{v}/personas/{persona}.json" (forPersona sp p persona role)
   for (name, p) in Bad.programs do writeJson root s!"programs/bad/{name}.json" p
   IO.FS.writeFile (root / "programs/canonical/STATS.md") stats
-  IO.println "Exported canonical v1, v1.1, v2; 14 bad programs; specs; statistics."
+  IO.println "Exported canonical v1, v1.1, v2; 15 persona canonicals; 14 bad programs; specs; statistics."
 end Ehr.Tools.ExportContent
 
 /-- Repository root defaults to the parent of the lean directory. -/

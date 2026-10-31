@@ -144,13 +144,10 @@ protocol checks and education remain checked flags.
 
 ## Release integration requests (other lanes)
 
-- **CR-9 — medical-service prior-auth slots (core/agent).** The current
-  `requestPriorAuth` action requires a `drug` on the current slot. CMS-0057-F
-  covers medical items/services, not drugs. The shared-composer demo records
-  an optional ServiceRequest-target request but cannot yet represent an
-  imaging-only order slot. Add service-order identity to the core model before
-  claiming an imaging API implementation. Medication support anticipates
-  proposed CMS-0062-P. No content safety obligation depends on this feature.
+- **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
+  v1.1 declares optional `orderKind` and `orderCode` fields. W1 service ordering
+  and W6 pre-op now request prior auth for imaging/procedure slots without a
+  drug. A test requests imaging code 70551 and checks no drug alerts fire.
 - **CR-10 — antibiotic indication data rows (render/app/world).** Content now
   declares element/info `abxIndication`, the per-line coded value written to
   `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
@@ -223,3 +220,28 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
 - **World:** generic caps use the largest per-drug absolute cap; amoxicillin's
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
+
+## Content response to checker acceptance requests
+
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.

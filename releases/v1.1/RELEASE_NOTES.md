@@ -12,10 +12,10 @@
 
 - **R1.1-1:** Adds optional prior-auth status info and request element. No new entry or review requirement.
 - **R1.1-2:** Adds the `priorAuth` catalog tag for the status component and request action.
-- **R1.1-3:** Surfaces the feature in shared W1/W3/W5/W6 order composers. Personalized UIs may keep it absent.
+- **R1.1-3:** Adds imaging/procedure controls in W1 lab/service ordering and W6 pre-op; also surfaces optional status in shared W1/W3/W5/W6 medication composers. Personalized UIs may keep it absent.
 
 ## Validation and integration
 
-The current interpreter records the request on an existing medication-order slot and writes only the declared ServiceRequest target. It does not contact a payer or model a medical-service-only slot. Thus the medication-composer demonstration anticipates the proposed drug rule; service-only integration is requested from core in CR-9. No legal compliance claim is made for this prototype.
+The interpreter now recognizes imaging/procedure service slots (`orderKind`, `orderCode`) without a drug. The canonical service request writes only the declared ServiceRequest target and does not contact a payer API. A regression requests prior auth for imaging code 70551 with no medication line and no drug alerts. The optional medication-composer feature anticipates the proposed drug rule, not the final services rule.
 
 Generated `spec.json` and `canonical.json` come from `cd lean && lake exe export-content`. Source audit and primary-source links: [docs/regulations.md](../../docs/regulations.md#5-release-motivation-text-exact-phrasing-to-use). These files describe demo policy, not legal or clinical advice.

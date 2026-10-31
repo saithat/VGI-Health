@@ -51,6 +51,13 @@ def recordSourcesValid (sp : Spec) (p : Program) : Bool := (components p).all fu
       el.prefill != .never && !el.humanOnly && el.recordFact? == some source
   | _ => true
 
+/-- Auto-linked fields use the exact source declared by the spec. -/
+def linkedPrefillsValid (sp : Spec) (p : Program) : Bool := (components p).all fun c =>
+  match c.kind with
+  | .field e _ pf => (sp.element? e).all fun el => el.prefill != .autoLinked ||
+      el.linkedFrom?.any fun src => pf == .linked src
+  | _ => true
+
 #guard Specs.V1.allDistinct (components canonicalV1 |>.map (·.id))
 #guard Specs.V1.allDistinct (canonicalV1.screens.map (·.id))
 #guard Specs.V1.allDistinct (canonicalV1.macros.map (·.id))
@@ -65,4 +72,5 @@ def recordSourcesValid (sp : Spec) (p : Program) : Bool := (components p).all fu
 #guard Specs.V1.specV1.alerts.all fun a => a.tier != .passive ||
   canonicalV1.screens.all fun s => !a.screens.contains s.workflow ||
     s.components.any fun c => c.kind == .alert a.id false && c.parent? == none
+#guard linkedPrefillsValid Specs.V1.specV1 canonicalV1
 end Ehr.Canonical
