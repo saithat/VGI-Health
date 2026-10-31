@@ -7,7 +7,7 @@ dist/
 .vite/
 *.tsbuildinfo
 # Tooling installed locally
-.tools/
+.tools
 # Secrets / local config
 .env
 .env.*
@@ -21,5 +21,3 @@ infra/synthea/output/
 playwright-report/
 test-results/
 
-# Installed WASM assets (make wasm)
-app/public/ehr/
