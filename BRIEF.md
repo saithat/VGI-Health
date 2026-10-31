@@ -238,8 +238,8 @@ For every commit (sign orders, sign note, approve refill, acknowledge result, ad
 - **Shown on the commit screen, with no receipt allowed:** the weight-based dose check, and the trend for an abnormal result before acknowledging it.
 
 ### Rule sources (owner decision, Oct 31)
-- **New rules come only from law:** federal or California statutes and regulations (`binding: true` in `docs/rules/`). Accreditation standards and guidance are not added as new rules.
-- **Existing hospital-policy rules stay, labeled "hospital policy (not law)"** in spec docstrings, the dashboard, and the demo. These are patient-ID re-entry, barcode scanning, the second-nurse double check, weight in kg only, and release v2's antibiotic indication (modeled on CDC stewardship guidance; stewardship programs themselves are required by 42 CFR §482.42 and H&S §1288.85).
+- **New rules come from law, or are entrenched:** federal or California statutes and regulations (`basis: law`), or requirements a hospital is very unlikely to drop (`basis: entrenched`), each with a concrete reason: Joint Commission accreditation (deemed status), a CMS-required attestation (e.g. the SAFER Guides self-assessment), a Leapfrog/payer contract standard, or a near-universal standard of care. Plain recommendations are not added.
+- **Existing non-law rules stay, labeled honestly** as "entrenched (reason)" where that applies (e.g. barcode scanning: Leapfrog/standard of care; two patient identifiers: Joint Commission), otherwise "hospital policy (not law)" in spec docstrings, the dashboard, and the demo. These are patient-ID re-entry, barcode scanning, the second-nurse double check, weight in kg only, and release v2's antibiotic indication (modeled on CDC stewardship guidance; stewardship programs themselves are required by 42 CFR §482.42 and H&S §1288.85).
 - **Product properties are not legal rules:** the alert-fatigue rules A1–A4, the budgets, and receipts are part of the product's design goals, and are labeled as such.
 
 ### Real California rules (owner decision, Oct 31)
