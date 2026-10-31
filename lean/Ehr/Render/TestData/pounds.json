@@ -1,0 +1,89 @@
+{
+  "resourceType": "Bundle",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:0",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "patient-1"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Jane"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1992-10-01"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:1",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "effectiveDateTime": "2026-10-31T09:00:00Z",
+        "valueQuantity": {
+          "value": 160,
+          "code": "[lb_av]",
+          "unit": "[lb_av]"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "effectiveDateTime": "2026-10-31T10:00:00Z",
+        "valueQuantity": {
+          "value": 100,
+          "code": "unknown",
+          "unit": "unknown"
+        }
+      }
+    }
+  ]
+}
