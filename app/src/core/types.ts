@@ -6,115 +6,297 @@
  * ItemView's underspecified field binding is made explicit below; confirm
  * its field names against the first Lean export before connecting WASM.
  */
-import { z } from 'zod';
+import { z } from "zod";
 
 const nat = z.number().int().nonnegative();
 const id = z.string().min(1);
 const ctor = <T extends z.ZodRawShape>(shape: T) => z.strictObject(shape);
-export const roleSchema = z.enum(['physician', 'np', 'rn', 'surgeon']);
-export const unitKindSchema = z.enum(['kg', 'lb', 'g', 'mg', 'mcg', 'mL', 'mgPerKg', 'units', 'none']);
-export const prefillPolicySchema = z.enum(['never', 'recordConfirm', 'defaultConfirm', 'autoLinked']);
-export const frictionSchema = z.enum(['safety', 'compliance', 'accidental']);
+export const roleSchema = z.enum(["physician", "np", "rn", "surgeon"]);
+export const unitKindSchema = z.enum([
+  "kg",
+  "lb",
+  "g",
+  "mg",
+  "mcg",
+  "mL",
+  "mgPerKg",
+  "units",
+  "none",
+]);
+export const prefillPolicySchema = z.enum([
+  "never",
+  "recordConfirm",
+  "defaultConfirm",
+  "autoLinked",
+]);
+export const frictionSchema = z.enum(["safety", "compliance", "accidental"]);
 export const valueKindSchema = z.union([
-  ctor({ quantity: ctor({ unit: unitKindSchema }) }), ctor({ coded: ctor({ valueSet: z.string() }) }),
-  z.enum(['text', 'flag', 'identity', 'cosign']), ctor({ scan: ctor({ target: z.string() }) }),
+  ctor({ quantity: ctor({ unit: unitKindSchema }) }),
+  ctor({ coded: ctor({ valueSet: z.string() }) }),
+  z.enum(["text", "flag", "identity", "cosign"]),
+  ctor({ scan: ctor({ target: z.string() }) }),
 ]);
 export const elementSpecSchema = ctor({
-  id, label: z.string(), kind: valueKindSchema, enteredBy: z.array(roleSchema), prefill: prefillPolicySchema,
-  friction: frictionSchema, humanOnly: z.boolean(), linkedFrom: id.nullable(), fhirTarget: z.string(),
+  id,
+  label: z.string(),
+  kind: valueKindSchema,
+  enteredBy: z.array(roleSchema),
+  prefill: prefillPolicySchema,
+  friction: frictionSchema,
+  humanOnly: z.boolean(),
+  linkedFrom: id.nullable(),
+  fhirTarget: z.string(),
 });
-export const infoSpecSchema = ctor({ id, label: z.string(), version: z.string() });
-export const commitSpecSchema = ctor({ id, label: z.string(), roles: z.array(roleSchema) });
+export const infoSpecSchema = ctor({
+  id,
+  label: z.string(),
+  version: z.string(),
+});
+export const commitSpecSchema = ctor({
+  id,
+  label: z.string(),
+  roles: z.array(roleSchema),
+});
 export const whenSchema = z.union([
-  z.enum(['always', 'highAlertMed', 'abnormalResult']),
-  ctor({ orderClass: ctor({ cls: z.string() }) }), ctor({ medClass: ctor({ cls: z.string() }) }),
+  z.enum(["always", "highAlertMed", "abnormalResult"]),
+  ctor({ orderClass: ctor({ cls: z.string() }) }),
+  ctor({ medClass: ctor({ cls: z.string() }) }),
 ]);
 export const reviewModeSchema = z.union([
-  z.literal('shownOnCommit'), ctor({ shownOrReceipt: ctor({ windowMin: nat, roles: z.array(roleSchema) }) }),
+  z.literal("shownOnCommit"),
+  ctor({
+    shownOrReceipt: ctor({ windowMin: nat, roles: z.array(roleSchema) }),
+  }),
 ]);
-export const entryReqSchema = ctor({ commit: id, element: id, when: whenSchema, perOrderLine: z.boolean() });
-export const reviewReqSchema = ctor({ commit: id, info: id, mode: reviewModeSchema, when: whenSchema });
-export const alertCondSchema = z.enum(['drugAllergy', 'interaction', 'duplicateTherapy', 'doseOutOfRange', 'weightInLb', 'careGap', 'highAlertMed']);
-export const tierSchema = z.enum(['interruptive', 'passive', 'removable']);
-export const alertSpecSchema = ctor({ id, label: z.string(), cond: alertCondSchema, tier: tierSchema, commit: id, screens: z.array(z.string()) });
-export const designRulesSchema = ctor({ maxDepth: nat, minTextSize: nat, stabilityBudget: nat, landmarks: z.array(id), catalog: z.array(z.string()) });
-export const specSchema = ctor({
-  version: z.string(), elements: z.array(elementSpecSchema), infos: z.array(infoSpecSchema), commits: z.array(commitSpecSchema),
-  entries: z.array(entryReqSchema), reviews: z.array(reviewReqSchema), alerts: z.array(alertSpecSchema), design: designRulesSchema,
+export const entryReqSchema = ctor({
+  commit: id,
+  element: id,
+  when: whenSchema,
+  perOrderLine: z.boolean(),
 });
-export const slotSchema = z.union([z.literal('current'), ctor({ fixed: ctor({ n: nat }) })]);
+export const reviewReqSchema = ctor({
+  commit: id,
+  info: id,
+  mode: reviewModeSchema,
+  when: whenSchema,
+});
+export const alertCondSchema = z.enum([
+  "drugAllergy",
+  "interaction",
+  "duplicateTherapy",
+  "doseOutOfRange",
+  "weightInLb",
+  "careGap",
+  "highAlertMed",
+]);
+export const tierSchema = z.enum(["interruptive", "passive", "removable"]);
+export const alertSpecSchema = ctor({
+  id,
+  label: z.string(),
+  cond: alertCondSchema,
+  tier: tierSchema,
+  commit: id,
+  screens: z.array(z.string()),
+});
+export const designRulesSchema = ctor({
+  maxDepth: nat,
+  minTextSize: nat,
+  stabilityBudget: nat,
+  landmarks: z.array(id),
+  catalog: z.array(z.string()),
+});
+export const specSchema = ctor({
+  version: z.string(),
+  elements: z.array(elementSpecSchema),
+  infos: z.array(infoSpecSchema),
+  commits: z.array(commitSpecSchema),
+  entries: z.array(entryReqSchema),
+  reviews: z.array(reviewReqSchema),
+  alerts: z.array(alertSpecSchema),
+  design: designRulesSchema,
+});
+export const slotSchema = z.union([
+  z.literal("current"),
+  ctor({ fixed: ctor({ n: nat }) }),
+]);
 export const prefillSchema = z.union([
-  z.literal('none'), ctor({ fromRecord: ctor({ fact: z.string() }) }), ctor({ default: ctor({ value: z.string() }) }), ctor({ linked: ctor({ element: id }) }),
+  z.literal("none"),
+  ctor({ fromRecord: ctor({ fact: z.string() }) }),
+  ctor({ default: ctor({ value: z.string() }) }),
+  ctor({ linked: ctor({ element: id }) }),
 ]);
 export const actionSchema = z.union([
-  z.enum(['back', 'newOrderLine']), ctor({ goto: ctor({ screen: id }) }),
-  ctor({ commit: ctor({ commit: id }) }), ctor({ markReviewed: ctor({ info: id }) }),
+  z.enum(["back", "newOrderLine"]),
+  ctor({ goto: ctor({ screen: id }) }),
+  ctor({ commit: ctor({ commit: id }) }),
+  ctor({ markReviewed: ctor({ info: id }) }),
 ]);
-export const visibilitySchema = z.union([z.literal('always'), ctor({ unlessReceipt: ctor({ info: id }) })]);
-export const sizeSchema = z.enum(['normal', 'compact', 'tiny']);
+export const visibilitySchema = z.union([
+  z.literal("always"),
+  ctor({ unlessReceipt: ctor({ info: id }) }),
+]);
+export const sizeSchema = z.enum(["normal", "compact", "tiny"]);
 export const kindSchema = z.union([
-  z.enum(['banner', 'tabs']),
-  ctor({ field: ctor({ element: id, slot: slotSchema, prefill: prefillSchema }) }),
-  ctor({ panel: ctor({ info: id }) }), ctor({ table: ctor({ info: id }) }), ctor({ trend: ctor({ info: id }) }),
-  ctor({ alert: ctor({ alert: id, popup: z.boolean() }) }), ctor({ button: ctor({ action: actionSchema }) }),
-  ctor({ group: ctor({ collapsible: z.boolean(), startCollapsed: z.boolean() }) }),
-  ctor({ macro: ctor({ id }) }), ctor({ search: ctor({ scope: z.string() }) }),
+  z.enum(["banner", "tabs"]),
+  ctor({
+    field: ctor({ element: id, slot: slotSchema, prefill: prefillSchema }),
+  }),
+  ctor({ panel: ctor({ info: id }) }),
+  ctor({ table: ctor({ info: id }) }),
+  ctor({ trend: ctor({ info: id }) }),
+  ctor({ alert: ctor({ alert: id, popup: z.boolean() }) }),
+  ctor({ button: ctor({ action: actionSchema }) }),
+  ctor({
+    group: ctor({ collapsible: z.boolean(), startCollapsed: z.boolean() }),
+  }),
+  ctor({ macro: ctor({ id }) }),
+  ctor({ search: ctor({ scope: z.string() }) }),
 ]);
 export const componentSchema = ctor({
-  id, kind: kindSchema, label: z.string(), parent: id.nullable(), tab: nat, visibility: visibilitySchema, size: sizeSchema,
-  hotkey: z.string().nullable(), tag: z.string(), copyOf: id.nullable(),
+  id,
+  kind: kindSchema,
+  label: z.string(),
+  parent: id.nullable(),
+  tab: nat,
+  visibility: visibilitySchema,
+  size: sizeSchema,
+  hotkey: z.string().nullable(),
+  tag: z.string(),
+  copyOf: id.nullable(),
 });
-export const screenSchema = ctor({ id, title: z.string(), workflow: z.string(), components: z.array(componentSchema) });
+export const screenSchema = ctor({
+  id,
+  title: z.string(),
+  workflow: z.string(),
+  components: z.array(componentSchema),
+});
 export const macroStepSchema = z.union([
-  ctor({ setValue: ctor({ comp: id, value: z.string() }) }), ctor({ click: ctor({ comp: id }) }), ctor({ goto: ctor({ screen: id }) }),
+  ctor({ setValue: ctor({ comp: id, value: z.string() }) }),
+  ctor({ click: ctor({ comp: id }) }),
+  ctor({ goto: ctor({ screen: id }) }),
 ]);
-export const macroSchema = ctor({ id, label: z.string(), steps: z.array(macroStepSchema) });
+export const macroSchema = ctor({
+  id,
+  label: z.string(),
+  steps: z.array(macroStepSchema),
+});
 export const programSchema = ctor({
-  id, version: nat, owner: id, role: roleSchema, specVersion: z.string(), start: id, screens: z.array(screenSchema), macros: z.array(macroSchema),
+  id,
+  version: nat,
+  owner: id,
+  role: roleSchema,
+  specVersion: z.string(),
+  start: id,
+  screens: z.array(screenSchema),
+  macros: z.array(macroSchema),
 });
 export const drugInfoSchema = ctor({
-  code: z.string(), name: z.string(), classes: z.array(z.string()), minMgPerKgTenths: nat,
-  maxMgPerKgTenths: nat, highAlert: z.boolean(), interactsWith: z.array(z.string()),
+  code: z.string(),
+  name: z.string(),
+  classes: z.array(z.string()),
+  minMgPerKgTenths: nat,
+  maxMgPerKgTenths: nat,
+  highAlert: z.boolean(),
+  interactsWith: z.array(z.string()),
 });
-export const patientIdentitySchema = ctor({ initials: z.string(), sex: z.string(), ageYears: nat });
+export const patientIdentitySchema = ctor({
+  initials: z.string(),
+  sex: z.string(),
+  ageYears: nat,
+});
 export const factsSchema = ctor({
-  patientId: id, identity: patientIdentitySchema, allergyVersion: nat, allergyClasses: z.array(z.string()), medsVersion: nat,
-  currentMedClasses: z.array(z.string()), weightToday: z.tuple([nat, unitKindSchema]).nullable(), careGaps: z.array(z.string()),
-  abnormalResult: z.boolean(), now: nat,
+  patientId: id,
+  identity: patientIdentitySchema,
+  allergyVersion: nat,
+  allergyClasses: z.array(z.string()),
+  medsVersion: nat,
+  currentMedClasses: z.array(z.string()),
+  weightToday: z.tuple([nat, unitKindSchema]).nullable(),
+  careGaps: z.array(z.string()),
+  abnormalResult: z.boolean(),
+  now: nat,
 });
 export const valueSchema = z.union([
-  ctor({ qty: ctor({ tenths: nat, unit: unitKindSchema }) }), ctor({ code: ctor({ c: z.string() }) }),
-  ctor({ text: ctor({ s: z.string() }) }), ctor({ flag: ctor({ b: z.boolean() }) }), ctor({ user: ctor({ u: z.string() }) }),
+  ctor({ qty: ctor({ tenths: nat, unit: unitKindSchema }) }),
+  ctor({ code: ctor({ c: z.string() }) }),
+  ctor({ text: ctor({ s: z.string() }) }),
+  ctor({ flag: ctor({ b: z.boolean() }) }),
+  ctor({ user: ctor({ u: z.string() }) }),
 ]);
-export const actorSchema = z.enum(['human', 'macro']);
-export const capturedSchema = ctor({ element: id, slot: nat, value: valueSchema, byHuman: z.boolean(), confirmed: z.boolean(), provenance: z.string().nullable() });
-export const receiptSchema = ctor({ info: id, dataVersion: nat, time: nat, role: roleSchema, user: id });
+export const actorSchema = z.enum(["human", "macro"]);
+export const capturedSchema = ctor({
+  element: id,
+  slot: nat,
+  value: valueSchema,
+  byHuman: z.boolean(),
+  confirmed: z.boolean(),
+  provenance: z.string().nullable(),
+});
+export const receiptSchema = ctor({
+  info: id,
+  dataVersion: nat,
+  time: nat,
+  role: roleSchema,
+  user: id,
+});
 export const userSchema = ctor({ id, role: roleSchema });
 export const stateSchema = ctor({
-  screen: id, history: z.array(id), captured: z.array(capturedSchema), receipts: z.array(receiptSchema),
-  acked: z.array(z.tuple([id, z.string()])), commits: z.array(id), expanded: z.array(id), tabSel: z.array(z.tuple([id, nat])),
-  popup: z.tuple([id, z.string()]).nullable(), currentSlot: nat, clock: nat,
+  screen: id,
+  history: z.array(id),
+  captured: z.array(capturedSchema),
+  receipts: z.array(receiptSchema),
+  acked: z.array(z.tuple([id, z.string()])),
+  commits: z.array(id),
+  expanded: z.array(id),
+  tabSel: z.array(z.tuple([id, nat])),
+  popup: z.tuple([id, z.string()]).nullable(),
+  currentSlot: nat,
+  clock: nat,
 });
 export const eventSchema = z.union([
-  ctor({ click: ctor({ comp: id }) }), ctor({ selectTab: ctor({ comp: id, idx: nat }) }),
-  ctor({ enter: ctor({ comp: id, value: valueSchema }) }), ctor({ confirm: ctor({ comp: id }) }),
-  ctor({ ack: ctor({ alert: id }) }), ctor({ scroll: ctor({ screen: id }) }), ctor({ search: ctor({ query: z.string() }) }),
+  ctor({ click: ctor({ comp: id }) }),
+  ctor({ selectTab: ctor({ comp: id, idx: nat }) }),
+  ctor({ enter: ctor({ comp: id, value: valueSchema }) }),
+  ctor({ confirm: ctor({ comp: id }) }),
+  ctor({ ack: ctor({ alert: id }) }),
+  ctor({ scroll: ctor({ screen: id }) }),
+  ctor({ search: ctor({ query: z.string() }) }),
 ]);
 // §4 leaves these record field names open. Keep this one adapter seam visible.
-export const fieldBindingSchema = ctor({ value: valueSchema, provenance: z.string().nullable(), pendingConfirm: z.boolean() });
+export const fieldBindingSchema = ctor({
+  value: valueSchema,
+  provenance: z.string().nullable(),
+  pendingConfirm: z.boolean(),
+});
 export const itemViewSchema = ctor({
-  component: componentSchema, shown: z.boolean(), depth: nat, expanded: z.boolean(), selectedTab: nat,
-  bound: fieldBindingSchema.nullable(), alertActive: z.boolean(),
+  component: componentSchema,
+  shown: z.boolean(),
+  depth: nat,
+  expanded: z.boolean(),
+  selectedTab: nat,
+  bound: fieldBindingSchema.nullable(),
+  alertActive: z.boolean(),
 });
 export const screenViewSchema = ctor({
-  screen: id, title: z.string(), items: z.array(itemViewSchema), enabled: z.array(id),
-  blocked: z.array(z.tuple([id, z.string()])), popup: z.tuple([id, z.string()]).nullable(),
+  screen: id,
+  title: z.string(),
+  items: z.array(itemViewSchema),
+  enabled: z.array(id),
+  blocked: z.array(z.tuple([id, z.string()])),
+  popup: z.tuple([id, z.string()]).nullable(),
 }).superRefine((view, context) => {
   const ids = view.items.map((item) => item.component.id);
-  if (new Set(ids).size !== ids.length) context.addIssue({ code: 'custom', message: 'Duplicate component IDs' });
+  if (new Set(ids).size !== ids.length)
+    context.addIssue({ code: "custom", message: "Duplicate component IDs" });
 });
-export const stepResultSchema = z.union([z.enum(['ok', 'ignored']), ctor({ blocked: ctor({ reason: z.string() }) })]);
-export const stepResponseSchema = ctor({ state: stateSchema, result: stepResultSchema });
+export const stepResultSchema = z.union([
+  z.enum(["ok", "ignored"]),
+  ctor({ blocked: ctor({ reason: z.string() }) }),
+]);
+export const stepResponseSchema = ctor({
+  state: stateSchema,
+  result: stepResultSchema,
+});
 
 export type ElementId = string;
 export type InfoId = string;
@@ -172,15 +354,15 @@ export function assertNever(value: never): never {
 
 /** Internal discriminant only; never sent across the Lean boundary. */
 export function renderKind(kind: Kind) {
-  if (typeof kind === 'string') return { tag: kind };
-  if ('field' in kind) return { tag: 'field' as const, ...kind.field };
-  if ('panel' in kind) return { tag: 'panel' as const, ...kind.panel };
-  if ('table' in kind) return { tag: 'table' as const, ...kind.table };
-  if ('trend' in kind) return { tag: 'trend' as const, ...kind.trend };
-  if ('alert' in kind) return { tag: 'alert' as const, ...kind.alert };
-  if ('button' in kind) return { tag: 'button' as const, ...kind.button };
-  if ('group' in kind) return { tag: 'group' as const, ...kind.group };
-  if ('macro' in kind) return { tag: 'macro' as const, ...kind.macro };
-  if ('search' in kind) return { tag: 'search' as const, ...kind.search };
+  if (typeof kind === "string") return { tag: kind };
+  if ("field" in kind) return { tag: "field" as const, ...kind.field };
+  if ("panel" in kind) return { tag: "panel" as const, ...kind.panel };
+  if ("table" in kind) return { tag: "table" as const, ...kind.table };
+  if ("trend" in kind) return { tag: "trend" as const, ...kind.trend };
+  if ("alert" in kind) return { tag: "alert" as const, ...kind.alert };
+  if ("button" in kind) return { tag: "button" as const, ...kind.button };
+  if ("group" in kind) return { tag: "group" as const, ...kind.group };
+  if ("macro" in kind) return { tag: "macro" as const, ...kind.macro };
+  if ("search" in kind) return { tag: "search" as const, ...kind.search };
   return assertNever(kind);
 }
