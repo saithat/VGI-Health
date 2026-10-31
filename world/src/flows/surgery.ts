@@ -7,17 +7,15 @@
  *   -> P3 gives post-op meds -> P5 rounds -> P5 discharges
  *   -> P5 post-op clinic visit + P1 follow-up.
  *
- * W6 task kinds are told apart by their first note section: consultNote,
- * hAndPUpdate (pre-op), briefOpNote (op note + post-op order set),
- * progressNote (rounding), medRec (discharge).
+ * W6 steps use the typed w6Step field; noteSections lists only documentation.
  */
 import { type DayBuild, type PopIndex, isPcnAllergic } from "../build";
 import { SHIFTS } from "../calendar";
 import { homeOrder, inpatientHomeMeds, isDiabetic, nsaidOk, opioidTolerant, prn, surgicalProphylaxis } from "../clinical";
-import { controlledNotes } from "../controlled";
+import { controlledPrescriptions } from "../controlled";
 import { p5DayType } from "../context";
 import { imagingReport, labObservation, surgicalConsent, weightObservation } from "../fhir";
-import { order } from "../formulary";
+import { order, serviceOrder } from "../formulary";
 import type { PatientProfile } from "../patients";
 import { anticoagulant, homeMed } from "../patients";
 import type { Rng } from "../rng";
@@ -47,13 +45,13 @@ export const PROCEDURES: Record<CaseDiagnosis, { procedure: string; durationMin:
   "umbilical-hernia": { procedure: "open umbilical hernia repair", durationMin: 50, disposition: "same-day" },
 };
 
-function holdNotes(p: PatientProfile, reason: string): string[] {
+function holdOrders(p: PatientProfile, reason: string): OrderChoice[] {
   const ac = anticoagulant(p);
-  return ac === undefined ? [] : [`hold:${ac.drug}:${reason}`];
+  return ac === undefined ? [] : [{ ...homeOrder(ac), holdReason: reason }];
 }
 
 /** Post-op order set (overnight) or PACU/discharge set (same-day). */
-export function postopOrders(p: PatientProfile, kg: number, c: SurgicalCase): { orders: OrderChoice[]; holds: string[] } {
+export function postopOrders(p: PatientProfile, kg: number, c: SurgicalCase): { orders: OrderChoice[]; holds: OrderChoice[] } {
   const oxyMg = opioidTolerant(p) ? 10 : 5;
   if (c.disposition === "same-day") {
     const orders = [order("acetaminophen", 1000, "mg", "PO", "q6h", { prn: true }), ...(nsaidOk(p) ? [prn.ibuprofen()] : []), prn.oxycodonePO(oxyMg, "q6h"), order("ondansetron", 4, "mg", "PO", "q6h", { prn: true })];
@@ -71,7 +69,7 @@ export function postopOrders(p: PatientProfile, kg: number, c: SurgicalCase): { 
     ...(c.complicated ? [order("ceftriaxone", 2000, "mg", "IV", "q24h", { indication: "intra-abdominal-infection" })] : []),
     ...home.orders,
   ];
-  return { orders, holds: [...home.holds.filter((h) => !h.startsWith("hold:warfarin") && !h.startsWith("hold:apixaban")), ...holdNotes(p, "postop-bleeding-risk")] };
+  return { orders, holds: [...home.holds.filter((h) => h.drug !== "warfarin" && h.drug !== "apixaban"), ...holdOrders(p, "postop-bleeding-risk")] };
 }
 
 /** Post-op discharge opioid: oxycodone (hydromorphone for some), higher dose if opioid-tolerant. */
@@ -151,7 +149,7 @@ export function createUrgentCase(b: DayBuild, p: PatientProfile, dx: CaseDiagnos
     "W6",
     p.id,
     toMin(clock),
-    { orders: regimen, disposition: "admit", noteSections: ["consultNote", "imagingReview", "labReview", "surgicalDecision", ...home.holds] },
+    { orders: [...regimen, ...home.holds], disposition: "admit", w6Step: "consult", noteSections: ["consultNote", "imagingReview", "labReview", "surgicalDecision"] },
     resources,
     b.interruptions("P5", rng),
   );
@@ -232,8 +230,9 @@ function dischargeTask(b: DayBuild, ip: Inpatient, startMin: number, rng: Rng): 
   const p = b.patient(ip.patientId);
   const taskId = b.peekTaskId("P5", "W6");
   const rx = dischargeRx(p, rng);
-  const notes = ["medRec", "dischargeInstructions", "followUp", ...controlledNotes(rx, postopSupplyDays(rng), p.homeMeds, rng)];
-  b.addTask("P5", "W6", p.id, startMin, { orders: rx, noteSections: notes }, [], b.interruptions("P5", rng));
+  const observations = controlledPrescriptions(rx, postopSupplyDays(rng), p.homeMeds, rng, "postoperative");
+  const notes = ["medRec", "dischargeInstructions", "followUp"];
+  b.addTask("P5", "W6", p.id, startMin, { orders: rx, w6Step: "discharge", noteSections: notes, observations }, [], b.interruptions("P5", rng));
   // The patient leaves the ward late morning (after the morning med pass), not when the order is signed.
   const rec = dischargeInpatient(b, ip, Math.max(toClock(startMin) + 90, rng.int(11 * 60, 13 * 60)), taskId, rng);
   const c = b.state.surgicalCases.find((x) => x.id === ip.caseId);
@@ -272,7 +271,7 @@ export function runSurgery(b: DayBuild): void {
     } else {
       notes.push("preopPlan");
     }
-    b.addTask("P5", "W6", ip.patientId, t, { orders: changes, noteSections: notes }, [], b.interruptions("P5", rng, 0.5));
+    b.addTask("P5", "W6", ip.patientId, t, { orders: changes, w6Step: "rounding", noteSections: notes }, [], b.interruptions("P5", rng, 0.5));
     t += 8;
     if (operated && ip.plannedDischargeDay === b.day) toDischarge.push(ip);
   }
@@ -325,7 +324,7 @@ export function runSurgery(b: DayBuild): void {
       "W6",
       p.id,
       toMin(start - 25),
-      { orders: preOrders, noteSections: ["hAndPUpdate", "consentVerification", "allergyReview", "anticoagulantReview", ...holdNotes(p, "preop")] },
+      { orders: [...preOrders, ...holdOrders(p, "preop")], w6Step: "preop", noteSections: ["hAndPUpdate", "consentVerification", "allergyReview", "anticoagulantReview"] },
       [surgicalConsent(`${preId}-consent`, p.id, c.bookedDay, 10 * 60, c.procedure), weightObservation(`${preId}-weight`, p.id, b.day, start - 60, kg, "kg")],
       b.interruptions("P5", crng, 0.5),
     );
@@ -333,7 +332,7 @@ export function runSurgery(b: DayBuild): void {
     // Brief op note + post-op order set.
     const post = postopOrders(p, kg, c);
     const postId = b.peekTaskId("P5", "W6");
-    b.addTask("P5", "W6", p.id, toMin(end + 5), { orders: post.orders, noteSections: ["briefOpNote", "postOpOrders", ...post.holds] }, [], b.interruptions("P5", crng, 0.5));
+    b.addTask("P5", "W6", p.id, toMin(end + 5), { orders: [...post.orders, ...post.holds], w6Step: "postop", noteSections: ["briefOpNote", "postOpOrders"] }, [], b.interruptions("P5", crng, 0.5));
     const pathAbnormal = c.diagnosis === "appendicitis" || c.diagnosis === "acute-cholecystitis" || c.diagnosis === "symptomatic-cholelithiasis";
     addPendingLab(b, {
       patientId: p.id,
@@ -379,8 +378,10 @@ export function runSurgery(b: DayBuild): void {
     } else {
       const dcMin = toMin(end + 110);
       const dcId = b.peekTaskId("P5", "W6");
-      const sameDayNotes = ["medRec", "dischargeInstructions", "followUp", ...controlledNotes(post.orders, 3, p.homeMeds, crng)];
-      b.addTask("P5", "W6", p.id, dcMin, { orders: post.orders, noteSections: sameDayNotes }, [], b.interruptions("P5", crng, 0.5));
+      const rx = post.orders.map((o) => ({ ...o }));
+      const observations = controlledPrescriptions(rx, 3, p.homeMeds, crng, "postoperative");
+      const sameDayNotes = ["medRec", "dischargeInstructions", "followUp"];
+      b.addTask("P5", "W6", p.id, dcMin, { orders: rx, w6Step: "discharge", noteSections: sameDayNotes, observations }, [], b.interruptions("P5", crng, 0.5));
       const rec = dischargeSameDay(b, p.id, c.id, c.procedure, end + 120, dcId, crng);
       c.stage = "discharged";
       c.dischargeDay = b.day;
@@ -478,7 +479,10 @@ function runP5Clinic(b: DayBuild, startMin: number, rng: Rng): void {
         "W1",
         p.id,
         nextSlot(),
-        { noteSections: c !== null ? ["hpi", "exam", "imagingReview", "assessmentPlan", "surgicalPlanning", "consentDiscussion", ...holdNotes(p, "planned-surgery")] : ["hpi", "exam", "imagingReview", "assessmentPlan"] },
+        { orders: [
+          serviceOrder("imaging", dx === "symptomatic-cholelithiasis" ? "ultrasound-right-upper-quadrant" : "ultrasound-abdominal-wall", dx),
+          ...(c !== null ? [...holdOrders(p, "planned-surgery"), serviceOrder("procedure", c.procedure.replaceAll(" ", "-"), dx)] : []),
+        ], noteSections: c !== null ? ["hpi", "exam", "imagingReview", "assessmentPlan", "surgicalPlanning", "consentDiscussion"] : ["hpi", "exam", "imagingReview", "assessmentPlan"] },
         [],
         b.interruptions("P5", rng),
       );

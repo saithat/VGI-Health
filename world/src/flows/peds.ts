@@ -123,15 +123,20 @@ export function runPeds(b: DayBuild): void {
 
   const visits: { p: PatientProfile; kind: VisitKind; noShow: boolean; reason: string }[] = [];
   const rechecks = b.state.appointments.filter((a) => a.persona === "P4" && a.day === b.day);
+  const addOns = rng.int(1, 3) + (b.ctx.monday ? 1 : 0);
   for (const a of rechecks) {
+    if (visits.filter((v) => !v.noShow).length >= target - addOns - fluShots) {
+      a.rescheduledFrom.push(b.day);
+      a.day = b.day + 1;
+      continue;
+    }
     b.picker.use(a.patientId);
     visits.push({ p: b.patient(a.patientId), kind: "recheck", noShow: rng.chance(0.08), reason: a.reason });
   }
   b.state.appointments = b.state.appointments.filter((a) => !(a.persona === "P4" && a.day === b.day));
 
-  const addOns = rng.int(1, 3) + (b.ctx.monday ? 1 : 0);
   let guard = 0;
-  while (visits.filter((v) => !v.noShow).length < target - addOns && guard++ < 200) {
+  while (visits.filter((v) => !v.noShow).length < target - addOns - fluShots && guard++ < 200) {
     const kind: VisitKind = rng.chance(b.ctx.fluWeek ? 0.4 : 0.5) ? "well" : "sick";
     const p = b.picker.pick(rng, (q) => q.ageYears < 18, b.ctx.allergyShare);
     if (p === undefined) break;

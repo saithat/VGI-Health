@@ -6,16 +6,13 @@
  * - a naloxone offer when an opioid is prescribed at >= 90 MME/day, or
  *   concurrently with a benzodiazepine.
  *
- * `OrderChoice` has no supply/duration field, so the world records clinical
- * facts as note sections (see STATUS.md, "conventions"):
- * - `supplyDays:<drug>:<n>`  days supplied for each outpatient controlled Rx;
- * - `naloxoneOffer:accepted|declined`  the patient's response, present only
- *   when the world's own MME/benzodiazepine check says the rule applies.
- * Lean decides whether a rule applies; these are the facts it needs.
+ * Supply and exemption facts use OrderChoice fields. Naloxone responses are
+ * structured FHIR observations because TaskChoices has no response field.
  *
  * It also assigns chronic opioid therapy to a few P1 patients when the
  * population has too few (world-assigned home meds, emitted as FHIR).
  */
+import type { ClinicalObservation } from "./fhir";
 import { dateTimeOf } from "./calendar";
 import { FORMULARY, NALOXONE_MME_THRESHOLD, isBenzodiazepine, isControlled, isOpioid, mmePerDay, order } from "./formulary";
 import type { HomeMed, PatientProfile } from "./patients";
@@ -40,16 +37,15 @@ export function naloxoneCheck(newRx: OrderChoice[], home: HomeMed[]): NaloxoneCh
   return { mme, benzo, applies: prescribingRisky && opioid && (mme >= NALOXONE_MME_THRESHOLD || benzo) };
 }
 
-/**
- * Note sections for the outpatient controlled prescriptions in `rx`:
- * a `supplyDays` entry per controlled drug, and the naloxone response when the rule applies.
- */
-export function controlledNotes(rx: OrderChoice[], supplyDays: number, home: HomeMed[], rng: Rng): string[] {
+/** Attach supply facts to outpatient orders and return any naloxone response. */
+export function controlledPrescriptions(rx: OrderChoice[], supplyDays: number, home: HomeMed[], rng: Rng, setting?: "ed" | "postoperative"): ClinicalObservation[] {
   const controlled = rx.filter((o) => isControlled(o.drug) && o.route === "PO");
   if (controlled.length === 0) return [];
-  const notes = controlled.map((o) => `supplyDays:${o.drug}:${supplyDays}`);
-  if (naloxoneCheck(rx, home).applies) notes.push(`naloxoneOffer:${rng.chance(0.65) ? "accepted" : "declined"}`);
-  return notes;
+  for (const o of controlled) {
+    o.supplyDays = supplyDays;
+    if (supplyDays <= 7 && setting !== undefined) o.curesExemptReason = `${setting}-supply-7-days-or-less`;
+  }
+  return naloxoneCheck(rx, home).applies ? [{ code: "naloxoneOffer", value: rng.chance(0.65) ? "accepted" : "declined" }] : [];
 }
 
 /** Short-supply opioid choice for an acute outpatient prescription. */
