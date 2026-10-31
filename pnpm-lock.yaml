@@ -1,0 +1,30 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  infra/scripts:
+    dependencies:
+      '@medplum/core':
+        specifier: 5.2.13
+        version: 5.2.13
+
+packages:
+
+  '@medplum/core@5.2.13':
+    resolution: {integrity: sha512-iAchF30F6z+iyzqxU4cxG26Vf7jluMic1jcgjyOQ/wdCkG8unx2Adn5B3EIs1gumRpXPDkqgofnPo0yheZC5qQ==}
+    engines: {node: ^22.18.0 || >=24.2.0}
+    peerDependencies:
+      pdfmake: ^0.2.5
+    peerDependenciesMeta:
+      pdfmake:
+        optional: true
+
+snapshots:
+
+  '@medplum/core@5.2.13': {}

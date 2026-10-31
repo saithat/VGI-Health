@@ -8,6 +8,9 @@
 #     local databases on 5432/6379); use `docker compose exec` to reach them;
 #   - MEDPLUM_MAX_JSON_SIZE is raised from 1mb to 16mb so per-patient Synthea
 #     transaction bundles can be POSTed synchronously;
+#   - MEDPLUM_RATE_LIMITS_ENABLED=false: Medplum's defaults allow only 5 logins/minute per IP
+#     and a per-user FHIR quota, which the setup script, bulk fixture loading, and the
+#     simulation's persona logins all exceed. Local synthetic-data stack only;
 #   - healthchecks use start_period/start_interval so first boot is detected quickly;
 #   - the compose project is named `vgi-medplum` so it never collides with other stacks.
 #
@@ -95,6 +98,7 @@ services:
       MEDPLUM_ALLOWED_ORIGINS: '*'
       MEDPLUM_INTROSPECTION_ENABLED: 'true'
       MEDPLUM_SHUTDOWN_TIMEOUT_MILLISECONDS: 30000
+      MEDPLUM_RATE_LIMITS_ENABLED: 'false'
 
     healthcheck:
       # The server image has no curl/wget, so use Node's fetch (as upstream does).

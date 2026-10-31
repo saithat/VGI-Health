@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset fixtures
+.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup fixtures
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 
@@ -31,3 +31,7 @@ infra-down:
 # Stop the stack AND delete all Medplum data (Postgres volume).
 infra-reset:
 	$(COMPOSE) down -v
+
+# Idempotent first-boot setup: project, ClientApplication, persona Practitioners + users; writes .env.
+setup:
+	node infra/scripts/setup.mjs
