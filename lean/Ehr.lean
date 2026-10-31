@@ -22,3 +22,4 @@ import Ehr.Specs.V1
 import Ehr.Canonical.Program
 import Ehr.Render
 import Ehr.Core.Tests
+import Ehr.Canonical.BadTests
