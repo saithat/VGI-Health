@@ -2883,5 +2883,855 @@
     "confidence": "high",
     "verified": true,
     "notes": "V1 requires patientMessage only for abnormalResult. Delivery/notification differs from typing text; do not turn an illustrative outside policy deadline into a universal SAFER limit."
+  },
+  {
+    "id": "guidance-aap-infant-age",
+    "title": "Use precise infant ages",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Table 1, Patient information",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "more specific than years",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Represent pediatric age more precisely than whole years.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age display precision by developmental age.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Published 2013 recommendation, not asserted to be a current AAP policy reaffirmation. V1 banner content does not constrain age granularity."
+  },
+  {
+    "id": "guidance-aap-height-cm",
+    "title": "Capture pediatric height in centimeters",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Table 1, Patient information",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "Height in centimeters",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include height in centimeters in pediatric prescribing data.",
+    "specMapping": {
+      "element": "height",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Pediatric prescribing height requirement and typed centimeter unit.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 height exists but has unit none and is not required by signOrders; existence is not enforcement. Historical 2013 AAP guidance."
+  },
+  {
+    "id": "guidance-aap-weight-calculator",
+    "title": "Calculate pediatric weight-based doses",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Table 1, Medication information",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "Weight-based dosing calculations",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Provide pediatric weight-based dose calculations.",
+    "specMapping": {
+      "element": "dosingWeight",
+      "info": "doseCheck",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Validated numeric calculator and weight/dose provenance.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 requires doseCheck display, not mathematical correctness of a calculator. Historical 2013 AAP guidance."
+  },
+  {
+    "id": "guidance-aap-daily-dose-limit",
+    "title": "Check total daily pediatric dose",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Table 1, Cognitive support",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "amount per day",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Check pediatric daily dose limits as well as individual doses.",
+    "specMapping": {
+      "element": null,
+      "info": "doseCheck",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Frequency-aware daily-dose arithmetic and pediatric reference ranges.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 doseOutOfRange is an abstract condition, not evidence of daily-dose calculation. Tier is local policy. Historical 2013 AAP guidance."
+  },
+  {
+    "id": "guidance-aap-liquid-conversion",
+    "title": "Convert ingredient dose to volume",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Table 1, Cognitive support",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "strength-to-volume conversions",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Convert liquid medication ingredient doses into administration volume.",
+    "specMapping": {
+      "element": null,
+      "info": "doseCheck",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Concentration-aware conversion with compatible units.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Historical 2013 AAP guidance. Do not mistake mg for mL; conversion requires the selected formulation concentration."
+  },
+  {
+    "id": "guidance-aap-metric-label",
+    "title": "Label pediatric liquids metrically",
+    "citation": "AAP Electronic Prescribing in Pediatrics (2013), Pediatrics 131(4):824–826; Recommendation 1",
+    "url": "https://publications.aap.org/pediatrics/article/131/4/824/31922/Electronic-Prescribing-in-Pediatrics-Toward-Safer",
+    "quote": "metric-only labeling instructions",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Generate metric-only pediatric medication labeling instructions.",
+    "specMapping": {
+      "element": "doseUnit",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-instruction rendering/label unit validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Historical 2013 guidance. A generic doseUnit field does not constrain generated home instructions."
+  },
+  {
+    "id": "guidance-aap-growth-who",
+    "title": "Use WHO infant growth charts",
+    "citation": "AAP Term Infant Growth Tools; WHO Growth Tools, Birth to 2 Years",
+    "url": "https://www.aap.org/en/patient-care/newborn-infant-and-early-childhood-nutrition/newborn-and-infant-nutrition-assessment-tools/term-infant-growth-tools/",
+    "quote": "first 2 years",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "review",
+    "proposedRule": "Use WHO growth standards for term infants under two years.",
+    "specMapping": {
+      "element": null,
+      "info": "growthChart",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/term-status chart selection and pediatric review requirement.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Growth chart info exists but is not a required v1 review; preterm infants need separate assessment tools."
+  },
+  {
+    "id": "guidance-aap-growth-outlier",
+    "title": "Flag infant growth extremes",
+    "citation": "AAP Term Infant Growth Tools; WHO Growth Charts, Birth to 2 Years",
+    "url": "https://www.aap.org/en/patient-care/newborn-infant-and-early-childhood-nutrition/newborn-and-infant-nutrition-assessment-tools/term-infant-growth-tools/",
+    "quote": "2.3rd and 97.7th percentiles",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "alert",
+    "proposedRule": "Identify potentially suboptimal term-infant growth using WHO 2.3rd/97.7th percentile cutoffs.",
+    "specMapping": {
+      "element": null,
+      "info": "growthChart",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "passive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/sex-specific anthropometric percentiles and growth predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Displayed chart lines are labeled 2nd/98th; these identify potential growth concerns, not a diagnosis. Passive tier is a proposal."
+  },
+  {
+    "id": "guidance-asa-preanesthesia-record",
+    "title": "Review preanesthesia record",
+    "citation": "ASA Basic Standards for Preanesthesia Care, amended October 15, 2025; item 1",
+    "url": "https://www.asahq.org/standards-and-practice-parameters/basic-standards-for-preanesthesia-care",
+    "quote": "available medical record",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Review available medical records before anesthesia.",
+    "specMapping": {
+      "element": null,
+      "info": "priorNotes",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesiologist role and preanesthesia event with required evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Anesthesiologist responsibility, before anesthesia delivery. V1 lacks that role/event; P5 is the adjacent surgical persona, not an authorized substitute. Professional standard classified as guidance, binding=false; surgical consent verification alone does not establish anesthesia consent."
+  },
+  {
+    "id": "guidance-asa-preanesthesia-prior-experience",
+    "title": "Discuss prior anesthetic experiences",
+    "citation": "ASA Basic Standards for Preanesthesia Care, amended October 15, 2025; item 2.1",
+    "url": "https://www.asahq.org/standards-and-practice-parameters/basic-standards-for-preanesthesia-care",
+    "quote": "previous anesthetic experiences",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Discuss previous anesthetic experiences.",
+    "specMapping": {
+      "element": null,
+      "info": "surgicalHistory",
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesiologist role and preanesthesia event with required evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Anesthesiologist responsibility, before anesthesia delivery. V1 lacks that role/event; P5 is the adjacent surgical persona, not an authorized substitute. Professional standard classified as guidance, binding=false; surgical consent verification alone does not establish anesthesia consent."
+  },
+  {
+    "id": "guidance-asa-preanesthesia-exam",
+    "title": "Perform focused preanesthesia examination",
+    "citation": "ASA Basic Standards for Preanesthesia Care, amended October 15, 2025; item 2",
+    "url": "https://www.asahq.org/standards-and-practice-parameters/basic-standards-for-preanesthesia-care",
+    "quote": "focused examination",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Perform a focused preanesthesia examination.",
+    "specMapping": {
+      "element": "exam",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesiologist role and preanesthesia event with required evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Anesthesiologist responsibility, before anesthesia delivery. V1 lacks that role/event; P5 is the adjacent surgical persona, not an authorized substitute. Professional standard classified as guidance, binding=false; surgical consent verification alone does not establish anesthesia consent."
+  },
+  {
+    "id": "guidance-asa-preanesthesia-tests",
+    "title": "Review pertinent preanesthesia tests",
+    "citation": "ASA Basic Standards for Preanesthesia Care, amended October 15, 2025; item 3",
+    "url": "https://www.asahq.org/standards-and-practice-parameters/basic-standards-for-preanesthesia-care",
+    "quote": "tests and consultations",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Review pertinent available tests and consultations as necessary.",
+    "specMapping": {
+      "element": null,
+      "info": "relevantLabs",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesiologist role and preanesthesia event with required evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Anesthesiologist responsibility, before anesthesia delivery. V1 lacks that role/event; P5 is the adjacent surgical persona, not an authorized substitute. Professional standard classified as guidance, binding=false; surgical consent verification alone does not establish anesthesia consent."
+  },
+  {
+    "id": "guidance-asa-preanesthesia-consent",
+    "title": "Ensure anesthesia consent",
+    "citation": "ASA Basic Standards for Preanesthesia Care, amended October 15, 2025; item 5",
+    "url": "https://www.asahq.org/standards-and-practice-parameters/basic-standards-for-preanesthesia-care",
+    "quote": "consent has been obtained",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Ensure consent for anesthesia care has been obtained.",
+    "specMapping": {
+      "element": "consentVerified",
+      "info": "consentDocument",
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesiologist role and preanesthesia event with required evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Anesthesiologist responsibility, before anesthesia delivery. V1 lacks that role/event; P5 is the adjacent surgical persona, not an authorized substitute. Professional standard classified as guidance, binding=false; surgical consent verification alone does not establish anesthesia consent."
+  },
+  {
+    "id": "guidance-who-oximeter",
+    "title": "Check pulse oximeter",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "pulse oximeter",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm the pulse oximeter is attached and functioning.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-allergy",
+    "title": "Check known surgical allergies",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Known allergy",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Confirm known allergies before anesthesia induction.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-airway",
+    "title": "Assess difficult airway risk",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Difficult airway",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Assess difficult airway risk before induction.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-blood-loss",
+    "title": "Assess major blood-loss risk",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": ">500ml",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Assess blood-loss risk exceeding 500 mL, or 7 mL/kg in children.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-antibiotic",
+    "title": "Confirm prophylaxis timing",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "last 60 minutes",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Confirm indicated antibiotic prophylaxis within the last 60 minutes.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Prophylaxis may be not applicable; no general CDC antibiotic-timeout deadline follows from this item."
+  },
+  {
+    "id": "guidance-who-team",
+    "title": "Introduce surgical team",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "name and role",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm team introductions by name and role.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-sterility",
+    "title": "Confirm instrument sterility",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "sterility",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm sterility including indicator results.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-imaging",
+    "title": "Display essential surgical imaging",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "essential imaging",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Display essential imaging when applicable.",
+    "specMapping": {
+      "element": null,
+      "info": "imaging",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-counts",
+    "title": "Confirm instrument and swab counts",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "counts",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Verbally confirm instrument, sponge and needle counts are complete.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-who-specimen",
+    "title": "Read surgical specimen labels aloud",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Specimen labelling",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Read specimen labels aloud, including patient name.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them."
+  },
+  {
+    "id": "guidance-npg-timeout-team-agreement",
+    "title": "Require collective time-out agreement",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "team members",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require team agreement on patient identity, site and procedure at time-out.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event, team participation and separate agreement evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic team-agreement aspect of R2-15; consentVerified at signPreOpOrders is not equivalent. The three agreement subjects are separated further below."
+  },
+  {
+    "id": "guidance-npg-timeout-performer-change",
+    "title": "Repeat time-out for changed performer",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 3, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "person performing",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Repeat time-out when another same-patient procedure has a different performer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure/performer identity and reset of completed time-out evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Specific re-performance condition, not a requirement to repeat merely because any team member changes."
   }
 ]
