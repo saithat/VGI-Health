@@ -180,7 +180,9 @@ export type When =
   /** A high-alert medication is involved. */
   | "highAlertMed"
   /** The patient has an abnormal result. */
-  | "abnormalResult";
+  | "abnormalResult"
+  /** Naloxone should be offered (CA B&P Code §741): some order line's drug is an opioid, and the patient takes a benzodiazepine or the line's daily MME is 90 or more (an unknown dose, frequency, or MME factor counts as a risk). */
+  | "naloxoneRisk";
 
 /**
  * An element that must be captured before a commit.
@@ -212,6 +214,12 @@ export interface ReviewReq {
   info: InfoId;
   mode: ReviewMode;
   when: When;
+  /**
+   * An element that, when entered by a human (confirmed, non-empty) in this
+   * episode, documents why the review was not done and so meets the requirement
+   * (CA H&S Code §11165.4: the reason CURES was not consulted).
+   */
+  waivedBy?: ElementId;
 }
 
 /**
@@ -325,7 +333,9 @@ export type Action =
   /** Records that the user reviewed this info (creates a receipt). */
   | { markReviewed: { info: InfoId } }
   /** Starts a new order line. */
-  | "newOrderLine";
+  | "newOrderLine"
+  /** Requests prior authorization for the current order line (release v1.1). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
+  | "requestPriorAuth";
 
 /**
  * When a component is visible. `unlessReceipt i`: only when there is no
@@ -366,7 +376,9 @@ export type Kind =
   | "tabs"
   /** A button that runs a macro. */
   | { macro: { id: MacroId } }
-  | { search: { scope: string } };
+  | { search: { scope: string } }
+  /** Prior-authorization status of the current order line (release v1.1; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
+  | { priorAuth: { info: InfoId } };
 
 /**
  * One component on a screen.
@@ -469,6 +481,11 @@ export interface DrugInfo {
    * Classes this drug interacts with.
    */
   interactsWith: string[];
+  /**
+   * Oral morphine milligram equivalent factor, in tenths (morphine = 10).
+   * `0` for non-opioids.
+   */
+  mmeFactorTenths: number;
 }
 
 /**
@@ -667,11 +684,13 @@ export interface ItemView {
    */
   selectedTab: number;
   /**
-   * For fields: the order line the field is bound to.
+   * For fields: the order line the field is bound to. For `priorAuth`: the
+   * current order line.
    */
   slot: number;
   /**
-   * For fields: the bound value, if any.
+   * For fields: the bound value, if any. For `priorAuth`: the request on the
+   * current order line (`flag true`), if any.
    */
   value?: Value;
   /**

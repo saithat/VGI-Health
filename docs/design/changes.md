@@ -143,3 +143,73 @@ Several were made stricter; those are marked **(stricter)**.
    continues with the next line, and exits with code 1 at the end.
 6. **`spec-export`** knows only `tiny` for now; real specs
    (`Ehr/Specs/V1.lean`, …) register in `specRegistry` in `Main.lean`.
+
+## California rules (owner-approved extension)
+
+1. **`ReviewReq.waivedBy? : Option ElementId`** (JSON `waivedBy`, left out
+   when none). A review requirement is also met when its `waivedBy` element
+   was captured in this episode by a human (`byHuman`), confirmed, with a
+   non-empty value (non-empty code/text/user, a checked flag, or any
+   quantity). For CA H&S Code §11165.4: review CURES before a first Schedule
+   II–IV prescription, or document why it was not consulted.
+2. **`When.naloxoneRisk`**: some order line's drug is in class `"opioid"` and
+   (the patient's `currentMedClasses` has `"benzodiazepine"`, or the line's
+   daily MME ≥ 90). Daily MME = dose (mg) × doses per day × MME factor; in
+   tenths, `dose × perDay × mmeFactorTenths ≥ 9000`. Doses per day come from
+   the order line's `"freq"` element (new well-known ID; `Value.code` or
+   `Value.text`): q4h 6, q6h 4, q8h 3, q12h 2, daily 1, bid 2, tid 3, qid 4
+   (case-insensitive). **Stricter choices:** an unknown or missing
+   frequency, a missing dose in mg, or an opioid with no MME factor all count
+   as a risk. Per order line (`perOrderLine := true`), the line's own dose and
+   frequency are used. For CA B&P Code §741.
+3. **`DrugInfo.mmeFactorTenths : Nat := 0`** (morphine 10, hydromorphone 40,
+   oxycodone 15, hydrocodone 10, tramadol 2). New drugs: oxycodone,
+   hydrocodone-acetaminophen, tramadol, lorazepam, alprazolam. The class
+   `"controlled-II-IV"` is on morphine, hydromorphone, oxycodone,
+   hydrocodone-acetaminophen, tramadol, lorazepam, alprazolam. Reference data,
+   not clinical advice.
+4. `lineMatches` now takes the state and slot (needed for the per-line MME).
+
+## Proofs (M4)
+
+1. `parseTenths` and `freqPerDay` are written over character lists with
+   structural recursion (same behavior as before). *Why:* `String.splitOn` and
+   `String.toLower` do not reduce in the kernel, and the proofs' `example`s
+   evaluate the real interpreter with `decide` (no `native_decide`).
+2. A4 is stated with the alert rule looked up by ID (`sp.alert? a`). If a spec
+   had two alert rules with the same ID, the theorem speaks about the first.
+   The checker's well-formedness check should require unique alert IDs.
+
+## Release v1.1 support (BRIEF 9b)
+
+1. **`Kind.priorAuth (info : InfoId)`**: the prior-authorization status of the
+   current order line. It counts as showing `info`, like a panel (`showsInfo`).
+   In the view, its `slot` is the current order line and its `value` is the
+   request on that line (`flag true`), if any.
+2. **`Action.requestPriorAuth`**: writes only the `"priorAuthRequest"` element
+   (new well-known ID) on the current slot, as `Value.flag true`. Same rules as
+   entering a value: the element must be in the spec (so under spec v1 the
+   request is `blocked "unknown element priorAuthRequest"`), the role must be
+   allowed, a macro may not request it if the element is human-only or
+   `never`-prefill, and a macro's request waits for a human confirm. Ignored if
+   the current slot has no order.
+3. **Catalog tags.** `Kind.catalogTag` gives each kind's tag; a
+   `button requestPriorAuth` has the tag `"priorAuth"` too, so both parts of the
+   feature need the v1.1 catalog. `Program.inCatalog` is a helper for the
+   checker lane (the checker enforces the catalog).
+4. **Tiny v1.1 example**: `specV1_1` (adds the optional element, the
+   `priorAuthStatus` info, and the `"priorAuth"` catalog tag; no requirement
+   uses them) and `programV1_1` (status panel and request button in the order
+   composer). `ehr spec-export tiny-1.1` prints the spec.
+5. T0, T3, A2, A4 were re-checked with the new kind and action (new branch
+   lemmas `requestPriorAuth_macro_safe`, `requestPriorAuth_commits`,
+   `requestPriorAuth_popup`).
+
+## T6 (macros)
+
+1. `runMacro` builds its stop message with `macroStopReason i r` (same text
+   as before), so T6 can state the result exactly.
+2. T6 compares a macro run with a reference fold of the public `step` with
+   `actor := macro` over the macro's steps. `MacroStep.goto` has no `Event`, so
+   the reference does it as a navigation (like a `goto` button), refused while
+   a popup is open.

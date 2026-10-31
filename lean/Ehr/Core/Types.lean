@@ -144,6 +144,10 @@ inductive When
   | highAlertMed
   /-- The patient has an abnormal result. -/
   | abnormalResult
+  /-- Naloxone should be offered (CA B&P Code §741): some order line's drug is
+  an opioid, and the patient takes a benzodiazepine or the line's daily MME is
+  90 or more (an unknown dose, frequency, or MME factor counts as a risk). -/
+  | naloxoneRisk
   deriving DecidableEq, Repr, Inhabited
 
 /-- An element that must be captured before a commit. -/
@@ -170,6 +174,10 @@ structure ReviewReq where
   info : InfoId
   mode : ReviewMode
   when : When := .always
+  /-- An element that, when entered by a human (confirmed, non-empty) in this
+  episode, documents why the review was not done and so meets the requirement
+  (CA H&S Code §11165.4: the reason CURES was not consulted). -/
+  waivedBy? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- The trigger condition of an alert. -/
@@ -261,6 +269,9 @@ inductive Action
   | markReviewed (info : InfoId)
   /-- Starts a new order line. -/
   | newOrderLine
+  /-- Requests prior authorization for the current order line (release v1.1).
+  It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). -/
+  | requestPriorAuth
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a component is visible. `unlessReceipt i`: only when there is no
@@ -297,6 +308,9 @@ inductive Kind
   /-- A button that runs a macro. -/
   | «macro» (id : MacroId)
   | search (scope : String)
+  /-- Prior-authorization status of the current order line (release v1.1;
+  catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. -/
+  | priorAuth (info : InfoId)
   deriving DecidableEq, Repr, Inhabited
 
 /-- One component on a screen. -/
@@ -371,6 +385,9 @@ structure DrugInfo where
   highAlert : Bool
   /-- Classes this drug interacts with. -/
   interactsWith : List String
+  /-- Oral morphine milligram equivalent factor, in tenths (morphine = 10).
+  `0` for non-opioids. -/
+  mmeFactorTenths : Nat := 0
   deriving DecidableEq, Repr, Inhabited
 
 /-- What patient-ID re-entry is checked against. -/
@@ -510,9 +527,11 @@ structure ItemView where
   expanded : Bool
   /-- For tabs: the selected tab index. -/
   selectedTab : Nat
-  /-- For fields: the order line the field is bound to. -/
+  /-- For fields: the order line the field is bound to. For `priorAuth`: the
+  current order line. -/
   slot : Nat
-  /-- For fields: the bound value, if any. -/
+  /-- For fields: the bound value, if any. For `priorAuth`: the request on the
+  current order line (`flag true`), if any. -/
   value? : Option Value := none
   /-- For fields: where a prefilled value came from. -/
   provenance? : Option String := none

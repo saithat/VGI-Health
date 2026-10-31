@@ -182,10 +182,46 @@ def facts : Facts where
 /-- The signed-in physician. -/
 def user : User := { id := "u1", role := .physician }
 
+/-! ## Release v1.1 (BRIEF 9b): prior-authorization status -/
+
+/-- Release v1.1 of the tiny spec. It adds an optional prior-auth request
+element (written to a ServiceRequest), the prior-auth status info, and the
+catalog tag `"priorAuth"`. No requirement uses them. -/
+def specV1_1 : Spec :=
+  { spec with
+    version := "tiny-1.1"
+    elements := spec.elements ++
+      [{ id := "priorAuthRequest", label := "Prior authorization request", kind := .flag
+         enteredBy := prescribers, prefill := .never, friction := .compliance
+         fhirTarget := "ServiceRequest" }]
+    infos := spec.infos ++ [{ id := "priorAuthStatus", label := "Prior authorization", version := "" }]
+    design := { spec.design with catalog := spec.design.catalog ++ ["priorAuth"] } }
+
+/-- The order screen with the prior-auth status panel and request button. -/
+def orderScreenV1_1 : Screen :=
+  { orderScreen with components := orderScreen.components.flatMap fun c =>
+      if c.id == "toSign" then
+        [{ id := "paStatus", kind := .priorAuth "priorAuthStatus", label := "Prior auth"
+           tag := "paStatus" },
+         { id := "paRequest", kind := .button .requestPriorAuth, label := "Request prior auth"
+           tag := "paRequest" },
+         c]
+      else [c] }
+
+/-- The tiny program for release v1.1: the prior-auth feature in the order
+composer. Under spec v1 the checker must reject it (catalog). -/
+def programV1_1 : Program :=
+  { program with
+    version := 2
+    specVersion := "tiny-1.1"
+    screens := [roomingScreen, orderScreenV1_1, signScreen] }
+
 /-! ## JSON round-trip tests -/
 
 #guard roundTrips spec
 #guard roundTrips program
+#guard roundTrips specV1_1
+#guard roundTrips programV1_1
 #guard roundTrips facts
 #guard roundTrips user
 #guard roundTrips (Event.enter "weightField" (.qty 725 .kg))

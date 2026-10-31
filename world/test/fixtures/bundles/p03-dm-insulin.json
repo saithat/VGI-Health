@@ -1,0 +1,362 @@
+{
+ "resourceType": "Bundle",
+ "type": "collection",
+ "entry": [
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin",
+   "resource": {
+    "resourceType": "Patient",
+    "id": "p03-dm-insulin",
+    "name": [
+     {
+      "use": "official",
+      "given": [
+       "James"
+      ],
+      "family": "Okafor"
+     }
+    ],
+    "gender": "male",
+    "birthDate": "1971-01-30",
+    "identifier": [
+     {
+      "system": "https://github.com/synthetichealth/synthea",
+      "value": "p03-dm-insulin"
+     }
+    ]
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-cond-1",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p03-dm-insulin-cond-1",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "44054006",
+       "display": "Diabetes mellitus type 2 (disorder)"
+      }
+     ],
+     "text": "Diabetes mellitus type 2 (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "onsetDateTime": "2011-04-02"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-cond-2",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p03-dm-insulin-cond-2",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "162864005",
+       "display": "Body mass index 30+ - obesity (finding)"
+      }
+     ],
+     "text": "Body mass index 30+ - obesity (finding)"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "onsetDateTime": "2011-04-02"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-cond-3",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p03-dm-insulin-cond-3",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "55822004",
+       "display": "Hyperlipidemia (disorder)"
+      }
+     ],
+     "text": "Hyperlipidemia (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "onsetDateTime": "2014-09-09"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-med-1",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p03-dm-insulin-med-1",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "311041",
+       "display": "insulin glargine 100 UNT/ML Injectable Solution"
+      }
+     ],
+     "text": "insulin glargine 100 UNT/ML Injectable Solution"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "authoredOn": "2026-01-12"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-med-2",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p03-dm-insulin-med-2",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "861004",
+       "display": "metformin hydrochloride 1000 MG Oral Tablet"
+      }
+     ],
+     "text": "metformin hydrochloride 1000 MG Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "authoredOn": "2026-01-12"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-med-3",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p03-dm-insulin-med-3",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "259255",
+       "display": "atorvastatin 40 MG Oral Tablet"
+      }
+     ],
+     "text": "atorvastatin 40 MG Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "authoredOn": "2026-01-12"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-obs-1",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p03-dm-insulin-obs-1",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "vital-signs"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "29463-7",
+       "display": "Body weight"
+      }
+     ],
+     "text": "Body weight"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "effectiveDateTime": "2026-08-05T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 112.4,
+     "unit": "kg",
+     "system": "http://unitsofmeasure.org",
+     "code": "kg"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-obs-2",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p03-dm-insulin-obs-2",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "4548-4",
+       "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+      }
+     ],
+     "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "effectiveDateTime": "2026-08-05T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 8.6,
+     "unit": "%",
+     "system": "http://unitsofmeasure.org",
+     "code": "%"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-obs-3",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p03-dm-insulin-obs-3",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "2160-0",
+       "display": "Creatinine [Mass/volume] in Serum or Plasma"
+      }
+     ],
+     "text": "Creatinine [Mass/volume] in Serum or Plasma"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "effectiveDateTime": "2026-08-05T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 1.18,
+     "unit": "mg/dL",
+     "system": "http://unitsofmeasure.org",
+     "code": "mg/dL"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-obs-4",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p03-dm-insulin-obs-4",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "18262-6",
+       "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+      }
+     ],
+     "text": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+    },
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "effectiveDateTime": "2026-08-05T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 104,
+     "unit": "mg/dL",
+     "system": "http://unitsofmeasure.org",
+     "code": "mg/dL"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p03-dm-insulin-enc-1",
+   "resource": {
+    "resourceType": "Encounter",
+    "id": "p03-dm-insulin-enc-1",
+    "status": "finished",
+    "class": {
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+     "code": "AMB"
+    },
+    "type": [
+     {
+      "text": "Diabetes follow-up"
+     }
+    ],
+    "subject": {
+     "reference": "Patient/p03-dm-insulin"
+    },
+    "period": {
+     "start": "2026-08-05T09:00:00-08:00",
+     "end": "2026-08-05T09:30:00-08:00"
+    }
+   }
+  }
+ ]
+}

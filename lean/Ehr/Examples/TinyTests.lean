@@ -233,4 +233,100 @@ def atSignWarfarin : State := run s0 (toSign "warfarin" 30 ++ [.selectTab "signT
 #guard ((view spec program facts user atSign).items.find? (·.comp.id == "patientIdField")).map
   (·.humanOnly) == some true
 
+/-! ## California rules: naloxone risk (B&P §741) and CURES waiver (H&S §11165.4) -/
+
+/-- A state with one order line: drug, dose (tenths of mg), and frequency. -/
+def orderState (drug : String) (dose : Nat) (freq : Option String) : State :=
+  { s0 with captured :=
+      [{ element := "drug", slot := 0, value := .code drug, byHuman := true, confirmed := true },
+       { element := "dose", slot := 0, value := .qty dose .mg, byHuman := true, confirmed := true }] ++
+      match freq with
+      | some f => [{ element := "freq", slot := 0, value := .code f, byHuman := true, confirmed := true }]
+      | none => [] }
+
+-- Oxycodone 30 mg q4h: 30 × 6 × 1.5 = 270 MME/day, at least 90: risk.
+#guard whenHolds facts (orderState "oxycodone" 300 (some "q4h")) .naloxoneRisk
+-- Oxycodone 5 mg q6h: 30 MME/day, no benzodiazepine: no risk.
+#guard !whenHolds facts (orderState "oxycodone" 50 (some "q6h")) .naloxoneRisk
+-- The same order with a current benzodiazepine: risk.
+#guard whenHolds { facts with currentMedClasses := ["benzodiazepine"] }
+  (orderState "oxycodone" 50 (some "q6h")) .naloxoneRisk
+-- Tramadol 50 mg qid: 40 MME/day: no risk.
+#guard !whenHolds facts (orderState "tramadol" 500 (some "qid")) .naloxoneRisk
+-- Morphine 30 mg tid is exactly 90 MME/day: risk. 29 mg tid (87): no risk.
+#guard whenHolds facts (orderState "morphine" 300 (some "tid")) .naloxoneRisk
+#guard !whenHolds facts (orderState "morphine" 290 (some "tid")) .naloxoneRisk
+-- An unknown or missing frequency counts as a risk (the stricter choice).
+#guard whenHolds facts (orderState "oxycodone" 50 (some "prn")) .naloxoneRisk
+#guard whenHolds facts (orderState "oxycodone" 50 none) .naloxoneRisk
+-- Not an opioid: no risk.
+#guard !whenHolds facts (orderState "amoxicillin" 5000 none) .naloxoneRisk
+-- Per order line: the line's own dose and frequency are used.
+#guard lineMatches facts (orderState "oxycodone" 300 (some "q4h")) .naloxoneRisk 0 "oxycodone"
+
+/-- An allergy-list review that a documented reason can waive. -/
+def waivableReview : ReviewReq :=
+  { commit := "signOrders", info := "allergyList", mode := .shownOrReceipt 1440 [.physician]
+    waivedBy? := some "curesReason" }
+
+/-- `atSign` plus a reason value, entered by a human or not. -/
+def withReason (byHuman : Bool) (reason : String := "CURES unavailable") : State :=
+  { atSign with captured := atSign.captured ++
+      [{ element := "curesReason", slot := 0, value := .text reason, byHuman, confirmed := true }] }
+
+-- Not shown, no receipt, no reason: not met.
+#guard !reviewMet spec program facts atSign waivableReview
+-- A reason entered by a human meets it.
+#guard reviewMet spec program facts (withReason true) waivableReview
+-- A reason not entered by a human, or an empty reason, does not.
+#guard !reviewMet spec program facts (withReason false) waivableReview
+#guard !reviewMet spec program facts (withReason true "") waivableReview
+-- Without `waivedBy`, a reason does nothing.
+#guard !reviewMet spec program facts (withReason true) { waivableReview with waivedBy? := none }
+
+/-! ## Release v1.1: prior authorization (BRIEF 9b) -/
+
+-- Catalog: the v1 program fits spec v1; the v1.1 program does not, but fits v1.1.
+#guard program.inCatalog spec
+#guard !programV1_1.inCatalog spec
+#guard programV1_1.inCatalog specV1_1
+#guard Kind.catalogTag (.button .requestPriorAuth) == "priorAuth"
+
+/-- On the v1.1 order screen with an order for amoxicillin. -/
+def atOrderPA : State :=
+  runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+    [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")]
+
+/-- The result of requesting prior auth. -/
+def afterPA : State × StepResult := step specV1_1 programV1_1 facts user .human atOrderPA (.click "paRequest")
+
+#guard afterPA.2 == .ok
+-- It writes only the request element, on the current order line.
+#guard afterPA.1.captured == atOrderPA.captured ++
+  [{ element := "priorAuthRequest", slot := 0, value := .flag true, byHuman := true, confirmed := true }]
+#guard afterPA.1.commits == atOrderPA.commits && afterPA.1.receipts == atOrderPA.receipts
+-- The status panel counts as showing its info, and shows the request.
+#guard infoShown specV1_1 programV1_1 facts atOrderPA "priorAuthStatus"
+#guard ((view specV1_1 programV1_1 facts user afterPA.1).items.find? (·.comp.id == "paStatus")).map
+  (fun i => (i.shown, i.value?)) == some (true, some (.flag true))
+-- Before any order on the line: ignored, and the view says why the button is blocked.
+#guard (step specV1_1 programV1_1 facts user .human
+          (runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+            [.click "toOrder"]) (.click "paRequest")).2 == .ignored
+-- Under spec v1 (no request element) the request is refused.
+#guard (step spec programV1_1 facts user .human
+          (runAll spec programV1_1 facts user .human (init spec programV1_1 facts user)
+            [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")])
+          (.click "paRequest")).2 == .blocked "unknown element priorAuthRequest"
+-- A macro may not request it (the element is `never`-prefill: a human must).
+#guard (step specV1_1 programV1_1 facts user .«macro» atOrderPA (.click "paRequest")).2 ==
+  .blocked "human only: priorAuthRequest"
+-- Signing works the same as in v1 (prior auth is never required).
+#guard (step specV1_1 programV1_1 facts user .human
+          (runAll specV1_1 programV1_1 facts user .human afterPA.1
+            [.enter "doseField" (.qty 5000 .mg), .click "toSign",
+             .enter "patientIdField" (.text "JD/F/34"), .selectTab "signTabs" 1,
+             .click "signButton", .ack "drugAllergy"])
+          (.click "signButton")).1.commits == ["signOrders"]
+
 end Ehr.Examples.TinyTests
