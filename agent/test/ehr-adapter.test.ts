@@ -24,7 +24,8 @@ case "$1" in
   deploy) ${verdictOk ? `echo '${JSON.stringify(CERT)}'` : `echo '${JSON.stringify(VIOLATION)}'; exit 1`} ;;
   simulate) echo '${JSON.stringify(DAY)}' ;;
   min-clicks) echo '{"tasks":[{"task":"t1","workflow":"W1","clicks":6,"keystrokes":2}]}' ;;
-  run-batch) echo '[1,2]' ;;
+  run-batch) printf '{"case":0,"index":0}\n{"case":0,"index":1}\n' ;;
+  spec-export) echo '{"version":"tiny-1","elements":[],"infos":[],"commits":[],"entries":[],"reviews":[],"alerts":[],"design":{"maxDepth":3,"minTextSize":1,"stabilityBudget":5,"landmarks":["patientBanner"],"catalog":["banner"]}}' ;;
   *) echo "unknown" >&2; exit 2 ;;
 esac
 `);
@@ -47,13 +48,15 @@ describe('ehr CLI adapter (stub binary)', () => {
     if (!persona) throw new Error('persona');
     expect((await ehr.simulate({ specVersion: 'v1', program, persona, schedule, worldDir: '/w', seed: 3 })).day).toBe(1);
     expect((await ehr.minClicks({ specVersion: 'v1', program, schedule, worldDir: '/w' })).tasks[0]?.clicks).toBe(6);
-    expect(await ehr.runBatch({ items: [] })).toEqual([1, 2]);
+    expect(await ehr.runBatch([{ spec: {}, program: {}, facts: {}, user: {}, events: [] }])).toEqual([{ case: 0, index: 0 }, { case: 0, index: 1 }]);
+    expect((await ehr.specExport('tiny')).version).toBe('tiny-1');
     const lines = (await readFile(log, 'utf8')).trim().split('\n');
     expect(lines[0]).toMatch(/^check --spec v1 --program \S+program\.json --prev \S+prev\.json --canonical \S+canonical\.json$/);
     expect(lines[1]).toMatch(/^deploy --spec v1 --program \S+ --prev \S+ --canonical \S+ --out /);
     expect(lines[2]).toMatch(/^simulate --spec v1 --program \S+ --persona \S+persona\.json --schedule \S+schedule\.json --world \/w --seed 3$/);
     expect(lines[3]).toMatch(/^min-clicks --spec v1 --program \S+ --schedule \S+ --world \/w$/);
-    expect(lines[4]).toMatch(/^run-batch --input \S+batch\.json$/);
+    expect(lines[4]).toMatch(/^run-batch \S+batch\.jsonl$/);
+    expect(lines[5]).toBe('spec-export tiny');
   });
 
   it('reads a violation from a non-zero exit, and deploy refusals as { deployed: false }', async () => {

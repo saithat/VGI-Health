@@ -14,20 +14,20 @@ function baseSpec(): Spec {
   return {
     version: 'v1',
     elements: [
-      { id: 'patientIdReentry', label: 'Patient ID re-entry', kind: 'identity', enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'never', friction: 'safety', humanOnly: true, linkedFrom: null, fhirTarget: 'Provenance' },
-      { id: 'weight', label: 'Weight (kg)', kind: { quantity: { unit: 'kg' } }, enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'recordConfirm', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'Observation.valueQuantity' },
-      { id: 'drug', label: 'Drug', kind: { coded: { valueSet: 'rxnorm' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'MedicationRequest.medication' },
-      { id: 'dose', label: 'Dose', kind: { quantity: { unit: 'mg' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'MedicationRequest.dosageInstruction' },
-      { id: 'frequency', label: 'Frequency', kind: { coded: { valueSet: 'freq' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'MedicationRequest.dosageInstruction.timing' },
+      { id: 'patientIdReentry', label: 'Patient ID re-entry', kind: 'identity', enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'Provenance' },
+      { id: 'weight', label: 'Weight (kg)', kind: { quantity: { unit: 'kg' } }, enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'recordConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'Observation.valueQuantity' },
+      { id: 'drug', label: 'Drug', kind: { coded: { valueSet: 'rxnorm' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.medication' },
+      { id: 'dose', label: 'Dose', kind: { quantity: { unit: 'mg' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.dosageInstruction' },
+      { id: 'frequency', label: 'Frequency', kind: { coded: { valueSet: 'freq' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.dosageInstruction.timing' },
       { id: 'diagnosis', label: 'Diagnosis', kind: { coded: { valueSet: 'icd10' } }, enteredBy: [...PRESCRIBERS], prefill: 'autoLinked', friction: 'compliance', humanOnly: false, linkedFrom: 'visitDiagnosis', fhirTarget: 'MedicationRequest.reasonReference' },
-      { id: 'note', label: 'Note text', kind: 'text', enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'accidental', humanOnly: false, linkedFrom: null, fhirTarget: 'DocumentReference' },
-      { id: 'wristbandScan', label: 'Wristband scan', kind: { scan: { target: 'wristband' } }, enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, linkedFrom: null, fhirTarget: 'MedicationAdministration' },
-      { id: 'medScan', label: 'Medication scan', kind: { scan: { target: 'medication' } }, enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, linkedFrom: null, fhirTarget: 'MedicationAdministration' },
-      { id: 'cosign', label: 'Second nurse', kind: 'cosign', enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, linkedFrom: null, fhirTarget: 'MedicationAdministration.performer' },
-      { id: 'painScore', label: 'Pain score', kind: { coded: { valueSet: 'pain0-10' } }, enteredBy: ['rn'], prefill: 'never', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'Observation' },
-      { id: 'consentVerified', label: 'Consent verified', kind: 'flag', enteredBy: ['surgeon'], prefill: 'never', friction: 'safety', humanOnly: true, linkedFrom: null, fhirTarget: 'Consent' },
-      { id: 'refillDecision', label: 'Refill decision', kind: { coded: { valueSet: 'refill' } }, enteredBy: ['physician', 'np'], prefill: 'never', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'Task.output' },
-      { id: 'vaccineLot', label: 'Vaccine lot', kind: 'text', enteredBy: ['np'], prefill: 'never', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'Immunization.lotNumber' },
+      { id: 'note', label: 'Note text', kind: 'text', enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'accidental', humanOnly: false, fhirTarget: 'DocumentReference' },
+      { id: 'wristbandScan', label: 'Wristband scan', kind: { scan: { target: 'wristband' } }, enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'MedicationAdministration' },
+      { id: 'medScan', label: 'Medication scan', kind: { scan: { target: 'medication' } }, enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'MedicationAdministration' },
+      { id: 'cosign', label: 'Second nurse', kind: 'cosign', enteredBy: ['rn'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'MedicationAdministration.performer' },
+      { id: 'painScore', label: 'Pain score', kind: { coded: { valueSet: 'pain0-10' } }, enteredBy: ['rn'], prefill: 'never', friction: 'compliance', humanOnly: false, fhirTarget: 'Observation' },
+      { id: 'consentVerified', label: 'Consent verified', kind: 'flag', enteredBy: ['surgeon'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'Consent' },
+      { id: 'refillDecision', label: 'Refill decision', kind: { coded: { valueSet: 'refill' } }, enteredBy: ['physician', 'np'], prefill: 'never', friction: 'compliance', humanOnly: false, fhirTarget: 'Task.output' },
+      { id: 'vaccineLot', label: 'Vaccine lot', kind: 'text', enteredBy: ['np'], prefill: 'never', friction: 'compliance', humanOnly: false, fhirTarget: 'Immunization.lotNumber' },
     ],
     infos: [
       { id: 'patientBanner', label: 'Patient banner', version: '' },
@@ -95,7 +95,7 @@ export function fakeSpec(version: string): Spec {
   if (version !== 'v2') throw new Error(`fake spec: unknown version ${version}`);
   // v2: antibiotic indication required and shown to nurses.
   spec.version = 'v2';
-  spec.elements.push({ id: 'abxIndication', label: 'Antibiotic indication', kind: { coded: { valueSet: 'abx-indications' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, linkedFrom: null, fhirTarget: 'MedicationRequest.reasonCode' });
+  spec.elements.push({ id: 'abxIndication', label: 'Antibiotic indication', kind: { coded: { valueSet: 'abx-indications' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.reasonCode' });
   spec.infos.push({ id: 'abxIndication', label: 'Antibiotic indication', version: '' });
   spec.entries.push({ commit: 'signOrders', element: 'abxIndication', when: { orderClass: { cls: 'antibiotic' } }, perOrderLine: true });
   spec.reviews.push({ commit: 'administerMed', info: 'abxIndication', mode: 'shownOnCommit', when: { medClass: { cls: 'antibiotic' } } });
@@ -105,7 +105,7 @@ export function fakeSpec(version: string): Spec {
 // ---------------------------------------------------------------- canonical program
 type K = Component['kind'];
 const c = (id: string, kind: K, extra: Partial<Component> = {}): Component => ({
-  id, kind, label: extra.label ?? id, parent: null, tab: 0, visibility: 'always', size: 'normal', hotkey: null, tag: extra.tag ?? id, copyOf: null, ...extra,
+  id, kind, label: extra.label ?? id, tab: 0, visibility: 'always', size: 'normal', tag: extra.tag ?? id, ...extra,
 });
 const banner = (s: string) => c(`${s}-banner`, 'banner', { tag: 'patientBanner', label: 'Patient banner' });
 const field = (id: string, element: string, extra: Partial<Component> = {}) => c(id, { field: { element, slot: 'current', prefill: 'none' } }, { tag: element, ...extra });

@@ -33,8 +33,8 @@ function buildAllergyHidden(p: Program): Candidate | null {
     if (!panel) continue;
     const tabsId = `seeded-tabs-${s.id}`;
     const tabs = {
-      id: tabsId, kind: 'tabs', label: 'Summary | Allergies', parent: panel.parent ?? null, tab: panel.tab, visibility: 'always',
-      size: 'normal', hotkey: null, tag: 'secondaryTabs', copyOf: null,
+      id: tabsId, kind: 'tabs', label: 'Summary | Allergies', ...(panel.parent ? { parent: panel.parent } : {}), tab: panel.tab,
+      visibility: 'always', size: 'normal', tag: 'secondaryTabs',
     };
     return {
       ...base,

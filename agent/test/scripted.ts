@@ -72,7 +72,7 @@ function nightly(persona: string): LlmProposal {
       // P5: two candidates that each pass but together exceed the stability budget (forces a repair).
       const groupInto = (gid: string, ids: string[]): Op[] => [
         op('add', `/screens/[id=w6-preop]/components/[id=${ids[0] ?? ''}]`, comp(gid, { group: { collapsible: true, startCollapsed: false } }, { label: gid })),
-        ...ids.map((x) => op('replace', `/screens/[id=w6-preop]/components/[id=${x}]/parent`, gid)),
+        ...ids.map((x) => op('add', `/screens/[id=w6-preop]/components/[id=${x}]/parent`, gid)),
       ];
       return {
         hypothesis, decision: 'change', candidates: [

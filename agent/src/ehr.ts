@@ -15,8 +15,12 @@
  *                 stdout: { tasks: [{ task, workflow?, clicks, keystrokes }] }
  *   ehr deploy    --spec <ver> --program P.json --prev PREV.json --canonical C.json --out <dir>
  *                 stdout: Certificate (exit 0) | Verdict (exit 1, refused; T4)
- *   ehr run-batch --input BATCH.json      stdout: JSON (passed through)
- *   ehr spec-export --spec <ver>          stdout: Spec
+ *
+ * IMPLEMENTED by lane/lean-core (lean/Main.lean, M3), matched here:
+ *   ehr run-batch <file.jsonl>   one BatchCase {spec, program, facts, user, events} per line
+ *                                stdout: one BatchStep {case, index, state, result, view} per event (JSONL)
+ *   ehr spec-export <name>       stdout: Spec
+ *   (also init / step / view on stdin; the agent loop does not need them)
  *
  * `--spec` names a Lean spec module version ("v1", "v1.1", "v2"); the spec
  * itself is compiled into the checker, never passed in as JSON.
@@ -26,7 +30,7 @@
  */
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { z } from 'zod';
@@ -58,7 +62,8 @@ export interface EhrClient {
   simulate(input: SimulateInput): Promise<DayResult>;
   minClicks(input: MinClicksInput): Promise<MinClicksResult>;
   deploy(input: DeployInput): Promise<DeployResult>;
-  runBatch(batch: unknown): Promise<unknown>;
+  /** `ehr run-batch`: cases in, one output object per event (JSONL parsed). */
+  runBatch(cases: readonly unknown[]): Promise<unknown[]>;
   specExport(specVersion: string): Promise<Spec>;
 }
 
@@ -160,17 +165,24 @@ class CliEhr implements EhrClient {
     });
   }
 
-  runBatch(batch: unknown): Promise<unknown> {
-    return this.withFiles({ batch }, async (p) => {
-      const res = await run(this.binary, ['run-batch', '--input', p['batch'] ?? '']);
-      if (res.code !== 0) throw new Error(`ehr run-batch: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
-      const out: unknown = JSON.parse(res.stdout);
+  async runBatch(cases: readonly unknown[]): Promise<unknown[]> {
+    if (!existsSync(this.binary)) throw new Error(`ehr binary not found at ${this.binary}`);
+    const dir = await mkdtemp(path.join(tmpdir(), 'ehr-'));
+    try {
+      const file = path.join(dir, 'batch.jsonl');
+      await writeFile(file, cases.map((c) => JSON.stringify(c)).join('\n') + '\n');
+      const res = await run(this.binary, ['run-batch', file]);
+      const out = res.stdout.split('\n').filter((l) => l.trim() !== '').map((l): unknown => JSON.parse(l));
+      if (res.code !== 0) throw new Error(`ehr run-batch: exit ${res.code}: ${res.stderr.slice(0, 2000)} ${JSON.stringify(out.slice(0, 3))}`);
       return out;
-    });
+    } finally {
+      await rm(dir, { recursive: true, force: true });
+    }
   }
 
   async specExport(specVersion: string): Promise<Spec> {
-    const res = await run(this.binary, ['spec-export', '--spec', specVersion]);
+    if (!existsSync(this.binary)) throw new Error(`ehr binary not found at ${this.binary}`);
+    const res = await run(this.binary, ['spec-export', specVersion]);
     if (res.code !== 0) throw new Error(`ehr spec-export: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
     return parseOut('spec-export', res, specSchema);
   }

@@ -1,13 +1,13 @@
 /**
  * Agent-owned data formats (zod). The decision record is owned by the agent
  * loop (core-model.md section 8); it is not safety-relevant, so it lives here
- * rather than in Lean. Lean-owned formats are mirrored in `lean-mirror.ts`
+ * rather than in Lean. Lean-owned formats come from `lean-types.ts` (generated types)
  * and re-exported below.
  */
 import { z } from 'zod';
-import { certificateSchema, eventSchema, verdictSchema } from './lean-mirror.js';
+import { certificateSchema, eventSchema, verdictSchema } from './lean-types.js';
 
-export * from './lean-mirror.js';
+export * from './lean-types.js';
 
 const nat = z.number().int().nonnegative();
 const int = z.number().int();

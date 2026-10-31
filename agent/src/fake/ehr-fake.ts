@@ -27,7 +27,7 @@ export function createFakeEhr(): EhrClient {
     simulate: async (i) => fakeSimulate(i),
     minClicks: async (i) => fakeMinClicks(i),
     deploy: async (i) => fakeDeploy(i),
-    runBatch: async (batch) => ({ fake: true, items: Array.isArray(batch) ? batch.length : 0 }),
+    runBatch: async (cases) => cases.map((_, i) => ({ case: i, fake: true })),
     specExport: async (v) => fakeSpec(v),
   };
 }
