@@ -240,6 +240,10 @@ For every commit (sign orders, sign note, approve refill, acknowledge result, ad
 ### Real California rules (owner decision, Oct 31)
 - **CURES review (CA Health & Safety Code §11165.4):** before signing a first Schedule II–IV prescription, the prescriber reviews the patient's CURES report within the last 24 hours, or documents the statutory reason it wasn't consulted. Modeled as a review requirement (`curesReport`, shown or a receipt within 1,440 minutes) that a human-entered exemption reason can waive (`waivedBy`).
 - **Naloxone offer (CA Business & Professions Code §741):** for opioid orders at ≥90 MME/day, or with a concurrent benzodiazepine, the prescriber records offering naloxone (an entry requirement under the condition `naloxoneRisk`).
+- **Controlled-substance details shown while signing (21 CFR 1311.140):** a no-receipt review requirement on signing controlled-substance orders. Macros can't sign (already true in the interpreter).
+- **Schedule II prescriptions have zero refills (21 CFR 1306.12):** a hard stop via a value constraint on the refills element.
+- **Immunization records (42 U.S.C. §300aa-25/26):** VIS given (with edition date) before recording, plus manufacturer, lot, and administering provider.
+- **More rules:** a second research round is ranking further real federal and California rules for owner approval.
 - **Grounding:** `docs/regulations.md` maps every spec rule to its real source (federal law, California law, accreditation standard, best practice, or our own design choice), with citations. Spec docstrings cite them.
 
 ### Alert rules
@@ -371,6 +375,8 @@ Each one is stated in plain words and quantifies over **all** specs and programs
 12. A4: the passive care-gap reminder turned into a popup.
 13. CURES: the CURES panel and the exemption picker both missing from the sign-orders path (commit unreachable for controlled orders).
 14. Naloxone: the naloxone offer pre-filled by a macro.
+15. EPCS: controlled-prescription details hidden in a collapsed group on the sign screen.
+16. Schedule II: a refills field defaulted to 3 with no constraint path.
 
 Each one gets a `¬ Satisfies` lemma, a checker rejection with a replayable counterexample, and an app test showing the hard stop blocks the commit.
 
