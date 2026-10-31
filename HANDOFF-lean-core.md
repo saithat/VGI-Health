@@ -11,7 +11,21 @@ starting. The orchestrator's five-item core changes queue is complete.
 | 2 / alerts, CR-2/4 | `5457421` | Explicit informational human alert clicks; macro alert clicks stop with a human-only reason. CR-2 retains the checker's conservative pin rule; CR-4 was already implemented/proven. |
 | 3 / content, CR-3 | `52206f9` | Declared record source enforced on prefill; encounter/weight-based When conditions; workflow-keyed passive targets; optional episode context passed through FHIR. |
 | 4 / world/sim | `fb1ed8c` | Optional typed clinical choices; OrderKind/W6Step; service-order prior-auth support; generic drug-name contract corrected; absolute dose caps. |
-| 5 / GenTS | this commit | 99 types and 24 real-JSON samples, including Display/Html/render rows and API types, Task and DaySchedule; completeness/name-collision checks. |
+| 5 / GenTS | `ea76226` | 99 types and 24 real-JSON samples, including Display/Html/render rows and API types, Task and DaySchedule; completeness/name-collision checks. |
+
+## Follow-ups from the consolidated checker request file
+
+Human clicks now open the alert's first pending popup candidate, without
+acknowledging it. Passive/unknown/nonfiring/acked alerts do not open; removable
+alerts retain popup opt-in. This supersedes item 2's informational human click.
+T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
+This human-alert follow-up is pushed as `f88c623`.
+
+Checker CR-6 is also resolved in this commit (the final follow-up): prior-auth convenience actions
+preserve every confirmed capture on the current slot and cannot create
+never/human-only captures. Tiny v1.1 exposes a human field and retains its never
+policy. Other specs may authorize the convenience action via a non-human-only
+policy; macros still leave those values awaiting human confirmation.
 
 ## Validation
 
@@ -54,7 +68,8 @@ starting. The orchestrator's five-item core changes queue is complete.
 ## Minimal edits outside Core
 
 - T0/T3/Alerts branch frames; Frame's record-prefill lemma; Alerts' Tiny example.
-- Tiny weight-source metadata and workflow target; V1's four active record
+- Tiny weight-source metadata, workflow target and human prior-auth field;
+  TinyTests uses the field and checks preservation. V1's four active record
   sources and three passive workflow targets. No entry/review rule was weakened.
 - Render.Types/Fhir: optional encounter context and its projection.
 - Formulary: six existing world pediatric caps, expressed in tenths of mg.
@@ -64,12 +79,14 @@ starting. The orchestrator's five-item core changes queue is complete.
 
 ## What's left
 
-**Nothing left in the assigned core changes queue.**
+**Nothing left in the assigned core changes queue or its consolidated core
+follow-ups.**
 
 Other-lane adoption is explicitly requested in
 `docs/design/changes-requests.md`: checker workflow coverage/enter-once/source
 checks and CR-1 acceptance; content passive component coverage and optional
-condition migrations/service fields; world/sim typed-choice and episode-context
+condition migrations/service fields and human prior-auth fields where policy
+requires them; world/sim typed-choice and episode-context
 production/consumption. These are not silently implemented in their lanes.
 HANDOFF-sim.md was absent from main; the explicit orchestrator requests supplied
 its required core scope.

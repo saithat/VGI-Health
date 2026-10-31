@@ -124,7 +124,12 @@ def backId (prog : Program) (cid : CompId) : Bool :=
     forgetOutput (clickCore sp prog facts user actor (withHistory s h) c) =
       forgetOutput (clickCore sp prog facts user actor s c) := by
   cases hk : c.kind with
-  | alert a popup => simp only [clickCore, hk]; cases actor <;> rfl
+  | alert a popup =>
+    simp only [clickCore, hk]
+    cases actor
+    · simp only [clickAlert, popupCandidates_history]
+      repeat' first | rfl | (split <;> try simp_all)
+    · rfl
   | button action =>
     cases action with
     | goto target => simpa only [clickCore, hk] using goTo_history sp prog facts s target h
@@ -148,7 +153,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
       · simp only [hh, ite_false]; rfl
     | requestPriorAuth =>
       simp only [clickCore, hk]
-      cases actor <;> simp only [requestPriorAuth, hasOrderAt, serviceOrderAt, orderLines, withHistory]
+      cases actor <;> simp only [requestPriorAuth, priorAuthCaptured, hasOrderAt, serviceOrderAt, orderLines, withHistory]
       all_goals repeat' first | rfl | (split <;> try simp_all)
   | group collapsible start => simp only [clickCore, hk]; cases collapsible <;> rfl
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl

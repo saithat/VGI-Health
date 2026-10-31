@@ -1,0 +1,10 @@
+{
+  "id": "P5",
+  "role": "surgeon",
+  "keyboardShare": 30,
+  "reviewsAllergiesEarly": false,
+  "scansSidebar": false,
+  "backtrackRate": 20,
+  "searchWhenBuried": false,
+  "overrideRate": 900
+}

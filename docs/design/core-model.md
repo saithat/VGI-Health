@@ -304,9 +304,10 @@ inductive Event
 - **`newOrderLine`:** blocked with `finish this order line first` while the
   current drug line misses an applicable per-order-line entry requirement.
   Humans and macros obey the same stop; empty/complete lines may advance.
-- **Inline alert clicks:** a human click is informational (`ignored`); a macro
-  click is `blocked "human only: acknowledge"`. Clicking cannot acknowledge
-  an alert. While a popup is open, clicks remain blocked by the modal rule.
+- **Inline alert clicks:** a human click opens the alert's first pending popup
+  candidate, without acknowledging it. Passive, unknown, nonfiring and already
+  acknowledged alerts do not open; removable alerts require popup opt-in. A
+  macro click is `blocked "human only: acknowledge"`. While a popup is open, clicks remain blocked by the modal rule.
 - **`ack a`:** human only, and only when `popup = some (a, k)`; adds `(a, k)` to `acked` and clears `popup`.
 - **Alerts:** an alert component is visible only if its condition holds (A2). Passive alerts never become `popup` (A4). An acked `(a, k)` never pops up again in the episode (A3).
 - **`markReviewed i`:** adds a receipt with the current version, clock, and the user's role.
@@ -513,3 +514,8 @@ on that slot. Its spec must declare those fields. `requestPriorAuth` recognizes
 both medication and service orders; the CMS-0057-F release's applicable order
 kinds are the services (`OrderChoice.isPriorAuthService`), excluding drugs.
 Drug alerts and drug-class requirements only inspect medication `orderLines`.
+
+Prior-auth convenience clicks preserve every already-confirmed request capture
+on the current slot. They cannot create never/human-only captures: the program
+must expose a human field for an ordinary Event.enter. This preserves both the
+literal human-entry property and confirmed values/provenance.

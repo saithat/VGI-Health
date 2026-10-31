@@ -12,7 +12,7 @@ import type { Appointment, AppointmentKind, DischargeRecord, Inpatient, PendingL
 
 /** Ward census cap: realistic ward size, scaled down for tiny test populations (so outpatients remain). */
 export function maxCensus(pop: PopIndex): number {
-  return Math.max(1, Math.min(16, Math.floor(pop.adults.length * 0.3)));
+  return Math.max(1, Math.min(10, Math.floor(pop.adults.length * 0.3)));
 }
 
 export function canAdmit(b: DayBuild): boolean {

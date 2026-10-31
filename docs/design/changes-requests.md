@@ -203,8 +203,9 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
 - **CR-1 resolved:** `currentLineComplete` guards `newOrderLine` for humans
   and macros. Checker may replace its blanket rejection with this hard-stop
   semantics. No new action/event was needed.
-- **Alert clicks resolved:** human inline clicks are informational (`ignored`),
-  macro clicks are `blocked "human only: acknowledge"`. Only a human matching
+- **Alert clicks resolved:** human clicks open the clicked alert's first pending
+  popup candidate, never acknowledging it; passive alerts remain inline. Macro
+  clicks are `blocked "human only: acknowledge"`. Only a human matching
   `ack` on the current popup acknowledges it; removed inline alerts do not
   disable spec interruptive alerts.
 - **CR-2:** retain checker's conservative `unlessReceipt` pin rule. Core
@@ -242,3 +243,36 @@ fails loading dashboard fixtures: Zod expects `DecisionRecord.screenCheck`, abse
 from `runs/mock/decisions` (and/or break records). Please regenerate the app-owned
 mock run against the current agent schema. The sim lane has not edited these
 artifacts. Agent's 31 tests and world's 52 tests pass.
+## World integration status
+
+Core fb1ed8c supplies the requested typed fields, service order kinds and generic
+absolute dose caps. World now emits the typed fields, imaging/procedure orders
+and structured FHIR clinical observations, and validates all schedules through
+Lean round trips.
+
+The real population also includes Humulin 70/30, hydrocodone-only extended-release,
+fentanyl, buprenorphine/naloxone and diazepam. World preserves these displays in
+`otherMedDisplays` without substituting a different ingredient. If alert facts
+need their classes or MME factors, lean-core/render should extend the authoritative
+formulary/FHIR mapping.
+
+
+## World follow-up: albuterol absolute cap (lean-core)
+
+Please add `maxDoseMgTenths := 50` for albuterol in `Ehr/Formulary.lean`.
+World's pediatric nebulizer regimen uses 0.15 mg/kg capped at 5 mg; the
+remaining generic cap is currently 0 (unspecified). In the real seed-1 run,
+52.5, 69.6 and 71.4 kg adolescents receive 5 mg, below the uncapped 0.1 mg/kg
+minimum. These are the same heavy-child absolute-cap cases addressed by
+fb1ed8c for the other pediatric drugs. Keep the mg/kg range and the 5 mg cap;
+do not raise their doses or weaken the rule to hide the mismatch.
+
+## Checker CR-6 resolution from core
+
+Confirmed priorAuthRequest captures on the current slot are preserved exactly
+by request clicks. For never/human-only elements a request click is blocked;
+only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
+field and retains its never policy. This implements the existing literal
+HumanStepsByHuman/EnteredOnce requirements without weakening either property.
+Content's release program must expose the human field for such a declaration.
+

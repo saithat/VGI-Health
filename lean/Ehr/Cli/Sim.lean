@@ -80,6 +80,18 @@ def bundleResourcesWithIds (bundle : Json) : List Json :=
       r.setObjVal! "id" (.str (String.ofList (url.toList.drop 9)))
     else r
 
+/-- World clinical observations are structured FHIR, not note-section tags.
+Pass their explicit coded values to goal derivation as named record facts. -/
+def clinicalRecord (rs : List Json) : List (String × String) :=
+  rs.filterMap fun r =>
+    if Render.Fhir.resourceType r != "Observation" then none else
+    let coding := Render.Fhir.codings (Render.Fhir.field r "code")
+    match coding.find? (fun c => Render.Fhir.str c "system" == "urn:vgi:world:clinical") with
+    | none => none
+    | some c =>
+      let value := Render.Fhir.firstCode (Render.Fhir.field r "valueCodeableConcept")
+      if value.isEmpty then none else some (Render.Fhir.str c "code", value)
+
 /-- Fixture index path from the world manifest, or an index supplied directly. -/
 def fixtureIndex (root world : System.FilePath) : IO (Option System.FilePath) := do
   if world.extension == some "json" then return some world
@@ -122,7 +134,7 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         let rs := mergeResources (bundleResourcesWithIds b) today
         let merged := Json.mkObj [("resourceType", .str "Bundle"),
           ("entry", toJson (rs.map fun r => Json.mkObj [("resource", r)]))]
-        let ctx : Render.FactsContext := { today := dateOf task.day, now := task.startMin }
+        let ctx : Render.FactsContext := { today := dateOf task.day, now := task.startMin, record := (clinicalRecord rs).reverse }
         match Render.Fhir.parseBundle ctx merged with
         | .error e => throw (IO.userError s!"{task.id}: FHIR facts: {e}")
         | .ok (f, _) => pure f

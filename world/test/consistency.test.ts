@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { PERSONAS } from "../src/schema";
-import { DAYS, run, schedule, stateOf } from "./helpers";
+import { DAYS, FIXTURE_INDEX, SYNTHEA_INDEX, run, schedule, stateOf } from "./helpers";
 
-const SEEDS = [1, 2, 3];
+const CASES = [
+  ...[1, 2, 3].map((seed) => ({ seed, index: FIXTURE_INDEX })),
+  { seed: 1, index: SYNTHEA_INDEX },
+];
 
-describe.each(SEEDS)("cross-persona consistency (seed %i)", (seed) => {
-  const r = run(seed);
+describe.each(CASES)("cross-persona consistency ($index, seed $seed)", ({ seed, index }) => {
+  const r = run(seed, index);
 
   it("every admitted patient is on P3's census the next day, with ward tasks", () => {
     let checked = 0;
@@ -93,10 +96,10 @@ describe.each(SEEDS)("cross-persona consistency (seed %i)", (seed) => {
     const p2 = schedule(r, 1, "P2").tasks.find((t) => t.id === c.edTaskId);
     expect(p2?.choices.disposition).toBe("consult");
     expect(p2?.patientId).toBe(c.patientId);
-    expect(schedule(r, 1, "P5").tasks.some((t) => t.patientId === c.patientId && t.workflow === "W6" && t.choices.noteSections[0] === "consultNote")).toBe(true);
+    expect(schedule(r, 1, "P5").tasks.some((t) => t.patientId === c.patientId && t.workflow === "W6" && t.choices.w6Step === "consult")).toBe(true);
     expect(c.orDay).toBe(2);
-    const p5day2 = schedule(r, 2, "P5").tasks.filter((t) => t.patientId === c.patientId && t.workflow === "W6").map((t) => t.choices.noteSections[0]);
-    expect(p5day2).toEqual(expect.arrayContaining(["hAndPUpdate", "briefOpNote"]));
+    const p5day2 = schedule(r, 2, "P5").tasks.filter((t) => t.patientId === c.patientId && t.workflow === "W6").map((t) => t.choices.w6Step);
+    expect(p5day2).toEqual(expect.arrayContaining(["preop", "postop"]));
     expect(schedule(r, 2, "P3").tasks.some((t) => t.patientId === c.patientId)).toBe(true);
     expect(c.dischargeDay).not.toBeNull();
     const dcDay = c.dischargeDay ?? 0;
@@ -104,9 +107,9 @@ describe.each(SEEDS)("cross-persona consistency (seed %i)", (seed) => {
     // Post-op days: P3 gives meds and P5 rounds before discharge.
     for (let d = c.orDay + 1; d <= dcDay; d++) {
       expect(schedule(r, d, "P3").tasks.some((t) => t.patientId === c.patientId && t.choices.administer.length > 0), `P3 meds day ${d}`).toBe(true);
-      expect(schedule(r, d, "P5").tasks.some((t) => t.patientId === c.patientId && t.choices.noteSections[0] === "progressNote"), `P5 rounds day ${d}`).toBe(true);
+      expect(schedule(r, d, "P5").tasks.some((t) => t.patientId === c.patientId && t.choices.w6Step === "rounding"), `P5 rounds day ${d}`).toBe(true);
     }
-    expect(schedule(r, dcDay, "P5").tasks.some((t) => t.patientId === c.patientId && t.choices.noteSections[0] === "medRec")).toBe(true);
+    expect(schedule(r, dcDay, "P5").tasks.some((t) => t.patientId === c.patientId && t.choices.w6Step === "discharge")).toBe(true);
     expect(c.postopVisitDay).not.toBeNull();
     expect(c.p1FollowupDay).not.toBeNull();
   });

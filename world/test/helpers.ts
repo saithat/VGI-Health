@@ -5,16 +5,18 @@ import { PERSONAS } from "../src/schema";
 import { type WorldRun, generateWorld } from "../src/world";
 
 export const FIXTURE_INDEX = join(__dirname, "fixtures", "index.json");
+export const SYNTHEA_INDEX = join(__dirname, "../../fixtures/synthea/index.json");
 export const DAYS = 10;
 
-const cache = new Map<number, WorldRun>();
+const cache = new Map<string, WorldRun>();
 
 /** Generate (and cache) a 10-day run on the hand-written fixture population. */
-export function run(seed: number): WorldRun {
-  const hit = cache.get(seed);
+export function run(seed: number, index = FIXTURE_INDEX): WorldRun {
+  const key = `${index}:${seed}`;
+  const hit = cache.get(key);
   if (hit !== undefined) return hit;
-  const r = generateWorld(seed, DAYS, loadPopulation(FIXTURE_INDEX).patients);
-  cache.set(seed, r);
+  const r = generateWorld(seed, DAYS, loadPopulation(index).patients);
+  cache.set(key, r);
   return r;
 }
 

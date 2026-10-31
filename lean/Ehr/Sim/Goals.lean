@@ -96,6 +96,19 @@ def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   else if e == "orderCode" then o.code?.map .code
   else none
 
+/-- Translate typed world exemption decisions to the hospital's coded
+vocabulary. Surgical supplies of six or seven days use CURES review because
+this hospital's policy accepts at most five, even though the world records
+seven-day statutory eligibility. No note-section strings are interpreted. -/
+def curesReason (o : OrderChoice) : Option String := do
+  let r ← o.curesExemptReason?
+  if r == "ed-supply-7-days-or-less" then
+    if o.supplyDays?.any (· ≤ 7) then some "ed-7-day" else none
+  else if r == "postoperative-supply-7-days-or-less" then
+    if o.supplyDays?.any (· ≤ 5) then some "surgery-5-day" else none
+  else if ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"].contains r then some r
+  else none
+
 /-- Elements filled once per immunization (slot = index). -/
 def immunizationElements : List ElementId := ["vaccine", "immunization", "cvx"]
 
@@ -119,8 +132,9 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
     else if el.id == "painScore" || el.id == "painReassessment" then choices.painScore?.map (fun n => .code (toString n))
     else if el.id == "refillReason" then choices.refillReason?.map .text
     else if el.id == "curesExemptionReason" then
-      (choices.orders.findSome? (·.curesExemptReason?)).map .code
-    else if el.id == "naloxoneOffer" then some (.code "offered-declined")
+      (choices.orders.findSome? curesReason).map .code
+    else if el.id == "naloxoneOffer" then some (.code
+      (if facts.record.lookup "naloxoneOffer" == some "accepted" then "prescribed" else "offered-declined"))
     else if el.id == "adminStatus" then med?.map fun m => .code (if m.holdReason?.isSome then "held" else "given")
     else if el.id == "adminReason" then med?.map fun m => .code (m.holdReason?.getD "scheduled")
     else if el.id == "refillDecision" then choices.refill?.map .code
@@ -244,7 +258,7 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       | none => []
   let waiver := sp.reviews.flatMap fun rq =>
     if !commits.contains rq.commit || !whenHolds facts hyp0 rq.when then [] else
-    match rq.waivedBy?, choices.orders.findSome? (·.curesExemptReason?) with
+    match rq.waivedBy?, choices.orders.findSome? curesReason with
     | some e, some reason => [{ element := e, value? := some (.code reason), commit := rq.commit }]
     | _, _ => []
   let services := ((List.range orders.length).zip orders).flatMap fun (i, o) =>
