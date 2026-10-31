@@ -1,4 +1,5 @@
 import Ehr.Check.PinSound
+import Ehr.Check.BadProofs
 import Ehr.Props.Examples
 
 namespace Ehr.Check.Tests

@@ -141,4 +141,23 @@ theorem verifiedReachable_sound (p : Program) (z : ScreenId) (h : z ∈ verified
   obtain ⟨sp, ⟨_, hpath, hscr⟩, rfl⟩ := h
   exact ⟨⟨_, isGotoPath_sound p _ _ _ hpath⟩, hscr⟩
 
+/-- Every goto out of a kept screen remains inside a finite screen set. -/
+def GotoClosed (p : Program) (kept : List ScreenId) : Prop :=
+  ∀ sc ∈ allComps p, sc.1.id ∈ kept → ∀ z ∈ gotoOf? sc.2.kind, z ∈ kept
+instance (p : Program) (kept : List ScreenId) : Decidable (GotoClosed p kept) := by
+  unfold GotoClosed; infer_instance
+
+/-- A closed set contains every screen on every goto path from its members. -/
+theorem gotoPath_closed (p : Program) (kept : List ScreenId) (h : GotoClosed p kept)
+    {a hops z} (hp : GotoPath p a hops z) (ha : a ∈ kept) : z ∈ kept := by
+  induction hp with
+  | here => exact ha
+  | @hop a b z rest he hp ih =>
+    obtain ⟨scr, hs, hid, comp, hc, hk⟩ := he
+    apply ih
+    have hmem : (scr, comp) ∈ allComps p := by
+      simp only [allComps, List.mem_flatMap, List.mem_map]
+      exact ⟨scr, hs, comp, hc, rfl⟩
+    exact h (scr, comp) hmem (by simpa only [hid] using ha) b (by simp [gotoOf?, hk])
+
 end Ehr.Check
