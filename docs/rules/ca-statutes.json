@@ -2875,5 +2875,885 @@
     "confidence": "high",
     "verified": true,
     "notes": "The notice requirements and distinct reminder opt-out remain important; refusal does not imply deletion of the clinical vaccine record or end all physician/public-health access. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-stability",
+    "title": "Homeless discharge documents treating-physician stability determination",
+    "citation": "California Health & Safety Code §1262.5(o)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "The treating physician has determined the homeless patient’s clinical stability for discharge",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Before discharge, document the treating physician’s clinical-stability determination, including assessment of orientation to person/place/time.",
+    "specMapping": {
+      "element": "dischargeCondition",
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Physician-attributed stability determination with required assessment content",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. V1 dischargeCondition alone does not establish the specified assessment or treating-physician attribution. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-meal",
+    "title": "Homeless discharge documents meal offer",
+    "citation": "California Health & Safety Code §1262.5(o)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "The homeless patient has been offered a meal, unless medically indicated otherwise.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document a meal offer before discharge, or that withholding the offer was medically indicated.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-clothing",
+    "title": "Inadequately clothed homeless patient is offered suitable clothing",
+    "citation": "California Health & Safety Code §1262.5(o)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "the hospital shall offer the homeless patient weather-appropriate clothing.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "When clothing is inadequate, document an offer of weather-appropriate clothing before discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-followup",
+    "title": "Homeless discharge documents necessary follow-up referral",
+    "citation": "California Health & Safety Code §1262.5(o)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "referred to a source of followup care, if medically necessary.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document referral to a follow-up source when medically necessary before discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-prescription",
+    "title": "Homeless discharge documents needed prescription",
+    "citation": "California Health & Safety Code §1262.5(o)(5)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "provided with a prescription, if needed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "When needed, document provision of the prescription before homeless discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-medication-supply",
+    "title": "Qualifying hospital provides available necessary discharge medicines",
+    "citation": "California Health & Safety Code §1262.5(o)(5)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "an appropriate supply of all necessary medication, if available.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "If the hospital has an onsite pharmacy licensed and staffed to dispense outpatient medication, document an appropriate supply of all necessary medication if available.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-infection-screen",
+    "title": "Homeless discharge documents regional infection-screen offer or referral",
+    "citation": "California Health & Safety Code §1262.5(o)(6)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "offered or referred to screening for infectious disease common to the region",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document offering or referring for screening for infections common to the region as determined by the local health department.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-vaccination",
+    "title": "Homeless discharge documents appropriate vaccination offer",
+    "citation": "California Health & Safety Code §1262.5(o)(7)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "offered vaccinations appropriate to the homeless patient’s presenting medical condition.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document an offer of vaccinations appropriate to the presenting condition before discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-behavioral-followup",
+    "title": "Needed homeless behavioral follow-up is treated or referred",
+    "citation": "California Health & Safety Code §1262.5(o)(8)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "the homeless patient shall be treated or referred to an appropriate provider.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "When the treating physician’s screening/evaluation indicates behavioral-health follow-up is needed, document treatment or referral to an appropriate provider before discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-insurance",
+    "title": "Homeless discharge documents coverage screening and enrollment assistance",
+    "citation": "California Health & Safety Code §1262.5(o)(9)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "screened for, and provided assistance to enroll in, any affordable health insurance coverage",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document coverage-eligibility screening and assistance to enroll in any affordable insurance for which the homeless patient is eligible.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-transport",
+    "title": "Homeless discharge documents transport offer within statutory range",
+    "citation": "California Health & Safety Code §1262.5(o)(10)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "a maximum travel time of 30 minutes or a maximum travel distance of 30 miles",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Document offering transportation to the identified destination when it is within 30 minutes’ travel or 30 miles of the hospital.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "homeless patient discharge under §1262.5(n)–(o)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Homeless-discharge predicate, structured checklist values and completion evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-1262-5-homeless-log",
+    "title": "Homeless discharge has a destination log",
+    "citation": "California Health & Safety Code §1262.5(q)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1262.5",
+    "quote": "maintain a log of homeless patients discharged and the destinations",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "design",
+    "proposedRule": "Maintain the homeless-discharge log and discharge destination information required by §1262.5(q); preserve protocol-completion evidence in the log or medical record.",
+    "specMapping": {
+      "element": "dischargeDestination",
+      "info": null,
+      "when": "homeless discharge within §1262.5(q)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Durable homeless-discharge log linked to destination and protocol evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1 C6 / R2-09, not a separate re-proposal. Applies to hospitals in §1262.5(n)(1); state hospitals excluded by (u). A documented offer does not mean acceptance, and the statute does not require accepting shelter or services. V1 dischargeDestination does not create this institutional log. The text references destinations under (o)(10), if any; do not invent a requirement that every person accepted transport. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38909.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Repealed and added by Stats. 2018, Ch. 981, Sec. 2.   (SB 1152)   Effective January 1, 2019.   Section operative July 1, 2019, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-wic-5150-hold-start",
+    "title": "5150 clock starts with first detention",
+    "citation": "California Welfare & Institutions Code §5150(a), (i)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "The 72-hour period begins at the time when the person is first detained.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Record and use the first detention time to calculate the §5150 period; transfer or arrival at the receiving facility does not restart the clock.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "person detained under §5150",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Cross-facility detention-start timestamp, elapsed-time computation and hold-status lifecycle",
+    "confidence": "high",
+    "verified": true,
+    "notes": "§5150 authorizes up to 72 hours, not an automatic mandatory 72-hour stay. Admission advisement includes the start date/time. Designated-facility and authorized-actor limits apply; legal extensions require separate authority. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-application-circumstances",
+    "title": "5150 application records how condition became known",
+    "citation": "California Welfare & Institutions Code §5150(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "an application in writing stating the circumstances",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Before detention admission under this pathway, require the written application to state how the person’s condition came to the authorized actor’s attention.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "§5150(e) detention admission to designated facility",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Written hold-application document and nonempty individualized circumstances",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-application-probable-cause",
+    "title": "5150 application states probable cause",
+    "citation": "California Welfare & Institutions Code §5150(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "has probable cause to believe that the person is",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Require the §5150(e) application to state probable cause for danger to self/others or grave disability resulting from a mental-health disorder.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "§5150(e) detention admission to designated facility",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Authorized-actor attribution, statutory ground and probable-cause documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A diagnosis alone or a generic “5150” code is insufficient. This row does not define current grave-disability criteria, which require separate §5008/county review. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-application-history",
+    "title": "5150 application records whether history was considered",
+    "citation": "California Welfare & Institutions Code §5150(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "record whether the historical course of the person’s mental disorder was considered",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Record whether the historical course was considered in the §5150 determination pursuant to §5150.05.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "§5150(e) detention application",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hold-application history-consideration field",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Section 5150.05 requires consideration of available relevant history when reasonably bearing on the determination, including listed family/provider/patient evidence; imminent harm is not the sole permitted consideration. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advisement-performer",
+    "title": "5150 admission advisement record names performer",
+    "citation": "California Welfare & Institutions Code §5150(j)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "The name of the person performing the advisement.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Keep the admission-advisement performer’s name with the admitted person’s medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "admitted for §5150 evaluation and treatment",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission-advisement event and authenticated performer identity",
+    "confidence": "high",
+    "verified": true,
+    "notes": "This is the (i)/(j) admission advisement, distinct from the initial-custody advisement record in (g)/(h). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advisement-date",
+    "title": "5150 admission advisement record includes date",
+    "citation": "California Welfare & Institutions Code §5150(j)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "The date of the advisement.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Keep the admission-advisement date with the admitted person’s medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "admitted for §5150 evaluation and treatment",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission-advisement date field linked to the hold",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advisement-completion",
+    "title": "5150 admission advisement record states completion",
+    "citation": "California Welfare & Institutions Code §5150(j)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "Whether the advisement was completed.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Record whether the §5150 admission advisement was completed; do not infer completion from the presence of a generated notice.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "admitted for §5150 evaluation and treatment",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission-advisement completion outcome distinct from notice generation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advisement-language",
+    "title": "5150 admission advisement record identifies language or modality",
+    "citation": "California Welfare & Institutions Code §5150(j)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "The language or modality used to communicate the advisement.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Record the actual language or communication modality used for the admission advisement.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "admitted for §5150 evaluation and treatment",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission-advisement language/modality field",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Preferred language in patientBanner does not establish the modality actually used. Section (i) separately requires accessible oral and written information and disability accommodations. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advisement-good-cause",
+    "title": "Uncompleted 5150 admission advisement has good-cause statement",
+    "citation": "California Welfare & Institutions Code §5150(j)(5)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "If the advisement was not completed, a statement of good cause.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "If the admission advisement was not completed, keep the specific good-cause statement with the medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "§5150 admission advisement not completed",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Conditional good-cause entry and nonempty explanation validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-wic-5150-advocate-notification",
+    "title": "Facility notifies advocate when detention exceeds seventy-two hours",
+    "citation": "California Welfare & Institutions Code §5150(k)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=WIC&sectionNum=5150",
+    "quote": "shall notify the county patients’ rights advocate",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "If a transported involuntary detainee has not been released within 72 hours of detention, notify the county patients’ rights advocate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "transported §5150 detainee not released within 72 hours",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Durable deadline obligation, advocate directory and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "This is a notification duty, not permission to extend detention. V1 disposition alone cannot prove it. No message is sent as part of this research task. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_95503.lob; reader URL blocked automated access. Database row updated 2026-10-01 01:02:10 (metadata, not effective date). Amended by Stats. 2022, Ch. 960, Sec. 1.   (AB 2275)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-1288-85-stewardship-evaluation",
+    "title": "Stewardship policy includes antibiotic-use evaluation",
+    "citation": "California Health & Safety Code §1288.85(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1288.85",
+    "quote": "a process to evaluate the judicious use of antibiotics",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Maintain an antimicrobial stewardship policy containing a process to evaluate judicious antibiotic use.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Institutional stewardship policy/process governance beyond a commit predicate",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Existing round 1 §2.3 grounding, retained as a scope boundary. Applies to general acute care hospitals; W1 only when provided by that hospital. Does not itself require a per-order indication, MAR display or an interruptive antibiotic alert. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_79608.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Added by Stats. 2014, Ch. 843, Sec. 1.   (SB 1311)   Effective January 1, 2015."
+  },
+  {
+    "id": "ca-statutes-hsc-125000-newborn-screen",
+    "title": "Newborn receives established genetic screening program services",
+    "citation": "California Health & Safety Code §125000(a), (c)–(d)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=125000",
+    "quote": "shall be administered to each child born in California",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Ensure each California-born child receives the established program’s information, tests and counseling once departmental regulations/testing methods apply, except the religious objection in (d).",
+    "specMapping": {
+      "element": null,
+      "info": "immunizationHistory",
+      "when": "California newborn subject to established genetic-screening program",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Newborn screening workflow, current program test set and exception handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to newborn screening/follow-up extension of W5, not a generic vaccine or every well-child visit. Department selects/updates tests; this statute alone does not establish sample timing or a current panel list. immunizationHistory is only a nearby V1 surface, not a screening record. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77668.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2012, Ch. 457, Sec. 33.   (SB 1381)   Effective January 1, 2013."
+  },
+  {
+    "id": "ca-statutes-hsc-125000-newborn-religious-objection",
+    "title": "Religious objection is an exception to this newborn test mandate",
+    "citation": "California Health & Safety Code §125000(d)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=125000",
+    "quote": "objects to a test on the ground that the test conflicts with his or her religious beliefs or practices.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Recognize the parent/guardian’s religious-belief/practice objection as the §125000(d) exception; do not falsely record the genetic test as completed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "parent/guardian religious objection to §125000 newborn test",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Parent/guardian authority and test-specific objection outcome",
+    "confidence": "high",
+    "verified": true,
+    "notes": "This exception is specific to §125000 and must not become a universal pediatric screening or vaccine waiver. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77668.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2012, Ch. 457, Sec. 33.   (SB 1381)   Effective January 1, 2013."
   }
 ]
