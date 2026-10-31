@@ -30,7 +30,8 @@ def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           else some (guardReason sp prog facts user s cm))
   | .button (.markReviewed i) =>
     some (if infoShown sp prog facts s i then none else some s!"{i} is not shown")
-  | .button .newOrderLine => some none
+  | .button .newOrderLine =>
+    some (if currentLineComplete sp facts user s then none else some "finish this order line first")
   | .button .requestPriorAuth =>
     some (match sp.element? priorAuthElement with
           | none => some s!"unknown element {priorAuthElement}"
