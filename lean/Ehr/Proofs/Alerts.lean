@@ -116,6 +116,7 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     PopupFrom sp prog facts s (clickCore sp prog facts user actor s c).1 := by
   unfold clickCore
   split
+  · cases actor <;> exact PopupFrom.same rfl
   · exact PopupFrom.same (goTo_popup ..)
   · exact PopupFrom.same (goBack_popup ..)
   · cases actor
@@ -200,6 +201,7 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
       · rfl
       · unfold clickCore
         split
+        · rfl
         · exact goTo_popup ..
         · exact goBack_popup ..
         · rfl

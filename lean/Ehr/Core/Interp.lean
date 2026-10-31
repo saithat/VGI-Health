@@ -174,6 +174,12 @@ may not start another macro. -/
 def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (c : Component) : State × StepResult :=
   match c.kind with
+  -- Inline alerts are informational. Acknowledgment is exclusively the
+  -- human `ack` event for the current popup; clicking cannot override it.
+  | .alert _ _ =>
+    match actor with
+    | .human => (s, .ignored)
+    | .«macro» => (s, .blocked "human only: acknowledge")
   | .button (.goto t) => goTo sp prog facts s t
   | .button .back => goBack sp prog facts s
   | .button (.commit cm) =>

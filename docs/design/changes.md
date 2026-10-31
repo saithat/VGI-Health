@@ -224,3 +224,22 @@ incomplete, empty, complete, and macro cases.
 
 Minimal compatibility edits: split the new hard-stop branch in T0, T3 and Alerts
 frame proofs; register Core.Tests in Ehr.lean. No theorem statements changed.
+
+## Core requests: alert clicks, CR-2 and CR-4
+
+Inline alert components are informational: a human click is `ignored`; a macro
+click is explicitly `blocked "human only: acknowledge"`, stopping the macro.
+Only a human `ack` event matching the open popup records an acknowledgment.
+A popup continues to block all clicks. Interruptive alerts still fire from the
+spec at commit even if their inline component is removed. Passive alerts never
+pop up. Core guards exercise these paths.
+
+CR-2 keeps the existing `unlessReceipt` semantics. The checker must use its
+requested conservative rule: a conditional pin is usable only when every
+receipt that hides it also satisfies that commit's requirement. CR-4 is already
+implemented by `waivedBy?`, `waived`, `reviewMet`, and T2's human-waiver branch;
+no new weakening or change is needed. CR-3 is handled with the workflow request
+in the next core item.
+
+Minimal compatibility edits: add a state-preserving alert branch to T0/T3/Alerts
+frame proofs. The 18 Comparator theorem statements are unchanged.
