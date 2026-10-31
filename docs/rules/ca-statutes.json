@@ -1696,7 +1696,7 @@
     "type": "ca-statute",
     "binding": true,
     "jurisdiction": "CA",
-    "appliesTo": "prescriber",
+    "appliesTo": "ehr-vendor",
     "workflows": [
       "W1",
       "W2",
@@ -1729,7 +1729,7 @@
     "needsCoreFeature": "Durable append-only change/deletion audit trail",
     "confidence": "high",
     "verified": true,
-    "notes": "Specific EHR-system duty; a review receipt alone is not a complete change audit. Applies to electronic records meeting subsection (d). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+    "notes": "Direct EHR-system behavior; also relevant to providers operating the system. Specific EHR-system duty; a review receipt alone is not a complete change audit. Applies to electronic records meeting subsection (d). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
   },
   {
     "id": "ca-statutes-civ-56-101-audit-actor",
@@ -1740,7 +1740,7 @@
     "type": "ca-statute",
     "binding": true,
     "jurisdiction": "CA",
-    "appliesTo": "prescriber",
+    "appliesTo": "ehr-vendor",
     "workflows": [
       "W1",
       "W2",
@@ -1773,7 +1773,7 @@
     "needsCoreFeature": "Authenticated actor attribution in durable audit events",
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+    "notes": "Direct EHR-system behavior; also relevant to providers operating the system. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
   },
   {
     "id": "ca-statutes-civ-56-101-audit-time",
@@ -1784,7 +1784,7 @@
     "type": "ca-statute",
     "binding": true,
     "jurisdiction": "CA",
-    "appliesTo": "prescriber",
+    "appliesTo": "ehr-vendor",
     "workflows": [
       "W1",
       "W2",
@@ -1817,7 +1817,7 @@
     "needsCoreFeature": "Trusted wall-clock timestamps in audit events",
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+    "notes": "Direct EHR-system behavior; also relevant to providers operating the system. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
   },
   {
     "id": "ca-statutes-civ-56-101-audit-change",
@@ -1828,7 +1828,7 @@
     "type": "ca-statute",
     "binding": true,
     "jurisdiction": "CA",
-    "appliesTo": "prescriber",
+    "appliesTo": "ehr-vendor",
     "workflows": [
       "W1",
       "W2",
@@ -1861,7 +1861,7 @@
     "needsCoreFeature": "Versioned record deltas/deletion evidence in the audit trail",
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+    "notes": "Direct EHR-system behavior; also relevant to providers operating the system. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
   },
   {
     "id": "ca-statutes-civ-56-101-sensitive-segregation",
@@ -2429,7 +2429,7 @@
     "proposedRule": "When a written directive/status document is known, request a copy; if furnished, maintain that copy in the record.",
     "specMapping": {
       "element": null,
-      "info": "consentDocument",
+      "info": null,
       "when": "known written directive/status document with copy furnished",
       "prefill": null,
       "friction": "compliance",
@@ -2440,7 +2440,7 @@
     "needsCoreFeature": "Directive-specific document storage, linkage and retention",
     "confidence": "high",
     "verified": true,
-    "notes": "consentDocument is surgical-consent content in V1, only an integration point. It does not already represent advance directives. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_93863.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Added by Stats. 1999, Ch. 658, Sec. 39.   Effective January 1, 2000.   Operative July 1, 2000, by Sec. 43 of Ch. 658."
+    "notes": "V1 consentDocument represents surgical consent and therefore is not mapped to this directive-document rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_93863.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Added by Stats. 1999, Ch. 658, Sec. 39.   Effective January 1, 2000.   Operative July 1, 2000, by Sec. 43 of Ch. 658."
   },
   {
     "id": "ca-statutes-prob-4732-capacity-determination",
@@ -2507,7 +2507,7 @@
     "proposedRule": "Validate the execution date when accepting a written advance directive as legally sufficient under §4673.",
     "specMapping": {
       "element": null,
-      "info": "consentDocument",
+      "info": null,
       "when": "accepting written advance directive under §4673",
       "prefill": null,
       "friction": "compliance",
@@ -2545,7 +2545,7 @@
     "proposedRule": "Validate the patient’s signature, or another adult’s signature in the patient’s name, presence and direction, on a §4673 written directive.",
     "specMapping": {
       "element": null,
-      "info": "consentDocument",
+      "info": null,
       "when": "accepting written advance directive under §4673",
       "prefill": null,
       "friction": "compliance",
@@ -2583,7 +2583,7 @@
     "proposedRule": "For a nonelectronic written directive, verify notarization or at least two legally qualified witnesses; apply §4673(b)’s stricter notarial requirements to electronic directives.",
     "specMapping": {
       "element": null,
-      "info": "consentDocument",
+      "info": null,
       "when": "accepting directive under §4673",
       "prefill": null,
       "friction": "compliance",
@@ -2621,7 +2621,7 @@
     "proposedRule": "For a POLST, verify signatures of the patient or legally recognized decisionmaker and a physician or appropriately supervised/scope-authorized NP or PA.",
     "specMapping": {
       "element": null,
-      "info": "consentDocument",
+      "info": null,
       "when": "accepting POLST",
       "prefill": null,
       "friction": "compliance",
@@ -3709,7 +3709,7 @@
     "proposedRule": "Ensure each California-born child receives the established program’s information, tests and counseling once departmental regulations/testing methods apply, except the religious objection in (d).",
     "specMapping": {
       "element": null,
-      "info": "immunizationHistory",
+      "info": null,
       "when": "California newborn subject to established genetic-screening program",
       "prefill": null,
       "friction": "compliance",
@@ -3720,7 +3720,7 @@
     "needsCoreFeature": "Newborn screening workflow, current program test set and exception handling",
     "confidence": "high",
     "verified": true,
-    "notes": "Applies to newborn screening/follow-up extension of W5, not a generic vaccine or every well-child visit. Department selects/updates tests; this statute alone does not establish sample timing or a current panel list. immunizationHistory is only a nearby V1 surface, not a screening record. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77668.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2012, Ch. 457, Sec. 33.   (SB 1381)   Effective January 1, 2013."
+    "notes": "Applies to newborn screening/follow-up extension of W5, not a generic vaccine or every well-child visit. Department selects/updates tests; this statute alone does not establish sample timing or a current panel list. V1 immunizationHistory is not a genetic-screening record; no matching V1 info is mapped. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77668.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2012, Ch. 457, Sec. 33.   (SB 1381)   Effective January 1, 2013."
   },
   {
     "id": "ca-statutes-hsc-125000-newborn-religious-objection",
@@ -3755,5 +3755,747 @@
     "confidence": "high",
     "verified": true,
     "notes": "This exception is specific to §125000 and must not become a universal pediatric screening or vaccine waiver. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77668.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2012, Ch. 457, Sec. 33.   (SB 1381)   Effective January 1, 2013."
+  },
+  {
+    "id": "ca-statutes-hsc-1259-primary-language",
+    "title": "Hospital records primary language",
+    "citation": "California Health & Safety Code §1259(c)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1259",
+    "quote": "Identify and record a patient’s primary language and dialect",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "In a licensed general acute care hospital, identify and record the patient’s primary language on a medical chart, bracelet, bedside notice or nursing card.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Primary-language data entry and persistence; no universal commit gate is specified",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic reference to R2-17; V1 patientBanner displays preferred language but has no required primary-language capture. The statute allows several recording locations, so EHR-only storage is a design choice, not the sole lawful implementation. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38843.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Amended by Stats. 2017, Ch. 561, Sec. 102.   (AB 1516)   Effective January 1, 2018."
+  },
+  {
+    "id": "ca-statutes-hsc-1259-dialect",
+    "title": "Hospital records patient dialect",
+    "citation": "California Health & Safety Code §1259(c)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1259",
+    "quote": "primary language and dialect",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "In a licensed general acute care hospital, identify and record the patient’s dialect on one of the statutory record/display locations.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Dialect element and persistence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-17. V1 preferred-language display is not a dialect field; this does not mandate a redundant interpreter checkbox at every encounter. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_38843.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:14 (metadata, not effective date). Amended by Stats. 2017, Ch. 561, Sec. 102.   (AB 1516)   Effective January 1, 2018."
+  },
+  {
+    "id": "ca-statutes-bpc-4118-5-admission-medication-profile",
+    "title": "Qualifying high-risk admission gets pharmacy medication profile",
+    "citation": "California Business & Professions Code §4118.5(a)–(c), (e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4118.5",
+    "quote": "upon admission and discharge of the high-risk patient",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "At admission, obtain an accurate medication profile/list for a hospital-defined high-risk patient when the hospital has more than 100 beds and the list can be acquired during pharmacy hours.",
+    "specMapping": {
+      "element": null,
+      "info": "currentMeds",
+      "when": "§4118.5 high-risk admission and institutional/time conditions met",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hospital bed-count/high-risk predicate, pharmacy-role workflow and facility-defined completion time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Round 1 lower-priority pharmacy-history grounding, atomized here. Pharmacist duty; trained/proctored technician or intern may obtain it if (b)’s QA/training conditions hold. State hospitals excluded. An RN medRecDecision does not prove pharmacy completion. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_128928.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 38.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4118-5-discharge-medication-profile",
+    "title": "Qualifying high-risk discharge gets pharmacy medication profile",
+    "citation": "California Business & Professions Code §4118.5(a)–(c), (e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4118.5",
+    "quote": "an accurate medication profile or list for each high-risk patient",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "At discharge, obtain the accurate profile/list for each hospital-defined high-risk patient meeting §4118.5’s more-than-100-bed and pharmacy-hours conditions.",
+    "specMapping": {
+      "element": "dischargeMedRec",
+      "info": "currentMeds",
+      "when": "§4118.5 high-risk discharge and institutional/time conditions met",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Pharmacy-role completion provenance, hospital scope and high-risk/time predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 dischargeMedRec does not prove the pharmacist/authorized delegate profile duty. The hospital sets the completion timeframe under (c); do not invent a universal 24-hour deadline. Training/QA delegation under (b) and state-hospital exclusion under (e) apply. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_128928.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 38.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4070-pharmacy-correction",
+    "title": "Electronic dispensing corrections need pharmacist approval",
+    "citation": "California Business & Professions Code §4070(c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4070",
+    "quote": "a correcting addition may be made only by or with the approval of a pharmacist.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "After dispensing, permit correction of an electronic-only pharmacy prescription/dispense record only as an addition by or approved by a pharmacist.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Pharmacy-specific append-only correction action and pharmacist approval attribution",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to the hospital pharmacy’s electronic-only records; the section also requires date, correction-actor and approving-pharmacist identity. General EHR edit permission is insufficient. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42960.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2000, Ch. 293, Sec. 2.   Effective January 1, 2001."
+  },
+  {
+    "id": "ca-statutes-bpc-4071-authorized-agent-record",
+    "title": "Prescription recipient records transmitting agent",
+    "citation": "California Business & Professions Code §4071",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4071",
+    "quote": "shall record the name of the authorized agent of the prescriber who transmits the order.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "When a hospital pharmacy receives an agent-transmitted oral/electronic prescription under §4071, record the agent’s name after reasonable authorization verification.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "agent transmits prescription under §4071",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Receiving-pharmacy agent identity and authorization record",
+    "confidence": "high",
+    "verified": true,
+    "notes": "This general agent pathway excludes Schedule II orders. Distinct from §11164(b)(3)’s controlled III–V prescriber-side written record. §4072 separately covers specified health-facility personnel; do not treat every RN as a prescriber. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_129257.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 1997, Ch. 549, Sec. 46.   Effective January 1, 1998."
+  },
+  {
+    "id": "ca-statutes-bpc-4073-do-not-substitute",
+    "title": "Electronic do-not-substitute instruction is honored",
+    "citation": "California Business & Professions Code §4073(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4073",
+    "quote": "a prescriber may indicate “Do not substitute,”",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Preserve and honor the prescriber’s electronic do-not-substitute instruction; an electronic checkbox does not require manual initials.",
+    "specMapping": {
+      "element": "substitution",
+      "info": null,
+      "when": "prescriber prohibits generic substitution",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transmission and dispensing enforcement of substitution prohibition",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 substitution captures a choice, but does not prove the pharmacy honors it. This concerns generic drug-product selection under §4073, not every biosimilar substitution rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42965.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2006, Ch. 659, Sec. 6.   Effective January 1, 2007."
+  },
+  {
+    "id": "ca-statutes-bpc-4075-controlled-pickup-identity",
+    "title": "Unknown controlled-prescription recipient must establish identity",
+    "citation": "California Business & Professions Code §4075",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4075",
+    "quote": "unknown and unable to properly establish his or her identity.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "At hospital pharmacy furnishing of an oral/electronically transmitted controlled prescription, do not furnish to an unknown person unable to properly establish identity.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "recipient unknown for oral/electronic controlled prescription furnishing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Actual pickup-recipient identity verification and dispense gate",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to pharmacy furnishing and patient representatives as relevant, not a universal patient-ID re-entry before prescriber signing. V1 patientIdReentry does not verify the person collecting medicine. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42968.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Added by Stats. 1996, Ch. 890, Sec. 3.   Effective January 1, 1997."
+  },
+  {
+    "id": "ca-statutes-bpc-4052-2-pharmacist-initiation-notice",
+    "title": "Pharmacist-initiated regimen reaches prescriber within twenty-four hours",
+    "citation": "California Business & Professions Code §4052.2(a)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4052.2",
+    "quote": "within 24 hours.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a pharmacist regimen initiated under §4052.2(a)(4), provide written notice to the treating prescriber or enter the appropriate information in a shared electronic patient record within 24 hours.",
+    "specMapping": {
+      "element": null,
+      "info": "newOrders",
+      "when": "pharmacist initiates regimen under §4052.2(a)(4)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Pharmacist role/authorization, regimen event time and delivered/shared-record notice evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Requires a specific written treating-prescriber order/authorization and applicable protocols. V1 has no pharmacist role or notification deadline. This is not independent prescribing authority for every pharmacist; use the paragraph’s actual scope. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43112.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2019, Ch. 497, Sec. 5.   (AB 991)   Effective January 1, 2020."
+  },
+  {
+    "id": "ca-statutes-civ-56-11-authorization-expiration",
+    "title": "CMIA release authorization has bounded expiration",
+    "citation": "California Civil Code §56.11(b)(8)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.11",
+    "quote": "States an expiration date or event.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For release based on a §56.11 authorization, require an expiration date/event of at most one year unless the signer requests a specific later date or the qualifying research/trial exception applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "disclosure relies on §56.11 authorization",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Authorization validity, expiration/event engine and explicit longer-duration exceptions",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Not a rule that every treatment disclosure needs authorization; §56.10(b)/(c) contains separate authorities. Other §56.11 validity conditions still apply, including authorized signature and scope. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32589.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2023, Ch. 374, Sec. 2.   (AB 1697)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-bpc-4074-discharge-drug-use",
+    "title": "Discharge medicine information explains use",
+    "citation": "California Business & Professions Code §4074(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4074",
+    "quote": "the use and storage of each drug",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Under the facility’s discharge-drug information policy, give the patient information about how each discharge-dispensed drug is used.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "drug given at discharge or under §4056(a)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-specific education content and actual delivery/educator evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1/round 2 discharge-handoff content. Information is given by a pharmacist or RN unless already provided by the prescriber. A generic V1 instruction text does not certify each required topic or delivery. This is not an education gate before each inpatient MAR administration. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42967.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2013, Ch. 304, Sec. 1.   (AB 1136)   Effective January 1, 2014."
+  },
+  {
+    "id": "ca-statutes-bpc-4074-discharge-drug-storage",
+    "title": "Discharge medicine information explains storage",
+    "citation": "California Business & Professions Code §4074(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4074",
+    "quote": "the use and storage of each drug",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Under the facility’s discharge-drug information policy, give the patient information about how each discharge-dispensed drug is stored.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "drug given at discharge or under §4056(a)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-specific education content and actual delivery/educator evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1/round 2 discharge-handoff content. Information is given by a pharmacist or RN unless already provided by the prescriber. A generic V1 instruction text does not certify each required topic or delivery. This is not an education gate before each inpatient MAR administration. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42967.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2013, Ch. 304, Sec. 1.   (AB 1136)   Effective January 1, 2014."
+  },
+  {
+    "id": "ca-statutes-bpc-4074-discharge-drug-warnings",
+    "title": "Discharge medicine information includes precautions and warnings",
+    "citation": "California Business & Professions Code §4074(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4074",
+    "quote": "the precautions and relevant warnings",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Under the facility’s discharge-drug information policy, give the patient information about the precautions and relevant warnings for each discharge-dispensed drug.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "drug given at discharge or under §4056(a)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-specific education content and actual delivery/educator evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1/round 2 discharge-handoff content. Information is given by a pharmacist or RN unless already provided by the prescriber. A generic V1 instruction text does not certify each required topic or delivery. This is not an education gate before each inpatient MAR administration. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42967.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2013, Ch. 304, Sec. 1.   (AB 1136)   Effective January 1, 2014."
+  },
+  {
+    "id": "ca-statutes-bpc-4074-discharge-drug-adherence",
+    "title": "Discharge medicine information explains following directions",
+    "citation": "California Business & Professions Code §4074(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4074",
+    "quote": "the importance of compliance with directions.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Under the facility’s discharge-drug information policy, give the patient information about the importance of following directions for each discharge-dispensed drug.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "drug given at discharge or under §4056(a)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-specific education content and actual delivery/educator evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of round 1/round 2 discharge-handoff content. Information is given by a pharmacist or RN unless already provided by the prescriber. A generic V1 instruction text does not certify each required topic or delivery. This is not an education gate before each inpatient MAR administration. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42967.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2013, Ch. 304, Sec. 1.   (AB 1136)   Effective January 1, 2014."
+  },
+  {
+    "id": "ca-statutes-bpc-4068-unused-ed-noncontrolled",
+    "title": "Unused ED take-home exception excludes controlled substances",
+    "citation": "California Business & Professions Code §4068(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4068",
+    "quote": "The dangerous drug is not a controlled substance.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Use §4068(b)’s unused-portion ED discharge pathway only for a noncontrolled dangerous drug acquired by the hospital pharmacy.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "unused-portion take-home dispensing under §4068(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Distinct take-home dispense action and controlled-drug classification",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 447 effective January 1, 2026. All five (b) conditions must hold. Unlike (a), this pathway does not require a closed pharmacy or impose (a)’s 72-hour quantity ceiling. It is a conditional dispensing permission, not a duty to dispense. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42964.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 363, Sec. 1.   (AB 447)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4068-unused-ed-administered",
+    "title": "Unused ED take-home drug was ordered and administered",
+    "citation": "California Business & Professions Code §4068(b)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4068",
+    "quote": "has been ordered and administered to the emergency room patient.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Require evidence that the particular drug was both ordered and administered to this ED patient before dispensing its unused portion under §4068(b).",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "unused-portion take-home dispensing under §4068(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient/drug-matched order and actual administration history",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 447 effective January 1, 2026. An order alone does not establish administration; other (b) conditions also apply. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42964.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 363, Sec. 1.   (AB 447)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4068-unused-ed-packaging",
+    "title": "Unused ED take-home drug has eligible packaging and self-use",
+    "citation": "California Business & Professions Code §4068(b)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4068",
+    "quote": "single patient use multidose packaging and can be self-administered by the patient",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Require single-patient-use multidose packaging and ability for the patient to self-administer before using §4068(b)’s unused-portion pathway.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "unused-portion take-home dispensing under §4068(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Packaging type and patient self-administration eligibility",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The statutory inhaler/drop/spray/topical/liquid examples are nonexhaustive. This does not authorize repackaging an arbitrary leftover medication. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42964.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 363, Sec. 1.   (AB 447)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4068-unused-ed-continuation",
+    "title": "Unused ED take-home portion is needed for continued treatment",
+    "citation": "California Business & Professions Code §4068(b)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4068",
+    "quote": "required to continue treatment of the emergency room patient.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Use the unused-portion ED pathway only when dispensing it is required to continue that patient’s treatment.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "unused-portion take-home dispensing under §4068(b)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prescriber-attributed need-for-continuation assessment",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42964.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 363, Sec. 1.   (AB 447)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4068-unused-ed-label",
+    "title": "Unused ED take-home portion gets prescription label",
+    "citation": "California Business & Professions Code §4068(b)(5)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4068",
+    "quote": "all of the information required by Section 4076.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "design",
+    "proposedRule": "Before dispensing the unused ED portion under §4068(b), ensure its label has the applicable §4076 information.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "unused-portion take-home dispensing under §4068(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Physical-label generation/verification and applicable §4076 label-content constraints",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 orderSummary is a nearby surface only; it does not certify a dispensed container label. Observe applicable §4076 exceptions rather than importing an unconditional all-fields template. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42964.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 363, Sec. 1.   (AB 447)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-hsc-11165-excluded-drugs-reporting",
+    "title": "Testosterone and mifepristone stay out of CURES reporting",
+    "citation": "California Health & Safety Code §11165(k)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11165",
+    "quote": "testosterone or mifepristone shall not be reported to the department, CURES, or a contracted prescription data processing vendor.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Exclude prescriptions for, and dispensing of, testosterone or mifepristone from reporting to DOJ, CURES or the contracted prescription-data processor under §11165(k)(1).",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "prescription/dispense drug is testosterone or mifepristone",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-identity-aware CURES reporting exclusion across prescribing/dispensing interfaces",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Current codified SB 497 chaptering text operative January 1, 2026; the Medical Board also describes this protection in its AB 82 new-law summary. This is an outbound-reporting prohibition, not a blanket repeal of §11165.4 consultation. The state’s January 2027 historical-removal deadline in (k)(2) is not a hospital deletion mandate. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41494.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2025, Ch. 764, Sec. 5.5.   (SB 497)   Effective October 13, 2025.   Operative January 1, 2026, pursuant to Sec. 8 of Stats. 2025, Ch. 764."
   }
 ]
