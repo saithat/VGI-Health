@@ -5,6 +5,7 @@ packages:
   - "infra/scripts"
 allowBuilds:
   esbuild: true
+<<<<<<< HEAD
 # @medplum/react imports react-router but omits it from its published manifest.
 packageExtensions:
   '@medplum/react@5.2.13':
@@ -14,3 +15,5 @@ minimumReleaseAgeExclude:
   - '@medplum/core@5.2.13'
   - '@medplum/react-hooks@5.2.13'
   - '@medplum/react@5.2.13'
+=======
+>>>>>>> origin/lane/world
