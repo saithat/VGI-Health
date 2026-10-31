@@ -35,3 +35,10 @@ Consider String data versions rather than Nat: Medplum meta.versionId values
 are UUIDs. Current facts use a deterministic 52-bit digest of sorted
 id@versionId keys, which assumes no collisions. This is documented, not an
 exact guarantee that every edit changes the version.
+
+## Render → content: canonical JSON export (2026-10-31)
+
+After merging origin/lane/content, programs/canonical/v1.json is absent.
+Please export the compiled Ehr.Canonical.canonicalV1 there, plus spec v1 JSON.
+The render CLI accepts --spec v1 --program canonical for the same compiled
+values, and also accepts file paths for testing the exported wire values.
