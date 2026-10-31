@@ -79,9 +79,15 @@ def ccText (cc : Json) : String :=
 def first (j : Json) (k : String) : Json :=
   (arr j k).headD .null
 
+/-- Construct a string by pushes. On wasm32 Lean 4.35's runtime string-data
+reader produces a boxed UInt32 zero as the list terminator, while its native
+String.ofList primitive expects a scalar list terminator. Structural folds
+inspect the constructor tag correctly; pushing avoids that runtime mismatch. -/
+def stringOfChars (cs : List Char) : String := cs.foldl String.push ""
+
 /-- A substring of `s`: `len` characters from `start`. -/
 def sub (s : String) (start len : Nat) : String :=
-  String.ofList ((s.toList.drop start).take len)
+  stringOfChars ((s.toList.drop start).take len)
 
 /-- The date part (`YYYY-MM-DD`) of a FHIR dateTime. -/
 def dayOf (t : String) : String := sub t 0 10
@@ -200,7 +206,7 @@ def initials (p : Json) : String :=
   let n := officialName p
   let g := (givenNames n).headD ""
   let f := str n "family"
-  String.ofList ((g.toList.take 1 ++ f.toList.take 1).map Char.toUpper)
+  stringOfChars ((g.toList.take 1 ++ f.toList.take 1).map Char.toUpper)
 
 /-- `"F"`, `"M"`, or `"U"`. -/
 def sexOf (p : Json) : String :=

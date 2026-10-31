@@ -74,3 +74,23 @@ wasm/install-into-app.sh
 The original `wasm/build-ehr.sh` was also run; it failed solely attempting a
 lock write in the shared SDK cache. Both commands use the same Python build
 and exact pinned Lean/Emscripten inputs. Installed assets are gitignored.
+
+The wasm32 string reconstruction uses `List.foldl String.push` in place of
+String.ofList after String.toList. In the pinned Lean runtime, string-data's
+nil is incorrectly constructed with lean_box_uint32(0), which is a heap object
+on wasm32; string-mk expects scalar nil. The fold inspects the List constructor
+tag, so it avoids that runtime mismatch. `Fhir.stringOfChars_eq` proves the
+fold has exactly String.ofList semantics. Differential tests cover all 174
+Synthea bundles and all 694 canonical page variants.
+
+Proofs are in Render to respect lane ownership. `check-proofs.py` freezes the
+15 main theorem signatures into a temporary Comparator challenge under the
+ignored `.tools/render-proof-audit`, exports challenge and implementation,
+and checks the solution using only propext, Quot.sound and Classical.choice.
+The temporary challenge has Comparator's expected proof holes; committed
+implementation and proof files contain none. Contracts.lean holds the shared
+TreeSafe/Shown definitions so the challenge imports no solution proofs.
+Each main theorem also has #print axioms and concrete Tiny examples. The
+trusted surface includes the executable page/FHIR readers, the fixed CSS,
+the painter, and the compiler/runtime. Browser screen-check tests validate
+actual visibility and DOM order at desktop and 390px widths.

@@ -20,10 +20,14 @@ end
 
 #guard (compIds (tinyPage tinyInitial)).contains "weightField"
 #guard !(compIds (tinyPage tinyInitial)).contains "signButton"
-#guard (tinyPage { tinyInitial with screen := "sign" }).toHtmlString.contains 'd'
 #guard Fhir.containsStr (tinyPage { tinyInitial with screen := "sign" }).toHtmlString "disabled=\"disabled\""
 #guard Fhir.containsStr (tinyPage tinyInitial).toHtmlString "record:weightToday"
 #guard Fhir.containsStr (tinyPage tinyInitial).toHtmlString "Confirm prefilled value"
+#guard Fhir.containsStr (tinyPage { tinyInitial with screen := "order" }).toHtmlString
+  "<option value=\"\">Choose medication"
+#guard Fhir.containsStr (tinyPage { tinyInitial with captured :=
+  [{ element := "weight", slot := 0, value := .qty 1600 .lb, byHuman := true, confirmed := true }] }).toHtmlString
+  "data-unit=\"lb\""
 #guard !(Fhir.containsStr (tinyPage tinyInitial).toHtmlString "ehr-tiny")
 #guard (Lean.Json.parse (apiRender "{}")).isOk
 #guard Fhir.containsStr (apiRender "{}") "error"

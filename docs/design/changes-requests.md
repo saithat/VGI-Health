@@ -82,3 +82,27 @@ They now use `.coded "boolean"`. Core's `.flag` is a checked acknowledgment:
 made every scheduled order in the canonical sets unsignable. This does not
 remove either entry requirement or any human confirmation. Consent, VIS,
 protocol checks and education remain checked flags.
+
+## Render → wasm: Lean 4.35 wasm32 string-list terminator (2026-10-31)
+
+Valid ehr_facts crashed even on a Patient-only Bundle. Debug stack traces
+identified lean_string_mk called by Fhir.sub. In the pinned runtime
+src/runtime/object.cpp, string_to_list_core initializes its List.nil with
+`lean_box_uint32(0)`; wasm32 lean_box_uint32 allocates a constructor, whereas
+lean_string_mk traverses until lean_is_scalar. It therefore reads beyond the
+nil object (OOB or bad_alloc). Native 64-bit boxes UInt32 as a scalar, masking
+the bug. Please fix/validate the wasm32 runtime input upstream in your lane.
+Render uses a structural List.foldl String.push reconstruction for sub/initials
+instead of String.ofList; this preserves the source semantics and avoids the
+mismatched runtime primitive. Other lanes using String.ofList after toList
+should be regression-tested on valid data too.
+
+## Render → app: generated WASM assets and lint (2026-10-31)
+
+After the required wasm/install-into-app.sh, plain `pnpm --filter app lint`
+scans gitignored generated public/ehr/ehr-interp.mjs and reports 88 vendor-code
+errors (including Emscripten's fetch implementation). Please ignore
+`public/ehr/**` in app/eslint.config.js, keeping all source/test boundary
+checks unchanged. `pnpm --filter app lint --ignore-pattern 'public/ehr/**'`
+passes; app build and all unit tests also pass. Render cannot edit app-owned
+configuration. Installed assets are retained for actual runtime verification.

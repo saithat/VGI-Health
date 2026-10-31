@@ -92,10 +92,10 @@ def infoContent (cx : Ctx) (i : InfoId) : Ro :=
         | none => "No confirmed kg weight available for dose check"),
        table ["Line", "Drug", "Dose check"]
         ((orderLines cx.s).map fun (n, drug) => row [toString n, drug,
-          if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "Within configured range"])
+          if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag"])
         "No order lines to check"]
-  | "anticoagulants" => table ["Medication", "Instructions", "Status", "Authored", "Prescriber"]
-      ((d.meds.filter fun r => inClass r.drug "anticoagulant").map medTr) "No anticoagulant requests on file"
+  | "anticoagulants" | "anticoagulantList" => table ["Medication", "Instructions", "Status", "Authored", "Prescriber"]
+      ((d.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medTr) "No anticoagulant requests on file"
   | "careGaps" => table ["Care gap"] (cx.facts.careGaps.map fun g => row [g]) "No configured care gaps"
   | "priorAuthStatus" => txt .value (if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
       then "Prior authorization requested" else "Prior authorization not requested")
@@ -133,7 +133,7 @@ def fieldPart (cx : Ctx) (it : ItemView) (e : ElementId) : Part :=
     .ro (.aria .label it.comp.label)]
   let input := match kind with
     | .coded "formulary" => Part.act .enter .select [.input] attrs
-        (.ro (.el .option [] [] [.text "Choose medication"]) :: formulary.map fun d =>
+        (.el .option [] [.value ""] [.ro (.text "Choose medication")] :: formulary.map fun d =>
           .el .option [] [.value d.name] [.ro (.text d.name)])
     | _ => Part.act .enter .input ([.input] ++ if it.pendingConfirm then [.inputPending] else []) attrs []
   .el .div [.field] []
