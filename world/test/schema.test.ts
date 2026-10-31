@@ -9,7 +9,7 @@ import { SHIFTS } from "../src/calendar";
 import { naloxoneCheck } from "../src/controlled";
 import { DRUG_NAMES, FREQS, ROUTES, dosePerKg, drugDef, isControlled, pedsDoseCaps } from "../src/formulary";
 import { DayScheduleSchema, FhirResourceSchema, type OrderChoice, OrderChoiceSchema, PERSONAS, TaskSchema } from "../src/schema";
-import { allTasks, run, schedule, stateOf } from "./helpers";
+import { allTasks, FIXTURE_INDEX, SYNTHEA_INDEX, run, schedule, stateOf } from "./helpers";
 
 const r = run(1);
 
@@ -92,7 +92,8 @@ function weightKg(t: { todayResources: unknown[] }): { value: number; unit: stri
   return undefined;
 }
 
-describe("clinical choices", () => {
+describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) => {
+  const r = run(1, index);
   const tasks = allTasks(r);
   const orders = tasks.flatMap((t) => [...t.choices.orders, ...t.choices.administer]);
 
@@ -186,7 +187,8 @@ describe("clinical choices", () => {
   });
 });
 
-describe("controlled substances (CURES / naloxone facts)", () => {
+describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("controlled substances (CURES / naloxone facts, %s)", (index) => {
+  const r = run(1, index);
   const tasks = allTasks(r);
 
   it("every outpatient controlled prescription records its supply in days", () => {

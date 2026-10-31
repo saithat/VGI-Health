@@ -249,6 +249,7 @@ export const PEDS_DOSE_CAPS: Partial<Record<DrugName, readonly number[]>> = {
   acetaminophen: [1000],
   ibuprofen: [400],
   ondansetron: [4],
+  albuterol: [5],
 };
 
 export function pedsDoseCaps(drug: string): readonly number[] {

@@ -128,5 +128,5 @@ export const peds = {
   acetaminophen: (kg: number): OrderChoice => order("acetaminophen", weightDose("acetaminophen", 15, kg, 10, 1000), "mg", "PO", "q6h", { prn: true }),
   ibuprofen: (kg: number): OrderChoice => order("ibuprofen", weightDose("ibuprofen", 10, kg, 10, 400), "mg", "PO", "q6h", { prn: true }),
   ondansetron: (kg: number): OrderChoice => order("ondansetron", weightDose("ondansetron", 0.15, kg, 0.5, 4), "mg", "PO", "once"),
-  albuterolNeb: (kg: number): OrderChoice => order("albuterol", kg < 10 ? 1.25 : kg < 20 ? 2.5 : 5, "mg", "INH", "q4h", { prn: true }),
+  albuterolNeb: (kg: number): OrderChoice => order("albuterol", weightDose("albuterol", 0.15, kg, 0.1, 5), "mg", "INH", "q4h", { prn: true }),
 };

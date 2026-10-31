@@ -12,6 +12,11 @@ const population = loadPopulation(join(root, "fixtures/synthea/index.json"));
 const run = generateWorld(1, 10, population.patients);
 
 describe("real Synthea population", () => {
+  it("is deterministic on the full population and independent of the horizon", () => {
+    expect(generateWorld(1, 10, population.patients).days).toEqual(run.days);
+    expect(generateWorld(1, 4, population.patients).days).toEqual(run.days.slice(0, 4));
+  });
+
   it("loads all 174 patients, including 50 children and 17 penicillin allergies", () => {
     expect(population.patients).toHaveLength(174);
     expect(run.pop.adults).toHaveLength(124);
