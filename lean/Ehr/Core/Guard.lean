@@ -55,10 +55,11 @@ def whenHolds (facts : Facts) (s : State) : When → Bool
     | none => false
   | .highAlertMed => (drugsInPlay facts s).any isHighAlert
   | .abnormalResult => facts.abnormalResult
+  | .naloxoneRisk => (orderLines s).any (fun p => naloxoneLine facts s p.1 p.2)
 
-/-- A `When` condition holds for one order line with drug `d` (used by
-per-order-line requirements). -/
-def lineMatches (facts : Facts) (w : When) (d : String) : Bool :=
+/-- A `When` condition holds for one order line (slot, drug `d`), used by
+per-order-line requirements. -/
+def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String) : Bool :=
   match w with
   | .always => true
   | .orderClass cls => inClass d cls
@@ -68,6 +69,7 @@ def lineMatches (facts : Facts) (w : When) (d : String) : Bool :=
     | none => false
   | .highAlertMed => isHighAlert d
   | .abnormalResult => facts.abnormalResult
+  | .naloxoneRisk => naloxoneLine facts s slot d
 
 /-- A captured value meets a requirement for element `el`: confirmed, valid,
 and entered by a human if the element is human-only. -/
@@ -90,17 +92,34 @@ def entryMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryRe
   | none => false
   | some el =>
     if rq.perOrderLine then
-      (orderLines s).all fun p => !lineMatches facts rq.when p.2 || hasGoodEntry facts user s el (some p.1)
+      (orderLines s).all fun p => !lineMatches facts s rq.when p.1 p.2 || hasGoodEntry facts user s el (some p.1)
     else
       !whenHolds facts s rq.when || hasGoodEntry facts user s el none
 
-/-- A review requirement is met: it does not apply, or the info is shown on
-the current screen, or (for `shownOrReceipt`) a valid receipt covers it. -/
+/-- A value is non-empty: a non-empty code, text, or user; a checked flag; or
+any quantity. -/
+def Value.nonEmpty : Value → Bool
+  | .qty _ _ => true
+  | .code c => !c.isEmpty
+  | .text t => !t.isEmpty
+  | .flag b => b
+  | .user u => !u.isEmpty
+
+/-- The waiver element was entered by a human in this episode, is confirmed,
+and is non-empty. -/
+def waived (s : State) : Option ElementId → Bool
+  | some e => s.captured.any fun x => x.element == e && x.byHuman && x.confirmed && x.value.nonEmpty
+  | none => false
+
+/-- A review requirement is met: it does not apply; or the info is shown on
+the current screen; or (for `shownOrReceipt`) a valid receipt covers it; or
+its `waivedBy?` element was entered by a human (confirmed, non-empty). -/
 def reviewMet (sp : Spec) (prog : Program) (facts : Facts) (s : State) (rq : ReviewReq) : Bool :=
   !whenHolds facts s rq.when || infoShown sp prog facts s rq.info ||
-    match rq.mode with
-    | .shownOnCommit => false
-    | .shownOrReceipt w roles => s.receipts.any (receiptValid sp facts (nowMin facts s) rq.info w roles)
+    (match rq.mode with
+     | .shownOnCommit => false
+     | .shownOrReceipt w roles => s.receipts.any (receiptValid sp facts (nowMin facts s) rq.info w roles)) ||
+    waived s rq.waivedBy?
 
 /-- The user's role may perform the commit (unknown commits: no). -/
 def roleOk (sp : Spec) (user : User) (c : CommitId) : Bool :=
@@ -155,7 +174,10 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
       | some rq => s!"review required: {rq.info} must be shown" ++
           (match rq.mode with
            | .shownOnCommit => ""
-           | .shownOrReceipt _ _ => " or covered by a valid receipt")
+           | .shownOrReceipt _ _ => " or covered by a valid receipt") ++
+          (match rq.waivedBy? with
+           | some e => s!" (or a reason entered in {e})"
+           | none => "")
       | none => "guard"
 
 end Ehr
