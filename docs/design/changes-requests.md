@@ -72,3 +72,12 @@ protocol checks and education remain checked flags.
   action schema (and the `priorAuth` kind to the known union if desired), then
   parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.
+- **CR-13 — pre-op encounter context (world/app/sim).** Set
+  `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
+  during pre-op ordering. Core passes `FactsContext.encounterKind` through
+  FHIR projection. Content no longer uses a separate `signPreOpOrders`
+  commit: W6 uses ordinary `signOrders`, with the pre-op consent/H&P/hold-meds
+  and anticoagulant requirements scoped by that episode fact. Test both
+  incomplete pre-op rejection and ordinary post-op success. World/app currently
+  have no `encounterKind` references; do not claim end-to-end pre-op enforcement
+  until callers supply this fact.
