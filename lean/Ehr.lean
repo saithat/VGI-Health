@@ -1,5 +1,14 @@
 import Ehr.Basic
 import Ehr.Core.Types
 import Ehr.Core.Json
+import Ehr.Formulary
+import Ehr.Core.Basics
+import Ehr.Core.Alerts
+import Ehr.Core.Guard
+import Ehr.Core.Interp
+import Ehr.Core.View
+import Ehr.Api
 import Ehr.Examples.Tiny
+import Ehr.Examples.TinyTests
+import Ehr.Examples.ApiTests
 import Ehr.Specs.V1

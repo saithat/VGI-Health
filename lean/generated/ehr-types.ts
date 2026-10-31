@@ -180,7 +180,9 @@ export type When =
   /** A high-alert medication is involved. */
   | "highAlertMed"
   /** The patient has an abnormal result. */
-  | "abnormalResult";
+  | "abnormalResult"
+  /** Naloxone should be offered (CA B&P Code §741): some order line's drug is an opioid, and the patient takes a benzodiazepine or the line's daily MME is 90 or more (an unknown dose, frequency, or MME factor counts as a risk). */
+  | "naloxoneRisk";
 
 /**
  * An element that must be captured before a commit.
@@ -212,6 +214,12 @@ export interface ReviewReq {
   info: InfoId;
   mode: ReviewMode;
   when: When;
+  /**
+   * An element that, when entered by a human (confirmed, non-empty) in this
+   * episode, documents why the review was not done and so meets the requirement
+   * (CA H&S Code §11165.4: the reason CURES was not consulted).
+   */
+  waivedBy?: ElementId;
 }
 
 /**
@@ -455,7 +463,8 @@ export interface DrugInfo {
    */
   rxnorm: string[];
   /**
-   * Drug classes, most specific first: `"penicillin"`, `"antibiotic"`, …
+   * Drug classes. The first is the therapeutic class used for
+   * duplicate-therapy checks; all are used for allergy and interaction matching.
    */
   classes: string[];
   /**
@@ -468,6 +477,11 @@ export interface DrugInfo {
    * Classes this drug interacts with.
    */
   interactsWith: string[];
+  /**
+   * Oral morphine milligram equivalent factor, in tenths (morphine = 10).
+   * `0` for non-opioids.
+   */
+  mmeFactorTenths: number;
 }
 
 /**
@@ -682,6 +696,10 @@ export interface ItemView {
    */
   pendingConfirm: boolean;
   /**
+   * For fields: only a human may enter this element (render as unskippable).
+   */
+  humanOnly: boolean;
+  /**
    * For alerts: the alert condition holds.
    */
   firing: boolean;
@@ -706,6 +724,16 @@ export interface ScreenView {
    */
   blocked: [CompId, string][];
   popup?: [AlertId, string];
+}
+
+/**
+ * Input of `ehr init` (stdin).
+ */
+export interface InitInput {
+  spec: Spec;
+  program: Program;
+  facts: Facts;
+  user: User;
 }
 
 /**
