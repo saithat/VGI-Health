@@ -4,18 +4,28 @@ Worktree: `/home/saithat/Projects/VGI-world`.
 
 ## Exactly what's left
 
-**Requested world work: nothing left.** The full Synthea population, typed
-clinical choices, P1/P5 imaging/procedure orders, persona exports, Lean contract
-checks, and the committed seed-1 ten-day run are complete and pushed.
+**Nothing left.** All requested world work is complete and pushed, including
+integration with main's albuterol absolute cap and Schedule II classes.
 
-**External follow-up (lean-core):** add `maxDoseMgTenths := 50` for albuterol.
-The precise request is in `docs/design/changes-requests.md`. World correctly
-caps pediatric nebulizer doses at 5 mg; core's generic cap is still 0, so three
-adolescent prescriptions in the seed-1 run can cause a false low-dose alert.
-World's `DrugDef.maxDoseMg` currently mirrors core's 0 exactly. Once the core
-entry lands, merge it, update that local reference value to 5, and rerun the
-formulary contract check. Do not raise doses or weaken a safety rule to avoid
-this alert. The other six generic pediatric caps are integrated.
+## Latest continuation (2026-10-31)
+
+- Fetched and merged `origin/main` (fast-forward to `bea74d0`), including the
+  core allowed-entry-value constraints and the albuterol 5 mg absolute cap.
+- `0454841`: synchronized `world/src/formulary.ts` with the authoritative Lean
+  reference: albuterol `maxDoseMg: 5`; appended `scheduleII` to morphine,
+  hydromorphone, oxycodone and hydrocodone-acetaminophen, preserving therapeutic
+  class order. Added a DEA Schedule II/class correspondence assertion to the
+  existing complete formulary/Lean schedule round-trip contract.
+- Regenerated `runs/world/1` with seed 1 for ten days. All 118 output files are
+  unchanged; clinical choices already used the correct pediatric dose caps.
+- Validation: `cd lean && lake build` passes (125 jobs); world build/lint and
+  all 92 tests pass, including every committed state/schedule, all 25 formulary
+  entries and the agent loader. Agent typecheck/lint and all 31 tests pass.
+  Lean's existing axiom audits report only `propext`, `Classical.choice` and
+  `Quot.sound` (release extension theorems require no axioms). No Lean source,
+  theorem, spec, property or safety rule was changed by this continuation.
+- The previous lean-core albuterol follow-up is resolved. No world blocker or
+  unfinished proof remains.
 
 ## Completed in this continuation
 
@@ -111,7 +121,7 @@ pnpm --filter world test
 pnpm --filter world gen --seed 1 --days 10
 ```
 
-Last checks: Lean build passes (81 jobs, its existing axiom audit reports only
+Last checks: Lean build passes (125 jobs, its existing axiom audit reports only
 propext/Classical.choice/Quot.sound); world build/lint and all 92 tests pass.
 The actual agent world loader is exercised by the CLI integration test.
 Agent typecheck/lint and all 31 tests pass with the typed core contract.
