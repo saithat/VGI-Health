@@ -207,6 +207,19 @@ protocol checks and education remain checked flags.
   `curesExemptionCodes` are content value sets, not a proof of membership.
   For full terminology enforcement, provide a generic spec value-set mapping
   and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+  Content's corrected shared CURES codes are generated at
+  `releases/cures-exemptions.json` by `ehr cures-exemptions-export`; v1,
+  v1.1 and v2 all use them. `surgery-7-day` replaces `surgery-5-day` per
+  H&S §11165.4(c)(4), matching `docs/rules/ca-statutes.json`. Membership
+  alone is insufficient: waiver validation also needs the qualifying
+  procedure/facility, directed supply of at most seven days and no refills.
+  The `cures-unavailable` code models (c)(6): timely access impossible,
+  no reasonably available authorized practitioner/designee, nonrefillable
+  seven-day limit, and medical-record reason. It is not a catch-all for
+  (c)(7)–(9). ED means a general acute care hospital; hospice still needs
+  terminal illness under §11159.2(c). Preserve the subset described in V1;
+  separate ED buprenorphine remains unmodeled. Content guards exercise
+  human documentation across releases, not these eligibility predicates.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
   v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's

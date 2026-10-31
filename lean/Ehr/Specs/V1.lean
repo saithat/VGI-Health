@@ -753,27 +753,35 @@ def orderComment : ElementSpec where
 The supported exemption categories a prescriber may record instead of checking CURES
 (CA Health and Safety Code §11165.4(c)). Codes of the `"cures-exemption"`
 value set:
-- `"admin-in-facility"`: the drug is given to the patient while admitted to a
-  licensed hospital, clinic, or other health facility;
-- `"ed-7-day"`: prescribed in an emergency department, nonrefillable, at most
-  a 7-day supply;
-- `"surgery-5-day"`: prescribed for a surgical procedure done in a licensed
-  facility, nonrefillable, at most a 5-day supply;
-- `"hospice"`: the patient is receiving hospice care;
-- `"cures-unavailable"`: CURES could not be accessed in a reasonable time
-  (for example a system outage), and the reason is documented.
-Verified against docs/regulations.md §2.2. This is a subset, not a complete
-statutory exemption list. The surgical code deliberately accepts only five
-days; §11165.4(c)(4) permits seven. That stricter hospital policy is retained.
-ED buprenorphine and other statutory cases are not separately modeled. -/
+- `"admin-in-facility"`: prescribed, ordered, or furnished for administration
+  in, transfer between, or use on the premises of a facility listed in (c)(1);
+- `"ed-7-day"`: prescribed, ordered, administered, or furnished in the ED of a
+  general acute care hospital, at most a nonrefillable 7-day supply used as
+  directed, under (c)(2);
+- `"surgery-7-day"`: part of treatment for a surgical procedure at a facility
+  listed in (c)(4), at most a nonrefillable 7-day supply used as directed;
+- `"hospice"`: a hospice patient who is terminally ill as defined in
+  H&S §11159.2(c), under (c)(5);
+- `"cures-unavailable"`: timely access is not reasonably possible, another
+  authorized practitioner or designee is not reasonably available, at most
+  a nonrefillable 7-day supply used as directed, and the reason is documented
+  in the medical record, under (c)(6).
+Checked against docs/rules/ca-statutes.json (procedure-seven-day and
+ed-buprenorphine rows) and its cited official bulk source for §11165.4(c).
+This is a subset: non-surgical procedures in (c)(4), the separate ED
+buprenorphine branch in (c)(3), and (c)(7)–(9) are not separately modeled.
+The codes document a human's choice; the current interpreter checks neither
+value-set membership nor these clinical/facility/supply predicates (CR-11). -/
 def curesExemptionCodes : List String :=
-  ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"]
+  ["admin-in-facility", "ed-7-day", "surgery-7-day", "hospice", "cures-unavailable"]
 
 /-- Law: CA H&S 11165.4(c); the modeled exemption list is a subset.
 Why CURES was not checked: one of the statutory exemptions in
 `curesExemptionCodes` (CA Health and Safety Code §11165.4(c)). A human
-records it; it is never pre-filled. When recorded, it meets the CURES review
-requirement instead of the report (see `orderSigningReviews`). -/
+records it; it is never pre-filled. A confirmed human entry waives the modeled
+CURES review requirement instead of the report (see `orderSigningReviews`).
+This is documentation, not proof that the statutory exemption applies: code
+membership and clinical/facility/supply eligibility remain CR-11 work. -/
 def curesExemptionReason : ElementSpec where
   id := "curesExemptionReason"
   label := "CURES not checked: exemption"
