@@ -6,6 +6,14 @@ open Ehr.Specs.V1 Ehr.Specs.V1_1 Ehr.Specs.V2
 /-- v1.1 preserves a complete v1 prescribing path without any new input. -/
 def optionalRelease : State := run w1Path canonicalV1_1 adult physician specV1_1
 #guard (finish optionalRelease "w1Sign" "signOrders" canonicalV1_1 adult physician specV1_1).commits == ["signOrders"]
+-- Optional and stewardship releases preserve the new Schedule II hard stop.
+#guard [(specV1_1, canonicalV1_1), (specV2, canonicalV2)].all fun (sp, p) =>
+  let path := (opioidPath).map fun e => match e with
+    | .enter "w1Orders.refills" _ => .enter "w1Orders.refills" (.qty 30 .none) | _ => e
+  let s := run path p adult physician sp
+  reason (one s (.click "w1Sign.commit.signOrders") p adult physician sp).2 ==
+    "value not allowed: refills (allowed: 0)" &&
+    (finish s "w1Sign" "signOrders" p adult physician sp).commits == []
 /-- A human requests prior auth on an existing order. -/
 def pa : State × StepResult := one
   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Orders",
