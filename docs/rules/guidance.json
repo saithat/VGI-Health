@@ -1,0 +1,3934 @@
+[
+  {
+    "id": "entrenched-npg-id-no-room",
+    "title": "Exclude room identifiers",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.01.01 EP 1, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "room number",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Exclude room numbers from qualifying patient identifiers.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Validate identifier categories; banner content is not typed in v1.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Two-identifier banner exists; exclusion of location identifiers is not checked.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-specimen-bedside",
+    "title": "Label specimens at bedside",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.01.01 EP 2, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "presence",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Label specimen containers while the patient is present.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Specimen-label event and patient-presence attestation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Physical presence cannot be established by screen certification alone.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-critical-recipient",
+    "title": "Define critical-result recipients",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.02.01 EP 1, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "whom",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "design",
+    "proposedRule": "Configure the authorized recipient of critical results.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Critical-result classification and recipient-routing policy.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic policy subitem of regulations.md R2-11; v1 acknowledgment is not evidence of delivery. Reporter responsibility remains part of the hospital policy; this row isolates recipient selection.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-suicide-screen",
+    "title": "Use validated suicide screening",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 2, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "validated",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Screen eligible patients using a validated suicide tool.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "behavioral-health-primary and age >=12",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Eligibility predicate, validated questionnaire and screening result.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. Disposition gate is a proposed local implementation; depressionScreen/PHQ-2 is not equivalent.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-suicide-intent",
+    "title": "Assess suicidal intent",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 3, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "intent",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "humanOnly",
+    "proposedRule": "Directly assess suicidal intent after positive screening.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "positive-suicide-screen or expressed-suicidal-ideation",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Suicide assessment fields and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. This is one assessment component, not a complete assessment.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-suicide-risk-level",
+    "title": "Record suicide risk level",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 4, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "overall",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Document the overall suicide risk level.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "suicide-assessment-indicated",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Suicide risk assessment element and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. ",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-suicide-mitigation",
+    "title": "Record suicide mitigation plan",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 4, p. 24",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "mitigate",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "disposition",
+    "encoding": "entry",
+    "proposedRule": "Document the suicide risk mitigation plan.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "suicide-assessment-indicated",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Risk mitigation plan element and predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to behavioral-health-primary care; screening age 12+. EPs 3–7 also cover any patient expressing suicidal ideation. Do not equate a documented plan with completion of physical protective measures.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-name",
+    "title": "Include medication name",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "name",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include the drug or solution name on procedural labels.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-strength",
+    "title": "Include medication strength",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Strength",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include strength on procedural medication labels.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-diluent-name",
+    "title": "Include diluent name",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Diluent",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include diluent name unless apparent from the container.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-diluent-volume",
+    "title": "Include diluent volume",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "volume",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include diluent volume unless apparent from the container.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-expiry-date",
+    "title": "Include expiration date",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Expiration",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include expiration date unless the hospital-defined short-procedure exception applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-label-expiry-time",
+    "title": "Include expiration time",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.03.01 EP 3, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "time",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include expiration time unless the hospital-defined short-procedure exception applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedural-medication-label-required",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedural label model, content validation and exception predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies on and off the sterile field; label-generation proposal, not an existing signOpNote requirement. Exceptions and label timing follow NPG.14.03.01; the short-procedure exception affects expiration only.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-anticoag-reversal",
+    "title": "Use anticoagulant reversal protocols",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.04.01 EP 1, p. 44",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "reversal",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Use approved evidence-based anticoagulant reversal protocols.",
+    "specMapping": {
+      "element": null,
+      "info": "coagLabs",
+      "when": "anticoagulant-reversal-or-related-bleeding-management-in-scope",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Therapeutic anticoagulation/bleeding predicate and protocol information.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Excludes routine short-term VTE prophylaxis. coagLabs is an adjacent v1 panel, not a reversal protocol; existingInSpec=false.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-medrec-written",
+    "title": "Provide written discharge medications",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.14.05.01 EP 4, p. 45",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "written",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Provide written medication information at discharge or outpatient encounter end.",
+    "specMapping": {
+      "element": "dischargeMedRec",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-facing medication-list delivery evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "dischargeMedRec is captured in v1; delivery of a written list is not established by that field alone.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-timeout-team-agreement",
+    "title": "Agree on time-out patient identity",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "members",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require team agreement on the correct patient identity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "time-out-immediately-before-invasive-procedure",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event, team participation and separate agreement evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic subject within R2-15. The remaining site/procedure subjects are separate entries; consentVerified is not equivalent.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-timeout-performer-change",
+    "title": "Repeat time-out for changed performer",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 3, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "performing",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Repeat time-out when another same-patient procedure has a different performer.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "same-patient-multiple-procedures-and-performer-changes",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure/performer identity and reset of completed time-out evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Specific re-performance condition, not a requirement to repeat merely because any team member changes.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-timeout-site-agreement",
+    "title": "Agree on time-out site",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "site",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require team agreement on the correct procedure site.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "time-out-immediately-before-invasive-procedure",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event and team site-agreement evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic subject within R2-15; a site field alone is not team agreement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-timeout-procedure-agreement",
+    "title": "Agree on time-out procedure",
+    "citation": "Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "Procedure",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require team agreement on the procedure to be done.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "time-out-immediately-before-invasive-procedure",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event and team procedure-agreement evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic subject within R2-15; does not follow from signing pre-op medication orders.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-npg-two-identifiers",
+    "title": "Use two patient identifiers",
+    "citation": "Joint Commission Hospital NPG.01.01.01 EP 1, effective January 2026, p. 1",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "patient identifiers",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Verify at least two person-specific identifiers when providing care.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Two-identifier verification evidence at clinical care boundaries.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Existing R1 context retained, not a new round-3 discovery. V1 pins patientBanner but does not check its identifier content or a bedside verification. patientIdReentry initials/sex/age is a different local policy."
+  },
+  {
+    "id": "entrenched-npg-site-mark-before-procedure",
+    "title": "Mark the surgical site before the procedure",
+    "citation": "Joint Commission Hospital NPG.01.06.02 EPs 1–3, effective January 2026, p. 5",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "marked",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Mark the site before applicable invasive procedures.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-requires-site-marking",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event, site-marking applicability and accountable human evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Related to R2-15, but distinct from time-out. Applies at minimum when multiple possible locations create safety risk. Involve patient if possible; accountable licensed practitioner marks, with limited qualified delegation. No blanket requirement for unmarkable sites."
+  },
+  {
+    "id": "entrenched-npg-medrec-resolve-discrepancies",
+    "title": "Resolve medication reconciliation discrepancies",
+    "citation": "Joint Commission Hospital NPG.14.05.01 EP 3, effective January 2026, p. 45",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "discrepancies",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Resolve discrepancies between home medications and hospital orders.",
+    "specMapping": {
+      "element": "medRecDecision",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Per-medication reconciliation and discrepancy-resolution completeness.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "E8/E16 baseline retained. V1 requires one medRecDecision at signNote and dischargeMedRec at discharge; neither proves complete comparison by a qualified individual. Extra display and commit gates are proposed hospital implementation."
+  },
+  {
+    "id": "entrenched-ismp-weight-metric",
+    "title": "Record metric weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 3(a)–(b), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "metric units only",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Record weight only in metric units.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 is stricter: kg only, whereas ISMP also permits grams. Existing entry requirement; regulations.md E5. Narrow mapping: the kg unit constraint exists; this does not certify every written format in the hospital.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-weight-measured",
+    "title": "Measure encounter weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 3(a)–(b), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "Weigh each patient",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Obtain measured weight at admission and appropriate encounters.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "admission-or-appropriate-prescribing-or-medication-administration-encounter",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Measured-weight provenance and encounter linkage.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Do not delay life-saving treatment to weigh a major-trauma patient; laboratory-only encounters are excluded. V1 has a weight entry, not this provenance/exception check.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-weight-not-historical",
+    "title": "Reject historical dosing weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 3(a)–(b), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "historical weight",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Avoid relying on historical weight for the encounter.",
+    "specMapping": {
+      "element": "dosingWeight",
+      "info": null,
+      "when": "admission-or-appropriate-prescribing-or-medication-administration-encounter",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Weight source/measurement-time validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 comments describe today, but its entry gate does not validate measurement provenance; this is additional validation.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-who-oximeter",
+    "title": "Check pulse oximeter",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "pulse oximeter",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm the pulse oximeter is attached and functioning.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-allergy",
+    "title": "Check known surgical allergies",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Known allergy",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Confirm known allergies before anesthesia induction.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-airway",
+    "title": "Assess difficult airway risk",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Difficult airway",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Assess difficult airway risk before induction.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-blood-loss",
+    "title": "Assess major blood-loss risk",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": ">500ml",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Assess blood-loss risk exceeding 500 mL, or 7 mL/kg in children.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-antibiotic",
+    "title": "Confirm prophylaxis timing",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "last 60 minutes",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Confirm indicated antibiotic prophylaxis within the last 60 minutes.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Prophylaxis may be not applicable; no general CDC antibiotic-timeout deadline follows from this item. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption. This is the adopted checklist confirmation question, not a universal dosing rule for every antibiotic; drug-specific infusion protocols and applicability must be preserved.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-team",
+    "title": "Introduce surgical team",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "name and role",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm team introductions by name and role.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-sterility",
+    "title": "Confirm instrument sterility",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "sterility (including indicator results)",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Confirm sterility including indicator results.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-imaging",
+    "title": "Display essential surgical imaging",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "essential imaging",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Display essential imaging when applicable.",
+    "specMapping": {
+      "element": null,
+      "info": "imaging",
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-counts",
+    "title": "Confirm surgical instrument count",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "counts",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Verbally confirm completion of the instrument count.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption. Count applicability follows the adopted procedure-specific checklist.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-specimen",
+    "title": "Read surgical specimen labels aloud",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "Specimen labelling",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Read specimen labels aloud, including patient name.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Operative phase events and checklist-specific evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Checklist timing matters; v1 signOpNote is retrospective and does not establish completion at the operative boundary. Physical checks require accountable human evidence; a certified screen cannot observe them. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-sponge-count",
+    "title": "Confirm surgical sponge count",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "sponge",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Verbally confirm completion of the sponge count.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "OR sign-out event and sponge-count evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "One separate checklist subject; signOpNote fields do not establish the count occurred before leaving OR. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption. Count applicability follows the adopted procedure-specific checklist.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-who-needle-count",
+    "title": "Confirm surgical needle count",
+    "citation": "WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR",
+    "url": "https://healthcluster.who.int/docs/librariesprovider16/meeting-reports/quality-toolkit/h.-surgical-safety-checklist.pdf?download=true&sfvrsn=6a8b581d_5",
+    "quote": "needle",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Verbally confirm completion of the needle count.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "procedure-in-adopted-WHO-checklist-scope",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "OR sign-out event and needle-count evidence.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "One separate checklist subject; physical counting remains a human action. Adoption hook verified in Leapfrog Hospital Survey 2026 version 2, Section 3B, checklist questions 2–5 and measure specifications; not every WHO detail is independently a Leapfrog scoring criterion. Outside designated complex procedures, applicability depends on hospital adoption. Count applicability follows the adopted procedure-specific checklist.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist."
+  },
+  {
+    "id": "entrenched-ismp-mtx-teachback",
+    "title": "Confirm methotrexate teach-back",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 2(c), p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "repeat back",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "humanOnly",
+    "proposedRule": "Have patients repeat methotrexate discharge dosing instructions.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "oral-methotrexate-discharge-prescription",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Teach-back completion and drug predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A generic instructions entry in v1 does not establish patient comprehension.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-layer-safeguards",
+    "title": "Layer high-alert safeguards",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 19(c), p. 18",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "bundle",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Combine weaker controls with stronger high-alert safeguards.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "facility-selected-high-alert-medication",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Medication-specific safeguard profiles beyond one alert/cosign.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Static policy proposal: a label or educational popup alone cannot satisfy the safeguard profile. Static review can require declared layers; effectiveness and real clinical performance require separate evidence. Do not treat a label or cosign alone as adequate risk control.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-weight-on-prescription",
+    "title": "Include patient weight on electronic prescriptions",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, BP 3(c), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "prescriptions",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include patient weight in electronic prescriptions.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Outbound prescription payload constraints and current patient-linked weight.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Capturing weight before signing does not prove it is transmitted to the dispensing pharmacy. V1 field presence is only a partial mapping."
+  },
+  {
+    "id": "entrenched-ismp-weight-discharge-summary",
+    "title": "Include metric weight in after-visit summaries",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, BP 3(d), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "summaries",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include metric patient weight in discharge and after-visit summaries.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-summary output model and weight-content validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The 2026 edition also allows pounds/ounces in an appropriate requisite summary field. Do not interpret metric documentation as forbidding patient-facing conversion. Neither dischargeInstructions nor signNote guarantees a weight-bearing summary."
+  },
+  {
+    "id": "entrenched-ismp-weight-growth-outlier",
+    "title": "Alert on growth-inconsistent pediatric weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, BP 3(e), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "growth",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Alert when a pediatric weight significantly diverges from an appropriate growth curve.",
+    "specMapping": {
+      "element": "weight",
+      "info": "growthChart",
+      "when": "pediatric-weight-growth-outlier",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/reference-specific growth calculations and significant-outlier predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 growthChart presence does not validate its reference or compute outliers. The source supplies no universal percentile cutoff or automatic order denial; clinical validation and overrides are hospital decisions."
+  },
+  {
+    "id": "entrenched-ismp-weight-change-alert",
+    "title": "Alert on implausible change from prior weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, BP 3(e), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "differs",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Alert on a significant change from the previous encounter weight.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "significant-change-from-previous-encounter-weight",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Longitudinal weight linkage and validated change threshold.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Do not substitute yesterday’s weight for measurement; use it as a plausibility check. The threshold and tier are local clinical policy, not an ISMP-specified numeric hard stop."
+  },
+  {
+    "id": "entrenched-ismp-dosing-weight-category",
+    "title": "Define which weight category drives dosing",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, BP 3(f), p. 5",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "categories",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Define selection rules for wet, dry and dosing weight categories.",
+    "specMapping": {
+      "element": "dosingWeight",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Weight-category metadata and protocol-dependent selection validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 has dosingWeight but no category selector or protocol linking the category to a drug. A policy check is statically possible once these are modeled; actual clinical appropriateness requires validated protocols."
+  },
+  {
+    "id": "entrenched-npg-pain-intervention-response",
+    "title": "Document the response to pain interventions",
+    "citation": "Joint Commission Hospital NPG.06.02.01 EP 7, effective January 2026, p. 21",
+    "url": "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+    "quote": "response(s)",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Evaluate and document the response to pain interventions.",
+    "specMapping": {
+      "element": "painReassessment",
+      "info": null,
+      "when": "after-pain-intervention",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Intervention-linked reassessment state and clinically appropriate timing.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "E13 baseline expanded: V1 requires a painReassessment field when charting assessments, but lacks a linkage to the intervention, due time or structured response. It cannot prove a timely post-dose reassessment. No universal 30/60-minute limit is asserted."
+  },
+  {
+    "id": "entrenched-tjc-pain-reassessment-criteria",
+    "title": "Define patient-appropriate pain reassessment criteria",
+    "citation": "Joint Commission public hospital pain FAQ 000001329; NPG.06.02.01 EP 1, 2026",
+    "url": "https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/standards-faqs/000001329",
+    "quote": "reassess pain",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Define pain reassessment criteria appropriate to age, condition and understanding.",
+    "specMapping": {
+      "element": "painReassessment",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned reassessment criteria and patient-context-specific applicability.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The current public hospital FAQ places this requirement in the NPG chapter. Criteria and documentation location are organizational choices; do not invent a universal reassessment interval."
+  },
+  {
+    "id": "entrenched-tjc-pain-alternative-tools",
+    "title": "Provide pain tools for patients unable to self-report",
+    "citation": "Joint Commission public hospital pain FAQ 000001329; Screening vs. assessing pain, 2026",
+    "url": "https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/standards-faqs/000001329",
+    "quote": "alternative assessment tools",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Provide suitable alternative pain-assessment tools when self-report is unsuitable.",
+    "specMapping": {
+      "element": "painScore",
+      "info": null,
+      "when": "self-report-unsuitable",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Assessment instrument catalog and age/communication-context selection.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The FAQ discusses non-self-reporting ICU patients and children. V1 painScore alone does not encode an instrument, population appropriateness or observer-scored alternatives."
+  },
+  {
+    "id": "entrenched-tjc-opioid-high-risk-monitoring",
+    "title": "Document monitoring of high-risk opioid recipients",
+    "citation": "Joint Commission public hospital pain FAQ 000001329; Monitoring of post-operative patients on opiates; NPG.06.02.01 EP 6, 2026",
+    "url": "https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/standards-faqs/000001329",
+    "quote": "high risk",
+    "type": "accreditation",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document monitoring for patients at high risk from opioid treatment.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "clinically-identified-high-risk-opioid-recipient",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Risk classification, monitoring plan, observations and time-linked monitoring evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The FAQ requires monitoring; the clinical team determines risk and monitoring requirements. A nursingAssessment text field cannot establish monitoring occurred. Physical equipment and ongoing observation need evidence beyond UI certification."
+  },
+  {
+    "id": "entrenched-safer-result-escalation",
+    "title": "Escalate unacknowledged critical results",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.5, implementation guidance, p. 16",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "automatic escalation if there is no response",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "alert",
+    "proposedRule": "Escalate life-threatening result notifications if rapid acknowledgment is absent.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "life-threatening-result-without-rapid-acknowledgment",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Notification acknowledgment, timeout and alternate-recipient routing.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic component of R2-11. No numerical universal deadline is supplied here; escalation must run even when no user opens the result.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-result-normal-notify",
+    "title": "Notify patients of normal results",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 3.4, p. 27",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "both normal and abnormal",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "Ensure timely patient notification of normal results.",
+    "specMapping": {
+      "element": "patientMessage",
+      "info": null,
+      "when": "normal-result",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Normal-result notification requirement and delivery evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 requires patientMessage only for abnormalResult. Delivery/notification differs from typing text; do not turn an illustrative outside policy deadline into a universal SAFER limit.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-result-ordering-clinician",
+    "title": "Identify the ordering clinician on test reports",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.2, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "ordering clinician",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Identify the ordering clinician on every ordered test and report.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Order/report provenance and rendered clinician identity.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 resultDetail panel ID does not constrain which report metadata appears. This row concerns the ordering clinician; transfer of follow-up responsibility is a separate process."
+  },
+  {
+    "id": "entrenched-safer-result-amendment-notification",
+    "title": "Notify clinicians when test results change",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.3, p. 14",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "changed or amended",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Notify responsible clinicians electronically when a result is amended.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "result-amended",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Result version-change events, responsible-recipient routing and notification evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A prior acknowledgment must not silently stand in for reviewing changed information. Alert tier is a local design decision; notification does not itself establish follow-up."
+  },
+  {
+    "id": "entrenched-safer-result-abnormal-flag",
+    "title": "Flag abnormal results in the display",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.6, p. 17",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "flagged",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Flag results outside reference ranges or otherwise judged abnormal.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "abnormalResult",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Per-result abnormal flags and rendered flag-content validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 uses abnormalResult to require resultTrend, but does not constrain the contents of resultDetail or prove an abnormal flag is displayed."
+  },
+  {
+    "id": "entrenched-safer-result-surrogate",
+    "title": "Support a covering clinician for results",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.8, p. 19",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "surrogates",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Support assigning surrogates to receive test results during absences.",
+    "specMapping": {
+      "element": null,
+      "info": "inbasketItems",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Coverage assignments, routing and ownership state.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Static review can require the assignment control and declared routing policy. Actual coverage and delivery require operational evidence."
+  },
+  {
+    "id": "entrenched-safer-result-components-together",
+    "title": "Display multicomponent results together",
+    "citation": "ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.7, implementation guidance, p. 18",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "Multicomponent results",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Report the components of a multicomponent test together.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Test-component grouping and complete-group display constraints.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A result panel can be present while a clinically important component remains hidden. The source gives lupus anticoagulant testing as an example; no fixed test list is inferred."
+  },
+  {
+    "id": "entrenched-safer-patient-list-identifiers",
+    "title": "Show multiple identifiers on patient lists",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.2, implementation guidance, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "unique identifiers",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include at least two unique identifiers per patient-list row.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-list row semantics and identifier-content cardinality.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The banner mapping is adjacent only. V1 design.landmarks pins a panel; it does not check patient-list rows."
+  },
+  {
+    "id": "entrenched-safer-patient-list-selection",
+    "title": "Highlight the selected patient in patient lists",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.2, implementation guidance, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "name is highlighted",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Visually highlight the selected patient in a patient list.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Selected-row state and patient-list styling constraints.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "No mandated color, boldness, font size or contrast number is inferred. Those are hospital/product choices."
+  },
+  {
+    "id": "entrenched-safer-patient-name-collision",
+    "title": "Warn about same or similar patient names",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.6, p. 15",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "same or similar",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Warn when patient search returns same or similar names.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "patient-search-name-collision",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Search-result comparison and name-collision alert condition.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Registration duplicate prevention is related but outside this atomic search-results rule. V1 has no patient-search collision predicate; tier is a local choice."
+  },
+  {
+    "id": "entrenched-safer-patient-photo-banner",
+    "title": "Display patient photographs in the banner",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 2.5, implementation guidance, p. 20",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "Patient photographs are displayed",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Display available patient photographs in supported EHR banners.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "photo-supported-and-available",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-linked photo facts and banner-content verification.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 pins patientBanner, without verifying photo content. A placeholder is not a photograph. Capture practices must respect cultural/religious considerations; this is assessed guidance, not compulsory facial recognition."
+  },
+  {
+    "id": "entrenched-safer-patient-photo-mobile",
+    "title": "Preserve patient photographs on mobile displays",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 2.5, implementation guidance, p. 20",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "computers and mobile devices",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Retain available patient photographs on supported mobile EHR displays.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "mobile-display-and-photo-supported-and-available",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Device-aware rendering and photo-content validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A desktop banner proof does not establish the mobile layout. This rule preserves the identification cue across supported devices."
+  },
+  {
+    "id": "entrenched-safer-printed-patient-identifiers",
+    "title": "Print identifiers on patient-specific materials",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.4, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "multiple patient identifiers",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include multiple patient identifiers on printed patient-specific materials.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Print-template semantics and patient-identifier cardinality.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Wristbands, labels and reports are examples; barcode generation is separate. Screen banner placement does not establish printed identifiers."
+  },
+  {
+    "id": "entrenched-safer-patient-reentry-fallback",
+    "title": "Retain human ID re-entry when photographs are unavailable",
+    "citation": "ASTP/ONC 2025 SAFER Patient Identification Guide RP 2.5, implementation guidance, p. 20",
+    "url": "https://healthit.gov/wp-content/uploads/2025/01/Safer-Guide-6.-Patient-Identification-Final.pdf",
+    "quote": "before signing orders",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "When photos are unavailable, retain a patient-identification safeguard before signing.",
+    "specMapping": {
+      "element": "patientIdReentry",
+      "info": null,
+      "when": "photo-unavailable-or-unsupported",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "E6/H2 baseline retained. SAFER permits alternatives; re-entry is our selected implementation, not a universal prescribed technique. V1 requires human patientIdReentry unconditionally, including pre-op signing, so its gate is stricter than this conditional practice."
+  },
+  {
+    "id": "entrenched-leapfrog-cpoe-85",
+    "title": "Reach the inpatient CPOE ordering threshold",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, October 20, 2026, Section 2, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "at least 85%",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Enter at least 85% of inpatient medication orders through CPOE with decision support.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hospital-level denominator, reporting period and actual order-entry audit data.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Institutional survey criterion, not a per-click or statutory obligation. Applies to inpatients/applicable BCMA units. The CPOE test threshold applies to adult/general hospitals; pediatric hospitals do not complete that test. A static certified UI cannot establish an observed percentage."
+  },
+  {
+    "id": "entrenched-leapfrog-cpoe-test-60",
+    "title": "Pass the CPOE harmful-error detection threshold",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, October 20, 2026, Section 2, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "at least 60%",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Detect at least 60% of frequent serious medication errors in the Leapfrog CPOE test.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "External CPOE evaluation tool and hospital-level test results.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Institutional survey criterion, not a per-click or statutory obligation. Applies to inpatients/applicable BCMA units. The CPOE test threshold applies to adult/general hospitals; pediatric hospitals do not complete that test. A static certified UI cannot establish an observed percentage."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-unit-coverage",
+    "title": "Deploy bedside BCMA in applicable units",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, October 20, 2026, Section 2, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "100%",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Implement bedside BCMA in all applicable units.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hospital unit inventory and operational deployment evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Institutional survey criterion, not a per-click or statutory obligation. Applies to inpatients/applicable BCMA units. The CPOE test threshold applies to adult/general hospitals; pediatric hospitals do not complete that test. A static certified UI cannot establish an observed percentage."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-scan-compliance",
+    "title": "Meet the BCMA scanning compliance target",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, October 20, 2026, Section 2, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "95%",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Achieve at least 95% patient-and-medication scanning compliance in applicable units.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Unit-specific administration denominators, reporting period and scanning audit events.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Institutional survey criterion, not a per-click or statutory obligation. Applies to inpatients/applicable BCMA units. The CPOE test threshold applies to adult/general hospitals; pediatric hospitals do not complete that test. A static certified UI cannot establish an observed percentage."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-scan-patient",
+    "title": "Scan the patient wristband",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "scanning patients",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Preserve patient wristband scanning in applicable bedside administrations.",
+    "specMapping": {
+      "element": "wristbandScan",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "E12/H3 baseline retained. Leapfrog measures >=95% compliance; this is the existing, stricter per-dose demo gate. Hospital exception workflows are not modeled. A scan field proves an attested interaction, not physical bedside presence or device authenticity."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-scan-medication",
+    "title": "Scan the medication barcode",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "patients and medications",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Preserve medication barcode scanning in applicable bedside administrations.",
+    "specMapping": {
+      "element": "medScan",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "E12/H3 baseline retained. Leapfrog measures >=95% compliance; this is the existing, stricter per-dose demo gate. Hospital exception workflows are not modeled. A scan field proves an attested interaction, not physical bedside presence or device authenticity."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-wrong-patient",
+    "title": "Provide BCMA decision support: wrong patient",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "wrong patient",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "alert",
+    "proposedRule": "Provide bedside BCMA decision support for wrong patient.",
+    "specMapping": {
+      "element": "wristbandScan",
+      "info": "marDoseDetails",
+      "when": "bcma-wrong-patient-condition",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Barcode-to-order/patient validation and medication-administration decision-support predicates.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "One decision-support category per row. V1 records scan values but does not validate real barcodes against the patient/order, dose or time. For second-nurse need, highAlertAdmin/highAlertCosign are partial models; real BCMA context and distinct physical checks still require integration. Tier is hospital-defined, not specified by Leapfrog."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-wrong-medication",
+    "title": "Provide BCMA decision support: wrong medication",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "wrong medication",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "alert",
+    "proposedRule": "Provide bedside BCMA decision support for wrong medication.",
+    "specMapping": {
+      "element": "medScan",
+      "info": "marDoseDetails",
+      "when": "bcma-wrong-medication-condition",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Barcode-to-order/patient validation and medication-administration decision-support predicates.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "One decision-support category per row. V1 records scan values but does not validate real barcodes against the patient/order, dose or time. For second-nurse need, highAlertAdmin/highAlertCosign are partial models; real BCMA context and distinct physical checks still require integration. Tier is hospital-defined, not specified by Leapfrog."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-wrong-dose",
+    "title": "Provide BCMA decision support: wrong dose",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "wrong dose",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "alert",
+    "proposedRule": "Provide bedside BCMA decision support for wrong dose.",
+    "specMapping": {
+      "element": "medScan",
+      "info": "marDoseDetails",
+      "when": "bcma-wrong-dose-condition",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Barcode-to-order/patient validation and medication-administration decision-support predicates.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "One decision-support category per row. V1 records scan values but does not validate real barcodes against the patient/order, dose or time. For second-nurse need, highAlertAdmin/highAlertCosign are partial models; real BCMA context and distinct physical checks still require integration. Tier is hospital-defined, not specified by Leapfrog."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-wrong-time",
+    "title": "Provide BCMA decision support: wrong time",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "wrong time",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "alert",
+    "proposedRule": "Provide bedside BCMA decision support for wrong time.",
+    "specMapping": {
+      "element": "medScan",
+      "info": "marDoseDetails",
+      "when": "bcma-wrong-time-condition",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Barcode-to-order/patient validation and medication-administration decision-support predicates.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "One decision-support category per row. V1 records scan values but does not validate real barcodes against the patient/order, dose or time. For second-nurse need, highAlertAdmin/highAlertCosign are partial models; real BCMA context and distinct physical checks still require integration. Tier is hospital-defined, not specified by Leapfrog."
+  },
+  {
+    "id": "entrenched-leapfrog-bcma-second-nurse",
+    "title": "Provide BCMA decision support: second nurse",
+    "citation": "Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58",
+    "url": "https://www.leapfroggroup.org/sites/default/files/Files/2026%20HospitalSurvey_20261020_v9.2%20(version%202).pdf",
+    "quote": "second nurse check needed",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "alert",
+    "proposedRule": "Provide bedside BCMA decision support for second nurse check needed.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": "marDoseDetails",
+      "when": "bcma-second-nurse-condition",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Barcode-to-order/patient validation and medication-administration decision-support predicates.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "One decision-support category per row. V1 records scan values but does not validate real barcodes against the patient/order, dose or time. For second-nurse need, highAlertAdmin/highAlertCosign are partial models; real BCMA context and distinct physical checks still require integration. Tier is hospital-defined, not specified by Leapfrog."
+  },
+  {
+    "id": "entrenched-ismp-mtx-weekly",
+    "title": "Default methotrexate weekly",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 2(a)–(b), p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "weekly dosage regimen default",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Default oral methotrexate orders to weekly dosing.",
+    "specMapping": {
+      "element": "freq",
+      "info": null,
+      "when": "oral-methotrexate-order",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Medication-specific default constraint.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A human may change a default; the separate daily-indication verification must still apply. Not an absolute ban on daily oncology treatment.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-mtx-daily-indication",
+    "title": "Verify daily methotrexate indication",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 2(a)–(b), p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "hard stop verification",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require appropriate oncologic indication verification for daily oral methotrexate.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "daily-oral-methotrexate",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug/frequency predicate and oncologic-indication validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Related to regulations.md S-ISMP-mtx; v1 indication capture alone does not verify an appropriate oncologic indication.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-select-doublechecks",
+    "title": "Target independent double checks",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 19(d), p. 18",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf",
+    "quote": "select high-alert",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Select highest-risk medications for independent double checks.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Risk-selected high-alert catalog and independent-check documentation beyond distinct-user cosign.",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "V1 implements distinct-nurse cosign for its high-alert subset. Source examples: chemotherapy, opioid infusions, IV insulin, heparin infusions. Do not extend manual checks indiscriminately to every high-alert drug. Risk-based selection is a policy requirement; v1 does not validate the selection process or independence.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-tjc-prohibited-list",
+    "title": "Maintain prohibited abbreviation rules",
+    "citation": "Joint Commission public terminology FAQ 000001229, updated April 21, 2026; Prohibited Abbreviations",
+    "url": "https://www.jointcommission.org/en-us/knowledge-library/support-center/standards-interpretation/standards-faqs/000001229",
+    "quote": "prohibited abbreviations",
+    "type": "accreditation",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Apply the hospital prohibited-abbreviation list to medication documentation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "R2-10 baseline retained as the policy rule; the following ISMP rows isolate individual token substitutions. The FAQ permits uneditable vendor content and manufacturer labels. Apply validation to hospital-generated or customizable medication content; no global substring ban.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-iu",
+    "title": "Spell out international units",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "IU",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use international units instead of IU.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-qd",
+    "title": "Spell out daily",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "QD",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use daily instead of QD and its punctuation/case variants.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-qod",
+    "title": "Spell out every other day",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "QOD",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use every other day instead of QOD and its variants.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-cc",
+    "title": "Use mL for volume",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "cc",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use mL instead of cc.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-microgram",
+    "title": "Spell microgram units safely",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "µg",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use mcg instead of the microgram symbol.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-dc",
+    "title": "Disambiguate discharge and discontinue",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Frequencies/Directions",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "D/C",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Write discharge or discontinue explicitly instead of D/C.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-units",
+    "title": "Spell out medication units",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Abbreviations for Doses/Measurement Units, p. 2",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "U or u",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use units instead of U or u in medication communication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-leading-zero",
+    "title": "Include a medication leading zero",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Dose Designations and Other Information, p. 6",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "0.5 mg",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Write a leading zero for medication doses smaller than one unit.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-trailing-zero",
+    "title": "Remove medication trailing zeros",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Dose Designations and Other Information, p. 6",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "1.0 mg",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Omit trailing zeros on whole-number medication doses.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-ms",
+    "title": "Disambiguate MS",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Drug Name Abbreviations, p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "MS",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use the full drug name instead of MS.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-mso4",
+    "title": "Spell out morphine sulfate",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Drug Name Abbreviations, p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "MSO4",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use morphine sulfate instead of MSO4.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-ismp-abbrev-mgso4",
+    "title": "Spell out magnesium sulfate",
+    "citation": "ISMP List of Error-Prone Abbreviations, Symbols, and Dose Designations (2024); Drug Name Abbreviations, p. 4",
+    "url": "https://online.ecri.org/hubfs/ISMP/Resources/ISMP_ErrorProneAbbreviation_List.pdf",
+    "quote": "MgSO4",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Use magnesium sulfate instead of MgSO4.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Context-sensitive medication text/decimal validator.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic expansion of R2-10. ISMP guidance; listed TJC-prohibited examples are starred in the source. Decimal restrictions concern medication doses, not clinically meaningful laboratory precision. Scope: hospital-generated/customizable medication text, including MAR labels, prescriptions and macro expansions. One token or decimal convention per rule; preserve precision in non-medication measurements. Existing R2-10 decomposition, not a claim of a new requirement.",
+    "basis": "entrenched",
+    "entrenchedBecause": "Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. ISMP explains the corresponding error-prone medication notation."
+  },
+  {
+    "id": "entrenched-safer-allergy-synonyms",
+    "title": "Consolidate synonymous allergy terms",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 1.2, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "mapping synonymous data elements",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Map synonymous allergen and reaction terms into consolidated picklists.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Coded allergy/reaction vocabularies and synonym normalization.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "New detail beyond R2-13 structured capture. Example source terms are dyspnea and shortness of breath. 2025 guide collection; worksheet footer August 2024. CMS requires assessment, not full implementation of this practice.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-environmental-allergy",
+    "title": "Separate environmental allergens",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 1.2, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "problem list",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Place environmental allergens in the problem list rather than drug allergies.",
+    "specMapping": {
+      "element": null,
+      "info": "problemList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Allergen category and storage-target validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to environmental allergens such as pollen; medication, contrast and latex allergies remain in the structured allergy workflow. 2025 guide collection; worksheet footer August 2024. CMS requires assessment, not full implementation of this practice.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-alert-tiers",
+    "title": "Tier alerts by severity",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.2, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "tiered by severity",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Assign alert presentation tiers by clinical severity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Validated severity classification and configurable-alert governance metadata.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 has fixed interruptive/passive/removable alert specifications. Full severity-based governance of configurable alerts is additional; specific tier choices, A1–A4, budgets and receipts remain product or hospital policy. 2025 guide collection; worksheet footer August 2024. CMS requires assessment, not full implementation of this practice.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-reverse-allergy",
+    "title": "Recheck drugs after allergy updates",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.2, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "reverse checking",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Recheck all active medications when a new allergy is entered.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "new-allergy-entered",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Allergy-update event and active-medication interaction evaluation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 checks drugAllergy at commits; it has no allergy-update action that triggers reverse checks. Interruptive tier is a proposed choice for clinically critical matches. 2025 guide collection; worksheet footer August 2024. CMS requires assessment, not full implementation of this practice.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-visible-weight",
+    "title": "Show weight during ordering",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.3, p. 17",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "weight",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Keep patient weight visible during order entry.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Order-entry phase visibility requirement, beyond commit-screen review.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 captures weight and shows doseCheck at signing; neither establishes weight visibility throughout order entry. Related to existing regulations.md E8/R3. 2025 guide collection; worksheet footer August 2024. CMS requires assessment, not full implementation of this practice.",
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated."
+  },
+  {
+    "id": "entrenched-safer-pediatric-calculator",
+    "title": "Integrate a pediatric weight-based dosing calculator",
+    "citation": "ASTP/ONC 2025 SAFER CPOE Guide RP 2.2, implementation guidance, p. 15",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "weight-based dosing calculator",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Integrate a weight-based pediatric dosing calculator into ordering.",
+    "specMapping": {
+      "element": "dosingWeight",
+      "info": "doseCheck",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Clinically validated calculator, drug-specific formulas and arithmetic correctness.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 stores dosingWeight and requires doseCheck to be shown. These names do not prove that a calculator or clinically valid arithmetic exists. Formal UI certification alone is insufficient for the dose calculation."
+  },
+  {
+    "id": "entrenched-safer-pediatric-dose-rounding",
+    "title": "Round pediatric doses with adequate precision",
+    "citation": "ASTP/ONC 2025 SAFER CPOE Guide RP 2.2, implementation guidance, p. 15",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "rounding",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Apply dose-rounding precision suitable for low-weight patients.",
+    "specMapping": {
+      "element": "dose",
+      "info": "doseCheck",
+      "when": "low-weight-patient",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug/formulation-specific precision rules and arithmetic beyond fixed-tenths values.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Source examples illustrate precision; they are not universal decimal requirements. V1 uses tenths for quantities and has no population-aware rounding policy."
+  },
+  {
+    "id": "entrenched-safer-pediatric-concentration",
+    "title": "Offer available pediatric drug concentrations",
+    "citation": "ASTP/ONC 2025 SAFER CPOE Guide RP 2.2, implementation guidance, p. 15",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "concentrations",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Offer appropriate available pediatric medication concentrations.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "pediatric-medication-order",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Formulation/concentration catalog and pediatric eligibility constraints.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Drug identity alone does not identify liquid concentration or guarantee available strengths. Do not confuse doseUnit with ingredient concentration."
+  },
+  {
+    "id": "entrenched-safer-maximum-daily-dose",
+    "title": "Check the maximum daily dose before dispensing",
+    "citation": "ASTP/ONC 2025 SAFER CPOE Guide RP 2.1, implementation guidance, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "maximum daily dose checking",
+    "type": "guidance",
+    "binding": false,
+    "basis": "entrenched",
+    "entrenchedBecause": "CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated.",
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Check maximum daily dose before submitting medication orders for dispensing.",
+    "specMapping": {
+      "element": "dose",
+      "info": "doseCheck",
+      "when": "medication-order-submitted-for-dispensing",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Daily-dose aggregation across orders, frequency/PRN interpretation and drug-specific limits.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Dose-range and maximum-daily-dose checks are separate. V1 doseOutOfRange does not establish cumulative daily-dose computation. Alert severity and clinically appropriate overrides require hospital policy; no universal hard ceiling is inferred."
+  }
+]
