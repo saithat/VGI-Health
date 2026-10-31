@@ -104,6 +104,12 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@26.6.6)(jsdom@26.1.0)
 
+  infra/scripts:
+    dependencies:
+      '@medplum/core':
+        specifier: 5.2.13
+        version: 5.2.13
+
 packages:
 
   '@asamuzakjp/css-color@3.2.0':
