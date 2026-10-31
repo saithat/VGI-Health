@@ -1,0 +1,882 @@
+[
+  {
+    "id": "ca-title22-70749-consult-report",
+    "title": "Retain consultation reports",
+    "citation": "22 CCR §70749(a)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Consultation reports.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "Store each inpatient consultation report in the medical record; signing the W6 consult note is a proposed local enforcement point.",
+    "specMapping": {
+      "element": "assessmentPlan",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist a complete consultation report, not only required note fields",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Related v1 note fields exist; report retention/completeness is not proven by their presence."
+  },
+  {
+    "id": "ca-title22-70749-treatment-orders",
+    "title": "Record treatment orders",
+    "citation": "22 CCR §70749(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Order sheet including medication, treatment and diet orders.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include treatment orders in the inpatient order sheet; add capture of nonmedication treatment orders to the order-signing path.",
+    "specMapping": {
+      "element": "nursingOrders",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. nursingOrders is optional in v1; the regulation does not require an arbitrary treatment on every encounter."
+  },
+  {
+    "id": "ca-title22-70749-diet-orders",
+    "title": "Record diet orders",
+    "citation": "22 CCR §70749(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "diet orders.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include actual diet orders in the inpatient order sheet; require an order record when a postoperative diet is ordered.",
+    "specMapping": {
+      "element": "postOpDiet",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. postOpDiet exists but is optional; do not require every medication order to contain a diet order."
+  },
+  {
+    "id": "ca-title22-70749-working-diagnosis",
+    "title": "Progress notes include the working diagnosis",
+    "citation": "22 CCR §70749(a)(5)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Progress notes including current or working diagnosis.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "Require the current or working diagnosis in an inpatient progress note before it is signed.",
+    "specMapping": {
+      "element": "progressNote",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. progressNote is optional; visitDiagnosis does not enforce diagnosis content in each progress note."
+  },
+  {
+    "id": "ca-title22-70749-nursing-care",
+    "title": "Nurses record care administered",
+    "citation": "22 CCR §70749(a)(6)(A)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Concise and accurate record of nursing care administered.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Require a concise, accurate account of nursing care when filing the corresponding nursing documentation.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires nursingAssessment, but does not validate that it records care administered."
+  },
+  {
+    "id": "ca-title22-70749-nursing-observations",
+    "title": "Record pertinent nursing observations",
+    "citation": "22 CCR §70749(a)(6)(B)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Record of pertinent observations including psychosocial and physical manifestations",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Include pertinent psychosocial and physical observations in nursing documentation when present.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A generic text field does not prove these contents. No per-dose pain-score mandate is inferred."
+  },
+  {
+    "id": "ca-title22-70749-nursing-incidents",
+    "title": "Record incidents and unusual occurrences",
+    "citation": "22 CCR §70749(a)(6)(B)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "incidents and unusual occurrences",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Record incidents and unusual occurrences pertinent to nursing care in the patient record.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Existing text field is a candidate; v1 has no incident-specific requirement."
+  },
+  {
+    "id": "ca-title22-70749-nursing-interpretation",
+    "title": "Record nursing interpretation of observations",
+    "citation": "22 CCR §70749(a)(6)(B)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "relevant nursing interpretation of such observations.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Include the relevant nursing interpretation of pertinent observations in the nursing note.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The nursingAssessment text exists, but its clinical contents are not checked."
+  },
+  {
+    "id": "ca-title22-70749-mar-drug",
+    "title": "MAR records the drug actually administered",
+    "citation": "22 CCR §70749(a)(6)(C)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Name, dosage and time of administration of medications and treatment.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Store the medication name in each actual administration record, linked to the selected order.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist actual administration medication identity",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. drug is an ordering element; showing marDoseDetails does not prove that the administration record contains the drug name. docs/regulations.md E12 discusses the parent requirement."
+  },
+  {
+    "id": "ca-title22-70749-mar-dose",
+    "title": "MAR records the dose actually administered",
+    "citation": "22 CCR §70749(a)(6)(C)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Name, dosage and time of administration of medications and treatment.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Store the dose actually administered in each medication administration record.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist actual administered dose, including differences from ordered dose",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The order dose and its display are not the administration dose record. Parent requirement appears in docs/regulations.md E12."
+  },
+  {
+    "id": "ca-title22-70749-mar-time",
+    "title": "MAR records administration time",
+    "citation": "22 CCR §70749(a)(6)(C)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "time of administration of medications and treatment.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Store actual administration time with each administration; a scheduled due time alone is insufficient.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Actual administration timestamp with correction/audit support",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Do not equate commit time with event time for late charting. Parent requirement appears in docs/regulations.md E12."
+  },
+  {
+    "id": "ca-title22-70749-mar-route",
+    "title": "Record nonoral administration route",
+    "citation": "22 CCR §70749(a)(6)(C)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Route of administration and site of injection shall be recorded if other than by oral administration.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Record the actual administration route for nonoral medications.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "nonoral administration",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Condition for nonoral route and persistence of actual administration route",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. route is required on orders, not captured as an administration element in v1. Parent requirement appears in docs/regulations.md E12."
+  },
+  {
+    "id": "ca-title22-70749-mar-site",
+    "title": "Record injection site",
+    "citation": "22 CCR §70749(a)(6)(C)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "site of injection shall be recorded if other than by oral administration.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Require the site of injection in the administration record for an injected medication.",
+    "specMapping": {
+      "element": "adminSite",
+      "info": null,
+      "when": "injection administration",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Condition distinguishing injectable administrations",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. adminSite exists but is optional in v1. The rule does not require an injection site for a noninjected medicine."
+  },
+  {
+    "id": "ca-title22-70749-restraint-type",
+    "title": "Record the restraint type",
+    "citation": "22 CCR §70749(a)(6)(D)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Record of type of restraint and time of application and removal.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Capture the type of restraint used in the nursing record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint applied",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint episode events and capture fields",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No restraint commit or element exists in v1. Parent rule is discussed in docs/regulations.md R2-19."
+  },
+  {
+    "id": "ca-title22-70749-restraint-start",
+    "title": "Record restraint application time",
+    "citation": "22 CCR §70749(a)(6)(D)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "time of application and removal.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record restraint application time, except for soft tie restraints used for patient support and protection.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint episode other than qualifying soft tie support/protection",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint episode timestamps and narrowly scoped soft-tie exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The exception concerns the timestamps, not restraint-type documentation; separate federal requirements may be stricter. docs/regulations.md R2-19 discusses this parent rule."
+  },
+  {
+    "id": "ca-title22-70749-restraint-end",
+    "title": "Record restraint removal time",
+    "citation": "22 CCR §70749(a)(6)(D)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "time of application and removal.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record restraint removal time, except for soft tie restraints used for patient support and protection.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint episode other than qualifying soft tie support/protection",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint episode timestamps and narrowly scoped soft-tie exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The exception concerns the timestamps, not restraint-type documentation; separate federal requirements may be stricter. docs/regulations.md R2-19 discusses this parent rule."
+  },
+  {
+    "id": "ca-title22-70749-vital-sheet",
+    "title": "Retain a vital-sign sheet",
+    "citation": "22 CCR §70749(a)(7)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Vital sign sheet.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Maintain an inpatient vital-sign record containing the observations captured during care.",
+    "specMapping": {
+      "element": null,
+      "info": "vitals",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Longitudinal persistence of inpatient vital-sign observations",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires individual vitals at chartAssessment; a current vitals panel alone is not a longitudinal sheet."
+  },
+  {
+    "id": "ca-title22-70749-lab-reports",
+    "title": "Retain all laboratory reports",
+    "citation": "22 CCR §70749(a)(8)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Reports of all laboratory tests performed.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Attach reports of every laboratory test performed to the inpatient medical record.",
+    "specMapping": {
+      "element": null,
+      "info": "labResults",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Result ingestion and completeness against all tests performed",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. labResults is display information; ackResult is not a guarantee that every report was retained."
+  },
+  {
+    "id": "ca-title22-70749-xray-reports",
+    "title": "Retain all X-ray reports",
+    "citation": "22 CCR §70749(a)(9)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Reports of all X-ray examinations performed.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Attach every performed X-ray examination report to the inpatient record.",
+    "specMapping": {
+      "element": null,
+      "info": "imaging",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Radiology report ingestion and completeness against examinations",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The imaging panel is related; v1 does not prove record completeness."
+  },
+  {
+    "id": "ca-title22-70749-anesthesia-record",
+    "title": "Retain the anesthesia record",
+    "citation": "22 CCR §70749(a)(11)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Anesthesia record including preoperative diagnosis, if anesthesia has been administered.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Include an anesthesia record whenever anesthesia was administered.",
+    "specMapping": {
+      "element": null,
+      "info": "intraopRecord",
+      "when": "anesthesia administered",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia documentation lifecycle and record persistence",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. An opAnesthesia value identifies a type; it does not constitute a complete anesthesia record."
+  },
+  {
+    "id": "ca-title22-70749-anesthesia-preop-diagnosis",
+    "title": "Anesthesia record includes preoperative diagnosis",
+    "citation": "22 CCR §70749(a)(11)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "Anesthesia record including preoperative diagnosis",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include the preoperative diagnosis within the anesthesia record, linking the operative diagnosis where appropriate.",
+    "specMapping": {
+      "element": "opPreopDiagnosis",
+      "info": null,
+      "when": "anesthesia administered",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia record with linked preoperative diagnosis",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires opPreopDiagnosis for the operative note only; this is a distinct record placement duty."
+  },
+  {
+    "id": "ca-title22-70749-op-technique",
+    "title": "Operative report describes technique",
+    "citation": "22 CCR §70749(a)(12)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "technique used",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require an account of the technique used in the operative report when surgery was performed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No technique element exists. opProcedure and opFindings do not establish technique content. Parent requirement is discussed in docs/regulations.md R2-02."
+  },
+  {
+    "id": "ca-title22-70749-op-tissue",
+    "title": "Operative report describes tissue removed or altered",
+    "citation": "22 CCR §70749(a)(12)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "tissue removed or altered, if surgery was performed.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require documentation of tissue removed or altered in the operative report, including an explicit none when appropriate.",
+    "specMapping": {
+      "element": "opSpecimens",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. opSpecimens is required, but lists specimens sent to pathology; it does not necessarily cover tissue altered or removed. Explicit none is a proposed local completion convention. docs/regulations.md R2-02 discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70749-discharge-course",
+    "title": "Discharge summary recapitulates the hospital course",
+    "citation": "22 CCR §70749(a)(16)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "significant findings and events of the patient's hospitalization",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Require a summary of significant findings and events of the hospitalization in the discharge summary.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. dischargeDiagnosis, instructions and condition do not capture a hospital-course narrative. Parent rule appears in docs/regulations.md E16."
+  },
+  {
+    "id": "ca-title22-70749-discharge-condition",
+    "title": "Discharge summary states discharge condition",
+    "citation": "22 CCR §70749(a)(16)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "his condition on discharge",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Require the patient condition on discharge as part of discharge documentation.",
+    "specMapping": {
+      "element": "dischargeCondition",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 dischargeEntries already requires dischargeCondition. The statute does not specify its coded representation. Parent rule appears in docs/regulations.md E16."
+  }
+]
