@@ -277,3 +277,13 @@ Please agree on preservation of **old safety obligations for compatible
 programs**, or strengthen the relation to preserve the vocabulary, before
 claiming a general Satisfies transport theorem. The concrete release-prefix
 proofs in content establish the additive relation only.
+
+### CR-6 checker containment
+
+The checker now conservatively rejects an **active** `requestPriorAuth`
+action under `humanOnlyKept` until its confirmed-capture preservation is
+fixed. Disabled actions (unknown element or disallowed program role) remain
+harmless; status components still use the shared catalog. This prevents a
+known counterexample to T1. Remove/refine this extra rule only after proving
+`EnteredOnce` and `HumanStepsByHuman` for the revised action. No property was
+weakened. Prior-auth request certification remains unfinished, explicitly.

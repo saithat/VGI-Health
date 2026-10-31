@@ -1,4 +1,4 @@
-import Ehr.Check.Rules
+import Ehr.Check.RequestSafety
 
 /-!
 # The checker
@@ -228,6 +228,12 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         match compFinding "humanOnlyKept" prog false fun scr c => badHumanPrefill spec scr c with
         | some f => some f
         | none => macroFinding "humanOnlyKept" prog (badMacroStep spec prog) },
+    { property := "humanOnlyKept", passes := requestsPreserveCaptures spec prog
+      explain := fun _ => compFinding "humanOnlyKept" prog false fun scr c =>
+        if c.kind == .button .requestPriorAuth &&
+            (spec.element? priorAuthElement).any (fun el => el.enteredBy.contains prog.role) then
+          some s!"request button {c.id} on {scr.id} can replace a confirmed capture outside an entry event (CR-6)"
+        else none },
     -- 7. units
     { property := "units", passes := decide (QuantityPrefillsKeepUnits spec prog)
       explain := fun _ => compFinding "units" prog false fun scr c =>

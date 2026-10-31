@@ -24,6 +24,20 @@ def mismatchedSlots : Program :=
           else c } }
 #guard (completeFor spec mismatchedSlots "signOrders").isSome
 
+/-- The new status kind is allowed by the extended catalog; an active request
+still needs CR-6's runtime capture-preservation fix before certification. -/
+def withRequest : Program :=
+  { goodProgram with screens := goodProgram.screens.map fun scr =>
+      if scr.id == "order" then
+        { scr with components := scr.components ++
+            [{ id := "request", kind := .button .requestPriorAuth }] }
+      else scr }
+#guard withRequest.inCatalog specV1_1
+#guard !requestsPreserveCaptures specV1_1 withRequest
+#guard match firstFinding (Ehr.Check.rules specV1_1 none goodProgram withRequest) with
+  | some f => f.property == "humanOnlyKept" && (counterexample specV1_1 withRequest f).2.2
+  | none => false
+
 /-- The acceptance theorem has concrete, satisfiable hypotheses. -/
 example : CatalogOnly spec goodProgram ∧ SpecIdsUnique spec ∧ IdsUnique goodProgram := by
   have h := accepted_structural spec none goodProgram goodProgram (by decide)
