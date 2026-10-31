@@ -18,7 +18,8 @@ Conventions:
   Caps match the existing world pediatric reference data (largest regimen cap).
 - `mmeFactorTenths` is the oral morphine-equivalent factor in tenths
   (morphine 10, hydromorphone 40, oxycodone 15, hydrocodone 10, tramadol 2).
-- Schedule II–IV drugs carry the class `"controlled-II-IV"`.
+- Schedule II–IV drugs carry the class `"controlled-II-IV"`; Schedule II drugs
+  also carry `"scheduleII"` for the zero-refills requirement.
   `0`/`0` means "no weight-based range" (e.g. dosed in units, or adult-only).
 -/
 
@@ -83,19 +84,19 @@ def formulary : List DrugInfo := [
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := [] },
   { name := "morphine", rxnorm := ["7052"]
-    classes := ["opioid", "analgesic", "controlled-II-IV"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
     interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
   { name := "hydromorphone", rxnorm := ["3423"]
-    classes := ["opioid", "analgesic", "controlled-II-IV"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 40 },
   { name := "oxycodone", rxnorm := ["7804"]
-    classes := ["opioid", "analgesic", "controlled-II-IV"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
     interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 15 },
   { name := "hydrocodone-acetaminophen", rxnorm := ["214182"]
-    classes := ["opioid", "analgesic", "acetaminophen", "controlled-II-IV"]
+    classes := ["opioid", "analgesic", "acetaminophen", "controlled-II-IV", "scheduleII"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
     interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
   { name := "tramadol", rxnorm := ["10689"]
@@ -165,5 +166,9 @@ def inClass (name cls : String) : Bool :=
 #guard primaryClass "apixaban" == some "anticoagulant"
 #guard (formulary.filter (·.classes.contains "controlled-II-IV")).length == 7
 #guard mmeFactor "oxycodone" == 15
+#guard (formulary.filter (·.classes.contains "scheduleII")).map (·.name) ==
+  ["morphine", "hydromorphone", "oxycodone", "hydrocodone-acetaminophen"]
+#guard ["tramadol", "lorazepam", "alprazolam"].all fun d =>
+  inClass d "controlled-II-IV" && !inClass d "scheduleII"
 
 end Ehr

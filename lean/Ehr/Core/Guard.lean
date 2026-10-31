@@ -58,7 +58,7 @@ def AlertSpec.targetsScreen (a : AlertSpec) (sc : Screen) : Bool :=
 /-- A `When` condition holds now. -/
 def whenHolds (facts : Facts) (s : State) : When → Bool
   | .always => true
-  | .orderClass cls => (orderLines s).any (fun p => inClass p.2 cls)
+  | .orderClass cls | .drugClass cls => (orderLines s).any (fun p => inClass p.2 cls)
   | .medClass cls =>
     match facts.medToGive? with
     | some d => inClass d cls
@@ -74,7 +74,7 @@ per-order-line requirements. -/
 def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String) : Bool :=
   match w with
   | .always => true
-  | .orderClass cls => inClass d cls
+  | .orderClass cls | .drugClass cls => inClass d cls
   | .medClass cls =>
     match facts.medToGive? with
     | some m => inClass m cls
@@ -90,13 +90,21 @@ and entered by a human if the element is human-only. -/
 def capturedSatisfies (facts : Facts) (user : User) (el : ElementSpec) (x : Captured) : Bool :=
   x.confirmed && valueSatisfies facts user el.kind x.value && (!needsHuman el || x.byHuman)
 
-/-- Some captured value for `el` meets the requirement, on slot `slot` (or on
-any slot if `slot = none`). -/
+/-- The value equals an allowed string parsed using the element's kind.
+No constraint permits every value; an empty allowed list permits none.
+Quantity parsing preserves the required unit; normal validity still applies. -/
+def entryValueAllowed (el : ElementSpec) (allowed : Option (List String)) (v : Value) : Bool :=
+  match allowed with
+  | none => true
+  | some values => values.any fun a => parseValue el.kind a == some v
+
+/-- Some captured value for `el` meets the requirement and its value constraint,
+on slot `slot` (or on any slot if `slot = none`). All checks use the same capture. -/
 def hasGoodEntry (facts : Facts) (user : User) (s : State) (el : ElementSpec)
-    (slot : Option Nat) : Bool :=
+    (slot : Option Nat) (allowed : Option (List String) := none) : Bool :=
   s.captured.any fun x =>
     x.element == el.id && (match slot with | some n => x.slot == n | none => true) &&
-      capturedSatisfies facts user el x
+      capturedSatisfies facts user el x && entryValueAllowed el allowed x.value
 
 /-- An entry requirement is met. Per-order-line: every order line matching
 `when` has a good entry on its slot. Otherwise: if `when` holds, some slot has
@@ -106,9 +114,9 @@ def entryMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryRe
   | none => false
   | some el =>
     if rq.perOrderLine then
-      (orderLines s).all fun p => !lineMatches facts s rq.when p.1 p.2 || hasGoodEntry facts user s el (some p.1)
+      (orderLines s).all fun p => !lineMatches facts s rq.when p.1 p.2 || hasGoodEntry facts user s el (some p.1) rq.allowed?
     else
-      !whenHolds facts s rq.when || hasGoodEntry facts user s el none
+      !whenHolds facts s rq.when || hasGoodEntry facts user s el none rq.allowed?
 
 /-- A value is non-empty: a non-empty code, text, or user; a checked flag; or
 any quantity. -/
@@ -165,7 +173,10 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
   match sp.element? rq.element with
   | none => s!"entry required: unknown element {rq.element}"
   | some el =>
-    let mine := s.captured.filter (·.element == el.id)
+    let mine := s.captured.filter fun x => x.element == el.id &&
+      (!rq.perOrderLine || (orderLines s).any fun p =>
+        x.slot == p.1 && lineMatches facts s rq.when p.1 p.2 &&
+          !hasGoodEntry facts user s el (some p.1) rq.allowed?)
     let unitHint := match el.kind with
       | .quantity u => s!" (must be in {u.name})"
       | _ => ""
@@ -173,6 +184,8 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
     else if mine.all (fun x => !x.confirmed) then s!"confirm required: {el.id}"
     else if mine.any (fun x => x.confirmed && !valueSatisfies facts user el.kind x.value) then
       s!"invalid value: {el.id}{unitHint}"
+    else if mine.any (fun x => x.confirmed && !entryValueAllowed el rq.allowed? x.value) then
+      s!"value not allowed: {el.id} (allowed: {", ".intercalate (rq.allowed?.getD [])})"
     else if needsHuman el then s!"human entry required: {el.id}"
     else s!"entry required: {el.id}"
 

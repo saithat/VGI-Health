@@ -188,7 +188,7 @@ def currentLineComplete (sp : Spec) (facts : Facts) (user : User) (s : State) : 
     sp.entries.all fun rq => !rq.perOrderLine || !lineMatches facts s rq.when p.1 p.2 ||
       match sp.element? rq.element with
       | none => false
-      | some el => hasGoodEntry facts user s el (some p.1)
+      | some el => hasGoodEntry facts user s el (some p.1) rq.allowed?
 
 /-- Open a closed group, or close an open one. -/
 def toggle (l : List CompId) (x : CompId) : List CompId :=

@@ -383,3 +383,65 @@ capture, not actual prior delivery of the VIS or full statutory record content.
 world's FORMULARY still gives `maxDoseTenths = 0`. Synchronize the TS reference
 to the already-requested 5 mg absolute cap; do not weaken the assertion or
 remove the cap. World typecheck and lint pass. Content did not edit world files.
+
+## Schedule II zero refills: adoption by content, check and agent
+
+Core now exposes `EntryReq.allowed? : Option (List String)` (optional JSON key
+`allowed`) and `When.drugClass cls` (JSON `{ "drugClass": { "cls": ... } }`).
+`orderClass` remains supported with identical semantics. Allowed strings are
+parsed with the element's kind and compared to the very capture satisfying the
+confirmation, human-entry and unit checks. `none` preserves the old behavior;
+`some []` permits no value. Numeric refills use `some ["0"]`, not tenths `"0.0"`
+(the latter is equivalent but less readable). A confirmed default of three is
+blocked with `value not allowed: refills (allowed: 0)`. Per-line matching and
+the `newOrderLine` hard stop both enforce the constraint.
+
+**Content:** apply this owner-approved rule to every order-signing commit
+(including pre/post-op and refill-modification paths) in the applicable specs:
+
+```lean
+{ commit := c.id, element := "refills", when := .drugClass "scheduleII",
+  perOrderLine := true, allowed? := some ["0"] }
+```
+
+Keep refills as `.quantity .none`. The formulary now tags morphine,
+hydromorphone, oxycodone and hydrocodone-acetaminophen with `scheduleII`.
+Tramadol, lorazepam and alprazolam remain controlled-II-IV and are not scheduleII.
+The source is 21 CFR 1306.12(a):
+https://www.ecfr.gov/current/title-21/section-1306.12 . Preserve each existing
+requirement and add the permanent bad-program-16 regression and rule citation.
+Core's `CoreTests.ScheduleII` and generated `scheduleIIRefillsRequirement` /
+`scheduleIIRefillsSpec` are executable adoption examples, not a replacement for
+content's hospital spec.
+
+**Check:** ensure completability respects constrained values and reports
+unrepairable defaults/macros rather than accepting a mere confirmed capture.
+A default of three must not satisfy the zero-refills requirement. Test mixed
+order lines and zero entered on the wrong slot. No property may be weakened.
+
+**Agent:** extend `whenSchema` in `agent/src/lean-types.ts` with `drugClass` and
+preserve optional `entries[].allowed` with the existing `dropNulls` convention.
+Its current zod object strips the new constraint and rejects the new condition.
+Add exact schema round trips for the two new generated samples. Generated TS
+already includes the constructor and optional list. No agent files were edited
+by lean-core because of lane ownership.
+
+**WASM:** rebuild interpreter artifacts after merging the core guard change;
+the checked-in app binary predates this constraint. Use native/WASM equivalence
+coverage for confirmed nonzero Schedule II refills and mixed-line constraints.
+
+
+**World compatibility blocker (validated after the core change):**
+`pnpm --filter world test` now reports 91 passing tests and one failure in
+`test/synthea.test.ts`'s full formulary equality contract. Append `"scheduleII"`
+to the `classes` arrays in `world/src/formulary.ts` for morphine,
+hydromorphone, oxycodone and hydrocodone-acetaminophen, matching the order in
+Lean. Keep the equality contract unchanged. World's albuterol cap is already
+5 mg and agrees with the new Lean cap. The exact world/agent compatibility
+patch is prepared locally at `/tmp/lean-core-compat.patch`; the requested
+ownership exception is pending. Core implementation commits are `0b929f0`
+(albuterol) and `4a11bc8` (constraints, proofs and regenerated TypeScript).
+
+Validation of `4a11bc8`: Lean build, kernel check, Comparator (all 18 frozen
+statements), 24 permitted-only axiom audits, and generated-sample strict tsc
+pass. Workspace builds/typechecks/lints pass; agent 31/app 90 tests pass.
