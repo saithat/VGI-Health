@@ -1834,5 +1834,923 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+  },
+  {
+    "id": "cms-482.24-c4iA-history-physical-timing",
+    "title": "Complete and file the H&P within the federal window",
+    "citation": "42 CFR §482.24(c)(4)(i)(A)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "no more than 30 days before or 24 hours after admission or registration",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require a completed H&P within the 30-day-before/24-hour-after admission or registration window, filed within 24 hours after admission/registration and before surgery or anesthesia services, subject to the qualifying outpatient assessment alternative.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission/registration/procedure timestamps, H&P completion and filing timestamps, outpatient-policy alternative",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Cross-reference §§482.22(c)(5), 482.51(b)(1), including the surgical emergency exception under §482.51. These are actual clinical-document dates, not review-receipt age. Earlier research C8/R2-01."
+  },
+  {
+    "id": "cms-482.24-c4iB-hp-update-timing",
+    "title": "Document the update when a preadmission H&P is used",
+    "citation": "42 CFR §482.24(c)(4)(i)(B)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "including any changes in the patient's condition",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signPreOpOrders",
+    "encoding": "entry",
+    "proposedRule": "When the H&P was completed within 30 days before admission/registration, place the updated examination, including changes, in the record within 24 hours after admission/registration and before surgery/anesthesia, subject to the qualifying outpatient alternative.",
+    "specMapping": {
+      "element": "hpUpdate",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Actual examination and filing timestamps, admission anchor and qualifying outpatient alternative",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 requires hpUpdate but proves neither the timing nor inclusion of changes. signPreOpOrders is a local proxy; the legal deadline is before surgery/anesthesia. Earlier research R2-01."
+  },
+  {
+    "id": "cms-482.24-c4v-consent-record",
+    "title": "Retain properly executed required written consents",
+    "citation": "42 CFR §482.24(c)(4)(v)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "Properly executed informed consent forms for procedures and treatments",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include properly executed written consents for procedures/treatments designated by medical staff or applicable federal/state law.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent artifact completeness, scope and execution validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 contains consentDocument and a pre-op consentVerified flag, but a flag or displayed document does not establish proper execution. Surgical timing is cataloged under §482.51(b)(2)."
+  },
+  {
+    "id": "cms-482.24-c4vi-practitioner-orders",
+    "title": "Retain all practitioner orders",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "All practitioners' orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include all practitioner orders in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": "openOrders",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-nursing-notes",
+    "title": "Retain nursing notes",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "nursing notes",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Include nursing notes in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-treatment-reports",
+    "title": "Retain treatment reports",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "reports of treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include reports of treatment in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-medication-records",
+    "title": "Retain medication records",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "medication records",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "entry",
+    "proposedRule": "Include medication records in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": "adminStatus",
+      "info": "marSchedule",
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-radiology-reports",
+    "title": "Retain radiology reports",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "radiology",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include radiology reports in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": "imaging",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-laboratory-reports",
+    "title": "Retain laboratory reports",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "laboratory reports",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include laboratory reports in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": "labResults",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vi-vital-signs",
+    "title": "Retain vital signs needed for monitoring",
+    "citation": "42 CFR §482.24(c)(4)(vi)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "vital signs",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include vital signs necessary to monitor the patient in the hospital medical record, as appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": "vitals",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persistent record content and record-level completeness validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Related v1 fields/panels are candidate content sources; presence or review of a panel does not prove the hospital record retains every required item."
+  },
+  {
+    "id": "cms-482.24-c4vii-summary-outcome",
+    "title": "Discharge summary describes hospitalization outcome",
+    "citation": "42 CFR §482.24(c)(4)(vii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "outcome of hospitalization",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include the outcome of hospitalization in the discharge summary.",
+    "specMapping": {
+      "element": "dischargeCondition",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hospitalization outcome narrative and discharge-summary persistence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A dischargeCondition value alone may not describe the outcome of the hospitalization. Earlier research E/discharge rows and R2-03; transmission is a separate obligation."
+  },
+  {
+    "id": "cms-482.24-c4vii-summary-disposition",
+    "title": "Discharge summary records case disposition",
+    "citation": "42 CFR §482.24(c)(4)(vii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "disposition of case",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include the disposition of the case in the discharge summary.",
+    "specMapping": {
+      "element": "dischargeDestination",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 requires the corresponding discharge content; this does not prove a complete persisted/transmitted summary. Earlier research E/discharge rows and R2-03; transmission is a separate obligation."
+  },
+  {
+    "id": "cms-482.24-c4vii-summary-followup",
+    "title": "Discharge summary states follow-up provisions",
+    "citation": "42 CFR §482.24(c)(4)(vii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.24",
+    "quote": "provisions for follow-up care",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include provisions for follow-up care in the discharge summary.",
+    "specMapping": {
+      "element": "dischargeFollowUp",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 requires the corresponding discharge content; this does not prove a complete persisted/transmitted summary. Earlier research E/discharge rows and R2-03; transmission is a separate obligation."
+  },
+  {
+    "id": "cms-482.25-b5-automatic-stop",
+    "title": "Automatically stop drugs lacking a stated time or dose count",
+    "citation": "42 CFR §482.25(b)(5)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.25",
+    "quote": "must automatically be stopped after a reasonable time that is predetermined by the medical staff",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For drugs/biologicals without a specific time or dose count, apply the medical-staff-predetermined automatic stop interval.",
+    "specMapping": {
+      "element": "duration",
+      "info": null,
+      "when": "hospital drug/biological order lacks a specific time or number of doses",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Policy-based stop time/dose-count semantics and automatic discontinuation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 duration is required but a textbox does not implement automatic stopping. No universal federal antibiotic stop interval. Earlier research E3/C10/R2-06."
+  },
+  {
+    "id": "cms-482.25-b6-error-report",
+    "title": "Immediately report drug administration errors",
+    "citation": "42 CFR §482.25(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.25",
+    "quote": "Drug administration errors",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Immediately report drug administration errors to the attending physician and, when appropriate, the hospital QAPI program.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "drug administration errors identified",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Event-triggered reporting, attending recipient and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. The federal duty is immediate reporting, not merely an alert shown to the reporting clinician. It supplies no numeric minute limit or alert tier."
+  },
+  {
+    "id": "cms-482.25-b6-ade-report",
+    "title": "Immediately report adverse drug reactions",
+    "citation": "42 CFR §482.25(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.25",
+    "quote": "adverse drug reactions",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Immediately report adverse drug reactions to the attending physician and, when appropriate, the hospital QAPI program.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "adverse drug reactions identified",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Event-triggered reporting, attending recipient and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. The federal duty is immediate reporting, not merely an alert shown to the reporting clinician. It supplies no numeric minute limit or alert tier."
+  },
+  {
+    "id": "cms-482.25-b6-incompatibility-report",
+    "title": "Immediately report drug incompatibilities",
+    "citation": "42 CFR §482.25(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.25",
+    "quote": "incompatibilities",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Immediately report drug incompatibilities to the attending physician and, when appropriate, the hospital QAPI program.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "drug incompatibilities identified",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Event-triggered reporting, attending recipient and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. The federal duty is immediate reporting, not merely an alert shown to the reporting clinician. It supplies no numeric minute limit or alert tier."
+  },
+  {
+    "id": "cms-482.42-c2ii-infection-program-record",
+    "title": "Document infection prevention and surveillance activities",
+    "citation": "42 CFR §482.42(c)(2)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.42",
+    "quote": "All documentation, written or electronic, of the infection prevention and control program",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Maintain written/electronic documentation of the infection prevention/control program and its surveillance, prevention and control activities.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Institution-wide infection surveillance and program records",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Institutional program obligation with EHR data implications; isolationScreen alone does not satisfy it."
+  },
+  {
+    "id": "cms-482.42-b2ii-antibiotic-evidence",
+    "title": "Document evidence-based antibiotic use",
+    "citation": "42 CFR §482.42(b)(2)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.42",
+    "quote": "Documents the evidence-based use of antibiotics in all departments and services of the hospital",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Maintain program documentation of evidence-based antibiotic use across all hospital departments/services.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Hospital-wide antibiotic stewardship evidence and program evaluation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Institutional obligation, not a federal requirement for a coded indication on every order. V1 indication is only a potential data source. Earlier research §5.1 release motivation; no abxIndication name exists in V1."
+  },
+  {
+    "id": "cms-482.43-a2-posthospital-needs",
+    "title": "Evaluate likely post-hospital service needs",
+    "citation": "42 CFR §482.43(a)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "a patient's likely need for appropriate post-hospital services",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Evaluate likely need for appropriate post-hospital services, including hospice, extended care, home health, non-health-care and community-based services.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-a2-service-availability",
+    "title": "Determine availability of needed post-hospital services",
+    "citation": "42 CFR §482.43(a)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "availability of the appropriate services",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Determine whether appropriate post-hospital services are available.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-a2-service-access",
+    "title": "Determine patient access to needed services",
+    "citation": "42 CFR §482.43(a)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "the patient's access to those services",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Determine whether the patient can access the appropriate post-hospital services.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-a3-evaluation-record",
+    "title": "Include discharge evaluation in the record",
+    "citation": "42 CFR §482.43(a)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "included in the patient's medical record",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include the discharge-planning evaluation in the medical record for establishing the discharge plan.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-a3-evaluation-discussion",
+    "title": "Discuss discharge evaluation with the patient",
+    "citation": "42 CFR §482.43(a)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "results of the evaluation must be discussed with the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "humanOnly",
+    "proposedRule": "Document discussion of the evaluation results with the patient or representative.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-a6-update-plan",
+    "title": "Update the discharge plan for changes in condition",
+    "citation": "42 CFR §482.43(a)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "The discharge plan must be updated, as needed, to reflect these changes.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Update the discharge plan as needed when reevaluation identifies changes in patient condition requiring modification.",
+    "specMapping": {
+      "element": "dischargeFollowUp",
+      "info": null,
+      "when": "discharge-planning evaluation/plan is required",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-planning evaluation/plan artifact, applicability and longitudinal updates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
   }
 ]
