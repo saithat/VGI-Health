@@ -362,7 +362,8 @@ structure DrugInfo where
   name : String
   /-- RxNorm codes for this drug (may be empty). -/
   rxnorm : List String := []
-  /-- Drug classes, most specific first: `"penicillin"`, `"antibiotic"`, … -/
+  /-- Drug classes. The first is the therapeutic class used for
+  duplicate-therapy checks; all are used for allergy and interaction matching. -/
   classes : List String
   /-- Usual dose range in tenths of mg per kg (`0`/`0` = no weight-based range). -/
   minMgPerKgTenths : Nat
@@ -517,6 +518,8 @@ structure ItemView where
   provenance? : Option String := none
   /-- For fields: a prefilled value is waiting for a human confirm. -/
   pendingConfirm : Bool := false
+  /-- For fields: only a human may enter this element (render as unskippable). -/
+  humanOnly : Bool := false
   /-- For alerts: the alert condition holds. -/
   firing : Bool := false
   deriving DecidableEq, Repr, Inhabited

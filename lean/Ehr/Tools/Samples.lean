@@ -1,4 +1,4 @@
-import Ehr.Examples.Tiny
+import Ehr.Examples.TinyTests
 
 /-!
 # JSON samples
@@ -10,7 +10,7 @@ JSON Lean really produces matches the generated types.
 
 namespace Ehr.Tools.Samples
 
-open Ehr.Examples
+open Ehr.Examples Ehr.Examples.TinyTests
 
 /-- A sample: TypeScript constant name, TypeScript type name, JSON value. -/
 structure Sample where
@@ -34,7 +34,7 @@ def sampleTask : Task where
                             route := "PO", freq := "TID", indication? := some "J02.9" }] }
   todayResources := [Lean.Json.mkObj [("resourceType", "Observation")]]
 
-/-- All samples (M1: data formats only). -/
+/-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
   mk "tinySpec" "Spec" Tiny.spec,
   mk "tinyProgram" "Program" Tiny.program,
@@ -49,7 +49,18 @@ def all : List Sample := [
   mk "sampleCertificate" "Certificate" Tiny.sampleCertificate,
   mk "sampleTask" "Task" sampleTask,
   mk "sampleDay" "DaySchedule" ({ day := 1, persona := "P1", load := "normal",
-                                  tasks := [sampleTask] } : DaySchedule)
+                                  tasks := [sampleTask] } : DaySchedule),
+  mk "tinyInitState" "State" s0,
+  mk "tinyPopupState" "State" popped.1,
+  mk "tinyViewInit" "ScreenView" (view Tiny.spec Tiny.program Tiny.facts Tiny.user s0),
+  mk "tinyViewPopup" "ScreenView" (view Tiny.spec Tiny.program Tiny.facts Tiny.user popped.1),
+  mk "tinyStepOutput" "StepOutput" ({ state := popped.1, result := popped.2 } : StepOutput),
+  mk "tinyBatchCase" "BatchCase"
+    ({ spec := Tiny.spec, program := Tiny.program, facts := Tiny.facts, user := Tiny.user,
+       events := toSign "amoxicillin" 5000 } : BatchCase),
+  mk "tinyBatchStep" "BatchStep"
+    ({ case := 0, index := 0, state := popped.1, result := popped.2
+       view := view Tiny.spec Tiny.program Tiny.facts Tiny.user popped.1 } : BatchStep)
 ]
 
 end Ehr.Tools.Samples
