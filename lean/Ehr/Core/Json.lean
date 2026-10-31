@@ -34,7 +34,7 @@ deriving instance Lean.ToJson, Lean.FromJson for
   Value, Actor, Captured, User, State, Event, StepResult, ItemView, ScreenView
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  StepOutput, StepInput, ViewInput, BatchCase, BatchStep
+  InitInput, StepOutput, StepInput, ViewInput, BatchCase, BatchStep
 
 deriving instance Lean.ToJson, Lean.FromJson for
   Workflow, OrderChoice, TaskChoices, PersonaParams, Op, TraceEvent, TaskMetrics,

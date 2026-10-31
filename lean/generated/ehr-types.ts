@@ -455,7 +455,8 @@ export interface DrugInfo {
    */
   rxnorm: string[];
   /**
-   * Drug classes, most specific first: `"penicillin"`, `"antibiotic"`, …
+   * Drug classes. The first is the therapeutic class used for
+   * duplicate-therapy checks; all are used for allergy and interaction matching.
    */
   classes: string[];
   /**
@@ -682,6 +683,10 @@ export interface ItemView {
    */
   pendingConfirm: boolean;
   /**
+   * For fields: only a human may enter this element (render as unskippable).
+   */
+  humanOnly: boolean;
+  /**
    * For alerts: the alert condition holds.
    */
   firing: boolean;
@@ -706,6 +711,16 @@ export interface ScreenView {
    */
   blocked: [CompId, string][];
   popup?: [AlertId, string];
+}
+
+/**
+ * Input of `ehr init` (stdin).
+ */
+export interface InitInput {
+  spec: Spec;
+  program: Program;
+  facts: Facts;
+  user: User;
 }
 
 /**
