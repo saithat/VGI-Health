@@ -16,3 +16,4 @@ import Ehr.Proofs.T3
 import Ehr.Proofs.T0
 import Ehr.Proofs.Alerts
 import Ehr.Proofs.Audit
+import Ehr.Render
