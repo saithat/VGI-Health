@@ -14,6 +14,9 @@ Conventions:
 - The first class is the therapeutic class used for duplicate-therapy checks;
   the rest are used for allergy and interaction matching.
 - `minMgPerKgTenths`/`maxMgPerKgTenths` are per dose, in tenths of mg/kg.
+- `mmeFactorTenths` is the oral morphine-equivalent factor in tenths
+  (morphine 10, hydromorphone 40, oxycodone 15, hydrocodone 10, tramadol 2).
+- Schedule II–IV drugs carry the class `"controlled-II-IV"`.
   `0`/`0` means "no weight-based range" (e.g. dosed in units, or adult-only).
 -/
 
@@ -78,13 +81,33 @@ def formulary : List DrugInfo := [
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := [] },
   { name := "morphine", rxnorm := ["7052"]
-    classes := ["opioid", "analgesic"]
+    classes := ["opioid", "analgesic", "controlled-II-IV"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
-    interactsWith := ["opioid", "benzodiazepine", "sedative"] },
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
   { name := "hydromorphone", rxnorm := ["3423"]
-    classes := ["opioid", "analgesic"]
+    classes := ["opioid", "analgesic", "controlled-II-IV"]
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
-    interactsWith := ["opioid", "benzodiazepine", "sedative"] },
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 40 },
+  { name := "oxycodone", rxnorm := ["7804"]
+    classes := ["opioid", "analgesic", "controlled-II-IV"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 15 },
+  { name := "hydrocodone-acetaminophen", rxnorm := ["214182"]
+    classes := ["opioid", "analgesic", "acetaminophen", "controlled-II-IV"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
+  { name := "tramadol", rxnorm := ["10689"]
+    classes := ["opioid", "analgesic", "serotonergic", "controlled-II-IV"]
+    minMgPerKgTenths := 10, maxMgPerKgTenths := 20, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative", "serotonergic"], mmeFactorTenths := 2 },
+  { name := "lorazepam", rxnorm := ["6470"]
+    classes := ["benzodiazepine", "sedative", "controlled-II-IV"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["opioid", "sedative"] },
+  { name := "alprazolam", rxnorm := ["596"]
+    classes := ["benzodiazepine", "sedative", "controlled-II-IV"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["opioid", "sedative"] },
   { name := "ondansetron", rxnorm := ["26225"]
     classes := ["serotoninAntagonist", "antiemetic", "qtProlonging"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := false
@@ -123,14 +146,22 @@ def isHighAlert (name : String) : Bool :=
   | some d => d.highAlert
   | none => false
 
+/-- The drug's oral MME factor in tenths (0 if unknown or not an opioid). -/
+def mmeFactor (name : String) : Nat :=
+  match lookupDrug name with
+  | some d => d.mmeFactorTenths
+  | none => 0
+
 /-- Is the drug in the given class? -/
 def inClass (name cls : String) : Bool :=
   (drugClasses name).contains cls
 
-#guard formulary.length == 20
+#guard formulary.length == 25
 #guard (formulary.map (·.name)).eraseDups.length == formulary.length
 #guard inClass "amoxicillin" "penicillin"
 #guard isHighAlert "warfarin" && !isHighAlert "acetaminophen"
 #guard primaryClass "apixaban" == some "anticoagulant"
+#guard (formulary.filter (·.classes.contains "controlled-II-IV")).length == 7
+#guard mmeFactor "oxycodone" == 15
 
 end Ehr

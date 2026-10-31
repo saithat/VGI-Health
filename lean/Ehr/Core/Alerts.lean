@@ -55,20 +55,11 @@ def weightKgTenths? (facts : Facts) (s : State) : Option Nat :=
     | some (w, .kg) => some w
     | _ => none
 
-/-- The dose (tenths of mg) captured on an order line, if any. -/
-def doseMgTenths? (s : State) (slot : Nat) : Option Nat :=
-  s.captured.findSome? fun x =>
-    if x.element == doseElement && x.slot == slot then
-      match x.value with
-      | .qty d .mg => some d
-      | _ => none
-    else none
-
 /-- The order line's dose is outside the drug's per-kg range for the kg
 weight. Needs a known drug with a range, a dose in mg, and a kg weight.
 In tenths: in range iff `min * weight ≤ 10 * dose ≤ max * weight`. -/
 def doseOutOfRange (facts : Facts) (s : State) (slot : Nat) (d : String) : Bool :=
-  match lookupDrug d, doseMgTenths? s slot, weightKgTenths? facts s with
+  match lookupDrug d, lineDoseMgTenths? s slot, weightKgTenths? facts s with
   | some di, some dose, some w =>
     decide (0 < di.maxMgPerKgTenths) && decide (0 < w) &&
       (decide (10 * dose < di.minMgPerKgTenths * w) ||
