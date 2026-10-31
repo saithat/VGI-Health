@@ -7,6 +7,7 @@ import "@mantine/notifications/styles.css";
 import "@medplum/react/styles.css";
 import { medplum } from "./data/medplum";
 import { App } from "./App";
+import { Dashboard } from "./dashboard/Dashboard";
 import "./styles.css";
 import "./ehr.css";
 
@@ -24,7 +25,11 @@ createRoot(root).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
       <MedplumProvider medplum={medplum}>
-        <App />
+        {window.location.pathname.replace(/\/$/, "") === "/dashboard" ? (
+          <Dashboard />
+        ) : (
+          <App />
+        )}
       </MedplumProvider>
     </MantineProvider>
   </React.StrictMode>,
