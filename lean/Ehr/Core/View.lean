@@ -42,6 +42,8 @@ def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           | some el =>
             if !el.enteredBy.contains user.role then some s!"role: {user.role.name} may not enter {priorAuthElement}"
             else if !hasOrderAt s s.currentSlot then some "no order on this line"
+            else if priorAuthCaptured s then some "already captured"
+            else if needsHuman el || el.prefill == .never then some s!"human entry required: {priorAuthElement}"
             else none)
   | .field e _ _ =>
     some (match sp.element? e with

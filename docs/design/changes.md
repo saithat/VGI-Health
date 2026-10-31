@@ -322,3 +322,19 @@ still blocked; the view enables precisely clicks that open a pending alert.
 Minimal proof compatibility: T0 uses clickAlert_commits and Alerts uses
 clickAlert_popup. Existing A2/A4 statements and safety rules are unchanged.
 Core guards exercise public clicks, unchanged acks and ignored cases.
+
+## Checker CR-6: preserve prior-auth captures and literal human-entry policy
+
+The consolidated checker request file also identifies two genuine prior-auth
+capture issues. A request action now preserves the entire state when this slot
+already has any confirmed priorAuthRequest capture (including a false flag or
+one with different provenance). A human request click cannot create a capture
+for a never/human-only element: it is blocked with `human entry required`.
+Such a request must use an ordinary human field Event.enter, as the existing
+HumanStepsByHuman property requires. Allowed non-human-only policy requests
+retain their convenience-action behavior. No property was weakened.
+
+Minimal compatibility: Tiny v1.1 exposes the required human request field,
+TinyTests enters it before checking status/signing, and the T3 frame proof
+splits the preservation branch. The Tiny spec retains its never policy.
+View reasons and public-step service tests match the stricter behavior.

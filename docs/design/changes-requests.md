@@ -178,3 +178,13 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
 - **World:** generic caps use the largest per-drug absolute cap; amoxicillin's
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
+
+
+## Checker CR-6 resolution from core
+
+Confirmed priorAuthRequest captures on the current slot are preserved exactly
+by request clicks. For never/human-only elements a request click is blocked;
+only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
+field and retains its never policy. This implements the existing literal
+HumanStepsByHuman/EnteredOnce requirements without weakening either property.
+Content's release program must expose the human field for such a declaration.

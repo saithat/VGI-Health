@@ -141,12 +141,20 @@ def markReviewed (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           [{ info := i, dataVersion := v, time := nowMin facts s, role := user.role, user := user.id }] },
        .ok)
 
+/-- A confirmed prior-auth capture on the current slot must never be replaced
+by a request click (regardless of its value or provenance). -/
+def priorAuthCaptured (s : State) : Bool :=
+  s.captured.any fun x =>
+    x.element == priorAuthElement && x.slot == s.currentSlot && x.confirmed
+
 /-- Request prior authorization for the current order line (release v1.1).
 It writes only the `"priorAuthRequest"` element, on the current slot, under the
 same rules as entering a value: the element must be in the spec and the role
 must be allowed; a macro may not do it if the element is human-only or
 `never`-prefill, and a macro's request waits for a human confirm. Ignored if
-the current slot has no order. -/
+the current slot has no order or already has a confirmed capture. Human-only
+and never-policy elements must be captured through a human field entry, not
+this convenience action. -/
 def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : State × StepResult :=
   match sp.element? priorAuthElement with
   | none => (s, .blocked s!"unknown element {priorAuthElement}")
@@ -154,6 +162,7 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
     if !el.enteredBy.contains user.role then
       (s, .blocked s!"role: {user.role.name} may not enter {priorAuthElement}")
     else if !hasOrderAt s s.currentSlot then (s, .ignored)
+    else if priorAuthCaptured s then (s, .ignored)
     else
       match actor with
       | .«macro» =>
@@ -164,10 +173,13 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
               byHuman := false, confirmed := false, provenance? := some "macro" }
           ({ s with captured := setCaptured s.captured x }, .ok)
       | .human =>
-        let x : Captured :=
-          { element := priorAuthElement, slot := s.currentSlot, value := .flag true
-            byHuman := true, confirmed := true, provenance? := none }
-        ({ s with captured := setCaptured s.captured x }, .ok)
+        if needsHuman el || el.prefill == .never then
+          (s, .blocked s!"human entry required: {priorAuthElement}")
+        else
+          let x : Captured :=
+            { element := priorAuthElement, slot := s.currentSlot, value := .flag true
+              byHuman := true, confirmed := true, provenance? := none }
+          ({ s with captured := setCaptured s.captured x }, .ok)
 
 /-- The current drug line meets every applicable per-line requirement in the
 spec. Checks all signing commits, so moving forward cannot strand a line. -/
