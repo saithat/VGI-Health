@@ -1,0 +1,127 @@
+{
+  "measuredAt": "2026-10-31T22:26:25.784Z",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "cpuModel": "AMD Ryzen 9 7950X3D 16-Core Processor",
+    "logicalCpus": 32
+  },
+  "build": {
+    "lean": "4.35.0",
+    "emscripten": "emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13 (e13ee988ce3d87a738dd8f3661d02223308c412a)",
+    "elapsedSeconds": 90.8473397730013,
+    "results": [
+      {
+        "variant": "init",
+        "modules": 654,
+        "wasmBytes": 589721
+      },
+      {
+        "variant": "json",
+        "modules": 712,
+        "wasmBytes": 756444
+      }
+    ]
+  },
+  "json": {
+    "variant": "json",
+    "node": "v22.23.1",
+    "output": "{\"counter\":42,\"input\":{\"counter\":41},\"items\":[41,42,43]}",
+    "wasmBytes": 756444,
+    "wasmGzipBytes": 153271,
+    "wasmBrotliBytes": 114915,
+    "loaderBytes": 59289,
+    "loadMs": 20.880370999999997,
+    "calls": 1000,
+    "totalMs": 5.984053000000003,
+    "meanMicroseconds": 5.984053000000003,
+    "p50Microseconds": 4.630000000005907,
+    "p95Microseconds": 8.580000000009136,
+    "differentialCases": 2006,
+    "memoryStressCalls": 20000,
+    "heapBefore": 27696,
+    "heapAfter": 27696
+  },
+  "init": {
+    "variant": "init",
+    "node": "v22.23.1",
+    "output": "hello 🩺 (Lean Init/WASM)",
+    "wasmBytes": 589721,
+    "wasmGzipBytes": 115493,
+    "wasmBrotliBytes": 89824,
+    "loaderBytes": 59299,
+    "loadMs": 19.431739999999998,
+    "calls": 1000,
+    "totalMs": 2.2001319999999964,
+    "meanMicroseconds": 2.2001319999999964,
+    "p50Microseconds": 1.649999999997931,
+    "p95Microseconds": 2.6799999999980173,
+    "differentialCases": 0,
+    "memoryStressCalls": 20000,
+    "heapBefore": 26328,
+    "heapAfter": 26328
+  },
+  "browser": {
+    "browser": "156.0.8078.4",
+    "first": {
+      "result": "{\"counter\":42,\"input\":{\"counter\":41,\"message\":\"Hello 🩺\"},\"items\":[41,42,43]}",
+      "elapsed": 2.5,
+      "loadMs": 27.5,
+      "synchronous": true
+    },
+    "benchmark": {
+      "calls": 1000,
+      "totalMs": 13.099999997764826,
+      "meanMicroseconds": 13.099999997764826,
+      "result": "{\"counter\":42,\"input\":{\"counter\":41},\"items\":[41,42,43]}",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+      "crossOriginIsolated": false,
+      "resources": [
+        {
+          "name": "http://127.0.0.1:8087/wasm/dist/ehr.js",
+          "bytes": 1160
+        },
+        {
+          "name": "http://127.0.0.1:8087/wasm/dist/ehr.mjs",
+          "bytes": 59589
+        },
+        {
+          "name": "http://127.0.0.1:8087/wasm/dist/ehr.wasm",
+          "bytes": 756744
+        }
+      ]
+    },
+    "initOnly": "hello 🩺 (Lean Init/WASM)",
+    "responses": [
+      {
+        "url": "http://127.0.0.1:8087/wasm/test/index.html",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8087/wasm/dist/ehr.js",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8087/wasm/dist/ehr.mjs",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8087/wasm/dist/ehr.wasm",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8087/wasm/dist/ehr-init.mjs",
+        "status": 200
+      },
+      {
+        "url": "http://127.0.0.1:8087/wasm/dist/ehr-init.wasm",
+        "status": 200
+      }
+    ],
+    "errors": []
+  },
+  "sha256": {
+    "ehr.wasm": "fbdce407107f6eec90148bfa2e7c0ed45ebbd891fb2b7fa49f900b7d39e6cee6",
+    "ehr-init.wasm": "e96865298f80f9d8b3a0d01f12abda96ac10ed3af6aa4b53095d9b74e9507ea3"
+  }
+}
