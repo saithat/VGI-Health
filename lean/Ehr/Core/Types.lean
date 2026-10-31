@@ -269,6 +269,9 @@ inductive Action
   | markReviewed (info : InfoId)
   /-- Starts a new order line. -/
   | newOrderLine
+  /-- Requests prior authorization for the current order line (release v1.1).
+  It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). -/
+  | requestPriorAuth
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a component is visible. `unlessReceipt i`: only when there is no
@@ -305,6 +308,9 @@ inductive Kind
   /-- A button that runs a macro. -/
   | «macro» (id : MacroId)
   | search (scope : String)
+  /-- Prior-authorization status of the current order line (release v1.1;
+  catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. -/
+  | priorAuth (info : InfoId)
   deriving DecidableEq, Repr, Inhabited
 
 /-- One component on a screen. -/
@@ -521,9 +527,11 @@ structure ItemView where
   expanded : Bool
   /-- For tabs: the selected tab index. -/
   selectedTab : Nat
-  /-- For fields: the order line the field is bound to. -/
+  /-- For fields: the order line the field is bound to. For `priorAuth`: the
+  current order line. -/
   slot : Nat
-  /-- For fields: the bound value, if any. -/
+  /-- For fields: the bound value, if any. For `priorAuth`: the request on the
+  current order line (`flag true`), if any. -/
   value? : Option Value := none
   /-- For fields: where a prefilled value came from. -/
   provenance? : Option String := none

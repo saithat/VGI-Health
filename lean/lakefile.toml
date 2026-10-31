@@ -12,3 +12,10 @@ root = "Main"
 [[lean_exe]]
 name = "gents"
 root = "Ehr.Tools.GenTS"
+
+# Comparator challenge (statements with `sorry`) and solution. Not default targets.
+[[lean_lib]]
+name = "Statements"
+
+[[lean_lib]]
+name = "Solution"

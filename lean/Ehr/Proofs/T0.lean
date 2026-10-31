@@ -58,6 +58,11 @@ theorem markReviewed_commits (sp : Spec) (prog : Program) (facts : Facts) (user 
   unfold markReviewed
   repeat' (first | rfl | split | (dsimp only; done) | dsimp only)
 
+theorem requestPriorAuth_commits (sp : Spec) (user : User) (actor : Actor) (s : State) :
+    (requestPriorAuth sp user actor s).1.commits = s.commits := by
+  unfold requestPriorAuth
+  repeat' (first | rfl | split | (dsimp only; done) | dsimp only)
+
 theorem clickCore_guarded (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (actor : Actor) (s : State) (c : Component) :
     CommitsGuarded sp prog facts user s (clickCore sp prog facts user actor s c).1 := by
@@ -72,6 +77,7 @@ theorem clickCore_guarded (sp : Spec) (prog : Program) (facts : Facts) (user : U
     · exact CommitsGuarded.of_eq (markReviewed_commits ..)
     · exact CommitsGuarded.of_eq rfl
   · exact CommitsGuarded.of_eq (prefillScreen_safe ..).commits
+  · exact CommitsGuarded.of_eq (requestPriorAuth_commits ..)
   · exact CommitsGuarded.of_eq rfl
   · cases actor <;> exact CommitsGuarded.of_eq rfl
   · exact CommitsGuarded.of_eq rfl

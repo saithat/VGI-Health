@@ -36,7 +36,7 @@ def shownComp? (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : C
 
 /-- The component kind displays this info. -/
 def showsInfo (i : InfoId) : Kind → Bool
-  | .panel j | .table j | .trend j => j == i
+  | .panel j | .table j | .trend j | .priorAuth j => j == i
   | .banner => i == bannerInfo
   | _ => false
 
