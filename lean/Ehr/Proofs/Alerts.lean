@@ -124,7 +124,9 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
   · cases actor
     · exact PopupFrom.same (markReviewed_popup ..)
     · exact PopupFrom.same rfl
-  · exact PopupFrom.same (prefillScreen_popup ..)
+  · split
+    · exact PopupFrom.same (prefillScreen_popup ..)
+    · exact PopupFrom.same rfl
   · exact PopupFrom.same (requestPriorAuth_popup ..)
   · exact PopupFrom.same rfl
   · cases actor <;> exact PopupFrom.same rfl
@@ -202,7 +204,9 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
         · exact goBack_popup ..
         · rfl
         · rfl
-        · exact prefillScreen_popup ..
+        · split
+          · exact prefillScreen_popup ..
+          · rfl
         · exact requestPriorAuth_popup ..
         · rfl
         · rfl
