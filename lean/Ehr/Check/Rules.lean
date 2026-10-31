@@ -138,12 +138,18 @@ def fixedSlot : Slot → Nat
   | .fixed n => n
   | .current => 0
 
-/-- The slots that can hold an order line: those of the drug fields. -/
-def lineSlots (prog : Program) : List Nat :=
+/-- Slots that can receive a drug, including dynamically selected current slots. -/
+def drugSlots (prog : Program) : List Slot :=
   ((allComps prog).filterMap fun sc =>
     match fieldOf? sc.2.kind with
-    | some f => if f.1 == drugElement then some (fixedSlot f.2.1) else none
+    | some f => if f.1 == drugElement then some f.2.1 else none
     | none => none).eraseDups
+
+/-- A field can repair the drug field's slot. With add-line navigation,
+current fields repair only the current line; fixed fields repair their own
+line. Without it, current is always slot zero. -/
+def repairsSlot (prog : Program) (drug field : Slot) : Bool :=
+  if hasNewLine prog then drug == field else fixedSlot drug == fixedSlot field
 
 /-- A field for element `e` that can always be made shown, on one of
 `screens`, bound to a slot accepted by `slotOk`. -/
@@ -162,8 +168,8 @@ the completability rules for `c` with commit screen `s`:
 - each entry requirement of `c` has a field reachable from `s`;
 - each review requirement of `c` with a waiver has its info pinned on `s`, or
   a field for the waiver element reachable from `s`;
-- per-order-line requirements: no "add order line" button (CR-1), and every
-  order-line slot has a field for each per-line element, reachable from `s`. -/
+- per-order-line requirements: every drug slot has a matching reachable field
+  for each per-line element. CR-1 prevents leaving an unfinished current line. -/
 def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
   match prog.screens.find? (fun x => !(openReach prog x.id).contains s) with
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
@@ -184,14 +190,10 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
         s!"a field to enter its waiver")
     | none =>
       let perLine := reqs.filter (·.perOrderLine)
-      if !perLine.isEmpty && hasNewLine prog then
-        some (s, s!"commit {c}: the \"add order line\" button can leave an order line unfinished, " ++
-          "and no field can reach it again (see CR-1)")
-      else
-        match (lineSlots prog).findSome? (fun k =>
-            (perLine.find? fun rq => !openFieldOn prog fromS rq.element (fun sl => fixedSlot sl == k)).map (k, ·)) with
-        | some (k, rq) => some (s, s!"commit {c}: order line {k} has no field the user can reach for {rq.element}")
-        | none => none
+      match (drugSlots prog).findSome? (fun slot =>
+          (perLine.find? fun rq => !openFieldOn prog fromS rq.element (repairsSlot prog slot)).map (slot, ·)) with
+      | some (slot, rq) => some (s, s!"commit {c}: order slot {repr slot} has no field the user can reach for {rq.element}")
+      | none => none
 
 /-- The completability rules for commit `c`: some commit screen passes
 `completeVia`. Returns the first failure if none does. -/

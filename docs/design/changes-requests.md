@@ -77,3 +77,20 @@ Content's bad-program exports and `Specs/Extends.lean` have not yet landed on
 origin/lane/content `6cd108d`. Please preserve the expected properties listed
 in HANDOFF-check.md when exporting the 14 programs. Per-screen component IDs
 are accepted; spec-level alert IDs must remain unique.
+
+## CR-6. Prior-auth requests and the existing semantic properties
+
+`requestPriorAuth` introduces two cases relevant to T1:
+
+1. With `priorAuthRequest.prefill = never` (as in Tiny v1.1), a human's
+   request **click** creates a new captured value. `HumanStepsByHuman`
+   currently requires new captures of never/human-only elements to arise
+   from `Event.enter`, so this click violates that property. Please coordinate
+   an owner-reviewed decision; check will not weaken the property to hide it.
+2. Requesting again overwrites a confirmed request (including a confirmed
+   value entered through a field or confirmed after a macro request).
+   `EnteredOnce` requires a non-entry, non-macro click to preserve every
+   confirmed captured value. Please preserve an already-confirmed request
+   on this slot when handling the request action.
+
+The v1 catalog blocks the action, so this does not affect canonical v1.
