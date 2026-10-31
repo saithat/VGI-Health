@@ -47,6 +47,8 @@ structure ValueGoal where
 structure Goals where
   commits : List CommitId
   values : List ValueGoal
+  /-- Optional legal alternatives, available only when the scenario is exempt. -/
+  waivers : List ValueGoal := []
   /-- Interruptive alerts (with keys) expected to fire at the goal commits. -/
   expectedAcks : List (AlertId × String)
   /-- Choices that do not fit the spec, in words. -/
@@ -73,17 +75,25 @@ def weightKgGoal (facts : Facts) : Option Value :=
 /-- Order-line element names. -/
 def orderElements : List ElementId :=
   ["drug", "dose", "doseUnit", "unit", "route", "freq", "frequency", "indication", "abxIndication", "duration", "quantity", "refills", "pharmacy",
-   "substitution", "prn", "orderDiagnosis"]
+   "substitution", "prn", "orderDiagnosis", "orderKind", "orderCode"]
 
 /-- The chosen value of an order element for one order (`none`: no chosen value). -/
 def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   if e == "drug" then some (.code o.drug)
-  else if e == "dose" then some (.qty o.doseTenths o.unit)
-  else if e == "doseUnit" || e == "unit" then some (.code o.unit.name)
+  else if e == "dose" then some (match o.unit with
+    | .g => .qty (o.doseTenths * 1000) .mg
+    | .mcg => (if o.doseTenths % 1000 == 0 then .qty (o.doseTenths / 1000) .mg else .qty o.doseTenths .mcg)
+    | _ => .qty o.doseTenths o.unit)
+  else if e == "doseUnit" || e == "unit" then some (.code (match o.unit with | .g => "mg" | .mcg => if o.doseTenths % 1000 == 0 then "mg" else "mcg" | u => u.name))
   else if e == "route" then some (.code o.route)
   else if e == "freq" || e == "frequency" then some (.code o.freq)
-  else if e == "indication" || e == "abxIndication" then o.indication?.map .code
-  else if e == "prn" then some (.flag o.prn)
+  else if e == "indication" then o.indication?.map .text
+  else if e == "abxIndication" then o.indication?.map .code
+  else if e == "prn" then some (.code (if o.prn then "yes" else "no"))
+  else if e == "duration" then o.supplyDays?.map (fun n => .code s!"{n} days")
+  else if e == "orderKind" then some (.code (match o.kind?.getD .medication with
+    | .medication => "medication" | .imaging => "imaging" | .procedure => "procedure"))
+  else if e == "orderCode" then o.code?.map .code
   else none
 
 /-- Elements filled once per immunization (slot = index). -/
@@ -105,7 +115,14 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
   | .cosign => some (.user (secondUser user))
   | .flag => some (.flag true)
   | _ =>
-    if el.id == weightElement then weightKgGoal facts
+    if el.id == weightElement || el.id == "dosingWeight" then weightKgGoal facts
+    else if el.id == "painScore" || el.id == "painReassessment" then choices.painScore?.map (fun n => .code (toString n))
+    else if el.id == "refillReason" then choices.refillReason?.map .text
+    else if el.id == "curesExemptionReason" then
+      (choices.orders.findSome? (·.curesExemptReason?)).map .code
+    else if el.id == "naloxoneOffer" then some (.code "offered-declined")
+    else if el.id == "adminStatus" then med?.map fun m => .code (if m.holdReason?.isSome then "held" else "given")
+    else if el.id == "adminReason" then med?.map fun m => .code (m.holdReason?.getD "scheduled")
     else if el.id == "refillDecision" then choices.refill?.map .code
     else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
     else if choices.noteSections.contains el.id then some (.text (noteText el.id))
@@ -144,12 +161,15 @@ def taskCommits (sp : Spec) (wf : Workflow) (ch : TaskChoices) : List CommitId :
     | .W1 => orders ++ note
     | .W2 => (if ch.ackResult then ["ackResult"] else []) ++ orders
     | .W3 => orders ++ (if ch.disposition?.isSome then ["disposition"] else []) ++ note
-    | .W4 => if ch.administer.isEmpty then [] else ["administerMed"]
+    | .W4 => if ch.administer.isEmpty then
+        (if ch.noteSections.isEmpty && ch.painScore?.isNone then [] else ["chartAssessment"])
+      else ["administerMed"]
     | .W5 => orders ++ (if ch.immunizations.isEmpty then [] else ["recordImmunization"]) ++ note
     | .W6 =>
       orders ++ (if ch.noteSections.contains "opNote" then ["signOpNote"] else []) ++
-        (if ch.disposition? == some "discharge" then ["discharge"] else []) ++
-        (if (ch.noteSections.filter (· != "opNote")).isEmpty then [] else ["signNote"])
+        (if ch.w6Step? == some .discharge || ch.disposition? == some "discharge" then ["discharge"] else []) ++
+        (if ch.w6Step? == some .discharge || ch.w6Step? == some .preop || ch.w6Step? == some .postop ||
+          (ch.noteSections.filter (· != "opNote")).isEmpty then [] else ["signNote"])
     | .W7 => if ch.refill?.isSome then ["approveRefill"] else []
   cand.filter fun c => (sp.commit? c).isSome
 
@@ -158,8 +178,9 @@ def taskCommits (sp : Spec) (wf : Workflow) (ch : TaskChoices) : List CommitId :
 /-- A state with the chosen order lines (drugs on slots 0, 1, …) and the given
 extra captured values, used to evaluate `When` conditions and alert keys. -/
 def hypothetical (orders : List OrderChoice) (extra : List ValueGoal) : State :=
-  let drugs : List Captured := (List.range orders.length).zip orders |>.map fun (i, o) =>
-    { element := drugElement, slot := i, value := .code o.drug, byHuman := true, confirmed := true }
+  let drugs : List Captured := (List.range orders.length).zip orders |>.filterMap fun (i, o) =>
+    if o.kind?.getD .medication != .medication then none else
+    some { element := drugElement, slot := i, value := .code o.drug, byHuman := true, confirmed := true }
   let others : List Captured := extra.filterMap fun g =>
     if g.element == drugElement then none else
     g.value?.map fun v =>
@@ -170,7 +191,9 @@ def hypothetical (orders : List OrderChoice) (extra : List ValueGoal) : State :=
 /-- The value goals one entry requirement creates. -/
 def entryGoals (facts : Facts) (user : User) (choices : TaskChoices) (med? : Option OrderChoice)
     (orders : List OrderChoice) (hyp : State) (el : ElementSpec) (rq : EntryReq) : List ValueGoal :=
-  let lines := (List.range orders.length).zip orders
+  let lines := ((List.range orders.length).zip orders).filter fun (_, o) =>
+    if el.id == "orderKind" || el.id == "orderCode" then o.kind?.getD .medication != .medication
+    else o.kind?.getD .medication == .medication
   if orderElements.contains el.id && !orders.isEmpty then
     lines.filterMap fun (i, o) =>
       if (rq.perOrderLine && !lineMatches facts hyp rq.when i o.drug) ||
@@ -219,7 +242,17 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       match sp.element? rq.element with
       | some el => entryGoals facts user choices med? orders hyp0 el rq
       | none => []
-  let checked := (dedupGoals raw).map (checkFit sp facts user)
+  let waiver := sp.reviews.flatMap fun rq =>
+    if !commits.contains rq.commit || !whenHolds facts hyp0 rq.when then [] else
+    match rq.waivedBy?, choices.orders.findSome? (·.curesExemptReason?) with
+    | some e, some reason => [{ element := e, value? := some (.code reason), commit := rq.commit }]
+    | _, _ => []
+  let services := ((List.range orders.length).zip orders).flatMap fun (i, o) =>
+    if o.kind?.getD .medication == .medication then [] else
+    ["orderKind", "orderCode"].map fun e =>
+      { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
+  let checked := (dedupGoals (raw ++ services)).map (checkFit sp facts user)
+  let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
   let hyp := hypothetical orders values
   let acks := sp.alerts.flatMap fun al =>
@@ -227,15 +260,44 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       (alertKeys facts hyp al.cond).map (al.id, ·)
     else []
   let missing := if commits.isEmpty then [s!"no commit in spec {sp.version} for workflow {repr wf}"] else []
-  { commits, values, expectedAcks := acks, problems := missing ++ checked.flatMap (·.2) }
+  {
+    commits, values, waivers := checkedWaivers.map (·.1), expectedAcks := acks,
+    problems := missing ++ checked.flatMap (·.2) ++ checkedWaivers.flatMap (·.2) }
 
-/-- The episodes of a task: one per medication for W4 (each with
-`medToGive?` set), otherwise one. Each is `(facts, orders, med?)`. -/
-def episodes (facts : Facts) (wf : Workflow) (ch : TaskChoices) :
-    List (Facts × List OrderChoice × Option OrderChoice) :=
+/-- An episode resets captures/commits while keeping the day's review receipts.
+W4 medications and W5 vaccines each require their own commit. -/
+structure Episode where
+  facts : Facts
+  choices : TaskChoices
+  orders : List OrderChoice
+  med? : Option OrderChoice := none
+
+/-- Typed episode context: pre-op requirements must never depend on a screen
+name or overloaded note-section strings. -/
+def episodeFacts (facts : Facts) (ch : TaskChoices) : Facts :=
+  match ch.w6Step? with
+  | none => facts
+  | some stage => { facts with encounterKind? := some (match stage with
+    | .consult => "consult" | .preop => "preop" | .postop => "postop"
+    | .rounding => "rounding" | .discharge => "discharge") }
+
+def episodes (facts : Facts) (wf : Workflow) (ch : TaskChoices) : List Episode :=
+  let facts := episodeFacts facts ch
   match wf with
-  | .W4 => ch.administer.map fun m => ({ facts with medToGive? := some m.drug }, [], some m)
-  | _ => [(facts, ch.orders, none)]
+  | .W4 =>
+    let meds := ch.administer.map fun m =>
+      { facts := { facts with medToGive? := some m.drug },
+        choices := { ch with administer := [m], noteSections := [] }, orders := [], med? := some m : Episode }
+    let assessment := if ch.noteSections.isEmpty && (!ch.administer.isEmpty || ch.painScore?.isNone) then [] else
+      [{ facts, choices := { ch with administer := [] }, orders := [] }]
+    meds ++ assessment
+  | .W5 =>
+    let medical := if ch.orders.isEmpty && (ch.noteSections.filter (· != "visGiven")).isEmpty then [] else
+      [{ facts, choices := { ch with immunizations := [] }, orders := ch.orders }]
+    let vaccines := ch.immunizations.map fun v =>
+      { facts, choices := { ch with orders := [], immunizations := [v], noteSections := [] }, orders := [] : Episode }
+    medical ++ vaccines
+  | _ => [{ facts, choices := ch, orders := ch.orders }]
 
 /-! ## Meeting the goals -/
 

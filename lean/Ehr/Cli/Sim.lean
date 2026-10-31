@@ -148,6 +148,8 @@ structure TaskMinimum where
   space : SearchSpace
   keystrokeSpace : SearchSpace
   exact : Bool
+  /-- Exactness is scoped; navigation/move restrictions are explicit. -/
+  searchModel : String := "full: goal-relevant workflow moves, no Back/scroll/search; goalDirected: first shown goal field, ready goal actions, otherwise shortest BFS navigation; clock fixed; exact only within each reported space"
   /-- Each W4 medication is a separate reset episode. -/
   episodePaths : List (List Event)
   keystrokeEpisodePaths : List (List Event)
@@ -158,7 +160,7 @@ structure ScheduleMinimum where
   deriving ToJson
 
 def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
-    (factsFor : Task → Facts) (bound : Nat) : Except String ScheduleMinimum := do
+    (factsFor : Task → Facts) (bound : Nat) (space? : Option SearchSpace := none) : Except String ScheduleMinimum := do
   let user : User := { id := prog.owner, role := prog.role }
   let tasks ← schedule.tasks.mapM fun task => do
     let facts := { factsFor task with now := task.startMin }
@@ -166,12 +168,13 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
       task := task.id, workflow := task.workflow,
       clicks := 0, keystrokes := 0, path := [], keystrokePath := [], space := .full,
       keystrokeSpace := .full, exact := true, episodePaths := [], keystrokeEpisodePaths := [] }
-    for (f, orders, med) in episodes facts task.workflow task.choices do
-      let g := deriveGoals sp f user task.workflow task.choices orders med
-      let ctx : Context := { sp, prog, facts := f, user, goals := g }
+    for ep in episodes facts task.workflow task.choices do
+      let f := ep.facts
+      let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med?
+      let ctx : Context := { sp, prog, facts := f, user, goals := g, workflow? := some task.workflow }
       let start := init sp prog f user
-      let click ← optionExcept (minimum ctx .clicks start bound) s!"{task.id}: click search exceeded bound or found no completion"
-      let keys ← optionExcept (minimum ctx .keystrokes start bound) s!"{task.id}: keystroke search exceeded bound or found no completion"
+      let click ← optionExcept (minimum ctx .clicks start bound space?) s!"{task.id}: click search exceeded bound or found no completion"
+      let keys ← optionExcept (minimum ctx .keystrokes start bound space?) s!"{task.id}: keystroke search exceeded bound or found no completion"
       result := { result with
         clicks := result.clicks + click.cost
         keystrokes := result.keystrokes + keys.cost
@@ -190,7 +193,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--world", "--fhir", "--seed", "--bound"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--world", "--fhir", "--seed", "--bound", "--space"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -209,7 +212,12 @@ def command (mode : String) (args : List String) : IO UInt32 := do
       IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
     else
       let bound ← ioExcept (optionExcept ((fs.lookup "--bound").getD "20000").toNat? "--bound must be a natural number")
-      match minSchedule sp prog schedule factsFor bound with
+      let space ← match (fs.lookup "--space").getD "auto" with
+        | "auto" => pure none
+        | "full" => pure (some SearchSpace.full)
+        | "goalDirected" => pure (some SearchSpace.goalDirected)
+        | other => throw (IO.userError s!"unknown --space {other}; use auto, full, goalDirected")
+      match minSchedule sp prog schedule factsFor bound space with
       | .error e => throw (IO.userError e)
       | .ok result => IO.println (encodeJson result)
     return 0

@@ -15,7 +15,7 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 | T5 | Abstraction facts match the FHIR data | not started (no FHIR → Facts function yet) | A |
 | T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | not started | A |
-| T8 | Releases only tighten | not started | A |
+| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, with no axioms: `specV1_1_extends_specV1` and `specV2_extends_specV1_1`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V1_1,V2}.lean` |
 | T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full and goal-directed spaces reported separately. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `MinClicksTests.lean` |
 | T10 | The page shows what must be shown | not started (no `render` yet) | A |
 | T11 | Panels are complete | not started (no `Display`/`render` yet) | A |

@@ -158,8 +158,9 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
       let (n, next) := draw out.rng 1000
       out := { out with rng := next }
       if n < params.backtrackRate && out.state.popup?.isNone then
+        let navCtx := workflowContext ctx task.workflow
         let turns := (shown ctx out.state).filter fun c => match c.kind with
-          | .button (.goto t) => t != out.state.screen && (ctx.prog.screen? t).isSome
+          | .button (.goto t) => t != out.state.screen && (navCtx.prog.screen? t).isSome
           | _ => false
         if !turns.isEmpty then
           let (idx, next) := draw out.rng turns.length
@@ -229,17 +230,18 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       now := task.startMin,
       receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := episodes facts task.workflow task.choices
-    let goals := eps.map fun (f, orders, med) => deriveGoals sp f user task.workflow task.choices orders med
-    let nActions := goals.foldl (fun n g => n + g.values.length + g.commits.length) 0
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
+    let nActions := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
       state := default, trace := [], complaints := [], rng,
       interruptions := positions, actionIndex := 0, elapsedMs := 0, lastDevice := none }
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
-    for (((f, _, _), g), idx) in (eps.zip goals).zipIdx do
+    for ((ep, g), idx) in (eps.zip goals).zipIdx do
+      let f := ep.facts
       let f := { f with receipts := facts.receipts ++ r.state.receipts }
-      let ctx : Context := { sp, prog, facts := f, user, goals := g }
+      let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers }, workflow? := some task.workflow }
       r := { r with
         state := { init sp prog f user with clock := r.elapsedMs / 100 },
         complaints := r.complaints ++ g.problems }

@@ -26,3 +26,5 @@ import Ehr.Render
 import Ehr.Sim.PolicyTests
 import Ehr.Core.Tests
 import Ehr.Sim.MinClicksTests
+import Ehr.Canonical.BadTests
+import Ehr.Canonical.ReleaseTests

@@ -10,10 +10,13 @@ and macros without Back clicks. It omits Back, scroll and search. Repeated
 identical review receipts are omitted. Clock remains fixed (no KLM time in this
 minimum-action model). The full captured list is preserved, not sorted.
 
-`goalDirected` forces the first shown unmet goal field, and forces open popup
-acknowledgment. Otherwise it uses the same non-entry moves. Exactness is among
+`goalDirected` forces the first shown unmet goal field and popup
+acknowledgment; otherwise it uses available goal actions, or BFS navigation
+to the next action. It restricts navigation and macros as well as entry order. Exactness is among
 runs of the reported space; goal-directed results do not claim global minima.
-Each objective tries full first, then goal-directed on exceeding the bound.
+Each objective tries full first for small tasks. Auto mode skips full above
+12 values or 20 screens, and falls back to goal-directed on the state bound.
+The CLI can explicitly select either space with --space.
 -/
 namespace Ehr.Sim
 open Ehr
@@ -45,40 +48,73 @@ def fullMoves (ctx : Context) (s : State) : List Event :=
   let cs := shown ctx s
   let moves := cs.flatMap fun c => match c.kind with
     | .field e sl _ =>
-      (ctx.goals.values.filter fun g => g.element == e &&
+      ((ctx.goals.values ++ ctx.goals.waivers).filter fun g => g.element == e &&
         (g.slot?.isNone || g.slot? == some (resolveSlot s sl))).flatMap fun g =>
           [.enter c.id (goalValue ctx.sp ctx.facts ctx.user g), .confirm c.id]
     | .button (.commit cm) =>
       if ctx.goals.commits.contains cm && !s.commits.contains cm &&
         commitValuesMet ctx.sp ctx.facts ctx.user ctx.goals s cm then [.click c.id] else []
     | .button (.markReviewed i) => if newReview ctx s i then [.click c.id] else []
-    | .button (.goto _) | .group true _ | .macro _ => [.click c.id]
+    | .button (.goto t) => if destinationAllowed ctx t then [.click c.id] else []
+    | .group true _ | .macro _ => [.click c.id]
     | .button .newOrderLine => if canAdvance ctx s then [.click c.id] else []
     | .tabs => tabEvents (ctx.prog.compsOf s.screen) c
     | _ => []
   (moves ++ ctx.sp.alerts.map (fun a => Event.ack a.id)).filter (safeEvent ctx s)
+
+/-- A bounded, goal-directed planning space. At a goal field it enters or
+confirms the first field; otherwise it chooses an available goal action, or
+the first event of the shortest BFS route to one. This deliberately restricts
+navigation and macros, and is not a global minimum claim. -/
+def directedMoves (ctx : Context) (s : State) : List Event :=
+  match s.popup? with
+  | some p => [.ack p.1]
+  | none =>
+    match (shown ctx s).findSome? (fieldAction ctx s) with
+    | some e => [e]
+    | none =>
+      let ready := actions ctx s
+      if !ready.isEmpty then ready else ((planNavigation ctx s).getD []).take 1
 
 def searchMoves (ctx : Context) (space : SearchSpace) (s : State) : List Event :=
   let s := forgetHistory s
   let all := fullMoves ctx s
   match space with
   | .full => all
-  | .goalDirected =>
-    match s.popup? with
-    | some p => [Event.ack p.1].filter (all.contains ·)
-    | none =>
-      match (shown ctx s).findSome? (fieldAction ctx s) with
-      | some e => [e].filter (all.contains ·)
-      | none => all.filter fun e => match e with | .enter .. | .confirm _ => false | _ => true
+  | .goalDirected => (directedMoves ctx s).filter (all.contains ·)
 
 /-- A small structural FNV-style Nat hash. Hash collisions remain in equality
 checked buckets; neither derived Hashable nor opaque machine hash is trusted. -/
 def hashString (s : String) : Nat :=
   s.toList.foldl (fun h c => (h * 1099511628211 + c.toNat) % 18446744073709551616) 14695981039346656037
 
-def stateHash (s : State) : Nat :=
-  hashString s.screen + s.currentSlot * 97 + s.captured.foldl
-    (fun h x => (h * 31 + hashString x.element + x.slot) % 18446744073709551616) 0
+def mix (a b : Nat) : Nat := (a * 1099511628211 + b) % 18446744073709551616
+
+def hashValue : Value → Nat
+  | .qty n u => mix n (hashString u.name)
+  | .text s => mix 1 (hashString s)
+  | .code s => mix 2 (hashString s)
+  | .user s => mix 3 (hashString s)
+  | .flag b => if b then 5 else 4
+
+def hashStrings (seed : Nat) (xs : List String) : Nat :=
+  xs.foldl (fun h s => mix h (hashString s)) seed
+
+def stateHash (s : State) : Nat := Id.run do
+  let mut h := mix (hashString s.screen) (mix s.currentSlot s.clock)
+  for x in s.captured do
+    h := mix h (mix (hashString x.element) (mix x.slot (hashValue x.value)))
+    h := mix h (if x.confirmed then 1 else 0)
+    h := mix h (if x.byHuman then 1 else 0)
+    h := mix h (hashString (x.provenance?.getD ""))
+  for r in s.receipts do
+    h := mix h (mix (hashString r.info) (mix r.dataVersion r.time))
+    h := mix h (mix (hashString r.user) (hashString r.role.name))
+  for (a, k) in s.acked do h := mix h (mix (hashString a) (hashString k))
+  h := hashStrings (hashStrings h s.commits) s.expanded
+  for (c, n) in s.tabSel do h := mix h (mix (hashString c) n)
+  if let some (a, k) := s.popup? then h := mix h (mix (hashString a) (hashString k))
+  return h
 
 /-- Normalized transitions still call the public interpreter once. -/
 def searchGraph (ctx : Context) (space : SearchSpace) (obj : Objective) : Certificate.Graph State Event :=
@@ -157,11 +193,17 @@ structure Minimum where
 
 /-- Full first; bounded full searches are retried in the documented smaller
 space. No uncertified upper bound is returned as a minimum. -/
-def minimum (ctx : Context) (obj : Objective) (start : State) (bound := 20000) : Option Minimum :=
-  match certifiedSearch ctx .full obj start bound with
-  | some c => some { cost := c.cost, path := c.path, space := .full }
-  | none => (certifiedSearch ctx .goalDirected obj start bound).map fun c =>
-      { cost := c.cost, path := c.path, space := .goalDirected }
+def minimum (ctx : Context) (obj : Objective) (start : State) (bound := 20000)
+    (space? : Option SearchSpace := none) : Option Minimum :=
+  let fullBudget := if ctx.goals.values.length > 12 || ctx.prog.screens.length > 20 then 0 else bound
+  match space? with
+  | some space => (certifiedSearch ctx space obj start bound).map fun c =>
+      { cost := c.cost, path := c.path, space }
+  | none =>
+    match certifiedSearch ctx .full obj start fullBudget with
+    | some c => some { cost := c.cost, path := c.path, space := .full }
+    | none => (certifiedSearch ctx .goalDirected obj start bound).map fun c =>
+        { cost := c.cost, path := c.path, space := .goalDirected }
 
 /-- Every `certifiedSearch` answer has an allowed replay at its cost, and no
 cheaper run in the selected graph reaches the task goals. -/
@@ -189,15 +231,7 @@ theorem T9_certifiedSearch (ctx space obj start bound c)
     e ∈ fullMoves ctx (forgetHistory s) := by
   cases space with
   | full => exact h
-  | goalDirected =>
-    simp only [searchMoves] at h
-    try dsimp only at h
-    split at h
-    next p hp => simpa using (List.mem_filter.mp h).2
-    next hp =>
-      split at h
-      next event he => simpa using (List.mem_filter.mp h).2
-      next => exact (List.mem_filter.mp h).1
+  | goalDirected => simpa using (List.mem_filter.mp h).2
 
  theorem searchMoves_safe (ctx space s e) (h : e ∈ searchMoves ctx space s) :
     safeEvent ctx s e = true := by

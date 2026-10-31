@@ -12,6 +12,7 @@ structure Context where
   facts : Facts
   user : User
   goals : Goals
+  workflow? : Option Workflow := none
 
 def Context.next (ctx : Context) (s : State) (e : Event) : State :=
   (step ctx.sp ctx.prog ctx.facts ctx.user .human s e).1
@@ -27,7 +28,10 @@ def shown (ctx : Context) (s : State) : List Component :=
 confirmed, including human-only and chosen-value checks. -/
 def fieldAction (ctx : Context) (s : State) (c : Component) : Option Event := do
   let .field e sl _ := c.kind | none
-  let g ← ctx.goals.values.find? fun g =>
+  let alternatives := ctx.goals.waivers.filter fun g => ctx.sp.reviews.any fun rq =>
+    rq.waivedBy? == some g.element && rq.commit == g.commit &&
+      whenHolds ctx.facts s rq.when && !reviewMet ctx.sp ctx.prog ctx.facts s rq
+  let g ← (ctx.goals.values ++ alternatives).find? fun g =>
     g.element == e && (g.slot?.isNone || g.slot? == some (resolveSlot s sl)) &&
       !valueGoalMet ctx.sp ctx.facts ctx.user s g
   let el ← ctx.sp.element? e
@@ -47,11 +51,21 @@ def canAdvance (ctx : Context) (s : State) : Bool :=
 def tabEvents (cs : List Component) (c : Component) : List Event :=
   ((cs.filter (·.parent? == some c.id)).map (·.tab)).eraseDups.map (.selectTab c.id ·)
 
+def workflowName : Workflow → String
+  | .W1 => "W1" | .W2 => "W2" | .W3 => "W3" | .W4 => "W4"
+  | .W5 => "W5" | .W6 => "W6" | .W7 => "W7"
+
+def destinationAllowed (ctx : Context) (target : ScreenId) : Bool :=
+  match ctx.workflow? with
+  | none => true
+  | some wf => (ctx.prog.screen? target).any fun sc =>
+      sc.workflow == workflowName wf || sc.workflow == "shell" || sc.id == ctx.prog.start
+
 /-- Real navigation, including Back for the persona. Search and scroll do not
 change interpreter state and are charged separately by the policy. -/
 def navigation (ctx : Context) (s : State) (allowBack := true) : List Event :=
   (shown ctx s).flatMap fun c => match c.kind with
-    | .button (.goto _) => [.click c.id]
+    | .button (.goto t) => if destinationAllowed ctx t then [.click c.id] else []
     | .button .back => if allowBack then [.click c.id] else []
     | .button .newOrderLine => if canAdvance ctx s then [.click c.id] else []
     | .group true _ => [.click c.id]
@@ -61,7 +75,11 @@ def navigation (ctx : Context) (s : State) (allowBack := true) : List Event :=
 def usefulReview (ctx : Context) (s : State) (i : InfoId) : Bool :=
   ctx.goals.commits.any fun cm => !s.commits.contains cm &&
     ctx.sp.reviews.any (fun rq => rq.commit == cm && rq.info == i &&
-      whenHolds ctx.facts s rq.when && !reviewMet ctx.sp ctx.prog ctx.facts s rq)
+      whenHolds ctx.facts s rq.when &&
+      (match rq.mode with
+       | .shownOnCommit => false
+       | .shownOrReceipt w roles => !s.receipts.any
+          (receiptValid ctx.sp ctx.facts (nowMin ctx.facts s) rq.info w roles)))
 
 /-- A field, a currently possible goal commit, or a needed review receipt. -/
 def actions (ctx : Context) (s : State) : List Event :=
