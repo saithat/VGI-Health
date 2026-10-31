@@ -213,3 +213,14 @@ Several were made stricter; those are marked **(stricter)**.
    `actor := macro` over the macro's steps. `MacroStep.goto` has no `Event`, so
    the reference does it as a navigation (like a `goto` button), refused while
    a popup is open.
+
+## Core requests: CR-1
+
+`newOrderLine` is blocked with `finish this order line first` while the current
+drug line misses any applicable per-order-line entry requirement. Both human
+and macro clicks obey it. Empty lines can advance. This keeps earlier lines
+complete without adding another navigation action. Core regression guards cover
+incomplete, empty, complete, and macro cases.
+
+Minimal compatibility edits: split the new hard-stop branch in T0, T3 and Alerts
+frame proofs; register Core.Tests in Ehr.lean. No theorem statements changed.

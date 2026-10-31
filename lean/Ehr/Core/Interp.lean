@@ -156,6 +156,15 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
             byHuman := true, confirmed := true, provenance? := none }
         ({ s with captured := setCaptured s.captured x }, .ok)
 
+/-- The current drug line meets every applicable per-line requirement in the
+spec. Checks all signing commits, so moving forward cannot strand a line. -/
+def currentLineComplete (sp : Spec) (facts : Facts) (user : User) (s : State) : Bool :=
+  (orderLines s).all fun p => p.1 != s.currentSlot ||
+    sp.entries.all fun rq => !rq.perOrderLine || !lineMatches facts s rq.when p.1 p.2 ||
+      match sp.element? rq.element with
+      | none => false
+      | some el => hasGoodEntry facts user s el (some p.1)
+
 /-- Open a closed group, or close an open one. -/
 def toggle (l : List CompId) (x : CompId) : List CompId :=
   if l.contains x then l.filter (· != x) else l ++ [x]
@@ -176,7 +185,9 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     | .human => markReviewed sp prog facts user s i
     | .«macro» => (s, .blocked "human only: review")
   | .button .newOrderLine =>
-    (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
+    if currentLineComplete sp facts user s then
+      (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
+    else (s, .blocked "finish this order line first")
   | .button .requestPriorAuth => requestPriorAuth sp user actor s
   | .group true _ => ({ s with expanded := toggle s.expanded c.id }, .ok)
   | .«macro» _ =>
