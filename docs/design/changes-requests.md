@@ -137,3 +137,30 @@ They now use `.coded "boolean"`. Core's `.flag` is a checked acknowledgment:
 made every scheduled order in the canonical sets unsignable. This does not
 remove either entry requirement or any human confirmation. Consent, VIS,
 protocol checks and education remain checked flags.
+
+## Check integration findings after content `febb477`
+
+The 14 Lean seeds have landed. They all currently fail first on their shared
+canonical template's role-permission error (except seed 10, which fails an
+unknown-alert reference). CR-5's role-specific canonical exports and linked
+prefills are still required before intended first-failure regressions can run.
+
+The intended mutation-specific checks differ from the handoff in these cases:
+
+- Seed 3 uses an undeclared `weightLb` field: the violated existing clause is
+  `DeclaredWritesInSpec` (`writesOnly`), not `QuantityPrefillsKeepUnits`.
+- Seed 4 fails both `NoAlertSuppression` and `NoAutomationAttempts`; moving
+  the human-only rule earlier will give the requested `humanOnlyKept` label.
+- Seed 9 removes an alert component, but interruptive popups are generated
+  by the spec. Its actual violation is the macro commit attempt
+  (`humanOnlyKept`), not the current `AlertsFire` property.
+- Seed 10 has an unknown alert: `ReferencesResolve` fails (`wellFormed`).
+  `NoFalseAlarms` does not prohibit unknown non-firing alerts.
+- Seed 13 removes only the W1 CURES paths. Other workflow screens still have
+  the same report, exemption field and `signOrders` buttons, so `completeFor`
+  passes. Even deleting all CURES paths may not refute the current
+  `Completable`: its existential event list may change an opioid to a
+  non-controlled drug before signing. It does not preserve clinical choices.
+
+Please coordinate content and the owner on these differences. Check will not
+claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
