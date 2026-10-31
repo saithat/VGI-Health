@@ -1,0 +1,908 @@
+[
+  {
+    "id": "cms-482.13-a1-rights-notice",
+    "title": "Inform patients of their rights",
+    "citation": "42 CFR §482.13(a)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "in advance of furnishing or discontinuing patient care whenever possible",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record that the patient or appropriate representative was informed of patient rights before care is furnished or discontinued whenever possible.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Rights-notice event and admission/care-discontinuation timing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. "
+  },
+  {
+    "id": "cms-482.13-b2-treatment-refusal",
+    "title": "Respect the right to refuse treatment",
+    "citation": "42 CFR §482.13(b)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "being able to request or refuse treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Allow a documented treatment refusal and route it for appropriate clinical handling instead of requiring an affirmative acceptance to complete every care path.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient treatment decision and refusal branch",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. This is a patient right, not a mandate for a specific refusal checkbox or permission to demand medically unnecessary care."
+  },
+  {
+    "id": "cms-482.13-b3-advance-directives",
+    "title": "Honor applicable advance directives",
+    "citation": "42 CFR §482.13(b)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "comply with these directives",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Make applicable advance directives available to treating staff and preserve a care path consistent with them.",
+    "specMapping": {
+      "element": "advanceDirectiveAsked",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "accidental",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Advance-directive content, applicability and care consistency",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. advanceDirectiveAsked is optional and accidental in v1; asking about a directive is not compliance with its content."
+  },
+  {
+    "id": "cms-482.13-e1ii-seclusion-violent-only",
+    "title": "Seclusion is limited to violent or self-destructive behavior",
+    "citation": "42 CFR §482.13(e)(1)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "Seclusion may only be used for the management of violent or self-destructive behavior.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not authorize seclusion for a nonviolent, non-self-destructive patient.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e3-least-restrictive",
+    "title": "Use the least restrictive effective intervention",
+    "citation": "42 CFR §482.13(e)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "the least restrictive intervention that will be effective",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Record the individualized choice of the least restrictive intervention effective for physical safety.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e4i-care-plan",
+    "title": "Modify the written care plan",
+    "citation": "42 CFR §482.13(e)(4)(i)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "a written modification to the patient's plan of care",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Require a written care-plan modification addressing the restraint or seclusion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e5-authorized-order",
+    "title": "Obtain an authorized restraint or seclusion order",
+    "citation": "42 CFR §482.13(e)(5)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "in accordance with the order of a physician or other licensed practitioner",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Link restraint or seclusion to an order from the responsible practitioner authorized by state law and hospital policy.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e6-no-standing",
+    "title": "Never use standing restraint or seclusion orders",
+    "citation": "42 CFR §482.13(e)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "must never be written as a standing order",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Reject standing restraint or seclusion orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e6-no-prn",
+    "title": "Never use PRN restraint or seclusion orders",
+    "citation": "42 CFR §482.13(e)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "on an as needed basis (PRN)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Reject PRN restraint or seclusion orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint/seclusion events, patient predicates and validated order state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e7-attending-consult",
+    "title": "Consult an attending who did not order the intervention",
+    "citation": "42 CFR §482.13(e)(7)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "The attending physician must be consulted as soon as possible",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Create a consultation obligation as soon as possible when the attending did not order the restraint or seclusion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Ordering-versus-attending identity and consultation obligation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e8iA-adult-four-hours",
+    "title": "Adult violent-restraint renewal limit",
+    "citation": "42 CFR §482.13(e)(8)(i)(A)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "4 hours for adults 18 years of age or older",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For violent or self-destructive restraint/seclusion, enforce the 4-hour order/renewal limit for patients aged 18 or older; apply more restrictive state limits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "violent or self-destructive restraint/seclusion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age-dependent order expiry and renewal clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Federal renewal framework applies for up to a total of 24 hours; not a universal limit for nonviolent restraint. Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e8iB-age9-17-two-hours",
+    "title": "Age 9–17 violent-restraint renewal limit",
+    "citation": "42 CFR §482.13(e)(8)(i)(B)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "2 hours for children and adolescents 9 to 17 years of age",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For violent or self-destructive restraint/seclusion, enforce the 2-hour order/renewal limit for patients aged 9–17; apply more restrictive state limits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "violent or self-destructive restraint/seclusion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age-dependent order expiry and renewal clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Federal renewal framework applies for up to a total of 24 hours; not a universal limit for nonviolent restraint. Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e8iC-under9-one-hour",
+    "title": "Under-nine violent-restraint renewal limit",
+    "citation": "42 CFR §482.13(e)(8)(i)(C)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "1 hour for children under 9 years of age",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For violent or self-destructive restraint/seclusion, enforce the 1-hour order/renewal limit for patients aged under 9; apply more restrictive state limits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "violent or self-destructive restraint/seclusion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age-dependent order expiry and renewal clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Federal renewal framework applies for up to a total of 24 hours; not a universal limit for nonviolent restraint. Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e8ii-assessment-24h",
+    "title": "Reassess before a new order after 24 hours",
+    "citation": "42 CFR §482.13(e)(8)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "After 24 hours, before writing a new order",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "After 24 hours of violent/self-destructive restraint or seclusion, require the authorized responsible practitioner to see and assess the patient before a new order.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Elapsed restraint time, practitioner assessment event and identity",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e9-early-discontinue",
+    "title": "Discontinue restraint or seclusion at the earliest possible time",
+    "citation": "42 CFR §482.13(e)(9)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "regardless of the length of time identified in the order",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Allow prompt discontinuation when clinically appropriate without waiting for order expiry.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discontinuation event and ongoing clinical assessment",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e10-monitoring",
+    "title": "Monitor restrained or secluded patients",
+    "citation": "42 CFR §482.13(e)(10)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "at an interval determined by hospital policy",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Track monitoring by a physician, other licensed practitioner or appropriately trained staff at the hospital-policy interval.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Policy-based recurring monitoring obligations and staff competency",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e12-face-to-face-hour",
+    "title": "Evaluate violent restraint or seclusion face to face within one hour",
+    "citation": "42 CFR §482.13(e)(12)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "seen face-to-face within 1 hour after the initiation of the intervention",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Track a face-to-face evaluation within one hour of initiation for violent/self-destructive behavior; evaluator must meet the regulatory qualifications.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "violent or self-destructive restraint/seclusion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Intervention-start clock, evaluation event and qualified evaluator",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A review receipt cannot establish that an in-person evaluation occurred. Paragraph (e)(12)(i) permits a qualified practitioner or trained RN. Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e14-rn-consult",
+    "title": "Trained RN evaluator consults the responsible practitioner",
+    "citation": "42 CFR §482.13(e)(14)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "as soon as possible after the completion of the 1-hour face-to-face evaluation",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When a trained RN performs the face-to-face evaluation, track consultation with the attending or responsible licensed practitioner as soon as possible afterward.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Evaluator role and post-evaluation consultation obligation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16i-document-evaluation",
+    "title": "Document the one-hour evaluation",
+    "citation": "42 CFR §482.13(e)(16)(i)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "The 1-hour face-to-face medical and behavioral evaluation",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the one-hour medical and behavioral evaluation for violent/self-destructive restraint or seclusion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16ii-document-behavior",
+    "title": "Document the behavior prompting intervention",
+    "citation": "42 CFR §482.13(e)(16)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "A description of the patient's behavior",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the patient behavior associated with restraint or seclusion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16ii-document-intervention",
+    "title": "Document the intervention used",
+    "citation": "42 CFR §482.13(e)(16)(ii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "the intervention used",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the restraint or seclusion intervention used.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16iii-document-alternatives",
+    "title": "Document attempted less restrictive alternatives",
+    "citation": "42 CFR §482.13(e)(16)(iii)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "Alternatives or other less restrictive interventions attempted (as applicable)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document alternatives or other less restrictive interventions attempted, when applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16iv-document-condition",
+    "title": "Document the condition warranting restraint or seclusion",
+    "citation": "42 CFR §482.13(e)(16)(iv)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "The patient's condition or symptom(s) that warranted the use of the restraint or seclusion",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the condition or symptoms warranting restraint or seclusion.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16v-document-response",
+    "title": "Document the response to restraint or seclusion",
+    "citation": "42 CFR §482.13(e)(16)(v)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "The patient's response to the intervention(s) used",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the patient response to the intervention.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  },
+  {
+    "id": "cms-482.13-e16v-document-continuation",
+    "title": "Document the rationale for continued restraint or seclusion",
+    "citation": "42 CFR §482.13(e)(16)(v)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.13",
+    "quote": "the rationale for continued use of the intervention",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Document the rationale whenever restraint or seclusion continues.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "restraint or seclusion is used",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Restraint-specific documentation fields and applicability predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482.  Related earlier research: docs/regulations.md R2-19; these rows split its federal requirements."
+  }
+]
