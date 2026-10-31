@@ -445,3 +445,12 @@ ownership exception is pending. Core implementation commits are `0b929f0`
 Validation of `4a11bc8`: Lean build, kernel check, Comparator (all 18 frozen
 statements), 24 permitted-only axiom audits, and generated-sample strict tsc
 pass. Workspace builds/typechecks/lints pass; agent 31/app 90 tests pass.
+
+
+## World compatibility resolution (2026-10-31)
+
+Resolved in `0454841` after merging main through `bea74d0`: world's formulary
+now mirrors the 5 mg albuterol cap and all four `scheduleII` classes exactly.
+The full equality contract remains intact, with an additional DEA Schedule II
+correspondence assertion. Lean build and world build/lint/all 92 tests pass.
+Seed-1 ten-day regeneration produces no changes to `runs/world/1`.
