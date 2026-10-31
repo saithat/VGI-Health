@@ -21,6 +21,8 @@ def drugElement : ElementId := "drug"
 def doseElement : ElementId := "dose"
 /-- The element holding the patient's weight (required in kg). -/
 def weightElement : ElementId := "weight"
+/-- The element holding an order line's frequency, e.g. `"q6h"` or `"bid"`. -/
+def freqElement : ElementId := "freq"
 /-- The info the `banner` component shows. -/
 def bannerInfo : InfoId := "patientBanner"
 
@@ -210,6 +212,52 @@ def orderLines (s : State) : List (Nat × String) :=
       | _ => none
     else none
 
+/-- Doses per day for a frequency code (`q4h` 6, `q6h` 4, `q8h` 3, `q12h` 2,
+`daily` 1, `bid` 2, `tid` 3, `qid` 4; case does not matter). Unknown: none. -/
+def freqPerDay (f : String) : Option Nat :=
+  match f.toLower with
+  | "q4h" => some 6
+  | "q6h" => some 4
+  | "q8h" => some 3
+  | "q12h" => some 2
+  | "daily" => some 1
+  | "bid" => some 2
+  | "tid" => some 3
+  | "qid" => some 4
+  | _ => none
+
+/-- The frequency (doses per day) captured on an order line, if known. -/
+def lineFreqPerDay? (s : State) (slot : Nat) : Option Nat :=
+  s.captured.findSome? fun x =>
+    if x.element == freqElement && x.slot == slot then
+      match x.value with
+      | .code f | .text f => freqPerDay f
+      | _ => none
+    else none
+
+/-- The dose (tenths of mg) captured on an order line, if any. -/
+def lineDoseMgTenths? (s : State) (slot : Nat) : Option Nat :=
+  s.captured.findSome? fun x =>
+    if x.element == doseElement && x.slot == slot then
+      match x.value with
+      | .qty d .mg => some d
+      | _ => none
+    else none
+
+/-- The order line's daily MME is 90 or more, or cannot be computed (unknown
+dose in mg, frequency, or MME factor: the stricter choice). In tenths:
+`dose × perDay × factor ≥ 9000`. -/
+def highMme (s : State) (slot : Nat) (d : String) : Bool :=
+  match lineDoseMgTenths? s slot, lineFreqPerDay? s slot with
+  | some dose, some perDay =>
+    mmeFactor d == 0 || decide (9000 ≤ dose * perDay * mmeFactor d)
+  | _, _ => true
+
+/-- The order line needs a naloxone offer: its drug is an opioid, and the
+patient takes a benzodiazepine or the line's daily MME is high (or unknown). -/
+def naloxoneLine (facts : Facts) (s : State) (slot : Nat) (d : String) : Bool :=
+  inClass d "opioid" && (facts.currentMedClasses.contains "benzodiazepine" || highMme s slot d)
+
 /-- Drugs in play: the order-line drugs plus the drug being given, if any. -/
 def drugsInPlay (facts : Facts) (s : State) : List String :=
   (orderLines s).map (·.2) ++ facts.medToGive?.toList
@@ -265,6 +313,7 @@ def depthAux (comps : List Component) : Nat → Component → Nat
       | some p => depthAux comps fuel p + 1
 
 #guard parseTenths "72.5" == some 725
+#guard freqPerDay "Q6H" == some 4 && freqPerDay "prn" == none
 #guard parseTenths "500" == some 5000
 #guard parseTenths "7.25" == none
 #guard identityText { initials := "JD", sex := "F", ageYears := 34 } == "JD/F/34"
