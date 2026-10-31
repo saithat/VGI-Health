@@ -234,7 +234,8 @@ function dischargeTask(b: DayBuild, ip: Inpatient, startMin: number, rng: Rng): 
   const rx = dischargeRx(p, rng);
   const notes = ["medRec", "dischargeInstructions", "followUp", ...controlledNotes(rx, postopSupplyDays(rng), p.homeMeds, rng)];
   b.addTask("P5", "W6", p.id, startMin, { orders: rx, noteSections: notes }, [], b.interruptions("P5", rng));
-  const rec = dischargeInpatient(b, ip, toClock(startMin) + 60, taskId, rng);
+  // The patient leaves the ward late morning (after the morning med pass), not when the order is signed.
+  const rec = dischargeInpatient(b, ip, Math.max(toClock(startMin) + 90, rng.int(11 * 60, 13 * 60)), taskId, rng);
   const c = b.state.surgicalCases.find((x) => x.id === ip.caseId);
   if (c !== undefined) {
     c.stage = "discharged";

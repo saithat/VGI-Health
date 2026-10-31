@@ -120,7 +120,7 @@ export const peds = {
   amoxicillinAom: (kg: number): OrderChoice =>
     order("amoxicillin", weightDose("amoxicillin", 45, kg, 10, 2000), "mg", "PO", "BID", { indication: "acute-otitis-media" }),
   amoxicillinStrep: (kg: number): OrderChoice =>
-    order("amoxicillin", weightDose("amoxicillin", 25, kg, 10, 500), "mg", "PO", "BID", { indication: "strep-pharyngitis" }),
+    order("amoxicillin", weightDose("amoxicillin", 50, kg, 10, 1000), "mg", "PO", "daily", { indication: "strep-pharyngitis" }),
   azithromycin: (kg: number, indication: AbxIndication): OrderChoice =>
     order("azithromycin", weightDose("azithromycin", 10, kg, 5, 500), "mg", "PO", "daily", { indication }),
   ceftriaxoneIm: (kg: number): OrderChoice =>

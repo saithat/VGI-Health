@@ -94,7 +94,7 @@ export const DRUG_NAMES: readonly DrugName[] = [
 ];
 
 export function isDrugName(s: string): s is DrugName {
-  return (DRUG_NAMES as readonly string[]).includes(s);
+  return DRUG_NAMES.some((d) => d === s);
 }
 
 export function drugDef(name: string): DrugDef | undefined {
@@ -235,3 +235,21 @@ export function mmePerDay(o: OrderChoice): number {
 
 /** MME/day at or above which the naloxone-offer rule applies (California, owner-approved spec addition). */
 export const NALOXONE_MME_THRESHOLD = 90;
+
+/**
+ * Absolute per-dose caps used by the pediatric regimens (mg). Once a dose hits
+ * its cap, mg/kg may fall below the range minimum for heavy children; that is
+ * correct dosing. (Lean's `DrugInfo` has no absolute cap yet; see STATUS.md.)
+ */
+export const PEDS_DOSE_CAPS: Partial<Record<DrugName, readonly number[]>> = {
+  amoxicillin: [2000, 1000],
+  azithromycin: [500],
+  ceftriaxone: [1000],
+  acetaminophen: [1000],
+  ibuprofen: [400],
+  ondansetron: [4],
+};
+
+export function pedsDoseCaps(drug: string): readonly number[] {
+  return isDrugName(drug) ? (PEDS_DOSE_CAPS[drug] ?? []) : [];
+}
