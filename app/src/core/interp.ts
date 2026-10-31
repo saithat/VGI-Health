@@ -1,3 +1,6 @@
+import { mockPage } from "../mock/page";
+import { offlineChart } from "../mock/patient";
+import type { ChartData } from "../data/fhir";
 import { bundleSchema } from "../data/fhir";
 import {
   eventSchema,
@@ -38,6 +41,13 @@ export interface Interp {
     userJson: string,
     stateJson: string,
   ): string;
+  render(
+    specJson: string,
+    programJson: string,
+    factsOrBundleJson: string,
+    userJson: string,
+    stateJson: string,
+  ): string;
   facts(bundleJson: string): string;
 }
 
@@ -63,6 +73,7 @@ function parseContext(
 export function createMockInterp(
   inputViews: ScreenView[],
   inputFacts: Facts,
+  chart: ChartData = offlineChart,
 ): Interp {
   const views = inputViews.map((view) => screenViewSchema.parse(view));
   const demoFacts = factsSchema.parse(inputFacts);
@@ -254,6 +265,14 @@ export function createMockInterp(
             };
           }),
         }),
+      );
+    },
+    render(spec, program, facts, user, stateJson) {
+      const view: ScreenView = JSON.parse(
+        this.view(spec, program, facts, user, stateJson),
+      );
+      return JSON.stringify(
+        mockPage(view, specSchema.parse(JSON.parse(spec)), chart),
       );
     },
     facts(bundleJson) {

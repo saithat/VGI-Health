@@ -1,42 +1,29 @@
+import type { Event, StepOutput } from "../../../lean/generated/ehr-types";
+import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
-import {
-  eventSchema,
-  factsSchema,
-  programSchema,
-  screenViewSchema,
-  specSchema,
-  stateSchema,
-  stepResponseSchema,
-  userSchema,
-  type Event,
-  type Facts,
-  type Program,
-  type Spec,
-  type User,
-} from "./types";
 
-/** Opaque state is owned by the interpreter; React subscribes to its view. */
+/** Opaque interpreter state. No runtime certification or tree validation.
+ * The release pipeline validates JSON and checks rendered screens offline.
+ * Bundle JSON is forwarded unchanged; Lean owns facts and display projection.
+ */
 export function createSession(
   interp: Interp,
-  spec: Spec,
-  program: Program,
-  facts: Facts,
-  user: User,
+  spec: unknown,
+  program: unknown,
+  bundle: unknown,
+  user: unknown,
 ) {
   const args = [
-    JSON.stringify(specSchema.parse(spec)),
-    JSON.stringify(programSchema.parse(program)),
-    JSON.stringify(factsSchema.parse(facts)),
-    JSON.stringify(userSchema.parse(user)),
+    JSON.stringify(spec),
+    JSON.stringify(program),
+    JSON.stringify(bundle),
+    JSON.stringify(user),
   ] as const;
-  let stateJson = JSON.stringify(
-    stateSchema.parse(JSON.parse(interp.init(...args))),
-  );
-  const readView = (json: string) =>
-    screenViewSchema.parse(JSON.parse(interp.view(...args, json)));
+  let stateJson = interp.init(...args);
+  const readPage = (): Html => JSON.parse(interp.render(...args, stateJson));
   let snapshot = {
-    view: readView(stateJson),
-    message: "Navigation preview · clinical actions require Lean WASM",
+    page: readPage(),
+    message: "MOCK · Navigation preview · clinical actions require Lean WASM",
   };
   const listeners = new Set<() => void>();
   return {
@@ -48,36 +35,20 @@ export function createSession(
       };
     },
     dispatch(event: Event) {
-      try {
-        const response = stepResponseSchema.parse(
-          JSON.parse(
-            interp.step(
-              ...args,
-              stateJson,
-              JSON.stringify(eventSchema.parse(event)),
-            ),
-          ),
-        );
-        const nextStateJson = JSON.stringify(response.state);
-        const nextView = readView(nextStateJson);
-        // Adopt state and view together only after both boundaries validate.
-        stateJson = nextStateJson;
-        const result = response.result;
-        snapshot = {
-          view: nextView,
-          message:
-            typeof result === "object"
-              ? result.blocked.reason
-              : result === "ignored"
-                ? "This preview only supports navigation and editing. Lean WASM is required for this action."
-                : "Preview updated · changes remain in this browser session",
-        };
-      } catch (error) {
-        snapshot = {
-          ...snapshot,
-          message: `Interpreter response rejected: ${error instanceof Error ? error.message : "Invalid JSON"}`,
-        };
-      }
+      const response: StepOutput = JSON.parse(
+        interp.step(...args, stateJson, JSON.stringify(event)),
+      );
+      stateJson = JSON.stringify(response.state);
+      const result = response.result;
+      snapshot = {
+        page: readPage(),
+        message:
+          typeof result === "object"
+            ? result.blocked.reason
+            : result === "ignored"
+              ? "MOCK · This action requires Lean WASM"
+              : "MOCK · Preview updated",
+      };
       listeners.forEach((listener) => listener());
     },
   };

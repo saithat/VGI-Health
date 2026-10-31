@@ -63,9 +63,10 @@ const boundary = {
 export default tseslint.config(
   { ignores: ["dist/**", "node_modules/**"] },
   js.configs.recommended,
+  { files: ["scripts/*.mjs"], languageOptions: { globals: { process: "readonly" } } },
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.{ts,tsx,js}"],
+    files: ["**/*.{ts,tsx,js,mjs}"],
     plugins: { boundary: { rules: { "single-data-module": boundary } } },
     rules: {
       "boundary/single-data-module": "error",
