@@ -71,4 +71,10 @@ open Ehr.Examples.Tiny Ehr.Props.Examples in
 example : (deployPlan spec none goodProgram program "t").2.any (·.target.publishes) = false := by
   decide
 
+/-! ## Axiom audit (expected: at most `propext`, `Classical.choice`, `Quot.sound`) -/
+
+#print axioms T4_publish_only_if_ok
+#print axioms T4_rejected_not_published
+#print axioms T4_published_certificate
+
 end Ehr.Proofs

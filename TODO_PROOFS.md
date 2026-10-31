@@ -8,10 +8,10 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 | Theorem | Statement (plain words) | Status | Where |
 |---|---|---|---|
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`) | `lean/Ehr/Proofs/T0.lean` |
-| T1 | If the checker accepts a program, it satisfies properties 1–12 | not started (no checker yet) | A |
+| T1 | If the checker accepts a program, it satisfies properties 1–12 | **not started**: checker and `Satisfies` exist (`lean/Ehr/Check/Check.lean`, `lean/Ehr/Props/Properties.lean`); proved so far: `isGotoPath_sound`, `shortPathTo_sound`, `verifiedReachable_sound` (`lean/Ehr/Check/Graph.lean`). Plan in `HANDOFF-check.md` | check lane |
 | T2 | A review prompt is skipped only with a valid receipt | not started as a named theorem; follows from `commitGuard_iff` + `reviewMet` (shown, valid receipt, or human waiver) | A |
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
-| T4 | `ehr deploy` publishes only programs with an ok verdict | not started | A |
+| T4 | `ehr deploy` publishes only programs with an ok verdict | **proven** (`T4_publish_only_if_ok`, `T4_rejected_not_published`, `T4_published_certificate`; axioms: propext, Classical.choice, Quot.sound) | `lean/Ehr/Proofs/CheckDeploy.lean` |
 | T5 | Abstraction facts match the FHIR data | not started (no FHIR → Facts function yet) | A |
 | T6 | Macros behave like their expansion or stop at a guard | not started | A |
 | T7 | Counterexamples are genuine | not started | A |
