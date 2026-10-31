@@ -447,3 +447,27 @@ structure Display where  -- display projection of the patient's FHIR records (Le
 - **T10:** every shown component is in the tree, with text and no hidden ancestor; hidden ones are absent; the commit button is enabled iff the guard holds.
 - **T11:** every panel lists every relevant record (for example, all active AllergyIntolerance entries).
 - The WASM API gains `render(…) → htmlJson`. The generic painter maps it to the DOM.
+
+### 9.1 Stylesheet classes and event attributes (shared by the Lean renderer and `app/src/ehr.css`)
+
+The Lean renderer may emit only these classes. The stylesheet defines exactly these and nothing that hides, collapses, or moves content off-screen.
+
+| Area | Classes |
+|---|---|
+| Shell | `ehr-shell`, `ehr-banner`, `ehr-banner-field`, `ehr-banner-label`, `ehr-badge`, `ehr-badge-allergy`, `ehr-badge-flag`, `ehr-sidebar`, `ehr-sidebar-section`, `ehr-main`, `ehr-screen-title`, `ehr-nav`, `ehr-nav-item`, `ehr-nav-active`, `ehr-toolbar` |
+| Structure | `ehr-section`, `ehr-section-header`, `ehr-section-collapsed` (the header only; Lean omits the children), `ehr-tabs`, `ehr-tab`, `ehr-tab-active`, `ehr-grid`, `ehr-row`, `ehr-landmark` |
+| Fields | `ehr-field`, `ehr-field-label`, `ehr-input`, `ehr-input-pending` (prefilled, awaiting confirm), `ehr-unit`, `ehr-provenance`, `ehr-confirm`, `ehr-human-only`, `ehr-required`, `ehr-value` |
+| Info | `ehr-panel`, `ehr-panel-title`, `ehr-table`, `ehr-table-compact`, `ehr-empty`, `ehr-trend`, `ehr-trend-line`, `ehr-abnormal` |
+| Alerts | `ehr-alert-inline`, `ehr-alert-interruptive`, `ehr-alert-passive`, `ehr-modal-backdrop`, `ehr-modal`, `ehr-modal-title`, `ehr-modal-body` |
+| Actions | `ehr-button`, `ehr-button-primary` (commit), `ehr-button-secondary`, `ehr-blocked-reason`, `ehr-macro`, `ehr-hotkey`, `ehr-search` |
+| Size | `ehr-compact`, `ehr-tiny` |
+
+Event attributes on interactive nodes:
+- `data-comp-id` (component id);
+- `data-event`: `click` | `enter` | `confirm` | `selectTab` | `ack` | `toggle` | `scroll` | `search`;
+- `data-tab` (tab index, for selectTab);
+- `data-alert` (alert id, for ack);
+- `data-value-kind`: `qty` | `code` | `text` | `flag` | `user`;
+- `data-unit` (for `qty`).
+
+The painter builds the Lean `Event` from these attributes and the input's value. It never invents events.
