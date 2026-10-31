@@ -1944,5 +1944,936 @@
     "confidence": "high",
     "verified": true,
     "notes": "Same narrow vendor scope as (c)(1)(C), with the (c)(4) exclusions. This is a capability requirement, not a rule forbidding every lawful interstate treatment disclosure. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-fam-6922-independent-minor",
+    "title": "Independent minor may consent to care",
+    "citation": "California Family Code §6922(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6922",
+    "quote": "The minor is 15 years of age or older.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "design",
+    "proposedRule": "Allow medical, vision or dental consent under §6922 when the minor is at least 15, lives separately from parents/guardian, and manages their own financial affairs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "all §6922(a) conditions met",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Service-specific consent authority with age, living-arrangement and financial-independence predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "All three conditions are conjunctive; financial support source and parental agreement to separate residence do not control. Section (c) permits specified clinician communication with parents; do not infer absolute confidentiality from consent alone. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_19145.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2023, Ch. 152, Sec. 2.   (SB 457)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-fam-6924-mental-health-consent",
+    "title": "Mature minor twelve or older may consent to outpatient mental health care",
+    "citation": "California Family Code §6924(b), (g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6924",
+    "quote": "mature enough to participate intelligently in the outpatient services or residential shelter services.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "design",
+    "proposedRule": "Permit outpatient mental-health treatment/counseling consent by a minor at least 12 whom the attending professional finds mature enough to participate intelligently.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "§6924 outpatient mental-health service with maturity determination",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/service scope and clinician maturity assessment",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 665 operative July 1, 2024 removed the former additional harm/abuse criterion. Does not authorize inpatient psychiatric admission or psychotropic medication merely on this basis. Residential shelter services are also covered by the section. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21795.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Repealed (in Sec. 2) and added by Stats. 2023, Ch. 338, Sec. 3.   (AB 665)   Effective January 1, 2024.   Operative July 1, 2024, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-fam-6924-mental-health-parent-contact",
+    "title": "Minor mental-health chart documents parental-contact decision",
+    "citation": "California Family Code §6924(d)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6924",
+    "quote": "shall state in the client record whether and when the person attempted to contact",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "For §6924 minor mental-health care, chart whether/when parental contact was attempted and its success, or the professional’s reason contact would be inappropriate after consulting the minor.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "minor mental-health treatment under §6924",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Minor-consent service predicate and structured parental-contact/exception documentation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "This documents the required involvement process; it does not grant blanket parental access to confidential notes. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21795.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Repealed (in Sec. 2) and added by Stats. 2023, Ch. 338, Sec. 3.   (AB 665)   Effective January 1, 2024.   Operative July 1, 2024, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-fam-6924-psychotropic-exclusion",
+    "title": "Minor mental-health consent alone does not authorize psychotropic drugs",
+    "citation": "California Family Code §6924(f)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6924",
+    "quote": "psychotropic drugs without the consent of the minor’s parent or guardian.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Do not use §6924 alone as authorization for psychotropic prescribing without parental/guardian consent; require applicable separate legal authority.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "psychotropic prescription relying on §6924 minor self-consent",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-class and service-specific consent-authority validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The section also withholds authority for convulsive therapy and psychosurgery. Other lawful consent pathways must be evaluated independently. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21795.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Repealed (in Sec. 2) and added by Stats. 2023, Ch. 338, Sec. 3.   (AB 665)   Effective January 1, 2024.   Operative July 1, 2024, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-fam-6928-assault-care-consent",
+    "title": "Minor may consent to sexual-assault care and evidence collection",
+    "citation": "California Family Code §6928(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6928",
+    "quote": "A minor who is alleged to have been sexually assaulted may consent",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "design",
+    "proposedRule": "Permit the alleged sexual-assault survivor who is a minor to consent to related diagnostic/treatment care and medical-evidence collection under §6928.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "alleged sexual assault with care related to that condition",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Assault-related service predicate and minor consent basis",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Section 6928 has no stated minimum age; §6927 separately addresses alleged rape at age 12 or older. Consent authority is not a mandate to perform a forensic examination. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_19148.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2018, Ch. 423, Sec. 25.   (SB 1494)   Effective January 1, 2019."
+  },
+  {
+    "id": "ca-statutes-fam-6928-assault-parent-contact",
+    "title": "Sexual-assault care records parental-contact time",
+    "citation": "California Family Code §6928(c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6928",
+    "quote": "the date and time the professional person attempted to contact the parent or guardian",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "For minor sexual-assault care, attempt parental/guardian contact and record attempt date/time and success, unless the professional reasonably believes the parent/guardian committed the assault.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "minor sexual-assault care under §6928",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Contact-attempt timestamp/outcome and suspected-parent-perpetrator exception",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_19148.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2018, Ch. 423, Sec. 25.   (SB 1494)   Effective January 1, 2019."
+  },
+  {
+    "id": "ca-statutes-fam-6929-substance-care-consent",
+    "title": "Minor twelve or older may consent to substance-problem care",
+    "citation": "California Family Code §6929(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929",
+    "quote": "relating to the diagnosis and treatment of a drug- or alcohol-related problem.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "design",
+    "proposedRule": "Allow a minor at least 12 to consent to the specified drug/alcohol diagnosis, treatment and counseling, subject to §6929’s replacement-narcotic-therapy limits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "minor age ≥12 and §6929 substance-problem service",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Service-specific consent basis and age validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Not permission for all psychiatric medication or all medical care; counseling has the provider definition in (a)(1). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21815.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2023, Ch. 456, Sec. 1.   (AB 816)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-fam-6929-substance-parent-contact",
+    "title": "Substance-care record documents parental involvement decision",
+    "citation": "California Family Code §6929(c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929",
+    "quote": "shall state in the minor’s treatment record whether and when",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "Record parental contact attempts and outcomes, or the professional reason contact would be inappropriate, in the minor’s §6929 treatment record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "minor treatment under §6929",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Substance-care consent predicate and parental-contact/exception record",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The treatment plan includes parental involvement if appropriate as determined by the treating professional or facility. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21815.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2023, Ch. 456, Sec. 1.   (AB 816)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-fam-6929-minor-moud-sixteen",
+    "title": "Sixteen-year-old MOUD consent has a federal-law condition",
+    "citation": "California Family Code §6929(e)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929",
+    "quote": "only if, and to the extent, expressly permitted by federal law.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For a minor at least 16 in a licensed narcotic treatment program, allow self-consent for replacement-narcotic MOUD only to the extent federal law expressly permits it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "minor ≥16 seeking MOUD from licensed narcotic treatment program",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/program-specific consent authority plus independently maintained federal-law eligibility",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 816 effective January 1, 2024. This is a conditional state permission, not verification of current federal OTP eligibility and not a blanket permission for all minor opioid prescribing. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21815.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2023, Ch. 456, Sec. 1.   (AB 816)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-fam-6929-parent-initiated-disclosure",
+    "title": "Parent-initiated substance care has a specific disclosure rule",
+    "citation": "California Family Code §6929(g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929",
+    "quote": "shall disclose medical information concerning the care to the minor’s parent or legal guardian",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For drug/alcohol care sought by the parent/guardian, support the physician’s disclosure of information concerning that care upon that parent/guardian’s request, subject to independently applicable federal law.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "parent/guardian sought minor substance care and requests information concerning it",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Parent-initiated-care provenance, requester verification, data scope and federal confidentiality reconciliation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Do not extend this exception to minor-initiated care or unrelated records. State permission/duty alone does not resolve 42 CFR Part 2 applicability. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_21815.lob; reader URL blocked automated access. Database row updated 2026-09-26 01:00:04 (metadata, not effective date). Amended by Stats. 2023, Ch. 456, Sec. 1.   (AB 816)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-123115-protected-minor-proxy",
+    "title": "Protected minor-service notes do not go to representatives",
+    "citation": "California Health & Safety Code §123115(a)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123115",
+    "quote": "including clinical notes",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Exclude records of the services listed in §123115(a)(3) from representative inspection/copy access when the patient had capacity and met the service’s minimum consent age.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "records of listed service and capacity/minimum consent age met",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Service/encounter-level segmentation and recipient-specific access authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Reference to R2-23, retained to anchor the expanded minor-service rules. V1 patientBanner and patientMessage do not enforce proxy segregation. This paragraph keys protection to eligibility/capacity, not merely a recorded parent-notification choice. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77201.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 2.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-prob-4731-record-directive",
+    "title": "Known directive or surrogate designation is promptly recorded",
+    "citation": "California Probate Code §4731(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4731",
+    "quote": "shall promptly record its existence in the patient’s health care record",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "Promptly record a known advance directive, its revocation, or a surrogate designation/disqualification in the health record.",
+    "specMapping": {
+      "element": "advanceDirectiveAsked",
+      "info": null,
+      "when": "supervising provider knows directive/revocation/surrogate status",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Directive/surrogate status elements with knowledge-triggered documentation obligation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 advanceDirectiveAsked is optional and accidental; asking a question does not satisfy this actual-knowledge recording duty. No universal each-visit discussion is mandated. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_93863.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Added by Stats. 1999, Ch. 658, Sec. 39.   Effective January 1, 2000.   Operative July 1, 2000, by Sec. 43 of Ch. 658."
+  },
+  {
+    "id": "ca-statutes-prob-4731-retain-directive-copy",
+    "title": "Furnished written directive copy remains in chart",
+    "citation": "California Probate Code §4731(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4731",
+    "quote": "shall arrange for its maintenance in the patient’s health care record.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When a written directive/status document is known, request a copy; if furnished, maintain that copy in the record.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "known written directive/status document with copy furnished",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Directive-specific document storage, linkage and retention",
+    "confidence": "high",
+    "verified": true,
+    "notes": "consentDocument is surgical-consent content in V1, only an integration point. It does not already represent advance directives. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_93863.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Added by Stats. 1999, Ch. 658, Sec. 39.   Effective January 1, 2000.   Operative July 1, 2000, by Sec. 43 of Ch. 658."
+  },
+  {
+    "id": "ca-statutes-prob-4732-capacity-determination",
+    "title": "Capacity change determination is recorded",
+    "citation": "California Probate Code §4732",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4732",
+    "quote": "shall promptly record the determination in the patient’s health care record",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "When the primary physician makes or learns a capacity/recovery or other instruction/authority-affecting determination, promptly record it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "primary physician makes or learns determination under §4732",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned decision-making-capacity and surrogate-authority record",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The same section additionally requires communication to the patient if possible and the then-authorized decisionmaker; this row isolates record entry. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10005.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Added by Stats. 1999, Ch. 658, Sec. 39.   Effective January 1, 2000.   Operative July 1, 2000, by Sec. 43 of Ch. 658."
+  },
+  {
+    "id": "ca-statutes-prob-4673-directive-execution-date",
+    "title": "Written advance directive contains execution date",
+    "citation": "California Probate Code §4673(a)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4673",
+    "quote": "The advance directive contains the date of its execution.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Validate the execution date when accepting a written advance directive as legally sufficient under §4673.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "accepting written advance directive under §4673",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Advance-directive document type and execution-date validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A review receipt’s time is not the execution date. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10640.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Amended by Stats. 2006, Ch. 579, Sec. 1.   Effective September 28, 2006."
+  },
+  {
+    "id": "ca-statutes-prob-4673-directive-signature",
+    "title": "Written directive has authorized patient signature",
+    "citation": "California Probate Code §4673(a)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4673",
+    "quote": "in the patient’s presence and at the patient’s direction.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Validate the patient’s signature, or another adult’s signature in the patient’s name, presence and direction, on a §4673 written directive.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "accepting written advance directive under §4673",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Document signature authority and signing-context evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Not limited to the patient physically writing their own signature. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10640.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Amended by Stats. 2006, Ch. 579, Sec. 1.   Effective September 28, 2006."
+  },
+  {
+    "id": "ca-statutes-prob-4673-directive-attestation",
+    "title": "Written directive has required witness or notary evidence",
+    "citation": "California Probate Code §4673(a)(3), (b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4673",
+    "quote": "either acknowledged before a notary public or signed by at least two witnesses",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a nonelectronic written directive, verify notarization or at least two legally qualified witnesses; apply §4673(b)’s stricter notarial requirements to electronic directives.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "accepting directive under §4673",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Directive medium, qualified-witness/notary validation and electronic-signature verification",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Witness eligibility is governed by §§4674–4675, not verified here. Electronic directives also have §4673(b)’s signature conditions; a scanned chart checkbox is not validation. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10640.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Amended by Stats. 2006, Ch. 579, Sec. 1.   Effective September 28, 2006."
+  },
+  {
+    "id": "ca-statutes-prob-4780-polst-signatures",
+    "title": "POLST has patient/decisionmaker and authorized clinician signatures",
+    "citation": "California Probate Code §4780(c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4780",
+    "quote": "and the patient or his or her legally recognized health care decisionmaker.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a POLST, verify signatures of the patient or legally recognized decisionmaker and a physician or appropriately supervised/scope-authorized NP or PA.",
+    "specMapping": {
+      "element": null,
+      "info": "consentDocument",
+      "when": "accepting POLST",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "POLST-specific document, signer-role and decisionmaker-authority validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic form-validity expansion of R2-18. Decisionmaker execution is constrained by (b). Do not convert the advisory “should inform” sentence about advance directives into a binding separate prompt. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10170.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Amended by Stats. 2015, Ch. 217, Sec. 1.   (AB 637)   Effective January 1, 2016."
+  },
+  {
+    "id": "ca-statutes-prob-4780-polst-revocation",
+    "title": "Capable patient can revoke POLST by communicating intent",
+    "citation": "California Probate Code §4780(d)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=PROB&sectionNum=4780",
+    "quote": "at any time and in any manner that communicates an intent to revoke",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Accept and propagate a capable person’s communicated POLST revocation without imposing a written-signature-only revocation form.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "capable individual communicates intent to revoke POLST",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Capacity-aware POLST status lifecycle and propagation to code-status/orders",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Specific expansion of R2-18; a stale banner cannot override a valid revocation. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_10170.lob; reader URL blocked automated access. Database row updated 2025-11-27 01:00:40 (metadata, not effective date). Amended by Stats. 2015, Ch. 217, Sec. 1.   (AB 637)   Effective January 1, 2016."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-registry-vaccine-type",
+    "title": "CAIR disclosure includes immunization type",
+    "citation": "California Health & Safety Code §120440(c)(3), (e), (g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "Types and dates of immunizations received by the patient or client.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Absent applicable refusal/prohibition, disclose the immunization type from the record to the specified immunization systems.",
+    "specMapping": {
+      "element": "vaccine",
+      "info": "immunizationHistory",
+      "when": "registry disclosure under §120440(c) permitted",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Registry submission payload and refusal-aware routing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 captures vaccine but does not prove registry disclosure. Current mandatory disclosure text is operative January 1, 2026; do not label reporting merely optional. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-registry-vaccine-date",
+    "title": "CAIR disclosure includes immunization date",
+    "citation": "California Health & Safety Code §120440(c)(3), (e), (g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "dates of immunizations received by the patient or client.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Absent applicable refusal/prohibition, disclose the date of each received immunization to the specified systems.",
+    "specMapping": {
+      "element": null,
+      "info": "immunizationHistory",
+      "when": "registry disclosure under §120440(c) permitted",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Administration-date provenance and registry payload validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A timestamp on chart entry is not necessarily the administration date. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-registry-manufacturer",
+    "title": "CAIR disclosure includes vaccine manufacturer",
+    "citation": "California Health & Safety Code §120440(c)(4), (e), (g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "Manufacturer and lot number for each immunization received.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Absent applicable refusal/prohibition, include each immunization’s manufacturer in registry disclosure.",
+    "specMapping": {
+      "element": null,
+      "info": "immunizationHistory",
+      "when": "registry disclosure under §120440(c) permitted",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Manufacturer element and registry submission payload validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Round 1 C5 noted the underlying datum; V1 inspected here has vaccineLot but no manufacturer element or registry transmission proof. existingInSpec is therefore false. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-registry-lot",
+    "title": "CAIR disclosure includes vaccine lot number",
+    "citation": "California Health & Safety Code §120440(c)(4), (e), (g)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "lot number for each immunization received.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Absent applicable refusal/prohibition, include each immunization’s lot number in registry disclosure.",
+    "specMapping": {
+      "element": "vaccineLot",
+      "info": null,
+      "when": "registry disclosure under §120440(c) permitted",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Registry transmission evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 requires vaccineLot entry; this row concerns disclosure to a registry, which it does not enforce. Distinct from round 1 C5’s chart-content rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-no-minor-sogisc",
+    "title": "Registry never receives a minor’s paragraph-13 demographics",
+    "citation": "California Health & Safety Code §120440(c), (c)(13)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "under 18 years of age.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Exclude all §120440(c)(13) SOGISC and sex-assigned-at-birth data from registry disclosure for patients under 18.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "registry payload for patient under 18",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age-sensitive field-level export filtering",
+    "confidence": "high",
+    "verified": true,
+    "notes": "SB 957 (2024), operative January 1, 2026. For adults, paragraph-13 disclosure is required only for information voluntarily provided; adult fields must not become mandatory rooming answers. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
+  },
+  {
+    "id": "ca-statutes-hsc-120440-registry-refusal",
+    "title": "Registry-sharing refusal changes outbound disclosure",
+    "citation": "California Health & Safety Code §120440(g), (d)(1)(D)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120440",
+    "quote": "the health care provider or other agency may not share this information",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "design",
+    "proposedRule": "Honor patient/authorized parent/guardian refusal of §120440 registry sharing, retaining the express §120440(d)(1)(D) exception for otherwise authorized CMIA use.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "valid refusal of §120440 recordsharing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Durable refusal preference and recipient/purpose-aware registry export guard",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The notice requirements and distinct reminder opt-out remain important; refusal does not imply deletion of the clinical vaccine record or end all physician/public-health access. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_76751.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended (as added by Stats. 2022, Ch. 582, Sec. 2) by Stats. 2024, Ch. 868, Sec. 3.   (SB 957)   Effective January 1, 2025.   Operative January 1, 2026, by its own provisions."
   }
 ]
