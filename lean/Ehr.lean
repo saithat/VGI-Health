@@ -15,8 +15,14 @@ import Ehr.Proofs.Frame
 import Ehr.Proofs.T3
 import Ehr.Proofs.T0
 import Ehr.Proofs.Alerts
+import Ehr.Proofs.T2
+import Ehr.Proofs.T6
 import Ehr.Proofs.Audit
 import Ehr.Props
+import Ehr.Check.Catalog
 import Ehr.Check.Deploy
 import Ehr.Cli.Check
 import Ehr.Proofs.CheckDeploy
+import Ehr.Specs.V1
+import Ehr.Canonical.Program
+import Ehr.Render

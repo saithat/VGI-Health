@@ -250,3 +250,167 @@ No spec, property, data-format type, or Comparator statement file was touched.
 There are no spike proofs claiming more than the executable checks. As in the
 brief, Lean's compiler, the C compiler, WASM engine, and boundary code are tested
 parts of the trusted execution path. No option B fallback was needed.
+
+## Integration
+
+Measured 2026-10-31 against the real interpreter from main (`f6fd803`) and the
+app's updated `Interp` interface (`3cdc6cc`). The spike probes remain available;
+`make wasm` now builds and installs the **real** `Ehr.Api` interpreter. No Lean
+module was renamed or edited, and no TypeScript interpreter was introduced.
+
+### Build and initialization
+
+`wasm/build-ehr.sh` uses the same pinned Lean/Emscripten/runtime configuration as
+the spike. Lake emits the project's C with its normal package symbol names
+(`lp_ehr_*`, `initialize_ehr_*`). The build discovers API roots by their
+`@[export ehr_*]` attributes, always includes `Ehr.Api`, and supports additional
+roots through repeatable `--api-module Module.Name` arguments. It follows actual
+initializer dependencies into project modules and the stdlib, generating matching
+stdlib C with Lean 4.35. The current closure contains **720 modules**, including
+`Ehr.Core.*`, `Ehr.Formulary`, `Ehr.Api`, and the JSON runtime dependencies.
+New imported `Ehr.Render.*` modules are included automatically; a separate module
+with an exported API is also discovered automatically.
+
+The least invasive solution to the module-name constraint is a targeted patch of
+**build-local generated project C**:
+
+1. Replace the project initializer's `lean_initialize()` prologue with
+   `lean_initialize_runtime_module()`.
+2. Redirect its stdlib `initialize_Init*`, `initialize_Lean*`, and
+   `initialize_Std*` declarations/calls to `runtime_initialize_*`.
+3. Preserve all project dependency initialization, generated constant
+   initialization, and computational definitions unchanged.
+
+The original Lake C and all Lean sources remain untouched. Exact per-module diffs
+are written beside the patched C under `wasm/.build/ehr-c/`; the complete selected
+module/export list is `wasm/.build/ehr-build.json`. The patch validates initializer
+shape and rejects surviving full Lean initialization. Stdlib runtime initializers
+are independently checked for full Lean initialization. Undefined link symbols
+remain errors; there is no fake `lean_initialize`, elaborator, or `.olean` loader.
+This handles today's combined `Ehr.*` initializers without requiring `module`
+conversions or forwarding imports in other lanes.
+
+The generated C++ bridge initializes each API root once and discovers **one-string
+exports** from the generated C. Today these are `ehr_init_envelope`,
+`ehr_step_envelope`, and `ehr_view_envelope`. Additional one-string `ehr_facts`
+(or `ehr_facts_envelope`) and `ehr_render` (or `ehr_render_envelope`) exports will
+be callable after rebuilding, without editing a bridge export list. Multi-argument
+Lean exports remain in the source API; the browser boundary uses envelopes only.
+
+The loader allocates UTF-8 input on the heap, transfers the Lean String to the
+export, copies/frees the Lean result, and frees both C buffers in `finally`.
+Literal NUL boundary strings are rejected; escaped JSON NUL and Unicode work.
+Calls are synchronous once the module has loaded. No threads or isolation headers
+are needed.
+
+### App usage
+
+`wasm/dist/ehr-interp.mjs` + `ehr-interp.wasm` are the Emscripten module.
+`interp-loader.mjs` is the typed envelope wrapper. `wasm/install-into-app.sh`
+copies all four runtime/declaration assets into ignored `app/public/ehr/`.
+`app/src/core/wasmInterp.ts` is the only app source added by this lane:
+
+```ts
+import { loadWasmInterp } from './core/wasmInterp';
+const interp = await loadWasmInterp();
+const stateJson = interp.init(specJson, programJson, factsJson, userJson);
+const nextJson = interp.step(specJson, programJson, factsJson, userJson,
+  stateJson, eventJson);
+```
+
+The adapter implements `Interp`, including its newly added `render` method. It
+assembles envelopes without parsing/reprinting state or event JSON, preserving
+large Nat tokens. A FHIR Bundle is routed through the Lean facts export. An
+optional asset base URL supports deployments under a subpath. The app's startup
+and existing interpreter files were not edited; the app lane can select this
+adapter when wiring its runtime.
+
+**Upstream capabilities still absent:** main has no FHIR `facts` or page `render`
+export yet. These adapter methods throw an explicit unavailable-export error;
+there is no fabricated Facts or page result. The new render API must accept an
+envelope compatible with the agreed app seam (spec/program/facts/user/state), or
+its input mapping must be reconciled when the renderer lands.
+
+### Equivalence and browser validation
+
+`node wasm/test/equivalence.mjs` builds `lean/.lake/build/bin/ehr`, obtains Tiny's
+fixtures directly from Lean (`wasm/test/Fixtures.lean`), and seeds xorshift32 with
+`0x7135c0de`. It generates **2,048 sequences**, each with 24–47 events. The corpus
+varies facts, users/roles, allergies, medication classes, quantities, Unicode,
+large Nats, navigation, entries, confirmations, tabs, macros, reviews, commits,
+and acknowledgements. Half the sequences begin with a guided ordering path.
+
+The native comparator is the real **`ehr run-batch`** command, using the same
+`runInit`/`runStep`/`runView` definitions as the envelope exports. Complete compact
+`BatchStep` strings match byte for byte, using unmodified Lean state/result/view
+substrings rather than normalizing them in JS:
+
+- **72,288 batch outputs**, each containing a matching step and view;
+- **144,576 step/view comparisons**, plus **16 direct native init comparisons**;
+- results: 13,582 ok, 5,697 blocked, 53,009 ignored;
+- malformed envelopes also produce Lean JSON errors for each operation.
+
+`programs/canonical/v1.json` and `releases/v1/spec.json` were both absent from
+main when measured. The suite automatically adds **another 2,048 sequences**
+using that program/spec when both files exist. Canonical equivalence and a real
+canonical performance measurement remain to be run after those artifacts land.
+
+The optional Chromium integration test loads the installed assets through Vite,
+imports the actual TypeScript adapter, and compares native init/step/view bytes.
+All three comparisons passed in Chromium 156.0.8078.4; loader and WASM HTTP
+responses were 200, `crossOriginIsolated` was false, and adapter load took
+37.6 ms. The app's TypeScript check, targeted adapter lint, and production build
+passed. Raw evidence is in `wasm/test/equivalence-results.json`,
+`integration-results.json`, and `benchmark-results.json`.
+
+### Size and performance
+
+| Artifact | Raw bytes | gzip bytes |
+|---|---:|---:|
+| Real interpreter WASM | 1,128,562 | 227,409 |
+| Emscripten ES loader | 59,303 | — |
+| Envelope wrapper | 1,955 | — |
+
+Because the canonical artifacts are not available, the benchmark is explicitly
+**synthetic**, not a claimed canonical measurement: seven copies of Tiny's
+three-screen workflow, **21 screens / 154 components**, with a roughly 29 KB JSON
+envelope. The measured step confirms the visible weight field; view renders the
+initial rooming screen. This exercises full program JSON decoding on every call.
+
+Node v22.23.1, same Ryzen 9 7950X3D machine as the spike; 200 warmups and 2,000
+measured synchronous calls per operation, including all UTF-8/JSON/copy/free work:
+
+| Operation | Mean | p50 | p95 | First call |
+|---|---:|---:|---:|---:|
+| step | 0.694 ms | 0.684 ms | 0.780 ms | 2.475 ms |
+| view | 0.739 ms | 0.737 ms | 0.787 ms | 2.098 ms |
+
+In-memory instantiation plus Lean initialization took 24.3 ms. Live allocator
+bytes stayed at **27,704** before and after another **5,000 calls per operation**.
+These measurements describe this synthetic workload and machine only.
+
+### Rebuild and rerun
+
+```sh
+wasm/setup.sh                      # only if pinned tooling is missing
+make wasm                          # build + install into app/public/ehr
+node wasm/test/equivalence.mjs      # native CLI / WASM differential suite
+node wasm/test/benchmark.mjs        # canonical if present, labeled synthetic otherwise
+pnpm --dir app run build
+
+# Optional browser validation; uses the spike's local Playwright installation
+PLAYWRIGHT_BROWSERS_PATH="$PWD/.tools/browser/browsers" \
+  node wasm/test/integration.mjs
+```
+
+Use `JOBS=4 make wasm` to reduce concurrency. Remove `wasm/.build` for a clean
+C/object rebuild; installed native `.olean`/Lake artifacts remain reusable.
+Generated WASM and installed app assets are ignored by git; rebuild them after
+checkout. The tests commit compact measurements, not their large generated corpus.
+
+An empty C/object-cache rebuild took **80.94 seconds** and produced the same
+WASM bytes as the warm build. SHA-256:
+
+```text
+719c1eeea8b2b32ffc7785c6b7661b3b2bf0f07bc7fbf435edcdf6898e83249c
+```

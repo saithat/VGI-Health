@@ -31,6 +31,13 @@ def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
   | .button (.markReviewed i) =>
     some (if infoShown sp prog facts s i then none else some s!"{i} is not shown")
   | .button .newOrderLine => some none
+  | .button .requestPriorAuth =>
+    some (match sp.element? priorAuthElement with
+          | none => some s!"unknown element {priorAuthElement}"
+          | some el =>
+            if !el.enteredBy.contains user.role then some s!"role: {user.role.name} may not enter {priorAuthElement}"
+            else if !(orderLines s).any (·.1 == s.currentSlot) then some "no order on this line"
+            else none)
   | .field e _ _ =>
     some (match sp.element? e with
           | none => some s!"unknown element {e}"
@@ -47,9 +54,11 @@ def itemView (sp : Spec) (facts : Facts) (s : State) (comps : List Component)
     (c : Component) : ItemView :=
   let slot := match c.kind with
     | .field _ sl _ => resolveSlot s sl
+    | .priorAuth _ => s.currentSlot
     | _ => 0
   let cap := match c.kind with
     | .field e _ _ => capturedAt? s e slot
+    | .priorAuth _ => capturedAt? s priorAuthElement slot
     | _ => none
   { comp := c
     shown := compShown sp facts s comps c

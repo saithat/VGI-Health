@@ -18,7 +18,7 @@ import Ehr.Proofs.T0
 
 namespace Ehr.Proofs
 
-open Ehr
+open Ehr Ehr.Props
 
 /-! ## A2 in the view -/
 
@@ -106,6 +106,11 @@ theorem markReviewed_popup (sp : Spec) (prog : Program) (facts : Facts) (user : 
   unfold markReviewed
   repeat' (first | rfl | split | dsimp only)
 
+theorem requestPriorAuth_popup (sp : Spec) (user : User) (actor : Actor) (s : State) :
+    (requestPriorAuth sp user actor s).1.popup? = s.popup? := by
+  unfold requestPriorAuth
+  repeat' (first | rfl | split | dsimp only)
+
 theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (actor : Actor) (s : State) (c : Component) :
     PopupFrom sp prog facts s (clickCore sp prog facts user actor s c).1 := by
@@ -120,6 +125,7 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     · exact PopupFrom.same (markReviewed_popup ..)
     · exact PopupFrom.same rfl
   · exact PopupFrom.same (prefillScreen_popup ..)
+  · exact PopupFrom.same (requestPriorAuth_popup ..)
   · exact PopupFrom.same rfl
   · cases actor <;> exact PopupFrom.same rfl
   · exact PopupFrom.same rfl
@@ -197,6 +203,7 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
         · rfl
         · rfl
         · exact prefillScreen_popup ..
+        · exact requestPriorAuth_popup ..
         · rfl
         · rfl
         · rfl
@@ -232,10 +239,7 @@ theorem runMacro_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User
     · rename_i s' heq
       rw [heq] at h
       exact (ih _ _).trans h
-    · rename_i s' _ heq
-      rw [heq] at h
-      exact h
-    · rename_i s' heq
+    · rename_i s' r _ heq
       rw [heq] at h
       exact h
 
@@ -269,11 +273,6 @@ theorem A2_popup_holds (sp : Spec) (prog : Program) (facts : Facts) (user : User
     exact ⟨al, hal, hid, hk, hna⟩
 
 /-! ## A4 -/
-
-/-- The open popup, if any, belongs to an alert rule (looked up by ID) that is
-not passive. -/
-def PopupNotPassive (sp : Spec) (s : State) : Prop :=
-  ∀ a k, s.popup? = some (a, k) → ∃ al, sp.alert? a = some al ∧ al.tier ≠ .passive
 
 /-- The initial state has no popup. -/
 theorem init_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User) :

@@ -1,0 +1,32 @@
+{
+  "node": "v22.23.1",
+  "canonicalPresent": false,
+  "program": "synthetic-seven-workflow-benchmark",
+  "screens": 21,
+  "components": 154,
+  "wasmBytes": 1128562,
+  "wasmGzipBytes": 227409,
+  "loaderBytes": 59303,
+  "wrapperBytes": 1955,
+  "loadMs": 24.32778300000001,
+  "step": {
+    "calls": 2000,
+    "inputBytes": 29136,
+    "firstCallMicroseconds": 2474.7320000000173,
+    "meanMicroseconds": 693.6878915000027,
+    "p50Microseconds": 683.9899999999943,
+    "p95Microseconds": 779.9710000001596,
+    "heapBefore": 27704,
+    "heapAfter": 27704
+  },
+  "view": {
+    "calls": 2000,
+    "inputBytes": 29093,
+    "firstCallMicroseconds": 2098.300999999992,
+    "meanMicroseconds": 739.3947059999929,
+    "p50Microseconds": 737.3710000001665,
+    "p95Microseconds": 786.9000000000597,
+    "heapBefore": 27704,
+    "heapAfter": 27704
+  }
+}

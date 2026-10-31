@@ -20,3 +20,6 @@ infra/synthea/output/
 .DS_Store
 playwright-report/
 test-results/
+
+# Installed WASM assets (make wasm)
+app/public/ehr/

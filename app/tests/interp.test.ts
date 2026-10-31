@@ -30,34 +30,29 @@ function setup() {
 }
 
 describe("temporary JSON interpreter seam", () => {
-  it("keeps the last validated state and view together after an invalid interpreter response", () => {
+  it("forwards bundles and Lean events directly and paints only render output", () => {
     const { interp } = setup();
-    let invalid = false;
-    const observed: string[] = [];
+    const page = { text: { s: "Lean owns this page" } };
+    const bundle = { resourceType: "Bundle", type: "collection", entry: [] };
+    const seen: string[][] = [];
     const wrapped: Interp = {
       ...interp,
-      step(...input) {
-        observed.push(input[4]);
-        return interp.step(...input);
+      view() {
+        throw new Error("The browser must not use ScreenView");
       },
-      view(...input) {
-        return invalid ? "{}" : interp.view(...input);
+      render(...args) {
+        seen.push(args);
+        return JSON.stringify(page);
       },
     };
-    const session = createSession(wrapped, mockSpec, mockProgram, mockFacts, {
+    const session = createSession(wrapped, mockSpec, mockProgram, bundle, {
       id: "P1",
       role: "physician",
     });
-    invalid = true;
+    expect(session.getSnapshot().page).toEqual(page);
     session.dispatch({ click: { comp: "rooming-next" } });
-    expect(session.getSnapshot().view.screen).toBe("rooming");
-    expect(session.getSnapshot().message).toContain(
-      "Interpreter response rejected",
-    );
-    invalid = false;
-    session.dispatch({ click: { comp: "rooming-next" } });
-    expect(observed[1]).toEqual(observed[0]);
-    expect(session.getSnapshot().view.screen).toBe("documentation");
+    expect(JSON.parse(seen[1]?.[2] ?? "null")).toEqual(bundle);
+    expect(session.getSnapshot().page).toEqual(page);
   });
   it("navigates forward/back and retains entered values", () => {
     const { interp, state } = setup();
@@ -172,14 +167,5 @@ describe("temporary JSON interpreter seam", () => {
     ).toBe(false);
     const { interp } = setup();
     expect(() => interp.init(...[args[0], "{}", args[2], args[3]])).toThrow();
-    expect(() =>
-      createSession(
-        { ...interp, view: () => '{"invalid":true}' },
-        mockSpec,
-        mockProgram,
-        mockFacts,
-        { id: "P1", role: "physician" },
-      ),
-    ).toThrow();
   });
 });

@@ -169,7 +169,7 @@ def plain (property message : String) : Option Finding := some { property, messa
 def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : List Rule :=
   let required := requiredCommits spec canonical prog
   [ -- 1. well-formed: catalog, unique IDs, references
-    { property := "wellFormed", passes := decide (CatalogOnly spec prog)
+    { property := "wellFormed", passes := prog.inCatalog spec
       explain := fun _ => compFinding "wellFormed" prog false fun scr c =>
         if spec.design.catalog.contains (kindName c.kind) then none
         else some s!"component {c.id} on screen {scr.id} is a {kindName c.kind}, which is not in the spec's catalog" },

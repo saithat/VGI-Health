@@ -1,0 +1,62 @@
+{
+  "name": "keep_surgical",
+  "remarks": [
+    "Keep patients who had a general-surgery case: appendectomy (appendicitis module) or cholecystectomy (gallstones module). Procedures stay in Synthea's 'present' map, so 'Active Condition' matches a performed procedure (same trick as keep_modules/must_have_cabg.json).",
+    "Used with `-k` by infra/synthea/generate.sh: only patients reaching the Keep state are exported."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "conditional_transition": [
+        {
+          "transition": "Keep",
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "80146002",
+                    "display": "Excision of appendix (procedure)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "45595009",
+                    "display": "Laparoscopic cholecystectomy (procedure)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "38102005",
+                    "display": "Cholecystectomy (procedure)"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Keep": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}

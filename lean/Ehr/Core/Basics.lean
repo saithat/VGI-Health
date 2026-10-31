@@ -23,6 +23,8 @@ def doseElement : ElementId := "dose"
 def weightElement : ElementId := "weight"
 /-- The element holding an order line's frequency, e.g. `"q6h"` or `"bid"`. -/
 def freqElement : ElementId := "freq"
+/-- The element a prior-authorization request writes (release v1.1). -/
+def priorAuthElement : ElementId := "priorAuthRequest"
 /-- The info the `banner` component shows. -/
 def bannerInfo : InfoId := "patientBanner"
 
@@ -36,6 +38,34 @@ def Role.name : Role → String
 def UnitKind.name : UnitKind → String
   | .kg => "kg" | .lb => "lb" | .g => "g" | .mg => "mg" | .mcg => "mcg" | .mL => "mL"
   | .mgPerKg => "mgPerKg" | .units => "units" | .none => "none"
+
+/-! ## Catalog tags -/
+
+/-- The catalog tag of a component kind. `DesignRules.catalog` lists the tags a
+program may use. A button that requests prior authorization has the tag
+`"priorAuth"`, so it needs the release v1.1 catalog too. -/
+def Kind.catalogTag : Kind → String
+  | .banner => "banner"
+  | .field .. => "field"
+  | .panel _ => "panel"
+  | .table _ => "table"
+  | .trend _ => "trend"
+  | .alert .. => "alert"
+  | .button .requestPriorAuth => "priorAuth"
+  | .button _ => "button"
+  | .group .. => "group"
+  | .tabs => "tabs"
+  | .«macro» _ => "macro"
+  | .search _ => "search"
+  | .priorAuth _ => "priorAuth"
+
+/-- Every catalog tag a program uses, in order (with repeats). -/
+def Program.catalogTags (p : Program) : List String :=
+  p.screens.flatMap fun sc => sc.components.map (·.kind.catalogTag)
+
+/-- Every component kind the program uses is in the spec's catalog. -/
+def Program.inCatalog (p : Program) (sp : Spec) : Bool :=
+  p.catalogTags.all (sp.design.catalog.contains ·)
 
 /-! ## Lookups (first match by ID) -/
 

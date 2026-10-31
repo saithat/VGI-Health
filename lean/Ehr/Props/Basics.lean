@@ -182,18 +182,7 @@ instance (el : ElementSpec) : Decidable (HumanMustEnter el) := by
 /-! ## Program structure helpers -/
 
 /-- The kind name used in the spec's component catalog. -/
-def kindName : Kind → String
-  | .banner => "banner"
-  | .field .. => "field"
-  | .panel _ => "panel"
-  | .table _ => "table"
-  | .trend _ => "trend"
-  | .alert .. => "alert"
-  | .button _ => "button"
-  | .group .. => "group"
-  | .tabs => "tabs"
-  | .«macro» _ => "macro"
-  | .search _ => "search"
+def kindName : Kind → String := Kind.catalogTag
 
 /-- The element, slot, and prefill of a field component. -/
 def fieldOf? : Kind → Option (ElementId × Slot × Prefill)

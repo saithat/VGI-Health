@@ -1,0 +1,37 @@
+{
+  "name": "keep_anticoagulant",
+  "remarks": [
+    "Keep patients with an active warfarin prescription (the only chronic oral anticoagulant Synthea prescribes: atrial_fibrillation and heart/avrr/antithrombotic modules).",
+    "Used with `-k` by infra/synthea/generate.sh: only patients reaching the Keep state are exported."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "conditional_transition": [
+        {
+          "transition": "Keep",
+          "condition": {
+            "condition_type": "Active Medication",
+            "codes": [
+              {
+                "system": "RxNorm",
+                "code": "855332",
+                "display": "Warfarin Sodium 5 MG Oral Tablet"
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Keep": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}

@@ -55,3 +55,25 @@ Lane A is adding `waivedBy` (met if the waiver element is entered by a human
 and confirmed). When it lands, properties 4 and 6 add the waiver as a third
 way to meet a review requirement, and the checker accepts "info pinned, or the
 waiver field reachable before the commit" for waivable requirements.
+
+## CR-5. Canonical v1 acceptance (2026-10-31, check lane)
+
+After merging main `1f43d67`, `rules specV1 none canonicalV1 canonicalV1`
+fails these checks (the remaining rules pass):
+
+- `writesOnly`: `canonicalV1.role = physician`, but `w4Admin.wristbandScan`
+  and other RN/surgeon-only fields/commit buttons are present. Please export
+  role-specific canonical programs whose declarations the role may use; the
+  checker must keep the role-permission property. The all-workflows template
+  may remain as a source template.
+- `capturesAllOnce`: `w1Orders.dosingWeight` (and other `dosingWeight` fields)
+  uses a record prefill despite the spec's `autoLinked` policy with source
+  `weight`. Please use `.linked "weight"` throughout. `orderDiagnosis` and
+  `claimDiagnosis` must likewise follow their declared links.
+- `completable`: CR-1 is still pending on origin/lane/lean-core `abac908`.
+  The checker will accommodate the guarded new-line action when it lands.
+
+Content's bad-program exports and `Specs/Extends.lean` have not yet landed on
+origin/lane/content `6cd108d`. Please preserve the expected properties listed
+in HANDOFF-check.md when exporting the 14 programs. Per-screen component IDs
+are accepted; spec-level alert IDs must remain unique.

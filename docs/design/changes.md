@@ -179,3 +179,37 @@ Several were made stricter; those are marked **(stricter)**.
 2. A4 is stated with the alert rule looked up by ID (`sp.alert? a`). If a spec
    had two alert rules with the same ID, the theorem speaks about the first.
    The checker's well-formedness check should require unique alert IDs.
+
+## Release v1.1 support (BRIEF 9b)
+
+1. **`Kind.priorAuth (info : InfoId)`**: the prior-authorization status of the
+   current order line. It counts as showing `info`, like a panel (`showsInfo`).
+   In the view, its `slot` is the current order line and its `value` is the
+   request on that line (`flag true`), if any.
+2. **`Action.requestPriorAuth`**: writes only the `"priorAuthRequest"` element
+   (new well-known ID) on the current slot, as `Value.flag true`. Same rules as
+   entering a value: the element must be in the spec (so under spec v1 the
+   request is `blocked "unknown element priorAuthRequest"`), the role must be
+   allowed, a macro may not request it if the element is human-only or
+   `never`-prefill, and a macro's request waits for a human confirm. Ignored if
+   the current slot has no order.
+3. **Catalog tags.** `Kind.catalogTag` gives each kind's tag; a
+   `button requestPriorAuth` has the tag `"priorAuth"` too, so both parts of the
+   feature need the v1.1 catalog. `Program.inCatalog` is a helper for the
+   checker lane (the checker enforces the catalog).
+4. **Tiny v1.1 example**: `specV1_1` (adds the optional element, the
+   `priorAuthStatus` info, and the `"priorAuth"` catalog tag; no requirement
+   uses them) and `programV1_1` (status panel and request button in the order
+   composer). `ehr spec-export tiny-1.1` prints the spec.
+5. T0, T3, A2, A4 were re-checked with the new kind and action (new branch
+   lemmas `requestPriorAuth_macro_safe`, `requestPriorAuth_commits`,
+   `requestPriorAuth_popup`).
+
+## T6 (macros)
+
+1. `runMacro` builds its stop message with `macroStopReason i r` (same text
+   as before), so T6 can state the result exactly.
+2. T6 compares a macro run with a reference fold of the public `step` with
+   `actor := macro` over the macro's steps. `MacroStep.goto` has no `Event`, so
+   the reference does it as a navigation (like a `goto` button), refused while
+   a popup is open.

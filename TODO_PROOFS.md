@@ -9,11 +9,11 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 |---|---|---|---|
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`) | `lean/Ehr/Proofs/T0.lean` |
 | T1 | If the checker accepts a program, it satisfies properties 1–12 | **not started**: checker and `Satisfies` exist (`lean/Ehr/Check/Check.lean`, `lean/Ehr/Props/Properties.lean`); proved so far: `isGotoPath_sound`, `shortPathTo_sound`, `verifiedReachable_sound` (`lean/Ehr/Check/Graph.lean`). Plan in `HANDOFF-check.md` | check lane |
-| T2 | A review prompt is skipped only with a valid receipt | not started as a named theorem; follows from `commitGuard_iff` + `reviewMet` (shown, valid receipt, or human waiver) | A |
+| T2 | A review prompt is skipped only with a valid receipt | **proven** for the interpreter: an applicable review requirement whose info was not shown was covered by a valid receipt (same version, inside the window, allowed role) or a human-entered waiver (`T2_receipts_sound`); `shownOnCommit` without a waiver means shown (`T2_shownOnCommit_shown`) | `lean/Ehr/Proofs/T2.lean` |
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
 | T4 | `ehr deploy` publishes only programs with an ok verdict | **proven** (`T4_publish_only_if_ok`, `T4_rejected_not_published`, `T4_published_certificate`; axioms: propext, Classical.choice, Quot.sound) | `lean/Ehr/Proofs/CheckDeploy.lean` |
 | T5 | Abstraction facts match the FHIR data | not started (no FHIR → Facts function yet) | A |
-| T6 | Macros behave like their expansion or stop at a guard | not started | A |
+| T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | not started | A |
 | T8 | Releases only tighten | not started | A |
 | T9 | Minimum clicks is exact | not started | A |
