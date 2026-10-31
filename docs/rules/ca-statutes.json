@@ -1,0 +1,982 @@
+[
+  {
+    "id": "ca-statutes-bpc-4040-patient-name",
+    "title": "Prescription identifies patient",
+    "citation": "California Business & Professions Code §4040(a)(1)(A)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "The name or names and address of the patient or patients.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include each intended patient’s name in the transmitted prescription, subject to specific statutory exceptions.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prescription payload validation and patient binding",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Chart-banner identity alone does not prove the outgoing prescription contains it. Label exceptions such as §4076(g) do not erase underlying record duties. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-patient-address",
+    "title": "Prescription carries patient address",
+    "citation": "California Business & Professions Code §4040(a)(1)(A)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "address of the patient or patients.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the intended patient’s address in the prescription; apply the narrow retrievability alternative in §4040(b) only where applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-address element and prescription transmission validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-drug",
+    "title": "Prescription names drug",
+    "citation": "California Business & Professions Code §4040(a)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "The name and quantity of the drug or device prescribed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require a drug name on each prescription line.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Existing V1 orderLineElements; overlaps round 1 E1/E9, retained solely as a statutory grounding. W7 needs payload checks for the requested drug. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-quantity",
+    "title": "Prescription states dispense quantity",
+    "citation": "California Business & Professions Code §4040(a)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "quantity of the drug or device prescribed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the quantity prescribed on each prescription line.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Existing V1 quantity and refillQuantity; round 1 E3/E9 grounding, not a new proposal. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-directions",
+    "title": "Prescription carries directions for use",
+    "citation": "California Business & Professions Code §4040(a)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "the directions for use.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Transmit usable directions for use with the prescription.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Validate the composed prescription sig/payload",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 route/freq/dose support a sig but do not certify the generated transmission. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-issue-date",
+    "title": "Prescription records date of issue",
+    "citation": "California Business & Professions Code §4040(a)(1)(C)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "The date of issue.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include the actual prescription issue date in the outgoing prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Trusted issue timestamp and transmission payload validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-license-classification",
+    "title": "Prescription includes license classification",
+    "citation": "California Business & Professions Code §4040(a)(1)(D)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "the prescriber’s license classification",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include the issuing prescriber’s license classification in the prescription, subject to §4040(b)’s permitted retrievability alternative.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prescriber credential attributes and payload validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-federal-registry",
+    "title": "Controlled prescription identifies federal registration",
+    "citation": "California Business & Professions Code §4040(a)(1)(D)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "the prescriber’s federal registry number, if a controlled substance is prescribed.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include the prescriber’s federal registry number when prescribing a controlled substance, subject to applicable statutory record alternatives.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prescriber registration validation and prescription payload checking",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-4040-requested-purpose",
+    "title": "Patient-requested purpose appears in prescription",
+    "citation": "California Business & Professions Code §4040(a)(1)(E)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=4040",
+    "quote": "if requested by the patient or patients.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When the patient requests it, include a legible clear statement of the condition or purpose for the drug.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 requires indication on every order, which is stricter than this conditional law. Round 1 E4/E9 grounding; no universal coded-indication mandate follows. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_43085.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:20 (metadata, not effective date). Amended by Stats. 2025, Ch. 196, Sec. 9.   (AB 1503)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-688-electronic-default",
+    "title": "Prescriptions default to electronic transmission",
+    "citation": "California Business & Professions Code §688(d)–(e)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=688",
+    "quote": "shall be issued as an electronic data transmission prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Issue prescriptions electronically unless a specifically applicable §688(e) exemption or §688(k) exclusion applies.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prescription transport policy and statutory exception predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Electronic capability was noted in round 1 E9; this is the issuance rule, not a human retyping requirement. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41901.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2022, Ch. 518, Sec. 1.   (AB 852)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-bpc-688-chosen-pharmacy",
+    "title": "Prescriber supports patient-selected pharmacy",
+    "citation": "California Business & Professions Code §688(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=688",
+    "quote": "a pharmacy selected by the patient.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Support transmitting the electronic prescription to the pharmacy the patient selects.",
+    "specMapping": {
+      "element": "pharmacy",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-choice provenance and actual routing validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 captures pharmacy but cannot establish that it was the patient’s choice or prove transmission. For W7 use refillPharmacy. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41901.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2022, Ch. 518, Sec. 1.   (AB 852)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-bpc-688-failure-reason",
+    "title": "Nontransmitted controlled prescription reason is documented",
+    "citation": "California Business & Professions Code §688(f)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=688",
+    "quote": "within 72 hours of the end of the technological or electrical failure",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "For a controlled prescription not electronically transmitted, document the reason as soon as practicable; track the statutory deadline tied to the end of the preventing technological/electrical failure.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled prescription not electronically transmitted",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Failure-end timestamp and durable 72-hour documentation obligation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Do not conflate this e-prescribing exception with CURES unavailability; §688(f) expressly ties its deadline to failure end. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41901.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2022, Ch. 518, Sec. 1.   (AB 852)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-bpc-688-ed-electronic-issuance",
+    "title": "ED exception still requires electronic issuance",
+    "citation": "California Business & Professions Code §688(e)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=688",
+    "quote": "shall be electronically issued but does not require electronic transmission",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Under §688(e)(4)’s ED/urgent-care exception, issue the prescription electronically even when giving it directly to the patient instead of transmitting it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "ED or urgent care prescription meeting §688(e)(4)(A)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED residence/geography/pharmacy availability predicates and issuance-versus-transmission state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Qualifying conditions: out-of-state residence, outside hospital geographic area, homeless/indigent without preferred pharmacy, or preferred pharmacy likely closed. This is not a blanket paper-prescribing waiver. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41901.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2022, Ch. 518, Sec. 1.   (AB 852)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-11164-security",
+    "title": "Electronic controlled prescription security",
+    "citation": "California Health & Safety Code §11164(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11164",
+    "quote": "ensure the security, integrity, authority, and confidentiality of the prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For electronic Schedule III–V prescriptions under §11164(b), ensure prescription security across transmission, maintenance and receipt.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "electronic Schedule III–V prescription under §11164(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Enforced electronic prescription security and auditable transport/storage controls",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The actor is any transmitter, maintainer or receiver, including a provider EHR operator. Electronic Schedule II prescribing is governed through other authority, including BPC §688(c), not this III–V pathway. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41493.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 4, Sec. 3.   (AB 149)   Effective March 11, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-11164-integrity",
+    "title": "Electronic controlled prescription integrity",
+    "citation": "California Health & Safety Code §11164(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11164",
+    "quote": "ensure the security, integrity, authority, and confidentiality of the prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For electronic Schedule III–V prescriptions under §11164(b), ensure prescription integrity across transmission, maintenance and receipt.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "electronic Schedule III–V prescription under §11164(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Enforced electronic prescription integrity and auditable transport/storage controls",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The actor is any transmitter, maintainer or receiver, including a provider EHR operator. Electronic Schedule II prescribing is governed through other authority, including BPC §688(c), not this III–V pathway. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41493.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 4, Sec. 3.   (AB 149)   Effective March 11, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-11164-authority",
+    "title": "Electronic controlled prescription authority",
+    "citation": "California Health & Safety Code §11164(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11164",
+    "quote": "ensure the security, integrity, authority, and confidentiality of the prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For electronic Schedule III–V prescriptions under §11164(b), ensure prescription authority across transmission, maintenance and receipt.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "electronic Schedule III–V prescription under §11164(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Enforced electronic prescription authority and auditable transport/storage controls",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The actor is any transmitter, maintainer or receiver, including a provider EHR operator. Electronic Schedule II prescribing is governed through other authority, including BPC §688(c), not this III–V pathway. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41493.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 4, Sec. 3.   (AB 149)   Effective March 11, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-11164-confidentiality",
+    "title": "Electronic controlled prescription confidentiality",
+    "citation": "California Health & Safety Code §11164(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11164",
+    "quote": "ensure the security, integrity, authority, and confidentiality of the prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For electronic Schedule III–V prescriptions under §11164(b), ensure prescription confidentiality across transmission, maintenance and receipt.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "electronic Schedule III–V prescription under §11164(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Enforced electronic prescription confidentiality and auditable transport/storage controls",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The actor is any transmitter, maintainer or receiver, including a provider EHR operator. Electronic Schedule II prescribing is governed through other authority, including BPC §688(c), not this III–V pathway. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41493.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 4, Sec. 3.   (AB 149)   Effective March 11, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-11164-agent-name",
+    "title": "Delegated controlled transmission records agent name",
+    "citation": "California Health & Safety Code §11164(b)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11164",
+    "quote": "specifies the name of the agent of the prescriber transmitting the prescription.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When an authorized prescriber’s agent transmits a Schedule III–V prescription under this paragraph, preserve the transmitting agent’s name in the written record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "agent transmits Schedule III–V prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Agent identity, prescriber authorization and immutable transmission provenance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41493.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 4, Sec. 3.   (AB 149)   Effective March 11, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-11158-direct-72-hour",
+    "title": "Direct Schedule II dispensing has a 72-hour ceiling",
+    "citation": "California Health & Safety Code §11158(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11158",
+    "quote": "In an amount not to exceed a 72-hour supply",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For the direct-dispensing exception in §11158(b)(1), cap the Schedule II supply at 72 hours according to the practitioner’s directions.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "direct dispensing under §11158(b)(1)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Separate dispense action and quantity-to-duration calculation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 2115 (2024) text. Not a general limit on outpatient Schedule II prescriptions; ordinary prescription pathways remain available. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_82575.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2024, Ch. 634, Sec. 2.   (AB 2115)   Effective September 27, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11158-no-more-expected",
+    "title": "72-hour direct dispense requires no further need expected",
+    "citation": "California Health & Safety Code §11158(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11158",
+    "quote": "the patient is not expected to require any additional amount",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Permit the §11158(b)(1) direct-dispensing exception only when the patient is not expected to need additional controlled substance beyond 72 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "direct dispensing under §11158(b)(1)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Direct-dispense predicate and clinician assessment evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_82575.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2024, Ch. 634, Sec. 2.   (AB 2115)   Effective September 27, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11158-oud-three-day",
+    "title": "Emergency OUD initiation dispenses at most three days",
+    "citation": "California Health & Safety Code §11158(b)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11158",
+    "quote": "Not more than a three-day supply of such medication may be dispensed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For direct Schedule II dispensing to initiate maintenance/detoxification treatment for OUD while arranging referral, dispense at most three days at one time.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "OUD direct dispensing under §11158(b)(2)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Direct-dispense action, OUD/referral predicates and three-day supply validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "AB 2115 effective September 27, 2024. Separate from a prescription sent to a pharmacy. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_82575.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2024, Ch. 634, Sec. 2.   (AB 2115)   Effective September 27, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11158-no-emergency-extension",
+    "title": "Emergency OUD dispensing cannot renew or extend",
+    "citation": "California Health & Safety Code §11158(b)(2)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11158",
+    "quote": "Such emergency treatment may not be renewed or extended.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Prevent renewing or extending the emergency treatment supplied under §11158(b)(2); route ongoing treatment through another lawful pathway.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "emergency treatment under §11158(b)(2)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Longitudinal episode tracking and dispense-path authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_82575.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2024, Ch. 634, Sec. 2.   (AB 2115)   Effective September 27, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11165-4-procedure-seven-day",
+    "title": "Procedure CURES exemption uses seven days",
+    "citation": "California Health & Safety Code §11165.4(c)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11165.4",
+    "quote": "does not exceed a nonrefillable seven-day supply",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Recognize the procedure-related CURES exemption only for treatment meeting §11165.4(c)(4), at a listed facility, and a nonrefillable supply of at most seven days.",
+    "specMapping": {
+      "element": "curesExemptionReason",
+      "info": "curesReport",
+      "when": "qualifying procedure-related controlled prescription",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure/facility predicate, supply arithmetic and exemption value validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Correction to V1: curesExemptionCodes says surgery-5-day; current statute says seven. Base CURES requirement already cataloged in rounds 1–2; this row isolates the exemption boundary. Mere presence of any code must not waive review. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41498.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2023, Ch. 144, Sec. 1.   (AB 1731)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11165-4-ed-buprenorphine",
+    "title": "ED buprenorphine has its own CURES exemption",
+    "citation": "California Health & Safety Code §11165.4(c)(3)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11165.4",
+    "quote": "buprenorphine or other controlled substance containing buprenorphine in the emergency department",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Recognize the specific CURES exemption for buprenorphine-containing controlled substances prescribed, ordered, administered or furnished in a general acute care hospital ED.",
+    "specMapping": {
+      "element": null,
+      "info": "curesReport",
+      "when": "buprenorphine-containing drug in general acute care hospital ED",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED/facility/drug predicate and explicit exemption branch",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Not a seven-day exception under (c)(2); subsection (c)(3) contains no supply ceiling. The V1 coded exemption list omits this branch. This limits a review duty rather than imposing a new review. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41498.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2023, Ch. 144, Sec. 1.   (AB 1731)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-hsc-11165-4-delegate-review-record",
+    "title": "Review of delegated CURES report is charted",
+    "citation": "California Health & Safety Code §11165.4(a)(1)(A)(iii)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=11165.4",
+    "quote": "shall document in the patient’s medical record that they reviewed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "If the practitioner did not directly access CURES, record that the practitioner reviewed the report supplied by another authorized CURES user within 24 hours of the controlled prescription.",
+    "specMapping": {
+      "element": null,
+      "info": "curesReport",
+      "when": "CURES report supplied by another authorized user",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Report-supplier identity and bound review/prescription timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 curesReport review/receipt alone does not establish this medical-record notation or delegate authorization. Specific expansion beyond the base review rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41498.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2023, Ch. 144, Sec. 1.   (AB 1731)   Effective January 1, 2024."
+  }
+]
