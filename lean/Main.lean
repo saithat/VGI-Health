@@ -1,5 +1,6 @@
 import Ehr
 import Ehr.Api
+import Ehr.Cli.Check
 
 /-!
 # `ehr` command-line tool (native)
@@ -39,6 +40,8 @@ def usage : String :=
   "  step                     stdin StepInput  -> StepOutput\n" ++
   "  view                     stdin ViewInput  -> ScreenView\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
+  "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
+  "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
     ", ".intercalate (specRegistry.map (·.1)) ++ ")"
 
@@ -72,6 +75,8 @@ def main (args : List String) : IO UInt32 := do
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
+  | "check" :: rest => Ehr.Cli.checkMain rest
+  | "deploy" :: rest => Ehr.Cli.deployMain rest
   | ["spec-export", name] =>
     match specRegistry.lookup name with
     | some sp => IO.println (Lean.toJson sp).pretty; return 0
