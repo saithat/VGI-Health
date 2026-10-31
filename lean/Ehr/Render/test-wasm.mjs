@@ -37,5 +37,30 @@ for (const [name, state] of states) {
   const input = { ...common, display, state };
   assert.deepEqual(JSON.parse(ehr.render(JSON.stringify(input))), native('render', input), name);
 }
+// A real canonical RN scan must accept the interpreter's identity and reject
+// an unrelated Medplum resource address. The painter emits the same Value.code.
+const scanElement = common.spec.elements.find((e) => e.kind?.scan?.target === 'wristband');
+assert.ok(scanElement);
+let scanChecked = false;
+for (const [name, state] of states.filter(([name]) => name.endsWith('-expanded'))) {
+  const screen = common.program.screens.find((s) => s.id === state.screen);
+  const component = screen.components.find((c) => c.kind?.field?.element === scanElement.id);
+  if (!component) continue;
+  const episode = { ...common, user: { ...common.user, role: 'rn' }, state };
+  const view = JSON.parse(ehr.view(JSON.stringify(episode)));
+  if (!view.enabled.includes(component.id)) continue;
+  const input = { ...episode, event: { enter: { comp: component.id, value: { code: { c: facts.patientId } } } } };
+  const good = JSON.parse(ehr.step(JSON.stringify(input)));
+  assert.deepEqual(good, native('step', input), `${name} wristband`);
+  assert.equal(good.result, 'ok');
+  assert.ok(good.state.captured.some((c) => c.element === scanElement.id && c.value?.code?.c === facts.patientId));
+  input.event.enter.value.code.c = 'unrelated-medplum-server-id';
+  const bad = JSON.parse(ehr.step(JSON.stringify(input)));
+  assert.deepEqual(bad, native('step', input));
+  assert.notEqual(bad.result, 'ok');
+  scanChecked = true;
+  break;
+}
+assert.ok(scanChecked, 'a shown canonical RN wristband field was exercised');
 for (const method of ['facts', 'render']) assert.ok(JSON.parse(ehr[method]('{}')).error);
-console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical page variants; stable patient/row ids and error envelopes passed.`);
+console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical page variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);
