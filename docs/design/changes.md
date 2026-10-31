@@ -125,3 +125,21 @@ Several were made stricter; those are marked **(stricter)**.
     steps that ran. A macro step that is `ignored` also stops it.
 20. **The clock is advanced by the caller** (the app or the simulation sets
     `state.clock`); `step` does not change it.
+
+## API and CLI (M3)
+
+1. **Exports.** `@[export ehr_init] apiInit`, `@[export ehr_step] apiStep`,
+   `@[export ehr_view] apiView` take one JSON string per argument, as in
+   section 5 (`step(spec, program, facts, user, state, event)`). The WASM spike
+   bridge calls a one-string envelope, so envelope forms are exported too:
+   `ehr_init_envelope` (`InitInput`), `ehr_step_envelope` (`StepInput`),
+   `ehr_view_envelope` (`ViewInput`). All six are thin wrappers over
+   `runInit`/`runStep`/`runView`, which the native CLI also calls.
+   Parse errors return `{"error": "<argument>: <message>"}`.
+2. **`facts(bundle)` is not implemented yet** (FHIR → Facts abstraction, T5).
+3. **API events are always `Actor.human`.** Macros run inside `step`.
+4. **`InitInput {spec, program, facts, user}`** type added for `ehr init`.
+5. **`run-batch`** prints `{"case": i, "error": …}` for a line it cannot parse,
+   continues with the next line, and exits with code 1 at the end.
+6. **`spec-export`** knows only `tiny` for now; real specs
+   (`Ehr/Specs/V1.lean`, …) register in `specRegistry` in `Main.lean`.

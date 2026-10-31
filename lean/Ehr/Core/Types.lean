@@ -539,6 +539,14 @@ structure ScreenView where
 
 /-! ## Interface records (API and CLI input/output) -/
 
+/-- Input of `ehr init` (stdin). -/
+structure InitInput where
+  spec : Spec
+  program : Program
+  facts : Facts
+  user : User
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Output of `step`. -/
 structure StepOutput where
   state : State
