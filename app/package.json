@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
-    "screen-check": "node scripts/screen-check.mjs"
+    "screen-check": "node scripts/screen-check.mjs",
+    "export-mock-pages": "node scripts/export-mock-pages.mjs"
   },
   "dependencies": {
     "@mantine/core": "^8.3.17",

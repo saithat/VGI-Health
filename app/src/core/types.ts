@@ -1,6 +1,8 @@
 /**
- * TEMPORARY hand-written mirrors of docs/design/core-model.md §2, §4–5.
- * Replace with types AND validators generated from Lean when available.
+ * MOCK-ONLY legacy fixture types for docs/design/core-model.md §2, §4–5.
+ * The real painter/session use generated Event/Value/StepOutput; these schemas
+ * describe only the explicitly selected development mock, including its old
+ * ScreenView binding representation. Do not use them to decode real Lean output.
  * Constructors with arguments use Lean's constructor-keyed derived JSON;
  * Option uses null and products use pairs. Nat is a nonnegative integer.
  * ItemView's underspecified field binding is made explicit below; confirm
@@ -347,22 +349,3 @@ export type Event = z.infer<typeof eventSchema>;
 export type ItemView = z.infer<typeof itemViewSchema>;
 export type ScreenView = z.infer<typeof screenViewSchema>;
 export type StepResult = z.infer<typeof stepResultSchema>;
-
-export function assertNever(value: never): never {
-  throw new Error(`Unsupported constructor: ${JSON.stringify(value)}`);
-}
-
-/** Internal discriminant only; never sent across the Lean boundary. */
-export function renderKind(kind: Kind) {
-  if (typeof kind === "string") return { tag: kind };
-  if ("field" in kind) return { tag: "field" as const, ...kind.field };
-  if ("panel" in kind) return { tag: "panel" as const, ...kind.panel };
-  if ("table" in kind) return { tag: "table" as const, ...kind.table };
-  if ("trend" in kind) return { tag: "trend" as const, ...kind.trend };
-  if ("alert" in kind) return { tag: "alert" as const, ...kind.alert };
-  if ("button" in kind) return { tag: "button" as const, ...kind.button };
-  if ("group" in kind) return { tag: "group" as const, ...kind.group };
-  if ("macro" in kind) return { tag: "macro" as const, ...kind.macro };
-  if ("search" in kind) return { tag: "search" as const, ...kind.search };
-  return assertNever(kind);
-}

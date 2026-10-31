@@ -179,6 +179,13 @@ describe("generic Lean page painter", () => {
       checked: true,
       expected: { enter: { comp: "c", value: { flag: { b: true } } } },
     },
+    {
+      event: "enter",
+      tag: "input",
+      attrs: { "data-value-kind": "flag", type: "checkbox", value: "true" },
+      checked: false,
+      expected: { enter: { comp: "c", value: { flag: { b: false } } } },
+    },
   ];
   it.each(cases)(
     "maps $event $attrs to exactly one Lean Event",

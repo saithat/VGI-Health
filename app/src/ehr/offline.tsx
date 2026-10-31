@@ -3,6 +3,10 @@ import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { paint } from "./painter";
 import type { Html } from "./html";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "@medplum/react/styles.css";
+import "../styles.css";
 import "../ehr.css";
 
 declare global {

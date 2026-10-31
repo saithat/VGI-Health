@@ -21,10 +21,7 @@ export function createSession(
   ] as const;
   let stateJson = interp.init(...args);
   const readPage = (): Html => JSON.parse(interp.render(...args, stateJson));
-  let snapshot = {
-    page: readPage(),
-    message: "MOCK · Navigation preview · clinical actions require Lean WASM",
-  };
+  let snapshot = { page: readPage() };
   const listeners = new Set<() => void>();
   return {
     getSnapshot: () => snapshot,
@@ -39,16 +36,7 @@ export function createSession(
         interp.step(...args, stateJson, JSON.stringify(event)),
       );
       stateJson = JSON.stringify(response.state);
-      const result = response.result;
-      snapshot = {
-        page: readPage(),
-        message:
-          typeof result === "object"
-            ? result.blocked.reason
-            : result === "ignored"
-              ? "MOCK · This action requires Lean WASM"
-              : "MOCK · Preview updated",
-      };
+      snapshot = { page: readPage() };
       listeners.forEach((listener) => listener());
     },
   };

@@ -66,3 +66,4 @@
 .ehr-shell :focus-visible { outline: 2px solid #147e89; outline-offset: 2px; }
 .ehr-shell > .ehr-grid { grid-template-columns: 280px minmax(300px, 1fr); }
 @media (max-width: 900px) { .ehr-shell > .ehr-grid { grid-template-columns: 1fr; } }
+.ehr-field > label { display: flex; flex-direction: column; gap: 4px; }

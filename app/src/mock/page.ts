@@ -506,8 +506,14 @@ export function mockPage(view: ScreenView, spec: Spec, data: ChartData): Html {
         ),
         box(
           "ehr-sidebar-section",
-          "Active problems",
-          info("problemList", data),
+          node("h3", {}, "Active problems"),
+          node(
+            "ul",
+            {},
+            ...data.resources
+              .filter((r) => r.resourceType === "Condition")
+              .map((r) => node("li", {}, conceptText(r.code))),
+          ),
         ),
         box(
           "ehr-sidebar-section",

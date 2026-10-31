@@ -82,10 +82,7 @@ export function App() {
       { id: personaId, role: persona.role },
     );
   }, [personaId, persona.role, data]);
-  const { page, message } = useSyncExternalStore(
-    session.subscribe,
-    session.getSnapshot,
-  );
+  const { page } = useSyncExternalStore(session.subscribe, session.getSnapshot);
   useEffect(() => {
     let active = true;
     // A read-only effect; all FHIR operations stay in the single data module.
@@ -170,9 +167,6 @@ export function App() {
       </div>
       {loadError && <p role="alert">{loadError}</p>}
       {paint(page, session.dispatch)}
-      <p role="status" aria-live="polite">
-        {message}
-      </p>
     </div>
   );
 }

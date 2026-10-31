@@ -2,10 +2,12 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
-const files = process.argv.slice(2).map((file) => resolve(file));
+const files = process.argv
+  .slice(2)
+  .map((file) => resolve(process.env.INIT_CWD ?? process.cwd(), file));
 if (!files.length || files.some((file) => !existsSync(file))) {
   process.stderr.write(
-    "Usage: pnpm --filter app screen-check <page-tree.json …>\nPaths are relative to app/ (or absolute). Every input must exist.\n",
+    "Usage: pnpm --filter app screen-check <page-tree.json …>\nPaths are relative to the invoking directory (or absolute). Every input must exist.\n",
   );
   process.exit(1);
 }

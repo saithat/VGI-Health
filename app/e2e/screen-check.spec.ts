@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
+import { inspectVisibility } from "./visibility";
 import { htmlSchema, type Html } from "../src/ehr/html";
 import type {} from "../src/ehr/offline";
 
@@ -24,6 +25,13 @@ for (const file of files)
     const tree = htmlSchema.parse(JSON.parse(readFileSync(file, "utf8")));
     const expected = componentIds(tree);
     const browserErrors: string[] = [];
+    const externalRequests: string[] = [];
+    await page.route("**/*", (route) => {
+      const url = new URL(route.request().url());
+      if (url.origin === "http://127.0.0.1:4179") return route.continue();
+      externalRequests.push(url.origin);
+      return route.abort();
+    });
     page.on("pageerror", (error) => browserErrors.push(error.message));
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderEhr === "function");
@@ -37,54 +45,9 @@ for (const file of files)
     ).toEqual(expected);
     for (let i = 0; i < expected.length; i++) {
       const component = components.nth(i);
-      const failures = await component.evaluate((element, minimum) => {
-        const errors: string[] = [];
-        const initial = element.getBoundingClientRect();
-        // Long pages may scroll vertically. Horizontal off-page content is a failure.
-        window.scrollTo(
-          0,
-          window.scrollY +
-            initial.top +
-            initial.height / 2 -
-            window.innerHeight / 2,
-        );
-        const rect = element.getBoundingClientRect();
-        const doc = document.documentElement;
-        const docTop = rect.top + window.scrollY;
-        if (rect.width <= 0 || rect.height <= 0)
-          errors.push("zero bounding box");
-        if (
-          rect.left < 0 ||
-          rect.right > doc.clientWidth + 1 ||
-          docTop < 0 ||
-          docTop + rect.height > doc.scrollHeight + 1
-        )
-          errors.push("outside the page");
-        const cx = rect.left + rect.width / 2,
-          cy = rect.top + rect.height / 2;
-        const hit = document.elementFromPoint(cx, cy);
-        if (!hit || !(hit === element || element.contains(hit)))
-          errors.push(
-            `covered or off-screen at center (${hit?.tagName ?? "no hit"})`,
-          );
-        for (
-          let ancestor: Element | null = element;
-          ancestor;
-          ancestor = ancestor.parentElement
-        ) {
-          const style = getComputedStyle(ancestor);
-          if (Number(style.opacity) <= 0 || style.visibility !== "visible")
-            errors.push("invisible ancestor");
-        }
-        for (const child of [element, ...element.querySelectorAll("*")]) {
-          const style = getComputedStyle(child);
-          if (Number(style.opacity) <= 0) errors.push("transparent content");
-          if (parseFloat(style.fontSize) < minimum)
-            errors.push(`font ${style.fontSize} below ${minimum}px`);
-        }
-        return errors;
-      }, minimum);
+      const failures = await component.evaluate(inspectVisibility, minimum);
       expect(failures, `${file}: component #${i} ${expected[i]}`).toEqual([]);
     }
     expect(browserErrors).toEqual([]);
+    expect(externalRequests).toEqual([]);
   });
