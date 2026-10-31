@@ -11,3 +11,5 @@ import Ehr.Api
 import Ehr.Examples.Tiny
 import Ehr.Examples.TinyTests
 import Ehr.Examples.ApiTests
+import Ehr.Sim.Goals
+import Ehr.Sim.GoalsTests
