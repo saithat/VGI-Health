@@ -68,6 +68,7 @@ theorem clickCore_guarded (sp : Spec) (prog : Program) (facts : Facts) (user : U
     CommitsGuarded sp prog facts user s (clickCore sp prog facts user actor s c).1 := by
   unfold clickCore
   split
+  · cases actor <;> exact CommitsGuarded.of_eq rfl
   · exact CommitsGuarded.of_eq (goTo_safe ..).commits
   · exact CommitsGuarded.of_eq (goBack_safe ..).commits
   · cases actor
