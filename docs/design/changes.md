@@ -125,3 +125,47 @@ Several were made stricter; those are marked **(stricter)**.
     steps that ran. A macro step that is `ignored` also stops it.
 20. **The clock is advanced by the caller** (the app or the simulation sets
     `state.clock`); `step` does not change it.
+
+## API and CLI (M3)
+
+1. **Exports.** `@[export ehr_init] apiInit`, `@[export ehr_step] apiStep`,
+   `@[export ehr_view] apiView` take one JSON string per argument, as in
+   section 5 (`step(spec, program, facts, user, state, event)`). The WASM spike
+   bridge calls a one-string envelope, so envelope forms are exported too:
+   `ehr_init_envelope` (`InitInput`), `ehr_step_envelope` (`StepInput`),
+   `ehr_view_envelope` (`ViewInput`). All six are thin wrappers over
+   `runInit`/`runStep`/`runView`, which the native CLI also calls.
+   Parse errors return `{"error": "<argument>: <message>"}`.
+2. **`facts(bundle)` is not implemented yet** (FHIR → Facts abstraction, T5).
+3. **API events are always `Actor.human`.** Macros run inside `step`.
+4. **`InitInput {spec, program, facts, user}`** type added for `ehr init`.
+5. **`run-batch`** prints `{"case": i, "error": …}` for a line it cannot parse,
+   continues with the next line, and exits with code 1 at the end.
+6. **`spec-export`** knows only `tiny` for now; real specs
+   (`Ehr/Specs/V1.lean`, …) register in `specRegistry` in `Main.lean`.
+
+## California rules (owner-approved extension)
+
+1. **`ReviewReq.waivedBy? : Option ElementId`** (JSON `waivedBy`, left out
+   when none). A review requirement is also met when its `waivedBy` element
+   was captured in this episode by a human (`byHuman`), confirmed, with a
+   non-empty value (non-empty code/text/user, a checked flag, or any
+   quantity). For CA H&S Code §11165.4: review CURES before a first Schedule
+   II–IV prescription, or document why it was not consulted.
+2. **`When.naloxoneRisk`**: some order line's drug is in class `"opioid"` and
+   (the patient's `currentMedClasses` has `"benzodiazepine"`, or the line's
+   daily MME ≥ 90). Daily MME = dose (mg) × doses per day × MME factor; in
+   tenths, `dose × perDay × mmeFactorTenths ≥ 9000`. Doses per day come from
+   the order line's `"freq"` element (new well-known ID; `Value.code` or
+   `Value.text`): q4h 6, q6h 4, q8h 3, q12h 2, daily 1, bid 2, tid 3, qid 4
+   (case-insensitive). **Stricter choices:** an unknown or missing
+   frequency, a missing dose in mg, or an opioid with no MME factor all count
+   as a risk. Per order line (`perOrderLine := true`), the line's own dose and
+   frequency are used. For CA B&P Code §741.
+3. **`DrugInfo.mmeFactorTenths : Nat := 0`** (morphine 10, hydromorphone 40,
+   oxycodone 15, hydrocodone 10, tramadol 2). New drugs: oxycodone,
+   hydrocodone-acetaminophen, tramadol, lorazepam, alprazolam. The class
+   `"controlled-II-IV"` is on morphine, hydromorphone, oxycodone,
+   hydrocodone-acetaminophen, tramadol, lorazepam, alprazolam. Reference data,
+   not clinical advice.
+4. `lineMatches` now takes the state and slot (needed for the per-line MME).
