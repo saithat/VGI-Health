@@ -1009,5 +1009,993 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The initial dispensing is not one of the five refills; this paragraph does not establish a Schedule V five-refill limit."
+  },
+  {
+    "id": "federal-rx-1306-22-extra-refill-quantity",
+    "title": "Additional oral refill quantity cannot exceed initial fill",
+    "citation": "21 CFR §1306.22(e)(3)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.22",
+    "quote": "equal to or less than",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "design",
+    "proposedRule": "When authorizing additional Schedule III–IV refills orally on the original prescription, limit each refill quantity to the original initial-fill quantity.",
+    "specMapping": {
+      "element": "refillQuantity",
+      "info": null,
+      "when": "additional oral Schedule III–IV refill authorization on original prescription",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "compare additional refill quantity to initial-fill authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1306-23-partial-record",
+    "title": "Record each Schedule III–V partial fill as a refill",
+    "citation": "21 CFR §1306.23(a)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.23",
+    "quote": "same manner as a refilling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record each Schedule III–V partial fill in the same manner as a refill.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "hospital pharmacy partial-fill records linked to prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-23-partial-cap",
+    "title": "Schedule III–V partial fills cannot exceed prescribed total",
+    "citation": "21 CFR §1306.23(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.23",
+    "quote": "does not exceed the total quantity prescribed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Limit the cumulative quantity dispensed across Schedule III–V partial fills to the original prescribed quantity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "cumulative partial-fill quantity constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-23-partial-expiry",
+    "title": "Schedule III–V partial fills stop after six months",
+    "citation": "21 CFR §1306.23(c)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.23",
+    "quote": "No dispensing occurs after 6 months",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not partially dispense a Schedule III–V prescription after six months from issue.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "calendar-month dispensing deadline",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-13-shortage-72h",
+    "title": "Supply-shortage Schedule II remainder has 72-hour limit",
+    "citation": "21 CFR §1306.13(a)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.13",
+    "quote": "within 72 hours of the first partial filling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a Schedule II partial fill because the pharmacy cannot supply the full quantity, require a new prescription before supplying a remainder beyond 72 hours after the first partial fill.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy shortage-based Schedule II partial fill",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill reason plus first-partial-fill clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-13-request-30d",
+    "title": "Requested Schedule II partial-fill remainder has 30-day limit",
+    "citation": "21 CFR §1306.13(b)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.13",
+    "quote": "not later than 30 days",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a patient- or prescriber-requested Schedule II partial fill under paragraph (b), stop remainder dispensing 30 days after the written prescription’s issue date.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy patient/prescriber-requested non-emergency Schedule II partial fill",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill legal basis plus prescription-issue clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-13-request-emergency-72h",
+    "title": "Emergency oral partial-fill remainder has 72-hour limit",
+    "citation": "21 CFR §1306.13(b)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.13",
+    "quote": "72 hours after the prescription is issued",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For an emergency oral Schedule II prescription partially filled under paragraph (b), stop remainder dispensing 72 hours after the prescription is issued.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy requested partial fill of emergency oral Schedule II prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "emergency oral issue-time clock distinct from first-partial-fill time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences."
+  },
+  {
+    "id": "federal-rx-1306-13-request-quantity",
+    "title": "Prescriber specifies quantity of each requested partial fill",
+    "citation": "21 CFR §1306.13(b)(3)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1306.13",
+    "quote": "quantity to be dispensed in each partial filling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When requesting partial filling of a Schedule II prescription, specify each partial-fill quantity on the prescription record before signing, except a later authorization after pharmacist consultation.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "prescriber-requested Schedule II partial filling",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill quantity schedule and pharmacy-consultation amendment path",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The ordinary quantity field covers total quantity, not the quantity of each partial fill."
+  },
+  {
+    "id": "federal-rx-1311-110-photo-id",
+    "title": "Hospital identity proofing matches government photo ID",
+    "citation": "21 CFR §1311.110(a)(1)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.110",
+    "quote": "photographic identification",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital elects to conduct EPCS identity proofing, match the practitioner to federal- or state-issued photographic identification.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "identity-proofing evidence tied to practitioner",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-110-state-authority",
+    "title": "Hospital identity proofing checks current state authorization",
+    "citation": "21 CFR §1311.110(a)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.110",
+    "quote": "current and in good standing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, verify current, good-standing state practice authorization and controlled-substance prescribing authorization where applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "credentialing validity checks",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-110-dea-authority",
+    "title": "Hospital identity proofing checks DEA authority",
+    "citation": "21 CFR §1311.110(a)(3)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.110",
+    "quote": "DEA registration is current and in good standing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, verify current, good-standing individual DEA registration or privileges to prescribe under the hospital registration for an exempt practitioner.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "individual DEA or hospital-exemption privilege validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-110-proof-record",
+    "title": "Hospital retains identity-proofing record",
+    "citation": "21 CFR §1311.110(e)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.110",
+    "quote": "retain a record of the identity-proofing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, retain a record of that proofing.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "retained identity-proofing record",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-130-list-two-approvals",
+    "title": "Two people approve hospital EPCS prescriber list",
+    "citation": "21 CFR §1311.130(a)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "approved by two individuals",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require two individuals to approve the hospital’s list of practitioners permitted to mark controlled prescriptions ready and sign them.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two distinct identity-proofing-list approvers",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-130-separate-permissions",
+    "title": "Separate hospital entity enters EPCS permissions",
+    "citation": "21 CFR §1311.130(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "a separate entity",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "After approval, send the permitted-prescriber list to a separate hospital entity for logical-access entry and execution.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "separation of credentialing approval and access administration",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The paragraph additionally requires separate authenticated entry and execution; listed next."
+  },
+  {
+    "id": "federal-rx-1311-130-second-executor",
+    "title": "Second authenticated person executes access controls",
+    "citation": "21 CFR §1311.130(b)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "A second individual must authenticate",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require a second authenticated individual to execute the hospital EPCS logical-access controls after the first authenticated individual enters the permissions.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two distinct authenticated access administrators",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-130-compromised-factor",
+    "title": "Revoke EPCS access immediately for compromised factor",
+    "citation": "21 CFR §1311.130(d)(1)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "terminated immediately",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Terminate the practitioner’s EPCS signing access immediately on notification that a required authentication factor is lost, stolen, or compromised.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "notification of lost/stolen/compromised EPCS factor",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-130-expired-dea",
+    "title": "Revoke EPCS access when DEA registration expires",
+    "citation": "21 CFR §1311.130(d)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "DEA registration expires",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Revoke EPCS readiness/signing permission on discovery of expired institutional or applicable individual DEA registration, unless renewed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discovery of unrenewed DEA registration expiry",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-130-departure",
+    "title": "Revoke EPCS access when practitioner loses authorization",
+    "citation": "21 CFR §1311.130(d)(4)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.130",
+    "quote": "no longer authorized",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Revoke EPCS readiness/signing permission on the discovery date when the practitioner is no longer authorized to use the hospital application.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "practitioner departure or other loss of hospital EPCS authorization",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-115-two-factors",
+    "title": "Controlled e-prescribing requires two authentication factors",
+    "citation": "21 CFR §1311.115(a)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.115",
+    "quote": "two of the following three factors",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require the prescriber to use two distinct factor categories from knowledge, biometric, and possession to sign each controlled e-prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two-factor EPCS authentication bound to signing event",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. A generic human click or patient-ID re-entry is not two-factor prescriber authentication. Batching for a single patient is permitted only under §1311.120(b)(13)."
+  },
+  {
+    "id": "federal-rx-1311-135-prescriber-signs",
+    "title": "Agent may prepare controlled Rx but only prescriber signs",
+    "citation": "21 CFR §1311.135(a)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.135",
+    "quote": "only the registrant may sign",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Allow an authorized agent to prepare the prescription, while reserving controlled-substance signing to the prescriber.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "verified prescriber identity and EPCS signature authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 commits exclude RN prescribing and macros are restricted by the interpreter; V1 lacks authenticated EPCS signer-to-DEA binding. An agent’s preparation is not prohibited."
+  },
+  {
+    "id": "federal-rx-1311-140-ready-selection",
+    "title": "Prescriber identifies prescriptions ready for signing",
+    "citation": "21 CFR §1311.140(a)(2)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.140",
+    "quote": "indicate the prescriptions that are ready",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require the prescriber to indicate which displayed controlled-substance prescriptions are ready for signature.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "per-prescription ready-for-signature state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-120-edit-review",
+    "title": "Editing a ready controlled Rx requires renewed review",
+    "citation": "21 CFR §1311.120(b)(10)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "another review and indication of readiness",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "After any DEA-element change to a ready controlled prescription, require renewed prescriber review and a new ready-for-signature indication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "prescription-version-bound readiness invalidation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. "
+  },
+  {
+    "id": "federal-rx-1311-120-display-issue-date",
+    "title": "Show controlled Rx issue date for signing",
+    "citation": "21 CFR §1311.120(b)(9)(i)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "date of issuance",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescription’s issue date for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 lacks controlled-prescription summary info."
+  },
+  {
+    "id": "federal-rx-1311-120-display-patient-name",
+    "title": "Show patient full name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(ii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "full name of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the patient’s full name for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 lacks controlled-prescription summary info."
+  },
+  {
+    "id": "federal-rx-1311-120-display-drug-name",
+    "title": "Show drug name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iii)",
+    "url": "https://www.ecfr.gov/on/2026-10-29/title-21/section-1311.120",
+    "quote": "drug name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the drug name for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "controlled-prescription summary info and continuous display during authenticated signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 lacks controlled-prescription summary info."
   }
 ]
