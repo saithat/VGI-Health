@@ -1798,5 +1798,947 @@
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires consentVerified at signPreOpOrders, an earlier local gate; it does not revalidate at surgery start. docs/regulations.md R6 explicitly distinguishes these times."
+  },
+  {
+    "id": "ca-title22-70263-order-drug",
+    "title": "Medication orders name the drug",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the name of the drug",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the drug name on each drug order.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. orderSigningEntries requires this field per line for signOrders and signPreOpOrders. Route is required for all routes in v1, stricter than the nonoral legal minimum. approveRefill does not itself require all medication-order fields. docs/regulations.md E1 already discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-order-dose",
+    "title": "Medication orders specify dosage",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the dosage",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the dosage on each drug order.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. orderSigningEntries requires this field per line for signOrders and signPreOpOrders. Route is required for all routes in v1, stricter than the nonoral legal minimum. approveRefill does not itself require all medication-order fields. docs/regulations.md E1 already discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-order-frequency",
+    "title": "Medication orders specify frequency",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the frequency of administration",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require frequency of administration on each drug order.",
+    "specMapping": {
+      "element": "freq",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. orderSigningEntries requires this field per line for signOrders and signPreOpOrders. Route is required for all routes in v1, stricter than the nonoral legal minimum. approveRefill does not itself require all medication-order fields. docs/regulations.md E1 already discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-order-route",
+    "title": "Medication orders specify nonoral route",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the route of administration, if other than oral",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the route for a nonoral drug on each drug order.",
+    "specMapping": {
+      "element": "route",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. orderSigningEntries requires this field per line for signOrders and signPreOpOrders. Route is required for all routes in v1, stricter than the nonoral legal minimum. approveRefill does not itself require all medication-order fields. docs/regulations.md E1 already discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-order-date",
+    "title": "Drug orders include the prescriber date",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the date, time and signature of the prescriber or furnisher.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Record the date of the prescriber or furnisher drug order when it is issued.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist drug-order issuance date in signed order metadata",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No order-date element exists in v1. This may be generated metadata; the source does not require manual entry. Parent requirement appears in docs/regulations.md E1."
+  },
+  {
+    "id": "ca-title22-70263-order-time",
+    "title": "Drug orders include the prescriber time",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the date, time and signature of the prescriber or furnisher.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Record the time of the prescriber or furnisher drug order when it is issued.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist drug-order issuance time in signed order metadata",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No order-time element exists in v1. This may be generated metadata; the source does not require manual entry. Parent requirement appears in docs/regulations.md E1."
+  },
+  {
+    "id": "ca-title22-70263-order-signature",
+    "title": "Drug orders bear the prescriber signature",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "signature of the prescriber or furnisher.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require the prescriber or furnisher authentication on each drug order before issue.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist attributable prescriber/furnisher signature on issued drug orders",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 restricts signOrders/signPreOpOrders to prescribers; a role-controlled commit alone does not prove persisted authentication. Parent rule appears in docs/regulations.md E1 and H1."
+  },
+  {
+    "id": "ca-title22-70263-licensed-admin",
+    "title": "Only authorized licensed personnel administer drugs",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "No drugs shall be administered except by licensed personnel authorized to administer drugs",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Restrict drug administration to personnel whose license and scope authorize that administration.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Verify current license and drug/procedure-specific scope, beyond static role labels",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 restricts administerMed to RNs, but does not verify licensure. The text also expressly permits respiratory care practitioners to administer aerosol drugs; this RN persona mapping is not an exclusive statewide rule."
+  },
+  {
+    "id": "ca-title22-70263-verbal-prompt-record",
+    "title": "Promptly record verbal drug orders",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "shall be recorded promptly in the patient's medical record",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record each verbal drug order promptly in the patient medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Verbal-order receipt/record events with promptness policy",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. No verbal-order workflow exists in v1. The regulation supplies no numeric definition of promptly. Parent rule appears in docs/regulations.md R2-07."
+  },
+  {
+    "id": "ca-title22-70263-verbal-giver",
+    "title": "Verbal-order record names the giver",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "noting the name of the person giving the verbal order",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Capture the identity of the person giving a verbal drug order in its record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Verbal-order record with giver identity",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Distinct from the receiving clinician and the later countersigner. docs/regulations.md R2-07 covers the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-verbal-receiver-signature",
+    "title": "Receiver signs the verbal-order record",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "the signature of the individual receiving the order.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require the receiving individual signature on a verbal drug-order record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Verbal-order receiver authentication",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The giver countersignature does not replace the receiver signature. Parent rule appears in docs/regulations.md R2-07."
+  },
+  {
+    "id": "ca-title22-70263-verbal-countersign-48h",
+    "title": "Countersign verbal orders within 48 hours",
+    "citation": "22 CCR §70263(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "The prescriber or furnisher shall countersign the order within 48 hours.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Track every verbal drug order until its prescriber or furnisher countersigns within 48 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Verbal-order countersignature lifecycle and 48-hour deadline",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Alerting is a proposed implementation of the legal deadline; no specific alert tier is prescribed. Parent rule appears in docs/regulations.md C9 and R2-07."
+  },
+  {
+    "id": "ca-title22-70263-verbal-authorized-receiver",
+    "title": "Only authorized professionals receive medication orders",
+    "citation": "22 CCR §70263(g)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "only by those health care professionals whose scope of licensure authorizes them to receive orders for medication.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Permit receipt and recording of a verbal medication-administration order only by a professional whose license scope authorizes receiving it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Licensure/scope check on verbal-order receiver",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is narrower than allowing any logged-in clinical role to accept a verbal order."
+  },
+  {
+    "id": "ca-title22-70263-standing-circumstances",
+    "title": "Standing orders specify administration circumstances",
+    "citation": "22 CCR §70263(h)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "Specify the circumstances under which the drug is to be administered.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require each standing drug order to specify the circumstances permitting administration.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Standing-order definition and applicability guard",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. PRN or an order-set label alone does not encode the circumstances."
+  },
+  {
+    "id": "ca-title22-70263-standing-conditions",
+    "title": "Standing orders specify intended patient conditions",
+    "citation": "22 CCR §70263(h)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "Specify the types of medical conditions of patients for whom the standing orders are intended.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the medical conditions for which a standing drug order is intended.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Standing-order clinical eligibility definition and patient applicability",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Order-set macros are not automatically equivalent to a patient-specific standing order."
+  },
+  {
+    "id": "ca-title22-70263-standing-dated",
+    "title": "Patient-specific standing orders are dated",
+    "citation": "22 CCR §70263(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "A copy of standing orders for a specific patient shall be dated",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Date each patient-specific copy of standing drug orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-specific standing-order copy with date metadata",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This duty concerns the specific patient copy, not merely the master template revision date."
+  },
+  {
+    "id": "ca-title22-70263-standing-signed",
+    "title": "Promptly sign patient-specific standing orders",
+    "citation": "22 CCR §70263(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "promptly signed by the prescriber",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require prompt prescriber signature on the patient-specific standing drug orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-specific standing-order prescriber signature lifecycle",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Committee approval of the template does not replace this signature."
+  },
+  {
+    "id": "ca-title22-70263-standing-in-record",
+    "title": "Put patient-specific standing orders in the record",
+    "citation": "22 CCR §70263(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "included in the patient's medical record.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Include the patient-specific standing drug-order copy in that patient medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Persist patient-specific standing orders with chart linkage",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Keeping an order-set template in a UI catalog does not establish patient-record inclusion."
+  },
+  {
+    "id": "ca-title22-70263-standing-annual-review",
+    "title": "Review standing orders at least annually",
+    "citation": "22 CCR §70263(h)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "be reviewed at least annually by that committee.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Require pharmacy and therapeutics committee or equivalent review of standing drug orders at least annually.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Governed standing-order template version approval and annual review",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. docs/regulations.md F7 discusses the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-duration-policy",
+    "title": "Apply hospital policies limiting drug therapy duration",
+    "citation": "22 CCR §70263(j)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "policies limiting the duration of drug therapy",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Apply the hospital approved duration limits when the prescriber does not specify therapy duration or other approved policy circumstances apply.",
+    "specMapping": {
+      "element": "duration",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Approved class/drug-specific duration policy and order evaluation",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is a hospital policy duty, not a universal mandate to manually enter duration. v1 requires duration on order lines but has no policy engine. docs/regulations.md E3, C10 and R2-06 already discuss this rule."
+  },
+  {
+    "id": "ca-title22-70263-bedside-order",
+    "title": "Bedside medications require a prescriber order",
+    "citation": "22 CCR §70263(l)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "Medications shall not be left at the patient's bedside unless the prescriber so orders.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require a prescriber order before authorizing medication storage at the bedside.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Bedside-storage authorization tied to medication order",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is not permission to self-administer without additional safeguards. Parent scope is discussed in docs/regulations.md R2-21."
+  },
+  {
+    "id": "ca-title22-70263-bedside-controlled-ban",
+    "title": "Do not leave Schedule II–IV drugs at bedside",
+    "citation": "22 CCR §70263(l)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "Drugs shall not be left at the bedside which are listed in Schedules II, III and IV",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Block bedside-storage authorization for Schedule II, III and IV drugs.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "requested bedside storage of Schedule II–IV drug",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-schedule-aware bedside-storage authorization constraint",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 has no bedside-storage authorization. This is not a blanket ban on inpatient administration of these medicines. docs/regulations.md R2-21 covers the parent rule."
+  },
+  {
+    "id": "ca-title22-70263-home-drug-order",
+    "title": "Brought-in medicines require a recorded order",
+    "citation": "22 CCR §70263(m)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "The drugs have been ordered by a person lawfully authorized to give such an order and the order entered in the patient's medical record.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "review",
+    "proposedRule": "Before administering a patient-brought medication, require an authorized order entered in the medical record.",
+    "specMapping": {
+      "element": null,
+      "info": "marDoseDetails",
+      "when": "patient-brought medication",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Medication provenance and linked authorized order presence check",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The selected medication details alone do not establish provenance or a valid order. docs/regulations.md R2-21 discusses this parent requirement."
+  },
+  {
+    "id": "ca-title22-70263-home-drug-label",
+    "title": "Brought-in medication containers must be labeled",
+    "citation": "22 CCR §70263(m)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "The medication containers are clearly and properly labeled.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Verify clear and proper labeling of a patient-brought medication container before use.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient-brought medication",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-brought medicine container-label verification",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A wristband or commercial medication barcode scan does not establish that this container is properly labeled. Parent rule appears in docs/regulations.md R2-21."
+  },
+  {
+    "id": "ca-title22-70263-home-drug-identify",
+    "title": "Physician or pharmacist identifies brought-in medicines",
+    "citation": "22 CCR §70263(m)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70263",
+    "quote": "positively identified, after arrival at the hospital, by the patient's physician or the hospital pharmacist.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "review",
+    "proposedRule": "Before administering patient-brought medication, require examination and positive identification of container contents after arrival by the patient physician or hospital pharmacist.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient-brought medication",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Attributable physician/pharmacist post-arrival identification record and pharmacist role",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A nurse acknowledgment cannot stand in for the specified physician/pharmacist examination. Parent rule appears in docs/regulations.md R2-21."
   }
 ]
