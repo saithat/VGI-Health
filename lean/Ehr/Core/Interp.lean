@@ -116,6 +116,18 @@ def clickCommit (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
       else (s, .blocked "alert")
   else (s, .blocked (guardReason sp prog facts user s c))
 
+/-- Open the clicked alert's first pending popup candidate. Passive alerts,
+unknown/nonfiring alerts and already-acknowledged keys do not open. This never
+acknowledges anything; removable alerts still require the program's popup opt-in. -/
+def clickAlert (sp : Spec) (prog : Program) (facts : Facts) (s : State)
+    (a : AlertId) : State × StepResult :=
+  match sp.alert? a with
+  | none => (s, .ignored)
+  | some al =>
+    match (popupCandidates sp prog facts s al.commit).find? (·.1 == a) with
+    | none => (s, .ignored)
+    | some p => ({ s with popup? := some p }, .ok)
+
 /-- Mark an info reviewed (human only): only while it is shown on the current
 screen. Adds a receipt with the current data version, time, role, and user. -/
 def markReviewed (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
@@ -175,11 +187,10 @@ may not start another macro. -/
 def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (c : Component) : State × StepResult :=
   match c.kind with
-  -- Inline alerts are informational. Acknowledgment is exclusively the
-  -- human `ack` event for the current popup; clicking cannot override it.
-  | .alert _ _ =>
+  -- Opening an alert never acknowledges it.
+  | .alert a _ =>
     match actor with
-    | .human => (s, .ignored)
+    | .human => clickAlert sp prog facts s a
     | .«macro» => (s, .blocked "human only: acknowledge")
   | .button (.goto t) => goTo sp prog facts s t
   | .button .back => goBack sp prog facts s

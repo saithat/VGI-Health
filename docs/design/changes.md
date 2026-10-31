@@ -295,3 +295,30 @@ property/spec rule or theorem statement changed. Core guards cover heavy-teen
 caps, ordinary ranges, missing weight, typed JSON round trips and service-order
 prior-auth requests without spurious drug alerts. HANDOFF-sim.md is absent on
 main at the fetched revision; the orchestrator's explicit requests were used.
+
+## Core requests: full GenTS render and schedule exports
+
+GenTS now collects Ehr.Render.Types alongside Core.Types/Json: Display and its
+rows, Html/Attr/Tag/Cls, read-only/part types, wire PageNode/PageAttr, FactsContext,
+FactsOutput and RenderInput. Task and DaySchedule were already exported from
+Core.Json and remain included. Generation fails if key public types disappear
+or two namespaces produce the same TypeScript name. Samples add real Lean JSON
+for Display, PageNode, RenderInput, FactsContext and FactsOutput; tsc checks the
+boundary representation alongside the existing Task/DaySchedule samples.
+
+No runtime semantics, properties, or theorem statements changed. GenTS and
+Samples are the necessary generator files outside Core; outputs are regenerated,
+never hand-edited.
+
+## Consolidated content follow-up: human alert clicks open pending alerts
+
+The consolidated checker request file includes content's more specific request
+that human clicks open firing alerts. This supersedes item 2's informational
+human-click choice: `clickAlert` opens the clicked alert's first pending popup
+candidate and never acknowledges it. Passive/unknown/nonfiring/acked alerts
+remain ignored. Removable alerts retain their program popup opt-in. Macros are
+still blocked; the view enables precisely clicks that open a pending alert.
+
+Minimal proof compatibility: T0 uses clickAlert_commits and Alerts uses
+clickAlert_popup. Existing A2/A4 statements and safety rules are unchanged.
+Core guards exercise public clicks, unchanged acks and ignored cases.

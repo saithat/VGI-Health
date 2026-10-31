@@ -178,8 +178,9 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
 - **CR-1 resolved:** `currentLineComplete` guards `newOrderLine` for humans
   and macros. Checker may replace its blanket rejection with this hard-stop
   semantics. No new action/event was needed.
-- **Alert clicks resolved:** human inline clicks are informational (`ignored`),
-  macro clicks are `blocked "human only: acknowledge"`. Only a human matching
+- **Alert clicks resolved:** human clicks open the clicked alert's first pending
+  popup candidate, never acknowledging it; passive alerts remain inline. Macro
+  clicks are `blocked "human only: acknowledge"`. Only a human matching
   `ack` on the current popup acknowledges it; removed inline alerts do not
   disable spec interruptive alerts.
 - **CR-2:** retain checker's conservative `unlessReceipt` pin rule. Core
