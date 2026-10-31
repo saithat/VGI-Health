@@ -112,6 +112,8 @@ structure ElementSpec where
   humanOnly : Bool := false
   /-- The element this one is copied from, for `autoLinked`. -/
   linkedFrom? : Option ElementId := none
+  /-- The sole named record fact a fromRecord prefill may use. None forbids it. -/
+  recordFact? : Option String := none
   /-- Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`. -/
   fhirTarget : String
   deriving DecidableEq, Repr, Inhabited
@@ -144,6 +146,10 @@ inductive When
   | highAlertMed
   /-- The patient has an abnormal result. -/
   | abnormalResult
+  /-- Episode encounter kind, e.g. "preop" (not a historical encounter). -/
+  | encounter (kind : String)
+  /-- Some order drug has a nonzero weight-based dose range. -/
+  | weightBased
   /-- Naloxone should be offered (CA B&P Code §741): some order line's drug is
   an opioid, and the patient takes a benzodiazepine or the line's daily MME is
   90 or more (an unknown dose, frequency, or MME factor counts as a risk). -/
@@ -209,7 +215,8 @@ structure AlertSpec where
   tier : Tier
   /-- The commit this alert concerns. -/
   commit : CommitId
-  /-- Screens where a passive alert must be shown inline. -/
+  /-- Workflow tags whose screens must show this passive alert inline.
+  These are Screen.workflow values, never program-specific screen IDs. -/
   screens : List String := []
   deriving DecidableEq, Repr, Inhabited
 
@@ -382,6 +389,8 @@ structure DrugInfo where
   /-- Usual dose range in tenths of mg per kg (`0`/`0` = no weight-based range). -/
   minMgPerKgTenths : Nat
   maxMgPerKgTenths : Nat
+  /-- Absolute per-dose maximum in tenths of mg; 0 means no cap specified. -/
+  maxDoseMgTenths : Nat := 0
   highAlert : Bool
   /-- Classes this drug interacts with. -/
   interactsWith : List String
@@ -429,6 +438,8 @@ structure Facts where
   /-- Other record values a field may prefill from, by name
   (e.g. `("visitDiagnosis", "J18.9")`). -/
   record : List (String × String) := []
+  /-- Kind of this episode, e.g. "preop". Absent means no encounter-kind match. -/
+  encounterKind? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -620,14 +631,34 @@ inductive Workflow
   | W1 | W2 | W3 | W4 | W5 | W6 | W7
   deriving DecidableEq, Repr, Inhabited
 
+/-- Kind of order. Imaging and procedures use a service code, not a drug name. -/
+inductive OrderKind
+  | medication | imaging | procedure
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Surgical workflow step for this task. -/
+inductive W6Step
+  | consult | preop | postop | rounding | discharge
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A clinical decision, fixed per scenario (independent of the UI). -/
 structure OrderChoice where
   /-- Formulary name (lowercase generic), e.g. `"amoxicillin"`. -/
   drug : String
+  /-- Omitted means medication for compatibility with existing schedules. -/
+  kind? : Option OrderKind := none
+  /-- Service code (e.g. CPT) for imaging/procedure; drug is empty in that case. -/
+  code? : Option String := none
   doseTenths : Nat
   unit : UnitKind
   route : String
   freq : String
+  /-- Days supplied for this prescription. -/
+  supplyDays? : Option Nat := none
+  /-- Documented CURES exemption reason, if applicable to this prescription. -/
+  curesExemptReason? : Option String := none
+  /-- Reason this administration is held or refused. -/
+  holdReason? : Option String := none
   indication? : Option String := none
   prn : Bool := false
   deriving DecidableEq, Repr, Inhabited
@@ -648,6 +679,12 @@ structure TaskChoices where
   immunizations : List String := []
   /-- Documentation sections to complete. -/
   noteSections : List String := []
+  /-- Pain score for this task (0-10). -/
+  painScore? : Option Nat := none
+  /-- W6 stage; independent of free-text documentation. -/
+  w6Step? : Option W6Step := none
+  /-- Reason for a refill denial or modification. -/
+  refillReason? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Persona behavior (not clinical choices). -/

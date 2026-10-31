@@ -45,6 +45,16 @@ def infoShown (sp : Spec) (prog : Program) (facts : Facts) (s : State) (i : Info
   let comps := prog.compsOf s.screen
   comps.any fun c => showsInfo i c.kind && layoutShown sp facts s comps c
 
+/-- The drug has a weight-based dose range in the formulary. -/
+def weightBasedDrug (d : String) : Bool :=
+  match lookupDrug d with
+  | some di => 0 < di.maxMgPerKgTenths
+  | none => false
+
+/-- A passive-alert target is a workflow, so renaming a screen does not evade it. -/
+def AlertSpec.targetsScreen (a : AlertSpec) (sc : Screen) : Bool :=
+  a.screens.contains sc.workflow
+
 /-- A `When` condition holds now. -/
 def whenHolds (facts : Facts) (s : State) : When → Bool
   | .always => true
@@ -55,6 +65,8 @@ def whenHolds (facts : Facts) (s : State) : When → Bool
     | none => false
   | .highAlertMed => (drugsInPlay facts s).any isHighAlert
   | .abnormalResult => facts.abnormalResult
+  | .encounter kind => facts.encounterKind? == some kind
+  | .weightBased => (orderLines s).any (fun p => weightBasedDrug p.2)
   | .naloxoneRisk => (orderLines s).any (fun p => naloxoneLine facts s p.1 p.2)
 
 /-- A `When` condition holds for one order line (slot, drug `d`), used by
@@ -69,6 +81,8 @@ def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String)
     | none => false
   | .highAlertMed => isHighAlert d
   | .abnormalResult => facts.abnormalResult
+  | .encounter kind => facts.encounterKind? == some kind
+  | .weightBased => weightBasedDrug d
   | .naloxoneRisk => naloxoneLine facts s slot d
 
 /-- A captured value meets a requirement for element `el`: confirmed, valid,

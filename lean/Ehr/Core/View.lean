@@ -22,6 +22,10 @@ def capturedAt? (s : State) (e : ElementId) (n : Nat) : Option Captured :=
 def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : Component) : Option (Option String) :=
   match c.kind with
+  | .alert a _ =>
+    match (clickAlert sp prog facts s a).2 with
+    | .ok => some none
+    | _ => none
   | .button (.goto t) => some (if (prog.screen? t).isSome then none else some "unknown screen")
   | .button .back => some (if s.history.isEmpty then some "no previous screen" else none)
   | .button (.commit cm) =>
@@ -30,13 +34,16 @@ def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           else some (guardReason sp prog facts user s cm))
   | .button (.markReviewed i) =>
     some (if infoShown sp prog facts s i then none else some s!"{i} is not shown")
-  | .button .newOrderLine => some none
+  | .button .newOrderLine =>
+    some (if currentLineComplete sp facts user s then none else some "finish this order line first")
   | .button .requestPriorAuth =>
     some (match sp.element? priorAuthElement with
           | none => some s!"unknown element {priorAuthElement}"
           | some el =>
             if !el.enteredBy.contains user.role then some s!"role: {user.role.name} may not enter {priorAuthElement}"
-            else if !(orderLines s).any (·.1 == s.currentSlot) then some "no order on this line"
+            else if !hasOrderAt s s.currentSlot then some "no order on this line"
+            else if priorAuthCaptured s then some "already captured"
+            else if needsHuman el || el.prefill == .never then some s!"human entry required: {priorAuthElement}"
             else none)
   | .field e _ _ =>
     some (match sp.element? e with
