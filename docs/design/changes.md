@@ -169,3 +169,13 @@ Several were made stricter; those are marked **(stricter)**.
    hydrocodone-acetaminophen, tramadol, lorazepam, alprazolam. Reference data,
    not clinical advice.
 4. `lineMatches` now takes the state and slot (needed for the per-line MME).
+
+## Proofs (M4)
+
+1. `parseTenths` and `freqPerDay` are written over character lists with
+   structural recursion (same behavior as before). *Why:* `String.splitOn` and
+   `String.toLower` do not reduce in the kernel, and the proofs' `example`s
+   evaluate the real interpreter with `decide` (no `native_decide`).
+2. A4 is stated with the alert rule looked up by ID (`sp.alert? a`). If a spec
+   had two alert rules with the same ID, the theorem speaks about the first.
+   The checker's well-formedness check should require unique alert IDs.
