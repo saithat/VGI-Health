@@ -37,6 +37,8 @@ def child : Facts := { adult with
 def hospital : Facts := { adult with
   weightToday? := some (700, .kg)
   currentMedClasses := [], careGaps := [] }
+/-- Pre-op context scopes consent, H&P and anticoagulant requirements. -/
+def preOpFacts : Facts := { hospital with encounterKind? := some "preop" }
 /-- Run actual human events from init. -/
 def run (es : List Event) (p : Program := canonicalV1) (f : Facts := adult)
     (u : User := physician) (sp : Spec := specV1) : State :=
@@ -186,6 +188,8 @@ def w5 : State := run w5Path (f := child) (u := np)
 def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (u := np))
   ([.click "w5Sign.next"] ++ enter "w5Immunizations"
     [("vaccine", .code "150"), ("vaccineLot", .text "FLU24-0931"),
+     ("vaccineManufacturer", .text "Synthetic vaccine manufacturer"),
+     ("vaccineProvider", .text "np1"), ("visEditionDate", .text "2025-08-29"),
      ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)])
   (f := child) (u := np)
 #guard (finish vaccineState "w5Immunizations" "recordImmunization" (f := child) (u := np)).commits.contains "recordImmunization"
@@ -217,8 +221,8 @@ def preOpPath : List Event :=
   enter "w6Sign" [("weight", .qty 700 .kg), ("dosingWeight", .qty 700 .kg),
     ("patientIdReentry", .text "RK/M/58")]
 /-- Pre-op signing state. -/
-def preOp : State := run preOpPath (f := hospital) (u := surgeon)
-#guard (finish preOp "w6Sign" "signPreOpOrders" (f := hospital) (u := surgeon)).commits == ["signPreOpOrders"]
+def preOp : State := run preOpPath (f := preOpFacts) (u := surgeon)
+#guard (finish preOp "w6Sign" "signOrders" (f := preOpFacts) (u := surgeon)).commits == ["signOrders"]
 /-- W6 operative note from a template, confirmed by its author. -/
 def opNote : State := run
   ([.click "home.work.w6OpNote", .click "w6OpNote.template"] ++

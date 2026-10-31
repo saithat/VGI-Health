@@ -19,3 +19,7 @@ name = "Statements"
 
 [[lean_lib]]
 name = "Solution"
+
+[[lean_exe]]
+name = "export-content"
+root = "Ehr.Tools.ExportContent"

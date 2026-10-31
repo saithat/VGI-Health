@@ -23,3 +23,4 @@ import Ehr.Canonical.Program
 import Ehr.Render
 import Ehr.Core.Tests
 import Ehr.Canonical.BadTests
+import Ehr.Canonical.ReleaseTests

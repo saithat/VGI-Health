@@ -95,6 +95,7 @@ are accepted; spec-level alert IDs must remain unique.
 
 The v1 catalog blocks the action, so this does not affect canonical v1.
 
+
 ---
 
 
@@ -142,6 +143,7 @@ After merging origin/lane/content, programs/canonical/v1.json is absent.
 Please export the compiled Ehr.Canonical.canonicalV1 there, plus spec v1 JSON.
 The render CLI accepts --spec v1 --program canonical for the same compiled
 values, and also accepts file paths for testing the exported wire values.
+
 # Content lane requests and integration status
 
 These requests preserve BRIEF 5a's scope and safety rules. Content does not edit Core.
@@ -150,24 +152,27 @@ These requests preserve BRIEF 5a's scope and safety rules. Content does not edit
   an incomplete current drug line. Fixed rows 10+ still let humans confirm
   every order-set value. An explicit earlier-line selector would improve editing
   and recovery, but is not needed to complete the canonical paths.
-- **CR-2 — `ElementSpec.recordFact? : Option String`: pending.** A
-  `recordConfirm` prefill must use its declared fact. `weight` declares
-  `weightToday`, never `weightYesterday`. Seed 6 otherwise accepts yesterday's
-  kg value after confirm. Reject wrong sources generically at prefill and
-  certification; do not special-case a seed. Core must retain unit checks.
-- **CR-3 — `When.encounter "preop"`: pending.** Scope consent, H&P update,
-  meds-to-hold and anticoagulant review to pre-op `signOrders`. The separate
-  `signPreOpOrders` compatibility commit currently duplicates signing rules.
-  Consent before pre-op orders is our stricter policy, not the legal deadline.
-- **CR-4 — `When.weightBased`: pending.** Scope dose-check review to orders
-  whose formulary drug has a mg/kg range. The current `.always` is a stricter
-  temporary workaround. Do not weaken kg validation or dose checking.
-- **CR-5 — alert click semantics: pending.** A human click should open a firing
-  alert, never acknowledge it implicitly; a macro must not acknowledge or
-  override. Seeds 4/9 cover unsafe macro attempts. Current alert clicks are ignored.
-- **CR-6 — passive alert placement.** `AlertSpec.screens` names canonical screen
-  IDs. Workflow-level placement would survive redesigns better; checker lane
-  should preserve the declared placement until the model supports this.
+- **CR-2 — record source: integrated (`8c7b3fe`).** `recordFact?` is the sole
+  permitted record source. Canonical weight declares `weightToday`; seed 6
+  uses `weightYesterday` and now fails a generic structural source check and
+  captures nothing at runtime. The kg requirement and unit checks remain.
+- **CR-3 — encounter scope: integrated (`8c7b3fe`).** Consent, H&P update,
+  meds-to-hold and anticoagulant review now apply to `signOrders` when
+  `Facts.encounterKind? = some "preop"`. The temporary separate
+  `signPreOpOrders` commit and its duplicate alerts have been retired. The
+  W6 pre-op path now tests ordinary signing; no workflow or safety step was
+  removed. World/app callers must supply the true encounter kind.
+- **CR-4 — weight-based scope: integrated (`8c7b3fe`).** `doseCheck` is required
+  on signing only for drugs with a mg/kg range. Tests show a hidden dose check
+  blocks lisinopril and does not block metformin (which has no range).
+- **CR-5 — alert click semantics: integrated (`febb477`).** Human inline
+  clicks remain informational/ignored. Macro inline clicks now block with
+  `human only: acknowledge`. Only a human ack of the open popup acknowledges.
+  Seeds 4/9 cover unsafe macro attempts; core covers the click behavior.
+- **CR-6 — passive alert placement: integrated (`8c7b3fe`).** Targets are now
+  workflow tags. Canonical adds each passive alert inline on every screen of
+  its targeted workflow. A generic guard checks this coverage. Screen renaming
+  can no longer evade the target. Checker must use workflow targets.
 - **CR-7 — enter-once scope.** Count an element once per workflow path, or
   ignore an already-captured value. The same `drug` binding across W1/W3/W5/W6
   is intentional; it is not a repeated prompt within one episode.
@@ -183,7 +188,46 @@ made every scheduled order in the canonical sets unsignable. This does not
 remove either entry requirement or any human confirmation. Consent, VIS,
 protocol checks and education remain checked flags.
 
-## Core implementation status and integration requests (Oct 31)
+## Release integration requests (other lanes)
+
+- **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
+  v1.1 declares optional `orderKind` and `orderCode` fields. W1 service ordering
+  and W6 pre-op now request prior auth for imaging/procedure slots without a
+  drug. A test requests imaging code 70551 and checks no drug alerts fire.
+- **CR-10 — antibiotic indication data rows (render/app/world).** Content now
+  declares element/info `abxIndication`, the per-line coded value written to
+  `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
+  each captured antibiotic line's indication in the sign summary, and the
+  active medication's indication from the FHIR order on the MAR. Test facts
+  use `Facts.record[("abxIndication", "surgical-prophylaxis")]`. Show the
+  actual value, not just a heading. Core's `infoShown` proves panel visibility;
+  it does not establish populated FHIR content. Preserve T11 fidelity.
+- **CR-11 — coded terminology membership (core/check).** `ValueKind.coded`
+  currently accepts any nonempty code. `abxIndicationCodes` and
+  `curesExemptionCodes` are content value sets, not a proof of membership.
+  For full terminology enforcement, provide a generic spec value-set mapping
+  and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+- **CR-12 — agent prior-auth action schema (agent).** The real exported
+  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
+  `requestPriorAuth` action. The shared-composer and service request buttons fail at
+  their `components[*].kind` action. Add the real constructor to the
+  action schema (and the `priorAuth` kind to the known union if desired), then
+  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  fields. This was found with actual exports; the existing 31 agent tests pass.
+- **CR-13 — pre-op encounter context (world/app/sim).** Set
+  `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
+  during pre-op ordering. Core passes `FactsContext.encounterKind` through
+  FHIR projection. Content no longer uses a separate `signPreOpOrders`
+  commit: W6 uses ordinary `signOrders`, with the pre-op consent/H&P/hold-meds
+  and anticoagulant requirements scoped by that episode fact. Test both
+  incomplete pre-op rejection and ordinary post-op success. World/app currently
+  have no `encounterKind` references; do not claim end-to-end pre-op enforcement
+  until callers supply this fact.
+
+
+## Core integration notes (historical checker request numbers above)
+
 
 The core queue is landing on `lane/lean-core`, one commit per item. See
 `docs/design/changes.md` for the full semantics and compatibility list.
@@ -224,6 +268,30 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
 
+## Content response to checker acceptance requests
+
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.
 ## World integration status
 
 Core fb1ed8c supplies the requested typed fields, service order kinds and generic
@@ -281,3 +349,37 @@ errors (including Emscripten's fetch implementation). Please ignore
 checks unchanged. `pnpm --filter app lint --ignore-pattern 'public/ehr/**'`
 passes; app build and all unit tests also pass. Render cannot edit app-owned
 configuration. Installed assets are retained for actual runtime verification.
+
+## New BRIEF value-constraint request (content → core)
+
+**Schedule II zero refills (21 CFR 1306.12; new BRIEF requirement): pending core.**
+Please add a generic per-order-line value constraint usable by EntryReq (e.g.
+`constraint? = zeroQuantity`) and enforce it in guard/entry validation. Content
+will require zero refills on `signOrders` only when `.orderClass "controlled-II"`.
+Also tag actual Schedule II formulary drugs with `controlled-II`; the existing
+controlled-II-IV tag includes tramadol and benzodiazepines and cannot safely
+stand in for Schedule II. Do not force all prescriptions to zero refills.
+Seed 16 and its hard-stop regression will integrate this generic constraint.
+This cannot be implemented faithfully in content alone with the current core
+EntryReq/ValueKind types.
+
+**Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
+never-policy human request field and preserving the policy. Tests check that
+convenience clicks neither forge nor overwrite the human capture.
+
+## New BRIEF immunization integration
+
+Content now requires `visEditionDate`, `vaccineManufacturer`, and
+`vaccineProvider` as well as the existing vaccine, lot, route/site and VIS flag.
+The W5 UI exposes all fields and its interpreter test records them. World/sim
+and FHIR write adapters must supply the actual vaccine inventory manufacturer,
+administering provider and VIS edition date. The entry guard establishes their
+capture, not actual prior delivery of the VIS or full statutory record content.
+
+## World regression from core albuterol-cap merge
+
+`pnpm --filter world test` now runs 92 tests: 91 pass, one fails in
+`world/test/synthea.test.ts:114`. Lean albuterol `maxDoseMgTenths = 50`, while
+world's FORMULARY still gives `maxDoseTenths = 0`. Synchronize the TS reference
+to the already-requested 5 mg absolute cap; do not weaken the assertion or
+remove the cap. World typecheck and lint pass. Content did not edit world files.

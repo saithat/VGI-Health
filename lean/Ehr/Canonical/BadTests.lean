@@ -90,7 +90,7 @@ def interactionPath : List Event := (w3Path .kg).map fun e => match e with
 /-- Macro override attempt. -/
 def overrideAttempt : State × StepResult := one (run interactionPath (p := Bad.macroOverride) (f := interactionFacts))
   (.click "w3Sign.override") (p := Bad.macroOverride) (f := interactionFacts)
-#guard reason overrideAttempt.2 != ""
+#guard reason overrideAttempt.2 == "macro stopped at step 0: human only: acknowledge"
 #guard overrideAttempt.1.commits == []
 #guard !(overrideAttempt.1.acked.any (·.1 == "interactionOrder"))
 #guard (one overrideAttempt.1 (.click "w3Sign.commit.signOrders")
@@ -106,14 +106,18 @@ def badCosign : State := run (adminPath "insulin lispro") (p := Bad.selfCosign)
 #guard reason (one badCosign (.enter "w4Admin.highAlertCosign" (.user "nurse1"))
   (p := Bad.selfCosign) (f := adminFacts "insulin lispro") (u := nurse)).2 ==
   "cosign must be a different user: highAlertCosign"
--- 6: generic record-source rejection is tested after the core recordFact change.
+-- 6: yesterday's kg value is rejected generically by the declared record source.
+#guard !recordSourcesValid specV1 Bad.staleWeight
+#guard cap (run [.click "home.work.w5Rooming", .confirm "w5Rooming.weight"]
+  (p := Bad.staleWeight) (f := child) (u := np)) "weight" == none
+#guard recordSourcesValid specV1 canonicalV1
 -- 7: the only refill commit screen is unreachable from the entrypoint.
 #guard !(reachable Bad.unreachableRefill "home").contains "w7Decision"
 -- 8: the macro cannot enter consent; removing anticoagulants independently blocks.
 #guard (more (run [.click "home.work.w6PreOp"] (p := Bad.forgedConsent) (f := hospital) (u := surgeon))
   [.click "w6PreOp.autoConsent"] (p := Bad.forgedConsent) (f := hospital) (u := surgeon)).captured == []
-#guard reason (one (run preOpPath (p := Bad.forgedConsent) (f := hospital) (u := surgeon))
-  (.click "w6Sign.commit.signPreOpOrders") (p := Bad.forgedConsent) (f := hospital) (u := surgeon)).2 ==
+#guard reason (one (run preOpPath (p := Bad.forgedConsent) (f := preOpFacts) (u := surgeon))
+  (.click "w6Sign.commit.signOrders") (p := Bad.forgedConsent) (f := preOpFacts) (u := surgeon)).2 ==
   "review required: anticoagulantList must be shown"
 -- 9: spec-generated allergy popup survives removal of its UI component.
 /-- Penicillin allergy, with otherwise complete W1 inputs. -/
@@ -149,4 +153,44 @@ def naloxoneAttempt : State × StepResult := one
 #guard reason naloxoneAttempt.2 == "macro stopped at step 3: human only: naloxoneOffer"
 #guard cap naloxoneAttempt.1 "naloxoneOffer" == none
 #guard naloxoneAttempt.1.commits == []
+
+/-! Regression for replacing the old unconditional/pre-op-commit workarounds. -/
+/-- Consent cannot be bypassed by ordinary signing in a pre-op episode. -/
+def noConsent : State := run (preOpPath.filter fun e => match e with
+  | .enter "w6PreOp.consentVerified" _ => false | _ => true) (f := preOpFacts) (u := surgeon)
+#guard reason (one noConsent (.click "w6Sign.commit.signOrders") (f := preOpFacts) (u := surgeon)).2 ==
+  "entry required: consentVerified"
+#guard noConsent.commits == []
+-- Post-op signing does not require the pre-op consent prompt again.
+#guard (finish postOp "w6Sign" "signOrders" (f := hospital) (u := surgeon)).commits == ["signOrders"]
+/-- Hide dose check to test the requirement's precise weight-based scope. -/
+def noDoseCheck : Program := canonicalV1.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.doseCheck"
+/-- Metformin has no mg/kg range in the reference formulary. -/
+def metforminPath : List Event := w1Path.map fun e => match e with
+  | .click "w1Orders.prefLisinopril" => .click "w1Orders.prefMetformin" | _ => e
+#guard (finish (run metforminPath noDoseCheck) "w1Sign" "signOrders" noDoseCheck).commits == ["signOrders"]
+#guard reason (one (run w1Path noDoseCheck) (.click "w1Sign.commit.signOrders") noDoseCheck).2 ==
+  "review required: doseCheck must be shown"
+
+/-- Removing glucose from the administration screen blocks insulin. -/
+def hiddenGlucose : Program := canonicalV1.updateScreen "w4Admin" fun s => s.dropComp "w4Admin.glucose"
+#guard reason (one (run (adminPath "insulin lispro" ++
+  [.enter "w4Admin.highAlertCosign" (.user "nurse2")]) hiddenGlucose (adminFacts "insulin lispro") nurse)
+  (.click "w4Admin.commit.administerMed") hiddenGlucose (adminFacts "insulin lispro") nurse).2 ==
+  "review required: glucoseTrend must be shown"
+/-- PRN pain medication without a pain score cannot be administered. -/
+def missingPain : State := run ((adminPath "oxycodone").filter fun e => match e with
+  | .enter "w4Admin.painScore" _ => false | _ => true) (f := adminFacts "oxycodone") (u := nurse)
+#guard reason (one missingPain (.click "w4Admin.commit.administerMed")
+  (f := adminFacts "oxycodone") (u := nurse)).2 == "entry required: painScore"
+
+-- 15: EPCS signing details are no-receipt information, even with a CURES report.
+#guard reason (one (run (opioidPath) Bad.hiddenControlledDetails)
+  (.click "w1Sign.commit.signOrders") Bad.hiddenControlledDetails).2 ==
+  "review required: orderSummary must be shown"
+#guard (finish (run (opioidPath) Bad.hiddenControlledDetails) "w1Sign" "signOrders"
+  Bad.hiddenControlledDetails).commits == []
+-- 16: A generic constrained-refills runtime regression remains blocked on the
+-- core value-constraint request in changes-requests.md; no false passing test.
+
 end Ehr.Canonical.Tests

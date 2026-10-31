@@ -124,7 +124,7 @@ def formulary : List DrugInfo := [
     interactsWith := ["anticoagulant", "aceInhibitor", "glycopeptide"] },
   { name := "albuterol", rxnorm := ["435"]
     classes := ["betaAgonist", "bronchodilator"]
-    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := false
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, maxDoseMgTenths := 50, highAlert := false
     interactsWith := ["betaBlocker"] }
 ]
 
