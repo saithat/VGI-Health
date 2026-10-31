@@ -1,0 +1,395 @@
+{
+  "schemaVersion": 1,
+  "runId": "mock",
+  "night": 8,
+  "persona": "P3",
+  "owner": "P3",
+  "mode": "nightly",
+  "specVersion": "v2",
+  "versionBefore": 3,
+  "versionAfter": 4,
+  "backend": {
+    "name": "scripted",
+    "model": "MOCK-authored-fixture",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "fake",
+    "binary": null
+  },
+  "evidence": {
+    "persona": "P3",
+    "trainDays": [
+      1
+    ],
+    "programVersion": 3,
+    "totals": {
+      "tasks": 4,
+      "completed": 4,
+      "clicks": 40,
+      "keystrokes": 80,
+      "scrolls": 24,
+      "popups": 2,
+      "overrides": 1,
+      "searches": 2,
+      "backtracks": 1,
+      "klmDeciSec": 1000
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "normal",
+        "programVersion": 3,
+        "metrics": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 40,
+          "keystrokes": 80,
+          "scrolls": 24,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1000
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 90,
+      "keystrokes": 95,
+      "scrolls": 100,
+      "klmDeciSec": 93
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W4",
+        "tasks": 4,
+        "avgClicks": 10,
+        "avgKeystrokes": 20,
+        "avgScrolls": 6,
+        "avgKlmSec": 25
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "work",
+        "events": 18,
+        "klmSec": 60,
+        "share": 0.6
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [],
+    "buriedSearches": [],
+    "alertOverrides": [],
+    "totalOverrides": 1,
+    "backtracks": [],
+    "complaints": [
+      {
+        "text": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "count": 3
+      }
+    ],
+    "orderMix": []
+  },
+  "hypothesis": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "P3-8-safe",
+        "summary": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "moveType": "shortcut",
+        "rationale": "Medication passes repeatedly backtrack between the MAR and patient chart.",
+        "targets": [
+          "work",
+          "allergies"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "MAR · Medication administration · personalized"
+          }
+        ],
+        "predicted": {
+          "clicks": 8,
+          "keystrokes": 12,
+          "scrolls": 4,
+          "klmDeciSec": 180
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1
+        ],
+        "before": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 40,
+          "keystrokes": 80,
+          "scrolls": 24,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 1000
+        },
+        "after": {
+          "tasks": 4,
+          "completed": 4,
+          "clicks": 36,
+          "keystrokes": 80,
+          "scrolls": 20,
+          "popups": 2,
+          "overrides": 1,
+          "searches": 2,
+          "backtracks": 1,
+          "klmDeciSec": 920
+        },
+        "saving": {
+          "clicks": 4,
+          "keystrokes": 0,
+          "scrolls": 4,
+          "klmDeciSec": 80
+        }
+      },
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "P3-8-safe"
+    ],
+    "rationale": "Preserve safety steps and reduce navigation; reject the unsafe shortcut.",
+    "rejectedAlternatives": [],
+    "choiceBy": "loop-fallback"
+  },
+  "predicted": {
+    "clicks": 8,
+    "keystrokes": 12,
+    "scrolls": 4,
+    "klmDeciSec": 180
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidateIds": [
+          "P3-8-safe"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/1/title",
+            "value": "MAR · Medication administration · personalized"
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 9,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 54,
+          "keystrokes": 59,
+          "scrolls": 64,
+          "klmDeciSec": 57
+        },
+        "after": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "MOCK validation accepted; values are illustrative."
+  },
+  "measured": {
+    "validation": {
+      "day": 9,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 54,
+          "keystrokes": 59,
+          "scrolls": 64,
+          "klmDeciSec": 57
+        },
+        "after": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        }
+      }
+    },
+    "test": {
+      "day": 10,
+      "load": "busy",
+      "before": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 40,
+        "keystrokes": 80,
+        "scrolls": 24,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 1000
+      },
+      "after": {
+        "tasks": 4,
+        "completed": 4,
+        "clicks": 36,
+        "keystrokes": 80,
+        "scrolls": 20,
+        "popups": 2,
+        "overrides": 1,
+        "searches": 2,
+        "backtracks": 1,
+        "klmDeciSec": 920
+      },
+      "saving": {
+        "clicks": 4,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 80
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 54,
+          "keystrokes": 59,
+          "scrolls": 64,
+          "klmDeciSec": 57
+        },
+        "after": {
+          "clicks": 42,
+          "keystrokes": 47,
+          "scrolls": 52,
+          "klmDeciSec": 45
+        }
+      }
+    },
+    "minClicks": [
+      {
+        "workflow": "W4",
+        "before": 23,
+        "after": 6
+      }
+    ],
+    "predictionHeld": false,
+    "predictionNote": "Illustrative measured savings were below the prediction."
+  },
+  "userResponse": {
+    "response": "accepted",
+    "probability": 0.9,
+    "reason": "MOCK clinician accepted the focused workflow."
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "MOCK-spec-v2",
+    "programHash": "MOCK-P3-v4",
+    "verdict": "ok",
+    "checkerVersion": "MOCK-not-a-checker",
+    "time": "2026-10-31T12:00:00Z"
+  },
+  "deployed": {
+    "version": 4,
+    "program": "programs/P3/v4.json",
+    "certificate": "certs/P3/v4.json"
+  },
+  "outcome": "deployed",
+  "release": null,
+  "flags": [],
+  "llmCalls": [],
+  "createdAt": "2026-10-31T12:00:00Z"
+}
