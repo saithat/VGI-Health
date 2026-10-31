@@ -1923,5 +1923,965 @@
     "confidence": "high",
     "verified": true,
     "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
+  },
+  {
+    "id": "guidance-cdc-opioid-50-reassess",
+    "title": "Reassess at 50 MME",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 4, implementation considerations",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "≥50 MME/day",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Reassess benefits and risks before increasing to at least 50 MME/day.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "eligible-opioid-dose-increase-to-50-MME",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "All-source MME calculation, dose-change predicate and benefit/risk panel.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. R2-16 overlap; a guidepost, not a ceiling."
+  },
+  {
+    "id": "guidance-cdc-naloxone-50",
+    "title": "Offer naloxone at 50 MME",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendations 4 and 8",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "offer naloxone",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Offer naloxone when total opioid dosage reaches 50 MME/day.",
+    "specMapping": {
+      "element": "naloxoneOffer",
+      "info": null,
+      "when": "eligible-outpatient-opioid-total-MME>=50",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "CDC 50-MME predicate distinct from v1 naloxoneRisk.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. V1 uses 90 MME or concurrent benzodiazepine; broader trigger is new."
+  },
+  {
+    "id": "guidance-cdc-naloxone-overdose",
+    "title": "Offer naloxone after overdose",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 8, implementation considerations",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "history of overdose",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Offer naloxone to opioid recipients with prior overdose.",
+    "specMapping": {
+      "element": "naloxoneOffer",
+      "info": null,
+      "when": "eligible-opioid and prior-overdose",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Prior-overdose risk predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. No requirement that the patient purchase it."
+  },
+  {
+    "id": "guidance-cdc-naloxone-sleep",
+    "title": "Offer naloxone for sleep-breathing risk",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 8, implementation considerations",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "sleep-disordered breathing",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Offer naloxone to opioid recipients with sleep-disordered breathing.",
+    "specMapping": {
+      "element": "naloxoneOffer",
+      "info": null,
+      "when": "eligible-opioid and sleep-disordered-breathing",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Sleep-disordered-breathing risk predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. "
+  },
+  {
+    "id": "guidance-cdc-opioid-benzo",
+    "title": "Review concurrent benzodiazepine risk",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 11",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "particular caution",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Review benefits versus risks when opioids and benzodiazepines overlap.",
+    "specMapping": {
+      "element": null,
+      "info": "currentMeds",
+      "when": "eligible-opioid with benzodiazepine",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Overlap predicate and explicit benefit/risk review.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. Caution permits individualized co-prescribing; not an absolute prohibition."
+  },
+  {
+    "id": "guidance-cdc-pdmp-each",
+    "title": "Review PDMP before opioid prescriptions",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 9, implementation considerations",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "every opioid prescription",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Ideally review PDMP data before each opioid prescription.",
+    "specMapping": {
+      "element": null,
+      "info": "curesReport",
+      "when": "eligible-outpatient-opioid-prescription",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Opioid-specific PDMP trigger and practicability handling.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. Availability/access exceptions matter; v1 CURES trigger is different."
+  },
+  {
+    "id": "guidance-cdc-pdmp-quarterly",
+    "title": "Review long-term PDMP quarterly",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 9, implementation considerations",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "every 3 months",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "review",
+    "proposedRule": "Review PDMP at least every three months during long-term therapy.",
+    "specMapping": {
+      "element": null,
+      "info": "curesReport",
+      "when": "eligible-long-term-opioid-therapy",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Calendar-month review interval and longitudinal PDMP event.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. Do not encode three calendar months as a fixed 90-day receipt."
+  },
+  {
+    "id": "guidance-cdc-no-abrupt-taper",
+    "title": "Avoid abrupt opioid discontinuation",
+    "citation": "CDC Clinical Practice Guideline for Prescribing Opioids for Pain (2022), MMWR 71(RR-3); Recommendation 5",
+    "url": "https://www.cdc.gov/mmwr/volumes/71/rr/rr7103a1.htm",
+    "quote": "abruptly",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "design",
+    "proposedRule": "Avoid abrupt discontinuation unless a life-threatening issue warrants it.",
+    "specMapping": {
+      "element": "refillDecision",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Taper plan, current dose and clinical exception validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "CDC adult outpatient scope; exclusions in guidance.md. Automated refill denial must not silently force discontinuation."
+  },
+  {
+    "id": "guidance-cdc-abx-dose",
+    "title": "Capture antibiotic dose",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Assessment Tool, Action, p. 29",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "dose",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Document dose for each antibiotic prescription.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Assessment asks whether a facility policy requires this. V1 already requires the generic field on every order line; older v2-only narrative does not match the current V1 source."
+  },
+  {
+    "id": "guidance-cdc-abx-duration",
+    "title": "Capture antibiotic duration",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Assessment Tool, Action, p. 29",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "duration",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Document duration for each antibiotic prescription.",
+    "specMapping": {
+      "element": "duration",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Assessment asks whether a facility policy requires this. V1 already requires the generic field on every order line; older v2-only narrative does not match the current V1 source."
+  },
+  {
+    "id": "guidance-cdc-abx-indication",
+    "title": "Capture antibiotic indication",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Assessment Tool, Action, p. 29",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "indication",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Document indication for each antibiotic prescription.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Assessment asks whether a facility policy requires this. V1 already requires the generic field on every order line; older v2-only narrative does not match the current V1 source."
+  },
+  {
+    "id": "guidance-cdc-abx-timeout-narrow",
+    "title": "Reassess antibiotic spectrum",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Antibiotic timeouts, p. 19",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "narrowing the spectrum",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "At antibiotic timeout, reassess whether therapy can be narrowed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Timed antibiotic review task and reassessment decision.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Provider-led supplemental review; not a substitute for stewardship audit. Optimal timing is not established; 48–72 hours describes trial evidence, not a universal deadline."
+  },
+  {
+    "id": "guidance-cdc-abx-iv-oral",
+    "title": "Reassess antibiotic route",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Antibiotic timeouts, p. 19",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "intravenous to oral",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "At antibiotic timeout, reassess intravenous-to-oral conversion.",
+    "specMapping": {
+      "element": "route",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Antibiotic reassessment task and route-conversion eligibility.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Local protocol determines eligibility; the recommendation does not authorize automatic conversion of every IV antibiotic."
+  },
+  {
+    "id": "guidance-cdc-abx-renal-dose",
+    "title": "Adjust antibiotics for organ dysfunction",
+    "citation": "CDC Core Elements of Hospital Antibiotic Stewardship Programs (2019); Other interventions, p. 19",
+    "url": "https://www.cdc.gov/antibiotic-use/media/pdfs/hospital-core-elements-508.pdf",
+    "quote": "especially renal",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Adjust antibiotic dosing when organ dysfunction requires it.",
+    "specMapping": {
+      "element": null,
+      "info": "relevantLabs",
+      "when": "antibiotic and organ-dysfunction",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Renal/hepatic dosing rules and patient-specific eligibility.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Adjacent v1 relevantLabs panel is required only for refill decisions; no antibiotic renal-dose gate exists."
+  },
+  {
+    "id": "guidance-cdc-vaccine-site",
+    "title": "Record vaccine injection site",
+    "citation": "CDC/ACIP General Best Practice Guidelines, Vaccine Administration; Multiple Injections",
+    "url": "https://www.cdc.gov/vaccines/hcp/imz-best-practices/vaccine-administration.html",
+    "quote": "injection sites",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Document each vaccine injection site.",
+    "specMapping": {
+      "element": "vaccineSite",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Recommendation directly supports site capture, which the vaccine-record statute does not explicitly list. For multiple injections, retain per-vaccine correspondence."
+  },
+  {
+    "id": "guidance-cdc-vaccine-adverse-record",
+    "title": "Record post-vaccine adverse events",
+    "citation": "CDC/ACIP General Best Practice Guidelines, Vaccination Records, July 17, 2024; Records of Health Care Providers",
+    "url": "https://www.cdc.gov/vaccines/hcp/imz-best-practices/vaccination-records.html",
+    "quote": "adverse events",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Update permanent records with documented post-vaccination adverse events.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Longitudinal adverse-event update action.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Guidance recommendation, separate from statutory vaccine-record fields or VAERS duties."
+  },
+  {
+    "id": "guidance-cdc-vaccine-serology-record",
+    "title": "Record vaccine-related serology",
+    "citation": "CDC/ACIP General Best Practice Guidelines, Vaccination Records, July 17, 2024; Records of Health Care Providers",
+    "url": "https://www.cdc.gov/vaccines/hcp/imz-best-practices/vaccination-records.html",
+    "quote": "serologic test results",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "Update permanent records with vaccine-preventable-disease serology results.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Immunization record linkage to relevant serology.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Guidance recommendation; result acknowledgment alone does not update immunization evidence."
+  },
+  {
+    "id": "guidance-acip-catchup-interval",
+    "title": "Check catch-up vaccine intervals",
+    "citation": "CDC/ACIP Child Immunization Schedule Notes, 2025 edition, July 2, 2025; How to use the schedule, item 2",
+    "url": "https://www.cdc.gov/vaccines/hcp/imz-schedules/child-adolescent-notes.html",
+    "quote": "interval for catch-up",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "review",
+    "proposedRule": "Check the catch-up interval before recommending a delayed vaccine dose.",
+    "specMapping": {
+      "element": null,
+      "info": "immunizationHistory",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned vaccine-series interval calculation and validity rules.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Opened official page identifies itself as the 2025 schedule, not 2026. Pin this edition for the demo; v1 displays history/forecast but does not verify schedule calculations."
+  },
+  {
+    "id": "guidance-safer-allergy-synonyms",
+    "title": "Consolidate synonymous allergy terms",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 1.2, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "synonymous data elements",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Map synonymous allergen and reaction terms into consolidated picklists.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Coded allergy/reaction vocabularies and synonym normalization.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "New detail beyond R2-13 structured capture. Example source terms are dyspnea and shortness of breath."
+  },
+  {
+    "id": "guidance-safer-environmental-allergy",
+    "title": "Separate environmental allergens",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 1.2, p. 11",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "problem list",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Place environmental allergens in the problem list rather than drug allergies.",
+    "specMapping": {
+      "element": null,
+      "info": "problemList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Allergen category and storage-target validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to environmental allergens such as pollen; medication, contrast and latex allergies remain in the structured allergy workflow."
+  },
+  {
+    "id": "guidance-safer-alert-tiers",
+    "title": "Tier alerts by severity",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.2, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "tiered by severity",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Assign alert presentation tiers by clinical severity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 alert specifications and A1–A4 already preserve severity tiers. The mapping tier denotes its critical-alert implementation; passive lower-severity alerts also exist. Specific tier assignments are local policy."
+  },
+  {
+    "id": "guidance-safer-reverse-allergy",
+    "title": "Recheck drugs after allergy updates",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.2, p. 13",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "reverse checking",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Recheck all active medications when a new allergy is entered.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Allergy-update event and active-medication interaction evaluation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 checks drugAllergy at commits; it has no allergy-update action that triggers reverse checks. Interruptive tier is a proposed choice for clinically critical matches."
+  },
+  {
+    "id": "guidance-safer-visible-weight",
+    "title": "Show weight during ordering",
+    "citation": "ASTP/ONC 2025 SAFER Guide: CPOE with Decision Support; RP 2.3, p. 17",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
+    "quote": "weight",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Keep patient weight visible during order entry.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Order-entry phase visibility requirement, beyond commit-screen review.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 captures weight and shows doseCheck at signing; neither establishes weight visibility throughout order entry. Related to existing regulations.md E8/R3."
+  },
+  {
+    "id": "guidance-safer-result-escalation",
+    "title": "Escalate unacknowledged critical results",
+    "citation": "ASTP/ONC 2025 SAFER Guide: Test Results Reporting and Follow-Up; RP 2.5, p. 16",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "automatic escalation if there is no response",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2",
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "alert",
+    "proposedRule": "Escalate life-threatening result notifications if rapid acknowledgment is absent.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "interruptive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Notification acknowledgment, timeout and alternate-recipient routing.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Atomic component of R2-11. No numerical universal deadline is supplied here; escalation must run even when no user opens the result."
+  },
+  {
+    "id": "guidance-safer-result-normal-notify",
+    "title": "Notify patients of normal results",
+    "citation": "ASTP/ONC 2025 SAFER Guide: Test Results Reporting and Follow-Up; RP 3.4, p. 26",
+    "url": "https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf",
+    "quote": "both normal and abnormal",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "Ensure timely patient notification of normal results.",
+    "specMapping": {
+      "element": "patientMessage",
+      "info": null,
+      "when": "normal-result",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Normal-result notification requirement and delivery evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 requires patientMessage only for abnormalResult. Delivery/notification differs from typing text; do not turn an illustrative outside policy deadline into a universal SAFER limit."
   }
 ]
