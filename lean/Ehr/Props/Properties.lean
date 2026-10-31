@@ -34,6 +34,16 @@ open Ehr
 def CatalogOnly (spec : Spec) (prog : Program) : Prop :=
   ∀ sc ∈ allComps prog, kindName sc.2.kind ∈ spec.design.catalog
 
+instance (spec : Spec) (prog : Program) : Decidable (CatalogOnly spec prog) := by
+  unfold CatalogOnly; infer_instance
+
+/-- Screen IDs are unique, and component IDs are unique on each screen. -/
+def IdsUnique (prog : Program) : Prop :=
+  (prog.screens.map (·.id)).Nodup ∧ ∀ scr ∈ prog.screens, (scr.components.map (·.id)).Nodup
+
+instance (prog : Program) : Decidable (IdsUnique prog) := by
+  unfold IdsUnique; infer_instance
+
 /-- The program's references point at real things: the start screen exists;
 every "go to" button and macro "go to" step names a screen of the program;
 every macro button names a macro of the program; every alert component names
@@ -41,13 +51,15 @@ an alert of the spec; every parent is a group or tab container on the same
 screen. -/
 def ReferencesResolve (spec : Spec) (prog : Program) : Prop :=
   (prog.screen? prog.start).isSome ∧
-  (∀ sc ∈ allComps prog, ∀ t, sc.2.kind = .button (.goto t) → (prog.screen? t).isSome) ∧
-  (∀ m ∈ prog.macros, ∀ t, .goto t ∈ m.steps → (prog.screen? t).isSome) ∧
-  (∀ sc ∈ allComps prog, ∀ m, sc.2.kind = .«macro» m → (prog.macro? m).isSome) ∧
-  (∀ sc ∈ allComps prog, ∀ a pop, sc.2.kind = .alert a pop → (spec.alert? a).isSome) ∧
-  (∀ sc ∈ allComps prog, ∀ pid, sc.2.parent? = some pid →
-    ∃ par ∈ sc.1.components, par.id = pid ∧
-      (par.kind = .tabs ∨ ∃ coll start, par.kind = .group coll start))
+  (∀ sc ∈ allComps prog, ∀ t ∈ gotoOf? sc.2.kind, (prog.screen? t).isSome) ∧
+  (∀ m ∈ prog.macros, ∀ st ∈ m.steps, ∀ t ∈ gotoStep? st, (prog.screen? t).isSome) ∧
+  (∀ sc ∈ allComps prog, ∀ m ∈ macroOf? sc.2.kind, (prog.macro? m).isSome) ∧
+  (∀ sc ∈ allComps prog, ∀ a ∈ alertOf? sc.2.kind, (spec.alert? a.1).isSome) ∧
+  (∀ sc ∈ allComps prog, ∀ pid ∈ sc.2.parent?,
+    ∃ par ∈ sc.1.components, par.id = pid ∧ isContainer par.kind = true)
+
+instance (spec : Spec) (prog : Program) : Decidable (ReferencesResolve spec prog) := by
+  unfold ReferencesResolve; infer_instance
 
 /-- On every screen the user can reach, every landmark (e.g. the patient
 banner) is shown. -/
@@ -58,14 +70,14 @@ def LandmarksShown (ep : Episode) : Prop :=
 `maxDepth` "go to" clicks from the start screen. -/
 def RequiredWithinDepth (spec : Spec) (canonical prog : Program) : Prop :=
   ∀ c ∈ requiredCommits spec canonical prog, ∀ rq ∈ spec.entries, rq.commit = c →
-    ∃ sc ∈ allComps prog, (∃ slot pf, sc.2.kind = .field rq.element slot pf) ∧
+    ∃ sc ∈ allComps prog, (∃ f ∈ fieldOf? sc.2.kind, f.1 = rq.element) ∧
       WithinClicks prog spec.design.maxDepth sc.1.id
 
-/-- **Property 1, well-formed.** Catalog components only, references resolve,
-landmarks always shown, and every required element within the depth bound.
-Needs the checker. -/
+/-- **Property 1, well-formed.** Catalog components only, unique IDs,
+references resolve, landmarks always shown, and every required element within
+the depth bound. Needs the checker. -/
 def WellFormed (spec : Spec) (canonical prog : Program) : Prop :=
-  CatalogOnly spec prog ∧ ReferencesResolve spec prog ∧
+  CatalogOnly spec prog ∧ IdsUnique prog ∧ ReferencesResolve spec prog ∧
   RequiredWithinDepth spec canonical prog ∧
   ∀ facts user, user.role = prog.role → LandmarksShown ⟨spec, prog, facts, user⟩
 
@@ -92,9 +104,11 @@ def EnteredOnce (ep : Episode) : Prop :=
 linked from the visit diagnosis) copies the linked element, so the human
 never types it twice. Needs the checker. -/
 def LinkedNotRetyped (spec : Spec) (prog : Program) : Prop :=
-  ∀ sc ∈ allComps prog, ∀ e slot pf el, sc.2.kind = .field e slot pf →
-    spec.element? e = some el → el.prefill = .autoLinked →
-    ∃ src, el.linkedFrom? = some src ∧ pf = .linked src
+  ∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
+    el.prefill = .autoLinked → ∃ src ∈ el.linkedFrom?, f.2.2 = .linked src
+
+instance (spec : Spec) (prog : Program) : Decidable (LinkedNotRetyped spec prog) := by
+  unfold LinkedNotRetyped; infer_instance
 
 /-- **Property 2, captures all, once.** Every commit captures each required
 element (by construction), a confirmed value is never asked for again (by
@@ -112,11 +126,12 @@ enter; every commit button is for a commit of the spec that the role may
 perform; every "mark reviewed" button is for an info of the spec. Needs the
 checker. -/
 def DeclaredWritesInSpec (spec : Spec) (prog : Program) : Prop :=
-  (∀ sc ∈ allComps prog, ∀ e slot pf, sc.2.kind = .field e slot pf →
-    ∃ el, spec.element? e = some el ∧ prog.role ∈ el.enteredBy) ∧
-  (∀ sc ∈ allComps prog, ∀ c, sc.2.kind = .button (.commit c) →
-    ∃ cs, spec.commit? c = some cs ∧ prog.role ∈ cs.roles) ∧
-  (∀ sc ∈ allComps prog, ∀ i, sc.2.kind = .button (.markReviewed i) → (spec.info? i).isSome)
+  (∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∃ el ∈ spec.element? f.1, prog.role ∈ el.enteredBy) ∧
+  (∀ sc ∈ allComps prog, ∀ c ∈ commitOf? sc.2.kind, ∃ cs ∈ spec.commit? c, prog.role ∈ cs.roles) ∧
+  (∀ sc ∈ allComps prog, ∀ i ∈ reviewOf? sc.2.kind, (spec.info? i).isSome)
+
+instance (spec : Spec) (prog : Program) : Decidable (DeclaredWritesInSpec spec prog) := by
+  unfold DeclaredWritesInSpec; infer_instance
 
 /-- In every reachable state, everything the episode would write is allowed:
 each captured value is for a spec element the user's role may enter; each
@@ -192,14 +207,16 @@ def CosignIsSecondUser (ep : Episode) : Prop :=
 element a human must enter; no macro step types into such a field, clicks a
 commit, review, or macro button. Needs the checker. -/
 def NoAutomationAttempts (spec : Spec) (prog : Program) : Prop :=
-  (∀ sc ∈ allComps prog, ∀ e slot pf el, sc.2.kind = .field e slot pf →
-    spec.element? e = some el → HumanMustEnter el → pf = .none) ∧
+  (∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
+    HumanMustEnter el → f.2.2 = .none) ∧
   (∀ m ∈ prog.macros, ∀ st ∈ m.steps, ∀ sc ∈ allComps prog,
-    (∀ v, st = .setValue sc.2.id v → ∀ e slot pf el, sc.2.kind = .field e slot pf →
-      spec.element? e = some el → ¬ HumanMustEnter el) ∧
-    (st = .click sc.2.id →
-      (∀ c, sc.2.kind ≠ .button (.commit c)) ∧ (∀ i, sc.2.kind ≠ .button (.markReviewed i)) ∧
-      (∀ m', sc.2.kind ≠ .«macro» m')))
+    (setTarget? st = some sc.2.id →
+      ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1, ¬ HumanMustEnter el) ∧
+    (clickTarget? st = some sc.2.id →
+      commitOf? sc.2.kind = none ∧ reviewOf? sc.2.kind = none ∧ macroOf? sc.2.kind = none))
+
+instance (spec : Spec) (prog : Program) : Decidable (NoAutomationAttempts spec prog) := by
+  unfold NoAutomationAttempts; infer_instance
 
 /-- **Property 5, human-only kept.** Re-entry, scans, double checks, and
 acknowledgments are never prefilled, skipped, or automated by a macro, and a
@@ -246,8 +263,11 @@ which keeps the unit it was recorded in. Other record values are bare numbers
 with no unit or date (e.g. a weight in lb, or yesterday's weight), so they may
 not fill a quantity. Needs the checker. -/
 def QuantityPrefillsKeepUnits (spec : Spec) (prog : Program) : Prop :=
-  ∀ sc ∈ allComps prog, ∀ e slot f el u, sc.2.kind = .field e slot (.fromRecord f) →
-    spec.element? e = some el → el.kind = .quantity u → f = "weightToday"
+  ∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
+    isQuantity el.kind = true → ∀ fact ∈ recordFactOf? f.2.2, fact = "weightToday"
+
+instance (spec : Spec) (prog : Program) : Decidable (QuantityPrefillsKeepUnits spec prog) := by
+  unfold QuantityPrefillsKeepUnits; infer_instance
 
 /-- **Property 7, units.** Weight in kg only, and the dose check uses kg
 (the interpreter's dose check reads only kg weights). -/
@@ -271,6 +291,9 @@ checker. -/
 def StabilityBudget (spec : Spec) (prev : Option Program) (prog : Program) : Prop :=
   ∀ p, prev = some p → (movedTags p prog).length ≤ spec.design.stabilityBudget
 
+instance (spec : Spec) (prev : Option Program) (prog : Program) : Decidable (StabilityBudget spec prev prog) := by
+  unfold StabilityBudget; infer_instance
+
 /-- **Property 8, budgets.** -/
 def WithinBudgets (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
   AlertBudget canonical prog ∧ StabilityBudget spec prev prog
@@ -293,8 +316,11 @@ def PassiveShownInline (ep : Episode) : Prop :=
 
 /-- No macro step clicks or types into an alert component. Needs the checker. -/
 def NoAlertSuppression (prog : Program) : Prop :=
-  ∀ m ∈ prog.macros, ∀ st ∈ m.steps, ∀ sc ∈ allComps prog, ∀ a pop, sc.2.kind = .alert a pop →
-    st ≠ .click sc.2.id ∧ ∀ v, st ≠ .setValue sc.2.id v
+  ∀ m ∈ prog.macros, ∀ st ∈ m.steps, ∀ sc ∈ allComps prog,
+    (alertOf? sc.2.kind).isSome → stepTarget? st ≠ some sc.2.id
+
+instance (prog : Program) : Decidable (NoAlertSuppression prog) := by
+  unfold NoAlertSuppression; infer_instance
 
 /-- **Property 9 (A1), alerts fire when they should.** -/
 def AlertsFire (spec : Spec) (prog : Program) : Prop :=
@@ -316,8 +342,11 @@ Interruptive alerts pop up from the spec, when their condition holds, at their
 commit; a popup placed by the program would not be tied to that. (Passive
 alerts are property 12.) Needs the checker. -/
 def NoInterruptivePopupRequests (spec : Spec) (prog : Program) : Prop :=
-  ∀ sc ∈ allComps prog, ∀ a al, sc.2.kind = .alert a true → spec.alert? a = some al →
-    al.tier ≠ .interruptive
+  ∀ sc ∈ allComps prog, ∀ a ∈ alertOf? sc.2.kind, a.2 = true →
+    ∀ al ∈ spec.alert? a.1, al.tier ≠ .interruptive
+
+instance (spec : Spec) (prog : Program) : Decidable (NoInterruptivePopupRequests spec prog) := by
+  unfold NoInterruptivePopupRequests; infer_instance
 
 /-- **Property 10 (A2), no false alarms.** -/
 def NoFalseAlarms (spec : Spec) (prog : Program) : Prop :=
@@ -334,15 +363,19 @@ def InterruptsOnce (ep : Episode) : Prop :=
     (∀ p, s.popup? = some p → (ep.next actor s e).popup? = some p ∨ p ∈ (ep.next actor s e).acked)) ∧
   Always ep fun s => ∀ p, s.popup? = some p → p ∉ s.acked
 
-/-- The program never asks the same alert to pop up on two different screens.
-Needs the checker. -/
-def PopupRequestedOnce (prog : Program) : Prop :=
-  ∀ a, ∀ s1 ∈ prog.screens, ∀ s2 ∈ prog.screens,
-    PopupRequested s1 a → PopupRequested s2 a → s1.id = s2.id
+/-- The program never asks the same interruptive alert to pop up on two
+different screens. Needs the checker. -/
+def PopupRequestedOnce (spec : Spec) (prog : Program) : Prop :=
+  ∀ s1 ∈ allComps prog, ∀ s2 ∈ allComps prog, ∀ a1 ∈ alertOf? s1.2.kind, ∀ a2 ∈ alertOf? s2.2.kind,
+    a1.2 = true → a2.2 = true → a1.1 = a2.1 →
+    (∀ al ∈ spec.alert? a1.1, al.tier = .interruptive) → s1.1.id = s2.1.id
+
+instance (spec : Spec) (prog : Program) : Decidable (PopupRequestedOnce spec prog) := by
+  unfold PopupRequestedOnce; infer_instance
 
 /-- **Property 11 (A3), no repeat interruptions.** -/
 def NoRepeatInterruptions (spec : Spec) (prog : Program) : Prop :=
-  PopupRequestedOnce prog ∧
+  PopupRequestedOnce spec prog ∧
   ∀ facts user, user.role = prog.role → InterruptsOnce ⟨spec, prog, facts, user⟩
 
 /-- Passive alerts never pop up. By construction. -/
@@ -352,8 +385,11 @@ def PassiveNeverPopsUp (ep : Episode) : Prop :=
 
 /-- The program never asks a passive alert to pop up. Needs the checker. -/
 def NoPassivePopupRequests (spec : Spec) (prog : Program) : Prop :=
-  ∀ sc ∈ allComps prog, ∀ a al, sc.2.kind = .alert a true → spec.alert? a = some al →
-    al.tier ≠ .passive
+  ∀ sc ∈ allComps prog, ∀ a ∈ alertOf? sc.2.kind, a.2 = true →
+    ∀ al ∈ spec.alert? a.1, al.tier ≠ .passive
+
+instance (spec : Spec) (prog : Program) : Decidable (NoPassivePopupRequests spec prog) := by
+  unfold NoPassivePopupRequests; infer_instance
 
 /-- **Property 12 (A4), severity tiers.** Passive alerts never pop up; only
 interruptive and removable ones may. -/

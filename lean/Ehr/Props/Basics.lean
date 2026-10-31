@@ -110,9 +110,15 @@ banner, panel, table, or trend displays it. -/
 def InfoShown (ep : Episode) (s : State) (i : InfoId) : Prop :=
   ShowsSome ep s fun comp => showsInfo i comp.kind = true
 
+instance (ep : Episode) (s : State) (i : InfoId) : Decidable (InfoShown ep s i) := by
+  unfold InfoShown ShowsSome; infer_instance
+
 /-- A button for commit `c` is shown on the current screen. -/
 def CommitButtonShown (ep : Episode) (s : State) (c : CommitId) : Prop :=
   ShowsSome ep s fun comp => comp.kind = .button (.commit c)
+
+instance (ep : Episode) (s : State) (c : CommitId) : Decidable (CommitButtonShown ep s c) := by
+  unfold CommitButtonShown ShowsSome; infer_instance
 
 /-- An alert component for alert `a` is shown on the current screen. -/
 def AlertShownInline (ep : Episode) (s : State) (a : AlertId) : Prop :=
@@ -164,6 +170,9 @@ identity, scan, or cosign), or its prefill policy is `never`. -/
 def HumanMustEnter (el : ElementSpec) : Prop :=
   needsHuman el = true ∨ el.prefill = .never
 
+instance (el : ElementSpec) : Decidable (HumanMustEnter el) := by
+  unfold HumanMustEnter; infer_instance
+
 /-! ## Program structure helpers -/
 
 /-- The kind name used in the spec's component catalog. -/
@@ -180,6 +189,72 @@ def kindName : Kind → String
   | .«macro» _ => "macro"
   | .search _ => "search"
 
+/-- The element, slot, and prefill of a field component. -/
+def fieldOf? : Kind → Option (ElementId × Slot × Prefill)
+  | .field e slot pf => some (e, slot, pf)
+  | _ => none
+
+/-- The target screen of a "go to" button. -/
+def gotoOf? : Kind → Option ScreenId
+  | .button (.goto t) => some t
+  | _ => none
+
+/-- The commit of a commit button. -/
+def commitOf? : Kind → Option CommitId
+  | .button (.commit c) => some c
+  | _ => none
+
+/-- The info of a "mark reviewed" button. -/
+def reviewOf? : Kind → Option InfoId
+  | .button (.markReviewed i) => some i
+  | _ => none
+
+/-- The macro of a macro button. -/
+def macroOf? : Kind → Option MacroId
+  | .«macro» m => some m
+  | _ => none
+
+/-- The alert of an alert component, and whether it asks to pop up. -/
+def alertOf? : Kind → Option (AlertId × Bool)
+  | .alert a popup => some (a, popup)
+  | _ => none
+
+/-- The component a macro step types into or clicks. -/
+def stepTarget? : MacroStep → Option CompId
+  | .setValue cid _ => some cid
+  | .click cid => some cid
+  | .goto _ => none
+
+/-- The component a macro step types into. -/
+def setTarget? : MacroStep → Option CompId
+  | .setValue cid _ => some cid
+  | _ => none
+
+/-- The component a macro step clicks. -/
+def clickTarget? : MacroStep → Option CompId
+  | .click cid => some cid
+  | _ => none
+
+/-- The screen a macro "go to" step goes to. -/
+def gotoStep? : MacroStep → Option ScreenId
+  | .goto t => some t
+  | _ => none
+
+/-- The record fact a prefill copies from. -/
+def recordFactOf? : Prefill → Option String
+  | .fromRecord f => some f
+  | _ => none
+
+/-- A group or a tab container. -/
+def isContainer : Kind → Bool
+  | .group .. | .tabs => true
+  | _ => false
+
+/-- A quantity (a number with a unit). -/
+def isQuantity : ValueKind → Bool
+  | .quantity _ => true
+  | _ => false
+
 /-- All components of a program, with the screen each is on. -/
 def allComps (p : Program) : List (Screen × Component) :=
   p.screens.flatMap fun scr => scr.components.map (scr, ·)
@@ -187,6 +262,9 @@ def allComps (p : Program) : List (Screen × Component) :=
 /-- One click on a "go to" button of screen `a` leads to screen `b`. -/
 def GotoEdge (p : Program) (a b : ScreenId) : Prop :=
   ∃ scr ∈ p.screens, scr.id = a ∧ ∃ comp ∈ scr.components, comp.kind = .button (.goto b)
+
+instance (p : Program) (a b : ScreenId) : Decidable (GotoEdge p a b) := by
+  unfold GotoEdge; infer_instance
 
 /-- A path of "go to" clicks: `GotoPath p a hops z` says that following the
 screens in `hops` one click at a time leads from `a` to `z`. -/
@@ -218,10 +296,6 @@ def movedTags (prev prog : Program) : List String :=
     match placeOf prev t, placeOf prog t with
     | some a, some b => a != b
     | _, _ => false
-
-/-- The program asks alert `a` to pop up on screen `scr`. -/
-def PopupRequested (scr : Screen) (a : AlertId) : Prop :=
-  ∃ comp ∈ scr.components, comp.kind = .alert a true
 
 /-- The number of popup requests (alert components with `popup := true`) on
 screens reachable from the start screen. -/
