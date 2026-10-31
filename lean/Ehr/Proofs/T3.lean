@@ -47,6 +47,7 @@ theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
     (s : State) (c : Component) : MacroSafe sp s (clickCore sp prog facts user .«macro» s c).1 := by
   unfold clickCore
   split
+  · exact MacroSafe.refl _ _
   · exact goTo_safe ..
   · exact goBack_safe ..
   · exact MacroSafe.refl _ _
