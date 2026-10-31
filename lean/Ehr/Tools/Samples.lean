@@ -1,4 +1,5 @@
 import Ehr.Examples.TinyTests
+import Ehr.Render.Json
 
 /-!
 # JSON samples
@@ -34,8 +35,24 @@ def sampleTask : Task where
                             route := "PO", freq := "TID", indication? := some "J02.9" }] }
   todayResources := [Lean.Json.mkObj [("resourceType", "Observation")]]
 
+/-- A wire page with nested nodes, attributes, and text (the painter's input). -/
+def samplePage : Ehr.Render.PageNode :=
+  .node .div [{ name := "class", value := "ehr-shell" }]
+    [.node .h1 [] [.text "Patient chart"],
+     .node .button [{ name := "data-comp-id", value := "signButton" },
+                   { name := "data-event", value := "click" }] [.text "Sign orders"]]
+
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "sampleDisplay" "Display" Ehr.Render.Display.empty,
+  mk "samplePage" "PageNode" samplePage,
+  mk "sampleRenderInput" "RenderInput"
+    ({ spec := Tiny.spec, program := Tiny.program, facts := Tiny.facts,
+       display := Ehr.Render.Display.empty, user := Tiny.user, state := s0 } : Ehr.Render.RenderInput),
+  mk "sampleFactsContext" "FactsContext"
+    ({ today := "2026-10-31", encounterKind? := some "preop" } : Ehr.Render.FactsContext),
+  mk "sampleFactsOutput" "FactsOutput"
+    ({ facts := Tiny.facts, display := Ehr.Render.Display.empty } : Ehr.Render.FactsOutput),
   mk "tinySpec" "Spec" Tiny.spec,
   mk "tinyProgram" "Program" Tiny.program,
   mk "tinyFacts" "Facts" Tiny.facts,

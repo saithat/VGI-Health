@@ -199,6 +199,7 @@ structure DrugInfo where
   classes : List String            -- "antibiotic", "penicillin", "anticoagulant", "insulin", ...
   minMgPerKgTenths : Nat
   maxMgPerKgTenths : Nat
+  maxDoseMgTenths : Nat := 0        -- absolute per-dose cap; 0 = unspecified
   highAlert : Bool
   interactsWith : List String      -- classes
 
@@ -300,6 +301,12 @@ inductive Event
   - all applicable `ReviewReq` are shown on the current screen, or covered by a valid receipt (`shownOrReceipt` only);
   - all applicable interruptive alerts are acked;
   - the user's role is in `CommitSpec.roles`.
+- **`newOrderLine`:** blocked with `finish this order line first` while the
+  current drug line misses an applicable per-order-line entry requirement.
+  Humans and macros obey the same stop; empty/complete lines may advance.
+- **Inline alert clicks:** a human click is informational (`ignored`); a macro
+  click is `blocked "human only: acknowledge"`. Clicking cannot acknowledge
+  an alert. While a popup is open, clicks remain blocked by the modal rule.
 - **`ack a`:** human only, and only when `popup = some (a, k)`; adds `(a, k)` to `acked` and clears `popup`.
 - **Alerts:** an alert component is visible only if its condition holds (A2). Passive alerts never become `popup` (A4). An acked `(a, k)` never pops up again in the episode (A3).
 - **`markReviewed i`:** adds a receipt with the current version, clock, and the user's role.
@@ -335,12 +342,20 @@ inductive Event
 ```lean
 inductive Workflow | W1 | W2 | W3 | W4 | W5 | W6 | W7   -- see BRIEF section 5
 
+inductive OrderKind | medication | imaging | procedure
+inductive W6Step | consult | preop | postop | rounding | discharge
+
 structure OrderChoice where        -- a clinical decision, fixed per scenario (independent of the UI)
-  drug : String                    -- RxNorm code from the formulary
+  drug : String                    -- lowercase generic name; empty for service orders
+  kind? : Option OrderKind := none -- omitted = medication (legacy schedules)
+  code? : Option String := none     -- imaging/procedure service code, e.g. CPT
   doseTenths : Nat
   unit : UnitKind
   route : String
   freq : String
+  supplyDays? : Option Nat := none
+  curesExemptReason? : Option String := none
+  holdReason? : Option String := none
   indication : Option String := none
   prn : Bool := false
 
@@ -352,6 +367,9 @@ structure TaskChoices where
   disposition : Option String := none      -- W3: "admit" | "discharge" | "consult"
   immunizations : List String := []        -- W5: CVX codes
   noteSections : List String := []         -- documentation sections to complete
+  painScore? : Option Nat := none           -- 0-10
+  w6Step? : Option W6Step := none
+  refillReason? : Option String := none
 
 structure Task where
   id : String
@@ -486,3 +504,12 @@ shared elements across distinct workflows do not constitute repeated entry.
 `AlertSpec.screens` contains workflow tags; each matching screen must show the
 passive alert. `AlertSpec.targetsScreen` is the shared predicate. The checker and
 content lanes must use it when checking/placing passive alerts.
+
+Medication and service orders remain distinct: medication orders bind `drug`
+to a lowercase generic formulary name; imaging/procedure choices bind `kind`
+and `code`, with an empty `drug`. On the UI a service order captures `orderKind`
+(`imaging` or `procedure`) and a nonempty `orderCode` on one slot, without a drug
+on that slot. Its spec must declare those fields. `requestPriorAuth` recognizes
+both medication and service orders; the CMS-0057-F release's applicable order
+kinds are the services (`OrderChoice.isPriorAuthService`), excluding drugs.
+Drug alerts and drug-class requirements only inspect medication `orderLines`.

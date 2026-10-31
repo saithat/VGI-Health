@@ -266,3 +266,46 @@ No entry/review rule or theorem statement changed. Content
 must spread passive components to every relevant workflow screen, and checker
 must use workflow targets. Existing pre-op rules remain on signPreOpOrders;
 content can now migrate them using the encounter condition without core edits.
+
+## Core requests: typed task choices, service orders and dose caps
+
+- Added optional `OrderChoice.supplyDays?`, `curesExemptReason?`, `holdReason?`;
+  `TaskChoices.painScore?`, `w6Step?` (typed W6Step), `refillReason?`. These JSON
+  fields omit `?` and no longer need overloaded note strings. Existing schedules
+  remain parseable because additions are optional.
+- `OrderKind` is medication/imaging/procedure. Optional `OrderChoice.kind?`
+  defaults semantically to medication; `code?` holds a service code for non-drugs,
+  whose drug string is empty. `OrderChoice.drug` is the lowercase generic name
+  for medications (core-model section 7 corrected). `isPriorAuthService` selects
+  imaging/procedure for the CMS-0057-F release, excluding drugs.
+- Core service orders capture `orderKind` and nonempty `orderCode` on a slot,
+  with no drug there. `hasOrderAt` lets prior-auth requests recognize them;
+  drug alerts/class requirements keep using medication-only `orderLines`.
+  Content's release spec must declare those two fields for entry.
+- `DrugInfo.maxDoseMgTenths` is an absolute per-dose cap (0 = unspecified).
+  `doseOutOfRange` clamps both weight-based bounds to the cap and independently
+  detects an absolute overdose even without weight. Existing world's pediatric
+  reference caps populate amoxicillin (largest cap 2000 mg), azithromycin,
+  ceftriaxone, acetaminophen, ibuprofen and ondansetron. Regimen-specific caps
+  below a drug's largest cap remain world regimen decisions, not generic caps.
+
+Minimal non-core edits: add those six cap values in Ehr/Formulary.lean and
+preserve the optional choices in agent/src/lean-types.ts. No
+property/spec rule or theorem statement changed. Core guards cover heavy-teen
+caps, ordinary ranges, missing weight, typed JSON round trips and service-order
+prior-auth requests without spurious drug alerts. HANDOFF-sim.md is absent on
+main at the fetched revision; the orchestrator's explicit requests were used.
+
+## Core requests: full GenTS render and schedule exports
+
+GenTS now collects Ehr.Render.Types alongside Core.Types/Json: Display and its
+rows, Html/Attr/Tag/Cls, read-only/part types, wire PageNode/PageAttr, FactsContext,
+FactsOutput and RenderInput. Task and DaySchedule were already exported from
+Core.Json and remain included. Generation fails if key public types disappear
+or two namespaces produce the same TypeScript name. Samples add real Lean JSON
+for Display, PageNode, RenderInput, FactsContext and FactsOutput; tsc checks the
+boundary representation alongside the existing Task/DaySchedule samples.
+
+No runtime semantics, properties, or theorem statements changed. GenTS and
+Samples are the necessary generator files outside Core; outputs are regenerated,
+never hand-edited.

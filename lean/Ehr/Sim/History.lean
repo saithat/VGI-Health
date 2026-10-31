@@ -148,7 +148,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
       · simp only [hh, ite_false]; rfl
     | requestPriorAuth =>
       simp only [clickCore, hk]
-      cases actor <;> simp only [requestPriorAuth, orderLines, withHistory]
+      cases actor <;> simp only [requestPriorAuth, hasOrderAt, serviceOrderAt, orderLines, withHistory]
       all_goals repeat' first | rfl | (split <;> try simp_all)
   | group collapsible start => simp only [clickCore, hk]; cases collapsible <;> rfl
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl
