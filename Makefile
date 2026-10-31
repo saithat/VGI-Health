@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down fixtures
+.PHONY: install run check lean app infra-up infra-down fixtures wasm
 
 install:
 	cd lean && lake build
@@ -18,3 +18,7 @@ infra-up:
 
 infra-down:
 	@if [ -f infra/docker-compose.yml ]; then docker compose -f infra/docker-compose.yml down; fi
+
+wasm:
+	wasm/build-ehr.sh
+	wasm/install-into-app.sh
