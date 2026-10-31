@@ -4,7 +4,8 @@
 //   node infra/scripts/setup.mjs        (or: make setup)
 //
 // Logs in as the default super admin (admin@example.com / medplum_admin), then ensures:
-//   - a Project "VGI Health" (the super admin becomes its owner/admin);
+//   - a Project "VGI Health" (the super admin becomes its owner/admin) with the
+//     'transaction-bundles' feature (atomic transactions, used by load.mjs);
 //   - a ClientApplication "VGI Health App" (client credentials for scripts, PKCE login for the app);
 //   - Practitioner resources for the personas P1-P5 plus a second inpatient RN (RN2), keyed by
 //     identifier https://vgi-health.example/fhir/sid/persona|<code>;
@@ -199,9 +200,19 @@ async function main() {
     await login(projectClient, { projectId: projects[0].id, pickProject: (m) => m.project?.reference === `Project/${projects[0].id}` });
     note('unchanged', `Project "${PROJECT_NAME}"`);
   }
-  const project = medplum.getProject();
-  const projectId = project.id;
+  const projectId = medplum.getProject().id;
   log(`  project   ${projectId}`);
+
+  // Atomic FHIR transactions (a super-admin-only project setting), so that load.mjs commits each
+  // fixture file together with its load marker, or not at all.
+  const projectResource = await admin.readResource('Project', projectId);
+  const features = projectResource.features ?? [];
+  if (!features.includes('transaction-bundles')) {
+    await admin.updateResource({ ...projectResource, features: [...features, 'transaction-bundles'] });
+    note('updated', 'Project feature transaction-bundles');
+  } else {
+    note('unchanged', 'Project feature transaction-bundles');
+  }
 
   // 3. ClientApplication (its ProjectMembership has no access policy -> full access within the project).
   const clientFields = {
