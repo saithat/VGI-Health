@@ -30,18 +30,20 @@ theorem requestPriorAuth_macro_safe (sp : Spec) (user : User) (s : State) :
     · exact MacroSafe.refl _ _
     · split
       · exact MacroSafe.refl _ _
-      · dsimp only
-        split
+      · split
         · exact MacroSafe.refl _ _
-        · rename_i hnh
-          refine ⟨rfl, rfl, rfl, ?_⟩
-          intro y hy hh
-          simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hy
-          rcases hy with ⟨hy, _⟩ | rfl
-          · exact hy
-          · exfalso
-            simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
-            simp [Spec.isHumanOnly, hel, hnh.1] at hh
+        · dsimp only
+          split
+          · exact MacroSafe.refl _ _
+          · rename_i hnh
+            refine ⟨rfl, rfl, rfl, ?_⟩
+            intro y hy hh
+            simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hy
+            rcases hy with ⟨hy, _⟩ | rfl
+            · exact hy
+            · exfalso
+              simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
+              simp [Spec.isHumanOnly, hel, hnh.1] at hh
 
 theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : Component) : MacroSafe sp s (clickCore sp prog facts user .«macro» s c).1 := by

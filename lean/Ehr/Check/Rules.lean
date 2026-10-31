@@ -165,6 +165,16 @@ def openFieldOn (prog : Program) (screens : List ScreenId) (e : ElementId)
         | some f => f.1 == e && slotOk f.2.1 && revealable scr.components c
         | none => false
 
+/-- A waiver must admit a nonempty value for every record in the property
+ domain. A wristband/medication target may be the empty code; its scan would
+ then be valid but would not count as a nonempty waiver. Other kinds always
+ have a nonempty human-enterable witness. -/
+def waiverHasNonemptyValue (spec : Spec) (e : ElementId) : Bool :=
+  (spec.element? e).any fun el =>
+    match el.kind with
+    | .scan target => target != "wristband" && target != "medication"
+    | _ => true
+
 /-- Why commit `c` might not stay reachable, or `none` if the program passes
 the completability rules for `c` with commit screen `s`:
 - every screen reaches `s` by buttons the user can always show;
@@ -187,7 +197,7 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
     match waivable.find? (fun rq =>
         !scrComps.any (pinnedForReview spec scrComps rq) &&
         !(match rq.waivedBy? with
-          | some w => openFieldOn prog fromS w (fun _ => true)
+          | some w => waiverHasNonemptyValue spec w && openFieldOn prog fromS w (fun _ => true)
           | none => false)) with
     | some rq => some (s, s!"commit {c}: {rq.info} is not shown on screen {s} and the user cannot reach " ++
         s!"a field to enter its waiver")

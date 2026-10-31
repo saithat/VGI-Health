@@ -514,3 +514,8 @@ on that slot. Its spec must declare those fields. `requestPriorAuth` recognizes
 both medication and service orders; the CMS-0057-F release's applicable order
 kinds are the services (`OrderChoice.isPriorAuthService`), excluding drugs.
 Drug alerts and drug-class requirements only inspect medication `orderLines`.
+
+Prior-auth convenience clicks preserve every already-confirmed request capture
+on the current slot. They cannot create never/human-only captures: the program
+must expose a human field for an ordinary Event.enter. This preserves both the
+literal human-entry property and confirmed values/provenance.

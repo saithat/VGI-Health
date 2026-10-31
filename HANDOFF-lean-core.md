@@ -19,6 +19,13 @@ Human clicks now open the alert's first pending popup candidate, without
 acknowledging it. Passive/unknown/nonfiring/acked alerts do not open; removable
 alerts retain popup opt-in. This supersedes item 2's informational human click.
 T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
+This human-alert follow-up is pushed as `f88c623`.
+
+Checker CR-6 is also resolved in this commit (the final follow-up): prior-auth convenience actions
+preserve every confirmed capture on the current slot and cannot create
+never/human-only captures. Tiny v1.1 exposes a human field and retains its never
+policy. Other specs may authorize the convenience action via a non-human-only
+policy; macros still leave those values awaiting human confirmation.
 
 ## Validation
 
@@ -61,7 +68,8 @@ T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
 ## Minimal edits outside Core
 
 - T0/T3/Alerts branch frames; Frame's record-prefill lemma; Alerts' Tiny example.
-- Tiny weight-source metadata and workflow target; V1's four active record
+- Tiny weight-source metadata, workflow target and human prior-auth field;
+  TinyTests uses the field and checks preservation. V1's four active record
   sources and three passive workflow targets. No entry/review rule was weakened.
 - Render.Types/Fhir: optional encounter context and its projection.
 - Formulary: six existing world pediatric caps, expressed in tenths of mg.
@@ -71,15 +79,14 @@ T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
 
 ## What's left
 
-The original five-item queue is complete. One newly visible core follow-up
-remains: checker CR-6, preserving confirmed prior-auth captures and enforcing
-ordinary human Event.enter for never/human-only request elements. It is being
-implemented next without weakening the checker properties.
+**Nothing left in the assigned core changes queue or its consolidated core
+follow-ups.**
 
 Other-lane adoption is explicitly requested in
 `docs/design/changes-requests.md`: checker workflow coverage/enter-once/source
 checks and CR-1 acceptance; content passive component coverage and optional
-condition migrations/service fields; world/sim typed-choice and episode-context
+condition migrations/service fields and human prior-auth fields where policy
+requires them; world/sim typed-choice and episode-context
 production/consumption. These are not silently implemented in their lanes.
 HANDOFF-sim.md was absent from main; the explicit orchestrator requests supplied
 its required core scope.

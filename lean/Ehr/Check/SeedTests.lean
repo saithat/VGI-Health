@@ -12,6 +12,8 @@ def rejectedWithReplay (p : Program) : Bool :=
   | none => false
   | some finding => (counterexample specV1 p finding).2.2
 
+#guard check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
+
 #guard Bad.programs.all (fun (_, p) => rejectedWithReplay p)
 
 /-- A specific failing rule also has a replayable explanation, independently

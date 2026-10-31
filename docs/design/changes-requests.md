@@ -360,3 +360,51 @@ weakened. Prior-auth request certification remains unfinished, explicitly.
   the preserved consent role rule. An NP supplied a `preop` episode must stay
   blocked. Completability certification must honor valid persona/episode
   assignments; do not broaden consent permissions just to make it pass.
+
+---
+
+
+## Checker CR-6 resolution from core
+
+Confirmed priorAuthRequest captures on the current slot are preserved exactly
+by request clicks. For never/human-only elements a request click is blocked;
+only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
+field and retains its never policy. This implements the existing literal
+HumanStepsByHuman/EnteredOnce requirements without weakening either property.
+Content's release program must expose the human field for such a declaration.
+
+### CR-6 integrated and containment removed (`c98cfaf`)
+
+The checker has now proved `requestPriorAuth_preserves_confirmed` and
+`requestPriorAuth_no_human_capture` in `Check/RequestSound.lean`, with axiom
+audits. The temporary active-request rejection is removed. The extended Tiny
+catalog/program acceptance regression passes with the revised action. Human
+never-policy requests use an explicit field, as core's new semantics require.
+The safety properties are unchanged.
+
+### Persona canonical diagnostic (`b366a59`)
+
+P3 (RN) passes every checker rule. P1/P2/P5 fail only the signOrders
+anticoagulant pin described above. P4 also lacks a reachable/permitted consent
+field for a preop episode. Links and role declarations now pass. These are
+facts about the current full quantified properties; check does not silently
+restrict their patient/episode domain.
+
+### Completability waiver edge case
+
+`completeVia` now checks that an unpinned review's waiver kind can always
+supply a nonempty value. Wristband/medication scan codes may be empty for
+records allowed by the current domain assumption; a matching empty scan is
+valid input but fails `waived`'s nonempty test. Such scans cannot be the sole
+waiver path. Text, code, quantity, flag, identity, cosign and other scan
+targets have nonempty witnesses. Canonical's coded CURES exemption is safe.
+
+### Content follow-up required for core `c98cfaf`
+
+The full build now fails exactly four guards in `Canonical/ReleaseTests.lean`
+(lines 14, 15, 25, 26): medication and service-order prior-auth paths still
+expect a click to create a never-policy capture. Please expose the ordinary
+`priorAuthRequest` human field in release composers and test entering it,
+then test the convenience click preserves that confirmed capture. Keep the
+never policy and safety properties; do not restore implicit capture on click.
+Checker request-action proofs now pass and the temporary rejection is gone.
