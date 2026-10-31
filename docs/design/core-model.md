@@ -301,6 +301,12 @@ inductive Event
   - all applicable `ReviewReq` are shown on the current screen, or covered by a valid receipt (`shownOrReceipt` only);
   - all applicable interruptive alerts are acked;
   - the user's role is in `CommitSpec.roles`.
+- **`newOrderLine`:** blocked with `finish this order line first` while the
+  current drug line misses an applicable per-order-line entry requirement.
+  Humans and macros obey the same stop; empty/complete lines may advance.
+- **Inline alert clicks:** a human click is informational (`ignored`); a macro
+  click is `blocked "human only: acknowledge"`. Clicking cannot acknowledge
+  an alert. While a popup is open, clicks remain blocked by the modal rule.
 - **`ack a`:** human only, and only when `popup = some (a, k)`; adds `(a, k)` to `acked` and clears `popup`.
 - **Alerts:** an alert component is visible only if its condition holds (A2). Passive alerts never become `popup` (A4). An acked `(a, k)` never pops up again in the episode (A3).
 - **`markReviewed i`:** adds a receipt with the current version, clock, and the user's role.

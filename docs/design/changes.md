@@ -295,3 +295,17 @@ property/spec rule or theorem statement changed. Core guards cover heavy-teen
 caps, ordinary ranges, missing weight, typed JSON round trips and service-order
 prior-auth requests without spurious drug alerts. HANDOFF-sim.md is absent on
 main at the fetched revision; the orchestrator's explicit requests were used.
+
+## Core requests: full GenTS render and schedule exports
+
+GenTS now collects Ehr.Render.Types alongside Core.Types/Json: Display and its
+rows, Html/Attr/Tag/Cls, read-only/part types, wire PageNode/PageAttr, FactsContext,
+FactsOutput and RenderInput. Task and DaySchedule were already exported from
+Core.Json and remain included. Generation fails if key public types disappear
+or two namespaces produce the same TypeScript name. Samples add real Lean JSON
+for Display, PageNode, RenderInput, FactsContext and FactsOutput; tsc checks the
+boundary representation alongside the existing Task/DaySchedule samples.
+
+No runtime semantics, properties, or theorem statements changed. GenTS and
+Samples are the necessary generator files outside Core; outputs are regenerated,
+never hand-edited.
