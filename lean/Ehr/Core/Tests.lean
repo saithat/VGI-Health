@@ -14,4 +14,14 @@ def incomplete : State :=
 #guard (clickCore spec program facts user .human atOrder addLine).1.currentSlot == 1
 #guard currentLineComplete spec facts user atSignAmox
 #guard (clickCore spec program facts user .human atSignAmox addLine).1.currentSlot == 1
+-- Inline alerts never acknowledge themselves; macros stop with a reason.
+def inlineAlert : Component := { id := "alert", kind := .alert "drugAllergy" false }
+#guard clickCore spec program facts user .human atSignAmox inlineAlert == (atSignAmox, .ignored)
+#guard clickCore spec program facts user .«macro» atSignAmox inlineAlert ==
+  (atSignAmox, .blocked "human only: acknowledge")
+#guard (step spec program facts user .«macro» atSignAmox (.click "drugAllergyAlert")).2 ==
+  .blocked "human only: acknowledge"
+#guard (step spec program facts user .human popped.1 (.click "drugAllergyAlert")).1 == popped.1
+#guard (step spec program facts user .human popped.1 (.ack "drugAllergy")).1.acked ==
+  [("drugAllergy", "amoxicillin@3")]
 end Ehr.CoreTests
