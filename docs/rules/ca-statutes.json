@@ -978,5 +978,971 @@
     "confidence": "high",
     "verified": true,
     "notes": "V1 curesReport review/receipt alone does not establish this medical-record notation or delegate authorization. Specific expansion beyond the base review rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41498.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:18 (metadata, not effective date). Amended by Stats. 2023, Ch. 144, Sec. 1.   (AB 1731)   Effective January 1, 2024."
+  },
+  {
+    "id": "ca-statutes-bpc-2290-5-telehealth-inform",
+    "title": "Explain use of telehealth before care",
+    "citation": "California Business & Professions Code §2290.5(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=2290.5",
+    "quote": "shall inform the patient about the use of telehealth",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before initiating telehealth delivery, inform the patient about using telehealth.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "initiating telehealth care",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Telehealth delivery event and prior explanation evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Applies to the provider initiating telehealth, including asynchronous store-and-forward as defined; §2290.5(h) excludes correctional patients. Current section amended effective 2026. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42473.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:19 (metadata, not effective date). Amended by Stats. 2025, Ch. 413, Sec. 1.   (SB 402)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-2290-5-telehealth-consent",
+    "title": "Obtain verbal or written telehealth consent",
+    "citation": "California Business & Professions Code §2290.5(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=2290.5",
+    "quote": "obtain verbal or written consent from the patient",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Obtain the patient’s verbal or written consent to telehealth before delivering care by that mode.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "initiating telehealth care",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consent value/authority validation and care-delivery temporal gate",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A written signature is not universally required; verbal consent is allowed. Normal in-person care remains available under (c). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42473.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:19 (metadata, not effective date). Amended by Stats. 2025, Ch. 413, Sec. 1.   (SB 402)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-2290-5-telehealth-document",
+    "title": "Document telehealth consent",
+    "citation": "California Business & Professions Code §2290.5(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=2290.5",
+    "quote": "The consent shall be documented.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "Persist the telehealth consent in the record and bind it to the initiating telehealth service.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "telehealth consent obtained",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Telehealth consent element and scope/service binding",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_42473.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:19 (metadata, not effective date). Amended by Stats. 2025, Ch. 413, Sec. 1.   (SB 402)   Effective January 1, 2026."
+  },
+  {
+    "id": "ca-statutes-bpc-741-overdose-risk",
+    "title": "Naloxone offer covers increased overdose risk",
+    "citation": "California Business & Professions Code §741(a)(1)(C), (c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=741",
+    "quote": "The patient presents with an increased risk for opioid overdose",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When §741 applies and increased overdose risk is present, offer a reversal-agent prescription even if neither the 90-MME nor benzodiazepine trigger is present.",
+    "specMapping": {
+      "element": "naloxoneOffer",
+      "info": null,
+      "when": "§741 increased-overdose-risk trigger and no subsection (c) exclusion",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Overdose/OUD history and lost-tolerance risk predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Increment beyond round 1 C2: V1 naloxoneRisk is not a complete statutory risk assessment. Excludes medications ordered for administration in a care setting, terminally ill patients as defined, and listed correctional cases. Risk examples are not an exhaustive list. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41953.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 231, Sec. 2.   (AB 714)   Effective September 5, 2019."
+  },
+  {
+    "id": "ca-statutes-bpc-741-caregiver-education",
+    "title": "Overdose education reaches designated persons",
+    "citation": "California Business & Professions Code §741(a)(3), (b)–(c)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=741",
+    "quote": "to one or more persons designated by the patient",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When §741 applies, provide overdose-prevention/reversal-agent education to at least one patient-designated person, or a minor’s parent/guardian, consistent with the standard of care and subsection (b)’s exceptions.",
+    "specMapping": {
+      "element": "naloxoneEducation",
+      "info": null,
+      "when": "§741 applies and education not excepted",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Education-recipient binding and decline/prior-education predicates",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 naloxoneEducation is a single flag; it does not prove which recipient was educated. This is a specific expansion of round 1 C2, not a second universal education rule. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41953.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 231, Sec. 2.   (AB 714)   Effective September 5, 2019."
+  },
+  {
+    "id": "ca-statutes-bpc-741-education-exceptions",
+    "title": "Education may be declined or recently completed",
+    "citation": "California Business & Professions Code §741(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=BPC&sectionNum=741",
+    "quote": "declines the education or has received the education within the past 24 months.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Allow the §741 education exception when the patient declines or received that education within 24 months; do not falsely record that education was given today.",
+    "specMapping": {
+      "element": "naloxoneEducation",
+      "info": null,
+      "when": "§741 education declined or received within 24 months",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Distinct declined/prior-education outcomes and education timestamp validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1’s required flag lacks these truthful alternative outcomes. This exception does not eliminate an otherwise required prescription offer. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_41953.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:00:18 (metadata, not effective date). Amended by Stats. 2019, Ch. 231, Sec. 2.   (AB 714)   Effective September 5, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-120990-hiv-right-decline",
+    "title": "Patient is advised of right to decline HIV test",
+    "citation": "California Health & Safety Code §120990(a)–(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120990",
+    "quote": "advise the patient that he or she has the right to decline the test.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Before ordering HIV testing under the medical-care-provider pathway, advise the patient of the right to decline; subsection (a) does not apply to an independently requested test.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "provider-planned HIV test under §120990(a)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "HIV test predicate, independent-request branch and pre-order counseling evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77348.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended by Stats. 2016, Ch. 670, Sec. 1.   (AB 2640)   Effective January 1, 2017."
+  },
+  {
+    "id": "ca-statutes-hsc-120990-hiv-declination",
+    "title": "HIV test refusal is recorded",
+    "citation": "California Health & Safety Code §120990(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120990",
+    "quote": "the medical care provider shall note that fact in the patient’s medical file.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": "signNote",
+    "encoding": "entry",
+    "proposedRule": "If a patient declines a planned HIV test, record the decline in the medical file.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient declines HIV test",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "HIV decline element bound to the proposed test",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77348.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended by Stats. 2016, Ch. 670, Sec. 1.   (AB 2640)   Effective January 1, 2017."
+  },
+  {
+    "id": "ca-statutes-hsc-120990-positive-hiv-followup",
+    "title": "Positive HIV result counseling includes care contacts",
+    "citation": "California Health & Safety Code §120990(h)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120990",
+    "quote": "including contact information for medical and psychological services.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "After a positive HIV test, identify recommended follow-up testing/care and give contact information for medical and psychological services.",
+    "specMapping": {
+      "element": "patientMessage",
+      "info": null,
+      "when": "positive HIV result",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Positive-HIV predicate, counseling content and actual communication evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A typed message alone does not establish required counseling. §120990(i) excludes clinical laboratories from this provider duty. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77348.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended by Stats. 2016, Ch. 670, Sec. 1.   (AB 2640)   Effective January 1, 2017."
+  },
+  {
+    "id": "ca-statutes-hsc-120990-negative-hiv-retest",
+    "title": "High-risk negative HIV result includes retesting advice",
+    "citation": "California Health & Safety Code §120990(h)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120990",
+    "quote": "advise the patient of the need for periodic retesting",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "For a negative HIV result when the provider determines high risk, advise the patient about periodic retesting.",
+    "specMapping": {
+      "element": "patientMessage",
+      "info": null,
+      "when": "negative HIV result and clinician-determined high risk",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "HIV result/risk predicate and communication evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The statute does not set a universal fixed retest interval. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77348.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended by Stats. 2016, Ch. 670, Sec. 1.   (AB 2640)   Effective January 1, 2017."
+  },
+  {
+    "id": "ca-statutes-hsc-120990-negative-hiv-prevention",
+    "title": "High-risk negative HIV result includes prevention information",
+    "citation": "California Health & Safety Code §120990(h)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=120990",
+    "quote": "including, but not limited to, preexposure prophylaxis and postexposure prophylaxis",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "ackResult",
+    "encoding": "entry",
+    "proposedRule": "For a high-risk patient testing HIV-negative, provide HIV prevention/risk-reduction information including PrEP and PEP consistent with CDC guidance.",
+    "specMapping": {
+      "element": "patientMessage",
+      "info": null,
+      "when": "negative HIV result and clinician-determined high risk",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "HIV result/risk predicate and counseling-content evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Offering prevention counseling/referral is permissive; the information duty is mandatory. This row does not require prescribing PrEP or PEP to everyone. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77348.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:31 (metadata, not effective date). Amended by Stats. 2016, Ch. 670, Sec. 1.   (AB 2640)   Effective January 1, 2017."
+  },
+  {
+    "id": "ca-statutes-hsc-123148-sensitive-release",
+    "title": "Sensitive electronic results need all three prerequisites",
+    "citation": "California Health & Safety Code §123148(f), (k)–(l)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123148",
+    "quote": "unless the patient requests the disclosure, the health care professional deems this disclosure as an appropriate means",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For the listed positive-HIV, hepatitis-antigen, drug-abuse and new/recurrent-malignancy results, gate electronic release on patient request, clinician appropriateness and prior oral discussion, subject to the specific HIV exceptions.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "result listed in §123148(f)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Separate electronic-release action, result categories, three conjunctive prerequisites and specific exceptions",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Reference to R2-08, retained as a consolidated guard rather than re-proposed. V1 ackResult is not electronic release. The quoted opening is completed by the oral-discussion requirement later in the same sentence; a request alone is insufficient. Imaging and portals are included. Other applicable federal law must also be reconciled. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77206.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 3.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-123148-anonymous-hiv-code",
+    "title": "Anonymous HIV posting uses a single-result secure code",
+    "citation": "California Health & Safety Code §123148(f)(1)(A)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123148",
+    "quote": "a secure code that can access only a single set of test results",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For the anonymous-HIV electronic-posting exception, use a secure code issued at testing that accesses only one set of results.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "anonymous HIV test electronic posting exception",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anonymous-result release branch, single-result secure-code authentication and no identity linkage",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Posting also requires no link to identifying/referring information and provision of §120990(h) information. This is a narrow exception within the R2-08 subject, not permission for identifiable positive-HIV auto-release. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77206.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 3.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-123148-revoke-result-consent",
+    "title": "Electronic-result consent can be revoked",
+    "citation": "California Health & Safety Code §123148(j)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123148",
+    "quote": "may revoke consent provided under this section at any time and without penalty",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Support patient or physician revocation of consent under §123148 without penalty; preserve the exception for actions already taken in reliance.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "revocation of §123148 consent",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned consent lifecycle, reliance history and propagation to result-release service",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77206.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 3.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-123111-attach-addendum",
+    "title": "Patient correction addendum stays attached",
+    "citation": "California Health & Safety Code §123111(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123111",
+    "quote": "shall attach the addendum to the patient’s records",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Attach a qualifying patient-written addendum under §123111(a) to the medical record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-submitted addendum workflow and durable linkage",
+    "confidence": "high",
+    "verified": true,
+    "notes": "The right follows inspection under §123110; 250 words per allegedly incomplete/incorrect item and an express request for inclusion. Not an automatic right to overwrite a clinician’s original entry. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_99563.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2018, Ch. 275, Sec. 1.   (AB 2088)   Effective January 1, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-123111-disclose-addendum",
+    "title": "Disclosures include the relevant patient addendum",
+    "citation": "California Health & Safety Code §123111(b)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123111",
+    "quote": "shall include that addendum if the health care provider makes a disclosure",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When disclosing a portion alleged incomplete/incorrect to a third party, include its attached §123111 patient addendum.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-part/addendum linkage and export/disclosure validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_99563.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2018, Ch. 275, Sec. 1.   (AB 2088)   Effective January 1, 2019."
+  },
+  {
+    "id": "ca-statutes-hsc-123115-mental-record-denial-date",
+    "title": "Mental-health access denial records request date",
+    "citation": "California Health & Safety Code §123115(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123115",
+    "quote": "noting the date of the request",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "If denying patient access to mental-health records for the statutory substantial-risk reason, place the request date with those records.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient mental-health-record access denied under §123115(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Records-access denial action and dated request linkage",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Not a general permission to suppress records. The alternative professional-access and patient-notification duties in (b)(2)–(4) still apply. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77201.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 2.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-123115-mental-record-denial-consequences",
+    "title": "Mental-health access denial identifies anticipated harm",
+    "citation": "California Health & Safety Code §123115(b)(1)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123115",
+    "quote": "a description of the specific adverse or detrimental consequences",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include specific anticipated adverse/detrimental consequences in the written record explaining denial under §123115(b), rather than a generic sensitive-record label.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient mental-health-record access denied under §123115(b)",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Substantial-risk decision and nonempty individualized explanation validator",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77201.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Amended by Stats. 2022, Ch. 888, Sec. 2.   (SB 1419)   Effective January 1, 2023."
+  },
+  {
+    "id": "ca-statutes-hsc-123130-summary-deadline",
+    "title": "Substituted record summary has its own deadline",
+    "citation": "California Health & Safety Code §123130(a)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=123130",
+    "quote": "within 10 working days from the date of the patient’s request.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "If electing a statutory summary rather than full-record access, make it available within ten working days; only extraordinary length/recent-discharge grounds allow a notified extension, capped at 30 days.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Records-summary workflow, working-day calendar and limited-extension notification evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Distinct from R2-25’s five-working-day inspection, 15-day copy and 30-day qualifying free-copy rules. §123130(c) does not mandate new medical record content. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_77204.lob; reader URL blocked automated access. Database row updated 2026-10-03 01:01:32 (metadata, not effective date). Added by Stats. 1995, Ch. 415, Sec. 8.   Effective January 1, 1996."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-preserve-edits",
+    "title": "EHR automatically preserves changes and deletions",
+    "citation": "California Civil Code §56.101(b)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "Automatically record and preserve any change or deletion of any electronically stored medical information.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Automatically preserve an audit record for each change or deletion of electronic medical information.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Durable append-only change/deletion audit trail",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Specific EHR-system duty; a review receipt alone is not a complete change audit. Applies to electronic records meeting subsection (d). Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-audit-actor",
+    "title": "EHR change audit records actor",
+    "citation": "California Civil Code §56.101(b)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "the identity of the person who accessed and changed the medical information",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Include the actual accessing/changing person’s identity in every electronic medical-information change/deletion record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Authenticated actor attribution in durable audit events",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-audit-time",
+    "title": "EHR change audit records access time",
+    "citation": "California Civil Code §56.101(b)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "the date and time the medical information was accessed",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the access date and time in the audit record for electronic medical-information changes/deletions.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Trusted wall-clock timestamps in audit events",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-audit-change",
+    "title": "EHR change audit records what changed",
+    "citation": "California Civil Code §56.101(b)(1)(B)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "the change that was made to the medical information.",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Preserve what was changed in the electronic medical-information change/deletion record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Versioned record deltas/deletion evidence in the audit trail",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-sensitive-segregation",
+    "title": "Covered EHR businesses segregate protected service data",
+    "citation": "California Civil Code §56.101(c)(1)(C), (c)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "Segregate medical information related to gender affirming care, abortion and abortion-related services, and contraception",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a covered §56.06 business storing these sensitive-service records on another’s behalf, support segregating the named service data from the rest of the record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Service-level record segmentation and vendor capability enforcement",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Vendor/business scope: subsection (c)(4) expressly excludes defined contractors, health plans and providers from this subdivision. Not a blanket hospital-provider obligation. Capability deadline was July 1, 2024; current section amended effective 2025. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
+  },
+  {
+    "id": "ca-statutes-civ-56-101-out-of-state-disable",
+    "title": "Covered EHR businesses can disable out-of-state access",
+    "citation": "California Civil Code §56.101(c)(1)(D), (c)(4)",
+    "url": "https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.101",
+    "quote": "Provide the ability to automatically disable access to segregated medical information",
+    "type": "ca-statute",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a covered §56.06 business, provide the capability to automatically disable access by out-of-state individuals/entities to the segregated gender-affirming, abortion-related and contraception information.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Recipient-jurisdiction-aware access revocation and segmented data controls",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Same narrow vendor scope as (c)(1)(C), with the (c)(4) exclusions. This is a capability requirement, not a rule forbidding every lawful interstate treatment disclosure. Verified 2026-10-31 against the Legislature's official https://downloads.leginfo.legislature.ca.gov/pubinfo_2025.zip, LAW_SECTION_TBL.dat and lob/LAW_SECTION_TBL_32556.lob; reader URL blocked automated access. Database row updated 2026-10-02 01:00:07 (metadata, not effective date). Amended by Stats. 2024, Ch. 853, Sec. 9.   (AB 3281)   Effective January 1, 2025."
   }
 ]
