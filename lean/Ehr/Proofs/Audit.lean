@@ -1,5 +1,6 @@
 import Lean
 import Ehr.Proofs.Alerts
+import Ehr.Proofs.T2
 
 /-!
 # Proof audit
@@ -53,6 +54,8 @@ namespace Ehr.Proofs
 #print axioms T0_commit_needs_guard
 #print axioms T0_entry_values
 #print axioms commitGuard_iff
+#print axioms T2_receipts_sound
+#print axioms T2_shownOnCommit_shown
 #print axioms T3_macro_step
 #print axioms T3_macro_run
 #print axioms T3_prefill_never_human_only
@@ -67,6 +70,7 @@ namespace Ehr.Proofs
 /-! ## Spec surface (definitions to review) -/
 
 #spec_surface T0_commit_needs_guard
+#spec_surface T2_receipts_sound
 #spec_surface T3_macro_step
 #spec_surface A2_view_firing
 #spec_surface A4_run
