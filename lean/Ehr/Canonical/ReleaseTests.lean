@@ -28,6 +28,19 @@ def servicePa : State × StepResult := one
 #guard (popupCandidates specV1_1 canonicalV1_1 adult servicePa.1 "signOrders").isEmpty
 #guard infoShown specV1_1 canonicalV1_1 adult servicePa.1 "priorAuthStatus"
 
+/-- A service order can follow a complete medication on a fresh slot, keeping
+both orders distinct rather than attaching a service code to the drug line. -/
+def mixedServicePa : State × StepResult := one
+  (more optionalRelease [.click "w1Sign.nav.w1Labs", .click "w1Labs.newServiceOrder",
+    .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+    canonicalV1_1 adult physician specV1_1)
+  (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
+#guard mixedServicePa.2 == .ok
+#guard mixedServicePa.1.currentSlot == 1
+#guard serviceOrderAt mixedServicePa.1 1
+#guard (orderLines mixedServicePa.1).length == 1
+#guard (cap mixedServicePa.1 "priorAuthRequest" 1).map (·.value) == some (.flag true)
+
 -- v2 has teeth: the old UI still reaches sign, but cannot meet the new entry.
 #guard reason (one (run amoxPath canonicalV1_1 adult physician specV2)
   (.click "w1Sign.commit.signOrders") canonicalV1_1 adult physician specV2).2 == "entry required: abxIndication"

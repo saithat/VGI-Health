@@ -164,8 +164,8 @@ protocol checks and education remain checked flags.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
   v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
-  `requestPriorAuth` action. The four request buttons fail at
-  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  `requestPriorAuth` action. The shared-composer and service request buttons fail at
+  their `components[*].kind` action. Add the real constructor to the
   action schema (and the `priorAuth` kind to the known union if desired), then
   parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.

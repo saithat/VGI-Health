@@ -47,8 +47,7 @@ use `pnpm --config.store-dir=/tmp/vgi-content-pnpm-store --filter <pkg> run <scr
 
 Comparator passes its 18 trusted core statements. `lake check` passes with only
 `propext`, `Quot.sound`, and `Classical.choice`. Never run two Lake processes
-concurrently. One mistaken overlap during verification is recorded in the
-conversation; both checks completed successfully.
+concurrently.
 
 Service-only prior auth (CR-9) is complete, with an imaging-only regression.
 The release exports include fifteen role-specific canonicals, and the fourteen
@@ -56,4 +55,5 @@ seeds mutate role-authorized bases. All auto-linked copies use their exact
 declared source.
 
 Main content commits: `8b63640` (workflows/seeds/citations), `6a47bbe`
-(releases/exports/scoping). Core merges: `febb477`, `8c7b3fe`.
+(releases/exports/scoping), `b366a59` (service prior auth, links, role exports).
+Core merges: `febb477`, `8c7b3fe`, `30f8ee8`.
