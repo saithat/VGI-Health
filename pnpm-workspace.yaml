@@ -3,3 +3,9 @@ packages:
   - "agent"
   - "world"
   - "infra/scripts"
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@medplum/core@5.2.13'
+  - '@medplum/react-hooks@5.2.13'
+  - '@medplum/react@5.2.13'
