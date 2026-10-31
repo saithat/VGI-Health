@@ -57,12 +57,14 @@ We ship:
           of random programs and click sequences (this checks the toolchain; the logic is shared)
 ```
 
-**What Lean does at runtime, and what it doesn't.** The Lean module only answers "given this program, state, and click, what is the next state and what does the screen show?" It also turns FHIR resources into the few facts the spec needs. React paints the answer. The app reads and writes Medplum itself, the way any EHR does: signing an order creates a MedicationRequest, and marking allergies reviewed creates a Provenance record. Each UI program declares which fields write to which FHIR elements. Overnight, the checker proves those declarations stay inside the spec ("writes only").
+**Principle: everything is settled before the clinician opens the EHR.** Nothing is checked at runtime, and nothing may break or block unexpectedly during a shift. Every risk is either proven for **all** inputs (every patient record, every click sequence) or tested offline before a version is deployed. The commit guard is an ordinary hard stop (for example, "Sign" stays disabled until patient-ID re-entry is done), and the checker proves offline that a certified UI never leaves the clinician stuck behind it.
+
+**Lean renders the page.** Given the program, the state, the click, and the patient's FHIR records, the Lean module returns the next state and the **complete page tree**: elements, text, the rows of every info panel (allergies, meds, dose check, trend points), and style classes from one fixed stylesheet. A generic painter of about 50–80 lines puts that tree in the browser and turns clicks and keystrokes back into events. It makes no decisions. The theorems cover the page tree, for every record: what must be visible is in the tree, legible, and not hidden, and every panel lists every relevant record. The app reads and writes Medplum itself, the way any EHR does: signing an order creates a MedicationRequest, and marking allergies reviewed creates a Provenance record. Each UI program declares which fields write to which FHIR elements. Overnight, the checker proves those declarations stay inside the spec ("writes only").
 
 **What the proofs cover:** the interpreter clinicians click through, the checker, and deploy are **one Lean codebase**. So the theorems are about the code that actually runs, both online in the browser and offline in the pipeline. Nothing is re-implemented in another language.
 
-**What is tested rather than proven:**
-- **React painting.** The per-version screen check compares every rendered screen of every deployed version with Lean's screen description.
+**What is tested rather than proven (all offline, before deploy):**
+- **The generic painter, the fixed stylesheet, and the browser.** The per-version screen check renders every screen of every candidate version in a headless browser, on sample patients, and confirms the visible page matches Lean's page tree (nothing required is hidden, off-screen, or covered). A version that fails is not deployed.
 - **The Emscripten/WASM toolchain.** Covered by the build-equivalence tests.
 
 **Option A (chosen), with fallback B.** Phase 0 includes a time-boxed (2–3 h) spike that compiles the interpreter to WASM with Emscripten (prior art: xeus-lean runs the Lean runtime in the browser). If the spike fails, fall back to **option B**: the same Lean code runs as a small local service (`ehr serve`) that the app calls on each click for screen logic only. The app still does all Medplum reads and writes. Switching to B needs owner sign-off, and nothing else changes.
@@ -90,7 +92,7 @@ Counterexamples replay in the **real app**, in a dashboard frame, so judges see 
 | Verified logic | **Lean 4.35.0** (core + Batteries; `plausible` for testing; no Mathlib) | One codebase: the interpreter (built to WASM for the app with **Emscripten**), plus the native `ehr` binary (checker, simulate, min-clicks, run-batch, spec-export, deploy, metrics). Proofs checked by `lake check` and Comparator. |
 | FHIR backend | **Medplum**, self-hosted with Docker Compose (server, Postgres, Redis, admin app) | Stores patients, allergies, observations, meds, orders, administrations, Provenance (receipts), Task (in-basket), and the deployed UI programs with their certificates. |
 | Patient data | **Synthea** (Java) | Generated once, trimmed, and committed. `make install` loads it into Medplum. It is also exported as fixtures for fast simulation. |
-| EHR app | **React + Vite + TypeScript**, `@medplum/core`, `@medplum/react` (Mantine), zod | The clinician-facing EHR UI and the dashboard. Calls the Lean WASM interpreter for screen logic and talks directly to Medplum. |
+| EHR app | **React + Vite + TypeScript**, `@medplum/core`, zod; Mantine + `@medplum/react` for the dashboard and sign-in only | EHR screens: a generic painter of Lean's page tree, plus one fixed, reviewed stylesheet. It calls the Lean WASM module for state and the page tree, and talks directly to Medplum for data. |
 | Agent loop | **TypeScript**, with Claude API (`@anthropic-ai/sdk`, default model `claude-opus-5-5`) or Codex CLI (`codex exec --output-schema`) | Overnight redesign and release migration. |
 | World generator | **TypeScript** | Daily schedules from the Synthea population. |
 | Tests | Lean `#guard` / `plausible`; Vitest + fast-check; Playwright ARIA snapshots | |
@@ -111,9 +113,10 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 - TS `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitReturns`.
 - ESLint bans `any`, non-null `!`, `as`, `@ts-ignore`, and `dangerouslySetInnerHTML`.
 - Component kinds are a discriminated union. The renderer uses an exhaustive `switch` with a `never` check.
-- **The app has no UI logic of its own.** State, enabled actions, hard stops, alerts, and screen descriptions all come from the Lean WASM interpreter. React never decides what is shown or enabled.
-- **The renderer is a pure function:** (screen description from the Lean interpreter, FHIR data) → view. No business state in React, and no `useEffect` that writes data. All writes go through one data module (the only module allowed to call Medplum; lint rule).
-- **Generated-program tests:** fast-check generates random valid UI programs; assert the rendered tree contains exactly the components and information the interpreter's screen description lists.
+- **The app has no UI logic of its own.** State, enabled actions, hard stops, alerts, panel contents, and the page tree all come from the Lean WASM module. The EHR screens are drawn by a **generic painter**: it maps each page-tree node (tag and attributes from a fixed whitelist, text, a class from the fixed stylesheet) to a DOM element, and maps DOM events back to Lean events by `data-comp-id`. No component-specific rendering code exists for EHR screens.
+- **The fixed stylesheet** (`app/src/ehr.css`) is reviewed and has no rule that hides, collapses, or moves content off-screen. Lean leaves hidden things out of the tree instead.
+- **One data module** is the only code allowed to call Medplum (lint rule). It passes FHIR records to Lean and writes records on commit.
+- **Painter tests:** fast-check generates random page trees; assert the DOM contains exactly the tree's nodes and text. The per-version screen check runs offline before deploy.
 
 **Guardrails (agents optimize for passing; prevent cheating)**
 - **Owner-owned:** `lean/Ehr/Specs/**` (the hospital spec, one Lean module per version), `lean/Ehr/Props/**` (property definitions), the Comparator statements file, and data-format types. Vendor releases add a new spec module; they never edit an old one. Change these only with explicit owner approval. Never weaken a property or spec to make a check pass.
@@ -147,7 +150,7 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 - G8. One vendor regulatory release, migrated differently for each persona, with every result certified.
 
 **Non-goals (state openly)**
-- We do not verify the LLM, React, the browser, Emscripten, Medplum, or Synthea. React's painting is tested per version, not proven.
+- We do not verify the LLM, the browser, Emscripten, Medplum, or Synthea. The generic painter and the stylesheet are tested offline per version, not proven.
 - **Not in scope (owner decision, Oct 31):** the six extra dashboard views, the Medplum Bot differential test, a third (rename/deprecate) release, and a hospitalist persona.
 - We do not prove clinical appropriateness. We prove conformance to the spec.
 - We do not prove efficiency is optimal. We measure it.
@@ -263,8 +266,9 @@ Banner, field, choice, read-only panel, trend chart, table, alert/warning, butto
 The agent may propose a new kind. It is added only with owner approval, with its Lean meaning, and with the proofs re-checked. Vendor releases may also add kinds (release v1.1, section 9b).
 
 ### App rendering rules
-- Pre-filled values show their provenance (source and date) and need a human confirm.
-- Human-only steps render as unskippable.
+- Lean renders these rules into the page tree (proven):
+  - pre-filled values show their provenance (source and date) and need a human confirm;
+  - human-only steps render as unskippable.
 - **FHIR resources used:**
   - Patient, Encounter;
   - AllergyIntolerance (its version IDs back the receipts);
@@ -344,6 +348,8 @@ Each one is stated in plain words and quantifies over **all** specs and programs
 - **T7 (stretch) Counterexamples are genuine:** if the checker rejects, the returned path is a real run that violates the named property.
 - **T8 Releases only tighten:** if spec B only adds requirements to spec A, every program that satisfies B also satisfies A. Applied to the releases: `V1_1` extends `V1` and `V2` extends `V1_1`, so no customization certified against a later spec loses an earlier guarantee.
 - **T9 Minimum clicks is exact:** `min-clicks` returns the length of a real completing path, and no shorter completing path exists.
+- **T10 The page shows what must be shown (any program, any record):** every component the interpreter marks as shown appears in the page tree, with its text, at legible size, and with no hidden ancestor. Nothing marked hidden appears. On a commit screen, every required review item appears with its content. The commit button is enabled in the tree exactly when the guard holds.
+- **T11 Panels are complete (any record):** each info panel lists every relevant record from the patient's FHIR data. For example, the allergy panel lists every active AllergyIntolerance, and the current-meds panel every active MedicationRequest. Pre-filled values show their provenance.
 
 ### 7.5 Seeded bad programs (permanent regression tests)
 1. The allergy list moved into an unopened tab on the sign screen.
@@ -610,7 +616,8 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 - [ ] Seeded bad programs 9–12 (alerts) fail with counterexamples. A1–A4 hold for every deployed version.
 - [ ] W7 (refill requests) is built and used in P1's simulated days.
 - [ ] Release v1.1: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
-- [ ] The per-version screen check passes for every deployed version.
+- [ ] The per-version screen check passes for every deployed version, and runs offline before deploy (a failing version is never deployed).
+- [ ] EHR screens are drawn by the generic painter from Lean's page tree; T10 and T11 are proven.
 - [ ] All five personas show test-day clicks, keystrokes, scrolls, and KLM time falling toward the floor, with minimum clicks per task reported for every version, across busy and quiet days, and their final UIs differ meaningfully.
 - [ ] Every night has a complete decision record with alternatives, plus predicted versus measured savings.
 - [ ] At least three logged rejections with counterexamples (allergy hidden, ID re-entry pre-filled, lb weight).
@@ -625,12 +632,13 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 
 - **Proven about running code:**
   - the interpreter in the app, which is the same Lean code: the hard stop (T0), receipts (T2), human-only steps (T3), abstraction facts (T5), macros (T6);
+  - the page tree and panel contents (T10, T11);
   - the checker, including alerts A1–A4 (T1);
   - deploy (T4);
   - minimum clicks (T9).
 - **Proven about the specs:** releases only tighten (T8).
 - **Tested:**
-  - every deployed version's rendered screens match Lean's screen descriptions (headless check);
+  - the generic painter, the fixed stylesheet, and the browser: every deployed version's screens match Lean's page tree in a headless browser (offline, before deploy);
   - native and WASM builds agree (build-equivalence tests).
 - **Trusted:**
   - the Lean compiler and Emscripten;
