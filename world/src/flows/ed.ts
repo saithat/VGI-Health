@@ -486,7 +486,7 @@ export function runEd(b: DayBuild): void {
   const rng = b.rng("ed");
   const ctx = b.ctx;
   const vol = ctx.personaVolume.P2;
-  const n = Math.max(9, Math.min(26, Math.round(16 * vol) + rng.int(-1, 1)));
+  const n = Math.max(12, Math.min(22, Math.round(16 * vol) + rng.int(-1, 1)));
 
   // Surgical consults today: the scripted appendicitis plus random ones.
   const consults: CaseDiagnosis[] = [];

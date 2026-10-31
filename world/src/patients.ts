@@ -112,10 +112,10 @@ const MED_RULES: readonly [DrugName, RegExp][] = [
   ["atorvastatin", /atorvastatin/i],
   ["warfarin", /warfarin/i],
   ["apixaban", /apixaban|eliquis/i],
-  ["insulin glargine", /glargine|lantus/i],
-  ["insulin lispro", /lispro|humalog/i],
+  ["insulin glargine", /glargine|lantus|basaglar|semglee|toujeo/i],
+  ["insulin lispro", /lispro|humalog|admelog|lyumjev/i],
   ["albuterol", /albuterol/i],
-  ["hydrocodone-acetaminophen", /hydrocodone|norco|vicodin/i],
+  ["hydrocodone-acetaminophen", /(?=.*(?:acetaminophen|apap))(?=.*hydrocodone)|norco|vicodin/i],
   ["oxycodone", /oxycodone|percocet|oxycontin/i],
   ["tramadol", /tramadol/i],
   ["lorazepam", /lorazepam|ativan/i],
@@ -134,7 +134,7 @@ function strengthFor(display: string, word: RegExp): number | undefined {
 
 function homeMedFrom(drug: DrugName, display: string): HomeMed {
   const rule = MED_RULES.find(([d]) => d === drug);
-  const n = strengthFor(display, rule?.[1] ?? new RegExp(drug));
+  const n = strengthFor(display, drug === "hydrocodone-acetaminophen" ? /hydrocodone|norco|vicodin/ : rule?.[1] ?? new RegExp(drug));
   return { ...homeMedCore(drug, display, n), origin: "record" };
 }
 
@@ -158,8 +158,10 @@ function homeMedCore(drug: DrugName, display: string, n: number | undefined): Om
       return { drug, dose: 4, unit: "units", route: "SC", freq: "TIDAC", prn: false, display };
     case "albuterol":
       return { drug, dose: 180, unit: "mcg", route: "INH", freq: "q4h", prn: true, display };
-    case "oxycodone":
-      return { drug, dose: n ?? 5, unit: "mg", route: "PO", freq: "q6h", prn: true, display };
+    case "oxycodone": {
+      const er = /extended release|oxycontin/i.test(display);
+      return { drug, dose: n ?? 5, unit: "mg", route: "PO", freq: er ? "q12h" : "q6h", prn: !er, display };
+    }
     case "hydrocodone-acetaminophen":
       return { drug, dose: n !== undefined && n <= 10 ? n : 5, unit: "mg", route: "PO", freq: "q6h", prn: true, display };
     case "tramadol":
@@ -180,7 +182,7 @@ function homeMedCore(drug: DrugName, display: string, n: number | undefined): Om
 function allergyClasses(text: string, category: string): string[] {
   const out: string[] = [];
   if (/penicillin|amoxicillin|ampicillin|\b7980\b|\b7984\b|\b91936005\b|\b294505008\b/i.test(text)) out.push("penicillin");
-  if (/cephalosporin|cefazolin|ceftriaxone|cephalexin/i.test(text)) out.push("cephalosporin");
+  if (/cephalosporin|cefazolin|ceftriaxone|cephalexin|cefdinir/i.test(text)) out.push("cephalosporin");
   if (/sulfa|sulfonamide/i.test(text)) out.push("sulfonamide");
   if (/aspirin|nsaid|ibuprofen/i.test(text)) out.push("nsaid");
   if (/morphine|codeine|opioid/i.test(text)) out.push("opioid");

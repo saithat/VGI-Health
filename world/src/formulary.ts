@@ -3,11 +3,11 @@
  * generic name (what `OrderChoice.drug` carries). Lean owns the real formulary
  * (`Ehr/Formulary.lean`); this table only drives the generator and its tests,
  * and should be kept aligned with the Lean one. Each entry carries the RxNorm
- * ingredient code in case the Lean side keys `OrderChoice.drug` by RxNorm.
+ * ingredient code for FHIR medication codings.
  *
  * `weightRange` is the per-dose range the generator keeps weight-based doses
- * inside (the Lean `minMgPerKgTenths`/`maxMgPerKgTenths` should match). For
- * insulin and heparin the range is in units/kg.
+ * inside (the Lean `minMgPerKgTenths`/`maxMgPerKgTenths` should match). A missing
+ * range corresponds to Lean’s 0/0 (no mg/kg check).
  *
  * Controlled substances (California CURES rule, owner-approved addition):
  * `schedule` is the DEA schedule; `mmeFactor` is the CDC 2022 oral morphine
@@ -50,7 +50,8 @@ export interface DrugDef {
   /** ISMP-style high-alert flag used by the generator (insulin and heparin per BRIEF W4). */
   highAlert: boolean;
   antibiotic: boolean;
-  /** Per-dose weight-based range (mg/kg, or units/kg for insulin/heparin). */
+  interactsWith: readonly string[];
+  /** Per-dose weight-based range (mg/kg, matching Lean). */
   weightRange?: { min: number; max: number };
   /** DEA schedule for controlled substances. */
   schedule?: "II" | "III" | "IV" | "V";
@@ -59,31 +60,31 @@ export interface DrugDef {
 }
 
 export const FORMULARY: Record<DrugName, DrugDef> = {
-  amoxicillin: { name: "amoxicillin", rxnorm: "723", classes: ["antibiotic", "penicillin", "beta-lactam"], highAlert: false, antibiotic: true, weightRange: { min: 20, max: 50 } },
-  cefazolin: { name: "cefazolin", rxnorm: "2180", classes: ["antibiotic", "cephalosporin", "beta-lactam"], highAlert: false, antibiotic: true, weightRange: { min: 15, max: 40 } },
-  ceftriaxone: { name: "ceftriaxone", rxnorm: "2193", classes: ["antibiotic", "cephalosporin", "beta-lactam"], highAlert: false, antibiotic: true, weightRange: { min: 10, max: 100 } },
-  azithromycin: { name: "azithromycin", rxnorm: "18631", classes: ["antibiotic", "macrolide"], highAlert: false, antibiotic: true, weightRange: { min: 2.5, max: 12 } },
-  vancomycin: { name: "vancomycin", rxnorm: "11124", classes: ["antibiotic", "glycopeptide"], highAlert: false, antibiotic: true, weightRange: { min: 10, max: 22 } },
-  lisinopril: { name: "lisinopril", rxnorm: "29046", classes: ["ace-inhibitor", "antihypertensive"], highAlert: false, antibiotic: false },
-  metformin: { name: "metformin", rxnorm: "6809", classes: ["biguanide", "antidiabetic"], highAlert: false, antibiotic: false },
-  atorvastatin: { name: "atorvastatin", rxnorm: "83367", classes: ["statin"], highAlert: false, antibiotic: false },
-  warfarin: { name: "warfarin", rxnorm: "11289", classes: ["anticoagulant", "vitamin-k-antagonist"], highAlert: false, antibiotic: false },
-  apixaban: { name: "apixaban", rxnorm: "1364430", classes: ["anticoagulant", "doac"], highAlert: false, antibiotic: false },
-  enoxaparin: { name: "enoxaparin", rxnorm: "67108", classes: ["anticoagulant", "lmwh"], highAlert: false, antibiotic: false, weightRange: { min: 0.3, max: 1.1 } },
-  heparin: { name: "heparin", rxnorm: "5224", classes: ["anticoagulant", "heparin"], highAlert: true, antibiotic: false, weightRange: { min: 40, max: 100 } },
-  "insulin glargine": { name: "insulin glargine", rxnorm: "274783", classes: ["insulin", "antidiabetic"], highAlert: true, antibiotic: false, weightRange: { min: 0.05, max: 0.5 } },
-  "insulin lispro": { name: "insulin lispro", rxnorm: "86009", classes: ["insulin", "antidiabetic"], highAlert: true, antibiotic: false, weightRange: { min: 0.02, max: 0.2 } },
-  morphine: { name: "morphine", rxnorm: "7052", classes: ["opioid", "controlled"], highAlert: false, antibiotic: false, weightRange: { min: 0.05, max: 0.1 }, schedule: "II", mmeFactor: 1 },
-  hydromorphone: { name: "hydromorphone", rxnorm: "3423", classes: ["opioid", "controlled"], highAlert: false, antibiotic: false, weightRange: { min: 0.005, max: 0.06 }, schedule: "II", mmeFactor: 5 },
-  ondansetron: { name: "ondansetron", rxnorm: "26225", classes: ["antiemetic"], highAlert: false, antibiotic: false, weightRange: { min: 0.1, max: 0.15 } },
-  acetaminophen: { name: "acetaminophen", rxnorm: "161", classes: ["analgesic", "antipyretic"], highAlert: false, antibiotic: false, weightRange: { min: 10, max: 15 } },
-  ibuprofen: { name: "ibuprofen", rxnorm: "5640", classes: ["nsaid", "analgesic"], highAlert: false, antibiotic: false, weightRange: { min: 5, max: 10 } },
-  albuterol: { name: "albuterol", rxnorm: "435", classes: ["bronchodilator", "beta-agonist"], highAlert: false, antibiotic: false, weightRange: { min: 0.1, max: 0.3 } },
-  oxycodone: { name: "oxycodone", rxnorm: "7804", classes: ["opioid", "controlled"], highAlert: false, antibiotic: false, schedule: "II", mmeFactor: 1.5 },
-  "hydrocodone-acetaminophen": { name: "hydrocodone-acetaminophen", rxnorm: "214182", classes: ["opioid", "controlled", "analgesic"], highAlert: false, antibiotic: false, schedule: "II", mmeFactor: 1 },
-  tramadol: { name: "tramadol", rxnorm: "10689", classes: ["opioid", "controlled"], highAlert: false, antibiotic: false, schedule: "IV", mmeFactor: 0.2 },
-  lorazepam: { name: "lorazepam", rxnorm: "6470", classes: ["benzodiazepine", "controlled"], highAlert: false, antibiotic: false, schedule: "IV" },
-  alprazolam: { name: "alprazolam", rxnorm: "596", classes: ["benzodiazepine", "controlled"], highAlert: false, antibiotic: false, schedule: "IV" },
+  "amoxicillin": { name: "amoxicillin", rxnorm: "723", classes: ["penicillin", "betaLactam", "antibiotic"], highAlert: false, antibiotic: true, interactsWith: ["vitaminKAntagonist"], weightRange: { min: 10, max: 50 } },
+  "cefazolin": { name: "cefazolin", rxnorm: "2180", classes: ["cephalosporin", "betaLactam", "antibiotic"], highAlert: false, antibiotic: true, interactsWith: [], weightRange: { min: 20, max: 50 } },
+  "ceftriaxone": { name: "ceftriaxone", rxnorm: "2193", classes: ["cephalosporin", "betaLactam", "antibiotic"], highAlert: false, antibiotic: true, interactsWith: ["calciumIv"], weightRange: { min: 25, max: 100 } },
+  "azithromycin": { name: "azithromycin", rxnorm: "18631", classes: ["macrolide", "antibiotic", "qtProlonging"], highAlert: false, antibiotic: true, interactsWith: ["qtProlonging", "vitaminKAntagonist"], weightRange: { min: 5, max: 10 } },
+  "vancomycin": { name: "vancomycin", rxnorm: "11124", classes: ["glycopeptide", "antibiotic"], highAlert: false, antibiotic: true, interactsWith: ["aminoglycoside", "nsaid"], weightRange: { min: 10, max: 20 } },
+  "lisinopril": { name: "lisinopril", rxnorm: "29046", classes: ["aceInhibitor", "antihypertensive"], highAlert: false, antibiotic: false, interactsWith: ["potassiumSparing", "nsaid"], weightRange: { min: 0.1, max: 0.6 } },
+  "metformin": { name: "metformin", rxnorm: "6809", classes: ["biguanide", "antidiabetic"], highAlert: false, antibiotic: false, interactsWith: ["iodinatedContrast"] },
+  "atorvastatin": { name: "atorvastatin", rxnorm: "83367", classes: ["statin", "lipidLowering"], highAlert: false, antibiotic: false, interactsWith: ["strongCyp3a4Inhibitor"] },
+  "warfarin": { name: "warfarin", rxnorm: "11289", classes: ["anticoagulant", "vitaminKAntagonist"], highAlert: true, antibiotic: false, interactsWith: ["anticoagulant", "nsaid", "antiplatelet", "macrolide"], weightRange: { min: 0.1, max: 0.3 } },
+  "apixaban": { name: "apixaban", rxnorm: "1364430", classes: ["anticoagulant", "factorXaInhibitor"], highAlert: true, antibiotic: false, interactsWith: ["anticoagulant", "nsaid", "antiplatelet"] },
+  "enoxaparin": { name: "enoxaparin", rxnorm: "67108", classes: ["anticoagulant", "lowMolecularWeightHeparin"], highAlert: true, antibiotic: false, interactsWith: ["anticoagulant", "nsaid", "antiplatelet"], weightRange: { min: 0.5, max: 1.5 } },
+  "heparin": { name: "heparin", rxnorm: "5224", classes: ["anticoagulant", "unfractionatedHeparin"], highAlert: true, antibiotic: false, interactsWith: ["anticoagulant", "nsaid", "antiplatelet"] },
+  "insulin glargine": { name: "insulin glargine", rxnorm: "274783", classes: ["basalInsulin", "insulin"], highAlert: true, antibiotic: false, interactsWith: [] },
+  "insulin lispro": { name: "insulin lispro", rxnorm: "86009", classes: ["bolusInsulin", "insulin"], highAlert: true, antibiotic: false, interactsWith: [] },
+  "morphine": { name: "morphine", rxnorm: "7052", classes: ["opioid", "analgesic", "controlled-II-IV"], highAlert: true, antibiotic: false, interactsWith: ["opioid", "benzodiazepine", "sedative"], weightRange: { min: 0.1, max: 0.2 }, schedule: "II", mmeFactor: 1 },
+  "hydromorphone": { name: "hydromorphone", rxnorm: "3423", classes: ["opioid", "analgesic", "controlled-II-IV"], highAlert: true, antibiotic: false, interactsWith: ["opioid", "benzodiazepine", "sedative"], schedule: "II", mmeFactor: 4 },
+  "oxycodone": { name: "oxycodone", rxnorm: "7804", classes: ["opioid", "analgesic", "controlled-II-IV"], highAlert: true, antibiotic: false, interactsWith: ["opioid", "benzodiazepine", "sedative"], weightRange: { min: 0.1, max: 0.2 }, schedule: "II", mmeFactor: 1.5 },
+  "hydrocodone-acetaminophen": { name: "hydrocodone-acetaminophen", rxnorm: "214182", classes: ["opioid", "analgesic", "acetaminophen", "controlled-II-IV"], highAlert: true, antibiotic: false, interactsWith: ["opioid", "benzodiazepine", "sedative"], weightRange: { min: 0.1, max: 0.2 }, schedule: "II", mmeFactor: 1 },
+  "tramadol": { name: "tramadol", rxnorm: "10689", classes: ["opioid", "analgesic", "serotonergic", "controlled-II-IV"], highAlert: true, antibiotic: false, interactsWith: ["opioid", "benzodiazepine", "sedative", "serotonergic"], weightRange: { min: 1, max: 2 }, schedule: "IV", mmeFactor: 0.2 },
+  "lorazepam": { name: "lorazepam", rxnorm: "6470", classes: ["benzodiazepine", "sedative", "controlled-II-IV"], highAlert: false, antibiotic: false, interactsWith: ["opioid", "sedative"], schedule: "IV" },
+  "alprazolam": { name: "alprazolam", rxnorm: "596", classes: ["benzodiazepine", "sedative", "controlled-II-IV"], highAlert: false, antibiotic: false, interactsWith: ["opioid", "sedative"], schedule: "IV" },
+  "ondansetron": { name: "ondansetron", rxnorm: "26225", classes: ["serotoninAntagonist", "antiemetic", "qtProlonging"], highAlert: false, antibiotic: false, interactsWith: ["qtProlonging"], weightRange: { min: 0.1, max: 0.2 } },
+  "acetaminophen": { name: "acetaminophen", rxnorm: "161", classes: ["acetaminophen", "analgesic", "antipyretic"], highAlert: false, antibiotic: false, interactsWith: [], weightRange: { min: 10, max: 15 } },
+  "ibuprofen": { name: "ibuprofen", rxnorm: "5640", classes: ["nsaid", "analgesic", "antipyretic"], highAlert: false, antibiotic: false, interactsWith: ["anticoagulant", "aceInhibitor", "glycopeptide"], weightRange: { min: 5, max: 10 } },
+  "albuterol": { name: "albuterol", rxnorm: "435", classes: ["betaAgonist", "bronchodilator"], highAlert: false, antibiotic: false, interactsWith: ["betaBlocker"], weightRange: { min: 0.1, max: 0.2 } },
 };
 
 export const DRUG_NAMES: readonly DrugName[] = [

@@ -1,12 +1,11 @@
 /**
  * zod schemas for the simulation formats the world generator emits.
  *
- * These MIRROR the Lean types in docs/design/core-model.md section 7
+ * These validate the Lean types in Ehr/Core/Types.lean and Json.lean
  * (`Workflow`, `UnitKind`, `OrderChoice`, `TaskChoices`, `Task`, `DaySchedule`,
- * `PersonaParams`). The Lean types are the single source of truth. This file is
- * a temporary hand-written mirror (core-model.md section 6) and must be
- * replaced by, or checked against, the TS/zod generated from Lean once lane A
- * emits it.
+ * `PersonaParams`). Lean is the single source of truth. Enum values come from
+ * generated TS; test/synthea.test.ts round-trips every real-population schedule
+ * through Lean’s actual derived FromJson/ToJson to detect contract drift.
  *
  * JSON conventions (Lean derived `ToJson`/`FromJson`):
  * - Enum constructors serialize as plain strings ("W1", "mgPerKg").
@@ -19,6 +18,7 @@
  * - Objects are strict: an unknown key is a drift from the Lean type.
  */
 import { z } from "zod";
+import { WorkflowValues, UnitKindValues, RoleValues } from "../../lean/generated/ehr-types";
 
 /** Lean `Nat`. */
 export const Nat = z.number().int().nonnegative();
@@ -27,16 +27,16 @@ export const Nat = z.number().int().nonnegative();
 const opt = <T extends z.ZodType>(t: T) => t.nullable().optional();
 
 /** `inductive Workflow | W1 | W2 | W3 | W4 | W5 | W6 | W7` (BRIEF section 5). */
-export const WorkflowSchema = z.enum(["W1", "W2", "W3", "W4", "W5", "W6", "W7"]);
+export const WorkflowSchema = z.enum(WorkflowValues);
 export type Workflow = z.infer<typeof WorkflowSchema>;
 export const WORKFLOWS: readonly Workflow[] = WorkflowSchema.options;
 
 /** `inductive UnitKind | kg | lb | g | mg | mcg | mL | mgPerKg | units | none`. */
-export const UnitKindSchema = z.enum(["kg", "lb", "g", "mg", "mcg", "mL", "mgPerKg", "units", "none"]);
+export const UnitKindSchema = z.enum(UnitKindValues);
 export type UnitKind = z.infer<typeof UnitKindSchema>;
 
 /** `inductive Role | physician | np | rn | surgeon`. */
-export const RoleSchema = z.enum(["physician", "np", "rn", "surgeon"]);
+export const RoleSchema = z.enum(RoleValues);
 export type Role = z.infer<typeof RoleSchema>;
 
 /** Persona ids "P1" … "P5" (Lean: `String`). */
@@ -48,9 +48,7 @@ export const PERSONAS: readonly Persona[] = PersonaSchema.options;
  * `structure OrderChoice`: one clinical decision, fixed per scenario and
  * independent of the UI.
  *
- * `drug`: the core-model comment says "RxNorm code from the formulary"; the
- * world lane was asked to emit lowercase generic names (see
- * `formulary.ts`, which also carries the RxNorm ingredient code for each).
+ * `drug`: the lowercase generic formulary name, per docs/design/changes.md.
  */
 export const OrderChoiceSchema = z.strictObject({
   drug: z.string().min(1),
