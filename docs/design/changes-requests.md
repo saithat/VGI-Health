@@ -258,3 +258,19 @@ by lean-core because of lane ownership.
 **WASM:** rebuild interpreter artifacts after merging the core guard change;
 the checked-in app binary predates this constraint. Use native/WASM equivalence
 coverage for confirmed nonzero Schedule II refills and mixed-line constraints.
+
+
+**World compatibility blocker (validated after the core change):**
+`pnpm --filter world test` now reports 91 passing tests and one failure in
+`test/synthea.test.ts`'s full formulary equality contract. Append `"scheduleII"`
+to the `classes` arrays in `world/src/formulary.ts` for morphine,
+hydromorphone, oxycodone and hydrocodone-acetaminophen, matching the order in
+Lean. Keep the equality contract unchanged. World's albuterol cap is already
+5 mg and agrees with the new Lean cap. The exact world/agent compatibility
+patch is prepared locally at `/tmp/lean-core-compat.patch`; the requested
+ownership exception is pending. Core implementation commits are `0b929f0`
+(albuterol) and `4a11bc8` (constraints, proofs and regenerated TypeScript).
+
+Validation of `4a11bc8`: Lean build, kernel check, Comparator (all 18 frozen
+statements), 24 permitted-only axiom audits, and generated-sample strict tsc
+pass. Workspace builds/typechecks/lints pass; agent 31/app 90 tests pass.
