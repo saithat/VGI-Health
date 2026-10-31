@@ -101,6 +101,17 @@ theorem clickCommit_popup (sp : Spec) (prog : Program) (facts : Facts) (user : U
       · split <;> exact PopupFrom.same rfl
     · exact PopupFrom.same rfl
 
+theorem clickAlert_popup (sp : Spec) (prog : Program) (facts : Facts)
+    (s : State) (a : AlertId) : PopupFrom sp prog facts s (clickAlert sp prog facts s a).1 := by
+  unfold clickAlert
+  split
+  · exact PopupFrom.same rfl
+  · rename_i al _
+    split
+    · exact PopupFrom.same rfl
+    · rename_i p hp
+      exact Or.inr (Or.inr ⟨al.commit, p, List.mem_of_find?_eq_some hp, rfl⟩)
+
 theorem markReviewed_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (i : InfoId) : (markReviewed sp prog facts user s i).1.popup? = s.popup? := by
   unfold markReviewed
@@ -116,6 +127,9 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     PopupFrom sp prog facts s (clickCore sp prog facts user actor s c).1 := by
   unfold clickCore
   split
+  · cases actor
+    · exact clickAlert_popup ..
+    · exact PopupFrom.same rfl
   · exact PopupFrom.same (goTo_popup ..)
   · exact PopupFrom.same (goBack_popup ..)
   · cases actor
@@ -124,7 +138,9 @@ theorem clickCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
   · cases actor
     · exact PopupFrom.same (markReviewed_popup ..)
     · exact PopupFrom.same rfl
-  · exact PopupFrom.same (prefillScreen_popup ..)
+  · split
+    · exact PopupFrom.same (prefillScreen_popup ..)
+    · exact PopupFrom.same rfl
   · exact PopupFrom.same (requestPriorAuth_popup ..)
   · exact PopupFrom.same rfl
   · cases actor <;> exact PopupFrom.same rfl
@@ -198,11 +214,14 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
       · rfl
       · unfold clickCore
         split
+        · rfl
         · exact goTo_popup ..
         · exact goBack_popup ..
         · rfl
         · rfl
-        · exact prefillScreen_popup ..
+        · split
+          · exact prefillScreen_popup ..
+          · rfl
         · exact requestPriorAuth_popup ..
         · rfl
         · rfl
@@ -344,7 +363,7 @@ example : atSignAmox.popup? ≠ some ("drugAllergy", "amoxicillin@3") ∧
 /-- The tiny spec's care-gap rule (passive). -/
 def careGapRule : AlertSpec :=
   { id := "careGap", label := "Care gap due", cond := .careGap, tier := .passive,
-    commit := "signOrders", screens := ["order"] }
+    commit := "signOrders", screens := ["W1"] }
 
 /-- A4's hypotheses hold on the tiny spec: the care-gap rule is passive and is
 the rule its ID names. -/

@@ -1,5 +1,6 @@
 import Ehr
 import Ehr.Api
+import Ehr.Render.Cli
 
 /-!
 # `ehr` command-line tool (native)
@@ -68,6 +69,14 @@ def runBatch (path : System.FilePath) : IO UInt32 := do
 /-- Entry point. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | "render-screens" :: rest => Render.Cli.run rest
+  | ["render"] => stdinCommand Render.RenderInput Render.PageNode Render.runRender
+  | ["facts"] =>
+    match decodeJson Render.Fhir.FactsInput (← readStdin) with
+    | .error e => IO.eprintln e; IO.println (errorJson e); return 1
+    | .ok i => match Render.Fhir.runFacts i with
+      | .error e => IO.eprintln e; IO.println (errorJson e); return 1
+      | .ok out => IO.println (encodeJson out); return 0
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView

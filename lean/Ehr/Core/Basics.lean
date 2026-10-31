@@ -251,6 +251,29 @@ def orderLines (s : State) : List (Nat × String) :=
       | _ => none
     else none
 
+/-- Effective order kind; old schedules without a kind describe medications. -/
+def OrderChoice.orderKind (o : OrderChoice) : OrderKind :=
+  o.kind?.getD .medication
+
+/-- Service orders are the order kinds covered by the CMS-0057-F prior-auth
+release; drugs have their own authorization workflows. -/
+def OrderChoice.isPriorAuthService (o : OrderChoice) : Bool :=
+  o.orderKind != .medication
+
+/-- A captured imaging/procedure order has a kind and a nonempty service code
+on the same slot, with no drug on that slot. Drug alerts continue to use only
+`orderLines`; a service code is never interpreted as a generic drug name. -/
+def serviceOrderAt (s : State) (slot : Nat) : Bool :=
+  !(orderLines s).any (·.1 == slot) &&
+  s.captured.any (fun x => x.slot == slot && x.element == "orderKind" &&
+    (x.value == .code "imaging" || x.value == .code "procedure")) &&
+  s.captured.any (fun x => x.slot == slot && x.element == "orderCode" &&
+    match x.value with | .code code => !code.isEmpty | _ => false)
+
+/-- Any medication or service order exists on this slot. -/
+def hasOrderAt (s : State) (slot : Nat) : Bool :=
+  (orderLines s).any (·.1 == slot) || serviceOrderAt s slot
+
 /-- Doses per day for a frequency code (`q4h` 6, `q6h` 4, `q8h` 3, `q12h` 2,
 `daily` 1, `bid` 2, `tid` 3, `qid` 4; case does not matter). Unknown: none.
 Written over characters so the kernel can evaluate it. -/

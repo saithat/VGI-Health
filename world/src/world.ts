@@ -77,7 +77,7 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
 
   // Medical inpatients already on the ward (older adults first, so young adults stay free for ED surgical presentations).
   const censusCap = maxCensus(pop);
-  const nMedical = Math.max(1, Math.min(censusCap - 1, rng.int(3, 5)));
+  const nMedical = Math.max(1, Math.min(censusCap - 1, rng.int(6, 8)));
   for (let k = 0; k < nMedical; k++) {
     const r = rng.fork(`init-ip-${k}`);
     const p = b.picker.pick(r, (q) => q.ageYears >= 45) ?? b.picker.pick(r, (q) => q.ageYears >= 18);

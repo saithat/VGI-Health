@@ -5,9 +5,9 @@
  * high-alert meds (insulin, heparin) appear in the passes; some doses are
  * held or refused with a reason; every patient gets a handoff.
  *
- * Note-section conventions for W4: "vitals", "assessment", "newOrdersReview",
- * "painScore:<0-10>", "painReassessment:<0-10>", "prnReason:<reason>",
- * "sedationScore:<0-3>", "hold:<drug>:<reason>", "refused:<drug>:<reason>", "handoff".
+ * Typed pain scores and per-order hold reasons describe administration decisions.
+ * Reassessment is a note section plus a typed pain score; PRN reasons and
+ * sedation scores use structured FHIR observations.
  */
 import type { DayBuild } from "../build";
 import { SHIFTS } from "../calendar";
@@ -70,12 +70,12 @@ function gone(ip: Inpatient, day: number, clock: number): boolean {
 
 /** Hold or refusal decision for one due dose (fixed clinical fact, not UI-dependent). */
 function holdReason(o: OrderChoice, ip: Inpatient, day: number, clock: number, rng: Rng): string | null {
-  if (o.drug === "insulin lispro" && npo(ip, day, clock)) return "hold:insulin lispro:npo";
-  if (o.drug === "lisinopril" && rng.chance(0.08)) return "hold:lisinopril:sbp-below-100";
-  if (o.drug === "insulin lispro" && rng.chance(0.08)) return "hold:insulin lispro:poor-oral-intake";
-  if (o.drug === "warfarin" && rng.chance(0.05)) return "hold:warfarin:inr-above-range";
-  if ((o.drug === "heparin" || o.drug === "enoxaparin") && rng.chance(0.02)) return `hold:${o.drug}:platelets-low`;
-  if (o.route === "PO" && rng.chance(0.025)) return `refused:${o.drug}:patient-refused`;
+  if (o.drug === "insulin lispro" && npo(ip, day, clock)) return "npo";
+  if (o.drug === "lisinopril" && rng.chance(0.08)) return "sbp-below-100";
+  if (o.drug === "insulin lispro" && rng.chance(0.08)) return "poor-oral-intake";
+  if (o.drug === "warfarin" && rng.chance(0.05)) return "inr-above-range";
+  if ((o.drug === "heparin" || o.drug === "enoxaparin") && rng.chance(0.02)) return "platelets-low";
+  if (o.route === "PO" && rng.chance(0.025)) return "patient-refused";
   return null;
 }
 
@@ -109,7 +109,7 @@ export function runWard(b: DayBuild): void {
       for (const o of due) {
         const hold = holdReason(o, ip, day, clock, prng);
         if (hold === null) administer.push(o);
-        else notes.push(hold);
+        else administer.push({ ...o, holdReason: hold });
       }
       if (administer.length === 0 && notes.length === 0) continue;
       b.addTask("P3", "W4", ip.patientId, toMin(clock) + (idx % 6) * 3, { administer, noteSections: notes }, [], b.interruptions("P3", prng));
@@ -135,24 +135,24 @@ export function runWard(b: DayBuild): void {
       if (choice === undefined) continue;
       given.push(clock);
       const score = hasClass(choice.drug, "opioid") ? prng.int(6, 9) : prng.int(3, 5);
-      b.addTask("P3", "W4", ip.patientId, toMin(clock), { administer: [choice], noteSections: [`painScore:${score}`] }, [], b.interruptions("P3", prng));
+      b.addTask("P3", "W4", ip.patientId, toMin(clock), { administer: [choice], painScore: score }, [], b.interruptions("P3", prng));
       const reassessAt = clock + (choice.route === "IV" ? 30 : 60);
       if (!gone(ip, day, reassessAt)) {
-        b.addTask("P3", "W4", ip.patientId, toMin(reassessAt), { noteSections: [`painReassessment:${Math.max(0, score - prng.int(2, 5))}`] }, [], b.interruptions("P3", prng, 0.5));
+        b.addTask("P3", "W4", ip.patientId, toMin(reassessAt), { painScore: Math.max(0, score - prng.int(2, 5)), noteSections: ["painReassessment"] }, [], b.interruptions("P3", prng, 0.5));
       }
     }
     // PRN antiemetic.
     const nauseaClock = prng.int(8 * 60, 18 * 60);
     const antiemetic = activeOrders(ip, day, nauseaClock).find((o) => o.prn && o.drug === "ondansetron");
     if (antiemetic !== undefined && prng.chance(ip.service === "surgery" ? 0.35 : 0.12) && !gone(ip, day, nauseaClock) && !offWard(ip, day, nauseaClock)) {
-      b.addTask("P3", "W4", ip.patientId, toMin(nauseaClock), { administer: [antiemetic], noteSections: ["prnReason:nausea"] }, [], b.interruptions("P3", prng));
+      b.addTask("P3", "W4", ip.patientId, toMin(nauseaClock), { administer: [antiemetic], observations: [{ code: "prnReason", value: "nausea" }] }, [], b.interruptions("P3", prng));
     }
 
     // PRN benzodiazepine (home benzodiazepine continued, or new anxiety PRN): sedation check before giving.
     const anxClock = prng.int(9 * 60, 18 * 60);
     const benzo = activeOrders(ip, day, anxClock).find((o) => o.prn && hasClass(o.drug, "benzodiazepine"));
     if (benzo !== undefined && prng.chance(0.45) && !gone(ip, day, anxClock) && !offWard(ip, day, anxClock)) {
-      b.addTask("P3", "W4", ip.patientId, toMin(anxClock), { administer: [benzo], noteSections: ["prnReason:anxiety", `sedationScore:${prng.int(0, 1)}`] }, [], b.interruptions("P3", prng));
+      b.addTask("P3", "W4", ip.patientId, toMin(anxClock), { administer: [benzo], observations: [{ code: "prnReason", value: "anxiety" }, { code: "sedationScore", value: prng.int(0, 1) }] }, [], b.interruptions("P3", prng));
     }
 
     // Handoff at end of shift.
