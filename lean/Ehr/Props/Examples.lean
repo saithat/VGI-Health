@@ -19,7 +19,9 @@ open Ehr Ehr.Examples.Tiny
 
 /-! ## A good tiny program -/
 
-/-- The sign screen with the allergy list pinned (not in a tab). -/
+/-- The sign screen with the allergy list pinned (not in a tab), and a button
+back to rooming (without it, a user who reaches this screen with the weight
+unconfirmed can never sign: the order screen has no way back). -/
 def goodSignScreen : Screen where
   id := "sign"
   title := "Sign orders"
@@ -34,7 +36,8 @@ def goodSignScreen : Screen where
     { id := "cosignField", kind := .field "cosigner" (.fixed 0) .none
       label := "Second signer", tag := "cosign" },
     { id := "signButton", kind := .button (.commit "signOrders"), label := "Sign", tag := "sign" },
-    { id := "backButton", kind := .button .back, label := "Back", tag := "back" }
+    { id := "backButton", kind := .button .back, label := "Back", tag := "back" },
+    { id := "toRooming", kind := .button (.goto "rooming"), label := "Rooming", tag := "toRooming" }
   ]
 
 /-- The order screen without the "add order" button (one order line). -/

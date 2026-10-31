@@ -73,9 +73,11 @@ def pinnedForReview (spec : Spec) (comps : List Component) (rq : ReviewReq) (c :
     | .always => true
     | .unlessReceipt i => i == rq.info && receiptHideSafe spec rq
 
-/-- Every review requirement for commit `c` has a pinned component on `scr`. -/
+/-- Every review requirement for commit `c` without a waiver has a pinned
+component on `scr`. -/
 def reviewsPinnedOn (spec : Spec) (scr : Screen) (c : CommitId) : Bool :=
-  spec.reviews.all fun rq => rq.commit != c || scr.components.any (pinnedForReview spec scr.components rq)
+  spec.reviews.all fun rq =>
+    rq.commit != c || rq.waivedBy?.isSome || scr.components.any (pinnedForReview spec scr.components rq)
 
 /-- Rule for property 4: every screen with a commit button pins every review
 requirement of that commit. -/
@@ -158,6 +160,8 @@ def openFieldOn (prog : Program) (screens : List ScreenId) (e : ElementId)
 the completability rules for `c` with commit screen `s`:
 - every screen reaches `s` by buttons the user can always show;
 - each entry requirement of `c` has a field reachable from `s`;
+- each review requirement of `c` with a waiver has its info pinned on `s`, or
+  a field for the waiver element reachable from `s`;
 - per-order-line requirements: no "add order line" button (CR-1), and every
   order-line slot has a field for each per-line element, reachable from `s`. -/
 def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
@@ -168,6 +172,16 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
     let reqs := spec.entries.filter (·.commit == c)
     match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
+    | none =>
+    let scrComps := prog.compsOf s
+    let waivable := spec.reviews.filter fun rq => rq.commit == c && rq.waivedBy?.isSome
+    match waivable.find? (fun rq =>
+        !scrComps.any (pinnedForReview spec scrComps rq) &&
+        !(match rq.waivedBy? with
+          | some w => openFieldOn prog fromS w (fun _ => true)
+          | none => false)) with
+    | some rq => some (s, s!"commit {c}: {rq.info} is not shown on screen {s} and the user cannot reach " ++
+        s!"a field to enter its waiver")
     | none =>
       let perLine := reqs.filter (·.perOrderLine)
       if !perLine.isEmpty && hasNewLine prog then

@@ -37,6 +37,14 @@ def CatalogOnly (spec : Spec) (prog : Program) : Prop :=
 instance (spec : Spec) (prog : Program) : Decidable (CatalogOnly spec prog) := by
   unfold CatalogOnly; infer_instance
 
+/-- The spec names each element, info, commit, and alert rule once. -/
+def SpecIdsUnique (spec : Spec) : Prop :=
+  (spec.elements.map (·.id)).Nodup ∧ (spec.infos.map (·.id)).Nodup ∧
+  (spec.commits.map (·.id)).Nodup ∧ (spec.alerts.map (·.id)).Nodup
+
+instance (spec : Spec) : Decidable (SpecIdsUnique spec) := by
+  unfold SpecIdsUnique; infer_instance
+
 /-- Screen IDs are unique, and component IDs are unique on each screen. -/
 def IdsUnique (prog : Program) : Prop :=
   (prog.screens.map (·.id)).Nodup ∧ ∀ scr ∈ prog.screens, (scr.components.map (·.id)).Nodup
@@ -73,11 +81,11 @@ def RequiredWithinDepth (spec : Spec) (canonical prog : Program) : Prop :=
     ∃ sc ∈ allComps prog, (∃ f ∈ fieldOf? sc.2.kind, f.1 = rq.element) ∧
       WithinClicks prog spec.design.maxDepth sc.1.id
 
-/-- **Property 1, well-formed.** Catalog components only, unique IDs,
-references resolve, landmarks always shown, and every required element within
-the depth bound. Needs the checker. -/
+/-- **Property 1, well-formed.** Catalog components only, unique IDs (in the
+spec and the program), references resolve, landmarks always shown, and every
+required element within the depth bound. Needs the checker. -/
 def WellFormed (spec : Spec) (canonical prog : Program) : Prop :=
-  CatalogOnly spec prog ∧ IdsUnique prog ∧ ReferencesResolve spec prog ∧
+  CatalogOnly spec prog ∧ SpecIdsUnique spec ∧ IdsUnique prog ∧ ReferencesResolve spec prog ∧
   RequiredWithinDepth spec canonical prog ∧
   ∀ facts user, user.role = prog.role → LandmarksShown ⟨spec, prog, facts, user⟩
 
@@ -152,20 +160,21 @@ def WritesOnly (spec : Spec) (prog : Program) : Prop :=
 /-! ## 4. Reviews before commit -/
 
 /-- When a commit happens, every review requirement for it is met on that
-screen: the info is shown, or a valid receipt covers it. By construction
-(T0). -/
+screen: the info is shown, or a valid receipt covers it, or a human entered
+its waiver. By construction (T0). -/
 def CommitReviewsMet (ep : Episode) : Prop :=
   EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →
     ∀ rq ∈ ep.spec.reviews, rq.commit = c → ReviewMetIn ep s rq
 
 /-- Whenever a button for a commit is shown, every review requirement for
-that commit is already met on that screen: the info is shown, or a valid
-receipt covers it. So the user is never sent hunting for hidden information
-(in a closed tab or a collapsed group) at the moment of signing. Needs the
-checker. -/
+that commit without a waiver is already met on that screen: the info is
+shown, or a valid receipt covers it. So the user is never sent hunting for
+hidden information (in a closed tab or a collapsed group) at the moment of
+signing. (A requirement with a waiver may instead be met by entering the
+waiver; property 6 makes sure the user can.) Needs the checker. -/
 def CommitScreenShowsReviews (ep : Episode) : Prop :=
   Always ep fun s => ∀ c, CommitButtonShown ep s c →
-    ∀ rq ∈ ep.spec.reviews, rq.commit = c → ReviewMetIn ep s rq
+    ∀ rq ∈ ep.spec.reviews, rq.commit = c → rq.waivedBy? = none → ReviewMetIn ep s rq
 
 /-- **Property 4, reviews before commit.** -/
 def ReviewsBeforeCommit (spec : Spec) (prog : Program) : Prop :=
@@ -243,7 +252,9 @@ def CommitsStayReachable (ep : Episode) (commits : List CommitId) : Prop :=
 
 /-- **Property 6, completable.** For every patient record that allows the
 commit at all, each commit the program must support stays reachable from
-every reachable state. Needs the checker. -/
+every reachable state: the user can always enter what is required, see what
+must be reviewed (or enter its waiver), and acknowledge alerts. Needs the
+checker. -/
 def Completable (spec : Spec) (canonical prog : Program) : Prop :=
   ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
     CommitsStayReachable ⟨spec, prog, facts, user⟩ (requiredCommits spec canonical prog)

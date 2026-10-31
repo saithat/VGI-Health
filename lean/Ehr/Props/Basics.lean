@@ -140,10 +140,16 @@ def ReceiptCovers (ep : Episode) (s : State) (rq : ReviewReq) : Prop :=
   | .shownOrReceipt window roles =>
     ∃ r ∈ s.receipts, receiptValid ep.spec ep.facts (nowMin ep.facts s) rq.info window roles r = true
 
+/-- The review requirement's waiver element (if it has one, e.g. the reason
+CURES was not consulted) was entered by a human in this episode, is
+confirmed, and is not empty. -/
+def Waived (s : State) (rq : ReviewReq) : Prop :=
+  waived s rq.waivedBy? = true
+
 /-- Review requirement `rq` is met in state `s`: it does not apply, or its
-info is shown, or a valid receipt covers it. -/
+info is shown, or a valid receipt covers it, or a human entered its waiver. -/
 def ReviewMetIn (ep : Episode) (s : State) (rq : ReviewReq) : Prop :=
-  Applies ep s rq.when → InfoShown ep s rq.info ∨ ReceiptCovers ep s rq
+  Applies ep s rq.when → InfoShown ep s rq.info ∨ ReceiptCovers ep s rq ∨ Waived s rq
 
 /-- A captured value counts for element `el`: it is for `el`, confirmed,
 valid for the element's kind (the right unit, a checked flag, a matching
@@ -160,7 +166,7 @@ needs one counting value (if it applies). -/
 def EntryMetIn (ep : Episode) (s : State) (rq : EntryReq) : Prop :=
   ∃ el, ep.spec.element? rq.element = some el ∧
     if rq.perOrderLine then
-      ∀ line ∈ orderLines s, lineMatches ep.facts rq.when line.2 = true →
+      ∀ line ∈ orderLines s, lineMatches ep.facts s rq.when line.1 line.2 = true →
         ∃ x ∈ s.captured, x.slot = line.1 ∧ CountsFor ep el x
     else
       Applies ep s rq.when → ∃ x ∈ s.captured, CountsFor ep el x
