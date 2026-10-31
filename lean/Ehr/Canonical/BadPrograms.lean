@@ -99,14 +99,19 @@ def hiddenControlledDetails : Program := seed 15 <| (base 15).updateScreen "w1Si
   (s.insertAfter "w1Sign.banner" [group s.id "epcsDetails" "Prescription details" (startCollapsed := true)])
     |>.updateComp "w1Sign.orders" fun c => { c with parent? := some "w1Sign.epcsDetails" }
 
-/-- 16: Default refills to three for a Schedule II prescription. The generic
-value-constraint hard stop is requested from core; this seed is permanent and
-must gain its negative runtime test when that constraint lands. -/
-def scheduleIIRefills : Program := seed 16 <| (base 16).updateScreen "w1Orders" fun s =>
-  s.updateComp "w1Orders.refills" fun c =>
-    { c with kind := .field "refills" .current (.default "3") }
+/-- 16: Default refills to three, then strand that value on a signing screen
+with no route back to a correction field. Even human confirmation cannot make
+three permissible; the spec's allowed-value hard stop must block signing. -/
+def scheduleIIRefills : Program := seed 16 <|
+  ((base 16).updateScreen "w1Orders" fun s =>
+    s.updateComp "w1Orders.refills" fun c =>
+      { c with kind := .field "refills" .current (.default "3") })
+  |>.updateScreen "w1Sign" fun s =>
+    { s with components := s.components.filter fun c => match c.kind with
+        | .button (.goto _) | .button .back | .«macro» _ => false
+        | _ => true }
 
-/-- Stable filenames and all fourteen seeds. -/
+/-- Stable filenames and all sixteen seeds. -/
 def programs : List (String × Program) :=
   [("01-hidden-allergies", hiddenAllergies), ("02-prefilled-identity", prefilledIdentity),
    ("03-pounds-as-weight", poundsAsWeight), ("04-macro-override", macroOverride),

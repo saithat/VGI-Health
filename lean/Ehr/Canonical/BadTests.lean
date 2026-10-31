@@ -190,7 +190,90 @@ def missingPain : State := run ((adminPath "oxycodone").filter fun e => match e 
   "review required: orderSummary must be shown"
 #guard (finish (run (opioidPath) Bad.hiddenControlledDetails) "w1Sign" "signOrders"
   Bad.hiddenControlledDetails).commits == []
--- 16: A generic constrained-refills runtime regression remains blocked on the
--- core value-constraint request in changes-requests.md; no false passing test.
+-- 16: Exercise the actual default, rather than replacing it with test input.
+/-- Confirm the seed's three refills on an otherwise complete Schedule II order. -/
+def threeRefillsPath (drug : String := "oxycodone") : List Event :=
+  (opioidPath).filterMap fun e => match e with
+    | .enter "w1Orders.drug" _ => some (.enter "w1Orders.drug" (.code drug))
+    | .enter "w1Orders.refills" _ => some (.confirm "w1Orders.refills")
+    | _ => some e
+/-- The default remains three even after a human confirms it. -/
+def threeRefills : State := run (threeRefillsPath) Bad.scheduleIIRefills
+#guard (cap threeRefills "refills").any fun x =>
+  x.value == .qty 30 .none && x.confirmed && x.provenance? == some "default"
+#guard reason (one threeRefills (.click "w1Sign.commit.signOrders") Bad.scheduleIIRefills).2 ==
+  "value not allowed: refills (allowed: 0)"
+#guard (finish threeRefills "w1Sign" "signOrders" Bad.scheduleIIRefills).commits == []
+#guard edges Bad.scheduleIIRefills "w1Sign" == []
+#guard (one threeRefills (.click "w1Sign.edit") Bad.scheduleIIRefills).2 == .ignored
+#guard (one threeRefills (.enter "w1Orders.refills" (.qty 0 .none)) Bad.scheduleIIRefills).2 == .ignored
+-- Every Schedule II formulary drug is covered; Schedule III/IV are not zeroed.
+#guard ["morphine", "hydromorphone", "oxycodone", "hydrocodone-acetaminophen"].all fun drug =>
+  let s := run (threeRefillsPath drug) Bad.scheduleIIRefills
+  !entryMet specV1 adult physician s (scheduleIIRefillsEntry signOrders)
+#guard ["tramadol", "lorazepam", "alprazolam", "metformin"].all fun drug =>
+  let s := run (threeRefillsPath drug) Bad.scheduleIIRefills
+  entryMet specV1 adult physician s (scheduleIIRefillsEntry signOrders) &&
+    (finish s "w1Sign" "signOrders" Bad.scheduleIIRefills).commits == ["signOrders"]
+/-- Restore the canonical correction routes without changing the invalid default.
+This is the repair for the stranded seed, not an exception to the rule. -/
+def repairableRefillsProgram : Program := Bad.scheduleIIRefills.updateScreen "w1Sign" fun s =>
+  ((Bad.base 16).screen? s.id).getD s
+/-- With canonical navigation restored, the clinician corrects the value to zero. -/
+def zeroRefills : State := more (run (threeRefillsPath) repairableRefillsProgram)
+  [.click "w1Sign.edit", .enter "w1Orders.refills" (.qty 0 .none),
+   .click "w1Orders.toSign", .click "w1Verify.continue"] repairableRefillsProgram
+#guard (finish zeroRefills "w1Sign" "signOrders" repairableRefillsProgram).commits == ["signOrders"]
+/-- A nonzero Schedule II line cannot be stranded by opening another line. -/
+def unfinishedLine : State := more (run (threeRefillsPath) repairableRefillsProgram)
+  [.click "w1Sign.edit"] repairableRefillsProgram
+#guard reason (one unfinishedLine (.click "w1Orders.newLine") repairableRefillsProgram).2 ==
+  "finish this order line first"
+#guard (one unfinishedLine (.click "w1Orders.newLine") repairableRefillsProgram).1.currentSlot == 0
+/-- Mixed lines: an ordinary line with zero does not cover a second Schedule II
+line with three refills. Both lines come from public entry/navigation events. -/
+def mixedRefills : State := more
+  (run (threeRefillsPath "metformin") repairableRefillsProgram)
+  ([.click "w1Sign.edit", .enter "w1Orders.refills" (.qty 0 .none), .click "w1Orders.newLine"] ++
+   order "w1Orders" "oxycodone" 100 ++
+   [.enter "w1Orders.refills" (.qty 30 .none), .click "w1Orders.toSign", .click "w1Verify.continue"])
+  repairableRefillsProgram
+#guard mixedRefills.currentSlot == 1
+#guard (orderLines mixedRefills).length == 2
+#guard (cap mixedRefills "refills" 0).map (·.value) == some (.qty 0 .none)
+#guard reason (one mixedRefills (.click "w1Sign.commit.signOrders") repairableRefillsProgram).2 ==
+  "value not allowed: refills (allowed: 0)"
+#guard (finish mixedRefills "w1Sign" "signOrders" repairableRefillsProgram).commits == []
+/-- Repair precisely the offending slot; both lines can then sign. -/
+def mixedZeroRefills : State := more mixedRefills
+  [.click "w1Sign.edit", .enter "w1Orders.refills" (.qty 0 .none),
+   .click "w1Orders.toSign", .click "w1Verify.continue"] repairableRefillsProgram
+#guard (finish mixedZeroRefills "w1Sign" "signOrders" repairableRefillsProgram).commits == ["signOrders"]
+
+/-- EPCS display cannot be replaced with a real receipt made on the preceding
+verification screen. This mutation adds only the review button for the test. -/
+def controlledReceiptProgram : Program := Bad.hiddenControlledDetails.updateScreen "w1Verify" fun s =>
+  s.insertAfter "w1Verify.orders" [reviewBtn s.id "orderSummary" "Review prescription details"]
+/-- Obtain the receipt through the interpreter while details are actually shown. -/
+def controlledReceipt : State := run ((opioidPath).flatMap fun e =>
+  if e == .click "w1Verify.continue" then [.click "w1Verify.review.orderSummary", e] else [e])
+  controlledReceiptProgram
+#guard controlledReceipt.receipts.any (·.info == "orderSummary")
+#guard reason (one controlledReceipt (.click "w1Sign.commit.signOrders") controlledReceiptProgram).2 ==
+  "review required: orderSummary must be shown"
+/-- Opening the actual sign-screen details repairs the display failure. -/
+def shownControlledDetails : State := more controlledReceipt [.click "w1Sign.epcsDetails"] controlledReceiptProgram
+#guard (finish shownControlledDetails "w1Sign" "signOrders" controlledReceiptProgram).commits == ["signOrders"]
+
+-- Vaccine record entries are independent hard stops, not optional prompts.
+#guard ["visGiven", "visEditionDate", "vaccineManufacturer", "vaccineLot", "vaccineProvider"].all fun e =>
+  let missing := run ([.click "home.work.w5Rooming", .click "w5Rooming.nav.w5Immunizations"] ++
+    vaccineEntries.filter fun ev => match ev with
+      | .enter id _ => id != cid "w5Immunizations" e | _ => true) (f := child) (u := np)
+  reason (one missing (.click "w5Immunizations.commit.recordImmunization")
+    (f := child) (u := np)).2 == "entry required: " ++ e &&
+    !(finish missing "w5Immunizations" "recordImmunization" (f := child) (u := np)).commits.contains "recordImmunization"
+#guard (one (more vaccineState [.enter "w5Immunizations.visGiven" (.flag false)] (f := child) (u := np))
+  (.click "w5Immunizations.commit.recordImmunization") (f := child) (u := np)).1.commits == ["signOrders"]
 
 end Ehr.Canonical.Tests

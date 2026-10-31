@@ -6,6 +6,8 @@
 
 "Release v2: antibiotic orders now carry a confirmed indication, and nurses see it before each dose. Stewardship programs are required by federal and California law; the per-order indication is our hospital's policy, modeled on CDC guidance."
 
+**Source class:** Hospital policy (not law). The per-order coded indication and MAR display are local policy modeled on CDC guidance; 42 CFR §482.42(b) and H&S §1288.85 require stewardship programs. This release adds no new rule from guidance or accreditation beyond the owner-approved existing policy.
+
 ## Release items
 
 - **R2-1:** Every antibiotic order line requires a coded `abxIndication`, confirmed by a prescriber, including surgeons. The old free-text label indication remains required.

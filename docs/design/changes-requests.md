@@ -352,16 +352,7 @@ configuration. Installed assets are retained for actual runtime verification.
 
 ## New BRIEF value-constraint request (content → core)
 
-**Schedule II zero refills (21 CFR 1306.12; new BRIEF requirement): pending core.**
-Please add a generic per-order-line value constraint usable by EntryReq (e.g.
-`constraint? = zeroQuantity`) and enforce it in guard/entry validation. Content
-will require zero refills on `signOrders` only when `.orderClass "controlled-II"`.
-Also tag actual Schedule II formulary drugs with `controlled-II`; the existing
-controlled-II-IV tag includes tramadol and benzodiazepines and cannot safely
-stand in for Schedule II. Do not force all prescriptions to zero refills.
-Seed 16 and its hard-stop regression will integrate this generic constraint.
-This cannot be implemented faithfully in content alone with the current core
-EntryReq/ValueKind types.
+**Resolved in core and content:** core `4a11bc8` implements generic `EntryReq.allowed?` and the `scheduleII` class. Content attaches `scheduleIIRefillsEntry signOrders` with `allowed? := some ["0"]`, preserving every prior rule. Canonical fields allow zero, all matching signing paths inherit the requirement, and seed 16 confirms its default of three and is blocked. Tests also cover mixed lines, the new-line stop, Schedule III/IV exclusions, correction to zero, and inheritance by v1.1/v2. No `controlled-II` alias is used: `scheduleII` is the authoritative core spelling. Downstream agent/world/WASM adoption remains below.
 
 **Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
 never-policy human request field and preserving the policy. Tests check that
@@ -445,3 +436,20 @@ ownership exception is pending. Core implementation commits are `0b929f0`
 Validation of `4a11bc8`: Lean build, kernel check, Comparator (all 18 frozen
 statements), 24 permitted-only axiom audits, and generated-sample strict tsc
 pass. Workspace builds/typechecks/lints pass; agent 31/app 90 tests pass.
+
+
+## Content integration completion and remaining owners (2026-10-31)
+
+Content's Schedule II rule is implemented and regenerated in all three release specs. `lake build` passes the actual canonical/seed/release paths. This resolves the previous content blocker, not the production checker's certification obligations.
+
+**CR-14, render: controlled prescription details must contain actual data.** `controlledRxReview` requires `orderSummary` shown, with no receipt or waiver, for controlled-II-IV signing. `InfoSpec.orderSummary` now explicitly denotes patient, drug, dose, quantity, directions and refills. At merged main `bea74d0`, `Render/Page.lean:infoContent` has no `orderSummary` arm and falls back to an empty-content message. Please render the actual current captured prescription rows and patient identity; test all these values, multiple lines, and hidden/collapsed seed 15 in the native/WASM page. A heading alone satisfies only the interpreter's abstract info visibility, not the legal display duty. The same data-fidelity issue for v2 indications is CR-10. No content file can implement the render-owned arm.
+
+**Agent compatibility remains required.** Actual release specs now contain `{ "drugClass": { "cls": "scheduleII" } }` and `allowed: ["0"]`; `agent/src/lean-types.ts` must accept and preserve both. Existing 31 agent tests pass but do not test these actual release-spec round trips. CR-12 (`requestPriorAuth` action) also remains; round-trip all release/persona programs and specs exactly.
+
+**World compatibility:** the albuterol cap is already fixed on merged main. Current world build/lint pass; 91/92 tests pass. The one failing full-formulary comparison is the missing `scheduleII` class on morphine (and the three other Schedule II drugs listed in the core adoption request). Keep that assertion and synchronize world-owned reference data; content has not edited it.
+
+**Vaccine integration:** required VIS edition, manufacturer and provider fields are declared and tested; every omission and a false VIS flag block recording. The flag explicitly attests that VIS was given before vaccination. No trusted delivery event/timestamp is modeled. World/app/sim must populate inventory/provider and actual statutory dates/details in the FHIR record; manual human provider entry is supported, so no unverified signed-in-user auto-link was added.
+
+**Check/app/WASM:** certify matching persona canonicals from `releases/<version>/personas/`, reject all sixteen permanent seeds with replayable counterexamples, and rebuild/test WASM against the allowed-value guard. Seed 16 confirms a default of three and strands that value on a sign screen with no navigation or correction field. Tests verify there are no outgoing navigation edges and attempts to edit the hidden composer field are ignored. Restoring canonical navigation allows human correction to zero; the guard is never relaxed. No checker implementation exists in this merged worktree, so content does not claim a `¬ Satisfies` theorem or production certificate.
+
+**W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.

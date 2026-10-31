@@ -8947,7 +8947,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w5Immunizations.record",
-     "label": "VIS given",
+     "label": "VIS given before vaccination",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "visGiven"}},
