@@ -1,0 +1,22 @@
+{
+  "seed": "0x7135c0de",
+  "cases": 2048,
+  "caseCounts": {
+    "tiny": 2048
+  },
+  "batchSteps": 72288,
+  "stepComparisons": 72288,
+  "viewComparisons": 72288,
+  "initComparisons": 16,
+  "resultCounts": {
+    "ok": 13582,
+    "blocked": 5697,
+    "ignored": 53009
+  },
+  "canonicalPresent": false,
+  "loadMs": 19.501440000000002,
+  "node": "v22.23.1",
+  "wasmBytes": 1128562,
+  "wasmGzipBytes": 227409,
+  "sha256": "719c1eeea8b2b32ffc7785c6b7661b3b2bf0f07bc7fbf435edcdf6898e83249c"
+}

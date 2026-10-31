@@ -30,6 +30,8 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
       wasm.step(`{${context(spec, program, facts, user)},"state":${state},"event":${event}}`),
     view: (spec, program, facts, user, state) =>
       wasm.view(`{${context(spec, program, facts, user)},"state":${state}}`),
+    render: (spec, program, facts, user, state) =>
+      wasm.render(`{${context(spec, program, facts, user)},"state":${state}}`),
     facts: (bundle) => wasm.facts(bundle),
   };
 }
