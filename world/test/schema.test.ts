@@ -5,6 +5,7 @@
  * generated from Lean once lane A emits them.
  */
 import { describe, expect, it } from "vitest";
+import { getNumber, getString } from "../src/json";
 import { SHIFTS } from "../src/calendar";
 import { naloxoneCheck } from "../src/controlled";
 import { DRUG_NAMES, FREQS, ROUTES, dosePerKg, drugDef, isControlled, pedsDoseCaps } from "../src/formulary";
@@ -95,7 +96,7 @@ function weightKg(t: { todayResources: unknown[] }): { value: number; unit: stri
 describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) => {
   const r = run(1, index);
   const tasks = allTasks(r);
-  const orders = tasks.flatMap((t) => [...t.choices.orders, ...t.choices.administer]);
+  const orders = tasks.flatMap((t) => [...t.choices.orders, ...t.choices.administer]).filter((o) => o.kind !== "imaging" && o.kind !== "procedure");
 
   it("use only formulary drugs, routes and frequencies, with positive doses", () => {
     expect(DRUG_NAMES.length).toBe(25);
@@ -161,9 +162,9 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) =
   it("P3: med passes include high-alert meds (insulin or heparin), PRNs with pain scores and reassessments", () => {
     const p3 = tasks.filter((t) => t.persona === "P3");
     expect(p3.some((t) => t.choices.administer.some((o) => drugDef(o.drug)?.highAlert === true))).toBe(true);
-    expect(p3.some((t) => t.choices.administer.some((o) => o.prn) && t.choices.noteSections.some((n) => n.startsWith("painScore:")))).toBe(true);
-    expect(p3.some((t) => t.choices.noteSections.some((n) => n.startsWith("painReassessment:")))).toBe(true);
-    expect(p3.some((t) => t.choices.noteSections.some((n) => n.startsWith("hold:") || n.startsWith("refused:")))).toBe(true);
+    expect(p3.some((t) => t.choices.administer.some((o) => o.prn) && t.choices.painScore !== undefined)).toBe(true);
+    expect(p3.some((t) => t.choices.noteSections.includes("painReassessment") && t.choices.painScore !== undefined)).toBe(true);
+    expect(p3.some((t) => t.choices.administer.some((o) => o.holdReason !== undefined))).toBe(true);
     expect(p3.some((t) => t.choices.noteSections.includes("handoff"))).toBe(true);
   });
 
@@ -180,8 +181,8 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) =
 
   it("P5 alternates clinic and OR days; OR days carry pre-op and post-op order sets", () => {
     for (let d = 1; d <= 10; d++) {
-      const kinds = schedule(r, d, "P5").tasks.filter((t) => t.workflow === "W6").map((t) => t.choices.noteSections[0]);
-      if (d % 2 === 0 && stateOf(r, d).today.surgery.casesOperated.length > 0) expect(kinds).toEqual(expect.arrayContaining(["hAndPUpdate", "briefOpNote"]));
+      const kinds = schedule(r, d, "P5").tasks.filter((t) => t.workflow === "W6").map((t) => t.choices.w6Step);
+      if (d % 2 === 0 && stateOf(r, d).today.surgery.casesOperated.length > 0) expect(kinds).toEqual(expect.arrayContaining(["preop", "postop"]));
       if (d % 2 === 1) expect(schedule(r, d, "P5").tasks.some((t) => t.workflow === "W1")).toBe(true);
     }
   });
@@ -194,12 +195,12 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("controlled substances (CURES / na
   it("every outpatient controlled prescription records its supply in days", () => {
     let n = 0;
     for (const t of tasks) {
-      const outpatient = t.workflow === "W1" || t.workflow === "W7" || (t.workflow === "W3" && t.choices.disposition === "discharge") || (t.workflow === "W6" && t.choices.noteSections[0] === "medRec");
+      const outpatient = t.workflow === "W1" || t.workflow === "W7" || (t.workflow === "W3" && t.choices.disposition === "discharge") || (t.workflow === "W6" && t.choices.w6Step === "discharge");
       if (!outpatient) continue;
       const rx = t.workflow === "W3" ? t.choices.orders.filter((o) => o.freq !== "once") : t.choices.orders;
       for (const o of rx) {
-        if (!isControlled(o.drug) || o.route !== "PO") continue;
-        expect(t.choices.noteSections.some((s) => s.startsWith(`supplyDays:${o.drug}:`)), `${t.id} ${o.drug}`).toBe(true);
+        if (!isControlled(o.drug) || o.route !== "PO" || o.holdReason !== undefined) continue;
+        expect(o.supplyDays, `${t.id} ${o.drug}`).toBeGreaterThan(0);
         n++;
       }
     }
@@ -207,29 +208,42 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("controlled substances (CURES / na
   });
 
   it("covers short CURES-exempt ED supplies, longer supplies, post-op opioids, chronic refills and naloxone offers", () => {
-    const notes = tasks.flatMap((t) => t.choices.noteSections.map((s) => ({ t, s })));
-    const supply = notes.filter((x) => x.s.startsWith("supplyDays:"));
-    expect(supply.some((x) => x.t.workflow === "W3" && Number(x.s.split(":")[2]) <= 7)).toBe(true);
-    expect(supply.some((x) => Number(x.s.split(":")[2]) > 7)).toBe(true);
+    const supply = tasks.flatMap((t) => t.choices.orders.filter((o) => o.supplyDays !== undefined).map((o) => ({ t, o })));
+    expect(supply.some((x) => x.t.workflow === "W3" && (x.o.supplyDays ?? 0) <= 7 && x.o.curesExemptReason !== undefined)).toBe(true);
+    expect(supply.some((x) => (x.o.supplyDays ?? 0) > 7)).toBe(true);
     expect(supply.some((x) => x.t.workflow === "W6")).toBe(true);
     expect(tasks.some((t) => t.workflow === "W7" && t.todayResources.some((res) => /oxycodone|hydrocodone|tramadol|alprazolam|lorazepam/.test(JSON.stringify(res)) && JSON.stringify(res).includes('"Task"')))).toBe(true);
-    expect(notes.some((x) => x.s.startsWith("naloxoneOffer:"))).toBe(true);
+    expect(tasks.some((t) => t.todayResources.some((res) => getString(res, "code", "coding", 0, "code") === "naloxoneOffer"))).toBe(true);
     expect(tasks.some((t) => t.persona === "P3" && t.choices.administer.some((o) => o.prn && isControlled(o.drug)))).toBe(true);
   });
 
   it("naloxone offers appear exactly where the MME >= 90 or opioid + benzodiazepine rule applies", () => {
     for (const t of tasks) {
-      const offered = t.choices.noteSections.some((s) => s.startsWith("naloxoneOffer:"));
-      const hasSupply = t.choices.noteSections.some((s) => s.startsWith("supplyDays:"));
+      if (t.workflow === "W7") continue; // Approval renews the contained FHIR prescription.
+      const offered = t.todayResources.some((res) => getString(res, "code", "coding", 0, "code") === "naloxoneOffer");
+      const hasSupply = t.choices.orders.some((o) => o.supplyDays !== undefined);
       if (!hasSupply) {
         expect(offered, t.id).toBe(false);
         continue;
       }
       const p = r.pop.byId.get(t.patientId);
       if (p === undefined) continue;
-      const rx = t.workflow === "W7" ? [] : t.choices.orders.filter((o) => o.freq !== "once" && o.route === "PO");
-      if (t.workflow !== "W7") expect(offered, t.id).toBe(naloxoneCheck(rx, p.homeMeds).applies);
+      const rx = t.choices.orders.filter((o) => o.freq !== "once" && o.route === "PO");
+      expect(offered, t.id).toBe(naloxoneCheck(rx, p.homeMeds).applies);
     }
+  });
+
+  it("approved controlled refills carry supply on the contained FHIR prescription", () => {
+    let checked = 0;
+    for (const t of tasks.filter((x) => x.workflow === "W7" && x.choices.refill === "approve")) {
+      for (const res of t.todayResources) {
+        const drug = getString(res, "contained", 0, "medicationCodeableConcept", "text");
+        if (drug === undefined || !isControlled(drug)) continue;
+        expect(getNumber(res, "contained", 0, "dispenseRequest", "expectedSupplyDuration", "value")).toBe(30);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
   });
 
   it("naloxoneCheck: 90 MME or opioid + benzodiazepine triggers; 60 MME alone does not", () => {

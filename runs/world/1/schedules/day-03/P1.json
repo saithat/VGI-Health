@@ -749,7 +749,30 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 30
+          },
+          {
+            "kind": "imaging",
+            "code": "mri-lumbar-spine-without-contrast",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
+          },
+          {
+            "kind": "procedure",
+            "code": "physical-therapy-evaluation",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
           }
         ],
         "administer": [],
@@ -761,8 +784,7 @@
           "exam",
           "assessmentPlan",
           "painAgreementReview",
-          "functionalAssessment",
-          "supplyDays:hydrocodone-acetaminophen:30"
+          "functionalAssessment"
         ]
       },
       "todayResources": [],
@@ -1294,10 +1316,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:a1c-above-goal",
           "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "a1c-above-goal"
       },
       "todayResources": [
         {

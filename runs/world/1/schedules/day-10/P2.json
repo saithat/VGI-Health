@@ -1081,7 +1081,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "BID",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "ed-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -1095,8 +1097,7 @@
           "disposition",
           "ecgReview",
           "mentalStatusExam",
-          "dischargeInstructions",
-          "supplyDays:lorazepam:3"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },

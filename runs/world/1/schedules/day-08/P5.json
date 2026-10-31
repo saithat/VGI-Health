@@ -20,7 +20,8 @@
           "overnightEvents",
           "labReview",
           "preopPlan"
-        ]
+        ],
+        "w6Step": "rounding"
       },
       "todayResources": [],
       "interruptions": 0
@@ -52,7 +53,8 @@
           "consentVerification",
           "allergyReview",
           "anticoagulantReview"
-        ]
+        ],
+        "w6Step": "preop"
       },
       "todayResources": [
         {
@@ -218,7 +220,8 @@
         "noteSections": [
           "briefOpNote",
           "postOpOrders"
-        ]
+        ],
+        "w6Step": "postop"
       },
       "todayResources": [],
       "interruptions": 0
@@ -250,7 +253,8 @@
           "consentVerification",
           "allergyReview",
           "anticoagulantReview"
-        ]
+        ],
+        "w6Step": "preop"
       },
       "todayResources": [
         {
@@ -392,7 +396,8 @@
         "noteSections": [
           "briefOpNote",
           "postOpOrders"
-        ]
+        ],
+        "w6Step": "postop"
       },
       "todayResources": [],
       "interruptions": 0
@@ -424,7 +429,8 @@
           "consentVerification",
           "allergyReview",
           "anticoagulantReview"
-        ]
+        ],
+        "w6Step": "preop"
       },
       "todayResources": [
         {
@@ -549,7 +555,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
           },
           {
             "drug": "ondansetron",
@@ -566,9 +574,9 @@
         "noteSections": [
           "medRec",
           "dischargeInstructions",
-          "followUp",
-          "supplyDays:oxycodone:3"
-        ]
+          "followUp"
+        ],
+        "w6Step": "discharge"
       },
       "todayResources": [],
       "interruptions": 0
@@ -621,7 +629,8 @@
         "noteSections": [
           "briefOpNote",
           "postOpOrders"
-        ]
+        ],
+        "w6Step": "postop"
       },
       "todayResources": [],
       "interruptions": 0
@@ -657,7 +666,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
           },
           {
             "drug": "ondansetron",
@@ -674,9 +685,9 @@
         "noteSections": [
           "medRec",
           "dischargeInstructions",
-          "followUp",
-          "supplyDays:oxycodone:3"
-        ]
+          "followUp"
+        ],
+        "w6Step": "discharge"
       },
       "todayResources": [],
       "interruptions": 1

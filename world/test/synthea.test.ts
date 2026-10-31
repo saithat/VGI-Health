@@ -105,7 +105,7 @@ it("round-trips every Synthea schedule through Lean and checks all formulary ref
   const leanDrugs = z.array(z.object({
     name: z.string(), rxnorm: z.array(z.string()), classes: z.array(z.string()),
     highAlert: z.boolean(), minMgPerKgTenths: z.number(), maxMgPerKgTenths: z.number(),
-    interactsWith: z.array(z.string()), mmeFactorTenths: z.number(),
+    interactsWith: z.array(z.string()), mmeFactorTenths: z.number(), maxDoseMgTenths: z.number(),
   })).parse(JSON.parse(lines.shift() ?? "null"));
   expect(leanDrugs.map((d) => d.name).sort()).toEqual([...DRUG_NAMES].sort());
   for (const name of DRUG_NAMES) {
@@ -115,7 +115,7 @@ it("round-trips every Synthea schedule through Lean and checks all formulary ref
       name, rxnorm: [local.rxnorm], classes: local.classes, highAlert: local.highAlert,
       minMgPerKgTenths: (local.weightRange?.min ?? 0) * 10,
       maxMgPerKgTenths: (local.weightRange?.max ?? 0) * 10,
-      interactsWith: local.interactsWith, mmeFactorTenths: (local.mmeFactor ?? 0) * 10,
+      interactsWith: local.interactsWith, mmeFactorTenths: (local.mmeFactor ?? 0) * 10, maxDoseMgTenths: local.maxDoseMg * 10,
     });
     expect(local.schedule !== undefined).toBe(local.classes.includes("controlled-II-IV"));
   }

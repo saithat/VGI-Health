@@ -6,7 +6,8 @@
  */
 import { type DayBuild, isPcnAllergic } from "../build";
 import { anticoagContinued, inpatientHomeMeds, isDiabetic, nsaidOk, opioidTolerant, peds, prn, vancomycin, vteProphylaxis } from "../clinical";
-import { acuteOpioidSupply, controlledNotes } from "../controlled";
+import type { ClinicalObservation } from "../fhir";
+import { acuteOpioidSupply, controlledPrescriptions } from "../controlled";
 import { SCRIPTED_APPENDICITIS_DAYS } from "../context";
 import { SHIFTS } from "../calendar";
 import { allergyIntolerance, weightObservation } from "../fhir";
@@ -470,7 +471,7 @@ function dedupeOrders(orders: OrderChoice[]): OrderChoice[] {
 }
 
 /** Full inpatient regimen: scenario orders + home meds + VTE prophylaxis + PRNs. */
-export function admissionRegimen(p: PatientProfile, kg: number, plan: AdmitPlan, rng: Rng): { orders: OrderChoice[]; holds: string[] } {
+export function admissionRegimen(p: PatientProfile, kg: number, plan: AdmitPlan, rng: Rng): { orders: OrderChoice[]; holds: OrderChoice[] } {
   const home = inpatientHomeMeds(p, kg, { holdAnticoag: plan.anticoagulates === true, holdAntihypertensive: plan.holdAntihypertensive === true });
   const specificDrugs = new Set(plan.specific.map((o) => o.drug));
   const homeOrders = home.orders.filter((o) => !specificDrugs.has(o.drug));
@@ -578,11 +579,12 @@ export function runEd(b: DayBuild): void {
 
     let orders = plan.stat;
     let notes = [...BASE_NOTES, ...plan.notes];
+    let observations: ClinicalObservation[] = [];
     let admissionId: string | null = null;
     if (disposition === "admit" && plan.admit !== undefined) {
       const reg = admissionRegimen(p, kg, plan.admit, prng);
-      orders = [...plan.stat, ...reg.orders];
-      notes = [...notes, "admissionOrders", ...reg.holds];
+      orders = [...plan.stat, ...reg.orders, ...reg.holds];
+      notes = [...notes, "admissionOrders"];
       const ip = admit(
         b,
         {
@@ -606,13 +608,14 @@ export function runEd(b: DayBuild): void {
       stays.push([clock, clock + prng.int(240, 420)]);
     } else {
       orders = [...plan.stat, ...plan.dischargeRx];
-      notes = [...notes, "dischargeInstructions", ...controlledNotes(plan.dischargeRx, plan.supplyDays ?? 3, p.homeMeds, prng)];
+      notes = [...notes, "dischargeInstructions"];
+      observations = controlledPrescriptions(plan.dischargeRx, plan.supplyDays ?? 3, p.homeMeds, prng, "ed");
       stays.push([clock, clock + prng.int(90, 240)]);
       if (b.state.p1Panel.includes(p.id) && prng.chance(plan.followupProb)) {
         addAppointment(b, "P1", p.id, b.day + prng.int(2, 4), "ed-followup", `ED follow-up: ${plan.key}`, taskId);
       }
     }
-    b.addTask("P2", "W3", p.id, startMin, { orders, disposition, noteSections: notes }, resources, b.interruptions("P2", prng));
+    b.addTask("P2", "W3", p.id, startMin, { orders, disposition, noteSections: notes, observations }, resources, b.interruptions("P2", prng));
     arrivals.push({ taskId, patientId: p.id, arrivalClock: clock, esi: plan.esi, scenario: plan.key, orderSet: plan.orderSet, disposition, weightUnit: lb ? "lb" : "kg", newAllergy, admissionId, caseId: null });
   });
 

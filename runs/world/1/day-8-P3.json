@@ -246,9 +246,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:3"
-        ]
+        "noteSections": [],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 2
@@ -266,8 +265,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 0
@@ -520,9 +520,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:4"
-        ]
+        "noteSections": [],
+        "painScore": 4
       },
       "todayResources": [],
       "interruptions": 2
@@ -548,9 +547,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:7"
-        ]
+        "noteSections": [],
+        "painScore": 7
       },
       "todayResources": [],
       "interruptions": 1
@@ -576,9 +574,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:8"
-        ]
+        "noteSections": [],
+        "painScore": 8
       },
       "todayResources": [],
       "interruptions": 0
@@ -596,8 +593,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:5"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 0
@@ -615,8 +613,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:6"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 6
       },
       "todayResources": [],
       "interruptions": 0
@@ -680,12 +679,69 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:anxiety",
-          "sedationScore:1"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d08-P3-W4-005-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-11T12:19:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "anxiety"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d08-P3-W4-005-clinical-1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "sedationScore"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-11T12:19:00-08:00",
+          "valueInteger": 1
+        }
+      ],
       "interruptions": 0
     },
     {

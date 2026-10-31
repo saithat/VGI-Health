@@ -20,32 +20,32 @@ export function homeOrder(m: HomeMed): OrderChoice {
 
 export interface InpatientMeds {
   orders: OrderChoice[];
-  /** noteSections entries `hold:<drug>:<reason>` for home meds held on admission. */
-  holds: string[];
+  /** Held home orders are emitted as typed decisions, excluded from active regimens. */
+  holds: OrderChoice[];
 }
 
 /** Home meds continued, held, or substituted on admission. */
 export function inpatientHomeMeds(p: PatientProfile, weightKg: number, opts: { holdAnticoag: boolean; holdAntihypertensive: boolean }): InpatientMeds {
   const orders: OrderChoice[] = [];
-  const holds: string[] = [];
+  const holds: OrderChoice[] = [];
   for (const m of p.homeMeds) {
     switch (m.drug) {
       case "lisinopril":
-        if (opts.holdAntihypertensive) holds.push("hold:lisinopril:hypotension-risk");
+        if (opts.holdAntihypertensive) holds.push({ ...homeOrder(m), holdReason: "hypotension-risk" });
         else orders.push(order("lisinopril", m.dose, "mg", "PO", "daily"));
         break;
       case "atorvastatin":
         orders.push(order("atorvastatin", m.dose, "mg", "PO", "daily"));
         break;
       case "metformin":
-        holds.push("hold:metformin:inpatient");
+        holds.push({ ...homeOrder(m), holdReason: "inpatient" });
         break;
       case "insulin glargine":
         orders.push(order("insulin glargine", Math.max(6, Math.round(0.8 * Math.min(m.dose, weightKg * 0.4))), "units", "SC", "daily"));
         break;
       case "warfarin":
       case "apixaban":
-        if (opts.holdAnticoag) holds.push(`hold:${m.drug}:procedure-or-bleeding-risk`);
+        if (opts.holdAnticoag) holds.push({ ...homeOrder(m), holdReason: "procedure-or-bleeding-risk" });
         else orders.push(order(m.drug, m.dose, "mg", "PO", m.drug === "warfarin" ? "daily" : "BID"));
         break;
       case "albuterol":

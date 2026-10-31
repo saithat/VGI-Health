@@ -28,7 +28,8 @@
           "progressNote",
           "overnightEvents",
           "labReview"
-        ]
+        ],
+        "w6Step": "rounding"
       },
       "todayResources": [],
       "interruptions": 0
@@ -64,7 +65,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q4h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 5,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -73,9 +76,9 @@
         "noteSections": [
           "medRec",
           "dischargeInstructions",
-          "followUp",
-          "supplyDays:oxycodone:5"
-        ]
+          "followUp"
+        ],
+        "w6Step": "discharge"
       },
       "todayResources": [],
       "interruptions": 1
@@ -181,7 +184,30 @@
       "patientId": "be8fbcad-42e9-f95c-d628-fafcfaa71aed",
       "startMin": 190,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-right-upper-quadrant",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          },
+          {
+            "kind": "procedure",
+            "code": "laparoscopic-cholecystectomy",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -226,7 +252,19 @@
       "patientId": "df321cbd-c86d-a784-e7b5-a54f04024125",
       "startMin": 240,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-right-upper-quadrant",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -362,7 +400,8 @@
           "labReview",
           "surgicalDecision"
         ],
-        "disposition": "admit"
+        "disposition": "admit",
+        "w6Step": "consult"
       },
       "todayResources": [
         {
@@ -534,7 +573,39 @@
       "patientId": "18bdcfba-d779-89db-be66-dcc772320a11",
       "startMin": 440,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          },
+          {
+            "drug": "warfarin",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "planned-surgery"
+          },
+          {
+            "kind": "procedure",
+            "code": "open-umbilical-hernia-repair",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -544,8 +615,7 @@
           "imagingReview",
           "assessmentPlan",
           "surgicalPlanning",
-          "consentDiscussion",
-          "hold:warfarin:planned-surgery"
+          "consentDiscussion"
         ]
       },
       "todayResources": [],
@@ -580,7 +650,19 @@
       "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
       "startMin": 490,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "inguinal-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],

@@ -708,7 +708,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "ed-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -722,8 +724,7 @@
           "disposition",
           "imagingReview",
           "splintProcedureNote",
-          "dischargeInstructions",
-          "supplyDays:hydrocodone-acetaminophen:3"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },

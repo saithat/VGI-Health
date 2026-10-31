@@ -953,7 +953,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "BID",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "ed-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -967,9 +969,7 @@
           "disposition",
           "ecgReview",
           "mentalStatusExam",
-          "dischargeInstructions",
-          "supplyDays:lorazepam:3",
-          "naloxoneOffer:accepted"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },
@@ -1016,6 +1016,39 @@
             "unit": "kg",
             "system": "http://unitsofmeasure.org",
             "code": "kg"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d05-P2-W3-010-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "naloxoneOffer"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/41497fe0-70ed-2932-21b9-873707cd7580"
+          },
+          "effectiveDateTime": "2026-11-06T12:23:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "accepted"
+              }
+            ]
           }
         }
       ],
@@ -1671,7 +1704,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 7,
+            "curesExemptReason": "ed-supply-7-days-or-less"
           },
           {
             "drug": "acetaminophen",
@@ -1692,8 +1727,7 @@
           "mdm",
           "disposition",
           "neuroExam",
-          "dischargeInstructions",
-          "supplyDays:tramadol:7"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },

@@ -285,18 +285,18 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 30
           }
         ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:taper",
-          "patientMessage",
-          "supplyDays:hydrocodone-acetaminophen:30"
+          "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "taper"
       },
       "todayResources": [
         {
@@ -394,10 +394,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:cures-multiple-prescribers",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "cures-multiple-prescribers"
       },
       "todayResources": [
         {
@@ -495,10 +495,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:early-refill",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "early-refill"
       },
       "todayResources": [
         {
@@ -894,10 +894,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:a1c-above-goal",
           "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "a1c-above-goal"
       },
       "todayResources": [
         {
@@ -1142,10 +1142,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:a1c-above-goal",
           "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "a1c-above-goal"
       },
       "todayResources": [
         {
@@ -1632,10 +1632,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:inr-low",
           "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "inr-low"
       },
       "todayResources": [
         {
@@ -2330,7 +2330,30 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 30
+          },
+          {
+            "kind": "imaging",
+            "code": "mri-lumbar-spine-without-contrast",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
+          },
+          {
+            "kind": "procedure",
+            "code": "physical-therapy-evaluation",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
           }
         ],
         "administer": [],
@@ -2342,8 +2365,7 @@
           "exam",
           "assessmentPlan",
           "painAgreementReview",
-          "functionalAssessment",
-          "supplyDays:hydrocodone-acetaminophen:30"
+          "functionalAssessment"
         ]
       },
       "todayResources": [],

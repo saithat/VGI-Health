@@ -444,12 +444,20 @@
       "startMin": 135,
       "choices": {
         "orders": [],
-        "administer": [],
+        "administer": [
+          {
+            "drug": "lisinopril",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "sbp-below-100"
+          }
+        ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "hold:lisinopril:sbp-below-100"
-        ]
+        "noteSections": []
       },
       "todayResources": [],
       "interruptions": 2
@@ -475,9 +483,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:9"
-        ]
+        "noteSections": [],
+        "painScore": 9
       },
       "todayResources": [],
       "interruptions": 3
@@ -503,9 +510,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:9"
-        ]
+        "noteSections": [],
+        "painScore": 9
       },
       "todayResources": [],
       "interruptions": 1
@@ -523,8 +529,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:5"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 0
@@ -542,8 +549,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:6"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 6
       },
       "todayResources": [],
       "interruptions": 0
@@ -729,9 +737,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:5"
-        ]
+        "noteSections": [],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 1
@@ -757,9 +764,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:9"
-        ]
+        "noteSections": [],
+        "painScore": 9
       },
       "todayResources": [],
       "interruptions": 0
@@ -777,8 +783,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:1"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 1
       },
       "todayResources": [],
       "interruptions": 0
@@ -796,8 +803,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:4"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 4
       },
       "todayResources": [],
       "interruptions": 0
@@ -936,11 +944,43 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:nausea"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d03-P3-W4-038-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/4bc4470d-f8dd-0694-86a7-3979b9430eb1"
+          },
+          "effectiveDateTime": "2026-11-04T14:26:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "nausea"
+              }
+            ]
+          }
+        }
+      ],
       "interruptions": 0
     },
     {
@@ -964,9 +1004,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:7"
-        ]
+        "noteSections": [],
+        "painScore": 7
       },
       "todayResources": [],
       "interruptions": 0
@@ -1010,8 +1049,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:2"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 2
       },
       "todayResources": [],
       "interruptions": 0

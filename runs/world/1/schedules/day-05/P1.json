@@ -222,7 +222,8 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3
           }
         ],
         "administer": [],
@@ -234,7 +235,6 @@
           "exam",
           "assessmentPlan",
           "urgentCareTriage",
-          "supplyDays:hydrocodone-acetaminophen:3",
           "pmh",
           "medRec"
         ]
@@ -461,7 +461,8 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3
           }
         ],
         "administer": [],
@@ -472,8 +473,7 @@
           "ros",
           "exam",
           "assessmentPlan",
-          "urgentCareTriage",
-          "supplyDays:hydrocodone-acetaminophen:3"
+          "urgentCareTriage"
         ]
       },
       "todayResources": [],
@@ -764,9 +764,7 @@
         "administer": [],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "supplyDays:oxycodone:30"
-        ],
+        "noteSections": [],
         "refill": "approve"
       },
       "todayResources": [
@@ -822,7 +820,15 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
             }
           ],
           "status": "requested",
@@ -865,10 +871,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:early-refill",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "early-refill"
       },
       "todayResources": [
         {
@@ -965,9 +971,7 @@
         "administer": [],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "supplyDays:oxycodone:30"
-        ],
+        "noteSections": [],
         "refill": "approve"
       },
       "todayResources": [
@@ -1023,7 +1027,15 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
             }
           ],
           "status": "requested",

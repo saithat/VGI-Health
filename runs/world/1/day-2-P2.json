@@ -361,7 +361,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "ed-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -374,8 +376,7 @@
           "mdm",
           "disposition",
           "imagingReview",
-          "dischargeInstructions",
-          "supplyDays:oxycodone:3"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },

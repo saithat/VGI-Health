@@ -28,7 +28,8 @@
           "progressNote",
           "overnightEvents",
           "labReview"
-        ]
+        ],
+        "w6Step": "rounding"
       },
       "todayResources": [],
       "interruptions": 0
@@ -64,7 +65,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q4h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 7,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -73,9 +76,9 @@
         "noteSections": [
           "medRec",
           "dischargeInstructions",
-          "followUp",
-          "supplyDays:oxycodone:7"
-        ]
+          "followUp"
+        ],
+        "w6Step": "discharge"
       },
       "todayResources": [],
       "interruptions": 1
@@ -173,7 +176,30 @@
       "patientId": "50d2c695-5faa-dfae-da75-4b182154a1ea",
       "startMin": 190,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          },
+          {
+            "kind": "procedure",
+            "code": "open-umbilical-hernia-repair",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -218,7 +244,30 @@
       "patientId": "fd7a2929-3304-ab96-ea47-c8cc1b89c99d",
       "startMin": 240,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-right-upper-quadrant",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          },
+          {
+            "kind": "procedure",
+            "code": "laparoscopic-cholecystectomy",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],

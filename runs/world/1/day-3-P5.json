@@ -20,7 +20,8 @@
           "overnightEvents",
           "labReview",
           "preopPlan"
-        ]
+        ],
+        "w6Step": "rounding"
       },
       "todayResources": [],
       "interruptions": 1
@@ -50,7 +51,8 @@
           "progressNote",
           "overnightEvents",
           "labReview"
-        ]
+        ],
+        "w6Step": "rounding"
       },
       "todayResources": [],
       "interruptions": 0
@@ -86,7 +88,9 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q4h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 5,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
           }
         ],
         "administer": [],
@@ -95,9 +99,9 @@
         "noteSections": [
           "medRec",
           "dischargeInstructions",
-          "followUp",
-          "supplyDays:oxycodone:5"
-        ]
+          "followUp"
+        ],
+        "w6Step": "discharge"
       },
       "todayResources": [],
       "interruptions": 2
@@ -129,7 +133,8 @@
           "consentVerification",
           "allergyReview",
           "anticoagulantReview"
-        ]
+        ],
+        "w6Step": "preop"
       },
       "todayResources": [
         {
@@ -287,7 +292,8 @@
         "noteSections": [
           "briefOpNote",
           "postOpOrders"
-        ]
+        ],
+        "w6Step": "postop"
       },
       "todayResources": [],
       "interruptions": 0
@@ -363,7 +369,19 @@
       "patientId": "b9dfc685-e57f-6298-5446-18da43697abe",
       "startMin": 227,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-right-upper-quadrant",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -385,7 +403,30 @@
       "patientId": "e458dd47-cfac-0c89-3206-150c3cfed809",
       "startMin": 252,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "inguinal-hernia"
+          },
+          {
+            "kind": "procedure",
+            "code": "laparoscopic-inguinal-hernia-repair",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "inguinal-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -577,7 +618,30 @@
       "patientId": "54a099e9-6a24-719f-681d-550144974cac",
       "startMin": 527,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-right-upper-quadrant",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          },
+          {
+            "kind": "procedure",
+            "code": "laparoscopic-cholecystectomy",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "symptomatic-cholelithiasis"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],

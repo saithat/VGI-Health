@@ -18,7 +18,7 @@
  * - Objects are strict: an unknown key is a drift from the Lean type.
  */
 import { z } from "zod";
-import { WorkflowValues, UnitKindValues, RoleValues } from "../../lean/generated/ehr-types";
+import { WorkflowValues, UnitKindValues, RoleValues, OrderKindValues, W6StepValues } from "../../lean/generated/ehr-types";
 
 /** Lean `Nat`. */
 export const Nat = z.number().int().nonnegative();
@@ -51,13 +51,23 @@ export const PERSONAS: readonly Persona[] = PersonaSchema.options;
  * `drug`: the lowercase generic formulary name, per docs/design/changes.md.
  */
 export const OrderChoiceSchema = z.strictObject({
-  drug: z.string().min(1),
+  drug: z.string(),
+  kind: opt(z.enum(OrderKindValues)),
+  code: opt(z.string().min(1)),
   doseTenths: Nat,
   unit: UnitKindSchema,
-  route: z.string().min(1),
-  freq: z.string().min(1),
+  route: z.string(),
+  freq: z.string(),
+  supplyDays: opt(Nat),
+  curesExemptReason: opt(z.string().min(1)),
+  holdReason: opt(z.string().min(1)),
   indication: opt(z.string().min(1)),
   prn: z.boolean(),
+}).superRefine((o, ctx) => {
+  const service = o.kind === "imaging" || o.kind === "procedure";
+  if (service ? o.drug !== "" || !o.code || o.doseTenths !== 0 || o.unit !== "none" || o.route !== "" || o.freq !== "" || o.prn || o.supplyDays != null || o.curesExemptReason != null || o.holdReason != null : o.drug === "" || o.route === "" || o.freq === "") {
+    ctx.addIssue({ code: "custom", message: "Expected a medication or a coded, nondrug service order" });
+  }
 });
 export type OrderChoice = z.infer<typeof OrderChoiceSchema>;
 
@@ -70,6 +80,9 @@ export const TaskChoicesSchema = z.strictObject({
   disposition: opt(z.enum(["admit", "discharge", "consult"])),
   immunizations: z.array(z.string().min(1)),
   noteSections: z.array(z.string().min(1)),
+  painScore: opt(Nat.max(10)),
+  w6Step: opt(z.enum(W6StepValues)),
+  refillReason: opt(z.string().min(1)),
 });
 export type TaskChoices = z.infer<typeof TaskChoicesSchema>;
 

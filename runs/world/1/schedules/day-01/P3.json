@@ -417,9 +417,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:9"
-        ]
+        "noteSections": [],
+        "painScore": 9
       },
       "todayResources": [],
       "interruptions": 2
@@ -437,8 +436,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:5"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 1
@@ -568,9 +568,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:4"
-        ]
+        "noteSections": [],
+        "painScore": 4
       },
       "todayResources": [],
       "interruptions": 1
@@ -588,8 +587,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 1
@@ -766,9 +766,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:3"
-        ]
+        "noteSections": [],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 1
@@ -786,8 +785,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 1

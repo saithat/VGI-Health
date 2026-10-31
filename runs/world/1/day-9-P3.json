@@ -265,9 +265,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:5"
-        ]
+        "noteSections": [],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 1
@@ -552,8 +551,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:3"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 1
@@ -579,9 +579,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:6"
-        ]
+        "noteSections": [],
+        "painScore": 6
       },
       "todayResources": [],
       "interruptions": 0
@@ -607,9 +606,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:3"
-        ]
+        "noteSections": [],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 0
@@ -627,8 +625,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:1"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 1
       },
       "todayResources": [],
       "interruptions": 0
@@ -646,8 +645,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 1
@@ -673,9 +673,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:9"
-        ]
+        "noteSections": [],
+        "painScore": 9
       },
       "todayResources": [],
       "interruptions": 1
@@ -701,11 +700,43 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:nausea"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d09-P3-W4-044-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/e4e9b21f-7954-3ef7-53aa-e188bbd8e5f1"
+          },
+          "effectiveDateTime": "2026-11-12T11:39:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "nausea"
+              }
+            ]
+          }
+        }
+      ],
       "interruptions": 0
     },
     {
@@ -815,12 +846,69 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:anxiety",
-          "sedationScore:1"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d09-P3-W4-016-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/3adc2c09-cd62-73e9-8329-edcd8b58b688"
+          },
+          "effectiveDateTime": "2026-11-12T13:01:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "anxiety"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d09-P3-W4-016-clinical-1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "sedationScore"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/3adc2c09-cd62-73e9-8329-edcd8b58b688"
+          },
+          "effectiveDateTime": "2026-11-12T13:01:00-08:00",
+          "valueInteger": 1
+        }
+      ],
       "interruptions": 0
     },
     {
@@ -994,9 +1082,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:3"
-        ]
+        "noteSections": [],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 0
@@ -1022,12 +1109,69 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:anxiety",
-          "sedationScore:0"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d09-P3-W4-004-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-12T16:51:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "anxiety"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d09-P3-W4-004-clinical-1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "sedationScore"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-12T16:51:00-08:00",
+          "valueInteger": 0
+        }
+      ],
       "interruptions": 1
     },
     {

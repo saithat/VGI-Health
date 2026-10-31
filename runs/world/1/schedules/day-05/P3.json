@@ -111,13 +111,22 @@
       "startMin": 36,
       "choices": {
         "orders": [],
-        "administer": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false,
+            "holdReason": "poor-oral-intake"
+          }
+        ],
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
           "vitals",
-          "assessment",
-          "hold:insulin lispro:poor-oral-intake"
+          "assessment"
         ]
       },
       "todayResources": [],
@@ -223,9 +232,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:4"
-        ]
+        "noteSections": [],
+        "painScore": 4
       },
       "todayResources": [],
       "interruptions": 0
@@ -512,8 +520,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 1
@@ -539,9 +548,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:7"
-        ]
+        "noteSections": [],
+        "painScore": 7
       },
       "todayResources": [],
       "interruptions": 1
@@ -559,8 +567,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:5"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 5
       },
       "todayResources": [],
       "interruptions": 0

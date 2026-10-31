@@ -26,7 +26,8 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 10
           },
           {
             "drug": "ibuprofen",
@@ -48,8 +49,7 @@
           "disposition",
           "imagingReview",
           "splintProcedureNote",
-          "dischargeInstructions",
-          "supplyDays:hydrocodone-acetaminophen:10"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },
@@ -639,6 +639,15 @@
             "route": "PO",
             "freq": "q6h",
             "prn": true
+          },
+          {
+            "drug": "metformin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "inpatient"
           }
         ],
         "administer": [],
@@ -651,8 +660,7 @@
           "mdm",
           "disposition",
           "ecgReview",
-          "admissionOrders",
-          "hold:metformin:inpatient"
+          "admissionOrders"
         ],
         "disposition": "admit"
       },
@@ -894,7 +902,8 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 10
           }
         ],
         "administer": [],
@@ -908,8 +917,7 @@
           "disposition",
           "imagingReview",
           "splintProcedureNote",
-          "dischargeInstructions",
-          "supplyDays:hydrocodone-acetaminophen:10"
+          "dischargeInstructions"
         ],
         "disposition": "discharge"
       },

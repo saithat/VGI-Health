@@ -15,9 +15,7 @@
         "administer": [],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "supplyDays:oxycodone:30"
-        ],
+        "noteSections": [],
         "refill": "approve"
       },
       "todayResources": [
@@ -73,7 +71,15 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
             }
           ],
           "status": "requested",
@@ -115,9 +121,7 @@
         "administer": [],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "supplyDays:hydrocodone-acetaminophen:30"
-        ],
+        "noteSections": [],
         "refill": "approve"
       },
       "todayResources": [
@@ -173,7 +177,15 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
             }
           ],
           "status": "requested",
@@ -216,10 +228,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:early-refill",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "early-refill"
       },
       "todayResources": [
         {
@@ -316,9 +328,7 @@
         "administer": [],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "supplyDays:hydrocodone-acetaminophen:30"
-        ],
+        "noteSections": [],
         "refill": "approve"
       },
       "todayResources": [
@@ -374,7 +384,15 @@
                     }
                   ]
                 }
-              ]
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
             }
           ],
           "status": "requested",
@@ -515,10 +533,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:overuse-needs-asthma-visit",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "overuse-needs-asthma-visit"
       },
       "todayResources": [
         {
@@ -711,7 +729,30 @@
             "unit": "mg",
             "route": "PO",
             "freq": "q6h",
-            "prn": true
+            "prn": true,
+            "supplyDays": 30
+          },
+          {
+            "kind": "imaging",
+            "code": "mri-lumbar-spine-without-contrast",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
+          },
+          {
+            "kind": "procedure",
+            "code": "physical-therapy-evaluation",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
           }
         ],
         "administer": [],
@@ -723,8 +764,7 @@
           "exam",
           "assessmentPlan",
           "painAgreementReview",
-          "functionalAssessment",
-          "supplyDays:tramadol:30"
+          "functionalAssessment"
         ]
       },
       "todayResources": [],
@@ -2536,10 +2576,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "modifyReason:hyperkalemia-dose-reduction",
           "patientMessage"
         ],
-        "refill": "modify"
+        "refill": "modify",
+        "refillReason": "hyperkalemia-dose-reduction"
       },
       "todayResources": [
         {
@@ -3023,10 +3063,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:early-refill",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "early-refill"
       },
       "todayResources": [
         {
@@ -3772,10 +3812,10 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "denyReason:hyperkalemia-needs-visit",
           "patientMessage"
         ],
-        "refill": "deny"
+        "refill": "deny",
+        "refillReason": "hyperkalemia-needs-visit"
       },
       "todayResources": [
         {

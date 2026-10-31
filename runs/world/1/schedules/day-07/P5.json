@@ -137,7 +137,19 @@
       "patientId": "4966bd28-61bc-8f51-3aab-1328a32ea2e7",
       "startMin": 240,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "inguinal-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],
@@ -315,7 +327,8 @@
           "labReview",
           "surgicalDecision"
         ],
-        "disposition": "admit"
+        "disposition": "admit",
+        "w6Step": "consult"
       },
       "todayResources": [
         {
@@ -445,7 +458,30 @@
       "patientId": "d27367bc-7af3-1b46-f249-9547e446bb1d",
       "startMin": 440,
       "choices": {
-        "orders": [],
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          },
+          {
+            "kind": "procedure",
+            "code": "open-umbilical-hernia-repair",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          }
+        ],
         "administer": [],
         "ackResult": false,
         "immunizations": [],

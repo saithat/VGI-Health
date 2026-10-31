@@ -1309,6 +1309,15 @@
             "route": "PO",
             "freq": "q6h",
             "prn": true
+          },
+          {
+            "drug": "metformin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "inpatient"
           }
         ],
         "administer": [],
@@ -1321,8 +1330,7 @@
           "mdm",
           "disposition",
           "imagingReview",
-          "admissionOrders",
-          "hold:metformin:inpatient"
+          "admissionOrders"
         ],
         "disposition": "admit"
       },

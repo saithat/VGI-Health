@@ -240,13 +240,20 @@
             "route": "SC",
             "freq": "daily",
             "prn": false
+          },
+          {
+            "drug": "lisinopril",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "patient-refused"
           }
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "refused:lisinopril:patient-refused"
-        ]
+        "noteSections": []
       },
       "todayResources": [],
       "interruptions": 1
@@ -367,9 +374,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:3"
-        ]
+        "noteSections": [],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 1
@@ -586,11 +592,43 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:nausea"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d02-P3-W4-007-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/732cdc7f-9ce5-c808-8fff-1777f491e16e"
+          },
+          "effectiveDateTime": "2026-11-03T09:22:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "nausea"
+              }
+            ]
+          }
+        }
+      ],
       "interruptions": 2
     },
     {
@@ -606,8 +644,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:0"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 0
       },
       "todayResources": [],
       "interruptions": 0
@@ -819,11 +858,43 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "prnReason:nausea"
-        ]
+        "noteSections": []
       },
-      "todayResources": [],
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d02-P3-W4-050-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/75d343d1-463d-3e74-2da8-80ba02140719"
+          },
+          "effectiveDateTime": "2026-11-03T12:49:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "nausea"
+              }
+            ]
+          }
+        }
+      ],
       "interruptions": 2
     },
     {
@@ -847,9 +918,8 @@
         ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "painScore:8"
-        ]
+        "noteSections": [],
+        "painScore": 8
       },
       "todayResources": [],
       "interruptions": 0
@@ -1056,8 +1126,9 @@
         "ackResult": false,
         "immunizations": [],
         "noteSections": [
-          "painReassessment:3"
-        ]
+          "painReassessment"
+        ],
+        "painScore": 3
       },
       "todayResources": [],
       "interruptions": 0
@@ -1097,12 +1168,20 @@
       "startMin": 603,
       "choices": {
         "orders": [],
-        "administer": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false,
+            "holdReason": "poor-oral-intake"
+          }
+        ],
         "ackResult": false,
         "immunizations": [],
-        "noteSections": [
-          "hold:insulin lispro:poor-oral-intake"
-        ]
+        "noteSections": []
       },
       "todayResources": [],
       "interruptions": 0
