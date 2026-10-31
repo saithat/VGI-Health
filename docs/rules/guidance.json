@@ -936,5 +936,992 @@
     "confidence": "high",
     "verified": true,
     "notes": "Atomic expansion of R2-10; ISMP guidance, binding=false. Preserve full-token matching rather than banning letters inside words."
+  },
+  {
+    "id": "guidance-ismp-weight-metric",
+    "title": "Record metric weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 3(b), p. 5",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "metric units only",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Record weight only in metric units.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 is stricter: kg only, whereas ISMP also permits grams. Existing entry requirement; regulations.md E5."
+  },
+  {
+    "id": "guidance-ismp-weight-measured",
+    "title": "Measure encounter weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 3(a), p. 5",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "Weigh each patient",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Obtain measured weight at admission and appropriate encounters.",
+    "specMapping": {
+      "element": "weight",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Measured-weight provenance and encounter linkage.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Do not delay life-saving treatment to weigh a major-trauma patient; laboratory-only encounters are excluded. V1 has a weight entry, not this provenance/exception check."
+  },
+  {
+    "id": "guidance-ismp-weight-not-historical",
+    "title": "Reject historical dosing weight",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 3(a), p. 5",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "historical weight",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Avoid relying on historical weight for the encounter.",
+    "specMapping": {
+      "element": "dosingWeight",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Weight source/measurement-time validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 comments describe today, but its entry gate does not validate measurement provenance; this is additional validation."
+  },
+  {
+    "id": "guidance-ismp-oral-syringe",
+    "title": "Select oral-compatible syringes",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; ARCHIVED BP 4, pp. 6, 21",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "oral syringe",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Dispense non-unit-dose oral liquids in oral or ISO-compatible enteral syringes.",
+    "specMapping": {
+      "element": "route",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Dispensing device/packaging attributes and pharmacy workflow.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Explicitly ARCHIVED in the requested 2024–2025 booklet; historical best practice retained there, not a new active 2024 practice. Order device choice is only an EHR implementation proxy."
+  },
+  {
+    "id": "guidance-ismp-liquid-device-metric",
+    "title": "Use metric dosing devices",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; ARCHIVED BP 5, pp. 6, 22",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "metric scale",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Select oral liquid dosing devices with metric-only scales.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Physical-device inventory/inspection outside UI semantics.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "ARCHIVED in requested booklet. EHR discharge/device instructions can support procurement and use; a screen checker cannot certify printed syringe graduations."
+  },
+  {
+    "id": "guidance-ismp-mtx-weekly",
+    "title": "Default methotrexate weekly",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 2(a), p. 4",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "weekly",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Default oral methotrexate orders to weekly dosing.",
+    "specMapping": {
+      "element": "freq",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Medication-specific default constraint.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A human may change a default; the separate daily-indication verification must still apply. Not an absolute ban on daily oncology treatment."
+  },
+  {
+    "id": "guidance-ismp-mtx-daily-indication",
+    "title": "Verify daily methotrexate indication",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 2(b), p. 4",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "hard stop",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require appropriate oncologic indication verification for daily oral methotrexate.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "daily-oral-methotrexate",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug/frequency predicate and oncologic-indication validation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Related to regulations.md S-ISMP-mtx; v1 indication capture alone does not verify an appropriate oncologic indication."
+  },
+  {
+    "id": "guidance-ismp-mtx-teachback",
+    "title": "Confirm methotrexate teach-back",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 2(c), p. 4",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "repeat back",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "humanOnly",
+    "proposedRule": "Have patients repeat methotrexate discharge dosing instructions.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Teach-back completion and drug predicate.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "A generic instructions entry in v1 does not establish patient comprehension."
+  },
+  {
+    "id": "guidance-ismp-select-doublechecks",
+    "title": "Target independent double checks",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 19(d), p. 17",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "select high-alert",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "administerMed",
+    "encoding": "humanOnly",
+    "proposedRule": "Select highest-risk medications for independent double checks.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "V1 implements distinct-nurse cosign for its high-alert subset. Source examples: chemotherapy, opioid infusions, IV insulin, heparin infusions. Do not extend manual checks indiscriminately to every high-alert drug."
+  },
+  {
+    "id": "guidance-ismp-layer-safeguards",
+    "title": "Layer high-alert safeguards",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 19(c), p. 17",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "bundle",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Combine weaker controls with stronger high-alert safeguards.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Medication-specific safeguard profiles beyond one alert/cosign.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Static policy proposal: a label or educational popup alone cannot satisfy the safeguard profile."
+  },
+  {
+    "id": "guidance-ismp-targeted-education",
+    "title": "Educate high-alert recipients",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 19(e), p. 17",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "targeted education",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Provide targeted education for selected high-alert medications.",
+    "specMapping": {
+      "element": "patientInstructions",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Drug-specific education evidence.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Generic patientInstructions does not prove targeted education or family involvement."
+  },
+  {
+    "id": "guidance-ismp-consult-triggers",
+    "title": "Define automatic consultation triggers",
+    "citation": "ISMP Targeted Medication Safety Best Practices for Hospitals, 2024–2025; BP 19(g), p. 17",
+    "url": "https://www.ismp.org/system/files/resources/2024-02/ISMP_TargetedMedicationSafetyBestPractices_Hospitals_021524_MS5818%20%281%29.pdf",
+    "quote": "automatic consultation",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Define criteria triggering medication education consultation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": "passive",
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Consultation criteria and routed consult/task creation.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Consultation is the recommendation; passive tier is a proposed UI choice, not ISMP wording."
+  },
+  {
+    "id": "guidance-ismp-acute-txa",
+    "title": "Flag injectable tranexamic acid",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "tranexamic acid",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include tranexamic acid injection in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-kcl",
+    "title": "Flag concentrated potassium chloride",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "potassium chloride",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include potassium chloride injection concentrate in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-nmb",
+    "title": "Flag neuromuscular blockers",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "neuromuscular",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include neuromuscular blocking agents in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-chemo",
+    "title": "Flag chemotherapy",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "chemotherapeutic agents",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include oral and parenteral chemotherapy in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-neuraxial",
+    "title": "Flag neuraxial medications",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "epidural",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include epidural and intrathecal medications in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-opioid",
+    "title": "Flag every opioid route",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "opioids",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include opioids by every administration route in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-sedation-child",
+    "title": "Flag pediatric oral sedation",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "oral, for children",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include oral moderate/minimal sedation agents for children in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-acute-hypertonic-saline",
+    "title": "Flag hypertonic saline",
+    "citation": "ISMP List of High-Alert Medications in Acute Care Settings (2024), p. 1; Classes/Categories or Specific Medications",
+    "url": "https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf",
+    "quote": "greater than 0.9%",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "administerMed",
+    "encoding": "design",
+    "proposedRule": "Include sodium chloride injection above 0.9% in the acute-care high-alert catalog.",
+    "specMapping": {
+      "element": "highAlertCosign",
+      "info": null,
+      "when": "highAlertMed",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Explicit medication catalog membership in the FHIR fact adapter.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Mapping identifies the existing high-alert hook, not an already-enumerated v1 drug class. Choose local layered safeguards; list membership alone does not mandate a second-nurse check."
+  },
+  {
+    "id": "guidance-ismp-community-immunosuppressant",
+    "title": "Flag ambulatory immunosuppressants",
+    "citation": "ISMP List of High-Alert Medications in Community/Ambulatory Care Settings (2021), p. 1; Classes/Categories of Medications",
+    "url": "https://www.ismp.org/system/files/resources/2021-09/HighAlertMedications_Community-2021.pdf",
+    "quote": "Immunosuppressant agents",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include oral and parenteral immunosuppressants in the community high-alert catalog.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Community-specific high-alert catalog and safeguards.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
+  },
+  {
+    "id": "guidance-ismp-community-liquid-child",
+    "title": "Flag measured pediatric liquids",
+    "citation": "ISMP List of High-Alert Medications in Community/Ambulatory Care Settings (2021), p. 1; Classes/Categories of Medications",
+    "url": "https://www.ismp.org/system/files/resources/2021-09/HighAlertMedications_Community-2021.pdf",
+    "quote": "Pediatric liquid medications",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include pediatric liquids requiring measurement in the community high-alert catalog.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Community-specific high-alert catalog and safeguards.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
+  },
+  {
+    "id": "guidance-ismp-community-pregnancy",
+    "title": "Flag pregnancy-contraindicated medications",
+    "citation": "ISMP List of High-Alert Medications in Community/Ambulatory Care Settings (2021), p. 1; Classes/Categories of Medications",
+    "url": "https://www.ismp.org/system/files/resources/2021-09/HighAlertMedications_Community-2021.pdf",
+    "quote": "contraindicated during pregnancy",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include medications contraindicated during pregnancy in the community high-alert catalog.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Community-specific high-alert catalog and safeguards.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
+  },
+  {
+    "id": "guidance-ismp-community-sulfonylurea",
+    "title": "Flag ambulatory sulfonylureas",
+    "citation": "ISMP List of High-Alert Medications in Community/Ambulatory Care Settings (2021), p. 1; Classes/Categories of Medications",
+    "url": "https://www.ismp.org/system/files/resources/2021-09/HighAlertMedications_Community-2021.pdf",
+    "quote": "Sulfonylurea hypoglycemics",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include oral sulfonylurea hypoglycemics in the community high-alert catalog.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Community-specific high-alert catalog and safeguards.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
+  },
+  {
+    "id": "guidance-ismp-community-insulin",
+    "title": "Flag all ambulatory insulins",
+    "citation": "ISMP List of High-Alert Medications in Community/Ambulatory Care Settings (2021), p. 1; Classes/Categories of Medications",
+    "url": "https://www.ismp.org/system/files/resources/2021-09/HighAlertMedications_Community-2021.pdf",
+    "quote": "all formulations and strengths",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Include all insulin formulations and strengths in the community high-alert catalog.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Community-specific high-alert catalog and safeguards.",
+    "confidence": "high",
+    "verified": true,
+    "notes": "2021 community edition opened directly; do not substitute the acute-care list. Classification informs local safeguards, not an automatic contraindication or mandatory popup."
   }
 ]
