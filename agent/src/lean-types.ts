@@ -43,16 +43,17 @@ const valueKindSchema: z.ZodType<L.ValueKind> = z.union([
   z.object({ coded: z.object({ valueSet: str }) }),
   z.object({ scan: z.object({ target: str }) }),
 ]);
-const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom'], z.object({
+const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 'recordFact'], z.object({
   id: str, label: str, kind: valueKindSchema, enteredBy: z.array(roleSchema),
   prefill: z.enum(['never', 'recordConfirm', 'defaultConfirm', 'autoLinked']),
   friction: z.enum(['safety', 'compliance', 'accidental']),
-  humanOnly: z.boolean(), linkedFrom: str.exactOptional(), fhirTarget: str,
+  humanOnly: z.boolean(), linkedFrom: str.exactOptional(), recordFact: str.exactOptional(), fhirTarget: str,
 }));
 const whenSchema: z.ZodType<L.When> = z.union([
-  z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk']),
+  z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk', 'weightBased']),
   z.object({ orderClass: z.object({ cls: str }) }),
   z.object({ medClass: z.object({ cls: str }) }),
+  z.object({ encounter: z.object({ kind: str }) }),
 ]);
 const reviewModeSchema: z.ZodType<L.ReviewMode> = z.union([
   z.literal('shownOnCommit'),
@@ -164,8 +165,10 @@ export const eventSchema: z.ZodType<L.Event> = z.union([
 const stepResultSchema: z.ZodType<L.StepResult> = z.union([z.enum(['ok', 'ignored']), z.object({ blocked: z.object({ reason: str }) })]);
 
 // ---------------------------------------------------------------- simulation
-const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication'], z.object({
+const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason'], z.object({
   drug: str, doseTenths: nat, unit: unitKindSchema, route: str, freq: str, indication: str.exactOptional(), prn: z.boolean(),
+  kind: z.enum(['medication', 'imaging', 'procedure']).exactOptional(), code: str.exactOptional(),
+  supplyDays: nat.exactOptional(), curesExemptReason: str.exactOptional(), holdReason: str.exactOptional(),
 }));
 const taskSchema: z.ZodType<L.Task> = z.object({
   id: str,
@@ -174,9 +177,11 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   workflow: z.enum(['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']),
   patientId: str,
   startMin: nat,
-  choices: dropNulls(['refill', 'disposition'], z.object({
+  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason'], z.object({
     orders: z.array(orderChoiceSchema), administer: z.array(orderChoiceSchema), ackResult: z.boolean(),
     refill: str.exactOptional(), disposition: str.exactOptional(), immunizations: z.array(str), noteSections: z.array(str),
+    painScore: nat.exactOptional(), w6Step: z.enum(['consult', 'preop', 'postop', 'rounding', 'discharge']).exactOptional(),
+    refillReason: str.exactOptional(),
   })),
   todayResources: z.array(z.unknown()),
   interruptions: nat,

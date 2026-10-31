@@ -140,6 +140,10 @@ export interface ElementSpec {
    */
   linkedFrom?: ElementId;
   /**
+   * The sole named record fact a fromRecord prefill may use. None forbids it.
+   */
+  recordFact?: string;
+  /**
    * Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`.
    */
   fhirTarget: string;
@@ -181,6 +185,10 @@ export type When =
   | "highAlertMed"
   /** The patient has an abnormal result. */
   | "abnormalResult"
+  /** Episode encounter kind, e.g. "preop" (not a historical encounter). */
+  | { encounter: { kind: string } }
+  /** Some order drug has a nonzero weight-based dose range. */
+  | "weightBased"
   /** Naloxone should be offered (CA B&P Code §741): some order line's drug is an opioid, and the patient takes a benzodiazepine or the line's daily MME is 90 or more (an unknown dose, frequency, or MME factor counts as a risk). */
   | "naloxoneRisk";
 
@@ -262,7 +270,8 @@ export interface AlertSpec {
    */
   commit: CommitId;
   /**
-   * Screens where a passive alert must be shown inline.
+   * Workflow tags whose screens must show this passive alert inline.
+   * These are Screen.workflow values, never program-specific screen IDs.
    */
   screens: string[];
 }
@@ -476,6 +485,10 @@ export interface DrugInfo {
    */
   minMgPerKgTenths: number;
   maxMgPerKgTenths: number;
+  /**
+   * Absolute per-dose maximum in tenths of mg; 0 means no cap specified.
+   */
+  maxDoseMgTenths: number;
   highAlert: boolean;
   /**
    * Classes this drug interacts with.
@@ -547,6 +560,10 @@ export interface Facts {
    * (e.g. `("visitDiagnosis", "J18.9")`).
    */
   record: [string, string][];
+  /**
+   * Kind of this episode, e.g. "preop". Absent means no encounter-kind match.
+   */
+  encounterKind?: string;
 }
 
 /**
@@ -816,6 +833,28 @@ export type Workflow =
 export const WorkflowValues = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"] as const;
 
 /**
+ * Kind of order. Imaging and procedures use a service code, not a drug name.
+ */
+export type OrderKind =
+  | "medication"
+  | "imaging"
+  | "procedure";
+/** All values of `OrderKind`. */
+export const OrderKindValues = ["medication", "imaging", "procedure"] as const;
+
+/**
+ * Surgical workflow step for this task.
+ */
+export type W6Step =
+  | "consult"
+  | "preop"
+  | "postop"
+  | "rounding"
+  | "discharge";
+/** All values of `W6Step`. */
+export const W6StepValues = ["consult", "preop", "postop", "rounding", "discharge"] as const;
+
+/**
  * A clinical decision, fixed per scenario (independent of the UI).
  */
 export interface OrderChoice {
@@ -823,10 +862,30 @@ export interface OrderChoice {
    * Formulary name (lowercase generic), e.g. `"amoxicillin"`.
    */
   drug: string;
+  /**
+   * Omitted means medication for compatibility with existing schedules.
+   */
+  kind?: OrderKind;
+  /**
+   * Service code (e.g. CPT) for imaging/procedure; drug is empty in that case.
+   */
+  code?: string;
   doseTenths: number;
   unit: UnitKind;
   route: string;
   freq: string;
+  /**
+   * Days supplied for this prescription.
+   */
+  supplyDays?: number;
+  /**
+   * Documented CURES exemption reason, if applicable to this prescription.
+   */
+  curesExemptReason?: string;
+  /**
+   * Reason this administration is held or refused.
+   */
+  holdReason?: string;
   indication?: string;
   prn: boolean;
 }
@@ -863,6 +922,18 @@ export interface TaskChoices {
    * Documentation sections to complete.
    */
   noteSections: string[];
+  /**
+   * Pain score for this task (0-10).
+   */
+  painScore?: number;
+  /**
+   * W6 stage; independent of free-text documentation.
+   */
+  w6Step?: W6Step;
+  /**
+   * Reason for a refill denial or modification.
+   */
+  refillReason?: string;
 }
 
 /**

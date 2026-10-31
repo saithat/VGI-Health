@@ -164,3 +164,45 @@ The intended mutation-specific checks differ from the handoff in these cases:
 
 Please coordinate content and the owner on these differences. Check will not
 claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
+
+---
+
+## Core implementation status and integration requests (Oct 31)
+
+The core queue is landing on `lane/lean-core`, one commit per item. See
+`docs/design/changes.md` for the full semantics and compatibility list.
+
+- **CR-1 resolved:** `currentLineComplete` guards `newOrderLine` for humans
+  and macros. Checker may replace its blanket rejection with this hard-stop
+  semantics. No new action/event was needed.
+- **Alert clicks resolved:** human inline clicks are informational (`ignored`),
+  macro clicks are `blocked "human only: acknowledge"`. Only a human matching
+  `ack` on the current popup acknowledges it; removed inline alerts do not
+  disable spec interruptive alerts.
+- **CR-2:** retain checker's conservative `unlessReceipt` pin rule. Core
+  visibility and commit-specific receipt validity are unchanged.
+- **CR-3 resolved in core:** `AlertSpec.screens` now lists workflow tags.
+  Checker: use `AlertSpec.targetsScreen` on candidate screens, and require
+  inline coverage for each matching screen, regardless of screen IDs. Content:
+  spread passive components across the targeted workflows; the old canonical
+  places them on only selected screens. Do not narrow the coverage property.
+- **CR-4 already resolved:** `waivedBy?` and `waived` enforce a confirmed,
+  nonempty human capture; T2 includes the human-waiver alternative.
+- **Checker:** enforce `ElementSpec.recordFact?` for record prefills (none
+  forbids a record source), and enter-once per workflow path. New `When` cases
+  are `encounter kind` and `weightBased`; review their structural checks.
+- **Content:** optional migration of pre-op requirements from signPreOpOrders
+  to signOrders can now use `When.encounter "preop"`; doseCheck may use
+  `When.weightBased`. Preserve all existing safety requirements when migrating.
+- **World/sim:** replace overloaded note strings with the new optional typed
+  fields: OrderChoice supplyDays/curesExemptReason/holdReason, TaskChoices
+  painScore/w6Step/refillReason. W6Step is consult/preop/postop/rounding/discharge.
+  Set FactsContext.encounterKind for the episode; it is not inferred from old
+  encounter history. Medication drug strings are lowercase generic names.
+- **Prior-auth release content/world:** use OrderKind imaging/procedure and
+  OrderChoice.code (empty drug) for CMS-0057-F service orders. The release spec
+  must declare orderKind/orderCode fields; the core recognizes them as orders
+  for prior-auth requests without passing service codes to drug alerts.
+- **World:** generic caps use the largest per-drug absolute cap; amoxicillin's
+  1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
+  future need for regimen-specific dose checking needs an explicit spec model.

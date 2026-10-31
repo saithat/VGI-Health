@@ -14,6 +14,8 @@ Conventions:
 - The first class is the therapeutic class used for duplicate-therapy checks;
   the rest are used for allergy and interaction matching.
 - `minMgPerKgTenths`/`maxMgPerKgTenths` are per dose, in tenths of mg/kg.
+- `maxDoseMgTenths` is the absolute per-dose cap (0 means unspecified).
+  Caps match the existing world pediatric reference data (largest regimen cap).
 - `mmeFactorTenths` is the oral morphine-equivalent factor in tenths
   (morphine 10, hydromorphone 40, oxycodone 15, hydrocodone 10, tramadol 2).
 - Schedule II–IV drugs carry the class `"controlled-II-IV"`.
@@ -26,7 +28,7 @@ namespace Ehr
 def formulary : List DrugInfo := [
   { name := "amoxicillin", rxnorm := ["723"]
     classes := ["penicillin", "betaLactam", "antibiotic"]
-    minMgPerKgTenths := 100, maxMgPerKgTenths := 500, highAlert := false
+    minMgPerKgTenths := 100, maxMgPerKgTenths := 500, maxDoseMgTenths := 20000, highAlert := false
     interactsWith := ["vitaminKAntagonist"] },
   { name := "cefazolin", rxnorm := ["2180"]
     classes := ["cephalosporin", "betaLactam", "antibiotic"]
@@ -34,11 +36,11 @@ def formulary : List DrugInfo := [
     interactsWith := [] },
   { name := "ceftriaxone", rxnorm := ["2193"]
     classes := ["cephalosporin", "betaLactam", "antibiotic"]
-    minMgPerKgTenths := 250, maxMgPerKgTenths := 1000, highAlert := false
+    minMgPerKgTenths := 250, maxMgPerKgTenths := 1000, maxDoseMgTenths := 10000, highAlert := false
     interactsWith := ["calciumIv"] },
   { name := "azithromycin", rxnorm := ["18631"]
     classes := ["macrolide", "antibiotic", "qtProlonging"]
-    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, highAlert := false
+    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, maxDoseMgTenths := 5000, highAlert := false
     interactsWith := ["qtProlonging", "vitaminKAntagonist"] },
   { name := "vancomycin", rxnorm := ["11124"]
     classes := ["glycopeptide", "antibiotic"]
@@ -110,15 +112,15 @@ def formulary : List DrugInfo := [
     interactsWith := ["opioid", "sedative"] },
   { name := "ondansetron", rxnorm := ["26225"]
     classes := ["serotoninAntagonist", "antiemetic", "qtProlonging"]
-    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := false
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, maxDoseMgTenths := 40, highAlert := false
     interactsWith := ["qtProlonging"] },
   { name := "acetaminophen", rxnorm := ["161"]
     classes := ["acetaminophen", "analgesic", "antipyretic"]
-    minMgPerKgTenths := 100, maxMgPerKgTenths := 150, highAlert := false
+    minMgPerKgTenths := 100, maxMgPerKgTenths := 150, maxDoseMgTenths := 10000, highAlert := false
     interactsWith := [] },
   { name := "ibuprofen", rxnorm := ["5640"]
     classes := ["nsaid", "analgesic", "antipyretic"]
-    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, highAlert := false
+    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, maxDoseMgTenths := 4000, highAlert := false
     interactsWith := ["anticoagulant", "aceInhibitor", "glycopeptide"] },
   { name := "albuterol", rxnorm := ["435"]
     classes := ["betaAgonist", "bronchodilator"]
