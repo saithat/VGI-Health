@@ -1,35 +1,18 @@
-# world/ status
+# World status
 
-Full handoff: [`../HANDOFF-world.md`](../HANDOFF-world.md). This file lists what is unfinished and the
-conventions other lanes must know.
+Full continuation details and exact remaining work: [HANDOFF-world.md](../HANDOFF-world.md).
 
-## Unfinished (nothing dropped; all still in scope)
-1. Merge `origin/lane/infra` (Synthea fixtures now exist: 174 patients, `fixtures/synthea/index.json`
-   with `id` + `file` per entry) and run on the real population. Check P1 stays at 16-20 W1 visits,
-   the P3 census is realistic (about 6-10), and P4/P5 volumes. Tune if needed.
-2. Decide with the orchestrator whether to commit `runs/world/1/` (about 2.2 MB on the fixture).
-   Regenerate it from the Synthea population first.
-3. Replace the hand-written zod mirror (`src/schema.ts`) with, or check it against, the TS/zod that lane A
-   generates from Lean. Align `src/formulary.ts` with `lean/Ehr/Formulary.lean` (drug key, weight ranges,
-   high-alert flags, DEA schedules, MME factors).
-4. Agree the note-section conventions below with lane A and the simulator, or get fields added to
-   `OrderChoice`/`TaskChoices` (supply days, hold reasons, W6 sub-kind).
-5. `PersonaParams` has a schema but is not emitted (not in the world brief; the simulator may want it).
+The real 174-patient Synthea population is validated. All 25 formulary entries
+match Lean. The committed ten-day seed-1 replay is 5.4 MB and loads through
+the real agent world loader. It includes persona parameters, flat schedules,
+agent-compatible nested schedules, states and manifests. World build/lint and
+81 tests pass; Lean build and agent typecheck/lint/31 tests pass.
 
-## Conventions (pending Lean agreement)
-- `OrderChoice.drug` is the lowercase generic name (as briefed). The core-model comment says "RxNorm code";
-  `FORMULARY[drug].rxnorm` has the code if Lean keys by RxNorm.
-- Doses: `doseTenths` in `unit`; hydrocodone-acetaminophen dose = hydrocodone mg. Pediatric doses are
-  absolute mg computed from today's kg weight (mg/kg dosing), capped at `PEDS_DOSE_CAPS`.
-- Routes: PO, IV, IM, SC, INH. Frequencies: once, daily, BID, TID, QID, q3h, q4h, q6h, q8h, q12h, q24h,
-  nightly, TIDAC.
-- Antibiotic indications are slugs (`community-acquired-pneumonia`, `surgical-prophylaxis`, ...); only
-  antibiotic orders carry `indication`.
-- `noteSections` entries are section ids, some with facts after colons: `hold:<drug>:<reason>`,
-  `refused:<drug>:<reason>`, `painScore:<n>`, `painReassessment:<n>`, `sedationScore:<n>`,
-  `prnReason:<reason>`, `supplyDays:<drug>:<days>`, `naloxoneOffer:accepted|declined`,
-  `denyReason:<slug>`, `modifyReason:<slug>`.
-- W6 sub-kind = first note section: `consultNote`, `hAndPUpdate` (pre-op), `briefOpNote` (op note +
-  post-op order set), `progressNote` (rounding), `medRec` (discharge).
-- W7: `refill` decision; `orders` only for `modify` (per core-model). The refill Task (FHIR) is in
-  `todayResources`.
+Remaining: merge lean-core's typed clinical-choice/order-kind additions when
+published; migrate note metadata, emit P1/P5 imaging/procedure orders for
+prior auth, then regenerate the committed replay and rerun checks. The latest
+inspected core branch (52206f9) does not yet contain those fields. Integration
+requests are recorded in [changes-requests.md](../docs/design/changes-requests.md).
+
+Run `cd lean && lake build` before world tests. The world contract suite uses
+one `lake env lean --run` process; do not run another lake process alongside it.

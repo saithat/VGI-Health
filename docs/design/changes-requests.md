@@ -2,7 +2,7 @@
 
 ## Typed simulation choices (requested by orchestrator, pending lean-core)
 
-At `origin/lane/lean-core` abac908 (already included in main 1f43d67),
+At `origin/lane/lean-core` 52206f9 (merged into world),
 `OrderChoice` and `TaskChoices` still lack the requested `supplyDays`,
 `curesExemptReason`, `holdReason`, `painScore`, `w6Step`, `refillReason`, and
 imaging/procedure order kind. Please publish the authoritative Lean fields,
