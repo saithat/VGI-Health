@@ -1,0 +1,250 @@
+{
+  "id": "mock-P5",
+  "version": 4,
+  "owner": "P5",
+  "role": "surgeon",
+  "specVersion": "v2",
+  "start": "work",
+  "screens": [
+    {
+      "id": "chart",
+      "title": "Chart review",
+      "workflow": "W1",
+      "components": [
+        {
+          "id": "banner",
+          "kind": "banner",
+          "label": "Patient",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "banner"
+        },
+        {
+          "id": "history",
+          "kind": {
+            "panel": {
+              "info": "currentMeds"
+            }
+          },
+          "label": "Medication history",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "history"
+        },
+        {
+          "id": "allergy-review",
+          "kind": {
+            "panel": {
+              "info": "allergyList"
+            }
+          },
+          "label": "Allergies",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "allergy-review"
+        },
+        {
+          "id": "open-work",
+          "kind": {
+            "button": {
+              "action": {
+                "goto": {
+                  "screen": "work"
+                }
+              }
+            }
+          },
+          "label": "Open task",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "open-work"
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "title": "Post-op order set · focused",
+      "workflow": "W1",
+      "components": [
+        {
+          "id": "banner",
+          "kind": "banner",
+          "label": "Patient",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "banner"
+        },
+        {
+          "id": "drug",
+          "kind": {
+            "field": {
+              "element": "drug",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Post-operative orders",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "drug"
+        },
+        {
+          "id": "dose",
+          "kind": {
+            "field": {
+              "element": "dose",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Dose",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "dose"
+        },
+        {
+          "id": "weight",
+          "kind": {
+            "field": {
+              "element": "weight",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Current weight · kg",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "weight"
+        },
+        {
+          "id": "prior-auth",
+          "kind": {
+            "panel": {
+              "info": "priorAuth"
+            }
+          },
+          "label": "Prior authorization status",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "prior-auth"
+        },
+        {
+          "id": "work-allergies",
+          "kind": {
+            "panel": {
+              "info": "allergyList"
+            }
+          },
+          "label": "Allergies",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "work-allergies"
+        },
+        {
+          "id": "open-commit",
+          "kind": {
+            "button": {
+              "action": {
+                "goto": {
+                  "screen": "commit"
+                }
+              }
+            }
+          },
+          "label": "Review orders",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "open-commit"
+        }
+      ]
+    },
+    {
+      "id": "commit",
+      "title": "Review & sign",
+      "workflow": "W1",
+      "components": [
+        {
+          "id": "banner",
+          "kind": "banner",
+          "label": "Patient",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "banner"
+        },
+        {
+          "id": "allergies",
+          "kind": {
+            "panel": {
+              "info": "allergyList"
+            }
+          },
+          "label": "Allergies before commit",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "allergies"
+        },
+        {
+          "id": "indication",
+          "kind": {
+            "field": {
+              "element": "indication",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Surgical prophylaxis default with explicit surgeon confirmation.",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "indication"
+        },
+        {
+          "id": "patientIdReentry",
+          "kind": {
+            "field": {
+              "element": "patientIdReentry",
+              "slot": "current",
+              "prefill": "none"
+            }
+          },
+          "label": "Re-enter patient identity",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "patientIdReentry"
+        },
+        {
+          "id": "commit-action",
+          "kind": {
+            "button": {
+              "action": {
+                "commit": {
+                  "commit": "signOrders"
+                }
+              }
+            }
+          },
+          "label": "Sign orders",
+          "tab": 0,
+          "visibility": "always",
+          "size": "normal",
+          "tag": "commit-action"
+        }
+      ]
+    }
+  ],
+  "macros": []
+}

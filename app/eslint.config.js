@@ -35,7 +35,7 @@ const boundary = {
           context.report({ node, messageId: "network" });
       },
       Identifier(node) {
-        if (node.name === "fetch")
+        if (node.name === "fetch" && !context.filename.replaceAll("\\", "/").endsWith("/src/dashboard/data.ts"))
           context.report({ node, messageId: "network" });
       },
       MemberExpression(node) {

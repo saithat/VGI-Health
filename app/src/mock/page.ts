@@ -91,6 +91,8 @@ function trend(items: Observation[], label: string): Html {
 function info(id: string, data: ChartData): Html {
   const r = data.resources;
   switch (id) {
+    case "priorAuth":
+      return table(["Order", "Prior authorization", "Action"], [["MOCK elective imaging", "Pending payer review", "Request prior authorization (fixture)"]]);
     case "allergyList":
       return table(
         ["Allergen", "Reaction", "Severity", "Status", "Recorded"],
@@ -482,7 +484,7 @@ export function mockPage(view: ScreenView, spec: Spec, data: ChartData): Html {
       node(
         "span",
         { class: "ehr-badge ehr-badge-flag" },
-        "MOCK · Uncertified W1 preview · No clinical writes",
+        "MOCK · Uncertified fixture preview · No clinical writes",
       ),
     ),
     ...top.filter((i) => i.component.kind === "banner").map(itemTree),
