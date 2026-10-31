@@ -1,0 +1,816 @@
+{
+  "day": 4,
+  "persona": "P5",
+  "load": "normal",
+  "tasks": [
+    {
+      "id": "d04-P5-W6-001",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "4bc4470d-f8dd-0694-86a7-3979b9430eb1",
+      "startMin": 15,
+      "choices": {
+        "orders": [
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "progressNote",
+          "overnightEvents",
+          "labReview"
+        ],
+        "w6Step": "rounding"
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W6-002",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "ab39897f-f620-c7eb-f22f-04f77dfbd982",
+      "startMin": 35,
+      "choices": {
+        "orders": [
+          {
+            "drug": "vancomycin",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "once",
+            "prn": false,
+            "indication": "surgical-prophylaxis"
+          },
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "once",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hAndPUpdate",
+          "consentVerification",
+          "allergyReview",
+          "anticoagulantReview"
+        ],
+        "w6Step": "preop"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Consent",
+          "id": "d04-P5-W6-002-consent",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "active",
+          "scope": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/consentscope",
+                "code": "treatment"
+              }
+            ]
+          },
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "59284-0",
+                  "display": "Patient Consent"
+                }
+              ]
+            }
+          ],
+          "patient": {
+            "reference": "Patient/ab39897f-f620-c7eb-f22f-04f77dfbd982"
+          },
+          "dateTime": "2026-10-23T10:00:00-08:00",
+          "provision": {
+            "type": "permit",
+            "code": [
+              {
+                "text": "laparoscopic cholecystectomy"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d04-P5-W6-002-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/ab39897f-f620-c7eb-f22f-04f77dfbd982"
+          },
+          "effectiveDateTime": "2026-11-05T06:30:00-08:00",
+          "valueQuantity": {
+            "value": 71.1,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W6-003",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "ab39897f-f620-c7eb-f22f-04f77dfbd982",
+      "startMin": 149,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": false
+          },
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true
+          },
+          {
+            "drug": "hydromorphone",
+            "doseTenths": 5,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q3h",
+            "prn": true
+          },
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "enoxaparin",
+            "doseTenths": 400,
+            "unit": "mg",
+            "route": "SC",
+            "freq": "daily",
+            "prn": false
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "briefOpNote",
+          "postOpOrders"
+        ],
+        "w6Step": "postop"
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W6-004",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "cc995869-355c-edf7-8a3e-4c0f6e0be9b2",
+      "startMin": 149,
+      "choices": {
+        "orders": [
+          {
+            "drug": "cefazolin",
+            "doseTenths": 20000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "once",
+            "prn": false,
+            "indication": "surgical-prophylaxis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hAndPUpdate",
+          "consentVerification",
+          "allergyReview",
+          "anticoagulantReview"
+        ],
+        "w6Step": "preop"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Consent",
+          "id": "d04-P5-W6-004-consent",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "active",
+          "scope": {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/consentscope",
+                "code": "treatment"
+              }
+            ]
+          },
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "59284-0",
+                  "display": "Patient Consent"
+                }
+              ]
+            }
+          ],
+          "patient": {
+            "reference": "Patient/cc995869-355c-edf7-8a3e-4c0f6e0be9b2"
+          },
+          "dateTime": "2026-10-09T10:00:00-08:00",
+          "provision": {
+            "type": "permit",
+            "code": [
+              {
+                "text": "open umbilical hernia repair"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d04-P5-W6-004-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/cc995869-355c-edf7-8a3e-4c0f6e0be9b2"
+          },
+          "effectiveDateTime": "2026-11-05T08:24:00-08:00",
+          "valueQuantity": {
+            "value": 75.6,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W6-007",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "4bc4470d-f8dd-0694-86a7-3979b9430eb1",
+      "startMin": 159,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true,
+            "supplyDays": 5,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "medRec",
+          "dischargeInstructions",
+          "followUp"
+        ],
+        "w6Step": "discharge"
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d04-P5-W6-005",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "cc995869-355c-edf7-8a3e-4c0f6e0be9b2",
+      "startMin": 232,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "briefOpNote",
+          "postOpOrders"
+        ],
+        "w6Step": "postop"
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W6-006",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "cc995869-355c-edf7-8a3e-4c0f6e0be9b2",
+      "startMin": 337,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true,
+            "supplyDays": 3,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
+          },
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "medRec",
+          "dischargeInstructions",
+          "followUp"
+        ],
+        "w6Step": "discharge"
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W2-008",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W2",
+      "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+      "startMin": 615,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0028-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "22637-3",
+                "display": "Pathology report final diagnosis Narrative"
+              }
+            ],
+            "text": "Pathology report final diagnosis Narrative"
+          },
+          "subject": {
+            "reference": "Patient/75d343d1-463d-3e74-2da8-80ba02140719"
+          },
+          "effectiveDateTime": "2026-11-05T08:00:00-08:00",
+          "issued": "2026-11-05T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "A",
+                  "display": "Abnormal"
+                }
+              ]
+            }
+          ],
+          "valueString": "Appendix: acute suppurative appendicitis"
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W2-009",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W2",
+      "patientId": "7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf",
+      "startMin": 621,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0029-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "22637-3",
+                "display": "Pathology report final diagnosis Narrative"
+              }
+            ],
+            "text": "Pathology report final diagnosis Narrative"
+          },
+          "subject": {
+            "reference": "Patient/7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf"
+          },
+          "effectiveDateTime": "2026-11-05T08:00:00-08:00",
+          "issued": "2026-11-05T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "A",
+                  "display": "Abnormal"
+                }
+              ]
+            }
+          ],
+          "valueString": "Gallbladder: chronic cholecystitis with cholelithiasis"
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W2-010",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W2",
+      "patientId": "9a2e8b17-59a6-ac87-e652-f4bdda835f29",
+      "startMin": 627,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0030-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "22637-3",
+                "display": "Pathology report final diagnosis Narrative"
+              }
+            ],
+            "text": "Pathology report final diagnosis Narrative"
+          },
+          "subject": {
+            "reference": "Patient/9a2e8b17-59a6-ac87-e652-f4bdda835f29"
+          },
+          "effectiveDateTime": "2026-11-05T08:00:00-08:00",
+          "issued": "2026-11-05T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "A",
+                  "display": "Abnormal"
+                }
+              ]
+            }
+          ],
+          "valueString": "Gallbladder: chronic cholecystitis with cholelithiasis"
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d04-P5-W2-011",
+      "day": 4,
+      "persona": "P5",
+      "workflow": "W2",
+      "patientId": "dcf96d91-46b1-4b9d-2369-3513cad75da4",
+      "startMin": 633,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": true,
+        "immunizations": [],
+        "noteSections": [
+          "resultNote",
+          "patientMessage"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "lab-0031-result",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "22637-3",
+                "display": "Pathology report final diagnosis Narrative"
+              }
+            ],
+            "text": "Pathology report final diagnosis Narrative"
+          },
+          "subject": {
+            "reference": "Patient/dcf96d91-46b1-4b9d-2369-3513cad75da4"
+          },
+          "effectiveDateTime": "2026-11-05T08:00:00-08:00",
+          "issued": "2026-11-05T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueString": "Hernia sac: fibroadipose tissue, no malignancy"
+        }
+      ],
+      "interruptions": 0
+    }
+  ]
+}

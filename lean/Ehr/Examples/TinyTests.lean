@@ -297,10 +297,16 @@ def atOrderPA : State :=
   runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
     [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")]
 
-/-- The result of requesting prior auth. -/
-def afterPA : State × StepResult := step specV1_1 programV1_1 facts user .human atOrderPA (.click "paRequest")
+/-- A never-policy request is entered through its human field; the convenience
+click then preserves it exactly. -/
+def afterPA : State × StepResult :=
+  step specV1_1 programV1_1 facts user .human
+    (step specV1_1 programV1_1 facts user .human atOrderPA (.enter "paField" (.flag true))).1
+    (.click "paRequest")
 
-#guard afterPA.2 == .ok
+#guard (step specV1_1 programV1_1 facts user .human atOrderPA (.click "paRequest")).2 ==
+  .blocked "human entry required: priorAuthRequest"
+#guard afterPA.2 == .ignored
 -- It writes only the request element, on the current order line.
 #guard afterPA.1.captured == atOrderPA.captured ++
   [{ element := "priorAuthRequest", slot := 0, value := .flag true, byHuman := true, confirmed := true }]

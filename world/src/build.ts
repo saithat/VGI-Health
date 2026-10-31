@@ -3,6 +3,7 @@
  * random streams, the patient picker, and task construction.
  */
 import { SHIFTS } from "./calendar";
+import { clinicalObservation, type ClinicalObservation } from "./fhir";
 import type { PatientProfile } from "./patients";
 import { hasAllergyClass } from "./patients";
 import { Rng } from "./rng";
@@ -92,6 +93,10 @@ export interface ChoiceInput {
   disposition?: "admit" | "discharge" | "consult";
   immunizations?: string[];
   noteSections?: string[];
+  painScore?: number;
+  w6Step?: NonNullable<TaskChoices["w6Step"]>;
+  refillReason?: string;
+  observations?: ClinicalObservation[];
 }
 
 /** Build a `TaskChoices` with every defaulted field present and `none` options omitted. */
@@ -105,6 +110,9 @@ export function choices(c: ChoiceInput): TaskChoices {
   };
   if (c.refill !== undefined) out.refill = c.refill;
   if (c.disposition !== undefined) out.disposition = c.disposition;
+  if (c.painScore !== undefined) out.painScore = c.painScore;
+  if (c.w6Step !== undefined) out.w6Step = c.w6Step;
+  if (c.refillReason !== undefined) out.refillReason = c.refillReason;
   return out;
 }
 
@@ -172,7 +180,7 @@ export class DayBuild {
       patientId,
       startMin: Math.max(0, Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
       choices: choices(c),
-      todayResources,
+      todayResources: [...todayResources, ...(c.observations ?? []).map((o, i) => clinicalObservation(`${id}-clinical-${i}`, patientId, this.day, SHIFTS[persona].startClock + startMin, o))],
       interruptions,
     };
     this.tasks[persona].push(task);

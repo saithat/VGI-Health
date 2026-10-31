@@ -1,0 +1,4696 @@
+{
+  "day": 6,
+  "persona": "P1",
+  "load": "busy",
+  "tasks": [
+    {
+      "id": "d06-P1-W7-020",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "54a099e9-6a24-719f-681d-550144974cac",
+      "startMin": 0,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0049-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "7804",
+                    "display": "oxycodone"
+                  }
+                ],
+                "text": "oxycodone"
+              },
+              "subject": {
+                "reference": "Patient/54a099e9-6a24-719f-681d-550144974cac"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "oxycodone 10 mg PO q12h",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q12h"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: oxycodone 10 mg q12h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/54a099e9-6a24-719f-681d-550144974cac"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-021",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "be8fbcad-42e9-f95c-d628-fafcfaa71aed",
+      "startMin": 4,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0050-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "214182",
+                    "display": "hydrocodone-acetaminophen"
+                  }
+                ],
+                "text": "hydrocodone-acetaminophen"
+              },
+              "subject": {
+                "reference": "Patient/be8fbcad-42e9-f95c-d628-fafcfaa71aed"
+              },
+              "authoredOn": "2026-09-30T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "hydrocodone-acetaminophen 5 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 5,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: hydrocodone-acetaminophen 5 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/be8fbcad-42e9-f95c-d628-fafcfaa71aed"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-022",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "c0acad3c-1487-0280-409b-a32c7870de62",
+      "startMin": 8,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ],
+        "refill": "deny",
+        "refillReason": "early-refill"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0051-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "7804",
+                    "display": "oxycodone"
+                  }
+                ],
+                "text": "oxycodone"
+              },
+              "subject": {
+                "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+              },
+              "authoredOn": "2026-10-13T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "oxycodone 10 mg PO q12h",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q12h"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: oxycodone 10 mg q12h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-023",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "c498c9fa-0382-5ec2-a0a8-6453acf5906a",
+      "startMin": 12,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0052-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "214182",
+                    "display": "hydrocodone-acetaminophen"
+                  }
+                ],
+                "text": "hydrocodone-acetaminophen"
+              },
+              "subject": {
+                "reference": "Patient/c498c9fa-0382-5ec2-a0a8-6453acf5906a"
+              },
+              "authoredOn": "2026-09-21T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "hydrocodone-acetaminophen 5 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 5,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "dispenseRequest": {
+                "expectedSupplyDuration": {
+                  "value": 30,
+                  "unit": "days",
+                  "system": "http://unitsofmeasure.org",
+                  "code": "d"
+                }
+              }
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: hydrocodone-acetaminophen 5 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/c498c9fa-0382-5ec2-a0a8-6453acf5906a"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W7-024",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "8d1c4fc1-daf6-9ab6-de7a-c8b68639104e",
+      "startMin": 16,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0053-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "435",
+                    "display": "albuterol"
+                  }
+                ],
+                "text": "albuterol"
+              },
+              "subject": {
+                "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "albuterol 180 mcg INH q4h PRN",
+                  "route": {
+                    "text": "INH"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q4h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 180,
+                        "unit": "mcg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: albuterol 180 mcg q4h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-025",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "13a729a9-d1af-6380-3d0d-fd4b78a27678",
+      "startMin": 20,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ],
+        "refill": "deny",
+        "refillReason": "overuse-needs-asthma-visit"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0054-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "435",
+                    "display": "albuterol"
+                  }
+                ],
+                "text": "albuterol"
+              },
+              "subject": {
+                "reference": "Patient/13a729a9-d1af-6380-3d0d-fd4b78a27678"
+              },
+              "authoredOn": "2026-09-29T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "albuterol 180 mcg INH q4h PRN",
+                  "route": {
+                    "text": "INH"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q4h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 180,
+                        "unit": "mcg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: albuterol 180 mcg q4h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/13a729a9-d1af-6380-3d0d-fd4b78a27678"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-001",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+      "startMin": 30,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "depressionScreen",
+          "careGaps"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-002",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "59d46478-c3c7-adaa-916e-c8f62ec56846",
+      "startMin": 50,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-003",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "93c8f2c5-d51c-61e1-ecb2-5544d4d987ae",
+      "startMin": 70,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W1-004",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+      "startMin": 90,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-005",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "d25a0360-5edb-4bc5-42a7-a07e67f50e63",
+      "startMin": 110,
+      "choices": {
+        "orders": [
+          {
+            "drug": "tramadol",
+            "doseTenths": 500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true,
+            "supplyDays": 30
+          },
+          {
+            "kind": "imaging",
+            "code": "mri-lumbar-spine-without-contrast",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
+          },
+          {
+            "kind": "procedure",
+            "code": "physical-therapy-evaluation",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "persistent-low-back-pain"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "painAgreementReview",
+          "functionalAssessment"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W1-006",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "df321cbd-c86d-a784-e7b5-a54f04024125",
+      "startMin": 130,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-007",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "f9af5423-5f36-8953-2fd2-8b134195c4a4",
+      "startMin": 150,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-008",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "26f5ea2a-fbec-c339-d370-9b3d0948479e",
+      "startMin": 170,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-009",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "67727e50-d536-37b0-b30b-04c20a2ad9a0",
+      "startMin": 190,
+      "choices": {
+        "orders": [
+          {
+            "drug": "atorvastatin",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-010",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "dcf96d91-46b1-4b9d-2369-3513cad75da4",
+      "startMin": 210,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 8750,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "BID",
+            "prn": false,
+            "indication": "acute-sinusitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W1-011",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "e458dd47-cfac-0c89-3206-150c3cfed809",
+      "startMin": 230,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-012",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+      "startMin": 250,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W7-026",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "e458dd47-cfac-0c89-3206-150c3cfed809",
+      "startMin": 272,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0055-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/e458dd47-cfac-0c89-3206-150c3cfed809"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/e458dd47-cfac-0c89-3206-150c3cfed809"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0055-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/e458dd47-cfac-0c89-3206-150c3cfed809"
+          },
+          "effectiveDateTime": "2026-04-23T08:00:00-08:00",
+          "issued": "2026-04-23T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4.6,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0055-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/e458dd47-cfac-0c89-3206-150c3cfed809"
+          },
+          "effectiveDateTime": "2026-05-07T08:00:00-08:00",
+          "issued": "2026-05-07T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.76,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-027",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2",
+      "startMin": 276,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0056-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 20 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 20,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 20 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0056-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "effectiveDateTime": "2026-04-14T08:00:00-08:00",
+          "issued": "2026-04-14T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 3.8,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0056-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8e7cc0e5-79d1-5170-cc85-9fe7c7ec17d2"
+          },
+          "effectiveDateTime": "2026-04-14T08:00:00-08:00",
+          "issued": "2026-04-14T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.88,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-028",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "f9af5423-5f36-8953-2fd2-8b134195c4a4",
+      "startMin": 280,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0057-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/f9af5423-5f36-8953-2fd2-8b134195c4a4"
+              },
+              "authoredOn": "2026-09-22T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/f9af5423-5f36-8953-2fd2-8b134195c4a4"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0057-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/f9af5423-5f36-8953-2fd2-8b134195c4a4"
+          },
+          "effectiveDateTime": "2026-07-23T08:00:00-08:00",
+          "issued": "2026-07-23T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4.3,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0057-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/f9af5423-5f36-8953-2fd2-8b134195c4a4"
+          },
+          "effectiveDateTime": "2026-05-29T08:00:00-08:00",
+          "issued": "2026-05-29T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.14,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-029",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "8d1c4fc1-daf6-9ab6-de7a-c8b68639104e",
+      "startMin": 284,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0058-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "6809",
+                    "display": "metformin"
+                  }
+                ],
+                "text": "metformin"
+              },
+              "subject": {
+                "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+              },
+              "authoredOn": "2026-10-01T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "metformin 500 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 500,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: metformin 500 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0058-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "effectiveDateTime": "2026-07-10T08:00:00-08:00",
+          "issued": "2026-07-10T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.4,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0058-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/8d1c4fc1-daf6-9ab6-de7a-c8b68639104e"
+          },
+          "effectiveDateTime": "2026-07-01T08:00:00-08:00",
+          "issued": "2026-07-01T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.13,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-030",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "67aaee92-f974-4c17-53a8-6c2d2af2234e",
+      "startMin": 288,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0059-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "6809",
+                    "display": "metformin"
+                  }
+                ],
+                "text": "metformin"
+              },
+              "subject": {
+                "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+              },
+              "authoredOn": "2026-09-22T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "metformin 500 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 500,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: metformin 500 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0059-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+          },
+          "effectiveDateTime": "2026-08-28T08:00:00-08:00",
+          "issued": "2026-08-28T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.4,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0059-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/67aaee92-f974-4c17-53a8-6c2d2af2234e"
+          },
+          "effectiveDateTime": "2026-07-30T08:00:00-08:00",
+          "issued": "2026-07-30T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.95,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-031",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "08d99813-0175-6b7f-201b-38f9c047e4d5",
+      "startMin": 292,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0060-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "6809",
+                    "display": "metformin"
+                  }
+                ],
+                "text": "metformin"
+              },
+              "subject": {
+                "reference": "Patient/08d99813-0175-6b7f-201b-38f9c047e4d5"
+              },
+              "authoredOn": "2026-09-29T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "metformin 500 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 500,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: metformin 500 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/08d99813-0175-6b7f-201b-38f9c047e4d5"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0060-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/08d99813-0175-6b7f-201b-38f9c047e4d5"
+          },
+          "effectiveDateTime": "2026-07-09T08:00:00-08:00",
+          "issued": "2026-07-09T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.3,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0060-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/08d99813-0175-6b7f-201b-38f9c047e4d5"
+          },
+          "effectiveDateTime": "2026-04-10T08:00:00-08:00",
+          "issued": "2026-04-10T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.8,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 3
+    },
+    {
+      "id": "d06-P1-W1-013",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "6a17f89c-1abb-945b-1d2c-39204cc9f73b",
+      "startMin": 330,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan",
+          "neuroExam"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d06-P1-W1-014",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "a31298c3-4ac1-26b4-507e-96428ca4bacd",
+      "startMin": 370,
+      "choices": {
+        "orders": [
+          {
+            "drug": "atorvastatin",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "ros",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-015",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "03746a88-d6dc-b6f1-f2e1-5f7487b91ec0",
+      "startMin": 390,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-016",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "399fe184-4ccf-214b-3711-342a21e574da",
+      "startMin": 410,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W1-017",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "0cca5c96-48d0-e99e-cbe8-a6e0ead4bd7f",
+      "startMin": 430,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W1-018",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+      "startMin": 450,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "dischargeReview",
+          "medRec",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W1-019",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W1",
+      "patientId": "aeddaee5-aebf-5781-521b-71f802139617",
+      "startMin": 470,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "edRecordReview",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P1-W7-032",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 590,
+      "choices": {
+        "orders": [
+          {
+            "drug": "lisinopril",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ],
+        "refill": "modify",
+        "refillReason": "hyperkalemia-dose-reduction"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0061-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/ff9a6ba9-323a-b7e8-558f-95c04c19ee3c"
+              },
+              "authoredOn": "2026-09-29T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/ff9a6ba9-323a-b7e8-558f-95c04c19ee3c"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0061-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/ff9a6ba9-323a-b7e8-558f-95c04c19ee3c"
+          },
+          "effectiveDateTime": "2026-09-07T08:00:00-08:00",
+          "issued": "2026-09-07T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.4,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0061-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/ff9a6ba9-323a-b7e8-558f-95c04c19ee3c"
+          },
+          "effectiveDateTime": "2026-06-25T08:00:00-08:00",
+          "issued": "2026-06-25T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.01,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-033",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "18bdcfba-d779-89db-be66-dcc772320a11",
+      "startMin": 594,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0062-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/18bdcfba-d779-89db-be66-dcc772320a11"
+              },
+              "authoredOn": "2026-09-21T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/18bdcfba-d779-89db-be66-dcc772320a11"
+          },
+          "authoredOn": "2026-11-06T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0062-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/18bdcfba-d779-89db-be66-dcc772320a11"
+          },
+          "effectiveDateTime": "2026-08-21T08:00:00-08:00",
+          "issued": "2026-08-21T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4.3,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0062-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/18bdcfba-d779-89db-be66-dcc772320a11"
+          },
+          "effectiveDateTime": "2026-04-20T08:00:00-08:00",
+          "issued": "2026-04-20T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.13,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-034",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "41497fe0-70ed-2932-21b9-873707cd7580",
+      "startMin": 598,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ],
+        "refill": "deny",
+        "refillReason": "early-refill"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0063-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "214182",
+                    "display": "hydrocodone-acetaminophen"
+                  }
+                ],
+                "text": "hydrocodone-acetaminophen"
+              },
+              "subject": {
+                "reference": "Patient/41497fe0-70ed-2932-21b9-873707cd7580"
+              },
+              "authoredOn": "2026-10-15T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "hydrocodone-acetaminophen 5 mg PO q6h PRN",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "q6h"
+                    }
+                  },
+                  "asNeededBoolean": true,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 5,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: hydrocodone-acetaminophen 5 mg q6h",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/41497fe0-70ed-2932-21b9-873707cd7580"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-035",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "b4ebde80-a88c-8cc8-3d43-ff08f280f515",
+      "startMin": 602,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0064-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/b4ebde80-a88c-8cc8-3d43-ff08f280f515"
+              },
+              "authoredOn": "2026-09-30T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/b4ebde80-a88c-8cc8-3d43-ff08f280f515"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0064-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/b4ebde80-a88c-8cc8-3d43-ff08f280f515"
+          },
+          "effectiveDateTime": "2026-06-24T08:00:00-08:00",
+          "issued": "2026-06-24T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0064-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/b4ebde80-a88c-8cc8-3d43-ff08f280f515"
+          },
+          "effectiveDateTime": "2026-08-26T08:00:00-08:00",
+          "issued": "2026-08-26T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.98,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-036",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "b5c8cec1-8415-25cf-b544-c19e84761e14",
+      "startMin": 606,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0065-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "83367",
+                    "display": "atorvastatin"
+                  }
+                ],
+                "text": "atorvastatin"
+              },
+              "subject": {
+                "reference": "Patient/b5c8cec1-8415-25cf-b544-c19e84761e14"
+              },
+              "authoredOn": "2026-09-23T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "atorvastatin 40 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 40,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: atorvastatin 40 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/b5c8cec1-8415-25cf-b544-c19e84761e14"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0065-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "18262-6",
+                "display": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+              }
+            ],
+            "text": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+          },
+          "subject": {
+            "reference": "Patient/b5c8cec1-8415-25cf-b544-c19e84761e14"
+          },
+          "effectiveDateTime": "2026-07-16T08:00:00-08:00",
+          "issued": "2026-07-16T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 141,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 99,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-037",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+      "startMin": 610,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0066-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+              },
+              "authoredOn": "2026-09-22T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0066-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+          },
+          "effectiveDateTime": "2026-08-20T08:00:00-08:00",
+          "issued": "2026-08-20T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 3.7,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0066-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/2ab83e2b-38d9-fa35-e2b0-dfbfae463454"
+          },
+          "effectiveDateTime": "2026-05-06T08:00:00-08:00",
+          "issued": "2026-05-06T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 0.78,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-038",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "fb36e38a-ec57-64d9-8d60-d1ab13bc9159",
+      "startMin": 614,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "patientMessage"
+        ],
+        "refill": "deny",
+        "refillReason": "hyperkalemia-needs-visit"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0067-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/fb36e38a-ec57-64d9-8d60-d1ab13bc9159"
+              },
+              "authoredOn": "2026-09-30T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/fb36e38a-ec57-64d9-8d60-d1ab13bc9159"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0067-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/fb36e38a-ec57-64d9-8d60-d1ab13bc9159"
+          },
+          "effectiveDateTime": "2026-08-27T08:00:00-08:00",
+          "issued": "2026-08-27T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.9,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0067-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/fb36e38a-ec57-64d9-8d60-d1ab13bc9159"
+          },
+          "effectiveDateTime": "2026-04-28T08:00:00-08:00",
+          "issued": "2026-04-28T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.14,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 2
+    },
+    {
+      "id": "d06-P1-W7-039",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "5416064f-0ad9-68a0-6291-1585026dc101",
+      "startMin": 618,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0068-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "29046",
+                    "display": "lisinopril"
+                  }
+                ],
+                "text": "lisinopril"
+              },
+              "subject": {
+                "reference": "Patient/5416064f-0ad9-68a0-6291-1585026dc101"
+              },
+              "authoredOn": "2026-09-28T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "lisinopril 10 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 10,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: lisinopril 10 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/5416064f-0ad9-68a0-6291-1585026dc101"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0068-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2823-3",
+                "display": "Potassium [Moles/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Potassium [Moles/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/5416064f-0ad9-68a0-6291-1585026dc101"
+          },
+          "effectiveDateTime": "2026-05-29T08:00:00-08:00",
+          "issued": "2026-05-29T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 4.9,
+            "unit": "mmol/L",
+            "system": "http://unitsofmeasure.org",
+            "code": "mmol/L"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 3.5,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              },
+              "high": {
+                "value": 5.1,
+                "unit": "mmol/L",
+                "system": "http://unitsofmeasure.org",
+                "code": "mmol/L"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0068-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/5416064f-0ad9-68a0-6291-1585026dc101"
+          },
+          "effectiveDateTime": "2026-05-13T08:00:00-08:00",
+          "issued": "2026-05-13T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.01,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-040",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "d9515abf-7b76-8a2d-556b-8ef1118c6265",
+      "startMin": 622,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0069-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "11289",
+                    "display": "warfarin"
+                  }
+                ],
+                "text": "warfarin"
+              },
+              "subject": {
+                "reference": "Patient/d9515abf-7b76-8a2d-556b-8ef1118c6265"
+              },
+              "authoredOn": "2026-09-24T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "warfarin 5 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 5,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: warfarin 5 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/d9515abf-7b76-8a2d-556b-8ef1118c6265"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0069-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "6301-6",
+                "display": "INR in Platelet poor plasma by Coagulation assay"
+              }
+            ],
+            "text": "INR in Platelet poor plasma by Coagulation assay"
+          },
+          "subject": {
+            "reference": "Patient/d9515abf-7b76-8a2d-556b-8ef1118c6265"
+          },
+          "effectiveDateTime": "2026-10-21T08:00:00-08:00",
+          "issued": "2026-10-21T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 2.1,
+            "unit": "{INR}",
+            "system": "http://unitsofmeasure.org",
+            "code": "{INR}"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.8,
+                "unit": "{INR}",
+                "system": "http://unitsofmeasure.org",
+                "code": "{INR}"
+              },
+              "high": {
+                "value": 1.2,
+                "unit": "{INR}",
+                "system": "http://unitsofmeasure.org",
+                "code": "{INR}"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P1-W7-041",
+      "day": 6,
+      "persona": "P1",
+      "workflow": "W7",
+      "patientId": "c0acad3c-1487-0280-409b-a32c7870de62",
+      "startMin": 626,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "refill": "approve"
+      },
+      "todayResources": [
+        {
+          "resourceType": "Task",
+          "id": "rx-0070-task",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "contained": [
+            {
+              "resourceType": "MedicationRequest",
+              "id": "current-rx",
+              "status": "active",
+              "intent": "order",
+              "medicationCodeableConcept": {
+                "coding": [
+                  {
+                    "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+                    "code": "6809",
+                    "display": "metformin"
+                  }
+                ],
+                "text": "metformin"
+              },
+              "subject": {
+                "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+              },
+              "authoredOn": "2026-09-28T09:00:00-08:00",
+              "dosageInstruction": [
+                {
+                  "text": "metformin 500 mg PO daily",
+                  "route": {
+                    "text": "PO"
+                  },
+                  "timing": {
+                    "code": {
+                      "text": "daily"
+                    }
+                  },
+                  "asNeededBoolean": false,
+                  "doseAndRate": [
+                    {
+                      "doseQuantity": {
+                        "value": 500,
+                        "unit": "mg"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "status": "requested",
+          "intent": "order",
+          "priority": "routine",
+          "code": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/CodeSystem/task-code",
+                "code": "fulfill"
+              }
+            ],
+            "text": "Refill request"
+          },
+          "description": "Refill request: metformin 500 mg daily",
+          "focus": {
+            "reference": "#current-rx"
+          },
+          "for": {
+            "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+          },
+          "authoredOn": "2026-11-09T06:30:00-08:00",
+          "requester": {
+            "display": "Patient portal"
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0070-lab0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "4548-4",
+                "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+              }
+            ],
+            "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+          },
+          "subject": {
+            "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+          },
+          "effectiveDateTime": "2026-05-12T08:00:00-08:00",
+          "issued": "2026-05-12T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 5.1,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+          },
+          "referenceRange": [
+            {
+              "high": {
+                "value": 5.6,
+                "unit": "%",
+                "system": "http://unitsofmeasure.org",
+                "code": "%"
+              }
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "rx-0070-lab1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "2160-0",
+                "display": "Creatinine [Mass/volume] in Serum or Plasma"
+              }
+            ],
+            "text": "Creatinine [Mass/volume] in Serum or Plasma"
+          },
+          "subject": {
+            "reference": "Patient/c0acad3c-1487-0280-409b-a32c7870de62"
+          },
+          "effectiveDateTime": "2026-04-14T08:00:00-08:00",
+          "issued": "2026-04-14T09:00:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "N",
+                  "display": "Normal"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 1.08,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 0.6,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              },
+              "high": {
+                "value": 1.3,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    }
+  ]
+}

@@ -10,9 +10,9 @@
  */
 import { type DayBuild, isPcnAllergic } from "../build";
 import { homeOrder, isDiabetic, nsaidOk, prn } from "../clinical";
-import { controlledNotes, hasChronicOpioid } from "../controlled";
-import { labObservation, refillTask, type LabKey } from "../fhir";
-import { drugDef, isBenzodiazepine, isControlled, isOpioid, order } from "../formulary";
+import { controlledPrescriptions, hasChronicOpioid } from "../controlled";
+import { labObservation, refillTask, type LabKey, type ClinicalObservation } from "../fhir";
+import { drugDef, isBenzodiazepine, isControlled, isOpioid, order, serviceOrder } from "../formulary";
 import type { HomeMed, PatientProfile } from "../patients";
 import { homeMed } from "../patients";
 import type { Rng } from "../rng";
@@ -23,6 +23,7 @@ import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
 interface VisitPlan {
   orders: OrderChoice[];
   notes: string[];
+  observations?: ClinicalObservation[];
   labs: { lab: LabKey; abnormalProb: number; followUp?: (abnormal: boolean) => OrderChoice[]; warfarin?: boolean }[];
 }
 
@@ -117,7 +118,8 @@ function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
       const controlled = p.homeMeds.filter((m) => isControlled(m.drug) && m.route === "PO");
       const taper = rng.chance(0.2);
       const orders = controlled.map((m) => (taper && isOpioid(m.drug) ? titrated(m, -1) : homeOrder(m)));
-      return { orders, notes: [...DOC, "painAgreementReview", "functionalAssessment", ...controlledNotes(orders, 30, p.homeMeds, rng)], labs: [] };
+      orders.push(serviceOrder("imaging", "mri-lumbar-spine-without-contrast", "persistent-low-back-pain"), serviceOrder("procedure", "physical-therapy-evaluation", "persistent-low-back-pain"));
+      return { orders, notes: [...DOC, "painAgreementReview", "functionalAssessment"], observations: controlledPrescriptions(orders, 30, p.homeMeds, rng), labs: [] };
     }
     default:
       return { orders: [], notes: [...DOC, "depressionScreen", "careGaps"], labs: rng.chance(0.5) ? [{ lab: rng.pick<LabKey>(["glucose", "tsh", "hemoglobin"]), abnormalProb: 0.15 }] : [] };
@@ -163,7 +165,7 @@ function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boole
     case "dental-pain": {
       // Urgent-care opioid: a 3-day supply.
       const rx = [order("hydrocodone-acetaminophen", 5, "mg", "PO", "q6h", { prn: true })];
-      return { orders: rx, notes: [...notes, ...controlledNotes(rx, 3, p.homeMeds, rng)], labs: [] };
+      return { orders: rx, notes, observations: controlledPrescriptions(rx, 3, p.homeMeds, rng), labs: [] };
     }
     default:
       return { orders: [], notes, labs: [] };
@@ -174,8 +176,9 @@ function newPatientVisit(p: PatientProfile, rng: Rng): VisitPlan {
   // Transfer of care: repeat prescriptions for every chronic formulary med.
   const chronic = p.homeMeds.filter((m) => !m.prn || m.drug === "albuterol" || isControlled(m.drug));
   const orders = chronic.map(homeOrder);
+  if (p.ageYears >= 50 && p.ageYears <= 75) orders.push(serviceOrder("procedure", "screening-colonoscopy", "colorectal-cancer-screening"));
   const labs: VisitPlan["labs"] = rng.chance(0.7) ? [{ lab: "a1c", abnormalProb: isDiabetic(p) ? 0.6 : 0.1 }, { lab: "ldl", abnormalProb: 0.35 }] : [];
-  return { orders, notes: ["hpi", "pmh", "socialHistory", "familyHistory", "ros", "exam", "medRec", "assessmentPlan", "depressionScreen", ...controlledNotes(orders, 30, p.homeMeds, rng)], labs };
+  return { orders, notes: ["hpi", "pmh", "socialHistory", "familyHistory", "ros", "exam", "medRec", "assessmentPlan", "depressionScreen"], observations: controlledPrescriptions(orders, 30, p.homeMeds, rng), labs };
 }
 
 function followupVisit(p: PatientProfile, kind: string, rng: Rng): VisitPlan {
@@ -296,7 +299,7 @@ function runClinic(b: DayBuild): void {
     else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false);
     else plan = chronicVisit(v.patient, chronicFocus(v.patient, vr), vr);
     const taskId = b.peekTaskId("P1", "W1");
-    b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes }, [], b.interruptions("P1", vr));
+    b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
     orderLabs(b, v.patient, plan, vr, `visit ${taskId}`);
   }
   b.state.today.clinics.P1 = { booked: visits.length, seen: all.length - noShows.length, noShows, addOns: addOnVisits.map((x) => x.v.patient.id), newPatients };
@@ -317,7 +320,7 @@ function runUrgentCare(b: DayBuild): void {
     if (isNew) newPatients++;
     const plan = acuteVisit(p, vr, b.ctx.fluWeek, true);
     const start = 30 + Math.round((k * 590) / n) + vr.int(0, 8);
-    b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes }, [], b.interruptions("P1", vr, 1.3));
+    b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
     seenIds.push(p.id);
   }
   b.state.today.clinics.P1 = { booked: 0, seen: seenIds.length, noShows: [], addOns: seenIds, newPatients };
@@ -459,17 +462,19 @@ function resultTask(b: DayBuild, lab: PendingLab, start: number, rng: Rng): void
 }
 
 function refillTaskFor(b: DayBuild, req: RefillRequest, start: number, rng: Rng): void {
-  const resources: Json[] = [refillTask(`${req.id}-task`, req.patientId, req.requestedDay, 6 * 60 + 30, req.current, drugDef(req.current.drug)?.rxnorm ?? "", req.lastFilledDaysAgo)];
-  req.labs.forEach((l, i) => resources.push(labObservation(`${req.id}-lab${i}`, req.patientId, req.requestedDay - l.daysAgo, 8 * 60, l.lab, l.value, l.interpretation)));
   const p = b.patient(req.patientId);
-  const notes: string[] = [];
-  if (req.decision === "deny") notes.push(`denyReason:${req.reason}`, "patientMessage");
-  if (req.decision === "modify") notes.push(`modifyReason:${req.reason}`, "patientMessage");
-  if (req.decision !== "deny") {
-    const rx = req.modified ?? req.current;
-    notes.push(...controlledNotes([rx], 30, p.homeMeds, rng));
-  }
-  b.addTask("P1", "W7", req.patientId, start, { refill: req.decision, orders: req.modified !== null ? [req.modified] : [], noteSections: notes }, resources, b.interruptions("P1", rng, 0.5));
+  const rx = { ...(req.modified ?? req.current) };
+  const observations = req.decision === "deny" ? [] : controlledPrescriptions([rx], 30, p.homeMeds, rng);
+  // Approval renews the contained prescription; modification carries its replacement order.
+  const current = req.decision === "approve" ? rx : req.current;
+  const resources: Json[] = [refillTask(`${req.id}-task`, req.patientId, req.requestedDay, 6 * 60 + 30, current, drugDef(current.drug)?.rxnorm ?? "", req.lastFilledDaysAgo)];
+  req.labs.forEach((l, i) => resources.push(labObservation(`${req.id}-lab${i}`, req.patientId, req.requestedDay - l.daysAgo, 8 * 60, l.lab, l.value, l.interpretation)));
+  b.addTask("P1", "W7", req.patientId, start, {
+    refill: req.decision,
+    ...(req.decision === "approve" ? {} : { refillReason: req.reason }),
+    orders: req.modified !== null ? [rx] : [],
+    noteSections: req.decision === "approve" ? [] : ["patientMessage"], observations,
+  }, resources, b.interruptions("P1", rng, 0.5));
 }
 
 function runInBasket(b: DayBuild): void {
