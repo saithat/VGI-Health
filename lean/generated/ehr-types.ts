@@ -485,6 +485,10 @@ export interface DrugInfo {
    */
   minMgPerKgTenths: number;
   maxMgPerKgTenths: number;
+  /**
+   * Absolute per-dose maximum in tenths of mg; 0 means no cap specified.
+   */
+  maxDoseMgTenths: number;
   highAlert: boolean;
   /**
    * Classes this drug interacts with.
@@ -829,6 +833,28 @@ export type Workflow =
 export const WorkflowValues = ["W1", "W2", "W3", "W4", "W5", "W6", "W7"] as const;
 
 /**
+ * Kind of order. Imaging and procedures use a service code, not a drug name.
+ */
+export type OrderKind =
+  | "medication"
+  | "imaging"
+  | "procedure";
+/** All values of `OrderKind`. */
+export const OrderKindValues = ["medication", "imaging", "procedure"] as const;
+
+/**
+ * Surgical workflow step for this task.
+ */
+export type W6Step =
+  | "consult"
+  | "preop"
+  | "postop"
+  | "rounding"
+  | "discharge";
+/** All values of `W6Step`. */
+export const W6StepValues = ["consult", "preop", "postop", "rounding", "discharge"] as const;
+
+/**
  * A clinical decision, fixed per scenario (independent of the UI).
  */
 export interface OrderChoice {
@@ -836,10 +862,30 @@ export interface OrderChoice {
    * Formulary name (lowercase generic), e.g. `"amoxicillin"`.
    */
   drug: string;
+  /**
+   * Omitted means medication for compatibility with existing schedules.
+   */
+  kind?: OrderKind;
+  /**
+   * Service code (e.g. CPT) for imaging/procedure; drug is empty in that case.
+   */
+  code?: string;
   doseTenths: number;
   unit: UnitKind;
   route: string;
   freq: string;
+  /**
+   * Days supplied for this prescription.
+   */
+  supplyDays?: number;
+  /**
+   * Documented CURES exemption reason, if applicable to this prescription.
+   */
+  curesExemptReason?: string;
+  /**
+   * Reason this administration is held or refused.
+   */
+  holdReason?: string;
   indication?: string;
   prn: boolean;
 }
@@ -876,6 +922,18 @@ export interface TaskChoices {
    * Documentation sections to complete.
    */
   noteSections: string[];
+  /**
+   * Pain score for this task (0-10).
+   */
+  painScore?: number;
+  /**
+   * W6 stage; independent of free-text documentation.
+   */
+  w6Step?: W6Step;
+  /**
+   * Reason for a refill denial or modification.
+   */
+  refillReason?: string;
 }
 
 /**

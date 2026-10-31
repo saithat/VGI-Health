@@ -37,7 +37,7 @@ def actionStatus (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s :
           | none => some s!"unknown element {priorAuthElement}"
           | some el =>
             if !el.enteredBy.contains user.role then some s!"role: {user.role.name} may not enter {priorAuthElement}"
-            else if !(orderLines s).any (·.1 == s.currentSlot) then some "no order on this line"
+            else if !hasOrderAt s s.currentSlot then some "no order on this line"
             else none)
   | .field e _ _ =>
     some (match sp.element? e with
