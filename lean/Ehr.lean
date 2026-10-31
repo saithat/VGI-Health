@@ -18,3 +18,5 @@ import Ehr.Proofs.Alerts
 import Ehr.Proofs.T2
 import Ehr.Proofs.T6
 import Ehr.Proofs.Audit
+import Ehr.Specs.V1
+import Ehr.Canonical.Program
