@@ -1,0 +1,22 @@
+# Lean
+lean/.lake/
+**/.lake/
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+# Tooling installed locally
+.tools/
+# Secrets / local config
+.env
+.env.*
+!.env.example
+# Raw generated data (trimmed fixtures are committed)
+fixtures/raw/
+infra/synthea/output/
+# Misc
+*.log
+.DS_Store
+playwright-report/
+test-results/

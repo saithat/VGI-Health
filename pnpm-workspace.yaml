@@ -1,0 +1,5 @@
+packages:
+  - "app"
+  - "agent"
+  - "world"
+  - "infra/scripts"
