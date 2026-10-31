@@ -2740,5 +2740,873 @@
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A nurse acknowledgment cannot stand in for the specified physician/pharmacist examination. Parent rule appears in docs/regulations.md R2-21."
+  },
+  {
+    "id": "ca-title22-70233-qualified-evaluator",
+    "title": "Qualified practitioner performs preanesthesia evaluation",
+    "citation": "22 CCR §70233(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "by an individual qualified to administer anesthesia as a licensed practitioner in accordance with his or her scope of licensure.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require preanesthesia evaluation by an individual qualified to administer anesthesia within that practitioner license scope.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Preanesthesia evaluation workflow with qualified anesthesia-provider roles",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is a mandatory service-policy provision. v1 has no anesthesia-provider role; the P5 surgical workflow includes the handoff, not authorization for any surgeon to perform every evaluation."
+  },
+  {
+    "id": "ca-title22-70233-preanesthesia-documentation",
+    "title": "Document information supporting anesthesia choice",
+    "citation": "22 CCR §70233(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "document pertinent information relative to the choice of anesthesia and the surgical or obstetrical procedure anticipated.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require preanesthesia evaluation documentation of information pertinent to the anesthesia choice and anticipated surgical or obstetrical procedure.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Dedicated preanesthesia evaluation record and commit",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The anesthesia service policy must provide for this documentation. hpUpdate and opAnesthesia are related but not equivalent."
+  },
+  {
+    "id": "ca-title22-70233-preinduction-review",
+    "title": "Review condition immediately before anesthesia induction",
+    "citation": "22 CCR §70233(a)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "Review of the patient's condition immediately prior to induction of anesthesia.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Require review of the patient condition immediately before inducing anesthesia.",
+    "specMapping": {
+      "element": null,
+      "info": "vitals",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Induction-start event and immediately-prior condition review",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This service-policy requirement is broader than vital signs alone. No four-hour review receipt is inferred; signOpNote is too late."
+  },
+  {
+    "id": "ca-title22-70233-anesthesia-events",
+    "title": "Record events throughout anesthesia",
+    "citation": "22 CCR §70233(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "Recording of all events taking place during the induction of, maintenance of and emergence from anesthesia",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Maintain an event record covering induction, maintenance and emergence from anesthesia.",
+    "specMapping": {
+      "element": null,
+      "info": "intraopRecord",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia event timeline with continuous episode documentation",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This service-policy provision covers the whole anesthetic episode. v1 only shows intraopRecord before op-note signing; it does not establish event completeness."
+  },
+  {
+    "id": "ca-title22-70233-blood-amount",
+    "title": "Record amount of blood given during anesthesia",
+    "citation": "22 CCR §70233(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "including the amount and duration of all anesthetic agents, other drugs, intravenous fluids and blood or blood fractions.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the amount of each blood or blood-fraction administration during anesthesia.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Intraoperative blood-product administration record with amount",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Mandatory anesthesia-policy content. opEbl records estimated blood loss, not transfused blood amount. No universal two-nurse transfusion check is inferred."
+  },
+  {
+    "id": "ca-title22-70233-blood-duration",
+    "title": "Record duration of blood given during anesthesia",
+    "citation": "22 CCR §70233(a)(4)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "including the amount and duration of all anesthetic agents, other drugs, intravenous fluids and blood or blood fractions.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the duration of each blood or blood-fraction administration during anesthesia.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Intraoperative blood-product administration record with duration",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Mandatory anesthesia-policy content. opEbl records estimated blood loss, not transfused blood duration. No universal two-nurse transfusion check is inferred."
+  },
+  {
+    "id": "ca-title22-70233-postanesthesia-complications",
+    "title": "Postanesthetic note states presence or absence of complications",
+    "citation": "22 CCR §70233(a)(5)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70233",
+    "quote": "at least one note describing the presence or absence of complications related to anesthesia.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record postanesthetic visits with at least one note stating whether anesthesia-related complications are present or absent.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Postanesthesia visit note workflow separate from operative report",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. opComplications describes operative complications and is not a postanesthetic visit note. A generic none in the operative note does not satisfy the separate visit record."
+  },
+  {
+    "id": "ca-title22-70413-ed-arrival-time",
+    "title": "ED log includes arrival time",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "time and means of arrival",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the arrival time in the ED log.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED log persistence linked to encounter arrival-time",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A field or disposition commit alone does not establish inclusion in the statutory ED log. v1 arrivalMode is optional; chiefComplaint is required at signNote, not an ED-log commit. The log also requires name, date, age, sex and record number; those existing identification concepts are not recataloged here."
+  },
+  {
+    "id": "ca-title22-70413-ed-arrival-means",
+    "title": "ED log includes means of arrival",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "means of arrival",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record how the patient arrived in the ED log.",
+    "specMapping": {
+      "element": "arrivalMode",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED log persistence linked to encounter arrival-means",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A field or disposition commit alone does not establish inclusion in the statutory ED log. v1 arrivalMode is optional; chiefComplaint is required at signNote, not an ED-log commit. The log also requires name, date, age, sex and record number; those existing identification concepts are not recataloged here."
+  },
+  {
+    "id": "ca-title22-70413-ed-complaint",
+    "title": "ED log includes nature of complaint",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "nature of complaint",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the nature of the presenting complaint in the ED log.",
+    "specMapping": {
+      "element": "chiefComplaint",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED log persistence linked to encounter complaint",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A field or disposition commit alone does not establish inclusion in the statutory ED log. v1 arrivalMode is optional; chiefComplaint is required at signNote, not an ED-log commit. The log also requires name, date, age, sex and record number; those existing identification concepts are not recataloged here."
+  },
+  {
+    "id": "ca-title22-70413-ed-disposition",
+    "title": "ED log includes disposition",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "disposition",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the patient disposition in the ED log.",
+    "specMapping": {
+      "element": "dispositionChoice",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED log persistence linked to encounter disposition",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A field or disposition commit alone does not establish inclusion in the statutory ED log. v1 arrivalMode is optional; chiefComplaint is required at signNote, not an ED-log commit. The log also requires name, date, age, sex and record number; those existing identification concepts are not recataloged here."
+  },
+  {
+    "id": "ca-title22-70413-ed-departure-time",
+    "title": "ED log includes departure time",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "time of departure.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record the patient departure time in the ED log.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "ED log persistence linked to encounter departure-time",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A field or disposition commit alone does not establish inclusion in the statutory ED log. v1 arrivalMode is optional; chiefComplaint is required at signNote, not an ED-log commit. The log also requires name, date, age, sex and record number; those existing identification concepts are not recataloged here."
+  },
+  {
+    "id": "ca-title22-70413-ed-dead-on-arrival",
+    "title": "Enter dead-on-arrival patients in ED log",
+    "citation": "22 CCR §70413(h)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "The name of those dead on arrival shall be entered in the log.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Ensure the ED log includes the name of each patient dead on arrival.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Dead-on-arrival encounter handling and ED log inclusion",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A patient who dies or is dead on arrival must not disappear from the log because no ordinary treatment/discharge commit occurs."
+  },
+  {
+    "id": "ca-title22-70413-ed-prior-records",
+    "title": "Make past hospital records available in ED",
+    "citation": "22 CCR §70413(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70413",
+    "quote": "Past hospital records shall be available to the emergency medical service.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3"
+    ],
+    "personas": [
+      "P2"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Make past hospital records accessible during emergency care.",
+    "specMapping": {
+      "element": null,
+      "info": "encounterHistory",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Availability of linked prior hospital records in emergency workflow",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. encounterHistory and priorNotes are related panels; their existence alone does not prove record retrieval/availability. The text does not require reviewing every old note before each ED commit."
+  },
+  {
+    "id": "ca-title22-70273-nutrition-plan",
+    "title": "Integrate nutritional care in care plan",
+    "citation": "22 CCR §70273(i)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70273",
+    "quote": "Nutritional care shall be integrated in the patient care plan.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include nutritional care in the patient care plan.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Multidisciplinary care-plan record with nutritional care",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A postOpDiet order alone does not establish integration into a care plan."
+  },
+  {
+    "id": "ca-title22-70273-dietitian-notes",
+    "title": "Dietitian records pertinent dietetic observations",
+    "citation": "22 CCR §70273(i)(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70273",
+    "quote": "Observations and information pertinent to dietetic treatment shall be recorded in patient's medical records by the dietitian.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Provide chart documentation by the dietitian for observations and information pertinent to dietetic treatment.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Dietitian role and attributed dietetic documentation workflow",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. P3 and P5 are consuming workflow personas; this row does not authorize either persona to impersonate the dietitian."
+  },
+  {
+    "id": "ca-title22-70273-dietary-discharge",
+    "title": "Include dietary records in transfer/discharge record",
+    "citation": "22 CCR §70273(i)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70273",
+    "quote": "Pertinent dietary records shall be included in patient's transfer discharge record to ensure continuity of nutritional care.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "review",
+    "proposedRule": "Include pertinent dietary records in the patient transfer/discharge documentation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Transfer/discharge packet assembly with pertinent dietary records",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The legal requirement is inclusion in the packet. Requiring review of packet completeness is a proposed local UI implementation, not a statutory on-screen-review mandate."
+  },
+  {
+    "id": "ca-title22-70537-pediatric-abuse-policy",
+    "title": "Pediatric policy addresses child abuse reporting",
+    "citation": "22 CCR §70537(a)(5)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70537",
+    "quote": "Reporting of child abuse or neglect.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Require maintained pediatric-service policies and procedures addressing reporting of child abuse or neglect.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Governed pediatric reporting policy and referral workflow",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This subsection mandates policy content; it does not itself specify a reporting clock or require a checkbox at every visit. Applies to hospital pediatric service; W5 is a hospital-service analogue, not a standalone-office mandate."
+  },
+  {
+    "id": "ca-title22-70537-pediatric-drug-policy",
+    "title": "Pediatric policy addresses drug reactions and interactions",
+    "citation": "22 CCR §70537(a)(8)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70537",
+    "quote": "Drug reactions and interactions.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Require pediatric-service policies and procedures addressing drug reactions and interactions.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Governed pediatric medication-reaction and interaction policy",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A service-policy duty, not a mandate for a specific alert tier or for a drug-allergy checkbox. Existing v1 alerts do not prove the policy exists. Applies to hospital pediatric service."
+  },
+  {
+    "id": "ca-title22-70537-pediatric-over13",
+    "title": "Document pediatric-bed exception for patient older than 13",
+    "citation": "22 CCR §70537(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70537",
+    "quote": "the reason documented in the patient's medical record.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "For a patient older than 13 placed in an approved pediatric-bed space, require pediatrician approval in unusual circumstances and record the reason.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age and bed-type eligibility with pediatrician approval and documented exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is one conditional exception authorization. Applies to hospital pediatric-bed placement, not to the maximum age an outpatient pediatric clinician may see. P4 cannot replace the required pediatrician approval."
+  },
+  {
+    "id": "ca-title22-70537-pediatric-accident-notify",
+    "title": "Promptly inform parent or guardian of child accident",
+    "citation": "22 CCR §70537(f)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70537",
+    "quote": "The hospital shall inform the parent or guardian as soon as possible of any accident affecting the child.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Trigger a parent/guardian notification task as soon as possible after an accident affecting a hospitalized child.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Pediatric accident event and parent/guardian notification task completion",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The legal duty is actual notification; an alert alone is insufficient. No numeric deadline or alert tier is specified. Hospital pediatric service only."
+  },
+  {
+    "id": "ca-title22-70547-newborn-oxygen-order",
+    "title": "Newborn oxygen requires written physician order",
+    "citation": "22 CCR §70547(i)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70547",
+    "quote": "Oxygen shall be administered to newborn infants only on the written order of a physician.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W5"
+    ],
+    "personas": [
+      "P3",
+      "P4"
+    ],
+    "commit": "administerMed",
+    "encoding": "review",
+    "proposedRule": "Before giving oxygen to a newborn, require a written physician order.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "newborn oxygen administration",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Newborn oxygen workflow with physician-authored written order verification",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Perinatal-unit requirement. P3/P4 are relevant nursing/pediatric workflow analogues; the NP persona does not replace the specifically named physician. v1 has neither a newborn-oxygen condition nor this order check."
+  },
+  {
+    "id": "ca-title22-70547-newborn-oxygen-target",
+    "title": "Newborn oxygen order specifies concentration or target",
+    "citation": "22 CCR §70547(i)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70547",
+    "quote": "The order shall include the concentration (volume percent) or desired arterial partial pressure of oxygen",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W5"
+    ],
+    "personas": [
+      "P3",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require either volume-percent oxygen concentration or desired arterial oxygen partial pressure on each newborn oxygen order.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Newborn oxygen order with alternative typed concentration/arterial-pressure target",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. One alternative-valued order requirement, not two simultaneous mandatory values. Ordinary medication dose in milligrams cannot represent it. Perinatal-unit scope."
+  },
+  {
+    "id": "ca-title22-70547-newborn-oxygen-24h",
+    "title": "Reassess newborn oxygen order after 24 hours",
+    "citation": "22 CCR §70547(i)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70547",
+    "quote": "be reviewed, modified, or discontinued after 24-hours.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W5"
+    ],
+    "personas": [
+      "P3",
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Track newborn oxygen orders for review, modification or discontinuation after 24 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Newborn oxygen order age and review/modify/discontinue lifecycle",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The text says after 24 hours; it does not say automatically stop exactly at 24 hours. Alerting is a proposed local implementation of follow-up. Perinatal-unit scope."
+  },
+  {
+    "id": "ca-title22-70243-blood-compatibility-service",
+    "title": "Provide blood typing and cross-matching laboratory capability",
+    "citation": "22 CCR §70243(b)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70243",
+    "quote": "blood typing, cross matching",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Maintain laboratory services and equipment capable of blood typing and cross matching; expose the associated order/results path to transfusion workflows.",
+    "specMapping": {
+      "element": null,
+      "info": "labResults",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Blood-bank/LIS service capability and interoperability",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The binding requirement is service/equipment capability. An EHR order/result path is an implementation proposal; this subsection does not define a per-transfusion check, universal double check, or blood-consent form."
   }
 ]
