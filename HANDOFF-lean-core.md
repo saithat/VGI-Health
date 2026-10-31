@@ -11,7 +11,14 @@ starting. The orchestrator's five-item core changes queue is complete.
 | 2 / alerts, CR-2/4 | `5457421` | Explicit informational human alert clicks; macro alert clicks stop with a human-only reason. CR-2 retains the checker's conservative pin rule; CR-4 was already implemented/proven. |
 | 3 / content, CR-3 | `52206f9` | Declared record source enforced on prefill; encounter/weight-based When conditions; workflow-keyed passive targets; optional episode context passed through FHIR. |
 | 4 / world/sim | `fb1ed8c` | Optional typed clinical choices; OrderKind/W6Step; service-order prior-auth support; generic drug-name contract corrected; absolute dose caps. |
-| 5 / GenTS | this commit | 99 types and 24 real-JSON samples, including Display/Html/render rows and API types, Task and DaySchedule; completeness/name-collision checks. |
+| 5 / GenTS | `ea76226` | 99 types and 24 real-JSON samples, including Display/Html/render rows and API types, Task and DaySchedule; completeness/name-collision checks. |
+
+## Follow-ups from the consolidated checker request file
+
+Human clicks now open the alert's first pending popup candidate, without
+acknowledging it. Passive/unknown/nonfiring/acked alerts do not open; removable
+alerts retain popup opt-in. This supersedes item 2's informational human click.
+T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
 
 ## Validation
 
@@ -64,7 +71,10 @@ starting. The orchestrator's five-item core changes queue is complete.
 
 ## What's left
 
-**Nothing left in the assigned core changes queue.**
+The original five-item queue is complete. One newly visible core follow-up
+remains: checker CR-6, preserving confirmed prior-auth captures and enforcing
+ordinary human Event.enter for never/human-only request elements. It is being
+implemented next without weakening the checker properties.
 
 Other-lane adoption is explicitly requested in
 `docs/design/changes-requests.md`: checker workflow coverage/enter-once/source
