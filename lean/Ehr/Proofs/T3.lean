@@ -51,7 +51,9 @@ theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
   · exact goBack_safe ..
   · exact MacroSafe.refl _ _
   · exact MacroSafe.refl _ _
-  · exact prefillScreen_safe_of (MacroSafe.of_eq rfl rfl rfl rfl)
+  · split
+    · exact prefillScreen_safe_of (MacroSafe.of_eq rfl rfl rfl rfl)
+    · exact MacroSafe.refl _ _
   · exact requestPriorAuth_macro_safe ..
   · exact MacroSafe.of_eq rfl rfl rfl rfl
   · exact MacroSafe.refl _ _
