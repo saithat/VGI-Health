@@ -144,10 +144,7 @@ theorem runMacro_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     · rename_i s' heq
       rw [heq] at h
       exact h.trans (ih _ _)
-    · rename_i s' _ heq
-      rw [heq] at h
-      exact h
-    · rename_i s' heq
+    · rename_i s' r _ heq
       rw [heq] at h
       exact h
 

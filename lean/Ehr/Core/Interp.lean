@@ -335,6 +335,11 @@ def macroStep (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : St
   | .goto t => if s.popup?.isSome then (s, .blocked "popup: acknowledge the alert first")
                else goTo sp prog facts s t
 
+/-- The message when a macro stops at step `i` with result `r`. -/
+def macroStopReason (i : Nat) : StepResult → String
+  | .blocked why => s!"macro stopped at step {i}: {why}"
+  | _ => s!"macro stopped at step {i}: step did not apply"
+
 /-- Run macro steps in order, stopping at the first step that is not `ok`.
 `i` is the index of the first step (for messages). -/
 def runMacro (sp : Spec) (prog : Program) (facts : Facts) (user : User) :
@@ -343,8 +348,7 @@ def runMacro (sp : Spec) (prog : Program) (facts : Facts) (user : User) :
   | i, s, st :: rest =>
     match macroStep sp prog facts user s st with
     | (s', .ok) => runMacro sp prog facts user (i + 1) s' rest
-    | (s', .blocked why) => (s', .blocked s!"macro stopped at step {i}: {why}")
-    | (s', .ignored) => (s', .blocked s!"macro stopped at step {i}: step did not apply")
+    | (s', r) => (s', .blocked (macroStopReason i r))
 
 /-- The macro a click on `cid` would run (a shown macro button whose macro exists). -/
 def clickedMacro? (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : CompId) :

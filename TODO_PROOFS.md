@@ -13,7 +13,7 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
 | T4 | `ehr deploy` publishes only programs with an ok verdict | not started | A |
 | T5 | Abstraction facts match the FHIR data | not started (no FHIR → Facts function yet) | A |
-| T6 | Macros behave like their expansion or stop at a guard | not started | A |
+| T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | not started | A |
 | T8 | Releases only tighten | not started | A |
 | T9 | Minimum clicks is exact | not started | A |

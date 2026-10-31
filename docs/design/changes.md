@@ -204,3 +204,12 @@ Several were made stricter; those are marked **(stricter)**.
 5. T0, T3, A2, A4 were re-checked with the new kind and action (new branch
    lemmas `requestPriorAuth_macro_safe`, `requestPriorAuth_commits`,
    `requestPriorAuth_popup`).
+
+## T6 (macros)
+
+1. `runMacro` builds its stop message with `macroStopReason i r` (same text
+   as before), so T6 can state the result exactly.
+2. T6 compares a macro run with a reference fold of the public `step` with
+   `actor := macro` over the macro's steps. `MacroStep.goto` has no `Event`, so
+   the reference does it as a navigation (like a `goto` button), refused while
+   a popup is open.

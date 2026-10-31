@@ -1,6 +1,7 @@
 import Lean
 import Ehr.Proofs.Alerts
 import Ehr.Proofs.T2
+import Ehr.Proofs.T6
 
 /-!
 # Proof audit
@@ -60,6 +61,9 @@ namespace Ehr.Proofs
 #print axioms T3_macro_run
 #print axioms T3_prefill_never_human_only
 #print axioms T3_cosign_distinct
+#print axioms T6_macro_is_fold
+#print axioms runMacro_ok_iff
+#print axioms T6_macro_run_safe
 #print axioms A2_view_firing
 #print axioms A2_view_shown
 #print axioms A2_popup_holds
@@ -72,6 +76,7 @@ namespace Ehr.Proofs
 #spec_surface T0_commit_needs_guard
 #spec_surface T2_receipts_sound
 #spec_surface T3_macro_step
+#spec_surface T6_macro_is_fold
 #spec_surface A2_view_firing
 #spec_surface A4_run
 

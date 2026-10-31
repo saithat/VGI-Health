@@ -239,10 +239,7 @@ theorem runMacro_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User
     · rename_i s' heq
       rw [heq] at h
       exact (ih _ _).trans h
-    · rename_i s' _ heq
-      rw [heq] at h
-      exact h
-    · rename_i s' heq
+    · rename_i s' r _ heq
       rw [heq] at h
       exact h
 
