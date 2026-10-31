@@ -1,5 +1,7 @@
 /** Release modes (v1.1 surface-feature, v2 migrate) and try-to-break-it, on a compressed calendar. */
 import { readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { rerunNight } from '../src/adhoc.js';
 import { LlmAgent } from '../src/agent.js';
 import { RecordingLlm } from '../src/backends/recording.js';
 import { ReplayLlm } from '../src/backends/replay.js';
@@ -50,7 +52,7 @@ describe('migrate (v2)', () => {
     const r = rec(2, 'P3');
     expect(r.mode).toBe('migrate');
     const [first, second] = r.certification.attempts;
-    expect(first?.check).toMatchObject({ status: 'fail', property: 'reviewsBeforeCommit' });
+    expect(first?.check).toMatchObject({ status: 'fail', property: 'ReviewsBeforeCommit' });
     expect(first?.check.message).toMatch(/Antibiotic indication/);
     expect(first?.check.counterexample?.length).toBeGreaterThan(0);
     expect(second?.check.status).toBe('pass');
@@ -86,10 +88,23 @@ describe('try-to-break-it', () => {
     const liveDir = await tmp('break');
     const live = await go(liveDir, new ScriptedLlm());
     expect(live.verdict.status).toBe('fail');
-    expect(live.verdict.property).toBe('reviewsBeforeCommit');
+    expect(live.verdict.property).toBe('ReviewsBeforeCommit');
     expect(live.verdict.counterexample?.at(-1)).toEqual({ click: { comp: 'w1-sign-orders' } });
     const replay = await go(await tmp('break-replay'), new ReplayLlm(liveDir));
     expect(replay.verdict).toEqual(live.verdict);
     expect(replay.backend).toMatchObject({ name: 'replay', replayOf: { backend: 'scripted' } });
+  });
+});
+
+describe('re-running one night of an existing run (night command)', () => {
+  it('rebuilds state from the run directory and replays the P3 migration night into adhoc/, leaving the run untouched', async () => {
+    const before = JSON.stringify(rec(2, 'P3'));
+    const { result, outDir } = await rerunNight({ runDir: run.dir, persona: 'P3', night: 2, llm: new ReplayLlm(run.dir), ehr: createFakeEhr() });
+    expect(outDir.startsWith(run.dir)).toBe(true);
+    expect(result.record.mode).toBe('migrate');
+    expect(result.record.outcome).toBe('migrated');
+    expect(result.record.llmCalls.every((c) => c.promptMatched === true)).toBe(true);
+    expect(existsSync(new RunStore(outDir).decisionPath(2, 'P3'))).toBe(true);
+    expect(JSON.stringify(rec(2, 'P3'))).toBe(before);
   });
 });

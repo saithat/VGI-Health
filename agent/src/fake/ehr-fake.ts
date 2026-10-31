@@ -98,20 +98,20 @@ export function fakeCheck(i: CheckInput): Verdict {
   const pathTo = (sid: string): Event[] => paths.get(sid) ?? [];
 
   // wellFormed: start exists, banner landmark on every screen, catalog kinds, parents, goto targets.
-  if (!screens.has(p.start)) return violation('wellFormed', `start screen ${p.start} does not exist`, [], []);
+  if (!screens.has(p.start)) return violation('WellFormed', `start screen ${p.start} does not exist`, [], []);
   for (const s of p.screens) {
     if (!s.components.some((x) => kindTag(x.kind) === 'banner' && isShown(x, s))) {
-      return violation('wellFormed', `patient banner landmark missing on ${s.id}`, pathTo(s.id), [s.id]);
+      return violation('WellFormed', `patient banner landmark missing on ${s.id}`, pathTo(s.id), [s.id]);
     }
     for (const comp of s.components) {
       if (!spec.design.catalog.includes(kindTag(comp.kind))) {
-        return violation('wellFormed', `component ${comp.id} has kind ${kindTag(comp.kind)} outside the catalog`, pathTo(s.id), [s.id]);
+        return violation('WellFormed', `component ${comp.id} has kind ${kindTag(comp.kind)} outside the catalog`, pathTo(s.id), [s.id]);
       }
       if (comp.parent && !s.components.some((x) => x.id === comp.parent)) {
-        return violation('wellFormed', `component ${comp.id} has parent ${comp.parent} not on ${s.id}`, pathTo(s.id), [s.id]);
+        return violation('WellFormed', `component ${comp.id} has parent ${comp.parent} not on ${s.id}`, pathTo(s.id), [s.id]);
       }
       const target = gotoOf(comp);
-      if (target && !screens.has(target)) return violation('wellFormed', `button ${comp.id} goes to missing screen ${target}`, pathTo(s.id), [s.id]);
+      if (target && !screens.has(target)) return violation('WellFormed', `button ${comp.id} goes to missing screen ${target}`, pathTo(s.id), [s.id]);
     }
   }
 
@@ -120,7 +120,7 @@ export function fakeCheck(i: CheckInput): Verdict {
     for (const comp of s.components) {
       const el = fieldElement(comp);
       if (el && !elementSpec(spec, el) && el !== 'visitDiagnosis') {
-        return violation('writesOnly', `field ${comp.id} writes element ${el}, which is not in spec ${spec.version}`, pathTo(s.id), [s.id]);
+        return violation('WritesOnly', `field ${comp.id} writes element ${el}, which is not in spec ${spec.version}`, pathTo(s.id), [s.id]);
       }
     }
   }
@@ -132,7 +132,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!el) continue;
       const es = elementSpec(spec, el);
       if ((isHumanOnly(es) || es?.prefill === 'never') && prefillOf(comp) !== 'none') {
-        return violation('humanOnlyKept', `${es?.label ?? el} (${comp.id}) is pre-filled, but it must be entered by a human every time`,
+        return violation('HumanOnlyKept', `${es?.label ?? el} (${comp.id}) is pre-filled, but it must be entered by a human every time`,
           [...pathTo(s.id), { confirm: { comp: comp.id } }, ...commitClicks(s)], [s.id]);
       }
     }
@@ -145,10 +145,10 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!found) continue;
       const el = fieldElement(found.comp);
       if ('setValue' in step && el && isHumanOnly(elementSpec(spec, el))) {
-        return violation('humanOnlyKept', `macro ${m.id} fills human-only element ${el}`, [...pathTo(found.screen.id)], [found.screen.id]);
+        return violation('HumanOnlyKept', `macro ${m.id} fills human-only element ${el}`, [...pathTo(found.screen.id)], [found.screen.id]);
       }
       if ('click' in step && commitOf(found.comp)) {
-        return violation('humanOnlyKept', `macro ${m.id} performs the commit ${commitOf(found.comp) ?? ''}`, [...pathTo(found.screen.id)], [found.screen.id]);
+        return violation('HumanOnlyKept', `macro ${m.id} performs the commit ${commitOf(found.comp) ?? ''}`, [...pathTo(found.screen.id)], [found.screen.id]);
       }
     }
   }
@@ -161,7 +161,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!es || !isRecord(es.kind) || !('quantity' in es.kind)) continue;
       const pf = JSON.stringify(prefillOf(comp));
       if (/lb/i.test(pf)) {
-        return violation('units', `${es.label} (${comp.id}) can be filled from a pound value (${pf}); weight must be kg`,
+        return violation('UnitsRight', `${es.label} (${comp.id}) can be filled from a pound value (${pf}); weight must be kg`,
           [...pathTo(s.id), { confirm: { comp: comp.id } }, ...commitClicks(s)], [s.id]);
       }
     }
@@ -178,7 +178,7 @@ export function fakeCheck(i: CheckInput): Verdict {
     }
   }
   for (const cm of canonicalCommits) {
-    if (!reachableCommits.has(cm)) return violation('completable', `commit ${cm} is not reachable from ${p.start}`, [], []);
+    if (!reachableCommits.has(cm)) return violation('Completable', `commit ${cm} is not reachable from ${p.start}`, [], []);
   }
 
   // reviewsBeforeCommit: required info shown on each commit screen (receipt-conditional allowed for shownOrReceipt).
@@ -192,7 +192,7 @@ export function fakeCheck(i: CheckInput): Verdict {
           (x.visibility === 'always' || r.mode !== 'shownOnCommit'));
         if (!shown) {
           const label = spec.infos.find((x) => x.id === r.info)?.label ?? r.info;
-          return violation('reviewsBeforeCommit', `${label} is not shown on ${s.title} before "${cm}" (collapsed, in an unopened tab, tiny, or missing)`,
+          return violation('ReviewsBeforeCommit', `${label} is not shown on ${s.title} before "${cm}" (collapsed, in an unopened tab, tiny, or missing)`,
             [...pathTo(s.id), { click: { comp: btn.id } }], [s.id]);
         }
       }
@@ -207,7 +207,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!btn) continue;
       const wf = p.screens.filter((x) => x.workflow === s.workflow);
       if (!wf.some((x) => x.components.some((y) => fieldElement(y) === e.element && isShown(y, x)))) {
-        return violation('capturesAllOnce', `${e.element} is not captured on workflow ${s.workflow} before "${e.commit}"`,
+        return violation('CapturesAllOnce', `${e.element} is not captured on workflow ${s.workflow} before "${e.commit}"`,
           [...pathTo(s.id), { click: { comp: btn.id } }], [s.id]);
       }
     }
@@ -221,7 +221,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!el || comp.copyOf) continue;
       const prev = seen.get(el);
       if (prev && prefillOf(comp) === 'none') {
-        return violation('capturesAllOnce', `${el} is asked twice on workflow ${s.workflow} (${prev}, ${comp.id})`, pathTo(s.id), [s.id]);
+        return violation('CapturesAllOnce', `${el} is asked twice on workflow ${s.workflow} (${prev}, ${comp.id})`, pathTo(s.id), [s.id]);
       }
       seen.set(el, comp.id);
     }
@@ -233,7 +233,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (kindTag(comp.kind) !== 'alert') continue;
       const a = spec.alerts.find((x) => x.id === kindPayload(comp.kind)?.['alert']);
       const popup = kindPayload(comp.kind)?.['popup'] === true;
-      if (a?.tier === 'passive' && popup) return violation('alertsA4', `passive alert ${a.id} turned into a popup on ${s.id}`, pathTo(s.id), [s.id]);
+      if (a?.tier === 'passive' && popup) return violation('SeverityTiers', `passive alert ${a.id} turned into a popup on ${s.id}`, pathTo(s.id), [s.id]);
     }
   }
   for (const s of i.canonical.screens) {
@@ -244,14 +244,14 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (a?.tier !== 'interruptive') continue;
       const kept = p.screens.some((ps) => ps.workflow === s.workflow && ps.components.some((x) =>
         kindTag(x.kind) === 'alert' && kindPayload(x.kind)?.['alert'] === id && kindPayload(x.kind)?.['popup'] === true));
-      if (!kept) return violation('alertsA1', `interruptive alert ${a.id} no longer pops up on workflow ${s.workflow}`, pathTo(s.id), [s.id]);
+      if (!kept) return violation('AlertsFire', `interruptive alert ${a.id} no longer pops up on workflow ${s.workflow}`, pathTo(s.id), [s.id]);
     }
   }
 
   // budgets: stability.
   const moved = componentsMoved(i.prev, p);
   if (moved > spec.design.stabilityBudget) {
-    return violation('budgets', `${moved} components moved; the stability budget is ${spec.design.stabilityBudget}`, [], []);
+    return violation('WithinBudgets', `${moved} components moved; the stability budget is ${spec.design.stabilityBudget}`, [], []);
   }
   return 'ok';
 }

@@ -56,13 +56,13 @@ export interface RunSummary {
   seededRejectedKinds: string[];
 }
 
-function deployedPatch(r: DecisionRecord): HistoryItem['patch'] {
+export function deployedPatch(r: DecisionRecord): HistoryItem['patch'] {
   if (!r.deployed || r.outcome === 'migration-fallback' || r.outcome === 'recertified' || r.outcome === 'not-surfaced') return [];
   const ok = [...r.certification.attempts].reverse().find((a) => a.check.status === 'pass');
   return ok?.patch ?? [];
 }
 
-function historyItem(r: DecisionRecord): HistoryItem {
+export function historyItem(r: DecisionRecord): HistoryItem {
   const byId = new Map(r.candidates.map((e) => [e.candidate.id, e.candidate]));
   const outcome = r.outcome === 'deployed' || r.outcome === 'surfaced' || r.outcome === 'migrated' ? 'accepted' : r.outcome;
   return {

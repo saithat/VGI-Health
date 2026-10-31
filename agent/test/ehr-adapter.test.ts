@@ -10,7 +10,7 @@ import { fakeCanonical } from '../src/fake/fixtures.js';
 import { fakeSchedule, FAKE_PERSONAS } from '../src/fake/world.js';
 import { tmp } from './helpers.js';
 
-const VIOLATION = { violation: { property: 'units', message: 'lb', counterexample: [{ click: { comp: 'b' } }], screens: ['s'] } };
+const VIOLATION = { violation: { property: 'UnitsRight', message: 'lb', counterexample: [{ click: { comp: 'b' } }], screens: ['s'] } };
 const CERT = { specVersion: 'v1', specHash: 'h', programHash: 'p', verdict: 'ok', checkerVersion: 'stub', time: 't' };
 const DAY = { day: 1, persona: 'P1', programVersion: 0, trace: [], tasks: [], floor: [], complaints: [] };
 

@@ -10,6 +10,10 @@
  *        --backend claude|codex|replay (--run runs/<run-id> | --world runs/world/<seed>)
  *        [--replay-from runs/<run-id>] [--spec v1|v1.1|v2] [--out DIR]
  *
+ *   pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend claude|codex|replay
+ *        [--mode auto|nightly|surface-feature|migrate] [--replay-from DIR] [--out DIR]
+ *        (re-runs one night of an existing run into <run>/adhoc/...; the original run is untouched)
+ *
  *   pnpm --filter agent fake-world --out runs/world/fake-7 [--days 10] [--seed 7]   (EHR_FAKE test fixture)
  *
  * Set EHR_FAKE=1 to use the fake ehr (tests / smoke runs only; certifies nothing).
@@ -19,6 +23,7 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 import { LlmAgent } from './agent.js';
+import { NIGHT_MODES, rerunNight, type NightMode } from './adhoc.js';
 import { BACKENDS, createBackend, type BackendChoice } from './backends/index.js';
 import { RecordingLlm } from './backends/recording.js';
 import { createEhr } from './ehr.js';
@@ -130,6 +135,40 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
   }, null, 2));
 }
 
+function modeArg(v: string | undefined): NightMode {
+  if (v === undefined) return 'auto';
+  const m = NIGHT_MODES.find((x) => x === v);
+  if (!m) throw new Error(`--mode must be one of ${NIGHT_MODES.join(', ')}`);
+  return m;
+}
+
+async function cmdNight(argv: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args: argv,
+    options: {
+      run: { type: 'string' }, persona: { type: 'string' }, night: { type: 'string' }, backend: { type: 'string' },
+      mode: { type: 'string' }, 'replay-from': { type: 'string' }, out: { type: 'string' }, model: { type: 'string' },
+    },
+  });
+  if (!values.run || !values.persona || !values.night) throw new Error('--run, --persona and --night are required');
+  const { result, outDir } = await rerunNight({
+    runDir: resolveUserPath(values.run),
+    persona: values.persona,
+    night: intArg(values.night, 'night', 1),
+    llm: createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model }),
+    ehr: createEhr(),
+    mode: modeArg(values.mode),
+    ...(values.out ? { outDir: resolveUserPath(values.out) } : {}),
+  });
+  const r = result.record;
+  console.log(JSON.stringify({
+    night: r.night, persona: r.persona, mode: r.mode, outcome: r.outcome, versionBefore: r.versionBefore, versionAfter: r.versionAfter,
+    backend: r.backend, hypothesis: r.hypothesis,
+    candidates: r.candidates.map((e) => ({ id: e.candidate.id, summary: e.candidate.summary, seeded: e.candidate.seeded, check: e.check.status, property: e.check.property })),
+    chosen: r.chosen, validation: r.validation.reason, release: r.release, flags: r.flags, outDir,
+  }, null, 2));
+}
+
 async function cmdFakeWorld(argv: string[]): Promise<void> {
   const { values } = parseArgs({ args: argv, options: { out: { type: 'string' }, days: { type: 'string' }, seed: { type: 'string' } } });
   if (!values.out) throw new Error('--out is required');
@@ -140,6 +179,7 @@ async function cmdFakeWorld(argv: string[]): Promise<void> {
 const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
   'run-days': cmdRunDays,
   'try-to-break-it': cmdTryToBreakIt,
+  night: cmdNight,
   'fake-world': cmdFakeWorld,
 };
 

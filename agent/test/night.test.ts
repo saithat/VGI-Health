@@ -74,12 +74,12 @@ describe('one full fake night per persona (replay backend)', () => {
     const r = record(replayed, 1, 'P5');
     const [merged, repaired] = r.certification.attempts;
     expect(merged?.source).toBe('merged');
-    expect(merged?.check).toMatchObject({ status: 'fail', property: 'budgets' });
+    expect(merged?.check).toMatchObject({ status: 'fail', property: 'WithinBudgets' });
     expect(repaired?.source).toBe('repair');
     expect(repaired?.check.status).toBe('pass');
     expect(r.certification.result).toBe('certified');
     const repairCall = readLlmRecords(replayed.dir).find((c) => c.callId === 'night-01/P5/repair-1');
-    expect(repairCall?.prompt).toContain('budgets');
+    expect(repairCall?.prompt).toContain('WithinBudgets');
   });
 });
 
@@ -89,7 +89,7 @@ describe('rejections are logged with counterexamples', () => {
     const bad = r.candidates.find((e) => e.candidate.id === 'p1-toolbar-sign');
     expect(bad?.candidate.seeded).toBe(false);
     expect(bad?.check.status).toBe('fail');
-    expect(bad?.check.property).toBe('reviewsBeforeCommit');
+    expect(bad?.check.property).toBe('ReviewsBeforeCommit');
     expect(bad?.check.message).toMatch(/Allergies/);
     expect(bad?.check.counterexample?.length).toBeGreaterThan(0);
     expect(bad?.check.counterexample?.at(-1)).toEqual({ click: { comp: 'w1-tb-sign' } });
