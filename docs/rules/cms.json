@@ -2752,5 +2752,861 @@
     "confidence": "high",
     "verified": true,
     "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. §482.43(a) covers early-identified at-risk patients and requests by the patient, representative or physician. Discharge gating is a local proxy; timely planning must begin earlier."
+  },
+  {
+    "id": "cms-482.43-b-send-current-course",
+    "title": "Transmit the current illness and treatment course",
+    "citation": "42 CFR §482.43(b)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "patient's current course of illness and treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "design",
+    "proposedRule": "Send all necessary medical information about the current illness and treatment course to the appropriate follow-up/ancillary provider at discharge or transfer/referral.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge/transfer/referral event, destination-bound transmission and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A displayed packet or a discharge follow-up field is not transmission. Use disposition for ED transfers; discharge is the inpatient proxy in this row. Earlier research R2-03, now split into atomic content categories."
+  },
+  {
+    "id": "cms-482.43-b-send-goals",
+    "title": "Transmit post-discharge goals of care",
+    "citation": "42 CFR §482.43(b)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "post-discharge goals of care",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "design",
+    "proposedRule": "Send necessary post-discharge goals-of-care information to the appropriate follow-up/ancillary provider at discharge or transfer/referral.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge/transfer/referral event, destination-bound transmission and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A displayed packet or a discharge follow-up field is not transmission. Use disposition for ED transfers; discharge is the inpatient proxy in this row. Earlier research R2-03, now split into atomic content categories."
+  },
+  {
+    "id": "cms-482.43-b-send-preferences",
+    "title": "Transmit treatment preferences",
+    "citation": "42 CFR §482.43(b)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.43",
+    "quote": "treatment preferences",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "design",
+    "proposedRule": "Send necessary treatment-preference information to the appropriate follow-up/ancillary provider at discharge or transfer/referral.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge/transfer/referral event, destination-bound transmission and delivery evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. A displayed packet or a discharge follow-up field is not transmission. Use disposition for ED transfers; discharge is the inpatient proxy in this row. Earlier research R2-03, now split into atomic content categories."
+  },
+  {
+    "id": "cms-482.51-b2-consent-before-surgery",
+    "title": "Required surgical consent is in the chart before surgery",
+    "citation": "42 CFR §482.51(b)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "in the patient's chart before surgery, except in emergencies",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signPreOpOrders",
+    "encoding": "entry",
+    "proposedRule": "Require the properly executed operation consent in the chart before surgery, with the regulatory emergency exception.",
+    "specMapping": {
+      "element": "consentVerified",
+      "info": "consentDocument",
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start event, properly executed consent validation and emergency predicate",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 requires a human consentVerified flag at pre-op order signing, but does not prove consent execution or the before-surgery timing. Order signing is a local proxy. Earlier research E4 and R2-01."
+  },
+  {
+    "id": "cms-482.51-b6-techniques",
+    "title": "Describe operative techniques",
+    "citation": "42 CFR §482.51(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "techniques",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the operative report to describe the operative techniques.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "New operative-report content element",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy."
+  },
+  {
+    "id": "cms-482.51-b6-findings",
+    "title": "Describe operative findings",
+    "citation": "42 CFR §482.51(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "findings",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the operative report to describe operative findings.",
+    "specMapping": {
+      "element": "opFindings",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy."
+  },
+  {
+    "id": "cms-482.51-b6-tissues",
+    "title": "Describe tissues removed or altered",
+    "citation": "42 CFR §482.51(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "tissues removed or altered",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the operative report to describe tissues removed or altered.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "New operative-report content element",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Earlier research R2-02. opProcedure names a procedure and opSpecimens names specimens; neither alone describes technique or altered tissue. The law does not prescribe an exact template or prefill policy."
+  },
+  {
+    "id": "cms-482.51-b6-immediate-report",
+    "title": "Write or dictate the operative report immediately after surgery",
+    "citation": "42 CFR §482.51(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "written or dictated immediately following surgery",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Track that the operative report is written or dictated immediately following surgery.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Surgery-completion and report-writing/dictation events with temporal obligations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. No numeric minute limit is supplied. Signing later is distinct from writing/dictating immediately. Earlier research R2-02."
+  },
+  {
+    "id": "cms-482.51-b6-surgeon-signature",
+    "title": "The surgeon signs the operative report",
+    "citation": "42 CFR §482.51(b)(6)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.51",
+    "quote": "signed by the surgeon",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "humanOnly",
+    "proposedRule": "Require an authenticated surgeon signature on the operative report.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Authenticated surgeon identity and human-only commit/signature semantics",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 signOpNote is restricted to the surgeon role, but role permission alone does not establish an authenticated surgeon signature or exclude macro signing. Earlier research R2-02."
+  },
+  {
+    "id": "cms-482.51-b6-preop-diagnosis",
+    "title": "Operative report includes the pre-operative diagnosis",
+    "citation": "CMS SOM Appendix A, A-0959, PDF p. 474; 42 CFR §482.51(b)(6)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Pre-operative and post-operative diagnosis;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the pre-operative diagnosis in the operative report.",
+    "specMapping": {
+      "element": "opPreopDiagnosis",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-0959, PDF p. 474. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 already requires this content before signOpNote. Guidance content is not mislabeled as explicit CFR wording."
+  },
+  {
+    "id": "cms-482.51-b6-postop-diagnosis",
+    "title": "Operative report includes the post-operative diagnosis",
+    "citation": "CMS SOM Appendix A, A-0959, PDF p. 474; 42 CFR §482.51(b)(6)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Pre-operative and post-operative diagnosis;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the post-operative diagnosis in the operative report.",
+    "specMapping": {
+      "element": "opPostopDiagnosis",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-0959, PDF p. 474. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 already requires this content before signOpNote. Guidance content is not mislabeled as explicit CFR wording."
+  },
+  {
+    "id": "cms-482.51-b6-procedure",
+    "title": "Operative report names the specific procedure",
+    "citation": "CMS SOM Appendix A, A-0959, PDF p. 474; 42 CFR §482.51(b)(6)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Name of the specific surgical procedure(s) performed;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Require the name of each specific surgical procedure performed in the operative report.",
+    "specMapping": {
+      "element": "opProcedure",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-0959, PDF p. 474. Guidance interprets the cited regulation; binding=false applies to this guidance row. V1 already requires this content before signOpNote. Guidance content is not mislabeled as explicit CFR wording."
+  },
+  {
+    "id": "cms-482.51-b6-other-practitioner-tasks",
+    "title": "Attribute significant tasks to other practitioners",
+    "citation": "CMS SOM Appendix A, A-0959, PDF p. 474; 42 CFR §482.51(b)(6)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "a description of the specific significant surgical tasks",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "For significant surgical tasks done by practitioners other than the primary surgeon, identify the practitioner and describe the tasks in the operative report.",
+    "specMapping": {
+      "element": "opSurgeons",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Practitioner-to-significant-task attribution and required operative-report fields",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-0959, PDF p. 474. Guidance interprets the cited regulation; binding=false applies to this guidance row. opSurgeons exists but is optional at signOpNote and does not record task attribution. Guidance content is not mislabeled as explicit CFR wording."
+  },
+  {
+    "id": "cms-482.51-b6-implants",
+    "title": "Operative report lists implanted devices or tissues",
+    "citation": "CMS SOM Appendix A, A-0959, PDF p. 474; 42 CFR §482.51(b)(6)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Prosthetic devices, grafts, tissues, transplants, or devices implanted, if any.",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": "signOpNote",
+    "encoding": "entry",
+    "proposedRule": "Document prosthetic devices, grafts, tissues, transplants or other devices implanted, when applicable.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "implants were placed",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Required implant documentation conditional on implantation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-0959, PDF p. 474. Guidance interprets the cited regulation; binding=false applies to this guidance row. opImplants exists in v1 but is absent from signOpNoteEntries; existence alone is not a rule."
+  },
+  {
+    "id": "cms-482.52-b1-pre-48hours",
+    "title": "Complete preanesthesia evaluation within 48 hours before surgery",
+    "citation": "42 CFR §482.52(b)(1)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.52",
+    "quote": "performed within 48 hours prior to surgery",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require a preanesthesia evaluation completed and documented by a person qualified under §482.52(a), performed within 48 hours before surgery or an anesthesia-requiring procedure.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; procedure/induction timestamp and 48-hour freshness",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 has no anesthesia-provider persona or anesthesia evaluation commit. P5/W6 denotes the perioperative workflow receiving this requirement, not permission for any surgeon to perform the evaluation. A-1003 excludes moderate sedation from this anesthesia rule; A-1005 explains recovery-area timing and possible post-discharge evaluation."
+  },
+  {
+    "id": "cms-482.52-b2-intraop-record",
+    "title": "Maintain an intraoperative anesthesia record",
+    "citation": "42 CFR §482.52(b)(2)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.52",
+    "quote": "An intraoperative anesthesia record.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Require an intraoperative anesthesia record for each patient receiving anesthesia services.",
+    "specMapping": {
+      "element": null,
+      "info": "intraopRecord",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 has no anesthesia-provider persona or anesthesia evaluation commit. P5/W6 denotes the perioperative workflow receiving this requirement, not permission for any surgeon to perform the evaluation. A-1003 excludes moderate sedation from this anesthesia rule; A-1005 explains recovery-area timing and possible post-discharge evaluation."
+  },
+  {
+    "id": "cms-482.52-b3-post-48hours",
+    "title": "Complete postanesthesia evaluation no later than 48 hours",
+    "citation": "42 CFR §482.52(b)(3)",
+    "url": "https://www.ecfr.gov/current/title-42/section-482.52",
+    "quote": "no later than 48 hours after surgery",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Track completion and documentation of a postanesthesia evaluation by a person qualified under §482.52(a) no later than 48 hours after surgery/anesthesia-requiring procedure.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; recovery event and postprocedure deadline",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. V1 has no anesthesia-provider persona or anesthesia evaluation commit. P5/W6 denotes the perioperative workflow receiving this requirement, not permission for any surgeon to perform the evaluation. A-1003 excludes moderate sedation from this anesthesia rule; A-1005 explains recovery-area timing and possible post-discharge evaluation."
+  },
+  {
+    "id": "cms-482.52-b1-pre-history",
+    "title": "Preanesthesia evaluation reviews medical and anesthesia history",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Review of the medical history, including anesthesia, drug and allergy history",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Within the preanesthesia 48-hour window, review medical history including anesthesia, drug and allergy history.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b1-pre-interview-exam",
+    "title": "Preanesthesia evaluation includes interview and examination",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Interview, if possible given the patient’s condition, and examination of the patient.",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Within the preanesthesia 48-hour window, examine the patient and interview the patient if the condition permits.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b1-pre-risk",
+    "title": "Preanesthesia evaluation records anesthesia risk",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Notation of anesthesia risk according to established standards of practice",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Record anesthesia risk according to established standards; review and update as necessary within 48 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b1-pre-problems",
+    "title": "Preanesthesia evaluation identifies potential anesthesia problems",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Identification of potential anesthesia problems",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Identify potential anesthesia problems, particularly possible complications or contraindications; review and update as necessary within 48 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b1-pre-additional-data",
+    "title": "Preanesthesia evaluation includes indicated additional data",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Additional pre-anesthesia data or information, if applicable",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Include additional preanesthesia data/information when indicated by standard practice; review and update as necessary within 48 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b1-pre-plan",
+    "title": "Develop the anesthesia care plan",
+    "citation": "CMS SOM Appendix A, A-1003, PDF pp. 486–487; 42 CFR §482.52(b)(1)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Development of the plan for the patient’s anesthesia care",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Develop the anesthesia plan, including induction, maintenance and postoperative medications and discussion of risks and benefits with the patient or representative; review/update as necessary within 48 hours.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance; component performance/review timestamps",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1003, PDF pp. 486–487. Guidance interprets the cited regulation; binding=false applies to this guidance row. Applies to general, regional or monitored anesthesia, not moderate sedation. CMS permits specified preparatory components earlier with review/update within 48 hours; the history review and interview/examination must occur within 48 hours. V1 has no anesthesia evaluator role or commit; P5 is the related perioperative persona."
+  },
+  {
+    "id": "cms-482.52-b3-post-respiratory",
+    "title": "Postanesthesia evaluation documents respiratory function",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Respiratory function, including respiratory rate, airway patency, and oxygen saturation;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document postanesthesia respiratory function, including respiratory rate, airway patency and oxygen saturation.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. Required postanesthesia clinical assessment by a qualified anesthesia provider; a generic vitals panel or RN assessment does not prove the anesthesia evaluation."
+  },
+  {
+    "id": "cms-482.52-b3-post-cardiovascular",
+    "title": "Postanesthesia evaluation documents cardiovascular function",
+    "citation": "CMS SOM Appendix A, A-1005, PDF p. 490; 42 CFR §482.52(b)(3)",
+    "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf",
+    "quote": "Cardiovascular function, including pulse rate and blood pressure;",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "entry",
+    "proposedRule": "Document postanesthesia cardiovascular function, including pulse rate and blood pressure.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Anesthesia-specific clinical events, qualified anesthesia-provider roles and document provenance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 in official CMS SOM Appendix A, Rev. 248, issued 2026-09-18; A-1005, PDF p. 490. Guidance interprets the cited regulation; binding=false applies to this guidance row. Required postanesthesia clinical assessment by a qualified anesthesia provider; a generic vitals panel or RN assessment does not prove the anesthesia evaluation."
   }
 ]
