@@ -350,7 +350,7 @@ example : atSignAmox.popup? ≠ some ("drugAllergy", "amoxicillin@3") ∧
 /-- The tiny spec's care-gap rule (passive). -/
 def careGapRule : AlertSpec :=
   { id := "careGap", label := "Care gap due", cond := .careGap, tier := .passive,
-    commit := "signOrders", screens := ["order"] }
+    commit := "signOrders", screens := ["W1"] }
 
 /-- A4's hypotheses hold on the tiny spec: the care-gap rule is passive and is
 the rule its ID names. -/
