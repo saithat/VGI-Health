@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, NativeSelect, Paper } from "@mantine/core";
+import { Button, NativeSelect, Paper } from "@mantine/core";
 import { SignInForm } from "@medplum/react";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { z } from "zod";
@@ -8,15 +8,8 @@ import type { Role } from "./core/types";
 import { environment, loadChart, signOut } from "./data/medplum";
 import type { ChartData } from "./data/fhir";
 import { offlineChart } from "./mock/patient";
-import {
-  mockFacts,
-  mockProgram,
-  mockSpec,
-  mockValueSets,
-  mockViews,
-} from "./mock/workflow";
-import { ScreenRenderer } from "./render/ScreenRenderer";
-import { Storyboard } from "./shell/Storyboard";
+import { mockFacts, mockProgram, mockSpec, mockViews } from "./mock/workflow";
+import { paint } from "./ehr/painter";
 
 const personaSchema = z.enum(["P1", "P2", "P3", "P4", "P5"]);
 const personas: {
@@ -76,17 +69,20 @@ export function App() {
             items: view.items.map((item) => ({ ...item, bound: null })),
           }));
     return createSession(
-      createMockInterp(fixtureViews, mockFacts),
+      createMockInterp(fixtureViews, mockFacts, data),
       mockSpec,
       mockProgram,
-      mockFacts,
+      {
+        resourceType: "Bundle",
+        type: "collection",
+        entry: [data.patient, ...data.resources].map((resource) => ({
+          resource,
+        })),
+      },
       { id: personaId, role: persona.role },
     );
-  }, [personaId, persona.role, data.source, data.patient.id]);
-  const { view, message } = useSyncExternalStore(
-    session.subscribe,
-    session.getSnapshot,
-  );
+  }, [personaId, persona.role, data]);
+  const { page } = useSyncExternalStore(session.subscribe, session.getSnapshot);
   useEffect(() => {
     let active = true;
     // A read-only effect; all FHIR operations stay in the single data module.
@@ -140,39 +136,8 @@ export function App() {
     );
 
   return (
-    <div className="ehr-app">
-      <header className="app-header">
-        <a href="#" className="brand" aria-label="VGI Health workspace">
-          VGI<span>HEALTH</span>
-        </a>
-        <div className="facility">
-          NORTHSIDE FAMILY MEDICINE<span>Ambulatory clinical workspace</span>
-        </div>
-        <div className="header-right">
-          <Badge size="sm" color="teal" variant="light">
-            {data.source === "offline" ? "OFFLINE DEMO" : "MEDPLUM CONNECTED"}
-          </Badge>
-          <span className="clinician-name">{persona.name}</span>
-          <Button
-            size="compact-xs"
-            variant="default"
-            onClick={() => {
-              if (data.source === "medplum") {
-                signOut()
-                  .then(() => setRefresh((value) => value + 1))
-                  .catch(() => setLoadError("Sign-out failed"));
-              } else setLogin(true);
-            }}
-          >
-            {data.source === "medplum" ? "Sign out" : "Sign in"}
-          </Button>
-        </div>
-      </header>
+    <div>
       <div className="workspace-toolbar">
-        <div className="workspace-breadcrumb">
-          Schedule <span>/</span> Clinical workspace <span>/</span>{" "}
-          <strong>W1 · Outpatient visit</strong>
-        </div>
         <div className="persona-control">
           <label htmlFor="persona">DEV PERSONA</label>
           <NativeSelect
@@ -184,54 +149,24 @@ export function App() {
               setPersonaId(personaSchema.parse(event.currentTarget.value))
             }
           />
+          <span>{persona.name}</span>
         </div>
+        <Button
+          size="compact-xs"
+          variant="default"
+          onClick={() => {
+            if (data.source === "medplum") {
+              signOut()
+                .then(() => setRefresh((value) => value + 1))
+                .catch(() => setLoadError("Sign-out failed"));
+            } else setLogin(true);
+          }}
+        >
+          {data.source === "medplum" ? "Sign out" : "Sign in"}
+        </Button>
       </div>
-      <div className="preview-notice">
-        <span className="preview-dot" />
-        <strong>Navigation preview</strong>
-        <span>Uncertified mock interpreter · clinical actions unavailable</span>
-        <span className="data-source">{data.message}</span>
-      </div>
-      {loadError && (
-        <Alert color="red" title="Chart input rejected">
-          {loadError}
-        </Alert>
-      )}
-      <div className="ehr-layout">
-        <Storyboard data={data} />
-        <main className="clinical-workspace">
-          <div className="encounter-strip">
-            <div>
-              <Badge size="xs" color="teal" variant="dot">
-                In progress
-              </Badge>
-              <span>Office visit · Follow-up</span>
-            </div>
-            <span>{data.context.asOf} · Family medicine</span>
-            <strong>Encounter preview</strong>
-          </div>
-          <ScreenRenderer
-            view={view}
-            data={data}
-            spec={mockSpec}
-            valueSets={mockValueSets}
-            onEvent={session.dispatch}
-          />
-          <div
-            className="unused-activities"
-            aria-label="Activities outside this preview"
-          >
-            Additional activities: Imaging · MAR · History · Care Gaps ·
-            Surgical Case
-          </div>
-        </main>
-      </div>
-      <footer className="status-bar">
-        <span role="status" aria-live="polite">
-          {message}
-        </span>
-        <span>W1 v0 · {personaId} · No clinical writes</span>
-      </footer>
+      {loadError && <p role="alert">{loadError}</p>}
+      {paint(page, session.dispatch)}
     </div>
   );
 }
