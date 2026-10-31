@@ -878,5 +878,925 @@
     "confidence": "medium",
     "verified": true,
     "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 dischargeEntries already requires dischargeCondition. The statute does not specify its coded representation. Parent rule appears in docs/regulations.md E16."
+  },
+  {
+    "id": "ca-title22-70749-discharge-recommendations",
+    "title": "Discharge summary includes future-care recommendations",
+    "citation": "22 CCR §70749(a)(16)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "the recommendations and arrangements for future care.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Require recommendations for future care in discharge documentation.",
+    "specMapping": {
+      "element": "dischargeInstructions",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires dischargeInstructions; their clinical adequacy remains outside the checker. Parent rule appears in docs/regulations.md E16."
+  },
+  {
+    "id": "ca-title22-70749-discharge-arrangements",
+    "title": "Discharge summary includes future-care arrangements",
+    "citation": "22 CCR §70749(a)(16)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70749",
+    "quote": "arrangements for future care.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P5"
+    ],
+    "commit": "discharge",
+    "encoding": "entry",
+    "proposedRule": "Include arrangements made for future care in the discharge summary, beyond merely recommending follow-up.",
+    "specMapping": {
+      "element": "dischargeFollowUp",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires a follow-up interval; it does not establish that appointments or other care arrangements were made. Parent rule appears in docs/regulations.md E16."
+  },
+  {
+    "id": "ca-title22-70751-record-integrity",
+    "title": "Safeguard records against loss and alteration",
+    "citation": "22 CCR §70751(b)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "against loss, defacement, tampering",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Protect the medical record against loss, defacement and tampering.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Durable storage, integrity protection and audited amendments",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. A structural UI checker does not establish backend integrity."
+  },
+  {
+    "id": "ca-title22-70751-record-access",
+    "title": "Protect records from unauthorized use",
+    "citation": "22 CCR §70751(b)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "use by unauthorized persons.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Restrict medical-record use to authorized persons.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-level authorization enforced by storage and APIs",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Commit role restrictions alone do not protect all record access."
+  },
+  {
+    "id": "ca-title22-70751-retention-seven-years",
+    "title": "Preserve records at least seven years after discharge",
+    "citation": "22 CCR §70751(c)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "a minimum of seven years following discharge of the patient",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Preserve patient records, including X-ray films or reproductions, for at least seven years following discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Discharge-relative record-retention engine and storage guarantees",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is the general minimum; the unemancipated-minor floor is an additional requirement, not a substitute."
+  },
+  {
+    "id": "ca-title22-70751-minor-retention",
+    "title": "Preserve unemancipated minor records beyond majority",
+    "citation": "22 CCR §70751(c)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "at least one year after such minor has reached the age of 18 years",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "For an unemancipated minor, retain records until at least one year after age 18 and in every case at least seven years.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "unemancipated minor record",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Age/emancipation-aware retention combining both minimum periods",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Do not interpret this as permission to discard records at 19 when the seven-year minimum has not run."
+  },
+  {
+    "id": "ca-title22-70751-complete-two-weeks",
+    "title": "Complete records within two weeks after discharge",
+    "citation": "22 CCR §70751(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "within two weeks following the patient's discharge.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "alert",
+    "proposedRule": "Track record deficiencies and complete the medical record promptly, no later than two weeks following discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Cross-record deficiency tracking with discharge-relative deadlines",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The regulation requires timely completion; an alert is a proposed implementation and has no legally prescribed alert tier."
+  },
+  {
+    "id": "ca-title22-70751-authenticate-two-weeks",
+    "title": "Authenticate records within two weeks after discharge",
+    "citation": "22 CCR §70751(g)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "authenticated or signed by a licensed healthcare practitioner",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require authentication or signature by a licensed practitioner acting within scope no later than two weeks following discharge.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Record-wide practitioner authentication and discharge-relative deadline",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 has role-controlled signing commits, but no record-wide two-week completeness/authentication check. The excerpt must be read with the rest of subsection (g)."
+  },
+  {
+    "id": "ca-title22-70751-exclusive-key",
+    "title": "Require an exclusive-key statement before key authentication",
+    "citation": "22 CCR §70751(g)(1)–(2)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "has placed a signed statement in the hospital administrative offices",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Before allowing stamp or computer-key authentication, retain the practitioner signed statement that only that practitioner possesses and will use it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Practitioner credential enrollment with signed exclusive-possession/use attestation",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 signing roles do not establish this administrative prerequisite. docs/regulations.md H1 cites the exclusive-use rule."
+  },
+  {
+    "id": "ca-title22-70751-unified-record",
+    "title": "Combine inpatient outpatient and ED records",
+    "citation": "22 CCR §70751(i)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70751",
+    "quote": "with inpatient, outpatient and emergency room records combined.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "not-encodable",
+    "proposedRule": "Maintain a unit medical-record system combining inpatient, outpatient and emergency records for the patient.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient identity linkage and unified longitudinal record",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The original implementation deadline was July 1, 1976; this row describes the continuing combined-record duty."
+  },
+  {
+    "id": "ca-title22-70215-shift-assessment",
+    "title": "Document assessment findings every shift",
+    "citation": "22 CCR §70215(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "for each shift",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Ensure an RN assessment is performed and its findings documented in the medical record each shift.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Shift-scoped assessment completion and findings record",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires nursingAssessment when chartAssessment occurs, but cannot require that a commit occur each shift. docs/regulations.md E13 and R2-05 already discuss this frequency."
+  },
+  {
+    "id": "ca-title22-70215-transfer-assessment",
+    "title": "Reassess on arrival in another care area",
+    "citation": "22 CCR §70215(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "upon receipt of the patient when he/she is transferred to another patient care area.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P2",
+      "P3",
+      "P5"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Require and document an RN assessment on receipt of a patient transferred to another care area.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Care-area transfer/receipt event and assessment obligation",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This is not limited to shift changes. Transfer-triggered obligations are absent from v1. Parent rule appears in docs/regulations.md R2-05."
+  },
+  {
+    "id": "ca-title22-70215-rn-assessment",
+    "title": "A registered nurse directly performs ongoing assessment",
+    "citation": "22 CCR §70215(a)(1)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "A registered nurse shall directly provide:",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "humanOnly",
+    "proposedRule": "Restrict performance of the ongoing nursing assessment to a registered nurse.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": null,
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. chartAssessment and nursingAssessment are RN-restricted in v1, but the assessment permits defaultConfirm and is not humanOnly. The proposed no-macro/no-prefill step implements direct performance; the regulation does not prescribe keyboard entry."
+  },
+  {
+    "id": "ca-title22-70215-admission-nursing-process",
+    "title": "RN initiates nursing care at admission",
+    "citation": "22 CCR §70215(b)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "shall be initiated by a registered nurse at the time of admission.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W3",
+      "W4"
+    ],
+    "personas": [
+      "P2",
+      "P3"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Initiate the nursing process through an RN at admission.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Admission event with RN-initiated nursing-process record",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The nursing process includes assessment, diagnosis, planning, intervention, evaluation and advocacy as circumstances require. No admission-nursing-process commit exists in v1."
+  },
+  {
+    "id": "ca-title22-70215-discharge-teaching",
+    "title": "RN manages ongoing discharge teaching",
+    "citation": "22 CCR §70215(a)(3)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "including ongoing discharge teaching of each patient.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4",
+      "W6"
+    ],
+    "personas": [
+      "P3",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require RN responsibility for assessment, planning, implementation and evaluation of ongoing discharge teaching.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Nursing patient-education plan and delegated task accountability",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Specific teaching tasks may be assigned by the responsible RN. A prescriber dischargeInstructions field does not establish the nursing education process."
+  },
+  {
+    "id": "ca-title22-70215-nursing-diagnosis",
+    "title": "Permanently record nursing diagnosis",
+    "citation": "22 CCR §70215(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "Information related to the patient's initial assessment and reassessments, nursing diagnosis, plan, intervention, evaluation, and patient advocacy",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Permanently record information about the patient nursing diagnosis in the medical record.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Structured nursing-process documentation with durable record storage",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The generic nursingAssessment field does not establish the presence of this item or permanent storage. Advocacy is required as circumstances require, per subsection (b)."
+  },
+  {
+    "id": "ca-title22-70215-nursing-plan",
+    "title": "Permanently record nursing plan",
+    "citation": "22 CCR §70215(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "Information related to the patient's initial assessment and reassessments, nursing diagnosis, plan, intervention, evaluation, and patient advocacy",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Permanently record information about the patient nursing plan in the medical record.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Structured nursing-process documentation with durable record storage",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The generic nursingAssessment field does not establish the presence of this item or permanent storage. Advocacy is required as circumstances require, per subsection (b)."
+  },
+  {
+    "id": "ca-title22-70215-nursing-intervention",
+    "title": "Permanently record nursing intervention",
+    "citation": "22 CCR §70215(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "Information related to the patient's initial assessment and reassessments, nursing diagnosis, plan, intervention, evaluation, and patient advocacy",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Permanently record information about the patient nursing intervention in the medical record.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Structured nursing-process documentation with durable record storage",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The generic nursingAssessment field does not establish the presence of this item or permanent storage. Advocacy is required as circumstances require, per subsection (b)."
+  },
+  {
+    "id": "ca-title22-70215-nursing-evaluation",
+    "title": "Permanently record nursing evaluation",
+    "citation": "22 CCR §70215(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70215",
+    "quote": "Information related to the patient's initial assessment and reassessments, nursing diagnosis, plan, intervention, evaluation, and patient advocacy",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W4"
+    ],
+    "personas": [
+      "P3"
+    ],
+    "commit": "chartAssessment",
+    "encoding": "entry",
+    "proposedRule": "Permanently record information about the patient nursing evaluation in the medical record.",
+    "specMapping": {
+      "element": "nursingAssessment",
+      "info": null,
+      "when": "always",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Structured nursing-process documentation with durable record storage",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The generic nursingAssessment field does not establish the presence of this item or permanent storage. Advocacy is required as circumstances require, per subsection (b)."
+  },
+  {
+    "id": "ca-title22-70223-verify-identity",
+    "title": "Verify patient identity before surgery",
+    "citation": "22 CCR §70223(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "the patient's identity",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify patient identity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start commit and anesthesia-provider roles with emergency exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Subsection (e) preserves emergency care in dire circumstances. patientIdReentry before ordering is not this preprocedure verification. Parent requirement appears in docs/regulations.md R6."
+  },
+  {
+    "id": "ca-title22-70223-verify-site",
+    "title": "Verify operative site before surgery",
+    "citation": "22 CCR §70223(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "the site",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify operative site.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start commit and anesthesia-provider roles with emergency exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Subsection (e) preserves emergency care in dire circumstances. patientIdReentry before ordering is not this preprocedure verification. Parent requirement appears in docs/regulations.md R6."
+  },
+  {
+    "id": "ca-title22-70223-verify-side",
+    "title": "Verify operative side before surgery",
+    "citation": "22 CCR §70223(d)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "side of the body to be operated on",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify operative side.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "always",
+      "prefill": "never",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start commit and anesthesia-provider roles with emergency exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. Subsection (e) preserves emergency care in dire circumstances. patientIdReentry before ordering is not this preprocedure verification. Parent requirement appears in docs/regulations.md R6."
+  },
+  {
+    "id": "ca-title22-70223-hp-24-hours",
+    "title": "Interval H&P must be recorded within previous 24 hours",
+    "citation": "22 CCR §70223(d)(1), (e)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "An interval medical history and physical examination performed and recorded within the previous 24 hours.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Before surgery, verify a recorded interval H&P performed and recorded within the preceding 24 hours, preserving emergency care in dire circumstances.",
+    "specMapping": {
+      "element": "hpUpdate",
+      "info": null,
+      "when": "always",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start-relative performed/recorded timestamps and emergency exception",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. hpUpdate is required at signPreOpOrders but v1 does not enforce either timestamp. A receipt window is not an H&P performance window. docs/regulations.md E14 and R2-01 cover this rule."
+  },
+  {
+    "id": "ca-title22-70223-screening-72-hours",
+    "title": "Appropriate screening tests within 72 hours before surgery",
+    "citation": "22 CCR §70223(d)(2), (e)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "Appropriate screening tests, based on the needs of the patient, accomplished and recorded within 72 hours prior to surgery.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Verify patient-appropriate screening tests were accomplished and recorded within 72 hours before surgery, preserving emergency care in dire circumstances.",
+    "specMapping": {
+      "element": null,
+      "info": "labResults",
+      "when": "always",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Patient-specific screening plan with performed/recorded times relative to procedure start",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The source does not mandate every possible test for every patient or equate a recent result review with timely testing."
+  },
+  {
+    "id": "ca-title22-70223-written-surgical-consent",
+    "title": "Written informed consent must be in record before surgery",
+    "citation": "22 CCR §70223(d)(3), (e)",
+    "url": "https://www.law.cornell.edu/regulations/california/22-CCR-70223",
+    "quote": "An informed consent, in writing, for the contemplated surgical procedure.",
+    "type": "ca-regulation",
+    "binding": true,
+    "jurisdiction": "CA",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "review",
+    "proposedRule": "Before surgery, verify that written informed consent for that procedure is in the record, with the dire-emergency exception in subsection (e).",
+    "specMapping": {
+      "element": "consentVerified",
+      "info": "consentDocument",
+      "when": "always",
+      "prefill": "never",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Procedure-start gate linked to procedure-specific written consent and emergency circumstances",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 requires consentVerified at signPreOpOrders, an earlier local gate; it does not revalidate at surgery start. docs/regulations.md R6 explicitly distinguishes these times."
   }
 ]
