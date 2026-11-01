@@ -15,7 +15,8 @@ describe('certified role baselines', () => {
       searchWhenBuried: false, overrideRate: 0 }, 'authenticated-user-id');
     expect(p.owner).toBe('authenticated-user-id');
     expect(p.id).toBe('P2');
-    expect(p.screens).toHaveLength(8);
+    expect(p.screens).toHaveLength(10);
+    expect(p.screens.filter(s => s.workflow === 'chart').map(s => s.id).sort()).toEqual(['chartReview', 'chartSummary']);
     expect(p.screens.every(s => ['shell', 'chart', 'W3'].includes(s.workflow))).toBe(true);
     expect(release.specVersion).toBe(id);
     expect(await ehr.check({ specVersion: id, program: p, prev: p, canonical: release.canonical })).toBe('ok');
