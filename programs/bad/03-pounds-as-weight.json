@@ -7008,7 +7008,7 @@
      "tab": 0,
      "size": "normal",
      "label": "Shift tasks and status",
-     "kind": {"table": {"info": "shiftWorklist"}},
+     "kind": {"table": {"info": "shiftTasks"}},
      "id": "w4Handoff.remainingTasks"},
     {"visibility": "always",
      "tag": "w4Handoff.back",

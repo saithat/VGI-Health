@@ -110,6 +110,7 @@
     }
   ],
   "rendererTheoremStatementsUnchanged": 59,
-  "leanSourceHash": "ebacbbfc942c71f1dba53ae1a797b392f9d677fcd7c3e973b191979563ea235e",
-  "layoutCorrection": "The existing includeResolved group keeps its ID, kind and behavior, with parent/tab placement under Problems in Canonical.Builders.tabStrip. No clinical rule or required display changes."
+  "leanSourceHash": "e719f81196748dcfa49d927c3eb0fd88d4d8770ff9a8871f48dd70257aba7505",
+  "layoutCorrection": "The existing includeResolved group keeps its ID, kind and behavior, with parent/tab placement under Problems in Canonical.Builders.tabStrip. No clinical rule or required display changes.",
+  "handoffBindingCorrection": "The existing remainingTasks component now requests shiftTasks, retaining selected-encounter Task descriptions instead of the assigned-patient queue."
 }

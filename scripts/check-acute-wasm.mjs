@@ -94,6 +94,11 @@ try {
       const screen = pending.shift(), state = states.get(screen);
       const input = { ...base, state };
       const screenUi = equal('render-ui', input);
+      if (screen === 'w4Handoff') {
+        const tasks = walkNodes(screenUi.workspace).find(node => node.info?.infoId === 'shiftTasks')?.info;
+        assert.equal(tasks?.rows.length, 3, 'SBAR retains every selected-encounter task');
+        assert.ok(tasks.rows.every(row => row.some(([key]) => key === 'Task')), 'handoff task details cannot be replaced by census columns');
+      }
       views++;
       const scale = { w3Triage: ['triageAcuity', 'code:1|2|3|4|5', '3'],
         w4Flowsheet: ['painReassessment', 'code:0|1|2|3|4|5|6|7|8|9|10', '4'] }[screen];

@@ -720,6 +720,8 @@ The single-chart review fixtures remain patient-scoped. Main `1721e64` also supp
 
 Self-review of the later shared-list integration found the resolved-problem toggle above every clinical activity. The unchanged control now belongs to the Problems tab in Lean, preserving its actual filtering action and keeping unrelated activities clear. The rejected 1440×900 triage/MAR captures and semantic trees are retained in `acute/reviewed-rejected/resolved-toggle/`; their source implementation is `ea1a4f07`. Native/WASM checks require the control to be absent initially and available after the real Problems-tab event.
 
+The final handoff review also caught an inherited binding collision: its task panel still requested the info ID now used by assigned-patient lists. Both the census activity and SBAR now request the separate `shiftTasks` source view where task details belong. The earlier SBAR semantic tree and task-focused photograph are retained in `acute/reviewed-rejected/handoff-tasks/` (implementation `ffcd773`). A native/WASM guard requires all three supplied task descriptions in the handoff panel, independently of the patient census.
+
 The regenerated acute effort measurements are unchanged across v1/v2/v3: W3 **57 clicks / 226 keystrokes / 198.45 estimated KLM seconds**; W4 **25 / 39 / 129.95**. These are the existing certified search spaces and minimum-click path estimates, not a claim of globally minimal clinical effort. See [acute-complexity.json](acute-complexity.json).
 
 ## Canonical realism: P1 PCP and P4 pediatric NP (ambulatory)

@@ -142,7 +142,7 @@ def handoff : Screen :=
       narrative s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar"),
       narrative s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar"),
       narrative s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar"),
-      presentation "worklist" (table s "remainingTasks" "shiftWorklist" "Shift tasks and status"),
+      presentation "worklist" (table s "remainingTasks" "shiftTasks" "Shift tasks and status"),
       goto s "toWorklist" "w4Worklist" "Unit Census & MAR"
     ] }
 
