@@ -71,7 +71,9 @@ export function reviewSources(bundle: Bundle, info: string): Resource[] {
   if (!selected.length && ["allergyList", "currentMeds"].includes(info))
     return resources.filter((r) => r.resourceType === "Patient");
   if (!selected.length)
-    throw new Error(`No versioned source record for review: ${info}`);
+    throw new Error(
+      "No versioned source record is available for this review. Refresh the chart or obtain the report before retrying.",
+    );
   return selected;
 }
 

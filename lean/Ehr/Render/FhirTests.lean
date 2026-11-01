@@ -129,6 +129,28 @@ def periopFacts := factsOf context [periopPatient, periopOrder, periopConsent] p
 def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-resource-id"}"#
 #guard mrnOf patientWithoutMrn == ""
 #guard patientIdOf patientWithoutMrn == "opaque-resource-id"
+
+/-- The selected clinic is older than the ward stay, and remains the active context. -/
+def selectedClinic : Json := json r#"{"resourceType":"Encounter","id":"selected-clinic","subject":{"reference":"Patient/periop-a"},"period":{"start":"2026-10-01"},"class":{"system":"http://terminology.hl7.org/CodeSystem/v3-ActCode","code":"AMB"},"reasonCode":[{"coding":[{"code":"K40.90"}]}]}"#
+/-- A more recent encounter must remain in history without replacing selection. -/
+def newerWard : Json := json r#"{"resourceType":"Encounter","id":"newer-ward","subject":{"reference":"Patient/periop-a"},"period":{"start":"2026-10-31"},"class":{"system":"http://terminology.hl7.org/CodeSystem/v3-ActCode","code":"IMP"},"reasonCode":[{"coding":[{"code":"R10.9"}]}]}"#
+/-- Explicit source selection, without a role-derived episode kind. -/
+def clinicContext : FactsContext := { context with encounterId? := some "selected-clinic" }
+#guard (factsOf clinicContext [selectedClinic, newerWard] periopPatient).encounterKind? == some "ambulatory"
+#guard (factsOf clinicContext [selectedClinic, newerWard] periopPatient).record.lookup "visitDiagnosis" == some "K40.90"
+#guard (displayOf clinicContext [selectedClinic, newerWard] periopPatient).banner.encounterClass == "AMB"
+#guard (displayOf clinicContext [selectedClinic, newerWard] periopPatient).encounters.length == 2
+#guard (factsOf { clinicContext with encounterKind? := some "preop" }
+  [selectedClinic, newerWard] periopPatient).encounterKind? == some "preop"
+#guard encounterRecords context [selectedClinic, newerWard] periopPatient == [selectedClinic, newerWard]
+#guard (factsOf { clinicContext with encounterId? := some "missing" }
+  [selectedClinic, newerWard] periopPatient).encounterKind?.isNone
+#guard (displayOf { clinicContext with encounterId? := some "missing" }
+  [selectedClinic, newerWard] periopPatient).banner.encounterClass == ""
+#guard (factsOf clinicContext [selectedClinic.setObjVal! "subject"
+  (json r#"{"reference":"Patient/another-patient"}"#), newerWard] periopPatient).encounterKind?.isNone
+#guard (factsOf clinicContext [selectedClinic.setObjVal! "class"
+  (json r#"{"system":"unknown","code":"AMB"}"#)] periopPatient).encounterKind?.isNone
 #guard parsed.display.banner.weight?.map (fun (weight, unit, _) => (weight, unit)) == parsed.facts.weightToday?
 #guard (output emptyBundle).display.banner.weight? == none
 #guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none

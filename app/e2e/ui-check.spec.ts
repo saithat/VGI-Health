@@ -6,6 +6,10 @@ import { z } from "zod";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import { formatDisplayValue } from "../src/ehr/ui/display";
 import {
+  allergyDisplay,
+  formatMedicationDirections,
+} from "../src/ehr/ui/clinical-display";
+import {
   uiScreenSchema,
   type UiNode,
   type UiScreen,
@@ -55,7 +59,7 @@ async function visibility(page: Page) {
     // each text node once in this synchronous, static DOM pass.
     const textChecked = new WeakSet<Node>();
     const selector =
-      'header, nav, main h1, section[role="region"], [data-comp-id], [data-info-id] th, [data-info-id] td, [data-info-id] dt, [data-info-id] dd, [data-info-id] li, nav button, [role="tab"], [role="dialog"]';
+      'header, nav, main h1, section[role="region"], [data-comp-id], [data-info-id] th, [data-info-id] td, [data-info-id] dt, [data-info-id] dd, [data-info-id] li, [role="note"], nav button, [role="tab"], [role="dialog"]';
     for (const el of document.querySelectorAll(selector)) {
       if (el.closest("[inert]")) continue;
       const id =
@@ -174,23 +178,47 @@ for (const file of fixtures)
     const bannerText = normalize(
       (await page.getByRole("banner").textContent()) ?? "",
     );
-    for (const [, value] of screen.banner)
+    for (const [label, value] of screen.banner)
       if (value)
-        expect(bannerText).toContain(normalize(formatDisplayValue(value)));
-    const infos = [...screen.side, ...screen.workspace]
-      .flatMap(nodes)
-      .flatMap((node) => ("info" in node ? [node.info] : []));
+        expect(bannerText).toContain(
+          normalize(
+            /allerg/i.test(label)
+              ? allergyDisplay(value)
+              : formatDisplayValue(value),
+          ),
+        );
+    const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
+    const structuredInfos = new Set(
+      allNodes
+        .filter((node) => "presentation" in node)
+        .flatMap(nodes)
+        .flatMap((node) => ("info" in node ? [node.info] : [])),
+    );
+    const infos = allNodes.flatMap((node) =>
+      "info" in node ? [node.info] : [],
+    );
     const panels = (await page.locator("[data-info-id]").allTextContents()).map(
       normalize,
     );
     for (const [index, info] of infos.entries()) {
       expect(panels[index], `Missing rendered info ${index}`).toBeDefined();
       for (const row of info.rows)
-        for (const [, value] of row)
+        for (const [key, value] of row) {
+          const medication =
+            !structuredInfos.has(info) &&
+            info.infoId === "currentMeds" &&
+            key === "Instructions"
+              ? row.find(([name]) => name === "Medication")?.[1]
+              : undefined;
           if (value)
             expect(panels[index]).toContain(
-              normalize(formatDisplayValue(value)),
+              normalize(
+                medication
+                  ? formatMedicationDirections(medication, value)
+                  : formatDisplayValue(value),
+              ),
             );
+        }
     }
     expect(browserErrors).toEqual([]);
   });

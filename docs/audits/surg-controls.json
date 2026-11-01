@@ -651,6 +651,7 @@
     }
   ],
   "failures": [],
+  "selectedEncounterProjectionComparisons": 3,
   "poundsEntry": {
     "target": "w6Sign.weight",
     "inputUnit": "kg",

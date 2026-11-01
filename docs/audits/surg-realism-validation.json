@@ -1,11 +1,11 @@
 {
-  "validatedAt": "2026-11-01T10:58:28.898443+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; integrated semantic navigation and shared app/EHR control verification",
+  "validatedAt": "2026-11-01T12:00:07.033135+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; selected FHIR encounter context, readable live receipts and shared clinical-display integration",
   "baselineCommit": "add0d2e",
-  "mainIntegratedThrough": "924425f",
+  "mainIntegratedThrough": "062a4ef",
   "presentationIntegratedThrough": "6062379",
-  "leanSourceHash": "53ccb4e82dd53aa260a92acb5f33dbd71dc805ddaff0e7733e695d6605fbb255",
-  "binarySha256": "1b155642039204219d98823afcdb35774d25d7cce8b440f892f29e50b0f00633",
+  "leanSourceHash": "eb6f601acb0b214feaae8180363d6b9c8ce453e02cc44493f01ea562a335abc2",
+  "binarySha256": "1955cd96cc8aace086189ea53a9fa9073edf70416e87f81f097af2cc4269d3b7",
   "programs": {
     "v1": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
     "v2": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
@@ -58,7 +58,7 @@
       "persistence": true,
       "keyboardHighlightContrastAtLeast": 4.5
     },
-    "sharedVisualSearchContrastTests": 13,
+    "sharedVisualSearchContrastTests": 17,
     "sharedControlAudit": {
       "report": "docs/audits/surg-browser-controls.json",
       "working": 2704,
@@ -68,7 +68,47 @@
       "roles": 6,
       "maxConfigurationsPerRole": 48,
       "regressionPassed": true,
-      "scope": "App shell and Lean EHR; separate live-agent API attempt not included"
+      "scope": "App shell and Lean EHR; separate live-agent API attempt not included",
+      "configurationCoverage": [
+        {
+          "role": "P1",
+          "sampledConfigurations": 25,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P2",
+          "sampledConfigurations": 14,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P3",
+          "sampledConfigurations": 48,
+          "remainingCheckpointsOutsideBudget": 8
+        },
+        {
+          "role": "P4",
+          "sampledConfigurations": 23,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P5",
+          "sampledConfigurations": 40,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "RN2",
+          "sampledConfigurations": 48,
+          "remainingCheckpointsOutsideBudget": 8
+        }
+      ]
+    },
+    "liveReview": {
+      "savedProvenanceBinding": true,
+      "selectedAmbulatoryContext": true,
+      "readableConfirmation": true,
+      "unobscuredPatientBanner": true,
+      "debugToolsRequireExplicitInspect": true,
+      "normalCloseChartReturnsToWorklist": true
     }
   },
   "controls": {
@@ -94,7 +134,7 @@
   "app": {
     "build": true,
     "lint": true,
-    "tests": 209
+    "tests": 226
   },
   "agent": {
     "tests": 84,
@@ -113,265 +153,307 @@
   "screenshots": [
     {
       "file": "app/shots/realism/surg/after/home-load.png",
-      "sha256": "ecb8225f04db9c93951ee938afe91e7673a686d0793f602f8ae0c8cc4d777eff",
+      "sha256": "94822cedb8fad2628a3e90a9e8f6144bcc0a04492e3139d8036238c0ad9cc963",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/live-encounter-details.png",
+      "sha256": "22ca6e422162c5a19ff6e4c0c824cb108e8022b839977831ada702c50998f7e6",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/live-encounter-picker.png",
+      "sha256": "8180649f7547be45d0f606e7e1abe55c460941375c4f39ca158f0956fbd94947",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/live-review-save-normal.png",
+      "sha256": "da9904b510fdb65b21284e5943faa0ee2eda744f811d09689ab090c982cdc50a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/live-review-save.png",
+      "sha256": "5b63d842cb8fd06e36489a306f77ed0f108a639727942089a0709f934346fb92",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-load.png",
-      "sha256": "73ca6327115f798605403409bbc86afa806589757166d513de7f721c17411c53",
+      "sha256": "8746e322970e52b4c951e5f455ea33fc72b811d955805e2ef572c44e52e4f161",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-task.png",
-      "sha256": "a2bc5eaf492eba845e15e9e7fe90aa1ebd2d05ec2191d6d0db4829c2363b8db9",
+      "sha256": "8746e322970e52b4c951e5f455ea33fc72b811d955805e2ef572c44e52e4f161",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Exam-load.png",
-      "sha256": "807c23c2a242ca410fc1a5efcc966e3b0aa413f7b6a681b70840507c13723525",
+      "sha256": "e35a16eee3290e429f29fd7b1718834ef458d3df10bc6e16dfbb7eba1afd39fa",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Exam-task.png",
-      "sha256": "807c23c2a242ca410fc1a5efcc966e3b0aa413f7b6a681b70840507c13723525",
+      "sha256": "e35a16eee3290e429f29fd7b1718834ef458d3df10bc6e16dfbb7eba1afd39fa",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-load.png",
-      "sha256": "097b66c4eae36b021630cb44ceb08d50dbba0b4bc28f51c5b896d14eb8f284e0",
+      "sha256": "60d13cd0e9aee5b21451948a3d232e68ea24ba21aed81090184c04767ddc9624",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-task.png",
-      "sha256": "097b66c4eae36b021630cb44ceb08d50dbba0b4bc28f51c5b896d14eb8f284e0",
+      "sha256": "60d13cd0e9aee5b21451948a3d232e68ea24ba21aed81090184c04767ddc9624",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-load.png",
-      "sha256": "01f0f6e6a1b206607c474b21f1181d46a8fbeda44f38416cb7b450d1290882e3",
+      "sha256": "cce757a465ef04d354c981f6847bbc91fc94080058a966ed80ed7572cc10db64",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-task.png",
-      "sha256": "01f0f6e6a1b206607c474b21f1181d46a8fbeda44f38416cb7b450d1290882e3",
+      "sha256": "cce757a465ef04d354c981f6847bbc91fc94080058a966ed80ed7572cc10db64",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1MedRec-load.png",
-      "sha256": "e78f5047c2d404001614b15503f31c7e197d20f013d3c1054f961bf7bfa37e10",
+      "sha256": "e91de993e75f94e2160d035f3601f871114654e1853fffb750e109cf9ab07190",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1MedRec-task.png",
-      "sha256": "bbc976f6054dfa1646fcaeeddf479aea866f24f12b8e861a9ff89c2ec7614a6b",
+      "sha256": "e91d061611349a3199c4bd480f2a67b34188491994b80a4d3d3bbfc16ebf29bd",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Orders-load.png",
-      "sha256": "9ccebcdf8663d55623b2c012e115cb7fdf08acae9ae5df3dcc3ec043ea81bbbb",
+      "sha256": "aca3d421f36ca5be0500aefdfc01397db8e37b49f50390d78d71c6d7c01b6e92",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Orders-task.png",
-      "sha256": "dfb33eb272d7a241197c7dfbcb795fb67d34c6ab2785dd59bff6265aa5f0efbf",
+      "sha256": "3b8b8e47e8af92c5a84b9a71af35a0462643629aa1956e8aedf1ee446a582724",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Rooming-load.png",
-      "sha256": "64a04765003986ff344ed8e64c42110a4e3694fe534b3e5e1bb0e3ec7605047d",
+      "sha256": "183ea431a1a089e44f26afc495aef9c459600dca2519500c66b2293ab8b39e1b",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Rooming-task.png",
-      "sha256": "06aaf4842a61dd137d7c04f5357b5502f3e2b9a3baafa4171ae7fa49d5c73a44",
+      "sha256": "334a209cbe2991e565298d894a0e2b1bb76328ecdc850164854ff978988ba040",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Sign-load.png",
-      "sha256": "e1a0d5cfa495b7c26d9d62de4939efc647e04c483007f9756c596977ed0095a3",
+      "sha256": "8f4ac373725ae022de500b367dfae69370e31c713565e76276251a2d93fe5fe4",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Sign-task.png",
-      "sha256": "6bbbab3d5d49c4d8e2ecefcc906e08811f5a578b8219b42bfbf5d75252cbcdcf",
+      "sha256": "f9c45a75612c871d99637547fa844dd2e4a41f203ff2113fbcd897a1d2aa8e6b",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-load.png",
-      "sha256": "b6931d390aea8d715a4e42ad9f671b28e16f9dd251998b757571eed65d3c2320",
+      "sha256": "ea4c5dffafcf3a2ab64c9fb83c2136c53e831aec3393033b8bc586f55bc125f4",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-task.png",
-      "sha256": "b6931d390aea8d715a4e42ad9f671b28e16f9dd251998b757571eed65d3c2320",
+      "sha256": "ea4c5dffafcf3a2ab64c9fb83c2136c53e831aec3393033b8bc586f55bc125f4",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-load.png",
-      "sha256": "dbe304be0bab62548fa816a919d2aa21352de8a7626c992ad34fbe5b9696e005",
+      "sha256": "5ae01e260cb8a0aaea5eebc84be468ef474a243caa3658a5883715a323643111",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-task.png",
-      "sha256": "b02e637e76a6a06b47f0e807ee79679b244d00cda5962fe586125d4f0b0f1d21",
+      "sha256": "6d5fb4b233961c88dc80ff144004e85562a63d39fe136dc9a5e9653361766713",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-load.png",
-      "sha256": "b876cb109c136327fd823821048c15324e1dcbcff4d9c4abd6306abe1153622d",
+      "sha256": "811a5f6c840acdd61dc3d7b456ff5c37dd1b1c14e6a5c889f8ed99930d0bfc69",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-task.png",
-      "sha256": "b876cb109c136327fd823821048c15324e1dcbcff4d9c4abd6306abe1153622d",
+      "sha256": "811a5f6c840acdd61dc3d7b456ff5c37dd1b1c14e6a5c889f8ed99930d0bfc69",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consults-load.png",
-      "sha256": "405246c562af8c69c0087c8c54361bbd617fe9ccce5b53b52c52b5c4e1e1c23f",
+      "sha256": "d4f0c85a3f24a23277730be10cec53b85407280308199045063dc19e2a8aaf4e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-load.png",
-      "sha256": "f93a27137a8660af2a59b5f5532491e5189f27e72fcca2d8edd3c35d0a42f20d",
+      "sha256": "e5f2ea0f9b5ac653e9b24511419d69c104b97d66017faf03349879c0016a9008",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-task.png",
-      "sha256": "a268ee65de3c1457e8caf4aad0b4dfd7cedf44a00a43f275a91130cb7d31aae2",
+      "sha256": "2517fa6880e836506d1e0f998215673fa7c79d7638fe4881416b491f7f19b04e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-code-search.png",
-      "sha256": "2f6c764fc01e01f35911f73884d80812a8e908e76e0a73e0ba0a495ab2467dc9",
+      "sha256": "b7d53f24123bcac46c729a333bc47961d425c407b952ce061a82357949bafc77",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-code-selected.png",
-      "sha256": "1f794cb9271a319aa908ebe704f1c0f52721df43544ffe8a634eb64c413a2ab0",
+      "sha256": "ce8da2175711b715b653a2b9047c1b223a6255e12288d51fe55064ce05e7e70c",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-load.png",
-      "sha256": "5196d18e32b444e43ea3f481d4ace3e19acaeb0e483aac806e8b5aafb91bdf4c",
+      "sha256": "d59f4cb87fc7b311900c42d0c02a457f6d9c0522ba83d805f9bd0633622bdf15",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-task.png",
-      "sha256": "4b60bde0a7f01b2ae4541736c65e6a8d4c902299d264ecd30428f0950b849eb8",
+      "sha256": "8539f1b2f8851b33f7760c13080cef7c4962aa8730c40d43431991a30d5cc5a7",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-load.png",
-      "sha256": "1238bb3896c61a9eef8dd0b47526e40db6a574def71cd54ca1da21bf4fa84430",
+      "sha256": "e6bd4d95f02988a0085ad83d0e56c06d6f1b9b0167bcf8cec4dc92d73c6d3265",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-task.png",
-      "sha256": "292efc29fc1ed42bd51120079ba6979b791e8eff69be8b3718bf66c5ec0677f2",
+      "sha256": "7cc4b52fbf0fa504d26ea8c478c139ada768cc3fcf8fa58996d8a5b430a09496",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-load.png",
-      "sha256": "ae33c526045f6e667edbbaabcb4a81970b9b0adf4068874fb15ce806924129e7",
+      "sha256": "3bf7febdeb43e2a88d5c42cf3ddbb8108cfbd92b88b1fe701b4e22aa8d288c33",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-task.png",
-      "sha256": "ae33c526045f6e667edbbaabcb4a81970b9b0adf4068874fb15ce806924129e7",
+      "sha256": "3bf7febdeb43e2a88d5c42cf3ddbb8108cfbd92b88b1fe701b4e22aa8d288c33",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-load.png",
-      "sha256": "300fe4636a304db6f46e9d98569751c24e9c35499164cb0eeb889afe0f5af65e",
+      "sha256": "574e3dbf7762247c8e73549e86abccdaa8ea70cb4d34c81c23736f7a823f5417",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-task.png",
-      "sha256": "300fe4636a304db6f46e9d98569751c24e9c35499164cb0eeb889afe0f5af65e",
+      "sha256": "574e3dbf7762247c8e73549e86abccdaa8ea70cb4d34c81c23736f7a823f5417",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-load.png",
-      "sha256": "ff2d2d023957d3168c33bf6b3023581cbd356b57cdd68f7cb3432eb11fb0579b",
+      "sha256": "0a1056c3c86585a6ea86d1faa7b153171e10541dcce907fdf6b9158a8c90ceca",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-task.png",
-      "sha256": "eb93357b3d2f82feaac4686fa92f91e8a5f388b86abbe5ce5167a7e2ffa2470e",
+      "sha256": "3451b7c20ad930d90de479f38801449ad6d15a17e9783453128c3657aa55fadd",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Schedule-load.png",
-      "sha256": "291fac8ea2811f375a6f232cf85c29a1ee6956f1ae1d06572a10c5fe373620e3",
+      "sha256": "3ac21b1e5297775292f34554b1b341577eb6376a159879e301ed5dea8f8ec30c",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-load.png",
-      "sha256": "f8cbb3394b5b6e55c2e918338d70ce8d21a23d84ab4e729c03d6984223520481",
+      "sha256": "2a883e75341010952674a6f9d78a138abc04c4767479ccb5cc23adafdee525ce",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-pounds-load.png",
-      "sha256": "6454c3c524de9c34b4d0391836ae7a6fd81a152ac2d2f75bcc406b85a87fb21e",
+      "sha256": "d44336efdb3b5dd24e73925706e9d1268f8f11f80ebe239b1ed153dae5f5265b",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-pounds-task.png",
-      "sha256": "4dacecd3e8f1131c61400e3236a272af415217849655d62360ba81dc813df71d",
+      "sha256": "75b8b275d155d80a4974f07f2c515b5525b1a48b2f0acb2d5544cdb3d29443ff",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-task.png",
-      "sha256": "2dc1fae49f2428bd07014592fb0e11881875bcc68defedf84eb7b52c074ae004",
+      "sha256": "272f6a6c324692338926928f654bd47042866d215a0547a893598b4adae30064",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/before/home-load.png",
       "sha256": "f3b441e35018497dfefd471e499a3b7d79f1f6c469b1a3aca2968c746d3b3991",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/live-encounter-details.png",
+      "sha256": "c953994f94689f591db90cf8693956909b971e3935112e52173cc3ba1fe7487a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/live-encounter-picker.png",
+      "sha256": "86b34a08d30dde4c4948535b77d340b07f5b183ac2c0f3db44bcd8bde438fee4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/live-review-save.png",
+      "sha256": "88844eb01e5838504ae87097ea43c0c2870ffa87eaa37ad2ef8c979ba314099e",
       "width": 1440,
       "height": 900
     },
@@ -613,8 +695,14 @@
   "nativeWasmSurgicalProjectionComparisons": 2,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "2922e45c98cbdf096a7dc91ca715fda18af1a4de9704e61c838ee98084a3ec38"
+    "appSha256": "7000b3a741b1d1aad5cbd1df7e31c78f4cd9ca1a3b3a2d69e9ff53caf7fea2d4"
   },
   "metricsRerun": true,
-  "shellIntegratedThrough": "b820eb9"
+  "shellIntegratedThrough": "062a4ef",
+  "sourceDirtyAtValidation": true,
+  "nativeWasmSelectedEncounterComparisons": 3,
+  "screenshotBaselines": {
+    "workflowScreens": "add0d2e",
+    "liveClinicScreens": "82f7c4d"
+  }
 }

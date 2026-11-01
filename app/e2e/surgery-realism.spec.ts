@@ -51,13 +51,13 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   let current = "w6PreOp";
   for (const [target, title] of [
     ["w6Orders", "Orders"],
-    ["w6Sign", "Sign orders"],
+    ["w6Sign", "Sign Orders"],
     ["w6OpNote", "Brief Op Note"],
     ["w6PostOp", "Postprocedure Orders"],
     ["w6Rounding", "Rounding"],
     ["w6Discharge", "Discharge"],
     ["w6Consults", "Consults"],
-    ["w6Consult", "Consult note"],
+    ["w6Consult", "Consult Note"],
     ["w6ConsultClose", "Sign Consult"],
     ["w6Schedule", "OR Schedule"],
   ]) {
@@ -78,15 +78,24 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await procedure.fill("cholecystectomy");
   await control(page, "w6OpNote.opSurgeons", "enter").click();
   await expect(procedure).toHaveValue("");
+  // A stationary pointer over a moving option clears Mantine's keyboard highlight.
+  await page.mouse.move(0, 0);
   await procedure.fill("cholecystectomy");
   const procedureOption = page.getByRole("option", {
     name: "Laparoscopic cholecystectomy (47562)",
     exact: true,
   });
   await expect(procedureOption).toBeVisible();
+  // Wait for the search's first-option highlight before exercising keyboard moves.
+  await expect(procedureOption).toHaveAttribute("data-combobox-selected");
   await procedure.press("ArrowDown");
-  if ((await procedureOption.getAttribute("data-combobox-selected")) === null)
-    await procedure.press("ArrowUp");
+  await expect(
+    page.getByRole("option", {
+      name: "Use code: cholecystectomy",
+      exact: true,
+    }),
+  ).toHaveAttribute("data-combobox-selected");
+  await procedure.press("ArrowUp");
   await expect(procedureOption).toHaveAttribute("data-combobox-selected");
   const optionContrast = await procedureOption.evaluate((element) => {
     const rgb = (value: string) =>

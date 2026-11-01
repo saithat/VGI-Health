@@ -110,7 +110,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     // Home entries get separate clean logins, including the baseline.
     for (const persona of [...personas, "baseline"]) {
       await page.context().clearCookies();
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -153,7 +153,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       for (const w of sampleIndices(workButtons, 1)) {
         // Each work item starts with an unselected patient in a fresh document.
         if (w) {
-          await freshGoto("/?audit=buttons");
+          await freshGoto("/?audit=buttons&inspect=1");
           await page.getByLabel("Patient search", { exact: true }).waitFor();
           await page
             .getByLabel("Worklist date", { exact: true })
@@ -263,7 +263,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     });
     // Sample catalog links across the vendor reference, projections and run versions.
     audit.screen = "replay inspector";
-    await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+    await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
     await page.locator(".clinical-app").waitFor();
     await audit.click(
       page.getByRole("button", { name: "Inspector", exact: true }),
@@ -282,14 +282,14 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       "app",
     );
     await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
       await page.locator(".clinical-app").waitFor();
       await page
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
     });
     await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
       await page.locator(".clinical-app").waitFor();
       await page
         .getByRole("button", { name: "Inspector", exact: true })
@@ -658,7 +658,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     for (const persona of selectedPersonas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -982,10 +982,8 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           for (const link of savedLinks) {
             if (!link || checkedResources.has(link)) continue;
             const button = page
-              .getByRole("button", {
-                name: new URL(link).pathname,
-                exact: true,
-              })
+              .locator(`button[data-resource-link=${JSON.stringify(link)}]`)
+              .filter({ visible: true })
               .first();
             if (!(await button.isVisible())) continue;
             checkedResources.add(link);

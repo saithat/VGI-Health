@@ -1090,13 +1090,37 @@ def surgicalPayloads (today : String) (rs : List Json) (p : Json) : List InfoPay
 def surgicalBindings (payloads : List InfoPayload) : List ArtifactBinding :=
   payloads.map fun p => { key := p.artifactKey, artifact := p.artifact, version := p.version }
 
+/-- Keep the selected encounter for contextual fields, while retaining all
+other record types. An unknown or foreign selection never becomes another visit. -/
+def encounterRecords (ctx : FactsContext) (rs : List Json) (p : Json) : List Json :=
+  match ctx.encounterId? with
+  | none => rs
+  | some id => rs.filter fun r => resourceType r != "Encounter" ||
+      (id != "" && str r "id" == id && periopSubject p r)
+
+/-- Explicit episode scope has priority. Otherwise a selected encounter's
+standard class supplies its setting. A clinical role never implies pre-op. -/
+def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option String :=
+  match ctx.encounterKind? with
+  | some kind => some kind
+  | none =>
+    if ctx.encounterId?.isNone then none else
+    (latestEncounter (encounterRecords ctx rs p)).bind fun enc =>
+      let coding := field enc "class"
+      if str coding "system" != "http://terminology.hl7.org/CodeSystem/v3-ActCode" then none else
+      match str coding "code" with
+      | "AMB" => some "ambulatory"
+      | "EMER" => some "emergency"
+      | "IMP" | "ACUTE" | "NONAC" => some "inpatient"
+      | _ => none
+
 /-- The facts the spec needs. -/
 def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
   let allergies := rs.filter isAllergy
   let meds := rs.filter isMedRequest
   let labs := labRows rs
-  let visitDx := match latestEncounter rs with
+  let visitDx := match latestEncounter (encounterRecords ctx rs p) with
     | some e => firstCode (first e "reasonCode")
     | none => ""
   { patientId := patientIdOf p
@@ -1112,7 +1136,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     abnormalResult := labs.any (·.abnormal)
     now := ctx.now
     medToGive? := ctx.medToGive?
-    encounterKind? := ctx.encounterKind?
+    encounterKind? := encounterKindOf ctx rs p
     receipts := ctx.receipts
     infoPayloads? := some (surgicalPayloads ctx.today rs p)
     artifactBindings? := some (surgicalBindings (surgicalPayloads ctx.today rs p))
@@ -1122,7 +1146,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
   let dob := str p "birthDate"
   { asOf := ctx.today
-    banner := bannerOf ctx.today rs p
+    banner := bannerOf ctx.today (encounterRecords ctx rs p) p
     allergies := allergyRows rs
     meds := medRows rs
     vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)

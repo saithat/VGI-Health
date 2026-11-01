@@ -44,6 +44,28 @@ function route(program, target) {
   throw new Error(`Unreachable screen ${target}`);
 }
 const report = { scope: 'P5, all releases; visible initial-state semantic buttons and every alternate tab; real WASM transitions', screens: [], failures: [] };
+// Exercise the selected-encounter wire path independently of role presets.
+{
+  const patient = { resourceType: 'Patient', id: 'context-patient', name: [{ text: 'Context Example' }] };
+  const coding = code => ({ system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code });
+  const encounter = (id, start, code) => ({ resourceType: 'Encounter', id,
+    subject: { reference: 'Patient/context-patient' }, period: { start }, class: coding(code) });
+  const bundle = { resourceType: 'Bundle', entry: [patient,
+    encounter('clinic', '2026-10-01', 'AMB'), encounter('ward', '2026-10-31', 'IMP')].map(resource => ({ resource })) };
+  for (const [id, explicitKind, expectedKind, expectedClass] of [
+    ['clinic', undefined, 'ambulatory', 'AMB'], ['clinic', 'preop', 'preop', 'AMB'],
+    ['missing', undefined, null, ''],
+  ]) {
+    const context = { today: '2026-11-01', now: 0, receipts: [], record: [], encounterId: id,
+      ...(explicitKind ? { encounterKind: explicitKind } : {}) };
+    const result = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
+    assert.deepEqual(result, nativeFacts(bundle, context));
+    assert.equal(result.facts.encounterKind ?? null, expectedKind);
+    assert.equal(result.display.banner.encounterClass, expectedClass);
+    assert.equal(result.display.encounters.length, 2);
+  }
+  report.selectedEncounterProjectionComparisons = 3;
+}
 for (const release of ['v1', 'v2', 'v3']) {
   const programBytes = await readFile(new URL(`releases/${release}/personas/P5.json`, root), 'utf8');
   const program = JSON.parse(programBytes);

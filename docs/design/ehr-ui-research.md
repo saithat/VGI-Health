@@ -6,6 +6,29 @@ Research and implementation review: 2026-11-01, SURG lane. This is the shared ve
 
 ### Evidence and target layouts
 
+The live clinic now uses the selected encounter's recorded setting. The
+[FHIR R4 encounter-class value set](https://hl7.org/fhir/R4/v3/ActEncounterCode/vs.html)
+defines ambulatory, emergency and inpatient classes independently of the
+clinician's role. Lean reads a recognized class from the selected patient's
+encounter when no explicit episode kind was supplied. Explicit pre-op task
+scope keeps priority. Selecting an older clinic encounter therefore retains that
+clinic's banner and diagnosis while preserving the newer ward encounter in
+Chart Review. Missing/foreign selections stay unknown. This corrects the prior
+live-adapter assumption that every surgeon encounter was pre-op.
+
+Live save receipts previously exposed commit IDs and FHIR resource paths, and
+the encounter picker printed transport IDs. They now use the spec's readable
+labels and numbered saved-record actions, with the original bindings retained.
+The save notification sits below the banner. Normal clinical sessions show the
+readable confirmation; saved-record actions, the encounter drawer and Inspector
+require explicit `inspect=1` debug mode when opened manually. Save-error
+recovery remains available in normal sessions. The technical viewer still opens the
+actual saved record. Two P5 clinic walks record genuine allergy reviews, check
+the persisted Provenance in debug mode, and verify the selected ambulatory
+context, unobscured banner and absence of technical controls in normal mode.
+The existing return-to-worklist action remains available as `Close chart` in
+normal sessions; it does not change encounter status or discard saved records.
+
 Code entry follows the same department-preference pattern: search a readable
 term, select its code, then retain the clinical code with its description. The
 surgeon preset supplies 15 diagnosis quick picks and the three procedure codes
@@ -65,7 +88,7 @@ Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load
 
 The integrated shared shell adds the indigo signed-in role bar, blue chart strips, explicit recorded weight/date and isolation status. On desktop, the banner and navigator remain visible while the workspace scrolls; opening a section returns that workspace to its heading. This fixes the earlier task-focused screenshots where patient identity scrolled away. The only current-section marker is on the actual Lean navigation button. The final 1440×900 review covers all surgical and clinic screens below, with the pre-op banner's planned context and the consult queue's Received column explicitly checked.
 
-The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 39 before and 43 after images, including an additional pounds-weight signing view with sections expanded and two real-browser code-choice views. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
+The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 42 before and 47 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the live after walk uses the integrated selected-encounter increment. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
 
 ### Screen-by-screen visual review
 
@@ -95,6 +118,11 @@ Compared with Salem's navigator and brief-note examples, the improvement is prim
 | Clinic laboratory orders | Existing laboratory ordering and signing route retained; the same Visit navigator and chart history are available. | [Laboratory orders](../../app/shots/realism/surg/after/w1Labs-task.png) |
 | Clinic verification | Required allergy/dose verification remains in the workspace. The change is navigation/context, with no hidden review substituted. | [Verification](../../app/shots/realism/surg/after/w1Verify-task.png) |
 | Clinic order signature | The independent order signature and human identity remain. Readable sources and kg-entry guidance use the same generic painter as surgery. | [Clinic signing](../../app/shots/realism/surg/after/w1Sign-task.png) |
+
+
+| Live encounter selection | The encounter picker printed transport IDs → patient names, recorded date, class and status. Actual selected references remain bound in the adapter. | [Encounter picker](../../app/shots/realism/surg/after/live-encounter-picker.png) |
+| Live review confirmation | A save toast covered the patient banner and printed review/resource IDs → readable allergy-review confirmation below the banner. Normal sessions omit record-viewer controls. | [Normal clinic](../../app/shots/realism/surg/after/live-review-save-normal.png), [debug save](../../app/shots/realism/surg/after/live-review-save.png) |
+| Live technical encounter details | The always-visible technical drawer printed encounter/resource paths → explicit debug-only context with the patient's name and numbered saved-record actions. Opening the action still verifies the actual saved Provenance. | [Debug context](../../app/shots/realism/surg/after/live-encounter-details.png) |
 
 ### Efficiency and validation evidence
 
@@ -133,7 +161,7 @@ simulation and archived-replay gates, with 209 app tests and 84 agent tests.
 All 120 coded-field instances with supplied choices across the 72 release/screens
 bind to visible semantic fields and retain manual entry. The real-WASM browser
 walk verifies code selection, no capture during filtering, persistence, and
-keyboard-highlight contrast of at least 4.5:1. The 45-state desktop/narrow gate
+keyboard-highlight contrast of at least 4.5:1. The keyboard walk keeps the pointer outside the dropdown and waits for each declared highlight before the next key. The 45-state desktop/narrow gate
 passes again without cache reuse (99 pass, three fixture-dependent skips).
 The 82-image set includes the two additional draft code-choice views. Min-click
 and KLM measurements are regenerated and unchanged by this increment.
@@ -152,6 +180,32 @@ controls across six roles. This is bounded configuration coverage (up to 48 per
 role), supplemented by complete world-2 task replay and the 72-screen P5 probe.
 Its report and regression gate support an isolated output directory, preserving
 the shared lane's separate live-agent evidence.
+
+
+The selected-encounter increment integrates main through `062a4ef`, preserving
+structured tables, source row actions, code quick picks and multiline fields
+while adopting its display cleanup and explicit-debug Inspector. The live P5
+adapter now passes the selected encounter to Lean instead of treating a
+surgeon's clinic visit as pre-op. Native and WASM agree on both real surgical
+projections and three selected-encounter fixtures; named Lean examples also
+cover unknown/foreign references, explicit pre-op priority and unknown code
+systems. The complete encounter history stays available in Chart Review.
+The live browser checks a real persisted allergy-review Provenance and the
+normal clinic's absence of technical controls. Its readable receipt stays below
+the patient banner; closing the chart returns to the worklist through the existing
+shell action, without changing the clinical encounter status. The initial notification-offset review exposed empty toast
+containers covering controls; the final CSS targets only the bottom-right
+container, and the full live click path passes.
+
+App build/lint and 226 tests pass, along with agent typecheck/lint and 84 tests.
+The 17 clinical/search/contrast/live browser tests and all 45 semantic screen
+states pass (99 checks, three fixture-dependent skips, no cache reuse).
+The shared display test distinguishes structured source-cell formatting from
+the legacy medication-card formatting while retaining exact ARIA equality and
+checking every supplied row value. All proof/certification/simulation gates and
+archived replay pass again. Min-click/KLM measurements are regenerated and
+unchanged. The current [validation manifest](../audits/surg-realism-validation.json)
+binds the selected-encounter increment, artifact hashes and all 89 images. The refreshed shared control audit records 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; its fast regression gate passes. Coverage is bounded to 48 configurations per role, with per-role remaining checkpoints retained in the report.
 
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
@@ -509,3 +563,25 @@ Final before/after additions were captured from the actual pre-redesign `75282d1
 The final orders, ED, nursing, pediatric and surgical captures use static navigator group headings; every supplied goto stays visible. No clinical records were added to make an empty panel look populated. Per-note disclosure remains a semantic-content handoff: full readable note bodies and the existing semantic section controls are retained.
 
 The interruptive alert now also has a matched pre-redesign capture using the unchanged semantic fixture. Its old neutral modal frame becomes the explicit red blocking frame, with the same acknowledgment event and retained patient context. The final set contains 12 before and 12 after images with dimensions and hashes recorded in the verification report.
+
+### Shared painter realism polish — 1 Nov, orchestrator follow-up
+
+Source before: main `924425f`. Captures: `app/shots/realism/shell-polish/{before,after}/`, all at 1440×900. This pass changes shared display/chrome only; canonical clinical content, Lean programs, captured values and FHIR writes are unchanged.
+
+Terminology cross-check: [SNOMED International's fully specified name guide](https://docs.snomed.org/snomed-ct-specifications/snomed-ct-editorial-guide/readme/authoring/general-naming-conventions/descriptions/fully-specified-name) distinguishes an unambiguous FSN from a clinician-friendly preferred term. Our closed-list tag cleanup is a display fallback, not a terminology-service lookup or a claim to retrieve the preferred term. It removes the supplied semantic suffixes while retaining meaningful qualifiers such as `(type 1)` and `(left arm)`. [NLM's RxNorm overview](https://www.nlm.nih.gov/research/umls/rxnorm/overview.html) describes names in terms of ingredient, strength, dose form and optional brand. The formatter retains those elements and all numbers. It reformats explicit quantity/frequency grammar and re-expresses the oral wording in a tablet/capsule product name only for recognized directions; it does not infer a missing dose, choose a drug, convert units or reschedule a medication. Original row text/codes remain in accessible row labels and native tooltips. Tests also verify that a cleaned Select label emits its original code unchanged.
+
+| Screen | Before → after | Review against the existing shell research |
+| --- | --- | --- |
+| P1 Orders | Repeated semantic tags and `1, 1x per 1 d`, generic code placeholders, empty Record table → readable medication directions, context placeholders and “Search to add orders”. | Persistent clinical context and local preference/entry groups stay distinct. Denser four-column entry still has persistent labels, units and readable 12 px minimum text. |
+| P3 MAR | Empty table frames and scattered bare navigation links → short empty lines and bordered navigation action bars. | No administrations are invented for an empty source chart. The typed MAR widget remains the presentation lane's scope. Footer placement needs the semantic content request recorded in `changes-requests.md`. |
+| P2 Triage | Verbose problem labels and excess section padding → clean names, compact section framing and sentence-case fields. | Source acuity, measurements, human-only states and reviews stay intact; no clinical values are inferred in React. |
+| P4 Rooming | Repeated terminology tags and generic field prompts → cleaner clinical context and compact measurement entry beside the full growth series. | The source growth table remains complete. Narrative and numeric clinical values are not rounded or rewritten. |
+| P5 Brief Op Note | Generic selects, repeated prompts and loose spacing → contextual procedure/diagnosis selectors, concise headings and dense template fields. | Op-note content and required fields are unchanged. The sign action retains its actual blocked reason. |
+
+The floating Inspector is absent by default and available only with `inspect=1`. URL canonicalization preserves this explicit flag, along with the separate audit opt-in. Empty semantic info stays present as an exact named accessibility `note`; only the fabricated empty table/header is removed. Navigation wrappers group adjacent supplied controls without changing their order, IDs, names or events. Section captions use Title Case; field captions use sentence case while accessible control names remain bound to the original Lean labels. Ordinary free text has no repetitive “Enter value” placeholder. Scanner/identity prompts remain explicit.
+
+Initial self-review at 1440×900 led to shorter indication/PRN placeholders, consistent medication-direction formatting across list/table/summary views, and removal of the duplicate “Allergies: Allergies not on file” wording. An empty allergy list remains “Allergies not on file”; only explicit negative-allergy text can become “No Known Allergies” or “No Known Drug Allergies”. The raw source finding and status remain available.
+
+The final sig review tightened the conservative fallback: route composition is restricted to the recognized quantity/frequency grammar or the explicit interval phrases covered by tests. Unfamiliar taper, feeding-tube or other free-text directions retain their source wording and product dose form, with no added route. Explicit mg quantities remain mg quantities; they are never converted to tablet counts. This correction changes only display text, and its raw-code/event checks remain in place.
+
+Final shared-painter polish verification, source `715cff7` / main `924425f`: 206 app tests, 84 agent tests, six live mapper tests, 37 desktop and 21 narrow checks pass. Lint/typecheck/build, direct canonical ARIA equality, rendered contrast, focus and reflow checks are green. The full bounded audit records 2,666 working interactions, 114 explained disabled states, zero dead controls and zero errors. Native build/kernel/Comparator/D1–D6, fresh WASM, 15/15 certifications, 18/18 core rejections, 1,284/1,284 world-2 tasks and the zero-mismatch frozen replay remain green. All 21 effort measurements are unchanged. `docs/audits/shell-polish-verification.json` binds the exact build and five requested before/after pairs; the broader gallery is in `app/shots/realism/shell/polish-latest/`. The footer-placement request remains with the workflow content lanes; shared rendering preserves source order and every control.

@@ -2305,6 +2305,10 @@ export interface FactsContext {
    */
   encounterKind?: string;
   /**
+   * The selected FHIR Encounter. Its identity stays in transport metadata.
+   */
+  encounterId?: string;
+  /**
    * Extra named record values, added after the ones derived from the bundle.
    */
   record: [string, string][];

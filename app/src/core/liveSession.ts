@@ -59,13 +59,12 @@ export function factsContext(
     now: date.getUTCHours() * 60 + date.getUTCMinutes(),
     receipts,
     record,
+    ...(context?.encounter.id ? { encounterId: context.encounter.id } : {}),
     ...(user.persona === "P2"
       ? { encounterKind: "emergency" }
       : user.persona === "P3" || user.persona === "RN2"
         ? { encounterKind: "inpatient" }
-        : user.persona === "P5"
-          ? { encounterKind: "preop" }
-          : {}),
+        : {}),
   };
 }
 export function projectLive(
@@ -150,6 +149,16 @@ export async function createLiveSession(
   const elements = z
     .object({ elements: z.array(elementSchema) })
     .parse(spec).elements;
+  const labels = z
+    .object({
+      commits: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+      infos: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+    })
+    .parse(spec);
   const screens = z
     .object({
       screens: z.array(
@@ -281,7 +290,15 @@ export async function createLiveSession(
             message: `Saved. Facts refresh failed: ${error instanceof Error ? error.message : String(error)}. Reopen the chart.`,
           };
         }
-        return { links: result.links, message: `${commitId} saved to Medplum` };
+        const label = receipt
+          ? (labels.infos.find((info) => info.id === receipt.info)?.label ??
+            "Chart")
+          : (labels.commits.find((commit) => commit.id === commitId)?.label ??
+            "Changes");
+        return {
+          links: result.links,
+          message: receipt ? `${label} review recorded` : `Saved: ${label}`,
+        };
       } finally {
         pending = false;
       }

@@ -54,7 +54,7 @@ const nameOf = (patient: Patient) =>
   [...(patient.name?.[0]?.given ?? []), patient.name?.[0]?.family]
     .filter(Boolean)
     .join(" ") ||
-  patient.id;
+  "Name not recorded";
 const patientReference = (resource: Resource) => {
   if (resource.resourceType === "Appointment")
     return resource.participant.find((p) =>
@@ -239,6 +239,8 @@ function Chart({
   const [resourceOpen, setResourceOpen] = useState(false);
   const [savedResource, setSavedResource] = useState<Resource>();
   const [resourceError, setResourceError] = useState("");
+  const inspect =
+    new URLSearchParams(window.location.search).get("inspect") === "1";
   function viewResource(link: string) {
     setResourceOpen(true);
     setSavedResource(undefined);
@@ -271,24 +273,26 @@ function Chart({
                   if (result) {
                     setLinks(result.links);
                     notifications.show({
-                      title: "Medplum",
+                      title: "Chart updated",
                       message: (
                         <>
                           {result.message}
-                          <ul>
-                            {result.links.map((link) => (
-                              <li key={link}>
-                                <Button
-                                  size="compact-xs"
-                                  variant="subtle"
-                                  data-resource-link={link}
-                                  onClick={() => viewResource(link)}
-                                >
-                                  {new URL(link).pathname}
-                                </Button>
-                              </li>
-                            ))}
-                          </ul>
+                          {inspect && (
+                            <ul>
+                              {result.links.map((link, index) => (
+                                <li key={link}>
+                                  <Button
+                                    size="compact-xs"
+                                    variant="subtle"
+                                    data-resource-link={link}
+                                    onClick={() => viewResource(link)}
+                                  >
+                                    View saved record {index + 1}
+                                  </Button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </>
                       ),
                       color: "green",
@@ -312,9 +316,9 @@ function Chart({
           size="xs"
           loading={pending}
           title={pending ? "Saving encounter changes" : undefined}
-          onClick={() => setPanel(true)}
+          onClick={inspect ? () => setPanel(true) : onClose}
         >
-          Live encounter
+          {inspect ? "Live encounter" : "Close chart"}
         </Button>
       </div>
       <Drawer
@@ -326,7 +330,10 @@ function Chart({
         closeButtonProps={{ "aria-label": "Close live encounter" }}
       >
         <Stack>
-          <Text>Encounter/{session.getContext().encounter.id}</Text>
+          <Text>
+            {ui?.banner.find(([label]) => label === "Patient")?.[1] ||
+              "Patient chart"}
+          </Text>
           {error && (
             <Alert role="alert" color="red">
               {error}
@@ -336,11 +343,11 @@ function Chart({
               </p>
             </Alert>
           )}
-          {links.length > 0 && (
+          {inspect && links.length > 0 && (
             <div role="status">
               <p>Saved resources</p>
               <ul>
-                {links.map((link) => (
+                {links.map((link, index) => (
                   <li key={link}>
                     <Button
                       size="compact-xs"
@@ -348,7 +355,7 @@ function Chart({
                       data-resource-link={link}
                       onClick={() => viewResource(link)}
                     >
-                      {new URL(link).pathname}
+                      View saved record {index + 1}
                     </Button>
                   </li>
                 ))}
@@ -358,7 +365,7 @@ function Chart({
           <Button variant="default" onClick={onClose}>
             Back to worklist / refresh chart
           </Button>
-          <a href="/dashboard">Demo / replay dashboard</a>
+          {inspect && <a href="/dashboard">Demo / replay dashboard</a>}
         </Stack>
       </Drawer>
       <Modal
@@ -453,9 +460,7 @@ function SelectEncounter({
   return (
     <Paper p="lg" withBorder mt="lg">
       <Title order={2}>{nameOf(patient)}</Title>
-      <Text>
-        DOB {patient.birthDate ?? "not recorded"} · Patient/{patient.id}
-      </Text>
+      <Text>DOB {patient.birthDate ?? "not recorded"}</Text>
       <Stack mt="md">
         <label>
           Encounter{" "}
@@ -466,8 +471,7 @@ function SelectEncounter({
           >
             {encounters.map((e) => (
               <option key={e.id} value={e.id}>
-                {e.period?.start?.slice(0, 16)} · {e.class.code} · {e.status} ·{" "}
-                {e.id}
+                {e.period?.start?.slice(0, 16)} · {e.class.code} · {e.status}
               </option>
             ))}
           </select>
@@ -483,7 +487,9 @@ function SelectEncounter({
               .filter((t) => t.status !== "completed")
               .map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.description ?? t.code?.text ?? t.id}
+                  {t.description ??
+                    t.code?.text ??
+                    "Request details not recorded"}
                 </option>
               ))}
           </select>
@@ -501,7 +507,7 @@ function SelectEncounter({
                 <option key={m.id} value={m.id}>
                   {m.medicationCodeableConcept?.text ??
                     m.medicationCodeableConcept?.coding?.[0]?.display ??
-                    m.id}{" "}
+                    "Medication name not recorded"}{" "}
                   · {m.dosageInstruction?.[0]?.text}
                 </option>
               ))}
@@ -517,7 +523,7 @@ function SelectEncounter({
               <option value="">Select a bed for admit</option>
               {beds.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {b.name ?? b.id}
+                  {b.name ?? "Bed name not recorded"}
                 </option>
               ))}
             </select>

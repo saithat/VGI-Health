@@ -82,6 +82,26 @@ Lean observers and DOM controls. The surgical audit also compares both actual
 case/consult FHIR projections between native Lean and WASM before exercising
 buttons and fields. These are verification changes, without clinical behavior.
 
+`FactsContext.encounterId` optionally identifies the selected FHIR Encounter.
+Lean uses only that patient's matching encounter for banner context and the
+encounter-diagnosis prefill; the complete encounter history remains available.
+Unknown or foreign selections do not fall back to a different visit. Explicit
+`encounterKind` retains priority, including simulated pre-op requirements.
+Otherwise a recognized HL7 encounter class supplies the setting. The live
+adapter passes its selected reference and no longer infers pre-op from P5's role.
+No guard, permission or specification is changed.
+
+Live receipts use the existing Lean spec's human labels. Saved-record buttons
+retain their transport references in data attributes; their visible text and the
+encounter picker omit internal IDs/paths. Notifications sit below the patient
+banner. Normal sessions show readable save confirmation; the encounter drawer,
+saved-record actions and Inspector require explicit `inspect=1` debug mode. The
+technical viewer retains the original saved resource for audit. Actual P5
+allergy-review walks verify the persisted Provenance binding in debug mode and
+absence of technical controls in normal mode, with 1440×900 captures. The
+existing return-to-worklist action remains available as `Close chart` in normal
+sessions; only the technical drawer and saved-record tools require debug mode.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed
@@ -2150,3 +2170,21 @@ an open protected-core prerequisite.
 Resolved by the check lane: the generated-type boundary now accepts and preserves
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.
+
+## SHELL-POLISH-2026-11-01: semantic placement of workspace navigation
+
+To amb/acute/surg content lanes: shared rendering now presents ordinary goto/Back
+controls as bordered buttons and groups adjacent navigation controls into a compact
+action bar, preserving their exact component IDs, DOM order, accessible names and
+events. Current source programs place Back / Patient workspace between clinical
+panels and chart tabs (for example `w4Mar`). Please move those existing controls
+into a semantic footer group after the workspace content, or retain them in a
+properly tagged navigator. Do not delete them or move required review content off
+commit screens. The painter will not reorder the semantic tree to simulate a footer.
+
+To presentation/content: empty info nodes now retain an explicit named `note`
+landmark with one short message rather than a fabricated empty Record table.
+`orderCatalog` with zero rows says “Search to add orders”; an empty allergy list
+says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
+wording is normalized only when supplied. Source codes/text remain in accessible
+row labels and native tooltips; no FHIR resource or captured value is rewritten.

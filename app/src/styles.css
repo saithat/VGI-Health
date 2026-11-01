@@ -193,3 +193,7 @@ body {
 .worklist-table tbody tr:nth-child(even) {
   background: var(--clinical-hover);
 }
+/* Keep save feedback clear of the patient banner and fixed chart controls. */
+.clinical-notifications[data-position="bottom-right"] {
+  bottom: 56px;
+}

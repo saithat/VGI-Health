@@ -16,7 +16,7 @@
 }
 .clinical-shell {
   display: grid;
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: 200px minmax(0, 1fr);
   align-items: start;
 }
 .clinical-app .clinical-banner {
@@ -30,8 +30,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  min-height: 40px;
+  padding: 6px 10px;
+  min-height: 36px;
   font-size: 12px;
   line-height: 16px;
   color: white;
@@ -64,8 +64,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 12px;
-  padding: 8px 12px;
-  min-height: 72px;
+  padding: 6px 10px;
+  min-height: 68px;
 }
 .patient-avatar {
   display: grid;
@@ -239,7 +239,7 @@
 .clinical-app main {
   min-width: 0;
   min-height: auto;
-  padding: 12px;
+  padding: 10px;
 }
 .clinical-workspace-heading {
   display: flex;
@@ -247,42 +247,42 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 .clinical-workspace-heading h1 {
   margin: 0;
   color: var(--clinical-ink);
-  font-size: 18px;
+  font-size: 17px;
   line-height: 24px;
   font-weight: 600;
 }
 .clinical-workspace {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   align-items: start;
 }
 .clinical-workspace.with-side {
-  grid-template-columns: 224px minmax(0, 1fr);
+  grid-template-columns: 208px minmax(0, 1fr);
 }
 .clinical-side {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 12px;
+  gap: 10px;
+  padding: 8px;
   background: var(--clinical-sidebar);
   border: 1px solid var(--clinical-border);
   border-radius: 4px;
 }
 .clinical-side > .clinical-info + .clinical-info {
-  padding-top: 12px;
+  padding-top: 8px;
   border-top: 1px solid var(--clinical-border);
 }
 .clinical-workspace-body {
   min-width: 0;
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
   align-items: start;
 }
 .clinical-workspace-body > * {
@@ -313,8 +313,8 @@
   color: #205c54;
 }
 .clinical-section-title {
-  padding: 4px 12px;
-  min-height: 30px;
+  padding: 4px 8px;
+  min-height: 28px;
   border-bottom: 1px solid var(--clinical-border);
   background: var(--clinical-section);
   border-left: 4px solid var(--clinical-primary);
@@ -322,12 +322,13 @@
 .clinical-section-title h2 {
   margin: 0;
   color: var(--clinical-ink);
-  font-size: 14px;
+  font-size: 13px;
   line-height: 20px;
   font-weight: 600;
 }
 .clinical-section-body {
-  padding: 12px;
+  padding: 8px;
+  gap: 8px;
   display: flex;
   flex-flow: row wrap;
   align-items: flex-start;
@@ -337,7 +338,7 @@
   flex: 1 1 100%;
 }
 .clinical-section-body > .clinical-field {
-  flex: 1 1 224px;
+  flex: 1 1 208px;
 }
 .clinical-section-body > .field-narrative {
   flex-basis: 100%;
@@ -403,8 +404,8 @@
 
 .clinical-control .mantine-Input-input {
   height: 32px;
-  min-height: 32px;
-  font-size: 13px;
+  min-height: 30px;
+  font-size: 12px;
   line-height: 18px;
   border-color: var(--clinical-control);
   color: var(--clinical-ink);
@@ -489,7 +490,7 @@
 }
 .clinical-table-scroll th {
   height: 30px;
-  padding: 6px;
+  padding: 4px 6px;
   color: var(--clinical-ink);
   background: var(--clinical-banner);
   font-size: 12px;
@@ -498,7 +499,7 @@
 }
 .clinical-table-scroll td {
   height: 28px;
-  padding: 6px;
+  padding: 4px 6px;
   vertical-align: top;
 }
 .clinical-table-scroll tr {
@@ -521,14 +522,14 @@
   line-height: 16px;
 }
 .clinical-info-list li {
-  padding: 6px 0;
+  padding: 4px 0;
   border-bottom: 1px solid var(--clinical-border);
 }
 .clinical-info-list li > span + span::before {
   content: " · ";
 }
 .record-primary {
-  font-weight: 600;
+  font-weight: 400;
 }
 .record-secondary,
 .record-label {
@@ -626,10 +627,29 @@
 }
 .clinical-action button {
   height: auto;
-  min-height: 32px;
-  padding: 6px 12px;
-  font-size: 13px;
+  min-height: 30px;
+  padding: 4px 10px;
+  font-size: 12px;
   line-height: 18px;
+}
+.clinical-navigation-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 8px;
+  border-block: 1px solid var(--clinical-border);
+  background: var(--clinical-section);
+}
+.clinical-navigation-action button {
+  border: 1px solid var(--clinical-control);
+  color: var(--clinical-primary);
+  background: var(--clinical-surface);
+}
+.clinical-empty {
+  margin: 0;
+  padding: 4px 0;
+  line-height: 16px;
 }
 .clinical-action .mantine-Button-label {
   white-space: normal;

@@ -5,6 +5,7 @@ import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
+import { allergyDisplay, sectionCaption } from "./clinical-display";
 import { clinicalCssVariables } from "./theme";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
@@ -108,18 +109,25 @@ export function PatientBanner({
                 <Badge
                   key={label}
                   color={
-                    !value.trim() ||
-                    /not recorded|no allergy records|not reviewed/i.test(value)
+                    allergyDisplay(value) === "Allergies not on file"
                       ? "yellow"
-                      : /no known|nkda/i.test(value)
+                      : /^No Known (?:Drug )?Allergies(?: \([^()]+\))?$/.test(
+                            allergyDisplay(value),
+                          )
                         ? "gray"
                         : "red"
                   }
                   variant="light"
                   className="allergy-badge"
                   size="lg"
+                  title={value}
+                  aria-label={`${label}: ${value}`}
                 >
-                  {label}: <DisplayValue value={value || "Not recorded"} />
+                  {/^(?:Allergies not on file|No Known (?:Drug )?Allergies)/.test(
+                    allergyDisplay(value),
+                  )
+                    ? allergyDisplay(value)
+                    : `${label}: ${allergyDisplay(value)}`}
                 </Badge>
               ) : (
                 <span
@@ -184,7 +192,7 @@ export function WorkflowNav({
                         : "user"
                 }
               />
-              {group}
+              {sectionCaption(group)}
             </h2>
             <ul className="workflow-links" aria-label={`${group} screens`}>
               {items.map(([id, label]) => (
@@ -194,10 +202,11 @@ export function WorkflowNav({
                     aria-current={id === active ? "page" : undefined}
                     data-comp-id={id}
                     data-event="click"
+                    aria-label={label}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
                     <span aria-hidden="true" className="nav-dot" />
-                    {label}
+                    {sectionCaption(label)}
                   </button>
                 </li>
               ))}
@@ -274,7 +283,9 @@ function StockUiScreenView({
               <Text size="xs" c="dimmed" mb={3}>
                 PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER
               </Text>
-              <Title order={1}>{screen.title}</Title>
+              <Title order={1} title={screen.title}>
+                {sectionCaption(screen.title)}
+              </Title>
             </div>
           </div>
           <div
