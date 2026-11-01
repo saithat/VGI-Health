@@ -184,10 +184,12 @@ lake comparator  # the repository's 18 trusted core statements
 # One Lake process at a time.
 cd ..
 python3 lean/Ehr/Sim/verify_proofs.py  # explicit single/joint T9 Comparator contracts
-python3 lean/Ehr/Sim/cli_smoke.py --days 10 --report /tmp/sim-validation.json
+python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 5 --report /tmp/sim-validation.json
 ```
 
-The CLI harness checks deterministic replay, all eight floor inequalities for
+The CLI harness defaults to one native worker; `--jobs N` runs independent
+day/persona subprocesses in parallel and collects the report in stable order.
+It never runs Lake workers. It checks deterministic replay, all eight floor inequalities for
 every completed task, and exact interruption retention. It records all incomplete
 tasks; `--require-complete` additionally fails on those scenarios. This distinction
 matters when a schedule requests work absent from its chosen spec/program.
