@@ -622,6 +622,26 @@
         }
       }
     },
+    "lean/Ehr/Check/bad/35-dose-without-drug.json": {
+      "status": "rejected",
+      "sha256": "3da5d84494934474360258f038e4dc44435ea7bf382b52acaf1ee8d92df0565f",
+      "output": {
+        "violation": {
+          "screens": [
+            "clinical"
+          ],
+          "property": "completable",
+          "message": "commit recordReview: dose field assessmentField needs a reachable formulary drug selection on the same order slot (Ehr.Slot.fixed 0)",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "recordButton"
+              }
+            }
+          ]
+        }
+      }
+    },
     "releases/v1/canonical.json": {
       "status": "reference",
       "sha256": "d0af7fb835b46b2b95fed4e6196db325307e4e2211007d86ec577a5be2821c56",

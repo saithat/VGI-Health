@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "a03e2d41ac463b14fb24b4041a06e1b8fe47cb7b",
+  "sourceRevision": "e0324af80411d0deb55a9b75c9c224746113a35a",
   "sourceDirty": true,
-  "binarySha256": "6175b77598452cb2810ddd231afa2ea7d977707d8366dd5023489d137f2524ac",
+  "binarySha256": "a0dbbb20befe842f928357890bbe6ac0e897c34751d8ddf9fb6c1b0b94c3d901",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 17,
-  "badCount": 17,
+  "badRejected": 18,
+  "badCount": 18,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -1105,6 +1105,47 @@
           {
             "blocked": {
               "reason": "macro stopped at step 1: human only: commit"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/35-dose-without-drug.json",
+      "group": "bad",
+      "spec": "lean/Ehr/Check/bad/dose-only-spec.json",
+      "programSha256": "3da5d84494934474360258f038e4dc44435ea7bf382b52acaf1ee8d92df0565f",
+      "specSha256": "e0ab0a514b09ef3540dc4c99f5b64adfd51fe29c5effea1c19578b283ff6aa61",
+      "canonicalSha256": "3da5d84494934474360258f038e4dc44435ea7bf382b52acaf1ee8d92df0565f",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "clinical"
+          ],
+          "property": "completable",
+          "message": "commit recordReview: dose field assessmentField needs a reachable formulary drug selection on the same order slot (Ehr.Slot.fixed 0)",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "recordButton"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          {
+            "blocked": {
+              "reason": "entry required: assessment"
             }
           }
         ],

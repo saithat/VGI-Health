@@ -213,12 +213,10 @@ theorem prefill_macro_human_completion :
       orderLines filled = [(0, "amoxicillin"), (1, "warfarin")] ∧
       filled.captured.all (fun x => !x.confirmed) = true ∧ "recordReview" ∈ finished.commits := by decide
 
-/-- The current checker has an accepted, non-completable program: the
-unrestricted completion implication needs a checker repair before proof. -/
-theorem completion_acceptance_counterexample :
-    ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p :=
-  ⟨DoseCompletionObstruction.spec, DoseCompletionObstruction.program,
-    DoseCompletionObstruction.accepted, DoseCompletionObstruction.not_completable⟩
+/-- The former accepted counterexample is now rejected for its missing drug dependency. -/
+theorem completion_dependency_rejected :
+    check DoseCompletionObstruction.spec none DoseCompletionObstruction.program
+      DoseCompletionObstruction.program ≠ .ok := DoseCompletionObstruction.rejected
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where
