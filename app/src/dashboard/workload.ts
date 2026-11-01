@@ -1,212 +1,34 @@
-import type { RunData } from "./data";
-
-export type Effort = { clicks: number; keystrokes: number; klmSeconds: number };
-export interface WorkloadIteration {
-  version: number;
-  days: number[];
-  tasks: number;
-  completed: number;
-  unclassified: number;
-  workflows: {
-    workflow: string;
-    tasks: number;
-    completed: number;
-    mean: Effort;
-  }[];
-  total: Effort | null;
-  noAgent?: Effort | null;
-  agentSavings?: Effort | null;
-  canonical?: Effort | null;
-  savings?: Effort | null;
+import type {RunData} from './data';
+import type {DayResult} from '../../../agent/src/schema';
+export type Effort={clicks:number;keystrokes:number;scrolls:number;scrollPx:number|null;mouseTravelPx:number|null};
+const keys=['clicks','keystrokes','scrolls','scrollPx','mouseTravelPx'] as const;
+const empty=():Effort=>({clicks:0,keystrokes:0,scrolls:0,scrollPx:0,mouseTravelPx:0});
+function add(a:Effort,b:Effort){for(const key of keys){const x=a[key],y=b[key];if(key==='scrollPx'||key==='mouseTravelPx')a[key]=typeof x==='number'&&typeof y==='number'?x+y:null;else a[key]=(x??0)+(y??0);}return a;}
+function cost(t:DayResult['tasks'][number]):Effort{return {clicks:t.clicks,keystrokes:t.keystrokes,scrolls:t.scrolls,scrollPx:t.scrollPx??null,mouseTravelPx:t.mouseTravelPx??null};}
+function divide(a:Effort,n:number):Effort{return {clicks:a.clicks/n,keystrokes:a.keystrokes/n,scrolls:a.scrolls/n,scrollPx:a.scrollPx===null?null:a.scrollPx/n,mouseTravelPx:a.mouseTravelPx===null?null:a.mouseTravelPx/n};}
+function difference(a:Effort,b:Effort):Effort{return {clicks:a.clicks-b.clicks,keystrokes:a.keystrokes-b.keystrokes,scrolls:a.scrolls-b.scrolls,scrollPx:a.scrollPx===null||b.scrollPx===null?null:a.scrollPx-b.scrollPx,mouseTravelPx:a.mouseTravelPx===null||b.mouseTravelPx===null?null:a.mouseTravelPx-b.mouseTravelPx};}
+export interface WorkloadIteration {version:number;days:number[];tasks:number;completed:number;unclassified:number;workflows:{workflow:string;tasks:number;completed:number;mean:Effort}[];total:Effort|null;canonical?:Effort|null;savings?:Effort|null;noAgent?:Effort|null;agentSavings?:Effort|null}
+export function workloadAt(run:RunData,persona:string,version:number):WorkloadIteration{
+ const days=run.days.filter(d=>d.persona===persona&&d.programVersion===version&&(!run.manifest.measurementProtocol||d.day%2===0));
+ const groups=new Map<string,{tasks:number;completed:number;measured:number;actual:Effort;canonical:Effort;canonicalN:number;control:Effort;controlActual:Effort;controlN:number}>();let unclassified=0;
+ for(const day of days)for(const task of day.tasks){
+  const workflow=/(?:^|-)(W[1-7])(?:-|$)/.exec(task.task)?.[1];if(!workflow){unclassified++;continue;}
+  const g=groups.get(workflow)??{tasks:0,completed:0,measured:0,actual:empty(),canonical:empty(),canonicalN:0,control:empty(),controlActual:empty(),controlN:0};groups.set(workflow,g);g.tasks++;g.completed+=Number(task.completed);
+  if(!task.completed)continue;
+  const canonical=run.baselines?.find(d=>d.persona===persona&&d.day===day.day)?.tasks.find(t=>t.task===task.task);
+  if(!run.manifest.measurementProtocol||canonical?.completed){add(g.actual,cost(task));g.measured++;if(canonical?.completed){add(g.canonical,cost(canonical));g.canonicalN++;}}
+  const control=run.noAgentDays?.find(d=>d.persona===persona&&d.day===day.day)?.tasks.find(t=>t.task===task.task);
+  if(control?.completed){add(g.control,cost(control));add(g.controlActual,cost(task));g.controlN++;}
+ }
+ const workflows=[...groups].sort(([a],[b])=>a.localeCompare(b)).map(([workflow,g])=>({workflow,tasks:g.tasks,completed:g.completed,mean:divide(g.actual,Math.max(1,g.measured))}));
+ const total=workflows.length?workflows.reduce((a,w)=>add(a,w.mean),empty()):null;
+ const canonicalGroups=[...groups.values()].filter(g=>g.canonicalN),controlGroups=[...groups.values()].filter(g=>g.controlN);
+ const canonical=canonicalGroups.length?canonicalGroups.reduce((a,g)=>add(a,divide(g.canonical,g.canonicalN)),empty()):null;
+ const noAgent=controlGroups.length?controlGroups.reduce((a,g)=>add(a,divide(g.control,g.controlN)),empty()):null;
+ const controlActual=controlGroups.reduce((a,g)=>add(a,divide(g.controlActual,g.controlN)),empty());
+ return {version,days:days.map(d=>d.day),tasks:workflows.reduce((n,w)=>n+w.tasks,0),completed:workflows.reduce((n,w)=>n+w.completed,0),unclassified,workflows,total,canonical,savings:canonical&&total?difference(canonical,total):null,noAgent,agentSavings:noAgent?difference(noAgent,controlActual):null};
 }
-
-/** Pool recorded tasks within a workflow, then sum workflow means (one task per workflow).
- * Never sum daily volumes, invent missing versions, or substitute predicted savings.
- */
-export function workloadAt(
-  run: RunData,
-  persona: string,
-  version: number,
-): WorkloadIteration {
-  const days = run.days.filter(
-    (d) =>
-      d.persona === persona &&
-      d.programVersion === version &&
-      (!run.manifest.measurementProtocol || d.day % 2 === 0),
-  );
-  const groups = new Map<
-    string,
-    {
-      clicks: number;
-      keystrokes: number;
-      klmSeconds: number;
-      tasks: number;
-      completed: number;
-    }
-  >();
-  let unclassified = 0;
-  const canonicalGroups = new Map<
-    string,
-    { clicks: number; keystrokes: number; klmSeconds: number; n: number }
-  >();
-  for (const day of days)
-    for (const task of day.tasks) {
-      const workflow = /(?:^|-)(W[1-7])(?:-|$)/.exec(task.task)?.[1];
-      if (!workflow) {
-        unclassified++;
-        continue;
-      }
-      const sum = groups.get(workflow) ?? {
-        clicks: 0,
-        keystrokes: 0,
-        klmSeconds: 0,
-        tasks: 0,
-        completed: 0,
-      };
-      sum.tasks++;
-      sum.completed += Number(task.completed);
-      const baseline = run.baselines
-        ?.find((b) => b.persona === persona && b.day === day.day)
-        ?.tasks.find((b) => b.task === task.task);
-      if (
-        !task.completed ||
-        (run.manifest.measurementProtocol && !baseline?.completed)
-      ) {
-        groups.set(workflow, sum);
-        continue;
-      }
-      if (baseline) {
-        const b = canonicalGroups.get(workflow) ?? {
-          clicks: 0,
-          keystrokes: 0,
-          klmSeconds: 0,
-          n: 0,
-        };
-        b.clicks += baseline.clicks;
-        b.keystrokes += baseline.keystrokes;
-        b.klmSeconds += baseline.klmDeciSec / 10;
-        b.n++;
-        canonicalGroups.set(workflow, b);
-      }
-      sum.clicks += task.clicks;
-      sum.keystrokes += task.keystrokes;
-      sum.klmSeconds += task.klmDeciSec / 10;
-      groups.set(workflow, sum);
-    }
-  const workflows = [...groups]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([workflow, sum]) => ({
-      workflow,
-      tasks: sum.tasks,
-      completed: sum.completed,
-      mean: {
-        clicks:
-          sum.clicks /
-          Math.max(1, canonicalGroups.get(workflow)?.n ?? sum.completed),
-        keystrokes:
-          sum.keystrokes /
-          Math.max(1, canonicalGroups.get(workflow)?.n ?? sum.completed),
-        klmSeconds:
-          sum.klmSeconds /
-          Math.max(1, canonicalGroups.get(workflow)?.n ?? sum.completed),
-      },
-    }));
-  const canonical = canonicalGroups.size
-    ? [...canonicalGroups.values()].reduce(
-        (a, b) => ({
-          clicks: a.clicks + b.clicks / b.n,
-          keystrokes: a.keystrokes + b.keystrokes / b.n,
-          klmSeconds: a.klmSeconds + b.klmSeconds / b.n,
-        }),
-        { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-      )
-    : null;
-  const actual = workflows.reduce(
-    (a, w) => ({
-      clicks: a.clicks + w.mean.clicks,
-      keystrokes: a.keystrokes + w.mean.keystrokes,
-      klmSeconds: a.klmSeconds + w.mean.klmSeconds,
-    }),
-    { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-  );
-  const controlGroups = new Map<
-    string,
-    { before: Effort; after: Effort; n: number }
-  >();
-  for (const day of days)
-    for (const task of day.tasks) {
-      const control = run.noAgentDays
-        ?.find((d) => d.day === day.day && d.persona === persona)
-        ?.tasks.find((t) => t.task === task.task);
-      const workflow = /(?:^|-)(W[1-7])(?:-|$)/.exec(task.task)?.[1];
-      if (!workflow || !task.completed || !control?.completed) continue;
-      const g = controlGroups.get(workflow) ?? {
-        before: { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-        after: { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-        n: 0,
-      };
-      for (const key of ["clicks", "keystrokes"] as const) {
-        g.before[key] += control[key];
-        g.after[key] += task[key];
-      }
-      g.before.klmSeconds += control.klmDeciSec / 10;
-      g.after.klmSeconds += task.klmDeciSec / 10;
-      g.n++;
-      controlGroups.set(workflow, g);
-    }
-  const noAgent: Effort = { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-    agentSavings: Effort = { clicks: 0, keystrokes: 0, klmSeconds: 0 };
-  for (const g of controlGroups.values())
-    for (const key of ["clicks", "keystrokes", "klmSeconds"] as const) {
-      noAgent[key] += g.before[key] / g.n;
-      agentSavings[key] += (g.before[key] - g.after[key]) / g.n;
-    }
-  return {
-    noAgent: controlGroups.size ? noAgent : null,
-    agentSavings: controlGroups.size ? agentSavings : null,
-    canonical,
-    savings: canonical
-      ? {
-          clicks: canonical.clicks - actual.clicks,
-          keystrokes: canonical.keystrokes - actual.keystrokes,
-          klmSeconds: canonical.klmSeconds - actual.klmSeconds,
-        }
-      : null,
-    version,
-    days: days.map((d) => d.day),
-    unclassified,
-    tasks: workflows.reduce((n, w) => n + w.tasks, 0),
-    completed: workflows.reduce((n, w) => n + w.completed, 0),
-    workflows,
-    total: workflows.length
-      ? workflows.reduce(
-          (n, w) => ({
-            clicks: n.clicks + w.mean.clicks,
-            keystrokes: n.keystrokes + w.mean.keystrokes,
-            klmSeconds: n.klmSeconds + w.mean.klmSeconds,
-          }),
-          { clicks: 0, keystrokes: 0, klmSeconds: 0 },
-        )
-      : null,
-  };
-}
-
-export function versionsFor(run: RunData, persona: string) {
-  const published = new Set([
-    0,
-    ...run.records
-      .filter((r) => r.persona === persona && r.deployed)
-      .map((r) => r.versionAfter),
-  ]);
-  return (run.files ?? [...run.programs.keys()])
-    .flatMap((path) => {
-      const match = new RegExp(`^programs/${persona}/v(\\d+)\\.json$`).exec(
-        path,
-      );
-      return match &&
-        (!run.manifest.measurementProtocol || published.has(Number(match[1])))
-        ? [Number(match[1])]
-        : [];
-    })
-    .sort((a, b) => a - b);
+export function versionsFor(run:RunData,persona:string){
+ const published=new Set([0,...run.records.filter(r=>r.persona===persona&&r.deployed).map(r=>r.versionAfter)]);
+ return [...new Set([...run.programs.keys(),...(run.files??[])])].flatMap(key=>{const m=new RegExp(`^programs/${persona}/v(\\d+)\\.json$`).exec(key);return m&&(!run.manifest.measurementProtocol||published.has(Number(m[1])))?[Number(m[1])]:[];}).sort((a,b)=>a-b);
 }

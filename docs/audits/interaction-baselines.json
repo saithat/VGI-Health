@@ -1,0 +1,365 @@
+{
+  "mode": "REAL-native-zero-LLM",
+  "ehrSha256": "a8d7b3d83142d8e719e247868dc1d888690f606d0a016d7a38fc7bac53ba925d",
+  "worldSha256": "7f4f9dabc4ad609422fb5be4598e54a30a285bb9f4022b72b078bc074dc3e26d",
+  "captureSha256": "0a45885b154892e71ea9e6b446486d0867de3c4a3fcb3f0212929e281e17e8f3",
+  "viewport": [
+    1440,
+    900
+  ],
+  "bundles": {
+    "P1": "Ashly_Rippin_149fcc1f.json",
+    "P2": "Ashly_Rippin_149fcc1f.json",
+    "P3": "Ashly_Rippin_149fcc1f.json",
+    "P4": "Abdul_Sauer_d0fe99e5.json",
+    "P5": "Albert_Weber_84816a36.json"
+  },
+  "rows": [
+    {
+      "persona": "P1",
+      "release": "v1",
+      "day": 2,
+      "completed": 40,
+      "tasks": 40,
+      "clicks": 786,
+      "keystrokes": 3746,
+      "scrolls": 826,
+      "scrollPx": 1620330,
+      "mouseTravelPx": 292346.71,
+      "geometry": {
+        "programHash": "0df5ae6a561c130a934782aa3a4ad444a24c91833cce2516b5568d8d24d35b0b",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v1",
+      "day": 2,
+      "completed": 18,
+      "tasks": 18,
+      "clicks": 1131,
+      "keystrokes": 4743,
+      "scrolls": 1471,
+      "scrollPx": 1572427,
+      "mouseTravelPx": 468114.43000000005,
+      "geometry": {
+        "programHash": "f65b249e8600c17aa1e791af804004fc982c3d5cd9f9bca68a0b63b3ac3e9301",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v1",
+      "day": 2,
+      "completed": 51,
+      "tasks": 51,
+      "clicks": 684,
+      "keystrokes": 1167,
+      "scrolls": 528,
+      "scrollPx": 1047333,
+      "mouseTravelPx": 310735.44,
+      "geometry": {
+        "programHash": "10cb3309b53bdc9d402ca45d0fafda4b1fa08c4fd54115fb6e28161dd547fdad",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v1",
+      "day": 2,
+      "completed": 20,
+      "tasks": 20,
+      "clicks": 745,
+      "keystrokes": 3998,
+      "scrolls": 949,
+      "scrollPx": 845248,
+      "mouseTravelPx": 310398.23,
+      "geometry": {
+        "programHash": "3cb7febd63b74fed4d485b71bd7bc26096f4b5afd6c26030944ebe7541d526fd",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v1",
+      "day": 2,
+      "completed": 14,
+      "tasks": 14,
+      "clicks": 728,
+      "keystrokes": 2467,
+      "scrolls": 1200,
+      "scrollPx": 1022169,
+      "mouseTravelPx": 271412.25,
+      "geometry": {
+        "programHash": "27db7062942432b850237e22a5bed660587e46e500141f597d273c7fad7b9e90",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P1",
+      "release": "v2",
+      "day": 4,
+      "completed": 40,
+      "tasks": 40,
+      "clicks": 844,
+      "keystrokes": 3765,
+      "scrolls": 925,
+      "scrollPx": 1733066,
+      "mouseTravelPx": 305263.8800000001,
+      "geometry": {
+        "programHash": "76e9eb940e34bf17efab4744e623249f9d3f348d6eb4935a23face476c0fe2bc",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v2",
+      "day": 4,
+      "completed": 13,
+      "tasks": 13,
+      "clicks": 941,
+      "keystrokes": 3701,
+      "scrolls": 1293,
+      "scrollPx": 1408617,
+      "mouseTravelPx": 387059.0299999999,
+      "geometry": {
+        "programHash": "c523a69655e6ec380e0a511770e8fd7b1960f9f47ba6b18bb7f3040936001415",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v2",
+      "day": 4,
+      "completed": 41,
+      "tasks": 41,
+      "clicks": 557,
+      "keystrokes": 978,
+      "scrolls": 445,
+      "scrollPx": 856076,
+      "mouseTravelPx": 252865.51999999996,
+      "geometry": {
+        "programHash": "c5a203e55967725609e865b13c42dd1193f55316f5b63c8fcc96760e1713fe71",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v2",
+      "day": 4,
+      "completed": 17,
+      "tasks": 17,
+      "clicks": 408,
+      "keystrokes": 2401,
+      "scrolls": 552,
+      "scrollPx": 492660,
+      "mouseTravelPx": 172091.71000000002,
+      "geometry": {
+        "programHash": "3c8f848c4315903fdee4df35c096bf8afe4ae025fcf00e1c7f9379120195e18b",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v2",
+      "day": 4,
+      "completed": 11,
+      "tasks": 11,
+      "clicks": 488,
+      "keystrokes": 1671,
+      "scrolls": 927,
+      "scrollPx": 785914,
+      "mouseTravelPx": 181759.24,
+      "geometry": {
+        "programHash": "f63d89f5503259e068f615774cef9869dd0b799b806abf64f640a6b03a3394b6",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P1",
+      "release": "v3",
+      "day": 8,
+      "completed": 39,
+      "tasks": 39,
+      "clicks": 795,
+      "keystrokes": 3464,
+      "scrolls": 860,
+      "scrollPx": 1712625,
+      "mouseTravelPx": 300905.4000000001,
+      "geometry": {
+        "programHash": "3f3326f60c13db2165259f6241b7fe0dc205c3990b5c3f32fce47d3f3ccbeeaf",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v3",
+      "day": 8,
+      "completed": 15,
+      "tasks": 15,
+      "clicks": 1484,
+      "keystrokes": 5553,
+      "scrolls": 2249,
+      "scrollPx": 2438885,
+      "mouseTravelPx": 596142.5599999999,
+      "geometry": {
+        "programHash": "3030ad7b643023b41a3059ba06c7eb0090db3ff44abeb73e46b21ee8eb5f5ac9",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v3",
+      "day": 8,
+      "completed": 38,
+      "tasks": 38,
+      "clicks": 506,
+      "keystrokes": 857,
+      "scrolls": 420,
+      "scrollPx": 715809,
+      "mouseTravelPx": 206098.55,
+      "geometry": {
+        "programHash": "44f8302f8eade32e661a863e159bc7f5be2e344be18cc91b3e0807d7d4cc05d1",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v3",
+      "day": 8,
+      "completed": 15,
+      "tasks": 15,
+      "clicks": 483,
+      "keystrokes": 2663,
+      "scrolls": 763,
+      "scrollPx": 676639,
+      "mouseTravelPx": 218998.63999999998,
+      "geometry": {
+        "programHash": "b0e2f12cbb4a09ed0bf2c60e50fd2bb13d7fa7e319f2358c6c81999a585c4604",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v3",
+      "day": 8,
+      "completed": 12,
+      "tasks": 12,
+      "clicks": 556,
+      "keystrokes": 1901,
+      "scrolls": 1031,
+      "scrollPx": 853294,
+      "mouseTravelPx": 233801.80999999997,
+      "geometry": {
+        "programHash": "e4e15aa2072b0f648b57df7dd5bda073d0ee7744fb1cc3dda52cbf9d4caa0ce2",
+        "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "appSha256": "6b00c81616678b4cf51e09ddaba6578911e2f5670fbbf619d79eb7a0c5b81cae",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    }
+  ],
+  "interactionModelSha256": "cf2aa91251dac184af800831be4dba07085b5de2640a1d64bd40f9287a0a0214"
+}

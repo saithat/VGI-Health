@@ -1,4 +1,4 @@
-import { resolve, dirname } from "node:path";
+import { resolve, dirname,basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, mkdtempSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -20,7 +20,7 @@ let cache;
 let checkedFiles = files;
 if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
   const { chromium } = await import("@playwright/test");
-  const sources = ["e2e/ui-check.spec.ts", "playwright.config.ts", "src/ehr/ui/fidelity.ts", "src/ehr/ui/display.tsx", "src/ehr/ui/types.ts", "scripts/screen-check.mjs", "scripts/screen-cache.mjs"];
+  const sources = ["e2e/ui-check.spec.ts", "e2e/geometry-capture.ts", "playwright.config.ts", "src/ehr/ui/fidelity.ts", "src/ehr/ui/display.tsx", "src/ehr/ui/types.ts", "scripts/screen-check.mjs", "scripts/screen-cache.mjs"];
   const context = contextDigest({
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
     sources: sources.map((file) => [file, digest(readFileSync(resolve(appDir, file)))]),
@@ -33,10 +33,11 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
   const directory = resolve(process.env.EHR_SCREEN_CACHE_DIR ?? resolve(appDir, "../runs/screen-check-cache"), context);
   const entries = files.map((file) => {
     const sha256 = digest(readFileSync(file));
-    return { file, sha256, reused: cachedTree(directory, context, sha256) };
+    return { file, sha256, reused: cachedTree(directory, context, sha256) && existsSync(resolve(directory,"geometry",`${sha256}.json`)) };
   });
   checkedFiles = entries.filter((entry) => !entry.reused).map((entry) => entry.file);
   cache = { context, directory, entries };
+  process.env.EHR_GEOMETRY_DIR = resolve(directory,"geometry");
   process.stdout.write(`Whole-version screen coverage: ${entries.length} trees; ${entries.length - checkedFiles.length} identical certified trees reused, ${checkedFiles.length} checked now. Context ${context}. Known-bad controls always run.\n`);
 }
 const port = process.env.APP_TEST_PORT ?? await new Promise((resolve, reject) => {
@@ -49,6 +50,7 @@ const port = process.env.APP_TEST_PORT ?? await new Promise((resolve, reject) =>
 });
 const output = mkdtempSync(resolve(tmpdir(), "ehr-visibility-"));
 const report = resolve(output, "playwright.json");
+if(ui&&!process.env.EHR_GEOMETRY_DIR)process.env.EHR_GEOMETRY_DIR=resolve(output,'geometry');
 const result = spawnSync(
   process.execPath,
   [
@@ -81,7 +83,7 @@ if (result.status !== 0 && existsSync(report)) {
   // navigation and rendering infrastructure exceptions remain errors.
   if (!(json.errors?.length) && errors.length && errors.every((e) => e.matcherResult || /(?:expect\(|expect\.)/.test(e.message ?? ""))) gateStatus = "fail";
 }
-if (process.env.EHR_SCREEN_RESULT) writeFileSync(process.env.EHR_SCREEN_RESULT, JSON.stringify({status:gateStatus}));
+if (process.env.EHR_SCREEN_RESULT) writeFileSync(process.env.EHR_SCREEN_RESULT, JSON.stringify({status:gateStatus, geometry:ui?files.flatMap(file=>[`${digest(readFileSync(file))}.json`,`${digest(readFileSync(file))}.background.json`].map(name=>({path:resolve(process.env.EHR_GEOMETRY_DIR,name),sample:basename(dirname(file))}))).filter(item=>existsSync(item.path)).map(item=>({...JSON.parse(readFileSync(item.path,'utf8')),sample:item.sample})):[]}));
 if (cache) {
   const receipt = recordBatch(cache.directory, cache.context, cache.entries, cache.entries.filter((entry) => !entry.reused).map((entry) => entry.sha256), result.status === 0);
   process.stdout.write(`Whole-version coverage receipt: ${receipt}\n`);
