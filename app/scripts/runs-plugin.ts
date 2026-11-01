@@ -144,7 +144,9 @@ export function runsPlugin(): Plugin {
           const get = async (file: string) =>
             JSON.parse(await readFile(resolve(root, id, file), "utf8"));
           const records = [],
-            days = [];
+            days = [],
+            baselines = [],
+            noAgentDays = [];
           const certificates: Record<string, unknown> = {};
           let complexity = null;
           for (const file of entry.files) {
@@ -152,6 +154,10 @@ export function runsPlugin(): Plugin {
               records.push(await get(file));
             else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
               days.push({ ...(await get(file)), trace: [] });
+            else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
+              baselines.push({ ...(await get(file)), trace: [] });
+            else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file))
+              noAgentDays.push({ ...(await get(file)), trace: [] });
             else if (file === "complexity.json") complexity = await get(file);
             else if (/^certs\/P[1-5]\/v\d+\.json$/.test(file))
               certificates[file] = await get(file);
@@ -165,6 +171,8 @@ export function runsPlugin(): Plugin {
                 manifest: await get("manifest.json"),
                 records,
                 days,
+                baselines,
+                noAgentDays,
                 complexity,
                 files: entry.files,
                 certificates,

@@ -28,7 +28,7 @@ export const manifestSchema = z.object({
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
   buildBindingRequired: z.boolean().optional(),
-  measurementProtocol: z.object({name:z.string()}).optional(),
+  measurementProtocol: z.object({ name: z.string() }).optional(),
   status: z.string().optional(),
   blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
@@ -74,6 +74,7 @@ export interface RunData {
   records: DecisionRecord[];
   days: DayResult[];
   baselines?: DayResult[];
+  noAgentDays?: DayResult[];
   programs: Map<string, Program>;
   sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
@@ -137,7 +138,9 @@ export async function loadRun(
   const run: RunData = {
     manifest,
     records: [],
-    days: [], baselines: [],
+    days: [],
+    baselines: [],
+    noAgentDays: [],
     programs: new Map(),
     sources: new Map(),
     certs: new Map(),
@@ -153,12 +156,17 @@ export async function loadRun(
         run.records.push(record);
       } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
         run.days.push(dayResultSchema.parse(await get(file)));
+      else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file))
+        run.noAgentDays?.push(dayResultSchema.parse(await get(file)));
       else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
         run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.source\.json$/.test(file))
-        run.sources?.set(file.replace(/\.source\.json$/, '.json'), programSchema.parse(await get(file)));
+        run.sources?.set(
+          file.replace(/\.source\.json$/, ".json"),
+          programSchema.parse(await get(file)),
+        );
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
@@ -189,6 +197,8 @@ export async function loadRunSummary(
       manifest: manifestSchema,
       records: z.array(decisionRecordSchema),
       days: z.array(dayResultSchema),
+      baselines: z.array(dayResultSchema).default([]),
+      noAgentDays: z.array(dayResultSchema).default([]),
       complexity: complexitySchema.nullable(),
       files: z.array(z.string()),
       certificates: z.record(z.string(), certificateSchema).default({}),
@@ -212,6 +222,7 @@ export async function loadRunSummary(
         ? complexityReleaseLabels(data.complexity)
         : data.complexity,
     programs: new Map(),
+    sources: new Map(),
     certs: new Map(Object.entries(data.certificates)),
     replay: null,
   };
@@ -226,6 +237,7 @@ export async function loadRunDetails(
   const detail = {
     ...run,
     programs: new Map(run.programs),
+    sources: new Map(run.sources),
     certs: new Map(run.certs),
     days: [...run.days],
   };
@@ -238,6 +250,15 @@ export async function loadRunDetails(
       else if (new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(file))
         detail.programs.set(
           file,
+          programSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (
+        new RegExp(`^programs/${persona}/v\\d+\\.source\\.json$`).test(file)
+      )
+        detail.sources.set(
+          file.replace(/\.source\.json$/, ".json"),
           programSchema.parse(
             await read(`/runs/${run.manifest.runId}/${file}`),
           ),

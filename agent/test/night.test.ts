@@ -124,7 +124,8 @@ describe('offline screen check gates deploy', () => {
     expect(r.deployed).toBeNull();
     expect(r.certificate).toBeNull();
     expect(r.versionAfter).toBe(r.versionBefore);
-    expect(replayed.rejections.some((x) => x.persona === 'P4' && x.property === 'ScreenCheck')).toBe(true);
+    expect(replayed.rejections.some((x) => x.property === 'ScreenCheck')).toBe(false);
+    expect(replayed.screenFailures.some((x)=>x.persona==='P4')).toBe(true);
   });
 
   it('deployed versions carry a passing screen-check result next to the certificate', () => {

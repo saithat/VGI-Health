@@ -907,7 +907,11 @@ function VersionList({
             evolves each persona’s fork. Odd days calibrate; even days are blind
             measurements and never select changes. Savings compare the certified
             canonical for that day’s release on identical schedules and seeds;
-            vendor release costs are separate.
+            canonical differences include vendor/fork drift. Agent-only savings
+            use the no-agent fork carried through recertification and canonical
+            fallback without LLM changes. Even nights reuse past data;
+            superseded changes have no independent test. Blind per-day task
+            counts are shown, including the smaller P5 samples.
           </p>
         )}
         <span>Saving: positive = less effort · exact fixed workflow union</span>
@@ -998,7 +1002,7 @@ function VersionList({
                 <span className="mobile-label">vs baseline: </span>
                 {blindProtocol
                   ? r.measured.test
-                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical`
+                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${fmt(r.measured.testNoAgent.saving.klmDeciSec / 10)}s agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
                     : "Unavailable"
                   : change(after, baseline)}
               </span>

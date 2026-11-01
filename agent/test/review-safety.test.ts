@@ -68,7 +68,7 @@ it('reports screen infrastructure as error and classifies only exact checker pro
  const check=screenCheckRejection({status:'error',mode:'real',bundles:[],pages:0,failingScreens:[],failingFiles:[],message:'startup failed'});
  expect(check.status).toBe('error');expect(rejectionKind(check)).toBe(null);
  expect(rejectionKind(checkResultSchema.parse({...check,status:'fail',property:'Unrelated',message:'pounds allergies identity'}))).toBe(null);
- expect(rejectionKind({...check,status:'fail',property:'UnitsRight'})).toBe('lbWeightAccepted');
+ expect(rejectionKind({...check,status:'fail',property:'UnitsRight',message:'field w on screen s fills weightKg from record value triageWeightLb, a bare number'})).toBe('lbWeightAccepted');
 });
 it('aborts after three consecutive model failures with explicit llm-error decisions',async()=>{
  const runsRoot=await tmp('FAKE-failures');

@@ -77,6 +77,7 @@ export async function buildCatalog() {
     const bad = /^programs\/bad\/(\d+)/.exec(path);
     const recorded =
       /^runs\/([^/]+)\/(?:programs\/)?(P[1-5])\/v(\d+)\.json$/.exec(path);
+    if (path.startsWith("runs/") && !recorded) continue;
     const release = path.startsWith("programs/benchmarks/releases/")
       ? historicalReleaseId(recordedRelease)
       : releaseLabel(recordedRelease, recorded?.[1] ?? "");
