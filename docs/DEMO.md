@@ -32,15 +32,17 @@ history, and all the paperwork. Let's actually save a visit.”
    `Hypertension follow-up`. Click **Mark allergies reviewed** →
    **Next: medication reconciliation**.
 4. Click **Mark medications reviewed**; choose `continue` in **each displayed
-   Medication N: continue / stop / modify** field (all four on this chart). Click **Next: HPI / ROS**. Enter **History of
-   present illness** `BP improving. No adverse effects.` and **Review of
+   Medication N: continue / stop / modify** field (all four on this chart).
+   Click **Next: HPI / ROS**. Enter **History of present illness** `BP improving. No adverse effects.` and **Review of
    systems** `No chest pain or dyspnea.` Click **Next: exam and A&P**.
 5. Enter **Physical exam** `Well appearing. Normal heart and lungs.`,
    **Assessment and plan** `Continue treatment; check metabolic panel.`, and
    **Visit diagnosis (ICD-10)** `I10`. Click **Visit close**. Enter **Level of
-   service** `99213`, **Follow-up** `4 weeks`, and **Patient instructions**
-   `Check home BP daily.` Click **Sign note**. If a reminder opens, click **Acknowledge**, then **Sign note** again.
-   Never narrate a disabled button as a saved note.
+   service** `99213` (select the matching dropdown option), **Follow-up**
+   `4 weeks`, and **Patient instructions** `Check home BP daily.` Click
+   **Sign note**. For the **Health maintenance reminder**, click
+   **Acknowledge**, then **Sign note** again. Never narrate a disabled button
+   as a saved note.
 6. Click **Live encounter**. Point to **Saved resources** and the
    `DocumentReference`, `Observation`, `Condition` or `ChargeItem` links that
    actually appear. Close with **Close live encounter**. The note and rooming
