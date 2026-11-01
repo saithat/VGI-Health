@@ -450,6 +450,35 @@ def Display.empty : Display :=
     allergies := [], meds := [], vitals := [], labs := [], problems := []
     immunizations := [], encounters := [], procedures := [], growth := [] }
 
+/-! ## Semantic UI (section 10; Init-only) -/
+
+/-- Semantic EHR nodes. Only the selected tab body is emitted. -/
+inductive UiNode
+  | section (id : String) (title : String) (children : List UiNode)
+  | columns (children : List UiNode)
+  | tabs (id : String) (labels : List String) (selected : Nat) (body : List UiNode)
+  | stepper (steps : List (String × String)) (current : Nat)
+  | field (comp : CompId) (label : String) (kind : String) (value : Option String)
+      (unit : Option String) (provenance : Option String) (pendingConfirm : Bool)
+      (humanOnly : Bool) (required : Bool)
+  | info (comp : CompId) (label : String) (infoId : InfoId) (display : String)
+      (rows : List (List (String × String)))
+  | alert (comp : CompId) (alertId : AlertId) (label : String) (severity : String)
+  | button (comp : CompId) (label : String) (role : String) (enabled : Bool)
+      (blockedReason : Option String) (hotkey : Option String)
+  | text (s : String)
+  deriving Repr, Inhabited
+
+/-- A semantic screen. The banner is the first and sole banner landmark. -/
+structure UiScreen where
+  banner : List (String × String)
+  nav : List (String × List (String × String))
+  title : String
+  workspace : List UiNode
+  side : List UiNode
+  modal : Option UiNode
+  deriving Repr, Inhabited
+
 /-! ## API records -/
 
 /-- What the FHIR parser needs besides the bundle: the date and time "now",
