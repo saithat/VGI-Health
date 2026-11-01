@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
-import { Audit } from "./driver";
+import { Audit, selector } from "./driver";
 import { writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
@@ -285,6 +285,73 @@ test("app shell: every shell control has an effect or an explained disabled stat
             "app",
           );
         }
+      }
+      if (run === "run1-P3") {
+        await freshGoto(`/dashboard?run=${run}&view=Trajectories&persona=P3`);
+        audit.screen = "Trajectories";
+        audit.persona = "P3";
+        const trajectories = page.getByRole("region", {
+          name: "All task trajectories",
+        });
+        const frame = page.frameLocator('iframe[title="Recorded EHR"]');
+        await frame
+          .getByRole("banner", { name: "Patient banner" })
+          .waitFor({ timeout: 60000 });
+        await audit.click(
+          trajectories.getByRole("button", { name: "Reset", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          trajectories.getByRole("button", { name: "Step", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          trajectories.getByRole("button", { name: "Play", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          trajectories.getByRole("button", { name: "Pause", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          trajectories.getByRole("button", { name: "Reset", exact: true }),
+          undefined,
+          "app",
+        );
+        const event = trajectories.getByLabel("Replay event", { exact: true });
+        await audit.click(event, () => event.press("ArrowRight"), "app");
+        const compare = trajectories.getByLabel("Compare baseline v0", {
+          exact: true,
+        });
+        await audit.click(compare, () => compare.check(), "app");
+        await page
+          .frameLocator('iframe[title="Baseline v0 EHR"]')
+          .getByRole("banner", { name: "Patient banner" })
+          .waitFor({ timeout: 60000 });
+        await audit.click(compare, () => compare.uncheck(), "app");
+        // Recorded frames intentionally expose no enabled clinical action.
+        for (const control of await frame.locator(selector).all()) {
+          if (!(await control.isVisible())) continue;
+          expect(await control.isDisabled()).toBe(true);
+          await audit.click(control, undefined, "app");
+        }
+        const tasks = trajectories
+          .getByRole("listbox", { name: "Recorded tasks" })
+          .getByRole("option");
+        const count = await tasks.count();
+        for (let i = 0; i < count; i++)
+          await audit.click(tasks.nth(i), undefined, "app");
+        const day = trajectories.getByLabel("Trajectory day", { exact: true });
+        await audit.click(day, () => day.selectOption("2"), "app");
+        const search = trajectories.getByRole("searchbox", {
+          name: "Search tasks",
+        });
+        await audit.click(search, () => search.fill("d02-P3-W4-001"), "app");
+        await audit.click(search, () => search.fill(""), "app");
       }
       writeReport(audit.rows, "app");
       await setup();

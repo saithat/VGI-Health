@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MantineProvider } from "@mantine/core";
 import { programSchema, type Program } from "../../../agent/src/schema";
 import type { UiScreen } from "../ehr/ui/types";
 import { UiScreenView } from "../ehr/ui/Screen";
 import type { InterpFactory } from "./replay";
+import { loadWasmInterp } from "../core/wasmInterp";
 import { readRunJson } from "./data";
 import { readArtifact } from "../browser/data";
 import {
@@ -39,8 +40,19 @@ function SemanticFrame({
     // owns scrolling, so screen transitions must reset that window explicitly.
     doc?.defaultView?.scrollTo(0, 0);
   }, [doc, screen.title]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!doc) return;
+    // This is a recorded frame. Only the playback controls may advance it.
+    for (const control of doc.querySelectorAll<HTMLElement>(
+      'button, input, select, textarea, [role="tab"]',
+    )) {
+      control.setAttribute("disabled", "");
+      control.setAttribute("aria-disabled", "true");
+      const reason =
+        "Recorded replay; use the playback controls above this EHR";
+      if (!control.title.includes(reason))
+        control.title = [control.title, reason].filter(Boolean).join(" · ");
+    }
     const nodes = doc.querySelectorAll<HTMLElement>("[data-comp-id]");
     nodes.forEach((node) => {
       node.dataset.trajectoryHighlight = String(
@@ -181,6 +193,10 @@ function TaskPlayback({
   useEffect(() => {
     let active = true;
     setError("");
+    if (!factory)
+      return () => {
+        active = false;
+      };
     async function load(file: string) {
       if (!factory) throw new Error("Loading the real WASM interpreter…");
       const task = trajectorySchema.parse(
@@ -280,6 +296,8 @@ function TaskPlayback({
       </p>
       <div className="trajectory-controls">
         <button
+          disabled={!count && !playing}
+          title={!count && !playing ? "Already at the first event" : undefined}
           onClick={() => {
             setPlaying(false);
             setCount(0);
@@ -288,7 +306,14 @@ function TaskPlayback({
           Reset
         </button>
         <button
-          disabled={!loaded || !factory}
+          disabled={!loaded || !factory || !max}
+          title={
+            !loaded || !factory
+              ? "Loading the selected trajectory"
+              : !max
+                ? "No recorded events"
+                : undefined
+          }
           onClick={() => {
             if (count >= max) setCount(0);
             setPlaying((p) => !p);
@@ -298,6 +323,13 @@ function TaskPlayback({
         </button>
         <button
           disabled={!loaded || count >= max}
+          title={
+            !loaded
+              ? "Loading the selected trajectory"
+              : count >= max
+                ? "No more recorded events"
+                : undefined
+          }
           onClick={() => {
             setPlaying(false);
             setCount((n) => Math.min(max, n + 1));
@@ -380,6 +412,21 @@ export function Trajectories({
   persona: string;
   factory?: InterpFactory | undefined;
 }) {
+  const [ownFactory, setOwnFactory] = useState<InterpFactory>();
+  useEffect(() => {
+    let active = true;
+    if (!factory)
+      void loadWasmInterp()
+        .then((interp) => {
+          if (active) setOwnFactory(() => () => interp);
+        })
+        .catch((error: unknown) => {
+          if (active) setError(String(error));
+        });
+    return () => {
+      active = false;
+    };
+  }, [factory]);
   const [index, setIndex] = useState<TrajectoryIndex | null>(null);
   const [error, setError] = useState("");
   const [day, setDay] = useState(1);
@@ -422,6 +469,8 @@ export function Trajectories({
           Day{" "}
           <select
             aria-label="Trajectory day"
+            disabled={days.length < 2}
+            title={days.length < 2 ? "No other recorded days" : undefined}
             value={day}
             onChange={(e) => {
               setDay(Number(e.target.value));
@@ -439,6 +488,14 @@ export function Trajectories({
           Search tasks{" "}
           <input
             type="search"
+            disabled={!index || !tasks.length}
+            title={
+              !index
+                ? "Loading trajectory index"
+                : !tasks.length
+                  ? "No trajectories recorded for this persona"
+                  : undefined
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Task, workflow or patient"
@@ -460,6 +517,8 @@ export function Trajectories({
           <button
             role="option"
             aria-selected={entry?.id === t.id}
+            disabled={entry?.id === t.id}
+            title={entry?.id === t.id ? "Current trajectory" : undefined}
             key={t.id}
             onClick={() => setSelected(t.id)}
           >
@@ -482,7 +541,7 @@ export function Trajectories({
           key={`${runId}-${persona}-${entry.id}`}
           runId={runId}
           entry={entry}
-          factory={factory}
+          factory={factory ?? ownFactory}
         />
       )}
     </section>

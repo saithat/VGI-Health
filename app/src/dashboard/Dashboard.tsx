@@ -1,5 +1,5 @@
 import { loadWasmInterp } from "../core/wasmInterp";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type {
   CheckResult,
   DecisionRecord,
@@ -18,7 +18,9 @@ import {
 } from "./data";
 import { ReplayScreen, type InterpFactory } from "./replay";
 import "./dashboard.css";
-import { Trajectories } from "./Trajectories";
+const Trajectories = lazy(() =>
+  import("./Trajectories").then((m) => ({ default: m.Trajectories })),
+);
 import { WorkflowComplexity, personas } from "./WorkflowComplexity";
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
@@ -1149,8 +1151,19 @@ export function Dashboard({
           <button
             key={name}
             aria-current={view === name ? "page" : undefined}
-            disabled={view === name}
-            title={view === name ? "Current dashboard area" : undefined}
+            disabled={
+              view === name ||
+              (name === "Trajectories" &&
+                !run?.files?.includes("trajectories/index.json"))
+            }
+            title={
+              name === "Trajectories" &&
+              !run?.files?.includes("trajectories/index.json")
+                ? "No trajectories recorded for this run"
+                : view === name
+                  ? "Current dashboard area"
+                  : undefined
+            }
             onClick={() => {
               setView(name);
               setSelection(null);
@@ -1216,7 +1229,22 @@ export function Dashboard({
                 <VersionList run={run} persona={persona} open={open} />
               </>
             )}
-            {view === "Trajectories" && <Trajectories key={runId} runId={runId} persona={persona} factory={interpFactory} />}
+            {view === "Trajectories" &&
+              (run.files?.includes("trajectories/index.json") ? (
+                <Suspense fallback={<p role="status">Loading trajectories…</p>}>
+                  <Trajectories
+                    key={runId}
+                    runId={runId}
+                    persona={persona}
+                    factory={interpFactory}
+                  />
+                </Suspense>
+              ) : (
+                <p role="status">
+                  No trajectories recorded for this run. Select Evolution or
+                  another run.
+                </p>
+              ))}
             {view === "Releases" && (
               <Releases
                 run={run}
