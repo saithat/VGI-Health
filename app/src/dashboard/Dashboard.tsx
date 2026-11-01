@@ -14,13 +14,14 @@ import {
 } from "./data";
 import { ReplayScreen, type InterpFactory } from "./replay";
 import "./dashboard.css";
+import { Trajectories } from "./Trajectories";
 import { WorkflowComplexity, personas } from "./WorkflowComplexity";
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
 import { workloadAt, versionsFor } from "./workload";
 import { formatComplexity as fmt } from "./complexity-data";
 
-const views = ["Evolution", "Releases", "Try to break it"];
+const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
@@ -968,6 +969,7 @@ export function Dashboard({
                 <VersionList run={run} persona={persona} open={open} />
               </>
             )}
+            {view === "Trajectories" && <Trajectories key={runId} runId={runId} persona={persona} factory={interpFactory} />}
             {view === "Releases" && (
               <Releases
                 run={run}
