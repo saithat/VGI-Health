@@ -103,4 +103,8 @@ theorem accepted_navigation (sp : Spec) (prev : Option Program) (can p : Program
     (h : check sp prev can p = .ok) : NavigationSane p := by
   sorry
 
+theorem cached_completion_eq (sp : Spec) (p : Program) (c : CommitId) :
+    completeForWithReach sp p c (tableReach p (openReachTable p)) = completeFor sp p c := by
+  sorry
+
 end Ehr.Check

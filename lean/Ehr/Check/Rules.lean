@@ -143,6 +143,17 @@ def commitScreens (prog : Program) (c : CommitId) : List ScreenId :=
 def openReach (prog : Program) (a : ScreenId) : List ScreenId :=
   (bfs prog (openGotoEdges prog) a).map (·.1)
 
+/-- Compute each declared screen's open reachability once per check. -/
+def openReachTable (prog : Program) : List (ScreenId × List ScreenId) :=
+  prog.screens.map fun scr => (scr.id, openReach prog scr.id)
+
+/-- Reuse a table entry, with the original search as a total fallback. -/
+def tableReach (prog : Program) (table : List (ScreenId × List ScreenId))
+    (start : ScreenId) : List ScreenId :=
+  match table.find? (fun entry => entry.1 == start) with
+  | some entry => entry.2
+  | none => openReach prog start
+
 /-- The program has an "add order line" button. -/
 def hasNewLine (prog : Program) : Bool :=
   (allComps prog).any fun sc => sc.2.kind == .button .newOrderLine
@@ -210,11 +221,12 @@ the completability rules for `c` with commit screen `s`:
   a field for the waiver element reachable from `s`;
 - per-order-line requirements: every drug slot has a matching reachable field
   for each per-line element. CR-1 prevents leaving an unfinished current line. -/
-def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
-  match prog.screens.find? (fun x => !(openReach prog x.id).contains s) with
+def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId)
+    (reach : ScreenId → List ScreenId) : Option (ScreenId × String) :=
+  match prog.screens.find? (fun x => !(reach x.id).contains s) with
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
   | none =>
-    let fromS := openReach prog s
+    let fromS := reach s
     let reqs := spec.entries.filter (·.commit == c)
     match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
@@ -234,6 +246,10 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
           (perLine.find? fun rq => !openFieldOn prog fromS rq.element (repairsSlot prog slot)).map (slot, ·)) with
       | some (slot, rq) => some (s, s!"commit {c}: order slot {repr slot} has no field the user can reach for {rq.element}")
       | none => none
+
+/-- The uncached public completion-path check. -/
+def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
+  completeViaWithReach spec prog c s (openReach prog)
 
 /-- A parsed scalar value that satisfies its kind for every patient and user.
 Identity, targeted scans and cosigns depend on that context and cannot use a
@@ -301,14 +317,19 @@ def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Op
 
 /-- The completability rules for commit `c`: some commit screen passes
 `completeVia`. Returns the first failure if none does. -/
-def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
+def completeForWithReach (spec : Spec) (prog : Program) (c : CommitId)
+    (reach : ScreenId → List ScreenId) : Option (Option ScreenId × String) :=
   if let some issue := additionalCompletionIssue spec prog c then some (none, issue)
   else if !entryValuesPossible spec c then
     some (none, s!"commit {c}: allowed entry values have no common context-independent completion value")
   else match commitScreens prog c with
   | [] => some (none, s!"commit {c}: no button for it that the user can always see")
   | s :: rest =>
-    if (s :: rest).any (fun x => (completeVia spec prog c x).isNone) then none
-    else (completeVia spec prog c s).map fun p => (some p.1, p.2)
+    if (s :: rest).any (fun x => (completeViaWithReach spec prog c x reach).isNone) then none
+    else (completeViaWithReach spec prog c s reach).map fun p => (some p.1, p.2)
+
+/-- The original total completion check, retained for proofs and direct callers. -/
+def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
+  completeForWithReach spec prog c (openReach prog)
 
 end Ehr.Check

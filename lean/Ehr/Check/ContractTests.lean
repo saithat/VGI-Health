@@ -17,7 +17,7 @@ open Ehr Ehr.Check Ehr.CoreTests Ehr.Examples.Tiny
 /-- The completion rule never suppresses an additional-contract finding. -/
 theorem completeFor_additional (sp : Spec) (p : Program) (c : CommitId)
     (h : completeFor sp p c = none) : additionalCompletionIssue sp p c = none := by
-  unfold completeFor at h
+  unfold completeFor completeForWithReach at h
   cases hi : additionalCompletionIssue sp p c with
   | none => rfl
   | some issue => simp [hi] at h

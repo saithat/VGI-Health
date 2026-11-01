@@ -84,6 +84,8 @@ features have been merged; main was fetched again after those features landed.
   `T8_checked_old_obligations`, `T8_v1_to_v1_1`, `T8_v1_1_to_v2`.
   Does not assume unfinished T1. `T8_unqualified_false` is retained.
 - D5 acceptance soundness over the actual semantic renderer navigation.
+- Completion reachability is cached once per check. `cached_completion_eq`
+  proves exact equality with the original algorithm for every program.
 - Core guard/clinical-alert safety proof compatibility and expanded contract
   safety, plus actual human-entry construction lemmas.
 - Seeds 8/9 timeout fix: closed local component/macro witnesses compile in

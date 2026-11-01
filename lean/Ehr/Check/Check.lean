@@ -191,6 +191,8 @@ def plain (property message : String) : Option Finding := some { property, messa
 /-- The checker's rules, in the order they are reported. -/
 def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : List Rule :=
   let required := requiredCommits spec canonical prog
+  let reachTable := openReachTable prog
+  let completion := fun c => completeForWithReach spec prog c (tableReach prog reachTable)
   [ -- 1. well-formed: catalog, unique IDs, references
     { property := "wellFormed", passes := prog.inCatalog spec
       explain := fun _ => compFinding "wellFormed" prog false fun scr c =>
@@ -296,9 +298,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           | none => none
         | none => none },
     -- 6. completable
-    { property := "completable", passes := required.all fun c => (completeFor spec prog c).isNone
+    { property := "completable", passes := required.all fun c => (completion c).isNone
       explain := fun _ => required.findSome? fun c =>
-        (completeFor spec prog c).map fun (scr, msg) =>
+        (completion c).map fun (scr, msg) =>
           { property := "completable", message := msg, screen? := scr
             click? := scr.bind fun z => ((prog.compsOf z).find? fun comp => commitOf? comp.kind == some c).map (·.id) } },
     -- 1. well-formed: landmarks and depth
