@@ -20,13 +20,16 @@ export function formatDisplayValue(value: string): string {
     return value;
   const date = hour === undefined ? calendar : new Date(value);
   if (!Number.isFinite(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-GB", {
+  const label = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     // A date-only DOB must not move to the previous day in a western timezone.
-    ...(hour === undefined ? { timeZone: "UTC" } : {}),
-  }).format(date);
+    timeZone: "UTC",
+  }).format(calendar);
+  // Keep the supplied clock, precision and offset rather than converting zones
+  // or discarding the recorded time when a payload contains an ISO timestamp.
+  return hour === undefined ? label : `${label} ${value.slice(11)}`;
 }
 export function DisplayValue({ value }: { value: string }) {
   const formatted = formatDisplayValue(value);
@@ -45,23 +48,28 @@ export function DisplayValue({ value }: { value: string }) {
 
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
-  const status = value.trim().toLowerCase();
-  if (/^(signed|reviewed|complete|completed)(?:$|\s)/.test(status))
+  const status = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
+  if (/^(l|low)$/.test(status)) return "blue";
+  if (/^(h|high)$/.test(status)) return "yellow";
+  if (/^(hh|ll|a|abnormal)$/.test(status)) return "red";
+  if (/^(critical|urgent|stat|overdue)(?:$|\s)/.test(status)) return "red";
+  if (/^(signed|reviewed|complete|completed|given|done)(?:$|\s)/.test(status))
     return "green";
   if (
-    /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation)(?:$|\s)/.test(
+    /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on-hold|roomed|arrived)(?:$|\s)/.test(
       status,
     )
   )
     return "yellow";
-  if (/^in progress(?:$|\s)/.test(status)) return "blue";
-  if (/^overdue(?:$|\s)/.test(status)) return "red";
-  if (/^due(?:$|\s)/.test(status)) return "blue";
-  if (/^given(?:$|\s)/.test(status)) return "green";
-  if (/^held(?:$|\s)/.test(status)) return "yellow";
-  if (/^refused(?:$|\s)/.test(status)) return "violet";
   if (
-    /^(future|scheduled|stopped|not due|not charted|not documented)(?:$|\s)/.test(
+    /^(in progress|in-progress|due|booked|ordered|requested|unread)(?:$|\s)/.test(
+      status,
+    )
+  )
+    return "blue";
+  if (/^(refused|declined)(?:$|\s)/.test(status)) return "violet";
+  if (
+    /^(future|scheduled|stopped|discontinued|cancelled|canceled|not given|not-done|not due|not charted|not documented)(?:$|\s)/.test(
       status,
     )
   )

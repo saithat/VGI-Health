@@ -36,7 +36,7 @@ Existing info IDs keep their meanings. New queue info IDs supported by the prese
 
 Clinical cells are read-only data. Every action must exist as a normal `UiNode.button`, field, tab or navigator event in the Lean tree. An ordinary goto button may be adjacent to the selected work item or placed in its row through the additive row-action contract below; an `Open` text column, pointer cursor or decorative filter must not masquerade as a control. Do not encode component IDs into clinical rows. The presentation lane will not make read-only grid cells editable.
 
-Status tints map only supplied text: due/pending (blue), overdue/critical (red), given/complete (green), held (amber), refused (violet), future/unknown/stopped (neutral). Always retain the words. Lab flags H/L/HH/LL/A come from Lean's FHIR reading or explicit payload; React never compares a result to a reference range. The painter may calculate coordinates from supplied numeric values solely for drawing, never dosing, percentiles, trends across unlike units, or clinical thresholds.
+Status tints map only supplied text through the shared shell palette: due/in-progress/booked (blue), pending/held/arrived/roomed (amber), overdue/critical (red), given/complete (green), refused (violet), future/scheduled/unknown/stopped (neutral). Always retain the words. Lab flags H/L/HH/LL/A come from Lean's FHIR reading or explicit payload; React never compares a result to a reference range. The painter may calculate coordinates from supplied numeric values solely for drawing, never dosing, percentiles, trends across unlike units, or clinical thresholds.
 
 ## Verification and ownership
 
@@ -137,10 +137,21 @@ Normal note cards omit absent optional import-metadata fields, rather than addin
 
 The painter may reflow dense tables into complete labeled records based on the widget's available width, including when a patient summary shares a desktop window. Wide ED/MAR grids remain grids. All columns, values and original row controls remain present in their original semantic table; no clinical fact or control is hidden. Screenshot review covers 1024, 1280 and 1440px and checks that status words do not split between lines.
 
+The constrained MAR can be tall because each supplied hour remains explicit. A department board or primary MAR can use the existing `layout.overview` hint to devote the workspace to its grid; this still retains explicit panels, required review supplements, alerts and the patient banner.
+
 Numeric strings outside the browser's finite plotting range remain complete table text, without a fabricated point. Axis geometry also remains finite for large representable source values. The independent ARIA projection expects images only for representable plotted series; source-value coverage remains unchanged.
 
 Growth measurements use the existing tenths-of-kg/cm display precision. Gram weights are converted to kg; the shared ambulatory height reader accepts explicitly recorded cm, m or inches and declines unknown units. The latest timestamp supplies each day's plotted weight/height regardless of FHIR array order. Original Observation values and units remain in their complete display projections. A missing/invalid birth or measurement date produces `Not recorded` for plotted age while retaining the measurement row; a valid newborn age remains zero. Clinical Facts and dosing calculations are unchanged.
 
+### Shared display integration
+
+Structured medication review uses the shared painter's existing explicit-direction grammar, retaining original source values in native tooltips and accessible labels. Captured fields, units and events are unchanged. Note `Text` and `Title` fields stay verbatim; a recognized converter-provenance suffix uses smaller secondary type with every original character retained. Both structured and legacy note cards retain supplied extra metadata.
+
+ISO display timestamps retain the supplied clock, fractional seconds and offset alongside their calendar date. They do not shift through the browser's timezone. Empty info keeps its clinical label and a named notice; original actions remain inline when there is no matching data row.
+
+The row-action extension above is implemented; the original adjacent-button pattern remains supported. Empty-state wording may use the shared painter's contextual message for that info ID instead of the generic `No records on file`. Neither refinement introduces a browser-owned action or changes the payload schema.
+
+Known clinical info IDs also select default presentations without an explicit tag: queue IDs select their corresponding kind; `labs`/`labResults` select results, `resultTrend` selects trend, `growthChart` selects growth, and `encounterNotes`/`priorNotes` select notes. Recognized explicit tags take precedence. An unrecognized tag keeps the info ID's default when one exists, otherwise the ordinary info layout. The complete selector is `presentationKind?` in `Render/Presentations.lean`; automatic side summaries remain compact.
 ### Current visit documentation
 
 A source info component tagged `layout.document` selects the semantic info display `document` outside the side rail. Its rows retain `Section`, exact `Text`, and source-computed `Entry status` cells; any additional supplied cells remain visible. The painter uses one read-only document region with a keyboard-scrollable body. It never edits, confirms or signs the note. Document/status info does not claim tabular row-action slots; controls targeting those layouts retain their ordinary inline fallback. W1/W5 use this for the current captured visit documentation, separately from historical Chart Review notes. Missing documentation and pending confirmation stay explicit in Lean.
@@ -357,3 +368,6 @@ recreated deterministically without changing the task world state.
 Actual surgical requests retain source case start/end times. On P5 clinic days,
 background room cases belong to other surgeons; P5 retains any actual urgent
 case. Each room's performer reference supplies the operating surgeon.
+### Unified drawing compatibility
+
+Ordinary legacy info tables, historical-note lists and trends use the same structured table, note and chart painters as explicit `present.*` nodes. Source-declared current documents retain their document-region semantics within the structured information module. Compact side summaries remain compact. One supplied-status tone map decorates all these views; the source text and clinical events remain unchanged.

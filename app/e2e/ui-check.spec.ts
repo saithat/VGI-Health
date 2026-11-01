@@ -193,12 +193,6 @@ for (const file of fixtures)
           ),
         );
     const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
-    const structuredInfos = new Set(
-      allNodes
-        .filter((node) => "presentation" in node)
-        .flatMap(nodes)
-        .flatMap((node) => ("info" in node ? [node.info] : [])),
-    );
     const infos = allNodes.flatMap((node) =>
       "info" in node ? [node.info] : [],
     );
@@ -210,15 +204,13 @@ for (const file of fixtures)
       for (const row of info.rows)
         for (const [key, value] of row) {
           const medication =
-            !structuredInfos.has(info) &&
-            info.infoId === "currentMeds" &&
-            key === "Instructions"
+            info.infoId === "currentMeds" && key === "Instructions"
               ? row.find(([name]) => name === "Medication")?.[1]
               : undefined;
           if (value)
             expect(panels[index]).toContain(
               normalize(
-                key === "Text"
+                key === "Text" || key === "Title"
                   ? value
                   : medication
                     ? formatMedicationDirections(medication, value)
@@ -422,7 +414,7 @@ test.describe("clinical presentation", () => {
       ).toHaveCount(24);
       await expect(
         page.locator('time[datetime="2026-10-31T00:30:00Z"]').first(),
-      ).toHaveText("30 Oct 2026");
+      ).toHaveText("31 Oct 2026 00:30:00Z");
       await expect(page.getByRole("banner")).toContainText("03 Jul 1968");
       await expect(page.locator(".status-green").first()).toHaveText(
         "Given 09:12",

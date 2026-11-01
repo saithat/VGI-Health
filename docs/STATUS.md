@@ -36,7 +36,7 @@ infer active orders/admissions from historical narrative.
 
 ## Role pre-set views (owner decision 2026-10-31)
 
-The vendor master keeps all screens. `Core/Navigation.lean` defines each persona's
+The vendor reference keeps all screens. `Core/Navigation.lean` defines each persona's
 pre-set workflows and public activity/navigator names; `forPersona` removes other
 screens, broken links and unusable macros, then applies role permissions.
 P1 has Schedule, Results and Rx Requests (16 screens); P2 ED Track Board (8);
@@ -56,7 +56,7 @@ pre-set view of the vendor reference, never a scope inferred from candidate
 screens. Removing an expected activity still fails certification. All safety
 rules remain active. Physician pre-op attestations remain available, conditionally,
 on the retained signing screen; the NP is refused in pre-op encounters.
-The three shared masters remain references; all fifteen role views certify.
+The three shared vendor references remain references; all fifteen role views certify.
 
 Default build after merging the chart-note lane: 44.36 seconds. The fifteen
 world-2 simulations on days 1, 4 and 7 complete all 407 tasks; the smoke script
@@ -85,7 +85,7 @@ clinical task byte. All 1,284 tasks across fifty schedules complete; the day
 persona's pre-set view.
 
 Fresh agent runs and release fallbacks load the certified persona view, using
-the shared master as the checker reference. The persona ID preserves that view
+the shared vendor reference as the checker reference. The persona ID preserves that view
 when its owner is an authenticated user UUID; candidate patches cannot change
 ID, owner or role. The real check/deploy/render adapter passes spec file paths.
 
@@ -147,7 +147,7 @@ button reason match in all three releases; rerun
 `node lean/Ehr/Check/check-encounter-wasm.mjs` for that integration check.
 
 Certification is **15/15 persona baselines**, including D5. The three shared
-`canonical.json` files are vendor masters used as `--canonical` references;
+`canonical.json` files are vendor references used as `--canonical` references;
 they mix clinician roles and are recorded as **reference**, not deployable
 single-role programs. Verdicts mark the persona projections **certified**.
 
@@ -178,7 +178,7 @@ navigation replays, including the NP pre-op macro; the attending-prefill seed
 was removed. Sixteen catalog
 seeds remain full-only. Run `python lean/Ehr/Check/certify.py --bad-only` for the
 fast differential regression. The full command records the 15 persona checks,
-previous-release comparisons and three master-reference records. Seed 13 still
+previous-release comparisons and three vendor-reference records. Seed 13 still
 removes all CURES routes; the old W1-only mutation had a valid receipt escape.
 
 Current world-2 day-1 smoke: P1 **42/0**, P2 **22/0**, P3 **38/0**,

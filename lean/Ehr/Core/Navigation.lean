@@ -2,7 +2,7 @@ import Ehr.Core.Types
 
 namespace Ehr
 
-/-- The pre-set view for each persona. Unknown owners retain the vendor master. -/
+/-- The pre-set view for each persona. Unknown owners retain the vendor reference. -/
 def presetWorkflows : String → List String
   | "P1" => ["W1", "W2", "W7"]
   | "P2" => ["W3"]

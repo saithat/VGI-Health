@@ -1,9 +1,22 @@
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { uiScreenSchema } from "../src/ehr/ui/types";
+import type { NodeOf, UiNode } from "../src/ehr/ui/types";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/core/buttonAudit";
 import type {} from "../src/ehr/offline";
+
+function infoNodes(nodes: UiNode[]): NodeOf<"info">[] {
+  return nodes.flatMap((node) => {
+    if ("info" in node) return [node.info];
+    if ("section" in node) return infoNodes(node.section.children);
+    if ("presentation" in node) return infoNodes(node.presentation.children);
+    if ("columns" in node) return infoNodes(node.columns.children);
+    if ("rowAction" in node) return infoNodes(node.rowAction.children);
+    if ("tabs" in node) return infoNodes(node.tabs.body);
+    return [];
+  });
+}
 
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
@@ -76,11 +89,34 @@ test("shared shell and browser visual review", async ({ page }) => {
   }
   if (process.env.REALISM_SHOTS !== "before") {
     await page.goto(
-      "/ehr?mode=replay&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
+      "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     const note = page.locator('[data-info-id="encounterNotes"] li').first();
     await expect(note).toBeVisible();
+    const semantic = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().ui,
+    );
+    if (!semantic) throw new Error("Missing native Notes screen");
+    writeFileSync(
+      `${folder}/chart-notes.ui.json`,
+      JSON.stringify(semantic, null, 2) + "\n",
+    );
+    expect(
+      observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+    ).toEqual(expectedAria(semantic));
+    const expectedBodies = infoNodes([...semantic.side, ...semantic.workspace])
+      .filter((info) => info.infoId === "encounterNotes")
+      .flatMap((info) =>
+        info.rows.map((row) => row.find(([key]) => key === "Text")?.[1] ?? ""),
+      );
+    expect(
+      await page
+        .locator(
+          '[data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body',
+        )
+        .allTextContents(),
+    ).toEqual(expectedBodies);
     await note.scrollIntoViewIfNeeded();
     await page.mouse.move(1, 1);
     await page.screenshot({
