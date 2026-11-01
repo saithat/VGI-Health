@@ -80,6 +80,7 @@ structure CommitSpec where
 inductive When
   | always
   | orderClass (cls : String)      -- some order line's drug is in this class
+  | drugClass (cls : String)       -- same as orderClass; per-line uses that drug
   | medClass (cls : String)        -- the med being given is in this class
   | highAlertMed
   | abnormalResult
@@ -91,6 +92,7 @@ structure EntryReq where
   element : ElementId
   when : When := .always
   perOrderLine : Bool := false     -- required for each order line that matches `when`
+  allowed? : Option (List String) := none -- strings parsed using the element kind
 
 inductive ReviewMode
   | shownOnCommit                  -- shown on the commit screen; no receipt allowed
@@ -519,3 +521,19 @@ Prior-auth convenience clicks preserve every already-confirmed request capture
 on the current slot. They cannot create never/human-only captures: the program
 must expose a human field for an ordinary Event.enter. This preserves both the
 literal human-entry property and confirmed values/provenance.
+
+### Allowed entry values (owner-approved Schedule II rule)
+
+`EntryReq.allowed?` is optional JSON `allowed`. Each listed string is parsed
+with `parseValue el.kind` and must equal the same capture that meets the
+confirmation, human-entry, and unit checks. `none` adds no constraint; `some []`
+allows no value. Numeric refills (`quantity none`) use `some ["0"]` for zero.
+An unmet value constraint blocks signing with a readable allowed-value reason.
+Per-line requirements and the new-line hard stop both enforce it.
+
+`When.drugClass "scheduleII"` matches Schedule II medication order lines;
+`orderClass` remains an equivalent existing constructor. The new class tags
+morphine, hydromorphone, oxycodone and hydrocodone-acetaminophen. Content adopts
+zero refills as an additional per-line requirement in each signing workflow.
+The core tests and generated samples provide the exact requirement encoding;
+other-lane adoption is recorded in `changes-requests.md`.

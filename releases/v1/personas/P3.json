@@ -7765,6 +7765,30 @@
        "element": "vaccineLot"}},
      "id": "w5Immunizations.vaccineLot"},
     {"visibility": "always",
+     "tag": "w5Immunizations.vaccineManufacturer",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w5Immunizations.record",
+     "label": "Manufacturer",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "vaccineManufacturer"}},
+     "id": "w5Immunizations.vaccineManufacturer"},
+    {"visibility": "always",
+     "tag": "w5Immunizations.vaccineProvider",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w5Immunizations.record",
+     "label": "Administering provider",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "vaccineProvider"}},
+     "id": "w5Immunizations.vaccineProvider"},
+    {"visibility": "always",
      "tag": "w5Immunizations.vaccineSite",
      "tab": 0,
      "size": "normal",
@@ -7793,7 +7817,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w5Immunizations.record",
-     "label": "VIS given",
+     "label": "VIS given before vaccination",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "visGiven"}},

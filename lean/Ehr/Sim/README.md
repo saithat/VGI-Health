@@ -42,11 +42,13 @@ naloxone response. No clinical state or display logic is reimplemented in TS.
 
 ## Search spaces and the exactness claim
 
-**Every episode answer is exact within its reported space. It is not a claim of a global
-minimum over every possible interpreter event.** `searchModel` repeats the restriction in the JSON output. Single-episode tasks
-set `exact:true`; multi-episode tasks set `exact:false`, list both per-episode
-spaces and paths, and set `episodeExact:true`. Their counts are independently
-certified episode sums, not a joint optimum across episode/receipt choices.
+**Every task answer is exact within its reported space. It is not a claim of a
+global minimum over every possible interpreter event.** `searchModel` repeats
+the restriction in JSON. Multi-episode tasks are searched jointly, with receipt
+carry and zero-cost resets allowed only after the preceding episode completes.
+They set `exact:true` and include per-episode paths. An optional early review can
+therefore reduce a later episode's cost; counts are not independent episode sums.
+This is per-task optimization, not joint optimization across the whole day.
 
 - **full:** goal-value entries and confirms, goal commit buttons after the
   chosen values are met, goto buttons, tab selections, group toggles, review
@@ -79,7 +81,9 @@ Dijkstra priority queue so concrete searches reduce in the kernel. A TreeMap
 of equality-checked hash buckets holds distances; hash collisions cannot make a
 false certificate pass. Search does not advance KLM time.
 
-`T9_minimum` covers the public auto/fallback function. `T9_minimum_real` connects
+`T9_jointMinimum` covers the CLI’s public joint task search and automatic
+fallbacks; `T9_taskSearch` connects it to actual Core transitions and guarded
+episode resets. `T9_minimum` covers the single-episode auto/fallback function. `T9_minimum_real` connects
 the certificate to actual `Ehr.step` runs, not a copied transition model.
 `History.lean` proves the history equivalence, including safe macros.
 `Certificate.lean` proves replay and the lower bound, including zero-cost edges.
@@ -112,8 +116,10 @@ and retains human-only work and required interruptive acknowledgments.
 CURES can be shown on the ideal commit screen at zero review cost, so a waiver
 is not a floor item. The persona records a scenario's exemption; search may use
 the cheaper legal alternative. A batch-wide waiver is offered only when every
-controlled prescription has the same supported exemption. Surgical six/seven-day
-supplies use report review under the hospital's stricter five-day waiver policy.
+controlled prescription has the same supported exemption. The current surgical
+exemption code is surgery-7-day; supplies above seven days use report review.
+Allowed-value requirements (including zero Schedule II refills) constrain
+unspecified goals; conflicting explicit clinical choices remain complaints.
 
 ## Verification
 

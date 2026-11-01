@@ -30,16 +30,13 @@ function setup() {
 }
 
 describe("temporary JSON interpreter seam", () => {
-  it("forwards bundles and Lean events directly and paints only render output", () => {
+  it("forwards bundles and events; paints render output and exposes view only for inspection", () => {
     const { interp } = setup();
     const page = { text: { s: "Lean owns this page" } };
     const bundle = { resourceType: "Bundle", type: "collection", entry: [] };
     const seen: string[][] = [];
     const wrapped: Interp = {
       ...interp,
-      view() {
-        throw new Error("The browser must not use ScreenView");
-      },
       render(...args) {
         seen.push(args);
         return JSON.stringify(page);

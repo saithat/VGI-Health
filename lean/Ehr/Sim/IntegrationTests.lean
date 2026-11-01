@@ -16,16 +16,17 @@ def controlled := deriveGoals Specs.V1.specV1 controlledFacts user .W6 controlle
 #guard controlled.commits == ["signOrders"]
 #guard controlled.values.any (·.element == "consentVerified")
 #guard controlled.values.any (·.element == "hpUpdate")
+#guard controlled.values.any (fun g => g.element == "refills" && g.value? == some (.qty 0 .none))
 #guard controlled.waivers.map (·.value?) == [some (.code "ed-7-day")]
 -- The ideal UI shows CURES for free; exemption entry is optional there.
 #guard floorMetrics "c" Specs.V1.specV1 controlledFacts user controlled ==
   floorMetrics "c" Specs.V1.specV1 controlledFacts user { controlled with waivers := [] }
 #guard curesReason { opioid with
-  supplyDays? := some 6,
+  supplyDays? := some 8,
   curesExemptReason? := some "postoperative-supply-7-days-or-less" } == none
 #guard curesReason { opioid with
   supplyDays? := some 5,
-  curesExemptReason? := some "postoperative-supply-7-days-or-less" } == some "surgery-5-day"
+  curesExemptReason? := some "postoperative-supply-7-days-or-less" } == some "surgery-7-day"
 #guard taskCuresReason { orders := [opioid, { opioid with curesExemptReason? := none }] } == none
 #guard orderValue "duration" opioid == some (.code "3 days")
 #guard orderValue "prn" opioid == some (.code "false")

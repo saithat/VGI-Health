@@ -1,6 +1,7 @@
 import Ehr
 import Ehr.Api
 import Ehr.Cli.Sim
+import Ehr.Render.Cli
 
 /-!
 # `ehr` command-line tool (native)
@@ -12,7 +13,8 @@ Subcommands (JSON over files, stdin, and stdout):
 - `ehr run-batch <file.jsonl>`: each line is a `BatchCase`
   `{spec, program, facts, user, events}`; prints one `BatchStep`
   `{case, index, state, result, view}` per event, as JSON lines.
-- `ehr spec-export <name>`: prints a spec as JSON (`tiny` for now).
+- `ehr spec-export <name>`: prints a registered spec as JSON.
+- `ehr cures-exemptions-export`: prints the shared CURES exemption codes.
 
 All subcommands call the same functions as the WASM exports (`Ehr.Api`).
 -/
@@ -42,7 +44,8 @@ def usage : String :=
   "  view                     stdin ViewInput  -> ScreenView\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
   "  spec-export <name>       spec JSON (names: " ++
-    ", ".intercalate (specRegistry.map (·.1)) ++ ")"
+    ", ".intercalate (specRegistry.map (·.1)) ++ ")\n" ++
+  "  cures-exemptions-export  shared CURES exemption codes (JSON)"
 
 /-- Decode stdin as `α`, apply `f`, and print the JSON result. -/
 def stdinCommand (α β : Type) [Lean.FromJson α] [Lean.ToJson β] (f : α → β) : IO UInt32 := do
@@ -72,10 +75,20 @@ def main (args : List String) : IO UInt32 := do
   match args with
   | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
   | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
+  | "render-screens" :: rest => Render.Cli.run rest
+  | ["render"] => stdinCommand Render.RenderInput Render.PageNode Render.runRender
+  | ["facts"] =>
+    match decodeJson Render.Fhir.FactsInput (← readStdin) with
+    | .error e => IO.eprintln e; IO.println (errorJson e); return 1
+    | .ok i => match Render.Fhir.runFacts i with
+      | .error e => IO.eprintln e; IO.println (errorJson e); return 1
+      | .ok out => IO.println (encodeJson out); return 0
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
+  | ["cures-exemptions-export"] =>
+    IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
   | ["spec-export", name] =>
     match specRegistry.lookup name with
     | some sp => IO.println (Lean.toJson sp).pretty; return 0

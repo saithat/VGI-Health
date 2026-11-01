@@ -1,19 +1,37 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run check lean app infra-up infra-down infra-wait infra-reset setup load synthea fixtures wasm
+.PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose -f infra/docker-compose.yml
+APP_PORT ?= 5173
+LIVE_WORLD ?= runs/world/live
+LIVE_DAYS ?= 10
+LIVE_ARGS ?=
 
 # Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
 # setup (project, client, personas -> .env) and fixture load. Safe to re-run.
 install:
 	cd lean && lake build
 	pnpm install
+	$(MAKE) wasm-check
 	$(MAKE) infra-up
 	$(MAKE) setup
 	$(MAKE) load
 
 run:
-	@echo "TODO: start Medplum (if needed) and the app in replay mode"
+	$(MAKE) wasm-check
+	pnpm --filter app build
+	node scripts/demo-urls.mjs $(APP_PORT)
+	pnpm --filter app exec vite preview --host 0.0.0.0 --port $(APP_PORT) --strictPort
+
+# Generate a real local world, then run agent nights with an online LLM backend.
+run-live:
+	@set -eu; \
+	if [ -n "$${ANTHROPIC_API_KEY:-}" ]; then backend=claude; \
+	elif command -v codex >/dev/null 2>&1; then backend=codex; \
+	else echo 'run-live needs ANTHROPIC_API_KEY or an authenticated codex CLI.' >&2; exit 1; fi; \
+	$(MAKE) infra-up; \
+	pnpm --filter world gen --seed 7 --days $(LIVE_DAYS) --out $(LIVE_WORLD); \
+	pnpm --filter agent run-days --backend "$$backend" --world $(LIVE_WORLD) --days $(LIVE_DAYS) $(LIVE_ARGS)
 
 check:
 	cd lean && lake build
@@ -52,3 +70,7 @@ synthea:
 wasm:
 	wasm/build-ehr.sh
 	wasm/install-into-app.sh
+	node scripts/wasm-assets.mjs --write
+
+wasm-check:
+	node scripts/wasm-assets.mjs

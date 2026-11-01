@@ -79,9 +79,15 @@ def ccText (cc : Json) : String :=
 def first (j : Json) (k : String) : Json :=
   (arr j k).headD .null
 
+/-- Construct a string by pushes. On wasm32 Lean 4.35's runtime string-data
+reader produces a boxed UInt32 zero as the list terminator, while its native
+String.ofList primitive expects a scalar list terminator. Structural folds
+inspect the constructor tag correctly; pushing avoids that runtime mismatch. -/
+def stringOfChars (cs : List Char) : String := cs.foldl String.push ""
+
 /-- A substring of `s`: `len` characters from `start`. -/
 def sub (s : String) (start len : Nat) : String :=
-  String.ofList ((s.toList.drop start).take len)
+  stringOfChars ((s.toList.drop start).take len)
 
 /-- The date part (`YYYY-MM-DD`) of a FHIR dateTime. -/
 def dayOf (t : String) : String := sub t 0 10
@@ -146,9 +152,18 @@ def unitOf (q : Json) : Option UnitKind :=
 /-- A resource's type. -/
 def resourceType (r : Json) : String := str r "resourceType"
 
-/-- **The resources of a bundle**: `entry[i].resource`, in order. -/
+/-- Normalize a fixture resource's identity. Medplum resources keep their
+server id; Synthea transaction entries without an id use the entire fullUrl. -/
+def entryResource (e : Json) : Json :=
+  let r := field e "resource"
+  match r with
+  | .obj _ =>
+    if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+  | _ => r
+
+/-- **The resources of a bundle**: normalized `entry[i].resource`, in order. -/
 def bundleResources (b : Json) : List Json :=
-  (arr b "entry").map (fun e => field e "resource")
+  (arr b "entry").map entryResource
 
 /-- Sort newest first by a date key (stable: ties keep bundle order). -/
 def newestFirst {α : Type} (key : α → String) (l : List α) : List α :=
@@ -191,7 +206,7 @@ def initials (p : Json) : String :=
   let n := officialName p
   let g := (givenNames n).headD ""
   let f := str n "family"
-  String.ofList ((g.toList.take 1 ++ f.toList.take 1).map Char.toUpper)
+  stringOfChars ((g.toList.take 1 ++ f.toList.take 1).map Char.toUpper)
 
 /-- `"F"`, `"M"`, or `"U"`. -/
 def sexOf (p : Json) : String :=
@@ -199,6 +214,15 @@ def sexOf (p : Json) : String :=
   | "female" => "F"
   | "male" => "M"
   | _ => "U"
+
+/-- Stable identity shared by fixture and Medplum Patient records. This is
+also the wristband payload: the Synthea identifier search token when present,
+else the normalized source id. Medplum assigns unrelated server ids. -/
+def patientIdOf (p : Json) : String :=
+  match (arr p "identifier").find? (fun i =>
+      str i "system" == "https://github.com/synthetichealth/synthea" && str i "value" != "") with
+  | some i => "https://github.com/synthetichealth/synthea|" ++ str i "value"
+  | none => str p "id"
 
 /-- The medical record number (identifier of type `MR`), else the id. -/
 def mrnOf (p : Json) : String :=
@@ -647,7 +671,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let visitDx := match latestEncounter rs with
     | some e => firstCode (first e "reasonCode")
     | none => ""
-  { patientId := str p "id"
+  { patientId := patientIdOf p
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
     allergyClasses := ((allergies.filter allergyActive).flatMap allergyClassesOf).eraseDups

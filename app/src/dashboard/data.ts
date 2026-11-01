@@ -13,6 +13,9 @@ import {
 export const runIndexSchema = z.array(
   z.object({ id: z.string().regex(/^[\w-]+$/), files: z.array(z.string()) }),
 );
+export const defaultRunSchema = z.object({
+  runId: z.string().regex(/^[\w-]+$/),
+});
 export const manifestSchema = z.object({
   runId: z.string(),
   days: z.number().int().positive(),

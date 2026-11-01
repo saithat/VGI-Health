@@ -338,3 +338,46 @@ Minimal compatibility: Tiny v1.1 exposes the required human request field,
 TinyTests enters it before checking status/signing, and the T3 frame proof
 splits the preservation branch. The Tiny spec retains its never policy.
 View reasons and public-step service tests match the stricter behavior.
+
+## World follow-up: albuterol absolute cap
+
+Added the requested 5 mg per-dose cap (`maxDoseMgTenths := 50`) while keeping
+albuterol's existing mg/kg range. Regression guards cover the three adolescent
+weights from the world run (52.5, 69.6 and 71.4 kg), doses just below and above
+the capped range, a smaller child's ordinary dose, and overdose without weight.
+
+
+## Owner-approved Schedule II rule: allowed entry values
+
+Added optional `EntryReq.allowed?` (`allowed` in JSON). The guard compares each
+allowed string parsed using the element kind to the exact capture that meets
+confirmation, validity, human-entry, units and slot requirements. No constraint
+preserves old behavior; an empty list permits no capture. Numeric refills are
+`quantity none`, so `some ["0"]` permits `qty 0 none`; wrong units, unchecked
+flags and unconfirmed values still fail. Both commit and current-line guards
+use the check. Entry reasons identify failing matching slots and report
+`value not allowed: refills (allowed: 0)` for confirmed nonzero refills.
+
+`When.drugClass` is an additional spelling of `orderClass`, for compatibility
+with the requested contract. With `perOrderLine := true` it matches the drug on
+that line. The four requested Schedule II formulary drugs carry `scheduleII`;
+tramadol, lorazepam and alprazolam retain controlled-II-IV without that class.
+The first therapeutic class is preserved for duplicate-therapy detection.
+
+T0's existing `commitGuard_iff` now refers to the stricter executable `entryMet`.
+`entryMet_iff_values` and `commitGuard_iff_values` additionally spell out the
+allowed-value witnesses. `T0_entry_values_allowed` adds the constraint to all
+previous value guarantees, and the original `T0_entry_values` is derived from
+it. `T0_entry_values_perLine` proves the same guarantees on every matching
+order slot. Concrete completing examples discharge all hypotheses for both
+new T0 corollaries. Original Comparator statements stay intact; no safety
+property or hospital spec is weakened. New theorems are axiom-audited.
+
+Core guards cover confirmed bad defaults, successful zero entry, all four
+Schedule II drugs, all three Schedule IV exclusions, whole-episode and per-line
+checks, inactive requirements, empty/invalid allowlists, units, pending values,
+wrong-slot and mixed-line captures, view reasons, human/macro new-line stops,
+and the JSON API. GenTS regenerates the optional list and new constructor;
+real JSON samples include the requirement and an example spec. Content/check,
+agent validators, and WASM artifact adoption are requested explicitly in
+`changes-requests.md`, respecting lane ownership.

@@ -1,4 +1,6 @@
 import Ehr.Sim.IntegrationTests
+import Ehr.Sim.TaskMinimumTests
+import Ehr.Sim.FactsTests
 
 /-! Axiom audit for every named simulator theorem. -/
 
@@ -62,3 +64,19 @@ import Ehr.Sim.IntegrationTests
 #print axioms Ehr.Sim.T9_minimum_real
 #print axioms Ehr.Sim.T9_minimum
 #print axioms Ehr.Sim.MinClicksTests.microSatisfiable
+
+#print axioms Ehr.Sim.Certificate.search_sound
+#print axioms Ehr.Sim.Certificate.map_run
+#print axioms Ehr.Sim.Certificate.lift_run
+#print axioms Ehr.Sim.taskNorm_twice
+#print axioms Ehr.Sim.taskNorm_index
+#print axioms Ehr.Sim.taskNorm_state
+#print axioms Ehr.Sim.taskContext_norm
+#print axioms Ehr.Sim.taskDone_norm
+#print axioms Ehr.Sim.taskMoves_norm
+#print axioms Ehr.Sim.taskWeight_norm
+#print axioms Ehr.Sim.task_ui_safe
+#print axioms Ehr.Sim.task_reset_requires_goal
+#print axioms Ehr.Sim.taskStep_norm
+#print axioms Ehr.Sim.T9_taskSearch
+#print axioms Ehr.Sim.T9_jointMinimum

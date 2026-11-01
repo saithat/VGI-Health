@@ -93,7 +93,25 @@ def macroNaloxone : Program := seed 14 <|
       .setValue "w1Orders.freq" "q4h", .setValue "w1Orders.naloxoneOffer" "offered"] })
   |>.updateScreen "w1Orders" fun s => s.insertAfter "w1Orders.banner"
     [macroBtn s.id "autoNaloxone" "badNaloxone" "Oxycodone 30 mg q4h + naloxone offered"]
-/-- Stable filenames and all fourteen seeds. -/
+/-- 15: Hide controlled-prescription details in a collapsed sign-screen group.
+The EPCS no-receipt review must still block signing. -/
+def hiddenControlledDetails : Program := seed 15 <| (base 15).updateScreen "w1Sign" fun s =>
+  (s.insertAfter "w1Sign.banner" [group s.id "epcsDetails" "Prescription details" (startCollapsed := true)])
+    |>.updateComp "w1Sign.orders" fun c => { c with parent? := some "w1Sign.epcsDetails" }
+
+/-- 16: Default refills to three, then strand that value on a signing screen
+with no route back to a correction field. Even human confirmation cannot make
+three permissible; the spec's allowed-value hard stop must block signing. -/
+def scheduleIIRefills : Program := seed 16 <|
+  ((base 16).updateScreen "w1Orders" fun s =>
+    s.updateComp "w1Orders.refills" fun c =>
+      { c with kind := .field "refills" .current (.default "3") })
+  |>.updateScreen "w1Sign" fun s =>
+    { s with components := s.components.filter fun c => match c.kind with
+        | .button (.goto _) | .button .back | .«macro» _ => false
+        | _ => true }
+
+/-- Stable filenames and all sixteen seeds. -/
 def programs : List (String × Program) :=
   [("01-hidden-allergies", hiddenAllergies), ("02-prefilled-identity", prefilledIdentity),
    ("03-pounds-as-weight", poundsAsWeight), ("04-macro-override", macroOverride),
@@ -101,8 +119,9 @@ def programs : List (String × Program) :=
    ("07-unreachable-refill", unreachableRefill), ("08-forged-consent", forgedConsent),
    ("09-hidden-allergy-alert", hiddenAllergyAlert), ("10-invented-alert", inventedAlert),
    ("11-repeated-interaction", repeatedInteraction), ("12-passive-popup", passivePopup),
-   ("13-no-cures", noCures), ("14-macro-naloxone", macroNaloxone)]
-#guard programs.length == 14
+   ("13-no-cures", noCures), ("14-macro-naloxone", macroNaloxone),
+   ("15-hidden-controlled-details", hiddenControlledDetails), ("16-schedule-ii-refills", scheduleIIRefills)]
+#guard programs.length == 16
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
 #guard !(reachable unreachableRefill "home").contains "w7Decision"

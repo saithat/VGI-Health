@@ -7,6 +7,7 @@ import type {
 } from "../../../agent/src/schema";
 import {
   loadRun,
+  defaultRunSchema,
   readRunJson,
   runIndexSchema,
   testPoints,
@@ -912,26 +913,36 @@ function BreakPanel({
   );
 }
 export function Dashboard({
-  interpFactory,
+  interpFactory: suppliedFactory,
 }: {
   interpFactory?: InterpFactory;
 }) {
   const query = new URLSearchParams(window.location.search);
   const [view, setView] = useState(query.get("view") ?? "Evolution");
-  const [runId, setRunId] = useState(query.get("run") ?? "mock");
+  const [runId, setRunId] = useState(query.get("run") ?? "");
   const [index, setIndex] = useState<ReturnType<typeof runIndexSchema.parse>>(
     [],
   );
   const [run, setRun] = useState<RunData | null>(null),
     [error, setError] = useState("");
+  const interpFactory =
+    run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory;
   const [persona, setPersona] = useState("P1"),
     [night, setNight] = useState(1),
     [rejectionId, setRejectionId] = useState("");
   useEffect(() => {
     let active = true;
-    readRunJson("/runs/index.json")
-      .then((raw) => {
-        if (active) setIndex(runIndexSchema.parse(raw));
+    Promise.all([
+      readRunJson("/runs/index.json"),
+      readRunJson("/runs/default.json"),
+    ])
+      .then(([raw, selected]) => {
+        if (active) {
+          setIndex(runIndexSchema.parse(raw));
+          setRunId(
+            (current) => current || defaultRunSchema.parse(selected).runId,
+          );
+        }
       })
       .catch((e: unknown) => {
         if (active)
@@ -960,6 +971,7 @@ export function Dashboard({
     };
   }, [index, runId]);
   useEffect(() => {
+    if (!runId) return;
     const q = new URLSearchParams({ run: runId, view });
     window.history.replaceState(null, "", `/dashboard?${q}`);
   }, [runId, view]);

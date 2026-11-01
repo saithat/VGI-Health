@@ -6,6 +6,8 @@
 
 "Release v2: antibiotic orders now carry a confirmed indication, and nurses see it before each dose. Stewardship programs are required by federal and California law; the per-order indication is our hospital's policy, modeled on CDC guidance."
 
+**Source class:** Hospital policy (not law). The per-order coded indication and MAR display are local policy modeled on CDC guidance; 42 CFR §482.42(b) and H&S §1288.85 require stewardship programs. This release adds no new rule from guidance or accreditation beyond the owner-approved existing policy.
+
 ## Release items
 
 - **R2-1:** Every antibiotic order line requires a coded `abxIndication`, confirmed by a prescriber, including surgeons. The old free-text label indication remains required.
@@ -20,3 +22,5 @@ All old rules remain unchanged. `specV2.Extends specV1_1` is proved by `decide`,
 Generated `spec.json` and `canonical.json` come from `cd lean && lake exe export-content`. Source audit and primary-source links: [docs/regulations.md](../../docs/regulations.md#5-release-motivation-text-exact-phrasing-to-use). These files describe demo policy, not legal or clinical advice.
 
 `canonical.json` is the full W1–W7 authoring template. The five role-specific deployment candidates are `personas/P1.json` … `personas/P5.json`; certify the matching candidate before deployment. These exports do not themselves carry a checker certificate.
+
+Prior-auth requests retain the never-prefill policy: enter the request field as a human. The convenience action cannot forge that capture and preserves any confirmed request.

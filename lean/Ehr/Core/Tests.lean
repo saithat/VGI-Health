@@ -1,4 +1,5 @@
 import Ehr.Examples.TinyTests
+import Ehr.Api
 
 namespace Ehr.CoreTests
 open Ehr.Examples.Tiny Ehr.Examples.TinyTests
@@ -55,6 +56,17 @@ def passive : AlertSpec :=
 #guard passive.targetsScreen { id := "renamed", title := "New layout", workflow := "W1", components := [] }
 #guard !passive.targetsScreen { id := "order", title := "Other", workflow := "W5", components := [] }
 -- Absolute caps prevent false low-dose alerts in heavy teenagers.
+#guard [525, 696, 714].all fun kgTenths =>
+  !doseOutOfRange { facts with weightToday? := some (kgTenths, .kg) }
+    (orderState "albuterol" 50 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := some (714, .kg) }
+  (orderState "albuterol" 51 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := some (714, .kg) }
+  (orderState "albuterol" 49 none) 0 "albuterol"
+#guard !doseOutOfRange { facts with weightToday? := some (200, .kg) }
+  (orderState "albuterol" 30 none) 0 "albuterol"
+#guard doseOutOfRange { facts with weightToday? := none }
+  (orderState "albuterol" 51 none) 0 "albuterol"
 #guard !doseOutOfRange { facts with weightToday? := some (1200, .kg) }
   (orderState "ibuprofen" 4000 none) 0 "ibuprofen"
 #guard doseOutOfRange { facts with weightToday? := some (1200, .kg) }
@@ -120,8 +132,7 @@ def enteredService : State :=
 -- a value entered through another field; it cannot erase provenance.
 def confirmedRequest : State :=
   { serviceState with captured := serviceState.captured ++
-    [{ element := priorAuthElement, slot := 0, value := .flag false,
-       byHuman := true, confirmed := true, provenance? := some "human field" }] }
+    [{ element := priorAuthElement, slot := 0, value := .flag false, byHuman := true, confirmed := true, provenance? := some "human field" }] }
 #guard requestPriorAuth specV1_1 user .human confirmedRequest == (confirmedRequest, .ignored)
 #guard requestPriorAuth specV1_1 user .«macro» confirmedRequest == (confirmedRequest, .ignored)
 #guard requestPriorAuth specV1_1 user .human afterPA.1 == (afterPA.1, .ignored)
@@ -137,4 +148,119 @@ def actionRequestSpec : Spec :=
 #guard (capturedAt? (requestPriorAuth actionRequestSpec user .«macro» serviceState).1
   priorAuthElement 0).map (·.confirmed) == some false
 #guard requestPriorAuth actionRequestSpec user .human confirmedRequest == (confirmedRequest, .ignored)
+
+namespace ScheduleII
+
+/-- Example adoption of 21 CFR 1306.12(a), kept here for the content lane to
+apply to its hospital specs: each Schedule II medication line has zero refills. -/
+def zeroRefills : EntryReq :=
+  { commit := "signOrders", element := "refills", when := .drugClass "scheduleII",
+    perOrderLine := true, allowed? := some ["0"] }
+
+def refills : ElementSpec :=
+  { id := "refills", label := "Refills", kind := .quantity .none,
+    enteredBy := [.physician], prefill := .defaultConfirm,
+    friction := .compliance, fhirTarget := "MedicationRequest.dispenseRequest.numberOfRepeatsAllowed" }
+
+def constrainedSpec : Spec :=
+  { spec with
+    elements := [(spec.element? "drug").getD default, refills]
+    entries := [zeroRefills], reviews := [], alerts := [] }
+
+def constrainedProgram : Program :=
+  { program with start := "order", screens :=
+      [{ id := "order", title := "Order", workflow := "W1", components :=
+        [{ id := "drug", kind := .field "drug" .current .none },
+         { id := "refills", kind := .field "refills" .current (.default "3") },
+         { id := "sign", kind := .button (.commit "signOrders") },
+         addLine] }], macros := [] }
+
+def run (events : List Event) : State :=
+  runAll constrainedSpec constrainedProgram facts user .human
+    (init constrainedSpec constrainedProgram facts user) events
+
+def bad : State := run [.enter "drug" (.code "hydromorphone"), .confirm "refills"]
+def good : State := run [.enter "drug" (.code "hydromorphone"), .enter "refills" (.qty 0 .none)]
+def sign (s : State) := step constrainedSpec constrainedProgram facts user .human s (.click "sign")
+
+#guard roundTrips zeroRefills
+#guard match decodeJson EntryReq "{\"commit\":\"signOrders\",\"element\":\"refills\",\"when\":\"always\",\"perOrderLine\":false}" with
+  | .ok rq => rq == { commit := "signOrders", element := "refills" }
+  | .error _ => false
+#guard roundTrips constrainedSpec
+#guard roundTrips ({ zeroRefills with allowed? := some [] } : EntryReq)
+#guard whenHolds facts bad (.drugClass "scheduleII")
+#guard !lineMatches facts bad (.drugClass "scheduleII") 0 "tramadol"
+#guard !lineMatches facts bad (.drugClass "scheduleII") 0 "lorazepam"
+#guard !lineMatches facts bad (.drugClass "scheduleII") 0 "alprazolam"
+#guard !entryMet constrainedSpec facts user bad zeroRefills
+#guard sign bad == (bad, .blocked "value not allowed: refills (allowed: 0)")
+#guard (view constrainedSpec constrainedProgram facts user bad).blocked.contains
+  ("sign", "value not allowed: refills (allowed: 0)")
+#guard !(view constrainedSpec constrainedProgram facts user bad).enabled.contains "sign"
+#guard !currentLineComplete constrainedSpec facts user bad
+#guard (step constrainedSpec constrainedProgram facts user .human bad (.click "add")).2 ==
+  .blocked "finish this order line first"
+#guard (step constrainedSpec constrainedProgram facts user .«macro» bad (.click "add")).2 ==
+  .blocked "finish this order line first"
+#guard currentLineComplete constrainedSpec facts user good
+#guard entryMet constrainedSpec facts user good zeroRefills
+#guard (sign good).2 == .ok
+#guard (sign good).1.commits == ["signOrders"]
+-- Every Schedule II drug is constrained; Schedule IV and ordinary drugs are not.
+#guard ["morphine", "hydromorphone", "oxycodone", "hydrocodone-acetaminophen"].all fun d =>
+  (sign (run [.enter "drug" (.code d), .enter "refills" (.qty 30 .none)])).2 ==
+    .blocked "value not allowed: refills (allowed: 0)"
+#guard ["tramadol", "lorazepam", "alprazolam", "amoxicillin"].all fun d =>
+  (sign (run [.enter "drug" (.code d), .confirm "refills"])).2 == .ok
+-- Units and confirmation remain mandatory even when the number is allowed.
+#guard !entryMet constrainedSpec facts user
+  (run [.enter "drug" (.code "morphine"), .enter "refills" (.qty 0 .mg)]) zeroRefills
+#guard !entryMet constrainedSpec facts user
+  { good with captured := good.captured.map fun x => { x with confirmed := false } } zeroRefills
+#guard !entryMet constrainedSpec facts user good { zeroRefills with allowed? := some [] }
+#guard !entryMet constrainedSpec facts user good { zeroRefills with allowed? := some ["bad number"] }
+#guard entryMet constrainedSpec facts user bad { zeroRefills with allowed? := none }
+-- Whole-episode constraints use the same check, and inactive requirements do not block.
+#guard !entryMet constrainedSpec facts user bad { zeroRefills with perOrderLine := false }
+#guard entryMet constrainedSpec facts user good { zeroRefills with perOrderLine := false }
+#guard entryMet constrainedSpec facts user (run []) zeroRefills
+-- A good value on another line cannot satisfy the Schedule II line.
+def otherSlot : State :=
+  { bad with captured := bad.captured ++
+      [{ element := "refills", slot := 1, value := .qty 0 .none, byHuman := true, confirmed := true }] }
+#guard !entryMet constrainedSpec facts user otherSlot zeroRefills
+#guard (sign otherSlot).2 == .blocked "value not allowed: refills (allowed: 0)"
+-- Mixed lines: every matching line needs its own zero; nonmatching lines may have refills.
+def mixed : State :=
+  { good with currentSlot := 1, captured := good.captured ++
+      [{ element := "drug", slot := 1, value := .code "oxycodone", byHuman := true, confirmed := true },
+       { element := "refills", slot := 1, value := .qty 30 .none, byHuman := true, confirmed := true }] }
+#guard !entryMet constrainedSpec facts user mixed zeroRefills
+#guard entryMet constrainedSpec facts user
+  { mixed with captured := setCaptured mixed.captured { element := "refills", slot := 1, value := .qty 0 .none, byHuman := true, confirmed := true } } zeroRefills
+#guard entryMet constrainedSpec facts user
+  { mixed with captured := setCaptured mixed.captured { element := "drug", slot := 1, value := .code "tramadol", byHuman := true, confirmed := true } } zeroRefills
+-- An unconfirmed zero and a confirmed disallowed value cannot be combined.
+#guard !entryMet constrainedSpec facts user
+  { bad with captured := bad.captured ++
+      [{ element := "refills", slot := 0, value := .qty 0 .none,
+         byHuman := true, confirmed := false }] } zeroRefills
+-- Existing kind validation is retained even if the allowlist contains false.
+#guard !hasGoodEntry facts user
+  { good with captured := [{ element := "refills", slot := 0, value := .flag false, byHuman := true, confirmed := true }] }
+  { refills with kind := .flag } (some 0) (some ["false"])
+-- The API's parsed JSON path uses the same hard stop and blocked reason.
+#guard match decodeJson StepOutput (apiStep (encodeJson constrainedSpec) (encodeJson constrainedProgram)
+    (encodeJson facts) (encodeJson user) (encodeJson bad) (encodeJson (Event.click "sign"))) with
+  | .ok out => out.result == .blocked "value not allowed: refills (allowed: 0)"
+  | .error _ => false
+-- Coded and text constraints compare exact values, with no numeric coercion.
+#guard entryValueAllowed { refills with kind := .text } (some ["0"]) (.text "0")
+#guard !entryValueAllowed { refills with kind := .text } (some ["0"]) (.text "0.0")
+#guard entryValueAllowed { refills with kind := .coded "refills" } (some ["0"]) (.code "0")
+#guard !entryValueAllowed refills (some ["0"]) (.text "0")
+
+end ScheduleII
+
 end Ehr.CoreTests

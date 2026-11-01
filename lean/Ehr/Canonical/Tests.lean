@@ -184,11 +184,15 @@ def w5Path : List Event :=
 /-- Pediatric sign-ready state. -/
 def w5 : State := run w5Path (f := child) (u := np)
 #guard (finish w5 "w5Sign" "signOrders" (f := child) (u := np)).commits == ["signOrders"]
-/-- W5 vaccine record with lot, route, site and VIS. -/
-def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (u := np))
-  ([.click "w5Sign.next"] ++ enter "w5Immunizations"
+/-- W5 vaccine entries, including the VIS edition and administering provider. -/
+def vaccineEntries : List Event := enter "w5Immunizations"
     [("vaccine", .code "150"), ("vaccineLot", .text "FLU24-0931"),
-     ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)])
+     ("vaccineManufacturer", .text "Synthetic vaccine manufacturer"),
+     ("vaccineProvider", .text "np1"), ("visEditionDate", .text "2025-01-31"),
+     ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)]
+/-- W5 vaccine record with lot, route, site, manufacturer, provider and VIS. -/
+def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (u := np))
+  ([.click "w5Sign.next"] ++ vaccineEntries)
   (f := child) (u := np)
 #guard (finish vaccineState "w5Immunizations" "recordImmunization" (f := child) (u := np)).commits.contains "recordImmunization"
 /-- W5 close retains rooming and medication reconciliation. -/

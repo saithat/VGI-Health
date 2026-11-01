@@ -8,30 +8,50 @@ pnpm --filter app lint
 pnpm --filter app test
 ```
 
-The default app uses an explicitly labeled, uncertified **MOCK** W1 outpatient
-interpreter. It supports rooming, documentation, medication/lab ordering, review
-and sign navigation, plus eight chart activities. All P1–P5 development personas
-currently open this W1 fixture. The mock can navigate, select tabs, expand groups
-and retain values. Signing, receipts, confirmations, clinical alert evaluation
-and macros await Lean WASM. No clinical writes occur.
+`make run` serves an offline clinical UI browser and recorded dashboard. It does
+not start Docker, require Medplum, or call external services. Open `/browse` for
+all releases, persona projections, bad programs and recorded run versions; select
+one of the 174 committed Synthea patients by name or flags.
 
-The entire EHR, including its shell and every panel row, arrives as a page tree.
-`src/ehr/painter.tsx` maps whitelisted tags/attributes/classes to React and DOM
-interactions to generated Lean Event JSON. Only nodes annotated with `data-event`
-produce events; `toggle` maps to Lean `click`. Scroll surfaces carry the screen id
-in `data-comp-id`. Quantities are encoded in tenths; flags use input checked state.
-Lean owns inclusion, enabled actions, state, alerts, content and layout. The
-painter has no component-kind rendering. `src/ehr.css` is the fixed §9.1 vocabulary;
-its parsed lint test reads the design document directly. Responsive layout wraps
-content; nothing is hidden. The old Mantine EHR path is removed.
+`/?persona=P1` through P5 open v1 persona projections with workflow defaults.
+Add `&run=mock` (or a real recorded run id) to open its deployed program instead.
+P2 selects a fixture with a latest ED encounter, P3 an inpatient encounter, P4 a
+child and P5 a surgical history. These are historical synthetic records; the app
+opens a local episode with the committed reference date (2026-10-31). P5 supplies
+`preop` encounter context to Lean. Reset or switching programs/patients starts a
+fresh episode; no clinical writes occur.
 
-`src/core/session.ts` calls `init`, then `render`, and on an event calls `step`
-then `render`. It forwards opaque JSON without runtime certification or tree
-validation. `Interp.render` takes the same five string inputs as `view`; the
-third is a FHIR bundle (or facts for the legacy mock), allowing Lean to derive
-both facts and display. `facts(bundleJson)` supplies the facts-only export.
-The app selects the mock explicitly, never on interpreter failure. Replace this
-selection with the real Interp when all WASM exports arrive.
+Explicit links use `/ehr?release=v1&program=releases/v1/personas/P1.json&persona=P1&patient=<fixture-id>`.
+Every EHR, including a mock-authored recorded program, executes **real Lean WASM**.
+Only the labeled mock dashboard replay uses the mock interpreter. `/dashboard`
+retains recorded run selection (`VGI_RUN=mock make run` overrides its default).
+Medplum remains optional infrastructure via `make infra-up`, `make setup` and
+`make load`; it is not consulted by the offline EHR route.
+
+The browser build copies committed JSON under `/releases`, `/programs`, `/runs`
+and `/fixtures` into `app/dist`; the Vite dev server serves the same artifacts.
+The catalog discovers programs by their actual screen/start structure and
+records deployed pointers separately from historical versions.
+
+The EHR calls `ehr_facts` with `{bundle, context}` once, then passes its facts to
+`init`/`step`/`view` and both facts and display to `render`. The existing generic
+painter draws only Lean's page tree and forwards annotated events. The collapsible
+inspector reads Lean's state and view for actions, blockers, provenance, pending
+confirms, receipts, alerts and commits. It does not control clinical behavior.
+
+Generate checker verdicts with `pnpm --filter app verdicts`. The script discovers
+every program and writes `app/public/verdicts.json`, including source hashes. If
+the native `ehr` advertises `check`, it runs
+`ehr check --spec <release-spec> --program <program>` for each program. Until that
+CLI lands, the inspector says **verdict not computed**. It never treats authored
+mock certificates as checker results. Re-run the script after changing programs.
+
+Verify assets with `make wasm-check`; rebuild stale ones with `make wasm` before
+committing. `pnpm --filter app test:live` runs real WASM Playwright episodes on
+desktop and narrow viewports with external network requests denied, including
+W1 identity/signing, the hidden-allergy bad program, P3's MAR and the browser.
+The unit suite additionally projects all 174 bundles and renders every catalog
+program through the committed WASM.
 
 Temporary `Html` JSON uses Lean's derived encoding:
 
@@ -170,7 +190,7 @@ task traces with the **same task and patient inputs**. Each side's
 not the agent trace's absolute shift timestamp `t`. Counters count recorded
 operators separately. No wall-clock or clinical cost model is inferred by the UI.
 
-When the WASM lane's adapter is ready, wire its Interp in the route:
+`ReplayApp` loads the WASM adapter and wires real recordings into the route:
 
 ```tsx
 <Dashboard interpFactory={() => wasmInterp} />

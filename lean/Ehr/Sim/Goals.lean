@@ -97,16 +97,15 @@ def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   else none
 
 /-- Translate typed world exemption decisions to the hospital's coded
-vocabulary. Surgical supplies of six or seven days use CURES review because
-this hospital's policy accepts at most five, even though the world records
-seven-day statutory eligibility. No note-section strings are interpreted. -/
+vocabulary. Surgical supply decisions use the current hospital code, surgery-7-day,
+with its seven-day bound. The removed surgery-5-day code is not an alias. No note-section strings are interpreted. -/
 def curesReason (o : OrderChoice) : Option String := do
   let r ← o.curesExemptReason?
   if r == "ed-supply-7-days-or-less" then
     if o.supplyDays?.any (· ≤ 7) then some "ed-7-day" else none
   else if r == "postoperative-supply-7-days-or-less" then
-    if o.supplyDays?.any (· ≤ 5) then some "surgery-5-day" else none
-  else if ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"].contains r then some r
+    if o.supplyDays?.any (· ≤ 7) then some "surgery-7-day" else none
+  else if ["admin-in-facility", "ed-7-day", "surgery-7-day", "hospice", "cures-unavailable"].contains r then some r
   else none
 
 /-- A single commit-wide waiver is used only when every controlled order has
@@ -250,6 +249,31 @@ def checkFit (sp : Spec) (facts : Facts) (user : User) (g : ValueGoal) : ValueGo
   | _, none => (g, [s!"element {g.element} is not in the spec"])
   | none, _ => (g, [])
 
+/-- Resolve every applicable allowed-value constraint for an otherwise
+unspecified entry. Explicit clinical choices are preserved and a conflict is
+reported, rather than silently changed to make a guard pass. -/
+def constrainGoal (sp : Spec) (facts : Facts) (user : User) (hyp : State)
+    (g : ValueGoal) : ValueGoal × List String :=
+  match sp.element? g.element with
+  | none => (g, [])
+  | some el =>
+    let requirements := sp.entries.filter fun rq =>
+      rq.commit == g.commit && rq.element == g.element && rq.allowed?.isSome &&
+        (if rq.perOrderLine then (orderLines hyp).any fun (slot, drug) =>
+          (g.slot?.isNone || g.slot? == some slot) && lineMatches facts hyp rq.when slot drug
+         else whenHolds facts hyp rq.when)
+    let fits := fun v => requirements.all (fun rq => entryValueAllowed el rq.allowed? v)
+    if requirements.isEmpty then (g, []) else
+    match g.value? with
+    | some v => if fits v then (g, []) else
+        (g, [s!"chosen value for {g.element} conflicts with an allowed-value requirement"])
+    | none =>
+      let candidates := requirements.flatMap fun rq =>
+        (rq.allowed?.getD []).filterMap (parseValue el.kind)
+      match candidates.find? (fun v => valueSatisfies facts user el.kind v && fits v) with
+      | some v => ({ g with value? := some v }, [])
+      | none => (g, [s!"no value for {g.element} satisfies all applicable allowed-value requirements"])
+
 /-- **The goals of one episode.** `orders` are the order lines (empty for an
 administration); `med?` is the medication given (W4). `facts` must already be
 the episode's facts (e.g. `medToGive?` set for W4). -/
@@ -291,7 +315,10 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
     if o.kind?.getD .medication == .medication then [] else
     ["orderKind", "orderCode"].map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
-  let checked := (dedupGoals (raw ++ explicitChoices ++ services)).map (checkFit sp facts user)
+  let checked := (dedupGoals (raw ++ explicitChoices ++ services)).map fun g =>
+    let (g, problems) := checkFit sp facts user g
+    let (g, constraints) := constrainGoal sp facts user hyp0 g
+    (g, problems ++ constraints)
   let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
   -- Final alerts use the values actually required by this task, not uncaptured
