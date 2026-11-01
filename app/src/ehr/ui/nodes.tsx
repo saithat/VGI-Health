@@ -757,7 +757,20 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       new Map(
         [...slots].map(([row, nodes]) => [
           row,
-          <UiChildren key={row} nodes={nodes} onEvent={onEvent} />,
+          <div
+            key={row}
+            data-row-navigation={
+              nodes.length === 1 &&
+              nodes[0] &&
+              "button" in nodes[0] &&
+              nodes[0].button.role === "nav" &&
+              nodes[0].button.enabled
+                ? "true"
+                : undefined
+            }
+          >
+            <UiChildren nodes={nodes} onEvent={onEvent} />
+          </div>,
         ]),
       );
     return (

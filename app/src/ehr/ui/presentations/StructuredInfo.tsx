@@ -136,7 +136,6 @@ export function RecordTable({
                     .flat()
                     .map(([key, value]) => `${key}: ${value}`)
                     .join(" · ")}
-                  data-opens-chart={!!actions?.get(i) || undefined}
                   onClick={
                     actions?.get(i)
                       ? (event) => {

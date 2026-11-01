@@ -637,8 +637,8 @@
 .presentation-table .esi-4 { color: #205e55; background: #e3f2e9; }
 .presentation-table .esi-5 { color: #215b94; background: #e8f1fa; }
 .table-trackBoard [data-column="Arrival"], .table-trackBoard [data-column="LOS"] { white-space: nowrap; overflow-wrap: normal; }
-.presentation-table tr[data-opens-chart] { cursor: pointer; }
-.presentation-table tr[data-opens-chart]:hover { background: var(--clinical-selected); }
+.presentation-table tr:has([data-row-navigation="true"]) { cursor: pointer; }
+.presentation-table tr:has([data-row-navigation="true"]):hover { background: var(--clinical-selected); }
 .presentation-row-actions .mantine-Button-root { min-width: max-content; }
 @media (min-width: 901px) {
   .presentation-table.with-row-actions { table-layout: auto; }
