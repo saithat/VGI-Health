@@ -2,7 +2,6 @@ import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect } from "react";
 import {
-  Accordion,
   AppShell,
   Badge,
   Group,
@@ -19,6 +18,14 @@ import "./clinical.css";
 
 function bannerValue(banner: Pair[], pattern: RegExp) {
   return banner.find(([label]) => pattern.test(label))?.[1];
+}
+function isolationPrecaution(label: string, value: string) {
+  return (
+    /isolation/i.test(label) &&
+    !/^(not recorded|not documented|unknown|none|no isolation(?: precautions)?|standard(?: precautions)?)?$/i.test(
+      value.trim(),
+    )
+  );
 }
 function modalTitle(node: UiNode): string | undefined {
   if ("section" in node) return node.section.title;
@@ -49,7 +56,13 @@ function bannerFields(screen: UiScreen): Pair[] {
     fields.push(["Code status", "Not recorded"]);
   return fields;
 }
-export function PatientBanner({ fields }: { fields: Pair[] }) {
+export function PatientBanner({
+  fields,
+  viewer,
+}: {
+  fields: Pair[];
+  viewer?: string | undefined;
+}) {
   const name = bannerValue(fields, /^(patient|name|patient name)$/i);
   return (
     <AppShell.Header
@@ -66,7 +79,7 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
         </strong>
         <span className="clinical-brand-divider" />
         <span>Clinical workspace</span>
-        <span className="clinical-encounter">Patient chart</span>
+        <span className="clinical-encounter">{viewer ?? "Patient chart"}</span>
       </div>
       <div className="clinical-banner-content">
         <div className="patient-avatar" aria-hidden="true">
@@ -114,8 +127,16 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
                   {label}: <DisplayValue value={value || "Not recorded"} />
                 </Badge>
               ) : (
-                <span key={label} className="banner-detail">
-                  <span className="banner-label">{label}</span>
+                <span
+                  key={label}
+                  className={`banner-detail${/code|isolation|weight/i.test(label) ? " banner-pill" : ""}${isolationPrecaution(label, value) ? " banner-precaution" : ""}`}
+                >
+                  <span className="banner-label">
+                    {isolationPrecaution(label, value) && (
+                      <ClinicalIcon name="warning" size={12} />
+                    )}{" "}
+                    {label}
+                  </span>
                   <strong>
                     <DisplayValue value={value || "Not recorded"} />
                   </strong>
@@ -129,50 +150,66 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
 }
 export function WorkflowNav({
   groups,
-  active,
+  onEvent,
+  title,
 }: {
   groups: UiScreen["nav"];
-  active: string | undefined;
+  onEvent: Emit;
+  title?: string;
 }) {
+  const available = groups.filter(([, items]) => items.length > 0);
   return (
     <AppShell.Navbar
       component="nav"
       aria-label="Clinical workflows"
-      className="clinical-navbar"
+      className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >
-      <Text className="nav-eyebrow" size="xs" fw={700} c="dimmed" mb="sm">
+      <Text
+        className="nav-eyebrow"
+        size="xs"
+        fw={700}
+        c="dimmed"
+        mb={available.length ? "sm" : 0}
+      >
         PATIENT WORKSPACE
       </Text>
-      <Accordion
-        multiple
-        defaultValue={groups.flatMap(([, items], index) =>
-          items.some(([id]) => id === active) ? [String(index)] : [],
-        )}
-        chevronPosition="right"
-        chevron={<ClinicalIcon name="chevron" />}
-        variant="default"
-        className="workflow-groups"
-      >
-        {groups.map(([group, items], index) => (
-          <Accordion.Item key={group} value={String(index)}>
-            <Accordion.Control>{group}</Accordion.Control>
-            <Accordion.Panel>
-              <ul className="workflow-links" aria-label={`${group} screens`}>
-                {items.map(([id, label]) => (
-                  <li
-                    key={id}
-                    aria-current={id === active ? "page" : undefined}
+      <div className="workflow-groups">
+        {available.map(([group, items]) => (
+          <section key={group} className="workflow-group" aria-label={group}>
+            <h2 className="nav-group-title">
+              <ClinicalIcon
+                name={
+                  /basket|result|request/i.test(group)
+                    ? "message"
+                    : /med|mar/i.test(group)
+                      ? "pill"
+                      : /schedule|round|surg/i.test(group)
+                        ? "clock"
+                        : "user"
+                }
+              />
+              {group}
+            </h2>
+            <ul className="workflow-links" aria-label={`${group} screens`}>
+              {items.map(([id, label]) => (
+                <li key={id}>
+                  <button
+                    type="button"
+                    data-comp-id={id}
+                    data-event="click"
+                    aria-current={label === title ? "page" : undefined}
+                    onClick={() => onEvent({ click: { comp: id } })}
                   >
                     <span aria-hidden="true" className="nav-dot" />
                     {label}
-                  </li>
-                ))}
-              </ul>
-            </Accordion.Panel>
-          </Accordion.Item>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </Accordion>
+      </div>
       <div className="nav-footer">
         <span className="status-dot" aria-hidden="true" />
         <Text size="xs">Encounter workspace</Text>
@@ -184,9 +221,11 @@ export function WorkflowNav({
 function StockUiScreenView({
   screen,
   onEvent,
+  viewer,
 }: {
   screen: UiScreen;
   onEvent: Emit;
+  viewer?: string | undefined;
 }) {
   const modal = screen.modal;
   const stepper = screen.workspace.find((node) => "stepper" in node);
@@ -207,14 +246,19 @@ function StockUiScreenView({
       padding="md"
     >
       <div
-        className="clinical-shell"
+        className={`clinical-shell${screen.nav.some(([, items]) => items.length) ? "" : " without-nav"}`}
         aria-hidden={modal ? true : undefined}
         ref={(element) => {
           if (element) element.inert = Boolean(modal);
         }}
       >
-        <PatientBanner fields={bannerFields(screen)} />
-        <WorkflowNav key={active} groups={screen.nav} active={active} />
+        <PatientBanner fields={bannerFields(screen)} viewer={viewer} />
+        <WorkflowNav
+          key={`${active ?? ""}:${screen.title}`}
+          groups={screen.nav}
+          onEvent={onEvent}
+          title={screen.title}
+        />
         <AppShell.Main>
           <div className="clinical-workspace-heading">
             <div>
@@ -279,6 +323,19 @@ function StockUiScreenView({
   );
 }
 
-export function UiScreenView(props: { screen: UiScreen; onEvent: Emit; presentations?: PresentationBundle | null }) {
-  return <PresentationProvider bundle={props.presentations ?? null}><StockUiScreenView screen={props.screen} onEvent={props.onEvent} /></PresentationProvider>;
+export function UiScreenView(props: {
+  screen: UiScreen;
+  onEvent: Emit;
+  viewer?: string | undefined;
+  presentations?: PresentationBundle | null;
+}) {
+  return (
+    <PresentationProvider bundle={props.presentations ?? null}>
+      <StockUiScreenView
+        screen={props.screen}
+        onEvent={props.onEvent}
+        viewer={props.viewer}
+      />
+    </PresentationProvider>
+  );
 }

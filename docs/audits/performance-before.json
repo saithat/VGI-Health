@@ -1,0 +1,50 @@
+[
+  {
+    "host": "127.0.0.1",
+    "label": "cold dashboard",
+    "bytes": 3160539,
+    "requests": 88,
+    "interactiveMs": 1007,
+    "wasmRequests": 1
+  },
+  {
+    "host": "127.0.0.1",
+    "label": "EHR → dashboard",
+    "bytes": 11488,
+    "requests": 88,
+    "interactiveMs": 970,
+    "wasmRequests": 1
+  },
+  {
+    "host": "127.0.0.1",
+    "label": "dashboard → EHR",
+    "bytes": 1963,
+    "requests": 13,
+    "interactiveMs": 278,
+    "wasmRequests": 1
+  },
+  {
+    "host": "vgi-audit.example.ts.net",
+    "label": "cold dashboard",
+    "bytes": 3160227,
+    "requests": 88,
+    "interactiveMs": 501,
+    "wasmRequests": 1
+  },
+  {
+    "host": "vgi-audit.example.ts.net",
+    "label": "EHR → dashboard",
+    "bytes": 11176,
+    "requests": 88,
+    "interactiveMs": 972,
+    "wasmRequests": 1
+  },
+  {
+    "host": "vgi-audit.example.ts.net",
+    "label": "dashboard → EHR",
+    "bytes": 1651,
+    "requests": 13,
+    "interactiveMs": 280,
+    "wasmRequests": 1
+  }
+]

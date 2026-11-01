@@ -2,6 +2,9 @@ import { fileURLToPath } from "node:url";
 import { buildBindingPlugin } from "./scripts/build-binding-plugin";
 import { defineConfig } from "vitest/config";
 import { catalogPlugin } from "./scripts/catalog-plugin";
+import { tryBreakPlugin } from "./scripts/try-break-plugin";
+import { compressionPlugin } from "./scripts/compression-plugin";
+import { readFileSync } from "node:fs";
 import react from "@vitejs/plugin-react";
 import { runsPlugin } from "./scripts/runs-plugin";
 import { tailscalePlugin } from "./scripts/tailscale-plugin";
@@ -21,7 +24,23 @@ const medplumProxy = {
 
 export default defineConfig({
   envDir: "..",
-  resolve: { alias: { "@ehr/presentation": fileURLToPath(new URL("./src/ehr/ui/presentation-helpers.tsx", import.meta.url)) } },
+  define: {
+    __LEAN_HASH__: JSON.stringify(
+      JSON.parse(
+        readFileSync(
+          new URL("./public/ehr/manifest.json", import.meta.url),
+          "utf8",
+        ),
+      ).leanSourceHash,
+    ),
+  },
+  resolve: {
+    alias: {
+      "@ehr/presentation": fileURLToPath(
+        new URL("./src/ehr/ui/presentation-helpers.tsx", import.meta.url),
+      ),
+    },
+  },
   server: { proxy: medplumProxy },
   preview: { proxy: medplumProxy },
   build: {
@@ -36,6 +55,8 @@ export default defineConfig({
     catalogPlugin(),
     tailscalePlugin(),
     devPersonaPlugin(),
+    tryBreakPlugin(),
+    compressionPlugin(),
   ],
   test: { environment: "jsdom", include: ["tests/**/*.test.{ts,tsx,js}"] },
 });

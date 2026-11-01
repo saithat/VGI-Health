@@ -1,100 +1,420 @@
-import { useEffect, useState } from "react";
+import { PatientPicker } from "./PatientPicker";
+import { useEffect, useMemo, useState } from "react";
+import type { KeyboardEvent } from "react";
+import { Button, Switch } from "@mantine/core";
+import { navigate } from "../navigation";
+import { AppHeader } from "../ehr/ui/AppHeader";
+import { ClinicalIcon } from "../ehr/ui/Icons";
+import { formatDisplayValue } from "../ehr/ui/display";
+import { loadRunSummary, type RunData } from "../dashboard/data";
 import {
-  currentProgram,
   defaultPatient,
   ehrUrl,
   loadCatalog,
   personas,
+  readArtifact,
+  verdictsSchema,
   type Catalog,
-  type Patient,
+  type ProgramEntry,
 } from "./data";
+import {
+  personaNames,
+  timelineNodes,
+  vendorReleases,
+  workloadDelta,
+  type TimelineNode,
+} from "./timeline";
+import "./browser.css";
 
-export function PatientPicker({
+type Verdicts = ReturnType<typeof verdictsSchema.parse>["programs"];
+function propertyOf(output: unknown): string {
+  if (typeof output !== "object" || output === null || !("violation" in output))
+    return "";
+  const violation = output.violation;
+  return typeof violation === "object" &&
+    violation !== null &&
+    "property" in violation
+    ? String(violation.property)
+    : "";
+}
+function CertificateBadge({
+  program,
+  verdicts,
+  run,
+}: {
+  program: ProgramEntry;
+  verdicts: Verdicts;
+  run?: RunData | undefined;
+}) {
+  const record = run?.records.find(
+    (record) =>
+      record.versionAfter === program.version &&
+      record.persona === program.persona &&
+      record.certificate,
+  );
+  const verdict = verdicts[program.path];
+  const certificate = run?.certs.get(
+    `certs/${program.persona}/v${program.version}.json`,
+  );
+  const status =
+    program.run && (record?.certificate || certificate?.verdict === "ok")
+      ? "certified"
+      : (program.recordedCertificate ?? verdict?.status ?? "not computed");
+  const property = propertyOf(verdict?.output);
+  return (
+    <span
+      className={`browser-badge ${program.mock ? "warning" : status === "certified" ? "success" : status === "rejected" ? "danger" : "neutral"}`}
+      title={
+        property ||
+        (status === "reference"
+          ? "Vendor master for comparison; choose a certified role view to sign in."
+          : undefined)
+      }
+    >
+      {program.mock
+        ? "MOCK certificate"
+        : status === "certified"
+          ? "✓ Certified"
+          : status === "reference"
+            ? "Reference"
+            : status === "rejected"
+              ? `Rejected${property ? ` · ${property}` : ""}`
+              : status === "full-profile only"
+                ? "Full-profile only"
+                : "Not computed"}
+    </span>
+  );
+}
+const nodeKey = (node: TimelineNode) => `${node.persona}-${node.day}`;
+function Timeline({
   catalog,
-  value,
-  onChange,
+  run,
+  verdicts,
+  patient,
 }: {
   catalog: Catalog;
-  value: string;
-  onChange: (patient: Patient) => void;
+  run?: RunData | undefined;
+  verdicts: Verdicts;
+  patient: string;
 }) {
-  const [search, setSearch] = useState("");
-  const [source, setSource] = useState("");
-  const [flags, setFlags] = useState<string[]>([]);
-  const patients = catalog.patients.filter(
-    (patient) =>
-      patient.name.toLowerCase().includes(search.toLowerCase()) &&
-      (!source || patient.source === source) &&
-      flags.every((flag) =>
-        Object.entries(patient.flags).some(
-          ([name, enabled]) => name === flag && enabled,
-        ),
-      ),
+  const nodes = useMemo(
+    () => personas.flatMap((persona) => timelineNodes(catalog, run, persona)),
+    [catalog, run],
   );
+  const [selectedKey, setSelectedKey] = useState("P3-5");
+  const selected =
+    nodes.find((node) => nodeKey(node) === selectedKey) ??
+    nodes.find((node) => node.persona === "P3") ??
+    nodes[0];
+  function move(event: KeyboardEvent<HTMLButtonElement>, node: TimelineNode) {
+    const horizontal =
+      event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
+    const vertical =
+      event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : 0;
+    if (!horizontal && !vertical && event.key !== "Home" && event.key !== "End")
+      return;
+    event.preventDefault();
+    const row = nodes.filter((item) => item.persona === node.persona);
+    const next = horizontal
+      ? row[row.indexOf(node) + horizontal]
+      : vertical
+        ? nodes
+            .filter(
+              (item) =>
+                item.persona ===
+                personas[
+                  personas.findIndex((persona) => persona === node.persona) +
+                    vertical
+                ],
+            )
+            .sort(
+              (a, b) => Math.abs(a.day - node.day) - Math.abs(b.day - node.day),
+            )[0]
+        : event.key === "Home"
+          ? row[0]
+          : row.at(-1);
+    if (next) {
+      setSelectedKey(nodeKey(next));
+      event.currentTarget
+        .closest(".timeline-canvas")
+        ?.querySelector<HTMLButtonElement>(`[data-node-key="${nodeKey(next)}"]`)
+        ?.focus();
+    }
+  }
+  const delta = selected ? workloadDelta(run, selected) : null;
   return (
-    <fieldset className="patient-picker">
-      <legend>
-        Patient · {catalog.patients.length} committed synthetic patients
-      </legend>
-      <label>
-        Search by name{" "}
-        <input
-          type="search"
-          value={search}
-          onChange={(event) => setSearch(event.currentTarget.value)}
-        />
-      </label>
-      <label>
-        Data source{" "}
-        <select aria-label="Patient source" value={source}
-          onChange={(event) => setSource(event.currentTarget.value)}>
-          <option value="">All sources</option>
-          <option value="synthea">Synthea</option>
-          <option value="synthetic-hospital">Synthetic Hospital</option>
-        </select>
-      </label>
-      <div className="patient-filters">
-        {["pediatric", "allergic", "anticoagulated", "surgical"].map((flag) => (
-          <label key={flag}>
-            <input
-              type="checkbox"
-              checked={flags.includes(flag)}
-              onChange={() =>
-                setFlags((current) =>
-                  current.includes(flag)
-                    ? current.filter((item) => item !== flag)
-                    : [...current, flag],
-                )
-              }
-            />
-            {flag}
-          </label>
-        ))}
+    <section
+      className="browser-panel timeline-panel"
+      aria-labelledby="timeline-title"
+    >
+      <div className="browser-section-heading">
+        <ClinicalIcon name="trend" />
+        <h2 id="timeline-title">One EHR. Five personal forks.</h2>
+        <span>Choose a day to open that revision</span>
       </div>
-      <label>
-        {patients.length} matching patients{" "}
-        <select
-          aria-label="Patient"
-          value={value}
-          onChange={(event) => {
-            const patient = catalog.patients.find(
-              (patient) => patient.id === event.currentTarget.value,
-            );
-            if (patient) onChange(patient);
-          }}
+      <div className="timeline-layout">
+        <div
+          className="timeline-canvas"
+          role="group"
+          aria-label="Branching persona timeline"
         >
-          {!patients.some((patient) => patient.id === value) && (
-            <option value={value}>Selected patient (outside filter)</option>
-          )}
-          {patients.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.name} · {patient.age} · {patient.sex} ·{" "}
-              {patient.encounterClass} · {patient.source === "synthetic-hospital" ? "Synthetic Hospital" : "Synthea"}
-            </option>
+          <div className="timeline-days">
+            <span>End of day</span>
+            {Array.from({ length: 11 }, (_, day) => (
+              <span key={day}>{day}</span>
+            ))}
+          </div>
+          <svg
+            className="timeline-edges"
+            aria-hidden="true"
+            viewBox="0 0 1100 440"
+            preserveAspectRatio="none"
+          >
+            <path d="M50 38 V405" stroke="var(--clinical-primary)" />
+            {[450, 750].map((x) => (
+              <g key={x}>
+                <path
+                  d={`M${x} 38 V405`}
+                  stroke="var(--clinical-control)"
+                  strokeDasharray="4 5"
+                />
+                {personas.map((_, index) => (
+                  <path
+                    key={index}
+                    d={`M${x - 6} ${125 + index * 70 - 8} L${x} ${125 + index * 70} L${x + 6} ${125 + index * 70 - 8}`}
+                    stroke="var(--clinical-control)"
+                    fill="none"
+                  />
+                ))}
+              </g>
+            ))}
+          </svg>
+          <div className="timeline-row vendor-track">
+            <div className="timeline-row-label">
+              <strong>Vendor master</strong>
+              <span>Shared reference</span>
+            </div>
+            {Array.from({ length: 11 }, (_, day) => {
+              const release = vendorReleases.find(
+                (release) => release.day === day,
+              );
+              const program =
+                release &&
+                catalog.programs.find(
+                  (program) =>
+                    program.path === `releases/${release.id}/canonical.json`,
+                );
+              return (
+                <div
+                  className={`timeline-slot${release ? " release-slot" : " empty-slot"}`}
+                  key={day}
+                >
+                  {release && program && (
+                    <>
+                      <a
+                        className="release-node"
+                        href={ehrUrl(program, patient, "P1")}
+                        title={release.summary}
+                      >
+                        {release.id}
+                      </a>
+                      <span className="release-description">
+                        {day === 0
+                          ? "Initial EHR"
+                          : day === 4
+                            ? "Prior auth"
+                            : "Antibiotic policy"}
+                      </span>
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {personas.map((persona) => (
+            <div
+              className={`timeline-row persona-track persona-${persona.toLowerCase()}`}
+              key={persona}
+            >
+              <div className="timeline-row-label">
+                <strong>
+                  {persona} <span>{personaNames[persona]}</span>
+                </strong>
+                <span>
+                  {run?.manifest.personas.includes(persona)
+                    ? "Recorded personalization"
+                    : "Certified role view · no run yet"}
+                </span>
+              </div>
+              {Array.from({ length: 11 }, (_, day) => {
+                const node = nodes.find(
+                  (node) => node.persona === persona && node.day === day,
+                );
+                return (
+                  <div
+                    className={`timeline-slot${node ? "" : " empty-slot"}`}
+                    key={day}
+                  >
+                    {node && (
+                      <>
+                        <span className="mobile-day">Day {day}</span>
+                        <button
+                          type="button"
+                          className={`timeline-node${node.kept ? " kept" : ""}${nodeKey(node) === (selected ? nodeKey(selected) : "") ? " selected" : ""}`}
+                          data-node-key={nodeKey(node)}
+                          tabIndex={
+                            nodeKey(node) ===
+                            (selected ? nodeKey(selected) : "")
+                              ? 0
+                              : -1
+                          }
+                          aria-label={`${persona} ${personaNames[persona]}, day ${day}, revision ${node.baseline ? 0 : node.program.version}, ${node.program.mock ? "mock authored, " : ""}${verdicts[node.program.path]?.status === "certified" || run?.certs.get(`certs/${persona}/v${node.program.version}.json`)?.verdict === "ok" || node.record?.certificate ? "certified" : "certificate not computed"}; open EHR`}
+                          title={node.summary}
+                          onFocus={() => setSelectedKey(nodeKey(node))}
+                          onMouseEnter={() => setSelectedKey(nodeKey(node))}
+                          onKeyDown={(event) => move(event, node)}
+                          onClick={() =>
+                            navigate(
+                              ehrUrl(
+                                node.program,
+                                patient || defaultPatient(catalog, persona).id,
+                                persona,
+                              ),
+                            )
+                          }
+                        >
+                          <span className="timeline-dot" aria-hidden="true">
+                            {node.kept ? "" : "✓"}
+                          </span>
+                          <span>
+                            {node.baseline
+                              ? node.program.release
+                              : `rev ${node.program.version}`}
+                          </span>
+                          <small>
+                            {node.kept
+                              ? "kept"
+                              : node.baseline
+                                ? "baseline"
+                                : "certified"}
+                          </small>
+                        </button>
+                        {node.rejected.length > 0 && (
+                          <span
+                            className="rejection-stub"
+                            title={node.rejected
+                              .map(
+                                (item) => `${item.property}: ${item.summary}`,
+                              )
+                              .join("\n")}
+                            aria-label={`${node.rejected.length} rejected candidates`}
+                          >
+                            × {node.rejected.length}
+                          </span>
+                        )}
+                        {[4, 7].includes(day) && (
+                          <span
+                            className="migration-badge"
+                            title="Vendor release merged and role view certified"
+                          >
+                            ↳ ✓
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           ))}
-        </select>
-      </label>
-    </fieldset>
+          <p className="timeline-legend">
+            <span>● Deployed</span>
+            <span>○ Kept</span>
+            <span className="allergy-text">× Rejected candidate</span>
+            <span>⇢ Vendor release / re-certification</span>
+          </p>
+        </div>
+        {selected && (
+          <aside
+            className={`timeline-detail persona-${selected.persona.toLowerCase()}`}
+            aria-label="Selected revision details"
+            aria-live="polite"
+          >
+            <span className="browser-eyebrow">
+              {selected.persona} · DAY {selected.day}
+            </span>
+            <h3>
+              {selected.baseline
+                ? `${selected.program.release} certified baseline`
+                : `${selected.persona} rev ${selected.program.version}`}
+            </h3>
+            <CertificateBadge
+              program={selected.program}
+              verdicts={verdicts}
+              run={run}
+            />
+            <p>{selected.summary}</p>
+            <div className="timeline-measure">
+              <strong>Measured change vs rev 0</strong>
+              {delta ? (
+                <dl>
+                  <div>
+                    <dt>Clicks</dt>
+                    <dd>
+                      {delta.clicks > 0 ? "+" : ""}
+                      {delta.clicks.toFixed(1)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Keys</dt>
+                    <dd>
+                      {delta.keys > 0 ? "+" : ""}
+                      {delta.keys.toFixed(1)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>KLM</dt>
+                    <dd>
+                      {delta.klm > 0 ? "+" : ""}
+                      {delta.klm.toFixed(1)} s
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="browser-muted">
+                  {selected.baseline
+                    ? "Role baseline before personalization."
+                    : "No independent workload measurement for this revision."}
+                </p>
+              )}
+            </div>
+            <Button
+              fullWidth
+              size="xs"
+              onClick={() =>
+                navigate(ehrUrl(selected.program, patient, selected.persona))
+              }
+            >
+              Open this revision
+            </Button>
+            {run && !selected.baseline && (
+              <div className="timeline-links">
+                <a
+                  href={`/dashboard?${new URLSearchParams({ run: run.manifest.runId, persona: selected.persona, version: String(selected.program.version) })}`}
+                >
+                  Compare with previous revision →
+                </a>
+                <a
+                  href={`/dashboard?${new URLSearchParams({ run: run.manifest.runId, persona: selected.persona, view: "Trajectories", day: String(selected.day) })}`}
+                >
+                  Replay this day’s trajectories →
+                </a>
+              </div>
+            )}
+          </aside>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -102,121 +422,423 @@ export function Browse() {
   const query = new URLSearchParams(window.location.search);
   const [catalog, setCatalog] = useState<Catalog>();
   const [patient, setPatient] = useState(query.get("patient") ?? "");
-  const [persona, setPersona] = useState(query.get("persona") ?? "P1");
-  const [run, setRun] = useState(query.get("run") ?? "");
+  const [runId, setRunId] = useState(query.get("run") ?? "");
+  const [run, setRun] = useState<RunData>();
+  const [verdicts, setVerdicts] = useState<Verdicts>({});
+  const [showMock, setShowMock] = useState(query.get("mock") === "1");
   const [error, setError] = useState("");
+  const [runError, setRunError] = useState("");
   useEffect(() => {
-    loadCatalog()
-      .then((data) => {
+    void Promise.all([
+      loadCatalog(),
+      readArtifact("/verdicts.json").then((data) => verdictsSchema.parse(data)),
+    ])
+      .then(([data, checks]) => {
         setCatalog(data);
+        setVerdicts(checks.programs);
         setPatient((current) =>
           data.patients.some((patient) => patient.id === current)
             ? current
-            : defaultPatient(data, persona).id,
+            : defaultPatient(data, query.get("persona") ?? "P3").id,
+        );
+        setRunId((current) =>
+          data.runs.some((run) => run.id === current && (!run.mock || showMock))
+            ? current
+            : (data.runs.find((run) => !run.mock)?.id ?? ""),
         );
       })
       .catch((error: unknown) => setError(String(error)));
-  }, [persona]);
-  if (error) return <p role="alert">{error}</p>;
-  if (!catalog) return <p>Loading offline UI catalog…</p>;
-  const groups = [...new Set(catalog.programs.map((program) => program.group))];
+    // URL inputs are read only on the route's initial mount.
+  }, []);
+  useEffect(() => {
+    let active = true;
+    setRun(undefined);
+    setRunError("");
+    if (runId)
+      void loadRunSummary(runId)
+        .then((run) => {
+          if (active) setRun(run);
+        })
+        .catch((error: unknown) => {
+          if (active) setRunError(String(error));
+        });
+    return () => {
+      active = false;
+    };
+  }, [runId]);
+  useEffect(() => {
+    if (!catalog || !patient) return;
+    const params = new URLSearchParams({
+      patient,
+      ...(runId ? { run: runId } : {}),
+      ...(showMock ? { mock: "1" } : {}),
+    });
+    window.history.replaceState(
+      null,
+      "",
+      `/browse?${params}${window.location.hash}`,
+    );
+  }, [catalog, patient, runId, showMock]);
+  const selected = catalog?.patients.find((item) => item.id === patient);
+  const visibleRuns =
+    catalog?.runs.filter((run) => showMock || !run.mock) ?? [];
+  const programs =
+    catalog?.programs.filter((program) => !program.mock || showMock) ?? [];
   return (
-    <main className="browser-page">
-      <nav>
-        <a href="/browse">VGI HEALTH · UI browser</a>
-        <a href="/dashboard">Recorded dashboard</a>
-      </nav>
-      <h1>Open a clinical UI</h1>
-      <p>
-        {catalog.programs.length} programs · real Lean WASM · local fixtures ·
-        record date {catalog.referenceDate}
-      </p>
-      <PatientPicker
-        catalog={catalog}
-        value={patient}
-        onChange={(selected) => setPatient(selected.id)}
-      />
-      <label>
-        Acting persona{" "}
-        <select
-          aria-label="Acting persona"
-          value={persona}
-          onChange={(event) => {
-            setPersona(event.currentTarget.value);
-            setPatient(defaultPatient(catalog, event.currentTarget.value).id);
-          }}
-        >
-          {personas.map((id) => (
-            <option key={id}>{id}</option>
-          ))}
-        </select>
-      </label>
-      <label>
-        Current program source{" "}
-        <select
-          aria-label="Current program source"
-          value={run}
-          onChange={(event) => setRun(event.currentTarget.value)}
-        >
-          <option value="">v1 persona projection</option>
-          {[
-            ...new Set(
-              catalog.programs.flatMap((program) =>
-                program.run ? [program.run] : [],
-              ),
-            ),
-          ].map((id) => (
-            <option key={id} value={id}>
-              {id}
-              {catalog.programs.some(
-                (program) => program.run === id && program.mock,
-              )
-                ? " · MOCK authored"
-                : ""}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p>
-        <a
-          href={ehrUrl(
-            currentProgram(catalog, persona, run || null),
-            patient,
-            persona,
-          )}
-        >
-          Open {persona}’s current program →
-        </a>
-      </p>
-      <div className="program-groups">
-        {groups.map((group) => (
-          <section key={group}>
-            <h2>{group}</h2>
-            <ul>
-              {catalog.programs
-                .filter((program) => program.group === group)
-                .map((program) => (
-                  <li key={program.path}>
-                    <a
-                      href={ehrUrl(
-                        program,
-                        patient,
-                        program.label === "Canonical source"
-                          ? persona
-                          : program.persona,
-                      )}
-                    >
-                      {program.label}
-                    </a>
-                    <small>
-                      {program.path} · {program.release}
-                    </small>
-                  </li>
+    <>
+      <AppHeader active="browse" />
+      <main className="browser-page">
+        <div className="browse-heading">
+          <div>
+            <span className="browser-eyebrow">
+              CANONICAL EHR & PERSONALIZATION
+            </span>
+            <h1>Open a clinical UI</h1>
+            <p>
+              One vendor baseline. A certified view for every role.
+              Personalization on each clinician’s fork.
+            </p>
+          </div>
+          <div className="browse-run-controls">
+            <label>
+              Recorded run
+              <select
+                aria-label="Recorded run"
+                value={runId}
+                onChange={(event) => setRunId(event.currentTarget.value)}
+              >
+                <option value="">Certified baselines only</option>
+                {visibleRuns.map((run) => (
+                  <option key={run.id} value={run.id}>
+                    {run.id}
+                    {run.mock ? " · MOCK" : " · real"}
+                  </option>
                 ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    </main>
+              </select>
+            </label>
+            <Switch
+              size="xs"
+              label="Show mock data"
+              checked={showMock}
+              onChange={(event) => {
+                const checked = event.currentTarget.checked;
+                setShowMock(checked);
+                if (
+                  !checked &&
+                  catalog?.runs.find((run) => run.id === runId)?.mock
+                )
+                  setRunId(catalog.runs.find((run) => !run.mock)?.id ?? "");
+              }}
+            />
+          </div>
+        </div>
+        {error && <p role="alert">{error}</p>}
+        {runError && <p role="alert">{runError}</p>}
+        {!catalog ? (
+          <p role="status">Loading certified UI catalog…</p>
+        ) : (
+          <>
+            <div className="browse-context">
+              <span className="browser-badge info">
+                <ClinicalIcon name="user" /> {selected?.name} · {selected?.age}{" "}
+                years · {selected?.sex}
+              </span>
+              <span>
+                Chart date {formatDisplayValue(catalog.referenceDate)}
+              </span>
+              <a href="#patient-selection">Change patient ↓</a>
+              {run?.manifest.ehr.mode === "fake" && (
+                <span className="browser-badge warning">
+                  MOCK authored data
+                </span>
+              )}
+            </div>
+            {runId && !run && !runError ? (
+              <p role="status">Loading recorded deployments…</p>
+            ) : (
+              <Timeline
+                catalog={catalog}
+                run={run}
+                verdicts={verdicts}
+                patient={patient}
+              />
+            )}
+            <div className="browse-lower">
+              <div id="patient-selection">
+                <PatientPicker
+                  catalog={catalog}
+                  value={patient}
+                  onChange={(patient) => setPatient(patient.id)}
+                />
+              </div>
+              <section
+                className="browser-panel program-panel"
+                aria-labelledby="program-title"
+              >
+                <div className="browser-section-heading">
+                  <ClinicalIcon name="lock" />
+                  <h2 id="program-title">Certified role views</h2>
+                  <span>Open with the selected patient</span>
+                </div>
+                <div className="program-grid-scroll">
+                  <table className="program-grid">
+                    <thead>
+                      <tr>
+                        <th scope="col">View</th>
+                        {vendorReleases.map((release) => (
+                          <th scope="col" key={release.id}>
+                            {release.id}
+                            <small>
+                              {release.day === 0
+                                ? "Initial EHR"
+                                : `Day ${release.day} release`}
+                            </small>
+                          </th>
+                        ))}
+                        <th scope="col">
+                          Latest personalized
+                          <small>Newest real run per persona</small>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {["vendor", ...personas].map((persona) => (
+                        <tr
+                          key={persona}
+                          className={
+                            persona === "vendor"
+                              ? "vendor-reference"
+                              : `persona-${persona.toLowerCase()}`
+                          }
+                        >
+                          <th scope="row">
+                            <strong>
+                              {persona === "vendor"
+                                ? "Vendor master (reference)"
+                                : `${persona} · ${personaNames[persona]}`}
+                            </strong>
+                            <small>
+                              {persona === "vendor"
+                                ? "Shared source · compare only"
+                                : "Canonical with role permissions"}
+                            </small>
+                          </th>
+                          {vendorReleases.map((release) => {
+                            const program = programs.find(
+                              (program) =>
+                                program.path ===
+                                `releases/${release.id}/${persona === "vendor" ? "canonical" : `personas/${persona}`}.json`,
+                            );
+                            return (
+                              <td key={release.id}>
+                                {program ? (
+                                  <>
+                                    <CertificateBadge
+                                      program={program}
+                                      verdicts={verdicts}
+                                    />
+                                    <Button
+                                      component="a"
+                                      href={ehrUrl(
+                                        program,
+                                        patient,
+                                        persona === "vendor" ? "P1" : persona,
+                                      )}
+                                      size="compact-xs"
+                                      variant={
+                                        persona === "vendor"
+                                          ? "outline"
+                                          : "light"
+                                      }
+                                      title={program.path}
+                                    >
+                                      Open
+                                      {persona === "vendor" ? " reference" : ""}
+                                    </Button>
+                                  </>
+                                ) : (
+                                  "Unavailable"
+                                )}
+                              </td>
+                            );
+                          })}
+                          <td>
+                            {(() => {
+                              const latest = catalog.runs
+                                .filter((run) => !run.mock)
+                                .flatMap((run) =>
+                                  programs.filter(
+                                    (program) =>
+                                      program.run === run.id &&
+                                      program.persona === persona &&
+                                      program.deployed,
+                                  ),
+                                )[0];
+                              return latest ? (
+                                <>
+                                  <CertificateBadge
+                                    program={latest}
+                                    verdicts={verdicts}
+                                    run={
+                                      run?.manifest.runId === latest.run
+                                        ? run
+                                        : undefined
+                                    }
+                                  />
+                                  <Button
+                                    component="a"
+                                    href={ehrUrl(latest, patient)}
+                                    size="compact-xs"
+                                    title={latest.path}
+                                  >
+                                    Open rev {latest.version}
+                                  </Button>
+                                </>
+                              ) : (
+                                <span className="browser-muted">
+                                  {persona === "vendor"
+                                    ? "Personalization is per clinician"
+                                    : "No recorded run yet"}
+                                </span>
+                              );
+                            })()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="program-grid-note">
+                  The vendor master is a reference. Sign in through a certified
+                  role view to use that role’s permissions and preset
+                  navigation.
+                </p>
+              </section>
+            </div>
+            <details className="browser-panel browser-details">
+              <summary>
+                Bad programs (should be rejected){" "}
+                <span>
+                  {
+                    programs.filter(
+                      (program) => program.group === "Bad programs",
+                    ).length
+                  }{" "}
+                  safety examples
+                </span>
+              </summary>
+              <div className="bad-program-list">
+                {programs
+                  .filter((program) => program.group === "Bad programs")
+                  .map((program) => (
+                    <div key={program.path}>
+                      <strong>
+                        {program.label}
+                        <small className="bad-expected">
+                          Expected:{" "}
+                          {program.expectedProperty ?? "See checker result"}
+                        </small>
+                      </strong>
+                      <CertificateBadge program={program} verdicts={verdicts} />
+                      <Button
+                        component="a"
+                        size="compact-xs"
+                        variant="outline"
+                        href={ehrUrl(program, patient)}
+                        title={program.path}
+                      >
+                        Open example
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </details>
+            <details className="browser-panel browser-details">
+              <summary>
+                Recorded revisions{" "}
+                <span>Certified forks and deployment history</span>
+              </summary>
+              {visibleRuns.map((recorded) => (
+                <section className="recorded-run" key={recorded.id}>
+                  <h3>
+                    {recorded.id}{" "}
+                    {recorded.mock && (
+                      <span className="browser-badge warning">MOCK</span>
+                    )}
+                  </h3>
+                  {personas.map((persona) => {
+                    const revisions = programs
+                      .filter(
+                        (program) =>
+                          program.run === recorded.id &&
+                          program.persona === persona,
+                      )
+                      .sort((a, b) => a.version - b.version);
+                    return revisions.length ? (
+                      <div className="recorded-revisions" key={persona}>
+                        <strong>
+                          {persona} · {personaNames[persona]}
+                        </strong>
+                        {revisions.map((program) => {
+                          const decision =
+                            run?.manifest.runId === recorded.id
+                              ? run.records.find(
+                                  (record) =>
+                                    record.persona === persona &&
+                                    record.versionAfter === program.version &&
+                                    record.versionAfter > record.versionBefore,
+                                )
+                              : undefined;
+                          return (
+                            <div
+                              className="recorded-revision-card"
+                              key={program.path}
+                            >
+                              <a
+                                href={ehrUrl(program, patient)}
+                                title={program.path}
+                              >
+                                rev {program.version}
+                                {program.deployed ? " · deployed" : ""}
+                              </a>
+                              <span className="browser-muted">
+                                {program.version === 0
+                                  ? "Baseline"
+                                  : decision
+                                    ? `Night ${decision.night}`
+                                    : "Recorded revision"}
+                              </span>
+                              <CertificateBadge
+                                program={program}
+                                verdicts={verdicts}
+                                run={
+                                  run?.manifest.runId === recorded.id
+                                    ? run
+                                    : undefined
+                                }
+                              />
+                              <p>
+                                {decision?.hypothesis ??
+                                  (program.version === 0
+                                    ? "Canonical with role permissions and preset navigation."
+                                    : "Select this run above for its decision details.")}
+                              </p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : null;
+                  })}
+                </section>
+              ))}
+            </details>
+            <p className="browse-footer">
+              Synthetic patient records · Original VGI visual design · Clinical
+              behavior comes from the certified UI program
+            </p>
+          </>
+        )}
+      </main>
+    </>
   );
 }

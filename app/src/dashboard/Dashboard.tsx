@@ -1,5 +1,7 @@
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
-import { useEffect, useMemo, useState } from "react";
+import { AppHeader } from "../ehr/ui/AppHeader";
+import { loadWasmInterp } from "../core/wasmInterp";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type {
   CheckResult,
   DecisionRecord,
@@ -7,7 +9,10 @@ import type {
   Savings,
 } from "../../../agent/src/schema";
 import {
-  loadRun,
+  loadRunSummary,
+  loadRunDetails,
+  breakCapability,
+  submitBreakAttempt,
   defaultRunSchema,
   readRunJson,
   runIndexSchema,
@@ -15,7 +20,9 @@ import {
 } from "./data";
 import { ReplayScreen, type InterpFactory } from "./replay";
 import "./dashboard.css";
-import { Trajectories } from "./Trajectories";
+const Trajectories = lazy(() =>
+  import("./Trajectories").then((m) => ({ default: m.Trajectories })),
+);
 import { WorkflowComplexity, personas } from "./WorkflowComplexity";
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
@@ -45,7 +52,7 @@ function Certificate({ record }: { record: DecisionRecord }) {
       <summary>
         <Badge tone="pass">
           {record.ehr.mode === "fake" ? "MOCK certificate" : "Certificate"} ·{" "}
-          {cert.specVersion}
+          {releaseLabel(cert.specVersion, record.runId)}
         </Badge>
       </summary>
       <dl>
@@ -112,8 +119,11 @@ function Counterexample({
   factory?: InterpFactory | undefined;
 }) {
   const [step, setStep] = useState(0);
+  const [manualEvents, setManualEvents] = useState<
+    import("../../../lean/generated/ehr-types").Event[]
+  >([]);
   const path = rejection.check.counterexample ?? [];
-  const events = path.slice(0, step);
+  const events = [...path.slice(0, step), ...manualEvents];
   const event = path[step - 1];
   const comp =
     event &&
@@ -136,13 +146,37 @@ function Counterexample({
         <p>{rejection.check.message ?? "No property message recorded."}</p>
       </div>
       <div className="dash-controls">
-        <button onClick={() => setStep(0)}>Reset path</button>
-        <button disabled={!step} onClick={() => setStep((n) => n - 1)}>
+        <button
+          disabled={!step && !manualEvents.length}
+          title={
+            !step && !manualEvents.length
+              ? "Already at the initial state"
+              : undefined
+          }
+          onClick={() => {
+            setStep(0);
+            setManualEvents([]);
+          }}
+        >
+          Reset path
+        </button>
+        <button
+          disabled={!step}
+          title={!step ? "Already at the first event" : undefined}
+          onClick={() => {
+            setStep((n) => n - 1);
+            setManualEvents([]);
+          }}
+        >
           Previous event
         </button>
         <button
           disabled={step >= path.length}
-          onClick={() => setStep((n) => n + 1)}
+          title={step >= path.length ? "No more recorded events" : undefined}
+          onClick={() => {
+            setStep((n) => n + 1);
+            setManualEvents([]);
+          }}
         >
           Next event
         </button>
@@ -155,7 +189,14 @@ function Counterexample({
           <li>
             <button
               aria-current={step === 0 ? "step" : undefined}
-              onClick={() => setStep(0)}
+              disabled={step === 0 && !manualEvents.length}
+              title={
+                step === 0 && !manualEvents.length ? "Current state" : undefined
+              }
+              onClick={() => {
+                setStep(0);
+                setManualEvents([]);
+              }}
             >
               Initial state
             </button>
@@ -164,7 +205,16 @@ function Counterexample({
             <li key={i}>
               <button
                 aria-current={step === i + 1 ? "step" : undefined}
-                onClick={() => setStep(i + 1)}
+                disabled={step === i + 1 && !manualEvents.length}
+                title={
+                  step === i + 1 && !manualEvents.length
+                    ? "Current event"
+                    : undefined
+                }
+                onClick={() => {
+                  setStep(i + 1);
+                  setManualEvents([]);
+                }}
               >
                 {eventLabel(e)}
               </button>
@@ -173,9 +223,9 @@ function Counterexample({
         </ol>
         <div>
           <p className="dash-note">
-            Rejected candidate on v{rejection.record.versionBefore}. Outlined:{" "}
-            {comp || rejection.targets.join(", ")}. An absent component is
-            reported by the property above.
+            Rejected candidate on rev {rejection.record.versionBefore}.
+            Outlined: {comp || rejection.targets.join(", ")}. An absent
+            component is reported by the property above.
           </p>
           <ReplayScreen
             run={run}
@@ -184,6 +234,9 @@ function Counterexample({
             specVersion={rejection.record.specVersion}
             patch={rejection.patch}
             events={events}
+            onEvent={(event) =>
+              setManualEvents((current) => [...current, event])
+            }
             highlight={[...rejection.targets, comp]}
             factory={factory}
           />
@@ -275,6 +328,7 @@ function Why({
   record: DecisionRecord;
   inspect: (id: string) => void;
 }) {
+  const decisionPath = `decisions/night-${String(record.night).padStart(2, "0")}/${record.persona}.json`;
   return (
     <div className="why-flow">
       <section>
@@ -302,7 +356,8 @@ function Why({
         <h3>{record.hypothesis}</h3>
         <p className="dash-note">
           Backend: {record.backend.name} / {record.backend.model} ·{" "}
-          {record.mode} · spec {releaseLabel(record.specVersion, run.manifest.runId)}
+          {record.mode} · spec{" "}
+          {releaseLabel(record.specVersion, run.manifest.runId)}
         </p>
       </section>
       <section>
@@ -353,7 +408,8 @@ function Why({
       <section>
         <span className="step-label">04 · Choice</span>
         <h3>
-          {record.outcome} · v{record.versionBefore} → v{record.versionAfter}
+          {record.outcome} · rev {record.versionBefore} → rev{" "}
+          {record.versionAfter}
         </h3>
         <p>{record.chosen?.rationale ?? "No candidate was chosen."}</p>
         {record.chosen?.rejectedAlternatives.map((a) => (
@@ -375,16 +431,32 @@ function Why({
       <section>
         <span className="step-label">07 · Certificate</span>
         <Certificate record={record} />
-        <p>
-          <a
-            href={`/runs/${run.manifest.runId}/decisions/night-${String(record.night).padStart(2, "0")}/${record.persona}.json`}
-          >
-            Open recorded decision JSON
-          </a>
-        </p>
+        {(!run.files || run.files.includes(decisionPath)) && (
+          <p>
+            <a href={`/runs/${run.manifest.runId}/${decisionPath}`}>
+              Open recorded decision JSON
+            </a>
+          </p>
+        )}
       </section>
     </div>
   );
+}
+
+/** Paint the modal's loading state before doing synchronous Lean rendering. */
+function DeferredReplay({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let timer = 0;
+    const frame = requestAnimationFrame(() => {
+      timer = window.setTimeout(() => setReady(true), 0);
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, []);
+  return ready ? children : <p role="status">Rendering recorded EHR…</p>;
 }
 
 function BeforeAfter({
@@ -426,6 +498,18 @@ function BeforeAfter({
       </p>
       <div className="dash-controls">
         <button
+          disabled={
+            !step &&
+            JSON.stringify(beforeEvents) === JSON.stringify(prefix) &&
+            JSON.stringify(afterEvents) === JSON.stringify(prefix)
+          }
+          title={
+            !step &&
+            JSON.stringify(beforeEvents) === JSON.stringify(prefix) &&
+            JSON.stringify(afterEvents) === JSON.stringify(prefix)
+              ? "Screens are already reset"
+              : undefined
+          }
           onClick={() => {
             setStep(0);
             setBeforeEvents(prefix);
@@ -436,6 +520,13 @@ function BeforeAfter({
         </button>
         <button
           disabled={step >= max || !!rejection}
+          title={
+            rejection
+              ? "Use the counterexample path for a rejected proposal"
+              : step >= max
+                ? "No more task events recorded for these versions"
+                : undefined
+          }
           onClick={() => {
             const next = step + 1;
             setStep(next);
@@ -451,7 +542,7 @@ function BeforeAfter({
       </div>
       <div className="paired-screens">
         <section aria-label="Before EHR">
-          <h3>Before · v{before}</h3>
+          <h3>Before · rev {before}</h3>
           <ReplayScreen
             run={run}
             persona={persona}
@@ -466,7 +557,7 @@ function BeforeAfter({
         </section>
         <section aria-label="After EHR">
           <h3>
-            {rejection ? "Rejected proposal" : "After"} · v{after}
+            {rejection ? "Rejected proposal" : "After"} · rev {after}
           </h3>
           <ReplayScreen
             run={run}
@@ -512,7 +603,10 @@ function Releases({
           {personas.flatMap((p) =>
             ["v2", "v3"].map((release) => {
               const r = run.records.find(
-                (r) => r.persona === p.id && r.release && releaseLabel(r.release.id, run.manifest.runId) === release,
+                (r) =>
+                  r.persona === p.id &&
+                  r.release &&
+                  releaseLabel(r.release.id, run.manifest.runId) === release,
               );
               return (
                 <tr
@@ -592,8 +686,10 @@ function Releases({
 function BreakPanel({
   run,
   replay,
+  persona,
 }: {
   run: RunData;
+  persona: string;
   replay: (rejection: Rejection) => void;
 }) {
   const attacks = getRejections(run).filter(
@@ -602,6 +698,59 @@ function BreakPanel({
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<Rejection | null>(null);
   const attack = attacks.find((a) => a.id === selected) ?? attacks[0];
+  const [capability, setCapability] = useState({
+    available: false,
+    reason: "Checking local agent…",
+  });
+  const [request, setRequest] = useState("");
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+  useEffect(() => {
+    void breakCapability()
+      .then((c) =>
+        setCapability({ available: c.available, reason: c.reason ?? "" }),
+      )
+      .catch((e) => setCapability({ available: false, reason: String(e) }));
+  }, []);
+  async function attempt() {
+    setPending(true);
+    setMessage("Running agent and checker…");
+    try {
+      const response = await submitBreakAttempt(
+        persona,
+        request,
+        run.manifest.runId,
+      );
+      setMessage(
+        `${response.verdict}: ${response.property ?? ""} ${response.message ?? response.agentSays}`,
+      );
+      const record = [...run.records]
+        .reverse()
+        .find((r) => r.persona === persona);
+      if (record && response.candidate)
+        setResult({
+          id: "live-attempt",
+          label: response.request,
+          summary: response.candidate.summary,
+          record: { ...record, versionBefore: record.versionAfter },
+          check: {
+            status: response.verdict,
+            property: response.property,
+            message: response.message,
+            counterexample: response.counterexample,
+            screens: null,
+            verdict: null,
+          },
+          patch: response.candidate.patch,
+          targets: [],
+        });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
     <>
       <p>
@@ -609,8 +758,42 @@ function BreakPanel({
         counterexample on the EHR.
       </p>
       <p className="dash-note">
-        Recorded checks only. No new agent or checker request is submitted.
+        Recorded examples are always available.{" "}
+        {capability.available
+          ? "Live attempts use the local authenticated agent and real checker."
+          : capability.reason}
       </p>
+      {capability.available && run.manifest.ehr.mode === "real" && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void attempt();
+          }}
+        >
+          <label>
+            Live request{" "}
+            <textarea
+              value={request}
+              maxLength={2000}
+              onChange={(e) => setRequest(e.currentTarget.value)}
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={pending || !request.trim()}
+            title={
+              pending
+                ? "An attempt is running"
+                : !request.trim()
+                  ? "Enter a request first"
+                  : undefined
+            }
+          >
+            Run live attempt
+          </button>
+        </form>
+      )}
+      {message && <p role="status">{message}</p>}
       <form
         className="break-form"
         onSubmit={(e) => {
@@ -623,6 +806,9 @@ function BreakPanel({
           <select
             value={attack?.id ?? ""}
             disabled={!attacks.length}
+            title={
+              !attacks.length ? "No recorded proposals in this run" : undefined
+            }
             onChange={(e) => {
               setSelected(e.currentTarget.value);
               setResult(null);
@@ -635,7 +821,17 @@ function BreakPanel({
             ))}
           </select>
         </label>
-        <button type="submit" disabled={!attack}>
+        <button
+          type="submit"
+          disabled={!attack || result?.id === attack.id}
+          title={
+            !attack
+              ? "No recorded proposal available"
+              : result?.id === attack.id
+                ? "Already showing this recorded verdict"
+                : undefined
+          }
+        >
           Show recorded verdict
         </button>
       </form>
@@ -644,8 +840,13 @@ function BreakPanel({
         <section>
           <h3>{result.label}</h3>
           <p>
-            <Badge tone="fail">
-              Rejected · {result.check.property ?? result.check.status}
+            <Badge tone={result.check.status === "pass" ? "pass" : "fail"}>
+              {result.check.status === "pass"
+                ? "Accepted"
+                : result.check.status === "invalid-patch"
+                  ? "Invalid patch"
+                  : "Rejected"}{" "}
+              · {result.check.property ?? result.check.status}
             </Badge>
           </p>
           <div className="failure-message">
@@ -656,7 +857,14 @@ function BreakPanel({
             {result.check.counterexample?.length ?? 0} recorded counterexample
             events.
           </p>
-          <button onClick={() => replay(result)}>Replay counterexample</button>
+          {result.check.status === "fail" &&
+          result.check.counterexample !== null ? (
+            <button onClick={() => replay(result)}>
+              Replay counterexample
+            </button>
+          ) : (
+            <p>No counterexample was returned for this verdict.</p>
+          )}
         </section>
       )}
     </>
@@ -692,12 +900,24 @@ function VersionList({
   return (
     <section className="version-history" aria-label="Version history">
       <div className="section-heading">
-        <h3>Versions and decisions</h3>
-        {blindProtocol && <p>One canonical EHR, with role permissions and preset views. The agent evolves each persona’s fork. Odd days calibrate; even days are blind measurements and never select changes. Savings compare the certified canonical for that day’s release on identical schedules and seeds; canonical differences include vendor/fork drift. Agent-only savings use the no-agent fork carried through recertification and canonical fallback without LLM changes. Even nights reuse past data; superseded changes have no independent test. Blind per-day task counts are shown, including the smaller P5 samples.</p>}
+        <h3>Revisions and decisions</h3>
+        {blindProtocol && (
+          <p>
+            One canonical EHR, with role permissions and preset views. The agent
+            evolves each persona’s fork. Odd days calibrate; even days are blind
+            measurements and never select changes. Savings compare the certified
+            canonical for that day’s release on identical schedules and seeds;
+            canonical differences include vendor/fork drift. Agent-only savings
+            use the no-agent fork carried through recertification and canonical
+            fallback without LLM changes. Even nights reuse past data;
+            superseded changes have no independent test. Blind per-day task
+            counts are shown, including the smaller P5 samples.
+          </p>
+        )}
         <span>Saving: positive = less effort · exact fixed workflow union</span>
       </div>
       <div className="version-column-head" aria-hidden="true">
-        <span>Version / night / change</span>
+        <span>Revision / night / change</span>
         <span>vs previous</span>
         <span>vs baseline</span>
         <span>Certificate</span>
@@ -707,15 +927,23 @@ function VersionList({
         onClick={() => open({ record: null })}
       >
         <span className="version-open">
-          <strong>v0 · Baseline</strong>
+          <strong>rev 0 · Baseline</strong>
           <span>Canonical program</span>
         </span>
         <span>—</span>
         <span>0 clicks / 0s KLM</span>
-        <Badge tone={run.certs.has(`certs/${persona}/v0.json`) ? "pass" : ""}>
+        <Badge
+          tone={
+            run.certs.has(`certs/${persona}/v0.json`) ||
+            run.files?.includes(`certs/${persona}/v0.json`)
+              ? "pass"
+              : ""
+          }
+        >
           {run.manifest.ehr.mode === "fake"
             ? "MOCK certificate"
-            : run.certs.has(`certs/${persona}/v0.json`)
+            : run.certs.has(`certs/${persona}/v0.json`) ||
+                run.files?.includes(`certs/${persona}/v0.json`)
               ? "Certificate recorded"
               : "Certificate unavailable"}
         </Badge>
@@ -737,9 +965,13 @@ function VersionList({
             >
               <span className="version-open">
                 <strong>
-                  {deployed ? `v${r.versionAfter}` : `Kept v${r.versionAfter}`}{" "}
+                  {deployed
+                    ? `rev ${r.versionAfter}`
+                    : `Kept rev ${r.versionAfter}`}{" "}
                   · Night {r.night}
-                  {r.release ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}` : ""}
+                  {r.release
+                    ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}`
+                    : ""}
                 </strong>
                 <span>
                   {chosen ||
@@ -747,16 +979,32 @@ function VersionList({
                       ? r.release.surfaced === false
                         ? "Optional feature left out of nursing workflow"
                         : "Release migration"
-                      : r.outcome === "llm-error" ? "LLM error — no design decision" : "No change deployed")}
+                      : r.outcome === "llm-error"
+                        ? "LLM error — no design decision"
+                        : "No change deployed")}
                 </span>
               </span>
               <span>
                 <span className="mobile-label">vs previous: </span>
-                {blindProtocol ? (r.release ? "Vendor release: separate cost" : r.measured.test ? "Blind measurement recorded" : r.outcome === "llm-error" ? "LLM error" : "Not independently measured") : deployed ? change(after, before) : "0 clicks / 0s KLM"}
+                {blindProtocol
+                  ? r.release
+                    ? "Vendor release: separate cost"
+                    : r.measured.test
+                      ? "Blind measurement recorded"
+                      : r.outcome === "llm-error"
+                        ? "LLM error"
+                        : "Not independently measured"
+                  : deployed
+                    ? change(after, before)
+                    : "0 clicks / 0s KLM"}
               </span>
               <span>
                 <span className="mobile-label">vs baseline: </span>
-                {blindProtocol ? (r.measured.test ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${fmt(r.measured.testNoAgent.saving.klmDeciSec/10)}s agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks` : "Unavailable") : change(after, baseline)}
+                {blindProtocol
+                  ? r.measured.test
+                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${fmt(r.measured.testNoAgent.saving.klmDeciSec / 10)}s agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
+                    : "Unavailable"
+                  : change(after, baseline)}
               </span>
               {r.certificate ? (
                 <Badge tone="pass">
@@ -798,6 +1046,8 @@ export function Dashboard({
   interpFactory?: InterpFactory;
 }) {
   const query = new URLSearchParams(window.location.search);
+  const [requestedVersion] = useState(query.get("version"));
+  const [requestedDay] = useState(Number(query.get("day") ?? "1"));
   const [view, setView] = useState(
     views.includes(query.get("view") ?? "")
       ? (query.get("view") ?? "Evolution")
@@ -814,8 +1064,11 @@ export function Dashboard({
   const [screenMode, setScreenMode] = useState<
     "pair" | "counterexample" | null
   >(null);
+  const [loadedFactory, setLoadedFactory] = useState<InterpFactory>();
   const interpFactory =
-    run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory;
+    run?.manifest.ehr.mode === "fake"
+      ? undefined
+      : (suppliedFactory ?? loadedFactory);
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -846,10 +1099,21 @@ export function Dashboard({
     setError("");
     setSelection(null);
     setScreenMode(null);
-    loadRun(runId, entry.files)
+    loadRunSummary(runId)
       .then((data) => {
         if (active) {
           setRun(data);
+          if (requestedVersion !== null && /^\d+$/.test(requestedVersion)) {
+            const record = data.records.find(
+              (record) =>
+                record.persona === persona &&
+                record.versionAfter === Number(requestedVersion),
+            );
+            if (record || requestedVersion === "0") {
+              setSelection({ record: record ?? null });
+              setScreenMode("pair");
+            }
+          }
           setPersona((current) =>
             data.manifest.personas.includes(current)
               ? current
@@ -886,16 +1150,45 @@ export function Dashboard({
     }
   };
   const selectedPersona = selection?.record?.persona ?? persona;
+  const [detail, setDetail] = useState<RunData | null>(null);
+  const [detailError, setDetailError] = useState("");
+  useEffect(() => {
+    let active = true;
+    setDetail(null);
+    setDetailError("");
+    if (run && selection) {
+      Promise.all([
+        loadRunDetails(run, selectedPersona),
+        run.manifest.ehr.mode === "fake" || suppliedFactory
+          ? Promise.resolve(null)
+          : loadWasmInterp(),
+      ])
+        .then(([data, interp]) => {
+          if (active) {
+            setDetail(data);
+            if (interp) setLoadedFactory(() => () => interp);
+          }
+        })
+        .catch((error: unknown) => {
+          if (active)
+            setDetailError(
+              error instanceof Error ? error.message : String(error),
+            );
+        });
+    }
+    return () => {
+      active = false;
+    };
+  }, [run, selection, selectedPersona, suppliedFactory]);
   const record = selection?.record;
   return (
     <div className="dashboard">
-      {run?.manifest.status === "blocked" && <div role="alert">Run blocked before deployment: {run.manifest.blockers?.join("; ")}</div>}
-      <header className="dash-header">
-        <a href="/" className="dash-brand">
-          VGI Health
-        </a>
-        <h1>UI evolution</h1>
-        <p>One canonical EHR, with role permissions and a pre-set view. The overnight agent evolves each persona’s fork; vendor releases merge into every fork and are re-certified.</p>
+      {run?.manifest.status === "blocked" && (
+        <div role="alert">
+          Run blocked before deployment: {run.manifest.blockers?.join("; ")}
+        </div>
+      )}
+      <AppHeader active="dashboard" title="UI evolution">
         <label>
           Run{" "}
           <select
@@ -910,13 +1203,33 @@ export function Dashboard({
             ))}
           </select>
         </label>
-        <a href={`/?persona=${persona}&run=${runId}`}>Open EHR</a>
-      </header>
+        <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>
+          Open EHR
+        </a>
+      </AppHeader>
+      <p className="dash-description">
+        One canonical EHR, with role permissions and a preset view. The
+        overnight agent evolves each persona’s fork; vendor releases merge into
+        every fork and are re-certified.
+      </p>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button
             key={name}
             aria-current={view === name ? "page" : undefined}
+            disabled={
+              view === name ||
+              (name === "Trajectories" &&
+                !run?.files?.includes("trajectories/index.json"))
+            }
+            title={
+              name === "Trajectories" &&
+              !run?.files?.includes("trajectories/index.json")
+                ? "No trajectories recorded for this run"
+                : view === name
+                  ? "Current dashboard area"
+                  : undefined
+            }
             onClick={() => {
               setView(name);
               setSelection(null);
@@ -935,10 +1248,18 @@ export function Dashboard({
                 key={p.id}
                 disabled={
                   !run?.manifest.personas.includes(p.id) ||
-                  !versionsFor(run, p.id).length
+                  !versionsFor(run, p.id).length ||
+                  persona === p.id
                 }
                 aria-pressed={persona === p.id}
-                title={p.name}
+                title={
+                  !run?.manifest.personas.includes(p.id) ||
+                  !versionsFor(run, p.id).length
+                    ? "No recorded versions for this persona"
+                    : persona === p.id
+                      ? "Current persona"
+                      : p.name
+                }
                 onClick={() => {
                   setPersona(p.id);
                   setSelection(null);
@@ -974,7 +1295,23 @@ export function Dashboard({
                 <VersionList run={run} persona={persona} open={open} />
               </>
             )}
-            {view === "Trajectories" && <Trajectories key={runId} runId={runId} persona={persona} factory={interpFactory} />}
+            {view === "Trajectories" &&
+              (run.files?.includes("trajectories/index.json") ? (
+                <Suspense fallback={<p role="status">Loading trajectories…</p>}>
+                  <Trajectories
+                    initialDay={requestedDay}
+                    key={runId}
+                    runId={runId}
+                    persona={persona}
+                    factory={interpFactory}
+                  />
+                </Suspense>
+              ) : (
+                <p role="status">
+                  No trajectories recorded for this run. Select Evolution or
+                  another run.
+                </p>
+              ))}
             {view === "Releases" && (
               <Releases
                 run={run}
@@ -988,6 +1325,7 @@ export function Dashboard({
               <BreakPanel
                 key={runId}
                 run={run}
+                persona={persona}
                 replay={(rejection) => {
                   open({ record: rejection.record, rejection });
                   setScreenMode("counterexample");
@@ -1010,7 +1348,7 @@ export function Dashboard({
           selection?.rejection
             ? `Rejected proposal · Night ${record?.night}`
             : record
-              ? `v${record.versionAfter} · Night ${record.night} · ${record.persona}`
+              ? `rev ${record.versionAfter} · Night ${record.night} · ${record.persona}`
               : `v0 · ${selectedPersona} · Baseline`
         }
         classNames={{
@@ -1020,7 +1358,11 @@ export function Dashboard({
         }}
         closeButtonProps={{ "aria-label": "Close decision record" }}
       >
-        {run && selection && (
+        {detailError && <p role="alert">{detailError}</p>}
+        {selection && !detail && !detailError && (
+          <p role="status">Loading decision replay…</p>
+        )}
+        {run && detail && selection && (
           <>
             <div className="dash-controls">
               <button onClick={() => setScreenMode("pair")}>
@@ -1047,12 +1389,12 @@ export function Dashboard({
               <>
                 <h3>Canonical baseline</h3>
                 <p>The recorded starting program, before nightly adaptation.</p>
-                <p>{programAt(run, selectedPersona, 0).id}</p>
+                <p>{programAt(detail, selectedPersona, 0).id}</p>
                 <details>
                   <summary>Baseline certificate</summary>
                   <pre>
                     {JSON.stringify(
-                      run.certs.get(`certs/${selectedPersona}/v0.json`) ??
+                      detail.certs.get(`certs/${selectedPersona}/v0.json`) ??
                         "Unavailable",
                       null,
                       2,
@@ -1082,29 +1424,37 @@ export function Dashboard({
         classNames={{ body: "dash-review", title: "dash-drawer-title" }}
         closeButtonProps={{ "aria-label": "Close EHR replay" }}
       >
-        {run &&
-          selection &&
-          (screenMode === "pair" ? (
-            <BeforeAfter
-              key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
-              run={run}
-              persona={selectedPersona}
-              record={record ?? null}
-              rejection={selection.rejection}
-              factory={interpFactory}
-            />
-          ) : (
-            selection.rejection && (
-              <div className="dash-review">
-                <Counterexample
-                  key={selection.rejection.id}
-                  run={run}
-                  rejection={selection.rejection}
-                  factory={interpFactory}
-                />
-              </div>
-            )
-          ))}
+        {detailError && <p role="alert">{detailError}</p>}
+        {selection && !detail && !detailError && (
+          <p role="status">Loading EHR replay…</p>
+        )}
+        <DeferredReplay
+          key={`${screenMode}-${selectedPersona}-${record?.night ?? 0}`}
+        >
+          {detail &&
+            selection &&
+            (screenMode === "pair" ? (
+              <BeforeAfter
+                key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
+                run={detail}
+                persona={selectedPersona}
+                record={record ?? null}
+                rejection={selection.rejection}
+                factory={interpFactory}
+              />
+            ) : (
+              selection.rejection && (
+                <div className="dash-review">
+                  <Counterexample
+                    key={selection.rejection.id}
+                    run={detail}
+                    rejection={selection.rejection}
+                    factory={interpFactory}
+                  />
+                </div>
+              )
+            ))}
+        </DeferredReplay>
       </Modal>
     </div>
   );
