@@ -697,7 +697,7 @@ unknown field (`writesOnly`), attempted macro commit (`humanOnlyKept`), and
 unknown alert (`wellFormed`). Runtime-generated interruptive alerts survive
 removing a UI alert component, as required by the preserved safety model.
 
-**CR-15 (core/app/check): property-specific replay evidence.** The public
+**CHECK-REPLAY (core/app/check): property-specific replay evidence.** The public
 violation currently carries events and screen IDs but no patient/user
 witness. Check's fixed replay record has no pre-op encounter, so a real
 navigation path to the missing anticoagulant panel does not itself
