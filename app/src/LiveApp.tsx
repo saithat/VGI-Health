@@ -5,7 +5,6 @@ import {
   Drawer,
   Group,
   Paper,
-  PasswordInput,
   Stack,
   Text,
   TextInput,
@@ -16,7 +15,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import { readArtifact } from "./browser/data";
+import { loadCatalog, readArtifact } from "./browser/data";
 import {
   availableBeds,
   bundleResources,
@@ -26,7 +25,6 @@ import {
   quickSignIn,
   readResource,
   searchPatients,
-  signIn,
   signOut,
   startEncounter,
   type Bundle,
@@ -83,18 +81,55 @@ interface Selection {
   workItem?: Resource;
 }
 
-function Login({ onLogin }: { onLogin: (user: LiveUser) => void }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const personaLabels: Record<string, string> = {
+  P1: "P1 · Primary care",
+  P2: "P2 · Emergency",
+  P3: "P3 · Inpatient RN",
+  P4: "P4 · Pediatric NP",
+  P5: "P5 · Surgeon",
+  RN2: "RN2 · Second nurse",
+};
+
+/** Program shown in live mode: the persona's latest certified personalized
+version from a recorded run, the persona's canonical projection if none
+exists yet, or the original canonical baseline. */
+async function liveProgram(persona: string, baseline: boolean) {
+  if (baseline)
+    return {
+      spec: await readArtifact("/releases/v2/spec.json"),
+      program: await readArtifact("/releases/v2/canonical.json"),
+    };
+  const catalog = await loadCatalog();
+  const deployed = catalog.programs.find(
+    (p) =>
+      p.persona === persona &&
+      p.deployed &&
+      p.run !== null &&
+      p.run !== "mock",
+  );
+  if (deployed)
+    return {
+      spec: await readArtifact(`/releases/${deployed.release}/spec.json`),
+      program: await readArtifact(`/${deployed.path}`),
+    };
+  return {
+    spec: await readArtifact("/releases/v2/spec.json"),
+    program: await readArtifact(`/releases/v2/personas/${persona}.json`),
+  };
+}
+
+function Login({
+  onLogin,
+}: {
+  onLogin: (user: LiveUser, baseline: boolean) => void;
+}) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  async function login(persona?: string) {
+  async function login(persona: string, baseline: boolean) {
     setPending(true);
     setError("");
     try {
-      onLogin(
-        persona ? await quickSignIn(persona) : await signIn(email, password),
-      );
+      onLogin(await quickSignIn(persona), baseline);
     } catch (error) {
       setError(errorText(error));
     } finally {
@@ -108,59 +143,38 @@ function Login({ onLogin }: { onLogin: (user: LiveUser) => void }) {
       </div>
       <Paper p="xl" withBorder w="min(520px, 95vw)">
         <Title order={1} size="h2">
-          Clinician sign-in
+          Choose a clinician
         </Title>
-        <Text mb="lg">Sign in to your local EHR. Changes save to Medplum.</Text>
+        <Text mb="lg">
+          Each opens that clinician's current certified EHR. Changes save to
+          the local Medplum server.
+        </Text>
         {error && (
           <Alert role="alert" color="red" mb="md">
             {error}
           </Alert>
         )}
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            void login();
-          }}
-        >
-          <Stack>
-            <TextInput
-              label="Medplum email"
-              type="email"
-              autoComplete="username"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-            />
-            <PasswordInput
-              label="Password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-            />
-            <Button type="submit" loading={pending}>
-              Sign in
-            </Button>
-          </Stack>
-        </form>
-        <Text mt="lg" fw={600}>
-          Dev persona quick-login
-        </Text>
-        <Text size="sm" mb="xs">
-          Seeded synthetic accounts · local server only
-        </Text>
-        <Group>
-          {["P1", "P2", "P3", "P4", "P5", "RN2"].map((persona) => (
+        <Stack gap="xs">
+          {Object.keys(personaLabels).map((persona) => (
             <Button
               key={persona}
               variant="light"
+              justify="flex-start"
               disabled={pending}
-              onClick={() => void login(persona)}
+              onClick={() => void login(persona, false)}
             >
-              {persona}
+              {personaLabels[persona]}
             </Button>
           ))}
-        </Group>
+          <Button
+            mt="md"
+            variant="outline"
+            disabled={pending}
+            onClick={() => void login("P1", true)}
+          >
+            Original canonical EHR (baseline)
+          </Button>
+        </Stack>
       </Paper>
       <a href="/browse">Demo / replay — no Docker required</a>
       <a href="/dashboard">Offline dashboard</a>
@@ -428,7 +442,7 @@ function SelectEncounter({
                 });
             }}
           >
-            Open canonical EHR
+            Open EHR
           </Button>
           <Button
             variant="default"
@@ -456,7 +470,15 @@ function SelectEncounter({
   );
 }
 
-function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
+function Home({
+  user,
+  baseline,
+  onLogout,
+}: {
+  user: LiveUser;
+  baseline: boolean;
+  onLogout: () => void;
+}) {
   const [worklist, setWorklist] = useState<Worklist>();
   const [names, setNames] = useState<Record<string, string>>({});
   const [query, setQuery] = useState("");
@@ -571,7 +593,10 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
   return (
     <main className="browser-page live-home">
       <nav aria-label="Workspace">
-        <strong>VGI HEALTH · LIVE · {user.persona}</strong>
+        <strong>
+          VGI HEALTH · LIVE · {user.persona}
+          {baseline ? " · ORIGINAL CANONICAL" : ""}
+        </strong>
         <a href="/browse">Demo / replay</a>
         <a href="/dashboard">Dashboard</a>
         <Button
@@ -826,12 +851,8 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
             setPending(true);
             setError("");
             const persona = user.persona === "RN2" ? "P3" : user.persona;
-            void Promise.all([
-              loadWasmInterp(),
-              readArtifact("/releases/v2/spec.json"),
-              readArtifact(`/releases/v2/personas/${persona}.json`),
-            ])
-              .then(([interp, spec, program]) =>
+            void Promise.all([loadWasmInterp(), liveProgram(persona, baseline)])
+              .then(([interp, { spec, program }]) =>
                 createLiveSession(
                   interp,
                   spec,
@@ -852,6 +873,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
 }
 export function LiveApp() {
   const [user, setUser] = useState<LiveUser>();
+  const [baseline, setBaseline] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
@@ -874,9 +896,18 @@ export function LiveApp() {
         </Alert>
       )}
       {user ? (
-        <Home user={user} onLogout={() => setUser(undefined)} />
+        <Home
+          user={user}
+          baseline={baseline}
+          onLogout={() => setUser(undefined)}
+        />
       ) : (
-        <Login onLogin={setUser} />
+        <Login
+          onLogin={(next, isBaseline) => {
+            setBaseline(isBaseline);
+            setUser(next);
+          }}
+        />
       )}
     </>
   );
