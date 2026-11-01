@@ -10,8 +10,7 @@ Run `make install && make run`. Use **one browser**, one tab, at
 is needed for this script: the overnight segment plays a committed **real Codex
 run**, `run1-P3`, not a new model call. The live segment writes to local Medplum.
 
-Rehearse the note below on an available P1 clinic patient. Set **Worklist date**
-to **2026-11-02** for the seeded day, rather than the computer's date. Keep the
+Rehearse the note below on an available P1 clinic patient from the department workspace. Keep the
 actual selected patient and encounter visible; don't promise that a completed
 shared work item will still be waiting on the next rehearsal. The UI browser exposes version history and readable diffs.
 
@@ -22,11 +21,8 @@ history, and all the paperwork. Let's actually save a visit.”
 
 1. At **http://localhost:5173/** click **P1 · Primary care**. The local persona
    button logs in; no password needs to appear on the projector.
-2. Keep `?inspect=1` in the URL. Set **Worklist date** to **2026-11-02**. Select a clinic patient, or enter
-   **Aaron** in **Patient search**, click **Search Medplum**, then the Aaron
-   Ankunding result. Use **Start new encounter** for a fresh rehearsal; select
-   that **in-progress** encounter in **Live encounter**, then **Open EHR**.
-3. Open a patient with **Open chart:**, then complete the displayed rooming fields and required reviews. Use **Review medications**, then **History / ROS**, then **Exam / Assessment & Plan**. Enter the required medication decisions and clinical narrative on the displayed screens.
+2. Keep `?inspect=1` in the URL. The current department workspace starts on a patient list. Choose an available clinic row using **Open chart:**; keep the actual patient and encounter visible and avoid reusing a completed shared visit.
+3. Complete the displayed rooming fields and required reviews. Use **Review medications**, then **History / ROS**, then **Exam / Assessment & Plan**. Enter the required medication decisions and clinical narrative on the displayed screens.
 4. Enter **Encounter diagnosis (ICD-10-CM)** `I10`. Open **Sign Visit**. Set **E/M service level** `99213`, **Return in** `4 weeks`, and **After-visit instructions** `Check home BP daily.` Complete any displayed required review or acknowledgement before signing. Never narrate a disabled button as a saved note.
 5. Keep **?inspect=1** in the live URL for the presenter resource view. After **Sign Visit**, point to the notification titled **Medplum** and click **View saved record 1** (or another returned record). To show the persistent receipt, click **Live encounter** and find **Saved resources** with the returned DocumentReference, Observation, Condition and ChargeItem links. Only describe resource types actually returned.
 
