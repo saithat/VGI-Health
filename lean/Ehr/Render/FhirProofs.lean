@@ -170,4 +170,18 @@ example : listVersion (bundleResources tinyBundle) = listVersion (bundleResource
 #print axioms T5_weight
 #print axioms T5_allergyVersion
 #print axioms T5_version_order_independent
+theorem noteRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
+    (hn : isDocumentReference r = true) (hv : documentVisible r = true) :
+    noteRow r ∈ noteRows rs := by
+  simp only [noteRows, newestFirst, List.mem_mergeSort, List.mem_map]
+  exact ⟨r, List.mem_filter.mpr ⟨hr, by simp [hn, hv]⟩, rfl⟩
+
+theorem T11_note (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
+    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hn : isDocumentReference r = true) (hv : documentVisible r = true) : noteRow r ∈ d.notes := by
+  obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d h
+  exact noteRows_complete _ r hr hn hv
+
+#print axioms T11_note
+
 end Ehr.Render.Fhir

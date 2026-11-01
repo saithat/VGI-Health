@@ -580,6 +580,149 @@ def procRow (r : Json) : ProcRow where
 def ofType (rt : String) (rs : List Json) : List Json :=
   rs.filter (resourceType · == rt)
 
+/-! ## Notes and reported history (display only) -/
+
+def knownText (s : String) : String := if s == "" then "Unknown" else s
+
+def refText (r : Json) : String :=
+  let d := str r "display"
+  if d != "" then d else str r "reference"
+
+def isDocumentReference (r : Json) : Bool := resourceType r == "DocumentReference"
+
+def documentVisible (r : Json) : Bool :=
+  str r "status" != "entered-in-error" && str r "docStatus" != "entered-in-error"
+
+/-- Strict RFC 4648 alphabet, including canonical padding bits. -/
+def base64Digit (c : Char) : Option Nat :=
+  if 'A' ≤ c && c ≤ 'Z' then some (c.toNat - 'A'.toNat)
+  else if 'a' ≤ c && c ≤ 'z' then some (26 + c.toNat - 'a'.toNat)
+  else if '0' ≤ c && c ≤ '9' then some (52 + c.toNat - '0'.toNat)
+  else if c == '+' then some 62 else if c == '/' then some 63 else none
+
+/-- Structural recursion consumes four input characters per step. -/
+def base64Bytes : List Char → Option (List UInt8)
+  | [] => some []
+  | a :: b :: c :: d :: rest => do
+      let x ← base64Digit a
+      let y ← base64Digit b
+      let first := UInt8.ofNat (x * 4 + y / 16)
+      if c == '=' then
+        if d == '=' && rest.isEmpty && y % 16 == 0 then some [first] else none
+      else
+        let z ← base64Digit c
+        let second := UInt8.ofNat (y % 16 * 16 + z / 4)
+        if d == '=' then
+          if rest.isEmpty && z % 4 == 0 then some [first, second] else none
+        else
+          let w ← base64Digit d
+          let tail ← base64Bytes rest
+          some (first :: second :: UInt8.ofNat (z % 4 * 64 + w) :: tail)
+  | _ => none
+
+/-- Pure decoding followed by Lean's strict UTF-8 validation. -/
+def decodeBase64Utf8 (s : String) : Option String := do
+  let bytes ← base64Bytes (s.toList.filter (fun c => !c.isWhitespace))
+  String.fromUTF8? (ByteArray.mk bytes.toArray)
+
+/-- Never fetch attachments or interpret HTML. -/
+def noteAttachmentText (a : Json) : String :=
+  if ((((str a "contentType").splitOn ";").headD "").trimAscii.toString.toLower) != "text/plain"
+  then "Note body unavailable (not inline text/plain)"
+  else if str a "data" == "" then "Note body unavailable (no inline data)"
+  else (decodeBase64Utf8 (str a "data")).getD "Note body unavailable (invalid base64 or UTF-8)"
+
+def extensionText (r : Json) (suffix : String) : String :=
+  match (arr r "extension").find? (fun e => (str e "url").endsWith suffix) with
+  | none => ""
+  | some e =>
+    let d := str e "valueDate"
+    if d != "" then d else
+      match field e "valueInteger" with
+      | .num n => toString n
+      | _ => str e "valueString"
+
+def noteRow (r : Json) : NoteRow :=
+  let attachments := (arr r "content").map (field · "attachment")
+  let date := str r "date"
+  let period := str (field (field r "context") "period") "start"
+  { id := str r "id"
+    date := if date != "" then date else if period != "" then period
+      else ((attachments.map (str · "creation")).find? (· != "")).getD ""
+    noteType := knownText (ccText (field r "type"))
+    author := knownText (", ".intercalate ((arr r "author").map refText))
+    encounter := knownText (", ".intercalate ((arr (field r "context") "encounter").map refText))
+    title := let title := str r "description"
+      if title != "" then title else knownText (str (attachments.headD .null) "title")
+    text := if attachments.isEmpty then "Note body unavailable (no attachments)"
+      else "\n\n".intercalate (attachments.zipIdx.map fun (a, i) =>
+        "Attachment " ++ toString (i + 1) ++
+        (if str a "title" == "" then "" else ": " ++ str a "title") ++ "\n" ++ noteAttachmentText a)
+    status := knownText (" / ".intercalate ([str r "status", str r "docStatus"].filter (· != "")))
+    sourceDate := extensionText r ":original-date"
+    shiftDays := extensionText r ":shift-days"
+    versionId := str (field r "meta") "versionId" }
+
+def noteRows (rs : List Json) : List NoteRow :=
+  newestFirst (·.date) ((rs.filter fun r => isDocumentReference r && documentVisible r).map noteRow)
+
+/-- MedicationStatement is reported history, never a MedicationRequest. -/
+def medicationStatementHistoryRow (r : Json) : HistoryRow :=
+  { id := str r "id", kind := "Home medications (reported)", item := knownText (medName r)
+    detail := "Reported home medication; " ++
+      knownText ("; ".intercalate ((arr r "dosage").map (str · "text"))) ++
+      "; date: " ++ knownText (str r "effectiveDateTime")
+    status := knownText (str r "status")
+    source := "MedicationStatement (reported history); " ++ knownText (refText (field r "informationSource"))
+    versionId := str (field r "meta") "versionId" }
+
+def familyHistoryRows (r : Json) : List HistoryRow :=
+  let conditions := arr r "condition"
+  (if conditions.isEmpty then [Json.null] else conditions).map fun c =>
+    { id := str r "id", kind := "Family history"
+      item := knownText (ccText (field c "code"))
+      detail := knownText (ccText (field r "relationship")) ++
+        (if ccText (field c "outcome") == "" then "" else "; " ++ ccText (field c "outcome")) ++
+        (let notes := (arr r "note" ++ arr c "note").map (str · "text")
+         if notes.isEmpty then "" else "; " ++ "; ".intercalate notes)
+      status := knownText (str r "status"), source := "FamilyMemberHistory"
+      versionId := str (field r "meta") "versionId" }
+
+def socialHistoryRow (r : Json) : HistoryRow :=
+  let (v, u, _) := obsValue r
+  let value := if v != "" then v else match field r "valueBoolean" with
+    | .bool b => toString b
+    | _ => match field r "valueInteger" with | .num n => toString n | _ => ""
+  { id := str r "id", kind := "Social history", item := knownText (ccText (field r "code"))
+    detail := knownText value ++ (if u == "" then "" else " " ++ u) ++ "; date: " ++ knownText (obsWhen r)
+    status := knownText (str r "status"), source := "Observation (social-history)"
+    versionId := str (field r "meta") "versionId" }
+
+def procedureHistoryRow (r : Json) : HistoryRow :=
+  { id := str r "id", kind := "Surgical history", item := knownText (ccText (field r "code"))
+    detail := "Date: " ++ knownText (procRow r).date ++
+      (let notes := (arr r "note").map (str · "text")
+       if notes.isEmpty then "" else "; " ++ "; ".intercalate notes)
+    status := knownText (str r "status"), source := "Procedure"
+    versionId := str (field r "meta") "versionId" }
+
+def isHistoryResource (r : Json) : Bool :=
+  ["MedicationStatement", "FamilyMemberHistory", "Procedure"].contains (resourceType r) ||
+    (resourceType r == "Observation" && (categoryCodes r).contains "social-history")
+
+def historyRows (rs : List Json) : List HistoryRow :=
+  rs.flatMap fun r =>
+    if str r "status" == "entered-in-error" then [] else
+    match resourceType r with
+    | "MedicationStatement" => [medicationStatementHistoryRow r]
+    | "FamilyMemberHistory" => familyHistoryRows r
+    | "Procedure" => [procedureHistoryRow r]
+    | "Observation" => if (categoryCodes r).contains "social-history" then [socialHistoryRow r] else []
+    | _ => []
+
+def notesVersionOf (rs : List Json) : Nat := listVersion (rs.filter isDocumentReference)
+def historyVersionOf (rs : List Json) : Nat := listVersion (rs.filter isHistoryResource)
+
 /-! ## Growth -/
 
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
@@ -675,6 +818,8 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
     allergyClasses := ((allergies.filter allergyActive).flatMap allergyClassesOf).eraseDups
+    notesVersion := notesVersionOf rs
+    historyVersion := historyVersionOf rs
     medsVersion := listVersion meds
     currentMedClasses := ((meds.filter medActive).flatMap fun r => drugClasses (medDrug r)).eraseDups
     weightToday? := weightTodayOf ctx.today rs
@@ -700,7 +845,9 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     immunizations := newestFirst (·.date) ((ofType "Immunization" rs).map immRow)
     encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
     procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
-    growth := growthPoints dob rs }
+    growth := growthPoints dob rs
+    notes := noteRows rs
+    history := historyRows rs }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

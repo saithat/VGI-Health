@@ -225,6 +225,8 @@ def factVersion (facts : Facts) (name : String) : Option Nat :=
   if name == "" then some 0
   else if name == "allergyVersion" then some facts.allergyVersion
   else if name == "medsVersion" then some facts.medsVersion
+  else if name == "notesVersion" then some facts.notesVersion
+  else if name == "historyVersion" then some facts.historyVersion
   else none
 
 /-- The current data version of an info (none if the info is unknown). -/

@@ -132,7 +132,7 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
   · have h := (uiComponentsWhere_mem cx (fun jt => jt.comp.kind != .banner && !uiNavButton cx jt && uiSideAt cx jt.comp.id) n).mpr
         ⟨it, hi, hs, by simp [hb, hv, hd], hn⟩
     simp only [UiPresent, renderUi, Ctx.rebuild, uiSide, uiAtomsList_append, List.mem_append, List.mem_singleton]
-    exact Or.inl (Or.inl (Or.inr (Or.inl h)))
+    exact Or.inl (Or.inl (Or.inr (Or.inl (Or.inl h))))
   · have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) n).mpr
         ⟨it, hi, hs, by simp [uiInWorkspace, hb, hv, hd], hn⟩
     simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
@@ -160,9 +160,12 @@ theorem uiMissing_readOnly (cx : Ctx) (n : UiNode)
 theorem uiSide_source (cx : Ctx) (n : UiNode) (hn : n ∈ uiAtomsList (uiSide cx)) :
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
   simp only [uiSide, uiAtomsList_append, List.mem_append] at hn
-  rcases hn with hn | hn
+  rcases hn with (hn | hn) | hn
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
+  · right
+    split at hn <;> simp [uiAtoms] at hn
+    subst n; trivial
   · generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals")] : List (String × String)) = pairs at hn
     right
@@ -531,5 +534,17 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
     · obtain ⟨_, rfl, _⟩ := hi
       exact uiLabel_nonempty _ _ (by decide)
   · simp [UiReadOnly] at hr
+
+/-- A shown Notes component retains every narrative and metadata field. -/
+theorem uiNotes_complete (cx : Ctx) (r : NoteRow) (hr : r ∈ cx.disp.notes)
+    (hi : infoShown cx.sp cx.prog cx.facts cx.s "encounterNotes" = true) :
+    ∃ comp label display rows,
+      UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s)
+        (.info comp label "encounterNotes" display rows) ∧ noteCells r ∈ rows := by
+  obtain ⟨comp, label, display, rows, hm, hf | hs⟩ := T11_ui_info cx "encounterNotes" hi
+  · exact ⟨comp, label, display, rows, hm, hf ▸ List.mem_map.mpr ⟨r, hr, rfl⟩⟩
+  · exact ⟨comp, label, display, rows, hm, hs ▸ List.mem_map.mpr ⟨r, hr, rfl⟩⟩
+
+#print axioms uiNotes_complete
 
 end Ehr.Render

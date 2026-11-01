@@ -30,11 +30,29 @@ try {
     await page.getByRole('button', { name: 'Open EHR', exact: true }).click();
     await expect(page.locator('.clinical-banner')).toBeVisible();
     await expect(page.locator('.clinical-banner')).toContainText(patient.name.split(' ').reverse().join(', '));
+    const bundle = JSON.parse(await readFile(resolve(root, patient.bundlePath ?? `fixtures/synthetic-hospital/${patient.file}`), 'utf8'));
+    const resources = bundle.entry.map((entry) => entry.resource);
+    const notes = resources.filter((r) => r.resourceType === 'DocumentReference' && r.status !== 'entered-in-error');
+    const homeMeds = resources.filter((r) => r.resourceType === 'MedicationStatement' && r.status !== 'entered-in-error');
+    if (persona === 'P1' || persona === 'P4') {
+      await page.getByRole('tab', { name: 'Notes', exact: true }).click();
+      const notePanel = page.locator('[data-info-id="encounterNotes"], [data-info-id="priorNotes"]').filter({ has: page.getByRole('heading', { name: 'Notes', exact: true }) });
+      await expect(notePanel).toBeVisible();
+      await expect(notePanel.locator('li')).toHaveCount(notes.length);
+      if (notes.length) await expect(notePanel).toContainText(Buffer.from(notes[0].content[0].attachment.data, 'base64').toString('utf8'));
+      if (homeMeds.length) {
+        const reported = page.locator('.clinical-side [data-info-id="importedHistory"]');
+        await expect(reported).toContainText('Home medications (reported)');
+        await expect(reported.locator('li')).toHaveCount(homeMeds.length);
+        for (const med of homeMeds) await expect(reported).toContainText(med.medicationCodeableConcept.text ?? med.medicationCodeableConcept.coding[0].display);
+      }
+    }
     if (persona === 'P1') {
       await mkdir(resolve(root, 'app/shots'), { recursive: true });
       await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-chart.png'), fullPage: true });
     }
-    verified.push({ persona, sourceId: patient.sourceId, name: patient.name, birthDate: patient.birthDate });
+    if (persona === 'P1') await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-notes.png'), fullPage: true });
+    verified.push({ notes: notes.length, homeMedications: homeMeds.length, persona, sourceId: patient.sourceId, name: patient.name, birthDate: patient.birthDate });
     await page.getByRole('button', { name: 'Live encounter', exact: true }).click();
     await page.getByRole('button', { name: 'Back to worklist / refresh chart', exact: true }).click();
     await page.getByRole('button', { name: 'Sign out', exact: true }).click();

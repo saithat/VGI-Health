@@ -22,7 +22,7 @@ deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode, UiNode
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
-  EncRow, ProcRow, GrowthPoint, Display
+  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, Display
 
 deriving instance Lean.ToJson, Lean.FromJson for RenderInput, FactsContext, FactsOutput
 
