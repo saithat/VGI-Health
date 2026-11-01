@@ -44,9 +44,12 @@ def selfCosign : Program := seed 5 <|
 def staleWeight : Program := seed 6 <| (base 6).updateScreen "w5Rooming" fun s =>
   s.updateComp "w5Rooming.weight" fun c =>
     { c with kind := .field "weight" (.fixed 0) (.fromRecord "weightYesterday") }
-/-- 7: Remove the only route to the refill decision. -/
-def unreachableRefill : Program := seed 7 <| (base 7).updateScreen "w7Review" fun s =>
-  s.dropComp "w7Review.decide"
+/-- 7: Remove every route to the refill decision, including relocated artifact
+links. The unsafe mutation still strands the clinician before the decision. -/
+def unreachableRefill : Program := seed 7 <|
+  { base 7 with screens := (base 7).screens.map fun s =>
+      { s with components := s.components.filter fun c =>
+          c.kind != .button (.goto "w7Decision") } }
 /-- 8: Forge consent with a macro and remove the sign-screen anticoagulants. -/
 def forgedConsent : Program := seed 8 <|
   ((base 8).addMacro {

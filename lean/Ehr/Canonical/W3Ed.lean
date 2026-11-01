@@ -37,7 +37,7 @@ def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
 /-- The ED track board. -/
 def trackBoard : Screen :=
   let s := "w3TrackBoard"
-  { id := s, title := "ED track board", workflow := "W3"
+  { id := s, title := "ED board", workflow := "W3"
     components := frame s ++ [
       table s "board" "edTrackBoard" "Department",
       goto s "open" "w3Triage" "Open patient"
@@ -71,7 +71,7 @@ def triage : Screen :=
 /-- Provider evaluation: triage summary, history and exam, results, imaging. -/
 def provider : Screen :=
   let s := "w3Provider"
-  { id := s, title := "Provider evaluation", workflow := "W3"
+  { id := s, title := "ED evaluation", workflow := "W3"
     components := frame s ++ [
       panel s "triage" "triageSummary" "Triage summary",
       field s "hpi" "hpi" "History of present illness",

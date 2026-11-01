@@ -1795,8 +1795,8 @@
   "abnormalResult": false},
  "expectedReason": "cms-482.13-e8iA-adult-four-hours",
  "events":
- [{"click": {"comp": "home.work.w3TrackBoard"}},
-  {"click": {"comp": "w3TrackBoard.featureNav.continueViolentRestraint"}},
+ [{"click": {"comp": "home.work.w1Rooming"}},
+  {"click": {"comp": "w1Rooming.featureNav.recordTreatmentDecision"}},
   {"enter":
    {"value": {"text": {"s": "RK/M/58"}},
     "comp": "feature.continueViolentRestraint.feature.patientIdReentry"}},

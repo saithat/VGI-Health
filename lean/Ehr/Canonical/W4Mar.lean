@@ -54,7 +54,7 @@ def mar : Screen :=
   let s := "w4Mar"
   { id := s, title := "MAR", workflow := "W4"
     components := frame s ++ [
-      table s "grid" "marSchedule" "Medication administration record"] ++
+      table s "grid" "marSchedule" "MAR time grid"] ++
       tabStrip s "marTabs" "Details"
         [(.table, "prnHistory", "PRN history"), (.trend, "glucoseTrend", "Glucose"),
          (.table, "coagLabs", "Coagulation labs")] ++ [
@@ -86,7 +86,7 @@ def admin : Screen :=
       field s "adminReason" "adminReason" "Reason / comment" (parent := some "documentation"),
       field s "adminSite" "adminSite" "Site" (parent := some "documentation"),
       macroBtn s "heldNpo" "w4HeldNpo" "Document held: NPO",
-      commitBtn s "administerMed" "Administer",
+      commitBtn s "administerMed" "Record administration",
       goto s "toFlowsheet" "w4Flowsheet" "Next: flowsheet",
       goto s "toMar" "w4Mar" "Back to MAR"
     ] }
@@ -96,6 +96,7 @@ def flowsheet : Screen :=
   let s := "w4Flowsheet"
   { id := s, title := "Flowsheet", workflow := "W4"
     components := frame s ++ [
+      table s "history" "flowsheetHistory" "Prior observations",
       group s "vitalsGroup" "Vital signs",
       field s "bpSystolic" "bpSystolic" "BP systolic" (parent := some "vitalsGroup"),
       field s "bpDiastolic" "bpDiastolic" "BP diastolic" (parent := some "vitalsGroup"),

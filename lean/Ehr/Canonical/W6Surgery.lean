@@ -91,6 +91,7 @@ def preOp : Screen :=
   let s := "w6PreOp"
   { id := s, title := "Pre-op", workflow := "W6"
     components := frame s ++ [
+      table s "phases" "surgicalChecklist" "Before induction",
       panel s "consent" "consentDocument" "Consent on file",
       field s "consentVerified" "consentVerified" "Surgical consent verified",
       table s "anticoagulants" "anticoagulantList" "Anticoagulants and antiplatelets",
@@ -173,6 +174,7 @@ def opNote : Screen :=
   let s := "w6OpNote"
   { id := s, title := "Brief op note", workflow := "W6"
     components := frame s ++ [
+      table s "phases" "surgicalChecklist" "Before leaving the OR",
       panel s "intraop" "intraopRecord" "Intra-op record",
       macroBtn s "template" "w6OpNoteTemplate" "Template: laparoscopic appendectomy",
       group s "note" "Brief op note",
@@ -211,6 +213,7 @@ def dischargeScreen : Screen :=
   let s := "w6Discharge"
   { id := s, title := "Discharge", workflow := "W6"
     components := frame s ++ [
+      table s "phases" "dischargeChecklist" "Discharge review",
       table s "meds" "currentMeds" "Current medications",
       panel s "allergies" "allergyList" "Allergies",
       group s "medRec" "Discharge medication reconciliation"] ++

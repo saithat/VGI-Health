@@ -1832,50 +1832,50 @@
   {"confirm": {"comp": "w1Orders.prn"}},
   {"confirm": {"comp": "w1Orders.orderDiagnosis"}},
   {"enter":
-   {"value": {"code": {"c": "Robert Kendall"}},
+   {"value": {"text": {"s": "Robert Kendall"}},
     "comp": "w1Orders.legal.prescriptionPatientName"}},
   {"enter":
-   {"value": {"code": {"c": "100 Synthetic Avenue, Sacramento CA 95814"}},
+   {"value": {"text": {"s": "100 Synthetic Avenue, Sacramento CA 95814"}},
     "comp": "w1Orders.legal.prescriptionPatientAddress"}},
   {"enter":
    {"value":
-    {"code":
-     {"c":
+    {"text":
+     {"s":
       "Take the prescribed dose by the stated route at the stated interval for the stated duration."}},
     "comp": "w1Orders.legal.prescriptionDirections"}},
   {"enter":
-   {"value": {"code": {"c": "Physician and surgeon"}},
+   {"value": {"text": {"s": "Physician and surgeon"}},
     "comp": "w1Orders.legal.prescriberLicenseClassification"}},
   {"enter":
-   {"value": {"code": {"c": "DEMO-REGISTRATION-NOT-VALID"}},
+   {"value": {"text": {"s": "DEMO-REGISTRATION-NOT-VALID"}},
     "comp": "w1Orders.legal.prescriberFederalRegistration"}},
   {"enter":
    {"value":
-    {"code":
-     {"c":
+    {"text":
+     {"s":
       "Short course for acute postoperative pain after assessment and medication review."}},
     "comp": "w1Orders.legal.controlledMedicalPurpose"}},
   {"enter":
-   {"value": {"code": {"c": "10 mg per tablet"}},
+   {"value": {"text": {"s": "10 mg per tablet"}},
     "comp": "w1Orders.legal.controlledProductStrength"}},
   {"enter":
-   {"value": {"code": {"c": "tablet"}},
+   {"value": {"text": {"s": "tablet"}},
     "comp": "w1Orders.legal.controlledDosageForm"}},
   {"enter":
-   {"value": {"code": {"c": "Morgan Example MD"}},
+   {"value": {"text": {"s": "Morgan Example MD"}},
     "comp": "w1Orders.legal.controlledPrescriberName"}},
   {"enter":
-   {"value": {"code": {"c": "200 Synthetic Avenue, Sacramento CA 95814"}},
+   {"value": {"text": {"s": "200 Synthetic Avenue, Sacramento CA 95814"}},
     "comp": "w1Orders.legal.controlledPrescriberAddress"}},
   {"enter":
    {"value":
-    {"code": {"c": "Specialist-documented narcolepsy treatment indication."}},
+    {"text": {"s": "Specialist-documented narcolepsy treatment indication."}},
     "comp": "w1Orders.legal.ghbMedicalNeed"}},
   {"enter":
    {"value": {"flag": {"b": true}},
     "comp": "w1Orders.legal.controlledReadyToSign"}},
   {"enter":
-   {"value": {"code": {"c": "2026-11-30"}},
+   {"value": {"text": {"s": "2026-11-30"}},
     "comp": "w1Orders.legal.earliestFillDate"}},
   {"enter":
    {"value": {"qty": {"unit": "kg", "tenths": 924}},

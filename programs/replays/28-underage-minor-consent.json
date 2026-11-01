@@ -1796,7 +1796,6 @@
  "expectedReason": "minorConsentDecision",
  "events":
  [{"click": {"comp": "home.work.w1Rooming"}},
-  {"click": {"comp": "w1Rooming.featureNav.authorizeMinorMentalHealthCare"}},
   {"enter":
    {"value": {"flag": {"b": true}},
     "comp":
