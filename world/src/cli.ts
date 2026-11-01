@@ -5,6 +5,7 @@
  * state-day-<d>.json, day-<d>-<persona>.json
  * (DaySchedule, validated against src/schema.ts) and manifest.json.
  */
+import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -106,6 +107,11 @@ function main(): void {
     perDay: run.days.map((d) => ({ day: d.state.day, date: d.state.date, weekday: d.state.context.weekday, events: d.state.context.scriptedEvents, loads: d.state.context.personaLoad, taskCounts: d.state.today.taskCounts })),
     files: [...files, "manifest.json"],
   });
+
+  // Presentation context has an independent deterministic stream and never changes tasks/state.
+  execFileSync(process.execPath, [join(root, "world/realism/generate.mjs"), "--world", outDir,
+    "--fixtures", fixtures, "--clinical", outDir === join(root, "runs/world/2")
+      ? join(root, "fixtures/clinical") : join(outDir, "clinical")], { stdio: "inherit" });
 
   console.log(`world: seed ${seed}, ${days} days, ${run.pop.all.length} patients from ${relative(root, fixtures)}`);
   console.log(`wrote ${files.length + 1} files to ${relative(root, outDir) || outDir}`);
