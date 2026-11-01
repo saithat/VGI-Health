@@ -18,3 +18,8 @@ Copy `w1Rooming.json`, `w1Orders.json`, and `w1Sign.json` from that output.
 other buttons use click. Tab labels occupy actual tab indexes. Navigation and
 stepper entries use screen IDs for goTo. Clinical summary info nodes have an
 empty comp ID because they do not dispatch component events.
+
+The workspace includes read-only required review info if a commit screen's
+program omits an applicable review panel. These safety info nodes and the side
+summary use empty comp IDs, with no component events. The side vitals are the
+latest observation per vital-sign code; workspace vitals retain full history.
