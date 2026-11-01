@@ -162,3 +162,26 @@ never resets or stops Medplum. Set `CLEAN_CLONE_PORT` or `KEEP_CLONE=1` as neede
 Trusted: Lean/Emscripten, Node/React/browser, Docker/Medplum, Synthea, and the
 owner-reviewed specs. The mock run illustrates the demo; it does not establish
 clinical correctness or real certification. See [BRIEF §13](BRIEF.md#13-trusted-base-say-this-in-the-readme-and-the-demo).
+
+## Data sources and credits
+
+- **Synthea**: synthetic patients, conditions, medications, labs and encounters
+  (fixtures/synthea), loaded into Medplum. Synthea is Apache-2.0 licensed: Walonoski J,
+  et al. *Synthea: An approach, method, and software mechanism for generating
+  synthetic patients and the synthetic electronic health care record.* JAMIA 2018;
+  25(3):230–238. https://github.com/synthetichealth/synthea
+- **Synthetic Hospital** (Park, Chen, Dettmers): we import its released synthetic
+  longitudinal records for chart realism. These are patient profiles with allergies,
+  home medications, history and social history, plus encounters with full clinical
+  notes. Code is MIT licensed; the released data is "fully synthetic and
+  redistributable". Cite: Park, Chen, Dettmers. *Synthetic Hospital: An Open,
+  Verifiable, Physician-Validated Longitudinal EHR Benchmark.* Preprint, 2026.
+  https://arxiv.org/abs/2609.30027 · https://github.com/sparkcpark/synthetic_hospital
+  (see its CITATION.cff). Its Epic-style simulator is an API, not a UI. We took
+  only its chart organization as a reference (chart summary, encounters, problem
+  list; results for labs, imaging and pathology; orders) and copied no code or
+  screens.
+- **Medplum** (Apache-2.0): FHIR R4 backend. https://github.com/medplum/medplum
+- EHR screen patterns follow public documentation and screenshots of real EHRs
+  (sources in docs/design/ehr-ui-research.md). No proprietary vendor screens
+  were copied.
