@@ -2175,3 +2175,9 @@ AMB integration correction for shared display: `formatMedicationLine` retains pr
 ### AMB M10: current visit document projection
 
 `noteSummary` reads current captured note sections, including all captured slots, and preserves exact text and confirmation status. Canonical W1/W5 opt into `layout.document`; semantic info `display=document` draws a read-only, keyboard-scrollable region. This uses current editor state, not a new FHIR projection or a historical-note fallback. Extra supporting rows are retained. It creates no capture, confirmation, author or signature. Unsupported document/status row-action targets keep their inline source controls.
+
+### AMB M11–M12: connected host diagnostics and baseline audit
+
+Default encounter save notifications/options no longer expose Medplum resource paths or logical Encounter IDs. `inspect=1` retains technical writeback links/JSON. A typed `refreshRequired` result preserves the reopen-chart warning after a saved write with failed refresh. New encounter selection follows the returned server Encounter, including when other chart encounters are future-dated. The existing host controls and Core clinical actions remain.
+
+The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release equality and `AUDIT_REPORT_DIR` for scoped evidence. Its recursive shape/key traversal now matches all four transparent semantic wrappers and includes supplied textareas. Default quick-login coverage is explicitly deployed-context coverage; program IDs alone cannot establish current canonical coverage.

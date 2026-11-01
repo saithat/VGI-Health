@@ -193,7 +193,9 @@ export async function createLiveSession(
     getContext: () => context,
     async dispatch(
       event: Event,
-    ): Promise<{ links: string[]; message: string } | undefined> {
+    ): Promise<
+      { links: string[]; message: string; refreshRequired?: true } | undefined
+    > {
       if (pending) throw new Error("A transaction is already saving");
       if (refreshNeeded)
         throw new Error(
@@ -256,7 +258,11 @@ export async function createLiveSession(
         if (result.refreshError) {
           refreshNeeded = true;
           session.accept(staged);
-          return { links: result.links, message: result.refreshError };
+          return {
+            links: result.links,
+            message: result.refreshError,
+            refreshRequired: true,
+          };
         }
         chart = result.bundle;
         const updated = bundleResources(chart).find(
@@ -274,6 +280,7 @@ export async function createLiveSession(
           session.accept(staged);
           return {
             links: result.links,
+            refreshRequired: true,
             message: `Saved. Facts refresh failed: ${error instanceof Error ? error.message : String(error)}. Reopen the chart.`,
           };
         }
