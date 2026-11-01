@@ -698,11 +698,16 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     true,
   );
   if (process.env.AUDIT_PERSONAS) {
+    const priorDirectory = resolve(
+      process.env.EHR_AUDIT_DIR ??
+        process.env.AUDIT_REPORT_DIR ??
+        "../docs/audits",
+    );
     const prior: Control[] = JSON.parse(
-      readFileSync(resolve("../docs/audits/buttons-ehr.json"), "utf8"),
+      readFileSync(resolve(priorDirectory, "buttons-ehr.json"), "utf8"),
     );
     const report = JSON.parse(
-      readFileSync(resolve("../docs/audits/buttons.json"), "utf8"),
+      readFileSync(resolve(priorDirectory, "buttons.json"), "utf8"),
     );
     const build = JSON.parse(readFileSync("dist/build-info.json", "utf8"));
     expect(report.revision).toBe(build.revision);

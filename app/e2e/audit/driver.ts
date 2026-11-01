@@ -126,7 +126,13 @@ export class Audit {
     // Position the target before starting the click-response timer. Playwright's
     // click otherwise includes automatic scrolling and layout stabilization.
     // Selection travel/scroll costs are measured separately by the geometry path.
-    await control.scrollIntoViewIfNeeded();
+    await control.evaluate((element) =>
+      element.scrollIntoView({
+        block: "center",
+        inline: "nearest",
+        behavior: "instant",
+      }),
+    );
     const before = await this.fingerprint();
     await this.page.evaluate(
       ({ dom, state }) => {
@@ -225,7 +231,50 @@ export class Audit {
       }
     } catch (e) {
       row.status = "error";
-      row.effect = String(e).split("\n").slice(0, 3).join(" ");
+      row.effect = String(e).slice(0, 10000);
+      const context = await this.page
+        .evaluate((comp) => {
+          const snapshot = window.__buttonAuditSession?.snapshot();
+          const element = comp
+            ? [...document.querySelectorAll("[data-comp-id]")].find(
+                (element) => element.getAttribute("data-comp-id") === comp,
+              )
+            : null;
+          return {
+            stateScreen: snapshot?.state.screen,
+            uiScreen: snapshot?.ui?.screen,
+            modal: Boolean(snapshot?.ui?.modal),
+            present: Boolean(element),
+            inert: Boolean(element?.closest("[inert]")),
+            busy: Boolean(document.querySelector('[aria-busy="true"]')),
+            elements: comp
+              ? [...document.querySelectorAll("[data-comp-id]")]
+                  .filter((e) => e.getAttribute("data-comp-id") === comp)
+                  .map((e) => ({
+                    tag: e.tagName,
+                    event: e.getAttribute("data-event"),
+                    rect: e.getBoundingClientRect().toJSON(),
+                    display: getComputedStyle(e).display,
+                    visibility: getComputedStyle(e).visibility,
+                    parents: [
+                      e.parentElement,
+                      e.parentElement?.parentElement,
+                      e.parentElement?.parentElement?.parentElement,
+                    ].map((parent) =>
+                      parent
+                        ? {
+                            tag: parent.tagName,
+                            class: parent.className,
+                            display: getComputedStyle(parent).display,
+                          }
+                        : null,
+                    ),
+                  }))
+              : [],
+          };
+        }, metadata.comp)
+        .catch(() => null);
+      row.effect += `; observed context ${JSON.stringify(context)}`;
     }
     if (row.status === "works" && (effectAt ?? Date.now()) - clickedAt > 2400) {
       row.status = "dead";

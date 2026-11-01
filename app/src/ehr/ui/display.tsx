@@ -124,7 +124,8 @@ export function severityTone(severity: string): ClinicalTone {
 
 /** Header accents describe the supplied section type, never a clinical finding. */
 export function sectionTone(label: string): ClinicalTone {
-  if (/allerg|precaution|critical|alert/i.test(label)) return "red";
+  if (/precaution|isolation|fall risk/i.test(label)) return "orange";
+  if (/allerg|critical|alert/i.test(label)) return "red";
   if (
     /in basket|message|cosign|note|history|instruction|education/i.test(label)
   )

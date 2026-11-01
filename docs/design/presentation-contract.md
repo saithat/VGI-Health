@@ -421,3 +421,11 @@ click event. Day-list rows preserve their source work-item reference: chart
 loading honors that existing encounter/request while lookup opens the patient's
 existing chart without inventing an encounter. Interactive work dates default
 to the world manifest's first work date and timeline links retain their day.
+
+## Dense shell painter contract — November 1, 10:30 local
+
+Shared shell work is presentation only. `UiNode.columns` containing three or more read-only sections will paint as a three-column card flow at 1280 px and above, two at 900–1279 px, one on narrow screens; source DOM/control order stays intact. Each section retains its region, title and source actions. Field-bearing column groups remain ordinary grids.
+
+The left `UiScreen.side` region is a 160 px storyboard on desktop with compact small-caps section headings, red allergy and orange precaution headings, and a decorative avatar. Please supply its actual search and identity fields semantically; the painter does not create controls or invent patient data. Application-activity groups remain source navigation; each supplied shortcut gains a decorative icon. Chart review tab labels/counts stay source-supplied, with compact rounded-top tabs and every tab preserved.
+
+For content integration, please give the new Summary/Index a source navigator label `Summary` (or `Chart Summary`, `Patient Summary`, `Index`) and keep the card groups as semantic `section`/`columns` nodes. All source nav/actions and side sections stay visible. Summary cards use `.clinical-card-grid`; storyboard uses `.clinical-side`; palette tokens remain in `theme.ts` / `docs/design/visual-style.md`.

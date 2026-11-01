@@ -223,3 +223,11 @@ source supplies search. Track Board is orange, Unit Census green, OR Schedule
 amber, In Basket purple and Schedule blue; these accents identify activities,
 not patient acuity. Status spelling variants such as `needs-action`, `on-hold`
 and `cosign-required` receive the same color as their space-separated labels.
+
+## Dense canonical shell — November 1 final pass
+
+This pass follows the owner-supplied public Epic Hyperspace inpatient reference from [Malleable Software](https://www.inkandswitch.com/essay/malleable-software/). Only layout patterns are used: a light shortcut toolbar, rounded workspace tabs, a compact left storyboard, and three columns of short Index cards. No vendor image or asset is included.
+
+These dimensions supersede the earlier spacing targets: body/clinical labels remain 12 px with 16 px line height, ordinary table rows target 22 px with 2 × 4 px cell padding, fields/actions target 24 px, section headers 22 px, and the desktop storyboard 160 px. At 1440 px field groups use four columns when their contents permit; narrative sections retain wider fields. Table headers are beveled and zebra rows support scanning; no nonfunctional sort affordance is drawn. Source tab counts remain supplied by Lean.
+
+Read-only semantic card sections flow in three columns above 1280 px and two above 900 px, with a single column below that. Cards retain every source item/action and their accessibility order. There is no React-generated clinical content, trimming, pagination, or fake workflow shortcut. The clinical date, viewer, role and encounter stay in a slim status bar with its measured height reserved below the chart. The toolbar uses the same meaningful hue tokens: allergy red, precaution orange, medication/MAR green, results orange, notes/In Basket violet, orders/procedure amber, general chart activity blue. All text/flags remain present. Decorative avatars and icons do not invent a patient photo or clinical status.

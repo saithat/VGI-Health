@@ -1,0 +1,51 @@
+{
+  "stage": "before",
+  "viewport": [
+    1440,
+    900
+  ],
+  "mode": "replay",
+  "release": "v3",
+  "captures": [
+    {
+      "file": "P1-summary.png",
+      "screen": "w1Rooming",
+      "sha256": "b1b86c68d543739538f1d9ae7c873f51cf365c7be209b2549b48aaf5407f09ad"
+    },
+    {
+      "file": "P1-orders.png",
+      "screen": "w1Orders",
+      "sha256": "76f550624ff0b179caf11bcbdb643135de402c8ee55acafe6ba7cc08dfb0f861"
+    },
+    {
+      "file": "P2-track-board.png",
+      "screen": "workspace:edTrackBoard",
+      "sha256": "aac71a78801edb37b08b9d2e09d42e524ab88c7ac3db7de2adf28e8f6b6da468"
+    },
+    {
+      "file": "P2-chart.png",
+      "screen": "w3Triage",
+      "sha256": "ecf04befe2fd0c1285defdeffc571aed53ce84526acaf2f4e75c9e44890bd01e"
+    },
+    {
+      "file": "P3-MAR.png",
+      "screen": "w4Mar",
+      "sha256": "96474cdc0e7ae8a9ee82c3dcb774afd012d8b5d69b7b09455911d07eba31b3e8"
+    },
+    {
+      "file": "P4-growth.png",
+      "screen": "w5Growth",
+      "sha256": "c8fbc8b104be7da28c7accf6b296b20f2b3f42bf95968c6a2fdb13c6bdc9653c"
+    },
+    {
+      "file": "P5-OR.png",
+      "screen": "workspace:orSchedule",
+      "sha256": "c8594e2008fb9ad3e85cf2ebc8f446ea57a32bc0d996e7a42881cfa4c63e56f6"
+    },
+    {
+      "file": "P5-op-note.png",
+      "screen": "w6OpNote",
+      "sha256": "f46728f62030aca1e6133a4a42fa288cd55abbe09a8b197c662304c3b2445d4e"
+    }
+  ]
+}

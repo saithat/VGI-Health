@@ -7,6 +7,7 @@ import {
 } from "./data/worldChart";
 import { keepFocusedTask, selectedRowSource } from "./data/patientDirectory";
 import { clinicianRoleNames } from "./ehr/ui/personas";
+import { formatClinicalDate } from "./data/clinicalDate";
 import { navigate } from "./navigation";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -30,6 +31,7 @@ import {
 
 type Session = ReturnType<typeof createSession>;
 interface Workspace {
+  clinicalDate: string;
   presentations: PresentationBundle | null;
   session: Session;
   catalog: Catalog;
@@ -82,7 +84,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
             screen={ui}
             presentations={workspace.presentations}
             onEvent={dispatch}
-            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`}`}
+            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`} · Clinical date: ${formatClinicalDate(workspace.clinicalDate)}`}
           />
         ) : (
           <Alert color="red" role="alert">
@@ -364,6 +366,7 @@ export function App() {
       );
       if (active) {
         setWorkspace({
+          clinicalDate: workDate,
           session,
           presentations,
           catalog,

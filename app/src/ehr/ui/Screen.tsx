@@ -14,6 +14,7 @@ import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
+import "./dense-shell.css";
 
 function bannerValue(banner: Pair[], pattern: RegExp) {
   return banner.find(([label]) => pattern.test(label))?.[1];
@@ -25,6 +26,18 @@ function isolationPrecaution(label: string, value: string) {
       value.trim(),
     )
   );
+}
+/** Decorative shortcuts follow the supplied clinical activity name. */
+export function activityIcon(
+  label: string,
+): Parameters<typeof ClinicalIcon>[0]["name"] {
+  if (/lookup|search/i.test(label)) return "search";
+  if (/\bmar\b|medication|orders/i.test(label)) return "pill";
+  if (/flowsheet|result|growth|vital/i.test(label)) return "trend";
+  if (/schedule|track board|census|worklist/i.test(label)) return "clock";
+  if (/basket|message|note/i.test(label)) return "message";
+  if (/chart review|patient/i.test(label)) return "user";
+  return "info";
 }
 function modalTitle(node: UiNode): string | undefined {
   if ("section" in node) return node.section.title;
@@ -223,20 +236,16 @@ export function WorkflowNav({
       className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >
-      <Text
-        className="nav-eyebrow"
-        size="xs"
-        fw={700}
-        c="dimmed"
-        mb={available.length ? "sm" : 0}
-      >
-        PATIENT WORKSPACE
-      </Text>
       <div className="workflow-groups">
         {available.map(([group, items]) => (
           <section
             key={group}
             className="workflow-group"
+            data-nav-kind={
+              items.every(([id]) => id.startsWith("workspace."))
+                ? "application"
+                : "chart"
+            }
             data-section-tone={sectionTone(group)}
             aria-label={group}
           >
@@ -267,7 +276,7 @@ export function WorkflowNav({
                     aria-label={label}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
-                    <span aria-hidden="true" className="nav-dot" />
+                    <ClinicalIcon name={activityIcon(label)} size={14} />
                     {sectionCaption(label)}
                   </button>
                 </li>
@@ -275,10 +284,6 @@ export function WorkflowNav({
             </ul>
           </section>
         ))}
-      </div>
-      <div className="nav-footer">
-        <span className="status-dot" aria-hidden="true" />
-        <Text size="xs">Encounter workspace</Text>
       </div>
     </AppShell.Navbar>
   );
@@ -328,10 +333,17 @@ function StockUiScreenView({
       root.style.scrollPaddingTop = pinned
         ? `${height + 12}px`
         : previousPadding;
+      const status = shell.querySelector<HTMLElement>(".workspace-footer");
+      shell.style.setProperty(
+        "--clinical-status-height",
+        `${Math.ceil(status?.getBoundingClientRect().height ?? 24)}px`,
+      );
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(header);
+    const status = shell.querySelector<HTMLElement>(".workspace-footer");
+    if (status) observer.observe(status);
     window.addEventListener("resize", measure);
     return () => {
       observer.disconnect();
@@ -348,7 +360,7 @@ function StockUiScreenView({
       padding="md"
     >
       <div
-        className={`clinical-shell${screen.nav.some(([, items]) => items.length) ? "" : " without-nav"}`}
+        className={`clinical-shell${screen.nav.some(([, items]) => items.length) ? "" : " without-nav"}${screen.banner.length ? " patient-open" : " department-open"}`}
         aria-hidden={modal ? true : undefined}
         ref={(element) => {
           shellRef.current = element;
@@ -396,6 +408,11 @@ function StockUiScreenView({
           >
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
+                {screen.banner.length > 0 && (
+                  <div className="storyboard-avatar" aria-hidden="true">
+                    <ClinicalIcon name="user" size={32} />
+                  </div>
+                )}
                 {draw(screen.side)}
               </aside>
             )}
@@ -404,7 +421,16 @@ function StockUiScreenView({
             </div>
           </div>
           <div className="workspace-footer">
-            VGI Health <span aria-hidden="true">·</span> Clinical encounter
+            <span>{viewer ?? screen.viewer ?? "VGI Health"}</span>
+            {screen.banner
+              .filter(([label]) =>
+                /^(encounter|encounter type|location|department)$/i.test(label),
+              )
+              .map(([label, value]) => (
+                <span key={label} title={`${label}: ${value}`}>
+                  {label}: <DisplayValue value={value} />
+                </span>
+              ))}
           </div>
         </AppShell.Main>
       </div>

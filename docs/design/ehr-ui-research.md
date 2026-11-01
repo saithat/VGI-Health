@@ -1511,3 +1511,11 @@ picker, inspector switcher and patient parameters in user-facing links are remov
 the prepared replay/live integration must still be merged and checked once the
 content lane publishes it. No private/generated work from that lane was copied
 into this branch to bypass its publication gates.
+
+### Shared shell — final dense canonical pass, November 1
+
+Reference reviewed directly: the owner-provided Epic Hyperspace inpatient image and its notes in `lane-logs/epic-reference.md`, sourced from Ink & Switch's [Malleable Software](https://www.inkandswitch.com/essay/malleable-software/). Its useful patterns are the separate application shortcut row and chart tabs, narrow stacked storyboard labels, and a three-column Index with compact card titles. The reference itself is not copied into the repository.
+
+The before set in `app/shots/final/before/` records the actual v3 canonical program before this shell pass. P1 Orders initially cuts off around pharmacy; the compact shell exposes pharmacy/diagnosis and controlled-substance fields within 900 px while retaining 12 px type. The op-note view keeps its diagnoses, anesthesia, blood-loss and operative narrative fields closer together. Track Board / OR rows use 22 px base cells, preserving wrap for real clinical text. MAR and growth retain their structured source widgets. The new Summary/Index, expanded storyboard and context projections remain the content lane's semantic work; final captures will be regenerated after that merges.
+
+The shell adds source-bound icons, small rounded activity tabs, a 160 px storyboard treatment, and a status bar whose measured height is reserved so no clinical control sits beneath it. Structural read-only cards may use a masonry-like column flow; forms, alerts and signing actions retain ordinary layouts. Every source control and accessible name remains present. Twelve pixels is retained as the existing legibility gate's floor.
