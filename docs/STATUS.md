@@ -433,3 +433,108 @@ Validation:
   subminimum fonts and occlusion. A required hidden-input fixture returns exit 1.
 - Main-route Chromium screenshot reviewed locally. Every check uses the same
   painter and stylesheet imports as the main route.
+
+## Workflow complexity lane
+
+`pnpm complexity --run <id>` builds `runs/<id>/complexity.json` and the frozen
+canonical union report at `programs/benchmarks/canonical-complexity.json`.
+`pnpm complexity` computes canonical only; `--no-canonical` computes just a run.
+Build the real native `ehr` first. `EHR_LEAN_DIR` / `EHR_BIN` can select a matching
+external build; this lane built in `/tmp` without modifying Lean sources.
+The measurement adapter under `scripts/complexity/` imports Lean's existing
+certified search, goal derivation, interpreter, operator model and floor.
+
+The benchmark freezes one representative case per W1–W7, including three surgical
+steps on one patient. See [benchmark README](../programs/benchmarks/README.md).
+The immutable release assets under `programs/benchmarks/releases/` are copied
+from the merged run branch, with its full revision recorded in suite.json.
+Main's newer release contracts have additional clinical obligations, so using
+them would change historical run semantics. Never silently substitute them for
+the release that certified the recorded iteration. Benchmark clinical choices
+missing from stock TaskChoices (diagnosis, service level, refill count) are
+pinned as existing Goals by the adapter; stock `ehr min-clicks` outputs remain
+verbatim beside the pinned paths. Directed search is exact only in its reported
+space; neither JSON nor chart claims a global optimum. KLM is minimum-click-path
+effort, not independently minimum time. Fields/screens/popups are replay-derived.
+
+The `run-days` CLI now computes the run report after completing a real run,
+without repeating the canonical calculation. Use `--no-complexity` to skip this
+postprocessing explicitly. A failed benchmark propagates an error after the
+run's clinical artifacts have been saved; no partial report is published.
+Five-persona manifests and both recorded program/certificate layouts are
+supported. Authoritative roles, not daily schedule volume, determine projection.
+
+Dashboard: `/dashboard?run=run1-P3&view=Workflow+complexity` has all six metric
+switches, directly labeled workflow stacks, floors, vendor/rejection markers,
+shared-scale persona panels and exact tables with v0 deltas. It uses existing
+persona colors and the read-only dashboard JSON boundary. Files are new except
+for the Dashboard import/tab/render registration. Screenshot:
+`app/shots/complexity.png` (desktop); Playwright also checks the 390px viewport.
+
+P3 W4 union, for its fixed insulin/assessment case: v0 = 25 clicks, 39 keys,
+129.95 KLM seconds; v1–v7 = 23 clicks, 39 keys, 127.55 seconds. The floor is
+14 clicks, 20 keys, 92.3 seconds, two screen visits, 13 required fields and one
+popup. No daily task-count denominator is used. The current outputs report
+`navigationDirected` for the native and pinned minima.
+
+Verification: app build/lint and 132 unit tests; agent typecheck/lint and 36
+unit tests; benchmark's three audit tests; desktop and narrow Playwright
+complexity smoke. The merge exposed the agent's schema dropping newer release
+metadata and not accepting clinical predicates; the adapter now validates those
+predicate forms and preserves opaque optional metadata for Lean to validate.
+
+Future release revisions: if a run's v0 canonical shape differs from the frozen
+run1 release assets, the command automatically uses current `releases/`.
+`--release-root <directory>` overrides this selection for another archived
+contract. The output records the chosen directory. Cases with missing clinical
+evidence fail closed; they must be updated deliberately for a new contract.
+
+## All task trajectories
+
+After each real `run-days` run, run this one-line postprocessing step from the
+repository root (replace the id): `pnpm trajectories --run run1-P3`.
+The indexer stays separate from `run-days` because it needs a matching native
+Lean build in addition to the simulator binary. Build only with
+`cd lean; ulimit -v 8000000; LEAN_NUM_THREADS=4 lake build ehr`.
+`EHR_LEAN_DIR` and `EHR_BIN` can select an existing matching build.
+
+`runs/<id>/trajectories/index.json` contains every task, metrics and recorded
+ideal-interface floor, completion, patient/fixture identity, program/spec paths,
+user and schedule resources. Compact `tasks/<id>.json` files hold each exact
+event slice and clinical episode contexts: facts input plus `init`/clock seeds.
+The dashboard fetches the index only after opening Trajectories and task files
+only on selection. Persona controls, day, and task search choose the replay.
+Play/pause/step/scrub drive the real WASM interpreter and semantic UI painter;
+gold outlines show the next event's component and counters accumulate trace ops.
+
+Reconstruction calls production `loadFacts`, `taskEpisodes`, goal derivation,
+`init` and `step` through `scripts/trajectories/Contexts.lean`, outside `lean/`.
+It materializes Synthea fullUrl UUIDs, merges resources cumulatively per patient
+within the day, carries receipts between tasks/episodes, and preserves episode
+resets. Each event restores the simulator's pre-step clock from its timestamp.
+Historical specs are snapshotted from archived `replay.json` contexts, when
+available, instead of silently substituting subsequently revised releases.
+Every event's pre-step screen and result are compared in native Lean and WASM;
+`verification.json` records counts, first divergent events, reconstruction and
+artifact hashes. A mismatch makes the command fail and remains visible in the UI.
+
+Generate optional v0 comparisons with `pnpm trajectories --run run1-P3 --baseline
+d01-P3-W4-001,d04-P3-W4-001,d07-P3-W4-001` (keep the command on one line).
+`--baseline all` selects every task. This calls `ehr simulate` with v0's release
+and the original day schedule, persona and RNG seed; the full day is simulated
+to preserve prior receipts/resources, then selected task slices are exported
+and verified. Regenerating without `--baseline` removes comparisons from the index.
+
+To recheck committed contexts using only Node and WASM, run
+`pnpm trajectories --run run1-P3 --verify-only`. This also checks baselines and
+updates `verification.json`; its mode explicitly identifies the prior native
+verification as saved evidence rather than a newly executed native check.
+The native rebuild attempted on resume failed with a thread-creation error
+under the required virtual-memory limit; the fresh all-task check uses WASM.
+
+The committed run1-P3 index covers 424 tasks across ten days, 14,658 recorded
+events, and three optional v0 trajectories. Schema validation and differential
+tests cover three releases, episode resets, baselines and deliberately corrupted
+screens/results. Run `pnpm test:trajectories` for these checks and one desktop
+Chromium smoke test (`--workers=1`). Screenshot: `app/shots/trajectories.png`.
+Never run a build alongside a browser/dev server on the memory-limited machine.
