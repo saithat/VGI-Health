@@ -188,6 +188,15 @@ def HumanMustEnter (el : ElementSpec) : Prop :=
 instance (el : ElementSpec) : Decidable (HumanMustEnter el) := by
   unfold HumanMustEnter; infer_instance
 
+/-- A convenience request action is not automated when its element requires
+an explicit human entry. Other component kinds impose no extra condition. -/
+def NoHumanRequest (spec : Spec) (kind : Kind) : Prop :=
+  kind = .button .requestPriorAuth →
+    ∀ el ∈ spec.element? priorAuthElement, ¬ HumanMustEnter el
+
+instance (spec : Spec) (kind : Kind) : Decidable (NoHumanRequest spec kind) := by
+  unfold NoHumanRequest; infer_instance
+
 /-! ## Program structure helpers -/
 
 /-- The kind name used in the spec's component catalog. -/

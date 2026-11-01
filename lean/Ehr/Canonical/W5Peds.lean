@@ -124,7 +124,7 @@ def immunizations : Screen :=
       field s "vaccineProvider" "vaccineProvider" "Administering provider" (parent := some "record"),
       field s "vaccineSite" "vaccineSite" "Site" (parent := some "record"),
       field s "vaccineRoute" "vaccineRoute" "Route" (parent := some "record"),
-      field s "visGiven" "visGiven" "VIS given" (parent := some "record"),
+      field s "visGiven" "visGiven" "VIS given before vaccination" (parent := some "record"),
       field s "visEditionDate" "visEditionDate" "VIS edition date" (parent := some "record"),
       commitBtn s "recordImmunization" "Record immunization",
       goto s "next" "w5Close" "Next: visit close"

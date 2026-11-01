@@ -1,7 +1,8 @@
 import Ehr.Core.Types
 namespace Ehr
 
-/-- An additive hospital release preserves every old declaration, requirement
+/-- Product design property.
+An additive hospital release preserves every old declaration, requirement
 and alert in order, and preserves the old design rules while extending only
 the catalog. This deliberately strong relation forbids editing old rules or
 shadowing an old lookup with a new declaration. It does not itself claim that

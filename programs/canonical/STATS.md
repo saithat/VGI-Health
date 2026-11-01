@@ -25,7 +25,7 @@ The screen count exceeds the approximate target because verification, results me
 | Prompt friction | Field instances |
 |---|---:|
 | Safety | 61 |
-| Compliance | 242 |
-| Accidental | 16 |
+| Compliance | 243 |
+| Accidental | 15 |
 
 Counts include hidden tabs/groups, composer and fixed-slot order-set rows, and the shared Home shell. Repeated bindings in different workflows are counted as separate prompts. Alert instances differ from alert rules because multiple workflows use the same rule. A button is an action instance, not a count of all possible data-entry events.

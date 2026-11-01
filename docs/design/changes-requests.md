@@ -240,6 +240,19 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
   `curesExemptionCodes` are content value sets, not a proof of membership.
   For full terminology enforcement, provide a generic spec value-set mapping
   and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+  Content's corrected shared CURES codes are generated at
+  `releases/cures-exemptions.json` by `ehr cures-exemptions-export`; v1,
+  v1.1 and v2 all use them. `surgery-7-day` replaces `surgery-5-day` per
+  H&S §11165.4(c)(4), matching `docs/rules/ca-statutes.json`. Membership
+  alone is insufficient: waiver validation also needs the qualifying
+  procedure/facility, directed supply of at most seven days and no refills.
+  The `cures-unavailable` code models (c)(6): timely access impossible,
+  no reasonably available authorized practitioner/designee, nonrefillable
+  seven-day limit, and medical-record reason. It is not a catch-all for
+  (c)(7)–(9). ED means a general acute care hospital; hospice still needs
+  terminal illness under §11159.2(c). Preserve the subset described in V1;
+  separate ED buprenorphine remains unmodeled. Content guards exercise
+  human documentation across releases, not these eligibility predicates.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
   v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
@@ -513,16 +526,7 @@ configuration. Installed assets are retained for actual runtime verification.
 
 ## New BRIEF value-constraint request (content → core)
 
-**Schedule II zero refills (21 CFR 1306.12; new BRIEF requirement): pending core.**
-Please add a generic per-order-line value constraint usable by EntryReq (e.g.
-`constraint? = zeroQuantity`) and enforce it in guard/entry validation. Content
-will require zero refills on `signOrders` only when `.orderClass "controlled-II"`.
-Also tag actual Schedule II formulary drugs with `controlled-II`; the existing
-controlled-II-IV tag includes tramadol and benzodiazepines and cannot safely
-stand in for Schedule II. Do not force all prescriptions to zero refills.
-Seed 16 and its hard-stop regression will integrate this generic constraint.
-This cannot be implemented faithfully in content alone with the current core
-EntryReq/ValueKind types.
+**Resolved in core and content:** core `4a11bc8` implements generic `EntryReq.allowed?` and the `scheduleII` class. Content attaches `scheduleIIRefillsEntry signOrders` with `allowed? := some ["0"]`, preserving every prior rule. Canonical fields allow zero, all matching signing paths inherit the requirement, and seed 16 confirms its default of three and is blocked. Tests also cover mixed lines, the new-line stop, Schedule III/IV exclusions, correction to zero, and inheritance by v1.1/v2. No `controlled-II` alias is used: `scheduleII` is the authoritative core spelling. Downstream agent/world/WASM adoption remains below.
 
 **Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
 never-policy human request field and preserving the policy. Tests check that
@@ -628,3 +632,88 @@ Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
 lists for record-dependent identity/scan/cosign values are conservatively
 rejected; no clinical permission or guard is relaxed. Zero-refill quantities
 are supported generically.
+
+---
+
+## Content integration completion and remaining owners (2026-10-31)
+
+Content's Schedule II rule is implemented and regenerated in all three release specs. `lake build` passes the actual canonical/seed/release paths. This resolves the previous content blocker, not the production checker's certification obligations.
+
+**CR-14, render: controlled prescription details must contain actual data.** `controlledRxReview` requires `orderSummary` shown, with no receipt or waiver, for controlled-II-IV signing. `InfoSpec.orderSummary` now explicitly denotes patient, drug, dose, quantity, directions and refills. At merged main `bea74d0`, `Render/Page.lean:infoContent` has no `orderSummary` arm and falls back to an empty-content message. Please render the actual current captured prescription rows and patient identity; test all these values, multiple lines, and hidden/collapsed seed 15 in the native/WASM page. A heading alone satisfies only the interpreter's abstract info visibility, not the legal display duty. The same data-fidelity issue for v2 indications is CR-10. No content file can implement the render-owned arm.
+
+**Agent compatibility remains required.** Actual release specs now contain `{ "drugClass": { "cls": "scheduleII" } }` and `allowed: ["0"]`; `agent/src/lean-types.ts` must accept and preserve both. Existing 31 agent tests pass but do not test these actual release-spec round trips. CR-12 (`requestPriorAuth` action) also remains; round-trip all release/persona programs and specs exactly.
+
+**World compatibility:** the albuterol cap is already fixed on merged main. Current world build/lint pass; 91/92 tests pass. The one failing full-formulary comparison is the missing `scheduleII` class on morphine (and the three other Schedule II drugs listed in the core adoption request). Keep that assertion and synchronize world-owned reference data; content has not edited it.
+
+**Vaccine integration:** required VIS edition, manufacturer and provider fields are declared and tested; every omission and a false VIS flag block recording. The flag explicitly attests that VIS was given before vaccination. No trusted delivery event/timestamp is modeled. World/app/sim must populate inventory/provider and actual statutory dates/details in the FHIR record; manual human provider entry is supported, so no unverified signed-in-user auto-link was added.
+
+**Check/app/WASM:** certify matching persona canonicals from `releases/<version>/personas/`, reject all sixteen permanent seeds with replayable counterexamples, and rebuild/test WASM against the allowed-value guard. Seed 16 confirms a default of three and strands that value on a sign screen with no navigation or correction field. Tests verify there are no outgoing navigation edges and attempts to edit the hidden composer field are ignored. Restoring canonical navigation allows human correction to zero; the guard is never relaxed. No checker implementation exists in this merged worktree, so content does not claim a `¬ Satisfies` theorem or production certificate.
+
+**W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.
+
+### Linked prefill type preservation
+
+Linked prefill copies values without conversion. Check now requires known
+source/target elements with equal kinds, including quantity units. A kg weight
+cannot silently become an mg dose. This also prevents malformed linked values
+from being archived behind `newOrderLine` and then becoming impossible to
+restore through a correctly typed input. Canonical's weight and diagnosis
+links have matching kinds. This is an extra conservative checker rule; no
+property or interpreter guard is weakened.
+
+Macro attempts to invoke a never/human-required prior-auth request are also
+rejected under `humanOnlyKept`, matching the revised human-entry API.
+
+### Archived fixed-slot writes and proof limits
+
+The completion audit found another repair obligation: after `newOrderLine`,
+a fixed-slot field can still modify an archived line, including a macro
+making its capture unconfirmed or a dose/frequency change triggering the
+naloxone requirement. A current-slot input cannot repair that older slot.
+`repairSlots` now includes fixed writers of per-line requirement elements
+and dose/frequency dependencies of per-line naloxone conditions. Each such
+slot needs reachable, revealable fields for the per-line requirements.
+The receipt-hidden archived-dose regression is rejected. This strengthens
+the checker and does not change any clinical requirement or interpreter guard.
+
+The proof status also distinguishes BRIEF T7 from replay validation. The
+finished T7-labelled lemmas prove a real successful navigation prefix and a
+failed checker rule, with an optional final triggering click. They do not
+prove that a cut path visits the violation or that every conservative
+rejection witnesses the named semantic property. Full T7 is still open.
+
+All original fourteen seeds have negative property proofs once the separate
+`bad13_preop_not_satisfies` diagnostic is included. That theorem explicitly
+uses the shared pre-op anticoagulant display defect, not the CURES mutation;
+the requested mutation-specific seed-13 completeness witness is still missing.
+`Ehr/Check/Seed13Escape.lean` now demonstrates the escape through real events:
+from the blocked W1 controlled order, visit W3, show its CURES tab, mark the
+report reviewed, return to W1, and sign the original controlled order using
+that fresh receipt. No drug change or safety exemption is used. Both the
+receipt and successful commit are permanent interpreter regressions.
+Seed 15 has its own controlled-detail display witness. The original expected
+labels for seeds 3, 9 and 10 also differ from their actual encoded defects:
+unknown field (`writesOnly`), attempted macro commit (`humanOnlyKept`), and
+unknown alert (`wellFormed`). Runtime-generated interruptive alerts survive
+removing a UI alert component, as required by the preserved safety model.
+
+**CR-15 (core/app/check): property-specific replay evidence.** The public
+violation currently carries events and screen IDs but no patient/user
+witness. Check's fixed replay record has no pre-op encounter, so a real
+navigation path to the missing anticoagulant panel does not itself
+demonstrate the conditional pre-op review failure on that record. To finish
+BRIEF T7, agree how violations carry/reproduce the witness facts and user,
+and distinguish conservative static-rule rejections from runs demonstrating
+a named semantic failure. Check must additionally prove the latter for each
+supported finding; successful navigation alone is insufficient. This is a
+request for the owning API/app lanes, not a change to their files here.
+
+**T8 direct obstruction (content/check):**
+`Ehr/Check/MonotonicityObstruction.lean:T8_unqualified_false` now refutes the
+unqualified statement directly, without assuming general T1. An empty task
+family gains a status info and the new `priorAuth` catalog kind. The later
+program fully satisfies all twelve properties (completion is vacuous because
+there are no commits), yet fails the old catalog. The release meets the
+current `Spec.Extends`. Owner agreement on an old-vocabulary compatibility
+condition or an old-obligations projection is needed; asserting full T8 as
+written would be false. No property or Extends definition was changed here.

@@ -1,5 +1,6 @@
 import Ehr.Check.PinSound
 import Ehr.Check.ReleaseChecks
+import Ehr.Check.MonotonicityObstruction
 import Ehr.Check.RequestSound
 import Ehr.Check.PartialSound
 import Ehr.Check.SeveritySound
@@ -11,8 +12,10 @@ import Ehr.Check.HumanSound
 import Ehr.Check.HumanEventsSound
 import Ehr.Check.AlertSound
 import Ehr.Check.ValueTests
+import Ehr.Check.ValueWitness
 import Ehr.Check.Sound
 import Ehr.Check.SeedTests
+import Ehr.Check.Seed13Escape
 import Ehr.Props.Examples
 
 namespace Ehr.Check.Tests
@@ -46,6 +49,13 @@ def withRequest : Program :=
       else scr }
 #guard withRequest.inCatalog specV1_1
 #guard check specV1_1 none goodProgram withRequest == .ok
+
+def automatedRequest : Program :=
+  { withRequest with macros := withRequest.macros ++
+      [{ id := "autoRequest", label := "Auto request", steps := [.click "request"] }] }
+#guard match firstFinding (Ehr.Check.rules specV1_1 none goodProgram automatedRequest) with
+  | some f => f.property == "humanOnlyKept" && (counterexample specV1_1 automatedRequest f).2.2
+  | none => false
 
 /-- The acceptance theorem has concrete, satisfiable hypotheses. -/
 example : CatalogOnly spec goodProgram ∧ SpecIdsUnique spec ∧ IdsUnique goodProgram := by

@@ -1,4 +1,6 @@
-import Ehr.Check.PinSound
+import Ehr.Check.GuardSound
+import Ehr.Check.Graph
+import Ehr.Check.ReplayContext
 import Ehr.Canonical.BadPrograms
 
 -- The canonical template has over 1,500 components; kernel reduction traverses them.

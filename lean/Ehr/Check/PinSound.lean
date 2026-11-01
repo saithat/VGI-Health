@@ -1,3 +1,4 @@
+import Ehr.Check.Rules
 import Ehr.Check.ScreenSound
 
 namespace Ehr.Check

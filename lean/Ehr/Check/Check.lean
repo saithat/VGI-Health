@@ -1,4 +1,5 @@
 import Ehr.Check.Rules
+import Ehr.Check.ReplayContext
 
 /-!
 # The checker
@@ -6,8 +7,8 @@ import Ehr.Check.Rules
 `check spec prev canonical prog` certifies a candidate UI program before it is
 deployed. It runs a fixed list of rules, in order. Each rule is fast and
 structural: it reads the program's lists, and searches the screen graph
-breadth-first. The verdict is `ok` only if every rule passes (T1 proves that
-then the program satisfies properties 1–12).
+breadth-first. The verdict is `ok` only if every rule passes (the completed safety implications and the remaining completeness obligation
+are assembled in `Ehr.Check.Sound`).
 
 If a rule fails, the verdict names the property, says what is wrong in plain
 words, and gives a **counterexample**: a click path from the start screen to
@@ -157,7 +158,14 @@ def badMacroStep (spec : Spec) (prog : Program) (m : Macro) (st : MacroStep) : O
       | some cm, _, _ => some s!"macro {m.id} clicks {c.id}, which performs commit {cm}; only a human may commit"
       | _, some i, _ => some s!"macro {m.id} clicks {c.id}, which marks {i} reviewed; only a human may review"
       | _, _, some m' => some s!"macro {m.id} clicks {c.id}, which runs macro {m'}"
-      | _, _, _ => none
+      | _, _, _ =>
+        if c.kind == .button .requestPriorAuth then
+          match spec.element? priorAuthElement with
+          | some el => if decide (HumanMustEnter el) then
+              some s!"macro {m.id} clicks request {c.id}, which requires a human field entry"
+            else none
+          | none => none
+        else none
     | .goto _ => none
 
 /-! ## The rules, in order -/
@@ -239,12 +247,17 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             else none
           | none => none
         | _ => none },
-    { property := "capturesAllOnce", passes := recordSourcesDeclared spec prog
+    { property := "capturesAllOnce", passes := recordSourcesDeclared spec prog && linkedSourcesTyped spec prog
       explain := fun _ => compFinding "capturesAllOnce" prog false fun scr c =>
         match fieldOf? c.kind with
         | some (e, _, .fromRecord fact) =>
           if (spec.element? e).any (fun el => el.recordFact? == some fact) then none
           else some s!"field {c.id} on {scr.id} uses undeclared record source {fact} for {e}"
+        | some (e, _, .linked source) =>
+          match spec.element? e, spec.element? source with
+          | some target, some src => if target.kind == src.kind then none
+              else some s!"field {c.id} on {scr.id} links {source} to {e} with a different kind or unit"
+          | _, _ => some s!"field {c.id} on {scr.id} has an unknown linked source or target"
         | _ => none },
     -- 2. captures all, once (auto-linked elements)
     { property := "capturesAllOnce", passes := decide (LinkedNotRetyped spec prog)
@@ -335,23 +348,6 @@ def firstFinding (rs : List Rule) : Option Finding :=
     (r.explain ()).getD { property := r.property, message := s!"{r.property}: rule failed" }
 
 /-! ## Counterexamples, replayed through the interpreter -/
-
-/-- The patient used to replay counterexamples. Navigation does not depend on
-the record; the final click shows the hard stop. -/
-def replayFacts : Facts where
-  patientId := "pt-replay"
-  identity := { initials := "AB", sex := "F", ageYears := 40 }
-  allergyVersion := 1
-  allergyClasses := []
-  medsVersion := 1
-  currentMedClasses := []
-  weightToday? := some (700, .kg)
-  careGaps := []
-  abnormalResult := false
-  now := 600
-
-/-- The user used to replay counterexamples: the program's role. -/
-def replayUser (prog : Program) : User := { id := "replay-user", role := prog.role }
 
 /-- Events that open every closed group and unselected tab above `c`, in the
 current state. -/

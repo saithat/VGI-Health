@@ -1,4 +1,4 @@
-import Ehr.Check.RuleSound
+import Ehr.Props.Properties
 import Ehr.Proofs.T0
 import Ehr.Proofs.T2
 import Ehr.Proofs.Alerts

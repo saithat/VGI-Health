@@ -214,7 +214,8 @@ def CosignIsSecondUser (ep : Episode) : Prop :=
 
 /-- The program never tries to automate a human step: no field prefills an
 element a human must enter; no macro step types into such a field, clicks a
-commit, review, or macro button. Needs the checker. -/
+commit, review, macro button, or a request action for a human-required
+element. Needs the checker. -/
 def NoAutomationAttempts (spec : Spec) (prog : Program) : Prop :=
   (∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
     HumanMustEnter el → f.2.2 = .none) ∧
@@ -222,7 +223,8 @@ def NoAutomationAttempts (spec : Spec) (prog : Program) : Prop :=
     (setTarget? st = some sc.2.id →
       ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1, ¬ HumanMustEnter el) ∧
     (clickTarget? st = some sc.2.id →
-      commitOf? sc.2.kind = none ∧ reviewOf? sc.2.kind = none ∧ macroOf? sc.2.kind = none))
+      commitOf? sc.2.kind = none ∧ reviewOf? sc.2.kind = none ∧ macroOf? sc.2.kind = none ∧
+      NoHumanRequest spec sc.2.kind))
 
 instance (spec : Spec) (prog : Program) : Decidable (NoAutomationAttempts spec prog) := by
   unfold NoAutomationAttempts; infer_instance

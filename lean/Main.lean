@@ -13,7 +13,8 @@ Subcommands (JSON over files, stdin, and stdout):
 - `ehr run-batch <file.jsonl>`: each line is a `BatchCase`
   `{spec, program, facts, user, events}`; prints one `BatchStep`
   `{case, index, state, result, view}` per event, as JSON lines.
-- `ehr spec-export <name>`: prints a spec as JSON (`tiny` for now).
+- `ehr spec-export <name>`: prints a registered spec as JSON.
+- `ehr cures-exemptions-export`: prints the shared CURES exemption codes.
 
 All subcommands call the same functions as the WASM exports (`Ehr.Api`).
 -/
@@ -46,7 +47,8 @@ def usage : String :=
   "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
   "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
-    ", ".intercalate (specRegistry.map (·.1)) ++ ")"
+    ", ".intercalate (specRegistry.map (·.1)) ++ ")\n" ++
+  "  cures-exemptions-export  shared CURES exemption codes (JSON)"
 
 /-- Decode stdin as `α`, apply `f`, and print the JSON result. -/
 def stdinCommand (α β : Type) [Lean.FromJson α] [Lean.ToJson β] (f : α → β) : IO UInt32 := do
@@ -88,6 +90,8 @@ def main (args : List String) : IO UInt32 := do
   | ["run-batch", file] => runBatch file
   | "check" :: rest => Ehr.Cli.checkMain rest
   | "deploy" :: rest => Ehr.Cli.deployMain rest
+  | ["cures-exemptions-export"] =>
+    IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
   | ["spec-export", name] =>
     match specRegistry.lookup name with
     | some sp => IO.println (Lean.toJson sp).pretty; return 0

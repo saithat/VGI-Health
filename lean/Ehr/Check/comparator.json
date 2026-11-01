@@ -1,0 +1,26 @@
+{
+  "challenge_module": "Ehr.Check.ComparatorStatements",
+  "solution_module": "Ehr.Check.Sound",
+  "theorem_names": [
+    "Ehr.Check.accepted_wellFormed",
+    "Ehr.Check.accepted_capturesAllOnce",
+    "Ehr.Check.accepted_writesOnly",
+    "Ehr.Check.accepted_reviewsBeforeCommit",
+    "Ehr.Check.accepted_humanOnlyKept",
+    "Ehr.Check.accepted_units",
+    "Ehr.Check.accepted_budgets",
+    "Ehr.Check.accepted_alertsFire",
+    "Ehr.Check.accepted_noFalseAlarms",
+    "Ehr.Check.accepted_noRepeatInterruptions",
+    "Ehr.Check.accepted_severityTiers",
+    "Ehr.Check.satisfies_of_checked_completable",
+    "Ehr.Check.T7_counterexample_replays",
+    "Ehr.Check.T7_rejection"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

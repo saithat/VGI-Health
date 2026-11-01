@@ -118,6 +118,18 @@ def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
       (spec.element? e).any (fun el => el.recordFact? == some fact)
     | _ => true
 
+/-- Linked prefill copies a value without conversion, so its source must be
+known and have the same kind (including the quantity unit). This also rules
+out ill-typed prefilled state being stranded on an archived order line. -/
+def linkedSourcesTyped (spec : Spec) (prog : Program) : Bool :=
+  (allComps prog).all fun sc =>
+    match fieldOf? sc.2.kind with
+    | some (e, _, .linked source) =>
+      match spec.element? e, spec.element? source with
+      | some target, some src => target.kind == src.kind
+      | _, _ => false
+    | _ => true
+
 /-! ## Completability rules -/
 
 /-- Screens with a commit button for `c` that can always be made shown. -/
@@ -147,6 +159,21 @@ def drugSlots (prog : Program) : List Slot :=
     match fieldOf? sc.2.kind with
     | some f => if f.1 == drugElement then some f.2.1 else none
     | none => none).eraseDups
+
+/-- A fixed-slot field can still edit an archived line after the current
+slot advances. Such writes must not strand a per-line requirement (including
+one newly triggered by changing a naloxone-risk dose/frequency). Current-slot
+fields alone cannot repair that archived line. -/
+def repairSlots (spec : Spec) (prog : Program) (c : CommitId) : List Slot :=
+  let reqs := spec.entries.filter fun rq => rq.commit == c && rq.perOrderLine
+  let fixed : List Slot := (allComps prog).filterMap fun sc =>
+    match fieldOf? sc.2.kind with
+    | some (e, .fixed n, _) =>
+      if reqs.any (fun rq => rq.element == e ||
+          (rq.when == .naloxoneRisk && (e == doseElement || e == freqElement)))
+      then some (.fixed n) else none
+    | _ => none
+  (drugSlots prog ++ fixed).eraseDups
 
 /-- A field can repair the drug field's slot. With add-line navigation,
 current fields repair only the current line; fixed fields repair their own
@@ -203,7 +230,7 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
         s!"a field to enter its waiver")
     | none =>
       let perLine := reqs.filter (·.perOrderLine)
-      match (drugSlots prog).findSome? (fun slot =>
+      match (repairSlots spec prog c).findSome? (fun slot =>
           (perLine.find? fun rq => !openFieldOn prog fromS rq.element (repairsSlot prog slot)).map (slot, ·)) with
       | some (slot, rq) => some (s, s!"commit {c}: order slot {repr slot} has no field the user can reach for {rq.element}")
       | none => none

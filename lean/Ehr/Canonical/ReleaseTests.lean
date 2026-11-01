@@ -1,11 +1,42 @@
 import Ehr.Canonical.Personas
 import Ehr.Canonical.BadTests
+import Ehr.Core.Json
 namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1 Ehr.Specs.V1_1 Ehr.Specs.V2
+
+-- The legal correction replaces the old code; it is not a legacy alias.
+#guard curesExemptionCodes.contains "surgery-7-day"
+#guard !curesExemptionCodes.contains "surgery-5-day"
+#guard curesExemptionCodes.length == 5
+#guard match (Lean.fromJson? (Lean.toJson curesExemptionCodes) : Except String (List String)) with
+  | .ok codes => codes == curesExemptionCodes
+  | .error _ => false
+
+-- Each release supports human documentation of the corrected code through
+-- real composer events. This tests the waiver path, not statutory eligibility
+-- or rejection of arbitrary codes: those still need core/check CR-11.
+#guard [(specV1, canonicalV1), (specV1_1, canonicalV1_1), (specV2, canonicalV2)].all fun (sp, p) =>
+  let p := p.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
+  let s := run opioidPath p adult physician sp
+  let entered := more s [.click "w1Sign.edit",
+    .enter "w1Orders.curesExemptionReason" (.code "surgery-7-day"),
+    .click "w1Orders.toSign", .click "w1Verify.continue"] p adult physician sp
+  (finish s "w1Sign" "signOrders" p adult physician sp).commits == [] &&
+  (cap entered "curesExemptionReason").any (fun c =>
+    c.byHuman && c.confirmed && c.value == .code "surgery-7-day") &&
+  (finish entered "w1Sign" "signOrders" p adult physician sp).commits == ["signOrders"]
 
 /-- v1.1 preserves a complete v1 prescribing path without any new input. -/
 def optionalRelease : State := run w1Path canonicalV1_1 adult physician specV1_1
 #guard (finish optionalRelease "w1Sign" "signOrders" canonicalV1_1 adult physician specV1_1).commits == ["signOrders"]
+-- Optional and stewardship releases preserve the new Schedule II hard stop.
+#guard [(specV1_1, canonicalV1_1), (specV2, canonicalV2)].all fun (sp, p) =>
+  let path := (opioidPath).map fun e => match e with
+    | .enter "w1Orders.refills" _ => .enter "w1Orders.refills" (.qty 30 .none) | _ => e
+  let s := run path p adult physician sp
+  reason (one s (.click "w1Sign.commit.signOrders") p adult physician sp).2 ==
+    "value not allowed: refills (allowed: 0)" &&
+    (finish s "w1Sign" "signOrders" p adult physician sp).commits == []
 /-- A human requests prior auth on an existing order. -/
 def pa : State × StepResult := one
   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Orders",
