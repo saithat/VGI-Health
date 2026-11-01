@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, sep } from "node:path";
@@ -88,6 +89,13 @@ export function compressionPlugin(): Plugin {
               ? "public, max-age=31536000, immutable"
               : "no-cache",
           );
+          const etag = `"${createHash("sha256").update(body).digest("hex")}"`;
+          res.setHeader("ETag", etag);
+          if (req.headers["if-none-match"] === etag) {
+            res.statusCode = 304;
+            res.end();
+            return;
+          }
           if (encoding) res.setHeader("Content-Encoding", encoding);
           res.setHeader("Content-Length", body.length);
           res.end(req.method === "HEAD" ? undefined : body);

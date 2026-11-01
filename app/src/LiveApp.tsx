@@ -924,7 +924,9 @@ function Home({
 }
 export function LiveApp() {
   const [user, setUser] = useState<LiveUser>();
-  const [baseline, setBaseline] = useState(false);
+  const [baseline, setBaseline] = useState(
+    () => sessionStorage.getItem("vgi.baseline") === "1",
+  );
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
@@ -950,11 +952,16 @@ export function LiveApp() {
         <Home
           user={user}
           baseline={baseline}
-          onLogout={() => setUser(undefined)}
+          onLogout={() => {
+            sessionStorage.removeItem("vgi.baseline");
+            setBaseline(false);
+            setUser(undefined);
+          }}
         />
       ) : (
         <Login
           onLogin={(next, isBaseline) => {
+            sessionStorage.setItem("vgi.baseline", isBaseline ? "1" : "0");
             setBaseline(isBaseline);
             setUser(next);
           }}

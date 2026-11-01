@@ -121,6 +121,23 @@ test("app shell: every shell control has an effect or an explained disabled stat
       );
       await page.locator(".clinical-app").waitFor({ timeout: 30000 });
       audit.screen = "live encounter header";
+      if (persona === "baseline") {
+        const source = z
+          .object({ id: z.string() })
+          .passthrough()
+          .parse(
+            await (
+              await page.context().request.get("/releases/v2/canonical.json")
+            ).json(),
+          );
+        const active = z
+          .object({ id: z.string() })
+          .passthrough()
+          .parse(
+            await page.evaluate(() => window.__buttonAuditSession?.program),
+          );
+        expect(active.id).toBe(source.id);
+      }
       for (const label of ["Live encounter"]) {
         const button = page.getByRole("button", { name: label, exact: true });
         if (await button.count()) {
