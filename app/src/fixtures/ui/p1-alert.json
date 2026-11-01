@@ -1,0 +1,542 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Alexandra Morgan"
+    ],
+    [
+      "DOB",
+      "04/12/1968"
+    ],
+    [
+      "MRN",
+      "00421873"
+    ],
+    [
+      "Age / sex",
+      "58 / Female"
+    ],
+    [
+      "Allergies",
+      "Penicillin \u00b7 rash"
+    ],
+    [
+      "Code status",
+      "Full code"
+    ],
+    [
+      "PCP",
+      "Elena Torres, MD"
+    ],
+    [
+      "Coverage",
+      "Blue Shield PPO"
+    ],
+    [
+      "Location",
+      "West clinic \u00b7 Room 04"
+    ]
+  ],
+  "nav": [
+    [
+      "Visit",
+      [
+        [
+          "w1Rooming",
+          "Rooming"
+        ],
+        [
+          "w1MedRec",
+          "Medications"
+        ],
+        [
+          "w1Hpi",
+          "Documentation"
+        ],
+        [
+          "w1Orders",
+          "Orders"
+        ],
+        [
+          "w1Sign",
+          "Review & sign"
+        ]
+      ]
+    ],
+    [
+      "Longitudinal chart",
+      [
+        [
+          "history",
+          "History"
+        ],
+        [
+          "results",
+          "Results review"
+        ],
+        [
+          "immunizations",
+          "Immunizations"
+        ]
+      ]
+    ],
+    [
+      "Care coordination",
+      [
+        [
+          "referrals",
+          "Referrals"
+        ],
+        [
+          "messages",
+          "Patient messages"
+        ]
+      ]
+    ]
+  ],
+  "title": "Review & sign",
+  "workspace": [
+    {
+      "stepper": {
+        "steps": [
+          [
+            "w1Rooming",
+            "Rooming"
+          ],
+          [
+            "w1MedRec",
+            "Medications"
+          ],
+          [
+            "w1Hpi",
+            "Documentation"
+          ],
+          [
+            "w1Orders",
+            "Orders"
+          ],
+          [
+            "w1Sign",
+            "Review & sign"
+          ]
+        ],
+        "current": 4
+      }
+    },
+    {
+      "section": {
+        "id": "review",
+        "title": "Final clinical review",
+        "children": [
+          {
+            "info": {
+              "comp": "w1.allergies",
+              "label": "Allergies & adverse reactions",
+              "infoId": "allergies",
+              "display": "table",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "Penicillin"
+                  ],
+                  [
+                    "Reaction",
+                    "Maculopapular rash"
+                  ],
+                  [
+                    "Severity",
+                    "Moderate"
+                  ],
+                  [
+                    "Status",
+                    "Active"
+                  ],
+                  [
+                    "Recorded",
+                    "05/16/2019"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Lisinopril"
+                  ],
+                  [
+                    "Reaction",
+                    "Dry cough"
+                  ],
+                  [
+                    "Severity",
+                    "Mild"
+                  ],
+                  [
+                    "Status",
+                    "Intolerance"
+                  ],
+                  [
+                    "Recorded",
+                    "08/22/2024"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1.meds",
+              "label": "Active medications",
+              "infoId": "meds",
+              "display": "table",
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "Losartan 50 mg tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "1 tablet PO daily"
+                  ],
+                  [
+                    "Indication",
+                    "Hypertension"
+                  ],
+                  [
+                    "Status",
+                    "Active"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Metformin ER 500 mg"
+                  ],
+                  [
+                    "Instructions",
+                    "2 tablets PO with dinner"
+                  ],
+                  [
+                    "Indication",
+                    "Type 2 diabetes"
+                  ],
+                  [
+                    "Status",
+                    "Active"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Atorvastatin 20 mg"
+                  ],
+                  [
+                    "Instructions",
+                    "1 tablet PO nightly"
+                  ],
+                  [
+                    "Indication",
+                    "Hyperlipidemia"
+                  ],
+                  [
+                    "Status",
+                    "Active"
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "id": "pending-orders",
+        "title": "Orders to sign",
+        "children": [
+          {
+            "info": {
+              "comp": "w1Sign.orders",
+              "label": "Prescription summary",
+              "infoId": "orders",
+              "display": "table",
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "Losartan 50 mg tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "1 tablet PO daily"
+                  ],
+                  [
+                    "Dispense",
+                    "90 tablets"
+                  ],
+                  [
+                    "Refills",
+                    "1"
+                  ],
+                  [
+                    "Pharmacy",
+                    "Community Pharmacy"
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "id": "attestation",
+        "title": "Identity & attestation",
+        "children": [
+          {
+            "text": {
+              "s": "Verify this patient before signing. Your signature will authorize the orders shown above."
+            }
+          },
+          {
+            "columns": {
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Sign.patientIdReentry",
+                    "label": "Patient identity re-entry",
+                    "kind": "identity",
+                    "value": null,
+                    "unit": null,
+                    "provenance": null,
+                    "pendingConfirm": false,
+                    "humanOnly": true,
+                    "required": true
+                  }
+                },
+                {
+                  "field": {
+                    "comp": "w1Sign.cosign",
+                    "label": "Cosigning clinician",
+                    "kind": "cosign",
+                    "value": null,
+                    "unit": null,
+                    "provenance": null,
+                    "pendingConfirm": false,
+                    "humanOnly": true,
+                    "required": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Sign.reviewed",
+              "label": "I reviewed the orders and relevant clinical information",
+              "kind": "flag",
+              "value": "true",
+              "unit": null,
+              "provenance": null,
+              "pendingConfirm": false,
+              "humanOnly": true,
+              "required": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "button": {
+        "comp": "w1Sign.commit.signOrders",
+        "label": "Sign orders",
+        "role": "primary",
+        "enabled": false,
+        "blockedReason": "Re-enter patient identifiers to sign these orders.",
+        "hotkey": "Ctrl + Enter"
+      }
+    }
+  ],
+  "side": [
+    {
+      "section": {
+        "id": "encounter",
+        "title": "Encounter summary",
+        "children": [
+          {
+            "info": {
+              "comp": "w1.encounter",
+              "label": "Office visit",
+              "infoId": "encounter",
+              "display": "summary",
+              "rows": [
+                [
+                  [
+                    "Date",
+                    "Oct 31, 2026"
+                  ],
+                  [
+                    "Type",
+                    "Follow-up"
+                  ],
+                  [
+                    "Provider",
+                    "Elena Torres, MD"
+                  ],
+                  [
+                    "Reason",
+                    "Blood pressure / diabetes"
+                  ],
+                  [
+                    "Status",
+                    "In progress"
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "id": "problem-summary",
+        "title": "Problem list",
+        "children": [
+          {
+            "info": {
+              "comp": "w1.problems",
+              "label": "Active problems",
+              "infoId": "problems",
+              "display": "list",
+              "rows": [
+                [
+                  [
+                    "Problem",
+                    "Essential hypertension"
+                  ],
+                  [
+                    "Code",
+                    "I10"
+                  ]
+                ],
+                [
+                  [
+                    "Problem",
+                    "Type 2 diabetes mellitus"
+                  ],
+                  [
+                    "Code",
+                    "E11.9"
+                  ]
+                ],
+                [
+                  [
+                    "Problem",
+                    "Mixed hyperlipidemia"
+                  ],
+                  [
+                    "Code",
+                    "E78.2"
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "id": "trend",
+        "title": "Recent results",
+        "children": [
+          {
+            "info": {
+              "comp": "w1.a1c",
+              "label": "Hemoglobin A1c",
+              "infoId": "a1c",
+              "display": "trend",
+              "rows": [
+                [
+                  [
+                    "Date",
+                    "04/18/2026"
+                  ],
+                  [
+                    "Value",
+                    "7.4"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ]
+                ],
+                [
+                  [
+                    "Date",
+                    "07/22/2026"
+                  ],
+                  [
+                    "Value",
+                    "7.1"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ]
+                ],
+                [
+                  [
+                    "Date",
+                    "10/27/2026"
+                  ],
+                  [
+                    "Value",
+                    "6.8"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ]
+                ]
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "modal": {
+    "section": {
+      "id": "drug-alert",
+      "title": "Medication safety alert",
+      "children": [
+        {
+          "alert": {
+            "comp": "w1Sign.alert",
+            "alertId": "duplicate-therapy",
+            "label": "Potential duplicate therapy: losartan is already listed as an active medication. Review the current medication list before proceeding.",
+            "severity": "warning"
+          }
+        },
+        {
+          "text": {
+            "s": "An existing prescription was last authored on July 22, 2026. Confirm whether this order replaces the prior prescription."
+          }
+        },
+        {
+          "button": {
+            "comp": "w1Sign.ack",
+            "label": "Acknowledge & return to review",
+            "role": "primary",
+            "enabled": true,
+            "blockedReason": null,
+            "hotkey": null
+          }
+        }
+      ]
+    }
+  }
+}

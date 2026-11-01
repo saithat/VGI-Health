@@ -7,6 +7,9 @@ export interface WasmEnvelopeInterp {
   view(input: string): string;
   facts(input: string): string;
   render(input: string): string;
+  exports?: readonly string[];
+  call?(name: string, input: string): string;
+  renderUi?(input: string): string;
 }
 
 /** Adapt the existing string seam without translating Lean data or semantics. */
@@ -79,6 +82,14 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
           `{${context(spec, program, facts, user, true)},"state":${state}}`,
         ),
       ),
+    ...(wasm.renderUi || (wasm.exports?.includes("ehr_render_ui") && wasm.call) ? {
+      renderUi: (spec: string, program: string, facts: string, user: string, state: string) => {
+        const input = `{${context(spec, program, facts, user, true)},"state":${state}}`;
+        if (wasm.renderUi) return checked(wasm.renderUi(input));
+        if (wasm.call) return checked(wasm.call("ehr_render_ui", input));
+        throw new Error("Semantic UI export is unavailable");
+      },
+    } : {}),
     facts: (bundle) => checked(wasm.facts(bundle)),
   };
 }
