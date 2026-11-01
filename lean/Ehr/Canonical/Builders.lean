@@ -186,6 +186,21 @@ def ambulatoryShell (s : ScreenId) (nav : List (ScreenId × String))
       { c with tag := "layout.focusedWorkspace" }
     else c
 
+/-- In Basket landing views put their original folder actions beside the
+message list. Row tags place the same buttons; they never infer a destination. -/
+def ambulatoryInBasketShell (s : ScreenId) (nav : List (ScreenId × String))
+    (chart : List Block) : List Component :=
+  (ambulatoryShell s nav chart "In Basket").flatMap fun c =>
+    if c.id == cid s "encounterNavigator" then
+      [{ group s "inBasketColumns" "In Basket" (collapsible := false) with tag := "layout.columns" },
+       { c with tag := "present.folderList", label := "Folders", parent? := some (cid s "inBasketColumns") }]
+    else if c.parent? == some (cid s "encounterNavigator") then
+      let row := match c.kind with
+        | .button (.goto "w7Queue") => "1"
+        | _ => "0"
+      [{ c with tag := "present.row|" ++ cid s "folders" ++ "|" ++ row }]
+    else [c]
+
 /-- An open clinical section. No extra collapse action is needed for ordinary
 rooming and documentation fields; optional history can still use `group`. -/
 def clinicalSection (s : ScreenId) (name label : String)
@@ -262,8 +277,7 @@ controlled-substance section, a collapsed "additional" section, an order-info
 tab strip whose second tab holds the CURES report, the pending-orders list, and
 the buttons. -/
 def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
-  [searchC s "orderSearch" "formulary" "Find orders",
-   table s "catalog" "orderCatalog" "Catalog results"] ++
+  [searchC s "orderSearch" "formulary" "Find orders"] ++
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
   [group s "prefList" "Preference list"] ++
   o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "prefList")) ++

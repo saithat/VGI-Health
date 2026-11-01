@@ -1,12 +1,16 @@
+import { useContext } from "react";
+import { ChartReferenceContext } from "../clinical-metadata";
+import type { UiChartReference } from "../../../../../lean/generated/ehr-types";
 import type { Info } from "./StructuredInfo";
 import type { Pair } from "../types";
 
 type Point = { x: number; y: number; label: string };
+type ReferenceCurve = { percentile: string; source: string; points: Point[] };
 type Series = {
   name: string;
   unit: string;
   points: Point[];
-  references: Map<string, Point[]>;
+  references: Map<string, ReferenceCurve>;
   timeBased: boolean;
 };
 function cell(row: Pair[], key: string) {
@@ -19,7 +23,11 @@ function number(value: string): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 /** Geometry only: unlike measures and units always occupy different charts. */
-function seriesFor(node: Info, kind: "trend" | "growth"): Series[] {
+function seriesFor(
+  node: Info,
+  kind: "trend" | "growth",
+  supplied: UiChartReference[],
+): Series[] {
   const groups = new Map<string, Series>();
   const add = (
     name: string,
@@ -36,14 +44,19 @@ function seriesFor(node: Info, kind: "trend" | "growth"): Series[] {
       name,
       unit,
       points: [],
-      references: new Map<string, Point[]>(),
+      references: new Map<string, ReferenceCurve>(),
       timeBased: true,
     };
     series.timeBased = series.timeBased && timeBased;
     if (percentile) {
-      const points = series.references.get(percentile) ?? [];
-      points.push({ x, y, label });
-      series.references.set(percentile, points);
+      const key = `${label}\u0000${percentile}`;
+      const curve = series.references.get(key) ?? {
+        percentile,
+        source: label,
+        points: [],
+      };
+      curve.points.push({ x, y, label });
+      series.references.set(key, curve);
     } else series.points.push({ x, y, label });
     groups.set(key, series);
   };
@@ -97,6 +110,21 @@ function seriesFor(node: Info, kind: "trend" | "growth"): Series[] {
       );
     }
   });
+  if (kind === "growth")
+    for (const reference of supplied) {
+      const group = groups.get(`${reference.measure}\u0000${reference.unit}`);
+      if (!group) continue;
+      const source = `${reference.source} · ${reference.population}`;
+      group.references.set(`${source}\u0000${reference.percentile}`, {
+        percentile: reference.percentile,
+        source,
+        points: reference.points.map(([age, value]) => ({
+          x: age / 10,
+          y: value / 100,
+          label: source,
+        })),
+      });
+    }
   return [...groups.values()].map((series) =>
     series.timeBased
       ? series
@@ -113,12 +141,16 @@ export function ClinicalChart({
   node: Info;
   kind: "trend" | "growth";
 }) {
-  const series = seriesFor(node, kind);
+  const supplied = useContext(ChartReferenceContext);
+  const series = seriesFor(node, kind, supplied);
   if (!series.length) return null;
   return (
     <div className="presentation-charts">
       {series.map((s) => {
-        const all = [...s.points, ...[...s.references.values()].flat()];
+        const all = [
+          ...s.points,
+          ...[...s.references.values()].flatMap((curve) => curve.points),
+        ];
         const { xmin, xmax, ymin, ymax } = all.reduce(
           (bounds, point) => ({
             xmin: Math.min(bounds.xmin, point.x),
@@ -136,15 +168,28 @@ export function ClinicalChart({
         const y = (n: number) => 200 - ((n - low) / (high - low)) * 162;
         const path = (points: Point[]) =>
           points.map((p) => `${x(p.x)},${y(p.y)}`).join(" ");
-        const lower = s.references.get("5th"),
-          upper = s.references.get("95th");
-        const band =
-          lower &&
-          upper &&
-          lower.length === upper.length &&
-          lower.every((p, i) => p.x === upper[i]?.x)
-            ? path(lower) + " " + path([...upper].reverse())
-            : undefined;
+        const curves = [...s.references.values()];
+        const bands = [...new Set(curves.map((curve) => curve.source))].flatMap(
+          (source) => {
+            const lower = curves.find(
+              (curve) => curve.source === source && curve.percentile === "5th",
+            )?.points;
+            const upper = curves.find(
+              (curve) => curve.source === source && curve.percentile === "95th",
+            )?.points;
+            return lower &&
+              upper &&
+              lower.length === upper.length &&
+              lower.every((p, i) => p.x === upper[i]?.x)
+              ? [
+                  {
+                    source,
+                    points: path(lower) + " " + path([...upper].reverse()),
+                  },
+                ]
+              : [];
+          },
+        );
         const recorded = [...new Set(s.points.map((point) => point.x))];
         const recordedTicks =
           recorded.length <= 5
@@ -193,11 +238,15 @@ export function ClinicalChart({
                   : s.timeBased
                     ? "Recorded time on the horizontal axis. "
                     : "Observation sequence on the horizontal axis. "}
-                All source values appear in the table below.
+                All recorded patient values appear in the table below.
               </desc>
-              {band && (
-                <polygon points={band} className="chart-reference-band" />
-              )}
+              {bands.map((band) => (
+                <polygon
+                  key={band.source}
+                  points={band.points}
+                  className="chart-reference-band"
+                />
+              ))}
               {[0, 1, 2, 3, 4].map((i) => {
                 const value = low + ((high - low) * i) / 4,
                   py = y(value);
@@ -234,17 +283,21 @@ export function ClinicalChart({
                   </g>
                 );
               })}
-              {[...s.references].map(([percentile, points]) => {
+              {[...s.references].map(([key, curve]) => {
+                const { points, percentile, source } = curve;
                 const last = points.at(-1);
                 return (
-                  <g key={percentile}>
+                  <g key={key}>
+                    <title>
+                      {source}: {percentile} reference curve
+                    </title>
                     <polyline
                       points={path(points)}
                       className="chart-reference"
                     />
                     {last && (
                       <text
-                        x="634"
+                        x={last ? x(last.x) + 8 : 634}
                         y={y(last.y) + 4}
                         className="chart-reference-label"
                       >
@@ -286,14 +339,7 @@ export function ClinicalChart({
                 {s.references.size
                   ? [
                       ...new Set(
-                        node.rows
-                          .filter(
-                            (row) =>
-                              cell(row, "Series") === s.name &&
-                              cell(row, "Unit") === s.unit,
-                          )
-                          .map((row) => cell(row, "Reference"))
-                          .filter(Boolean),
+                        curves.map((curve) => curve.source).filter(Boolean),
                       ),
                     ].join(" • ")
                   : "Percentile reference data not supplied."}

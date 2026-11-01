@@ -139,5 +139,7 @@
   ["Encounter", "EMER"],
   ["Attending", "Nora Shah, MD"],
   ["Location", "ED 08"],
-  ["Allergies", "Amoxicillin — Hives (active)"],
-  ["Code status", "Full code"]]}
+  ["Allergies", "Amoxicillin"],
+  ["Code status", "Full code"],
+  ["Weight", "Not recorded"],
+  ["Isolation", "Not recorded"]]}

@@ -1,5 +1,7 @@
 import Ehr.Core.Navigation
 import Ehr.Render.Presentations
+import Ehr.Render.CodeChoices
+import Ehr.Render.GrowthStandards
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
 The interpreter resolves visibility exactly once. Nesting consumes no item:
@@ -26,14 +28,13 @@ def uiBannerWeight (facts : Facts) (d : Display) : String :=
   | some (value, unit, date) => s!"{value / 10}.{value % 10} {unit.name}" ++
       (if date == "" then "" else " · " ++ uiDate date)
 
-/-- Clinical banner content comes from Lean, so the painter need not infer it.
-An unavailable code status is explicit, never silently treated as full code. -/
+/-- Header allergies summarize substances and status; reactions remain complete
+in the allergy list and mandatory reviews. Unknown code status stays explicit. -/
 def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
   uiBanner d ++
     [("Allergies", if d.allergies.isEmpty then "No allergy records on file"
       else "; ".intercalate (d.allergies.map (fun r => r.substance ++
-        (if r.reaction == "" then "" else " — " ++ r.reaction) ++
-        (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
+        (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")")))),
      ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded"),
      ("Weight", uiBannerWeight facts d),
      ("Isolation", uiLabel ((facts.record.lookup "isolation").getD "") "Not recorded")]
@@ -110,7 +111,9 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "procedures" => cx.disp.procedures.map fun r =>
         [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
     | "growthChart" => (cx.disp.growth.map fun r =>
-        [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
+        [("Date", uiDate r.date), ("Age (months)",
+          if isoDateValid cx.disp.banner.dob && isoDateValid r.date && cx.disp.banner.dob ≤ r.date
+          then toString r.ageMonths else "Not recorded"),
          ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
          ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]) ++ uiPayloadRows cx i
     | "doseCheck" => uiDoseRows cx
@@ -245,19 +248,30 @@ def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
 def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × String)) :=
   if uiSideAt cx id && !uiOrderInfo i then uiSummaryRows cx i else uiRows cx i
 
+/-- Reference data decorates only the growth plot; its ordinary info is complete. -/
+def uiWrapGrowthReferences (cx : Ctx) (kind : Option UiPresentationKind) (i : InfoId)
+    (node : UiNode) : UiNode :=
+  if kind == some .growth && i == "growthChart" then
+    .chartReferences (uiGrowthReferences cx.disp) [node]
+  else node
+
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
-  uiWrapInfo (if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i) <|
-  .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
+  let kind := if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i
+  let node := uiWrapInfo kind <| .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
     (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
+  uiWrapGrowthReferences cx kind i node
 
 /-- Search reads typed chart rows or the supplied code catalog. It never replaces
 required reviews, captures clinical evidence, or selects an order. -/
 def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
   if scope == "formulary" then
     formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
+  else if scope == "inbasket" then
+    uiRows cx "inBasketResults" ++ uiRows cx "inBasketRxRequests"
   else if scope == "loinc" then
-    uiRows cx "labResults" ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
+    commonLabChoices.map (fun term => [("Test", term.label), ("LOINC", term.code)]) ++
+    (cx.facts.codeTables?.getD []).flatMap (fun table =>
       if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
   else if scope == "chart" then
     (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
@@ -305,7 +319,7 @@ is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   match it.comp.kind with
   | .banner => [.info "" "Patient banner" "patientBanner" "summary" [uiClinicalBanner cx.facts cx.disp]]
-  | .field e _ _ => uiField cx it e ::
+  | .field e _ _ => uiWrapFieldChoices cx e (uiField cx it e) ::
       if it.pendingConfirm then
         [.button it.comp.id "Confirm prefilled value" "confirm" (uiEnabled cx it.comp.id)
           (uiBlocked cx it.comp.id) none] else []

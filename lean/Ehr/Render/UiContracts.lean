@@ -7,6 +7,8 @@ mutual
 body. Leaf nodes are unchanged. This observes presence, never browser styling. -/
 def uiAtoms : UiNode → List UiNode
   | .presentation _ kids => uiAtomsList kids
+  | .valueSet _ _ kids => uiAtomsList kids
+  | .chartReferences _ kids => uiAtomsList kids
   | .rowAction _ _ kids => uiAtomsList kids
   | .section id title kids => .section id title [] :: uiAtomsList kids
   | .columns kids => .columns [] :: uiAtomsList kids

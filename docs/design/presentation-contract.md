@@ -63,3 +63,25 @@ An ordinary button tagged `present.row|<info component ID>|<zero-based source ro
 The painter places these controls in the matching row for tables, schedules, boards, worklists, message lists, results, flowsheets, MARs and folder lists. The first matching info component with that row is used if a malformed program repeats the target ID. All source rows and multiple actions per row are retained in source order. Missing targets, invalid/out-of-range rows, unsupported chart/note layouts and markers outside a presentation retain the original control inline. No action is invented or dropped. Charts and notes continue to use adjacent ordinary controls. `PresentationFixtures.rowActionsProgram` is a complete example with actual goto targets and return controls; a row marker does not switch patients or create a new clinical event.
 
 Row indexes beyond JavaScript's exact integer transport range do not select a row wrapper; Lean emits the original ordinary control. This keeps an oversized source tag from making the entire JSON screen unusable. MAR headers may group the supplied dated-hour columns under their recorded date, while undated columns retain their complete labels. Narrow row labels still include the full supplied date and time.
+
+### Ambulatory metadata
+
+`UiNode.valueSet options allowCustom children` supplies typed `{code, label}`
+choices around an ordinary field. It does not change that field's Value,
+validation, permissions, human-only flag, provenance or confirmation. The
+browser displays labels and dispatches the selected code. If custom codes are
+allowed, typing shows an explicit `Use code` option; typing alone is not an
+entry. Existing closed formulary and dose-unit controls retain their semantics.
+
+`UiNode.chartReferences references children` supplies published reference samples
+around an ordinary growth info/presentation. Each reference carries measure,
+unit, percentile, source, population and points in tenths of a month/hundredths
+of the stated unit. Patient rows remain complete and separate. WHO 2006 covers
+0–24 months; CDC 2000 covers 24–240 months. Lean selects an explicit US Core
+birth-sex code, known measurement units and applicable ages. Unknown or
+conflicting population data supplies no curve. Curves do not cross population,
+source or unit boundaries; the browser calculates geometry only.
+
+Both wrappers are transparent to semantic presence and preserve every ordinary
+child control/info node. Row-placement, button-audit and ARIA traversals recurse
+through them. No D-rule, clinical requirement or theorem statement is changed.

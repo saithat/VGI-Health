@@ -2111,3 +2111,30 @@ All three active specs round-trip exactly; agent tests and typecheck pass.
   ordinary order-review/signing actions for integration with the shell lane.
   Order signing is not a direct section shortcut; In Basket navigation lists
   folders rather than processing stages.
+
+
+### AMB typed metadata and row layout integration
+
+- Incorporated presentation row actions. Ambulatory Schedule presets place their
+  original encounter opener in row zero; In Basket preserves original folder
+  goto IDs in the folder pane and original review buttons in the selected row.
+  A row does not switch patients or infer a clinical destination.
+- Added transparent `UiNode.valueSet` and `UiNode.chartReferences` data wrappers.
+  Keep their ordinary field/info children, event IDs, provenance, human-only and
+  confirmation semantics. Button/ARIA/row-placement traversals recurse through
+  both. No clinical rule, D-rule or existing theorem statement changes.
+- `GrowthStandards.lean` contains published WHO/CDC samples generated from six
+  source tables with URLs/hashes. Explicit birth-sex coding selects a population;
+  unknown/conflicting coding does not use administrative gender. Patient values
+  stay separate. Height normalization requires a recorded unit; curves never
+  calculate a patient's percentile.
+- Renamed the AMB projection row types to `AmbulatoryScheduleRow` and
+  `AmbulatoryMessageRow` so generated TypeScript has no collision with the
+  presentation lane's `ScheduleRow`. Field meanings and payloads are unchanged.
+- Order search supplies its results through the actual Lean query. Removed the
+  separate unbacked empty orderCatalog panel, which contradicted those results.
+  The original order fields, preference macros, pending orders and signing
+  actions remain. LOINC search uses the public lab preference catalog.
+- The shared shell role/weight/isolation/search follow-up above is integrated.
+  The allergy header summarizes all supplied substances/non-active status;
+  complete reactions remain in ordinary allergy lists and required reviews.

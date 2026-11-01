@@ -33,6 +33,26 @@ def parsed := output clinical
 #guard patientIdOf ((entryResource (first clinical "entry")).setObjVal! "id" (.str "server-id")) == parsed.facts.patientId
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null
+
+/-- Administrative gender does not stand in for the reference-population code. -/
+def administrativeGenderOnlyExample : Json := json "{\"gender\":\"male\"}"
+#guard growthReferenceSex administrativeGenderOnlyExample == none
+
+/-- A recorded birth-sex extension selects the published boys' reference. -/
+def recordedBirthSexExample : Json := json "{\"gender\":\"other\",\"extension\":[{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"M\"}]}"
+#guard growthReferenceSex recordedBirthSexExample == some "M"
+
+/-- Conflicting source codes never silently choose the first population. -/
+def conflictingBirthSexExample : Json := json "{\"extension\":[{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"F\"},{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"M\"}]}"
+#guard growthReferenceSex conflictingBirthSexExample == none
+
+/-- Meter and inch readings convert before rounding to the growth axis unit. -/
+def meterHeightExample : Json := json "{\"value\":1.75,\"code\":\"m\"}"
+def inchHeightExample : Json := json "{\"value\":70,\"code\":\"[in_i]\"}"
+def unlabelledHeightExample : Json := json "{\"value\":175}"
+#guard heightCmTenths meterHeightExample == some 1750
+#guard heightCmTenths inchHeightExample == some 1778
+#guard heightCmTenths unlabelledHeightExample == none
 #guard decodeBase64Utf8 "SGVsbG8KCs6xIPCfmIA=" == some "Hello\n\nα 😀"
 #guard decodeBase64Utf8 "" == some ""
 #guard decodeBase64Utf8 "YQ==" == some "a"

@@ -27,6 +27,11 @@ import { DisplayValue, severityTone, statusTone } from "./display";
 import { clinicalTokens } from "./theme";
 import { StructuredInfo } from "./presentations/StructuredInfo";
 import { PresentationContext, rowLayout } from "./presentations/row-layout";
+import {
+  ChartReferenceContext,
+  ExplicitConfirmContext,
+  ValueSetContext,
+} from "./clinical-metadata";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -48,8 +53,13 @@ export function UiChildren({
   nodes: UiNode[];
   onEvent: Emit;
 }) {
+  const inherited = useContext(ExplicitConfirmContext);
+  const explicit = new Set(inherited);
+  for (const node of nodes)
+    if ("button" in node && node.button.role === "confirm")
+      explicit.add(node.button.comp);
   return (
-    <>
+    <ExplicitConfirmContext.Provider value={explicit}>
       {nodes.map((node, i) => (
         <UiNodeView
           key={i}
@@ -66,7 +76,7 @@ export function UiChildren({
           }
         />
       ))}
-    </>
+    </ExplicitConfirmContext.Provider>
   );
 }
 export function SectionNode({ node, onEvent }: Props<"section">) {
@@ -163,6 +173,9 @@ export function FieldNode({
   confirmProvided = false,
 }: Props<"field"> & { confirmProvided?: boolean }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [typedCode, setTypedCode] = useState("");
+  const valueSet = useContext(ValueSetContext);
+  const explicitConfirms = useContext(ExplicitConfirmContext);
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
     if (event) onEvent(event);
@@ -195,6 +208,17 @@ export function FieldNode({
   const codes = Array.from(
     new Set([...(node.value ? [node.value] : []), ...options]),
   );
+  const choices = valueSet
+    ? valueSet.options.map(({ code, label }) => ({ value: code, label }))
+    : codes.map((code) => ({ value: code, label: code }));
+  if (node.value && !choices.some((choice) => choice.value === node.value))
+    choices.unshift({ value: node.value, label: node.value });
+  if (
+    valueSet?.allowCustom &&
+    typedCode.trim() &&
+    !choices.some((choice) => choice.value === typedCode)
+  )
+    choices.push({ value: typedCode, label: `Use code: ${typedCode}` });
   return (
     <Box
       className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "textarea" ? " field-narrative" : ""}${kind === "search" ? " field-search" : ""}`}
@@ -256,17 +280,24 @@ export function FieldNode({
           role="combobox"
           aria-expanded={dropdownOpen}
           onDropdownOpen={() => setDropdownOpen(true)}
-          onDropdownClose={() => setDropdownOpen(false)}
+          onDropdownClose={() => {
+            setDropdownOpen(false);
+            setTypedCode("");
+          }}
           rightSection={<ClinicalIcon name="chevron" />}
           searchable
-          data={codes}
+          data={choices}
           value={node.value}
           placeholder="Select or search code"
-          onChange={(value) => send(value ?? "")}
+          onChange={(value) => {
+            send(value ?? "");
+            setTypedCode("");
+          }}
           onInput={(event) => {
             // Select's onSearchChange also fires when it synchronizes a supplied
             // value. Only a real input event may turn a code into human entry.
-            if (options.length === 0) send(event.currentTarget.value);
+            if (valueSet) setTypedCode(event.currentTarget.value);
+            else if (options.length === 0) send(event.currentTarget.value);
           }}
           nothingFoundMessage="Enter a code"
         />
@@ -317,19 +348,21 @@ export function FieldNode({
               <DisplayValue value={node.provenance} />
             </Badge>
           )}
-          {node.pendingConfirm && !confirmProvided && (
-            <Button
-              size="compact-xs"
-              variant="light"
-              color="yellow"
-              aria-label={`Confirm ${node.label}`}
-              data-comp-id={node.comp}
-              data-event="confirm"
-              onClick={() => onEvent({ confirm: { comp: node.comp } })}
-            >
-              Confirm
-            </Button>
-          )}
+          {node.pendingConfirm &&
+            !confirmProvided &&
+            !explicitConfirms.has(node.comp) && (
+              <Button
+                size="compact-xs"
+                variant="light"
+                color="yellow"
+                aria-label={`Confirm ${node.label}`}
+                data-comp-id={node.comp}
+                data-event="confirm"
+                onClick={() => onEvent({ confirm: { comp: node.comp } })}
+              >
+                Confirm
+              </Button>
+            )}
         </Group>
       )}
     </Box>
@@ -756,6 +789,18 @@ export function StockUiNodeView({
   switch (true) {
     case "presentation" in node:
       return <PresentationNode node={node.presentation} onEvent={onEvent} />;
+    case "valueSet" in node:
+      return (
+        <ValueSetContext.Provider value={node.valueSet}>
+          <UiChildren nodes={node.valueSet.children} onEvent={onEvent} />
+        </ValueSetContext.Provider>
+      );
+    case "chartReferences" in node:
+      return (
+        <ChartReferenceContext.Provider value={node.chartReferences.references}>
+          <UiChildren nodes={node.chartReferences.children} onEvent={onEvent} />
+        </ChartReferenceContext.Provider>
+      );
     case "rowAction" in node:
       return <RowActionNode node={node.rowAction} onEvent={onEvent} />;
     case "section" in node:

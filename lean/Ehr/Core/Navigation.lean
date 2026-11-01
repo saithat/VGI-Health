@@ -43,4 +43,9 @@ def presetLandings : String → List (ScreenId × String)
   | "P5" => [("w6PreOp", "OR Schedule"), ("w1Rooming", "Consults"), ("w2Inbasket", "In Basket: Results")]
   | _ => []
 
+/-- A schedule row opens its encounter; Schedule remains the activity's name. -/
+def presetLandingControlLabel (owner target activity : String) : String :=
+  if ["P1", "P4"].contains owner && ["w1Rooming", "w5Rooming"].contains target
+  then "Open encounter" else activity
+
 end Ehr

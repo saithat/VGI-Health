@@ -529,6 +529,9 @@ structure Display where
   encounters : List EncRow
   procedures : List ProcRow
   growth : List GrowthPoint
+  /-- Explicit US Core birth-sex coding for published growth references.
+  Administrative gender alone does not select a reference population. -/
+  growthReferenceSex? : Option String := none
   notes : List NoteRow := []
   history : List HistoryRow := []
   schedule : List ScheduleRow := []
@@ -556,10 +559,31 @@ inductive UiPresentationKind
   | folderList | messages | results | trend | growth | notes
   deriving DecidableEq, Repr, Inhabited
 
+/-- A displayed term and the exact code sent by its ordinary field. -/
+structure UiCodeChoice where
+  code : String
+  label : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Published growth-curve samples, separate from patient measurements.
+Points use tenths of a month and hundredths of the stated unit. -/
+structure UiChartReference where
+  measure : String
+  unit : String
+  percentile : String
+  source : String
+  population : String
+  points : List (Nat × Nat)
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
   | presentation (kind : UiPresentationKind) (children : List UiNode)
+  /-- Choices decorate the original field; they do not enter or validate it. -/
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  /-- Reference curves decorate an unchanged complete clinical info child. -/
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
   /-- Place existing controls with a source info row; unmatched controls stay inline. -/
   | rowAction (target : CompId) (row : Nat) (children : List UiNode)
   | section (id : String) (title : String) (children : List UiNode)

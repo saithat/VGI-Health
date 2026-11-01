@@ -12,6 +12,7 @@ const corpus = (await readFile(resolve(root, 'app/src/fixtures/presentations/api
 for (const [kind, input] of corpus) {
   const result = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(input)));
   assert.deepEqual(result, native('render-ui', input), kind);
+  const rootNode = result.workspace[1]?.chartReferences?.children[0] ?? result.workspace[1];
   if (kind === 'inBasket') {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
@@ -35,8 +36,8 @@ for (const [kind, input] of corpus) {
       assert.equal(original?.button.label, 'Open MAR');
     }
   } else {
-    assert.equal(result.workspace[1].presentation.kind, kind);
-    assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);
+    assert.equal(rootNode.presentation.kind, kind);
+    assert.ok(rootNode.presentation.children.some(node => node.info), kind);
   }
 }
 const bundle = JSON.parse(await readFile(resolve(root, 'lean/Ehr/Render/TestData/presentations.json'), 'utf8'));

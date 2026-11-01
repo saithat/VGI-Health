@@ -35,12 +35,14 @@ def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "In Bas
 def queue : Screen :=
   let s := "w7Queue"
   { id := s, title := "In Basket: Rx Requests", workflow := "W7"
-    components := frame s ++ [
-      { table s "folders" "inBasketFolders" "In Basket folders" with tag := "present.folderList" },
-      { table s "items" "inBasketRxRequests" "Rx Requests" with tag := "present.messages" },
-      clinicalSection s "selected" "Selected refill request",
+    components := ambulatoryInBasketShell s nav chart ++ [
+      { table s "folders" "inBasketFolders" "In Basket folders" (parent := some "encounterNavigator") with tag := "present.folderList" },
+      { clinicalSection s "messages" "Rx Requests" (parent := some "inBasketColumns") with tag := "present.messages" },
+      { table s "items" "inBasketRxRequests" "Requests" (parent := some "messages") with tag := "present.messages" },
+      clinicalSection s "selected" "Selected refill request" (parent := some "messages"),
       panel s "request" "refillRequest" "Requested prescription" (parent := some "selected"),
-      goto s "open" "w7Review" "Review request" (parent := some "selected")
+      { goto s "open" "w7Review" "Review request" (parent := some "messages") with
+        tag := "present.row|" ++ cid s "items" ++ "|0" }
     ] }
 
 /-- Chart review for the refill: each item on its own tab. -/

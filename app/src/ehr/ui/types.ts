@@ -16,6 +16,28 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
+      valueSet: z.strictObject({
+        options: z.array(z.strictObject({ code: label, label })),
+        allowCustom: z.boolean(),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      chartReferences: z.strictObject({
+        references: z.array(
+          z.strictObject({
+            measure: label,
+            unit: label,
+            percentile: label,
+            source: label,
+            population: label,
+            points: z.array(z.tuple([nat, nat])),
+          }),
+        ),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
       rowAction: z.strictObject({
         target: label,
         row: nat,

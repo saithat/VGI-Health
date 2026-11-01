@@ -563,6 +563,10 @@ Lean emits a **semantic UI tree**. React (Mantine/@medplum/react) draws it with 
 
 ```lean
 inductive UiNode
+  | presentation (kind : UiPresentationKind) (children : List UiNode)      -- structured reading layout
+  | rowAction (target : CompId) (row : Nat) (children : List UiNode)       -- placement of an existing action
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
   | section  (id : String) (title : String) (children : List UiNode)        -- a titled group / card
   | columns  (children : List UiNode)                                       -- side-by-side layout hint
   | tabs     (id : String) (labels : List String) (selected : Nat) (body : List UiNode)  -- only the selected body is present
@@ -578,7 +582,7 @@ inductive UiNode
 
 structure UiScreen where
   banner : List (String × String)      -- patient banner fields (always first; D1)
-  nav : List (String × List (String × String))   -- groups: (groupLabel, [(screenId, label)])
+  nav : List (String × List (String × String))   -- groups: (groupLabel, [(compId, label)])
   title : String
   workspace : List UiNode
   side : List UiNode                   -- optional clinical summary column
@@ -586,6 +590,14 @@ structure UiScreen where
 ```
 
 `renderUi : Spec → Program → Facts → Display → User → State → UiScreen` (Init-only, exported to WASM as `ehr_render_ui`).
+
+`UiCodeChoice` carries the exact code and its display label. `valueSet` wraps the
+unchanged field; selecting a choice sends its original entry event. Searching a
+picker does not capture a clinical value. `UiChartReference` carries published
+samples with their measure, unit, percentile, source and population. These
+metadata wrappers retain their complete ordinary children and add no actions.
+Clinical choices and reference selection happen in Lean; the painter draws the
+supplied labels and geometry. The design rules below are unchanged.
 
 **Minimal design rules (theorems over every program, record, and state). Just enough to rule out bad UI:**
 - **D1 Landmark:** exactly one banner, first, with at least two patient identifiers (name + DOB or MRN), on every screen.

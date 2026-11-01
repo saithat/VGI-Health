@@ -286,4 +286,6 @@
   ["Attending", ""],
   ["Location", ""],
   ["Allergies", "No allergy records on file"],
-  ["Code status", "Full code"]]}
+  ["Code status", "Full code"],
+  ["Weight", "30.4 kg · Nov 1, 2026 08:00"],
+  ["Isolation", "Not recorded"]]}

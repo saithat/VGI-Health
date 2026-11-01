@@ -1,6 +1,7 @@
 import Lean.Data.Json
 import Ehr.Render.Json
 import Ehr.Formulary
+import Ehr.Core.Basics
 
 /-!
 # FHIR bundle → facts and display
@@ -214,6 +215,17 @@ def sexOf (p : Json) : String :=
   | "female" => "F"
   | "male" => "M"
   | _ => "U"
+
+/-- Growth references require explicit birth-sex coding, not administrative
+gender. Missing, unknown or conflicting source values remain unavailable. -/
+def growthReferenceSex (p : Json) : Option String :=
+  let codes := ((arr p "extension").filter fun extension =>
+    str extension "url" == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex").map
+      (str · "valueCode") |>.eraseDups
+  match codes with
+  | ["M"] => some "M"
+  | ["F"] => some "F"
+  | _ => none
 
 /-- Stable identity shared by fixture and Medplum Patient records. This is
 also the wristband payload: the Synthea identifier search token when present,
@@ -734,6 +746,17 @@ def historyVersionOf (rs : List Json) : Nat := listVersion (rs.filter isHistoryR
 
 /-! ## Growth -/
 
+/-- Normalize an explicitly supplied height unit for a centimeter growth axis.
+Unknown units stay unavailable; an unlabelled number is never assumed to be cm. -/
+def heightCmTenths (quantity : Json) : Option Nat :=
+  let code := str quantity "code"
+  let unit := (if code == "" then str quantity "unit" else code).toLower
+  match unit with
+  | "cm" => qtyScaled quantity 1
+  | "m" => qtyScaled quantity 3
+  | "[in_i]" | "in" => (qtyScaled quantity 3).map (fun n => n * 254 / 10000)
+  | _ => none
+
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
 first. -/
 def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
@@ -743,7 +766,7 @@ def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
     | some (w, .lb) => some (dayOf (obsWhen r), w * 4536 / 10000)
     | _ => none
   let hs := (rs.filter fun r => isObservation r && hasCode (field r "code") bodyHeightCode).filterMap
-    fun r => (qtyScaled (field r "valueQuantity") 1).map (dayOf (obsWhen r), ·)
+    fun r => (heightCmTenths (field r "valueQuantity")).map (dayOf (obsWhen r), ·)
   let days := oldestFirst id ((ws.map (·.1) ++ hs.map (·.1)).eraseDups)
   days.map fun d =>
     { date := d, ageMonths := ageMonths dob d
@@ -822,7 +845,7 @@ The ordinary InfoPayload boundary keeps patient/version binding intact. -/
 namespace Ambulatory
 
 /-- A typed appointment row; opening its encounter remains an ordinary UI goto. -/
-structure ScheduleRow where
+structure AmbulatoryScheduleRow where
   time : String
   patient : String
   ageSex : String
@@ -834,7 +857,7 @@ structure ScheduleRow where
   deriving Inhabited
 
 /-- A typed message row, preserving the Task's actual status and received time. -/
-structure MessageRow where
+structure AmbulatoryMessageRow where
   received : String
   patient : String
   subject : String
@@ -863,7 +886,7 @@ def taskFolder (r : Json) : String :=
   else if (code.splitOn "result").length > 1 then "Results" else "Patient Messages"
 
 /-- Project every current-chart appointment on the requested day. -/
-def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List ScheduleRow :=
+def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List AmbulatoryScheduleRow :=
   ((ofType "Appointment" rs).filter fun r =>
     dayOf (str r "start") == ctx.today && (arr r "participant").any fun participant =>
       referenceMatches (str (field participant "actor") "reference") p).map fun r =>
@@ -878,7 +901,7 @@ def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List Schedul
       provider := displayFor "Practitioner/", location := displayFor "Location/" }
 
 /-- The supplied Task list, without guessed unread or completion flags. -/
-def messageRows (rs : List Json) (p : Json) : List MessageRow :=
+def messageRows (rs : List Json) (p : Json) : List AmbulatoryMessageRow :=
   (patientTasks rs p).map fun r =>
     { received := str r "authoredOn", patient := displayName p
       subject := let description := str r "description"
@@ -1214,6 +1237,8 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
     procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
     growth := growthPoints dob rs
+    growthReferenceSex? := if isoDateValid dob && isoDateValid ctx.today && dob ≤ ctx.today
+      then growthReferenceSex p else none
     notes := noteRows rs
     history := historyRows rs
     schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs

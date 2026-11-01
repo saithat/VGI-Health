@@ -13,6 +13,9 @@ function call(command, value) {
   return JSON.parse(result.stdout);
 }
 function nodes(tree) {
+  if (tree.valueSet) return [tree, ...tree.valueSet.children.flatMap(nodes)];
+  if (tree.chartReferences) return [tree, ...tree.chartReferences.children.flatMap(nodes)];
+  if (tree.rowAction) return [tree, ...tree.rowAction.children.flatMap(nodes)];
   if (tree.section) return [tree, ...tree.section.children.flatMap(nodes)];
   if (tree.columns) return [tree, ...tree.columns.children.flatMap(nodes)];
   if (tree.presentation) return [tree, ...tree.presentation.children.flatMap(nodes)];
@@ -37,7 +40,7 @@ for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P
       if (target && !visited.has(target)) { const next = [...path, c.id]; visited.set(target, next); queue.push([target, next]); }
     }
   }
-  for (const screen of program.screens.filter(screen => screen.workflow === workflow)) {
+  for (const screen of program.screens.filter(screen => screen.workflow === workflow || screen.id === 'home')) {
     let state = initial;
     for (const comp of visited.get(screen.id) ?? []) {
       const result = call('step', { ...base, state, event: { click: { comp } } });

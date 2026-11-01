@@ -11,6 +11,12 @@ const root = process.env.EHR_AMB_UI_ROOT;
 const phase = process.env.EHR_AMB_SHOT_PHASE ?? "after";
 const output = "shots/realism/amb";
 function descendants(node: UiNode): UiNode[] {
+  if ("valueSet" in node)
+    return [node, ...node.valueSet.children.flatMap(descendants)];
+  if ("chartReferences" in node)
+    return [node, ...node.chartReferences.children.flatMap(descendants)];
+  if ("rowAction" in node)
+    return [node, ...node.rowAction.children.flatMap(descendants)];
   if ("presentation" in node)
     return [node, ...node.presentation.children.flatMap(descendants)];
   if ("section" in node)

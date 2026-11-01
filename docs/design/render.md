@@ -135,15 +135,16 @@ and semantic T10/T11. `UiTests.lean` has satisfiable Tiny/FHIR instances, a miss
 review program, round trips, and axiom reports. The proof comparator checks these
 statements independently of the solution. D5 belongs to the checker: decidable
 `NavSane spec prog` in NavRules checks the workflow-wide overview labels, group sizes, and orphans.
-That overview diagnostic is not a certificate of the new interactive shell nav.
-Its expanded P1 report still fails the 12-entry limit; no entries
-are truncated. The content/checker integration request is tracked separately.
+The interactive shell navigator uses real goto components; overview coverage
+and interactive button semantics are checked separately. Neither view truncates
+its source entries to meet a size limit.
 
 Field kind strings preserve `identity`, `scan`, and `cosign`. Formulary inputs
 carry `code:<name>|<name>...`, taken directly from Lean's formulary; other coded
 inputs use `code`. This keeps the original entry semantics and choices without
-requiring React to reconstruct domain data. The clinical banner includes allergy
-records/reactions/status and code status from Facts.record's `codeStatus` value,
+requiring React to reconstruct domain data. The clinical banner summarizes
+allergy substances/status; complete reactions remain in allergy lists and
+required reviews. It includes code status from Facts.record's `codeStatus` value,
 or explicit `Not recorded` if unavailable. It never assumes full code.
 
 The program's banner is represented once in the shell. Navigator groups tagged
@@ -168,3 +169,17 @@ are transparent to clinical presence; the original complete info and action
 nodes remain the proof target. A source group tagged `layout.columns` emits
 semantic columns. Browser-only filters, synthetic actions and inferred clinical
 statuses are not part of this drawing contract.
+
+`valueSet` supplies typed code/label choices around an unchanged field. The
+browser sends the chosen code, with the same human/provenance/confirmation
+metadata; unlisted codes require explicit selection when allowed. An explicit
+confirm button remains the single confirmation affordance through transparent
+wrappers. Search text alone does not create captured evidence.
+
+`chartReferences` supplies read-only published curves around the complete growth
+info. WHO 2006 and CDC 2000 samples are generated from their published tables,
+with source hashes in `GrowthStandards.lean`. Lean selects only an explicit
+recorded birth-sex population and applicable supplied measures/ages. Missing or
+conflicting coding does not fall back to administrative gender. Unknown height
+units are not assumed to be centimeters. The painter scales the supplied points;
+it never estimates a patient's percentile or selects a reference population.

@@ -39,6 +39,10 @@ async function render(page: Page, screen: UiScreen) {
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("valueSet" in tree)
+    return [tree, ...tree.valueSet.children.flatMap(nodes)];
+  if ("chartReferences" in tree)
+    return [tree, ...tree.chartReferences.children.flatMap(nodes)];
   if ("rowAction" in tree)
     return [tree, ...tree.rowAction.children.flatMap(nodes)];
   if ("presentation" in tree)

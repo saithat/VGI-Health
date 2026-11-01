@@ -112,5 +112,7 @@
   ["Encounter", "IMP"],
   ["Attending", "Daniel Park, MD"],
   ["Location", "5 West • 512B"],
-  ["Allergies", "Amoxicillin — Hives (active)"],
-  ["Code status", "Full code"]]}
+  ["Allergies", "Amoxicillin"],
+  ["Code status", "Full code"],
+  ["Weight", "Not recorded"],
+  ["Isolation", "Not recorded"]]}

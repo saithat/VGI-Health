@@ -33,14 +33,15 @@ def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "In Bas
 def inbasket : Screen :=
   let s := "w2Inbasket"
   { id := s, title := "In Basket: Results", workflow := "W2"
-    components := frame s ++ [
-      { table s "folders" "inBasketFolders" "In Basket folders" with tag := "present.folderList" },
-      searchC s "basketSearch" "inbasket" "Search In Basket",
-      { table s "items" "inBasketResults" "Results messages" with tag := "present.messages" },
-      clinicalSection s "selected" "Selected result message",
+    components := ambulatoryInBasketShell s nav chart ++ [
+      { table s "folders" "inBasketFolders" "In Basket folders" (parent := some "encounterNavigator") with tag := "present.folderList" },
+      { clinicalSection s "messages" "Results messages" (parent := some "inBasketColumns") with tag := "present.messages" },
+      { searchC s "basketSearch" "inbasket" "Search In Basket" with parent? := some (cid s "messages") },
+      { table s "items" "inBasketResults" "Results" (parent := some "messages") with tag := "present.messages" },
+      clinicalSection s "selected" "Selected result message" (parent := some "messages"),
       panel s "preview" "messagePreview" "Message details" (parent := some "selected"),
-      goto s "openResult" "w2Result" "Review result" (parent := some "selected"),
-      goto s "refills" "w7Queue" "Rx Requests"
+      { goto s "openResult" "w2Result" "Review result" (parent := some "messages") with
+        tag := "present.row|" ++ cid s "items" ++ "|0" }
     ] }
 
 /-- The result: detail and trend on screen, the decision, an optional follow-up

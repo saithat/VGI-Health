@@ -777,3 +777,152 @@ describe("semantic EHR painter", () => {
     );
   });
 });
+
+it("shows Lean's code labels and sends only the selected source code", () => {
+  const emit = vi.fn();
+  paint(
+    [
+      {
+        valueSet: {
+          options: [
+            { code: "PO", label: "Oral (PO)" },
+            { code: "IV", label: "Intravenous (IV)" },
+          ],
+          allowCustom: true,
+          children: [
+            { field: { ...field, kind: "code", label: "Route", value: "PO" } },
+          ],
+        },
+      },
+    ],
+    emit,
+  );
+  expect(emit).not.toHaveBeenCalled();
+  const input = screen.getByRole("combobox", { name: "Route" });
+  if (!(input instanceof HTMLInputElement)) throw new Error("Expected a code input");
+  expect(input.value).toBe("Oral (PO)");
+  fireEvent.click(input);
+  fireEvent.click(screen.getByRole("option", { name: "Intravenous (IV)" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: "entry", value: { code: { c: "IV" } } },
+  });
+});
+
+it("requires explicit selection of an unlisted code and preserves a sibling confirmation", () => {
+  const emit = vi.fn();
+  const model: UiNode[] = [
+    {
+      valueSet: {
+        options: [{ code: "I10", label: "I10 — Essential hypertension" }],
+        allowCustom: true,
+        children: [
+          {
+            field: {
+              ...field,
+              kind: "code",
+              label: "Diagnosis",
+              value: "I10",
+              pendingConfirm: true,
+              humanOnly: true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      button: {
+        comp: "entry",
+        label: "Confirm prefilled value",
+        role: "confirm",
+        enabled: true,
+        blockedReason: null,
+        hotkey: null,
+      },
+    },
+  ];
+  paint(model, emit);
+  expect(screen.getAllByRole("button")).toHaveLength(1);
+  const input = screen.getByRole("combobox", { name: "Diagnosis" });
+  fireEvent.click(input);
+  fireEvent.input(input, { target: { value: "Z99.89" } });
+  expect(emit).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("option", { name: "Use code: Z99.89" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: "entry", value: { code: { c: "Z99.89" } } },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Confirm prefilled value" }),
+  );
+  expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: "entry" } });
+});
+
+it("keeps reference populations separate and retains every patient measurement", () => {
+  const references = ["WHO infant reference", "CDC child reference"].flatMap(
+    (source, n) =>
+    ["5th", "50th", "95th"].map((percentile, p) => {
+      const points: [number, number][] = [
+        [n * 240, 300 + p * 100],
+        [n * 240 + 120, 500 + p * 100],
+      ];
+      return ({
+        measure: "Weight",
+        unit: "kg",
+        percentile,
+        source,
+        population: "Boys",
+      points,
+    });
+    }),
+  );
+  const { container } = paint([
+    {
+      chartReferences: {
+        references,
+        children: [
+          {
+            presentation: {
+              kind: "growth",
+              children: [
+                {
+                  info: {
+                    comp: "growth",
+                    label: "Growth measurements",
+                    infoId: "growthChart",
+                    display: "trend",
+                    rows: [
+                      [
+                        ["Date", "Jan 1, 2026"],
+                        ["Age (months)", "0"],
+                        ["Weight (kg)", "3.6"],
+                      ],
+                      [
+                        ["Date", "Jan 1, 2027"],
+                        ["Age (months)", "12"],
+                        ["Weight (kg)", "6.0"],
+                      ],
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  expect(container.querySelectorAll(".chart-reference")).toHaveLength(6);
+  expect(container.querySelectorAll(".chart-reference-band")).toHaveLength(2);
+  expect(container.querySelectorAll(".chart-patient-point")).toHaveLength(2);
+  expect(
+    screen.getByRole("table", { name: "Growth measurements" }).textContent,
+  ).toContain("3.6");
+  expect(
+    screen.getByRole("table", { name: "Growth measurements" }).textContent,
+  ).toContain("6.0");
+  expect(
+    container.querySelector(".presentation-chart-source")?.textContent,
+  ).toContain("WHO infant reference · Boys");
+  expect(
+    container.querySelector(".presentation-chart-source")?.textContent,
+  ).toContain("CDC child reference · Boys");
+});

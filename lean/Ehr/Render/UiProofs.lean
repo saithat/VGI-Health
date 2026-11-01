@@ -9,6 +9,19 @@ namespace Ehr.Render
     uiAtoms (uiWrapInfo kind node) = uiAtoms node := by
   cases kind <;> simp [uiWrapInfo, uiAtoms, uiAtomsList]
 
+/-- Code labels neither hide a field nor add a clinical action. -/
+@[simp] theorem uiWrapFieldChoices_atoms (cx element node) :
+    uiAtoms (uiWrapFieldChoices cx element node) = uiAtoms node := by
+  unfold uiWrapFieldChoices
+  split <;> simp [uiAtoms, uiAtomsList]
+  split <;> simp [uiAtoms, uiAtomsList]
+
+/-- Published curves leave every original clinical record and control present. -/
+@[simp] theorem uiWrapGrowthReferences_atoms (cx kind info node) :
+    uiAtoms (uiWrapGrowthReferences cx kind info node) = uiAtoms node := by
+  unfold uiWrapGrowthReferences
+  split <;> simp [uiAtoms, uiAtomsList]
+
 /-- Row placement preserves the complete original semantic action. -/
 @[simp] theorem uiWrapRow_atoms (tag node) :
     uiAtoms (uiWrapRow tag node) = uiAtoms node := by

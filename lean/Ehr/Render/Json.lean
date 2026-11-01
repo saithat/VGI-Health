@@ -19,7 +19,7 @@ wire form (`Html.toPage`) first.
 namespace Ehr.Render
 
 deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
-  UiPresentationKind, UiNode, UiScreen
+  UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
