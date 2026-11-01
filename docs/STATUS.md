@@ -347,7 +347,7 @@ desktop/mobile dashboard smoke and a production static/offline smoke.
 ### Agent loop
 
 1. **Screen-check failure fallbacks.** If migration passes `ehr check` but fails
-   screen-check, continue to canonical-plus-customizations fallback. If a
+   screen-check, continue to the exact certified persona canonical fallback. If a
    surfaced feature fails screen-check, recertify the unchanged program.
 2. **Optional repair policy (owner).** Decide whether failing screens should
    feed back into the repair loop like checker counterexamples; this was not
@@ -379,7 +379,7 @@ desktop/mobile dashboard smoke and a production static/offline smoke.
    exist; finish wiring the recorded real run as the keyless demo default.
    Current dashboard selection falls back to labeled mock examples.
 9. **Owner design review.** Review release-only nights; acceptance thresholds;
-   the 50% predicted-saving threshold; night+2 test measurement; user-revert
+   the 50% predicted-saving threshold; next blind even-day actual measurement; user-revert
    probability/timing; and min-clicks aggregation (exact policies below).
 10. **Integrity and scale follow-ups.** Codex's read-only empty-directory
     sandbox can still read guessed absolute paths; train-only prompts are the
@@ -429,7 +429,7 @@ and determinism checks below when upstream types or formulary values change.
 | Nightly loop | `src/night.ts` | All 9 steps of BRIEF §9 (listed below). |
 | Modes | `src/modes.ts` | `surface-feature` (v2), `migrate` (v3), `try-to-break-it`. |
 | Tempting bad proposals | `src/seeded.ts` | Allergy list moved into an unopened tab, patient-ID re-entry pre-filled, weight pre-filled from a pound source. Built generically from program structure. One is injected per night only while that kind has not yet been rejected in the run (`--seed-policy until-each-rejected`, the default; also `every-night` and `none`). Injected candidates are labeled `seeded: true`. They are never eligible for deployment. If one ever passes the checker, the record is flagged `OWNER REVIEW`. |
-| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v2 day (Day 4), migrate before the v3 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, a test measurement is added from day night+2. |
+| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v2 day (Day 4), migrate before the v3 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, accepted versions are matched to their next actual blind even-day measurement; superseded versions remain explicitly unmeasured. |
 | Re-run one night | `src/adhoc.ts` | Rebuilds a night's state from a run directory and re-runs it into `<run>/adhoc/…`. For live demos. |
 | Tests | `test/*.test.ts` (31 tests, vitest, `EHR_FAKE=1`) | One fake night per persona gives a valid record (via the replay backend). Rejected candidates are logged with counterexamples. No validation or test data appears in any captured prompt. Also covered: release modes, try-to-break-it, the adapter contract (stub binary), validators against Lean samples, and JSON Patch. |
 
@@ -439,13 +439,13 @@ and determinism checks below when upstream types or formulary values change.
 4. **Pre-screen.** `ehr check` on each candidate. Passing candidates also get `ehr simulate` on the last 2 train days, old versus new program.
 5. **Choose.** The LLM picks one candidate or a set with no overlapping patches, and gives a rationale against the alternatives. If its answer is unusable, the loop falls back deterministically.
 6. **Certify** the merged program. On failure, the counterexample goes back to the LLM, up to 3 repairs, and every attempt is logged.
-7. **Validate.** Day d+1 is replayed on the old and new versions through an opaque `Holdout`.
+7. **Validate.** Replay a held-out task partition of the most recent PAST odd calibration day with an independent seed through `Holdout`. Odd days 1/3/5/7/9 calibrate; even days 2/4/6/8/10 are blind headline measurements and never select changes. Require full validation completion and no completion regression.
 8. **Simulated user response.**
 9. **Record and deploy** with `ehr deploy`.
 
 #### Release modes (`src/modes.ts`)
 - **`surface-feature` (v2).** Re-checks the program against v2. The LLM decides, from this persona's own traces, whether and where to surface the panel. Candidates are checked, validated, and deployed. If the panel is not surfaced, the unchanged program is recertified under v2.
-- **`migrate` (v3).** Re-checks against v3. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is canonical v3 plus each earlier customization that still applies and passes; the user is flagged.
+- **`migrate` (v3).** Re-checks against v3. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is the exact certified v3 persona canonical; the user is flagged. This also applies when deployment or screen infrastructure fails. If canonical check/validation/screen/deploy fails, abort loudly.
 - **`try-to-break-it`.** The LLM implements a free-text request as one candidate. The loop runs check and returns the verdict and counterexample. Nothing is deployed.
 
 #### Decision record fields
@@ -521,15 +521,15 @@ outcome `screen-check-failed`.
    - Surface-feature: accept unless the day gets more than 5% slower.
    - Migration: gated on the certificate only. The validation replay is recorded but not gating, because conformance is mandatory.
 3. **"Prediction held"** means the measured validation KLM saving is at least 50% of the predicted one.
-4. **Test measurement** uses day night+2 only, replayed on the old and new versions. Its busy/quiet label is recorded; reporting per load is left to the dashboard (`summary.json` has per-day load and metrics).
+4. **Test measurement** uses the next actual blind even day on which the accepted version was measured. Superseded/out-of-window versions are explicitly unmeasured; night 9 is measured on day 10. Reports show each day’s task/completion count and compare both the active-release persona canonical and the deterministic no-agent recertify/fallback fork, with identical schedules and seeds. Agent-only savings use the no-agent arm; canonical differences include vendor/fork drift.
 5. **Simulated user revert** happens at night step 8, before deploy. Probability = min(0.3, 0.05 + 0.03 × components moved), seeded per (world seed, night, persona).
 6. **Min clicks** are reported as the per-workflow mean over the last train day's tasks, for workflows whose minimum changed.
 
 ### Integration pitfalls
 
 - **Lean `Option` fields are omitted keys** (`parent?`, `hotkey?`, `copyOf?`, `linkedFrom?`, `waivedBy?`, …), never `null` in output. A JSON-Patch `replace` on an absent key fails, as RFC 6902 requires. Use `add`. The system prompt tells the LLM this.
-- **Patch selectors** `[id=…]` / `[tag=…]` (and `+` for "after") resolve just before each op. The stored patch keeps selectors, so it stays portable across versions; migration fallback re-applies history patches onto the new canonical program.
-- **Integrity.** Prompts are built only in `src/prompts.ts`, from train-only inputs. Day d+1 is reachable only through `Holdout.validate`, which returns aggregates to the loop. Do not pass DayResults of later days, or validation/test metrics, into history or prompts. The test in `test/night.test.ts` injects `LEAKCHECK-day-N` markers and will catch it.
+- **Patch selectors** `[id=…]` / `[tag=…]` (and `+` for "after") resolve just before each op. The stored patch keeps selectors, so it stays portable across versions; migration fallback uses the exact new certified persona canonical without replaying customization patches.
+- **Integrity.** Prompts are built only in `src/prompts.ts`, from train-only inputs. The held-out partition of past odd days is reachable only through `Holdout.validate`; even-day schedules/results never enter selection prompts. Do not pass DayResults of later days, or validation/test metrics, into history or prompts. The test in `test/night.test.ts` injects `LEAKCHECK-day-N` markers and will catch it.
 - **Determinism.** Seeds derive from the world seed (simulate: `seed*1000+day`; user revert: hash of world seed, night, persona), not the run id, so replay runs reproduce decisions exactly. Recorded prompts are compared byte for byte (`promptMatched`). Do not put timestamps or run ids in prompts.
 - **Claude.** Opus 5.5 cannot disable thinking and rejects forced `tool_choice`. The backend uses `output_config.format` (JSON schema), `thinking: {type:'adaptive'}`, effort `high`, and `fallbacks:'default'` with beta `server-side-fallback-2026-07-01`, via `client.beta.messages.stream(...).finalMessage()`. Patch values travel as `valueJson` strings, because strict schemas cannot express arbitrary JSON.
 - **Codex** runs from an empty temp dir with `--sandbox read-only --ephemeral`, so it does not start inside the repo, where later days' traces live.

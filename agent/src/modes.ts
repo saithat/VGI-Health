@@ -19,7 +19,7 @@ import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './p
 import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
 import {
-  MAX_REPAIRS, completionOk, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
+  InfrastructureError, MAX_REPAIRS, completionOk, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
@@ -76,7 +76,7 @@ async function deployInto(deps: LoopDeps, rec: DecisionRecord, persona: string, 
 }
 
 /** Outcome when deployInto returned false: a screen-check failure is distinguished from a refused deploy. */
-const failOutcome = (rec: DecisionRecord): DecisionRecord['outcome'] => (rec.screenCheck?.status === 'fail' ? 'screen-check-failed' : 'certification-failed');
+const failOutcome = (rec: DecisionRecord): DecisionRecord['outcome'] => (rec.screenCheck?.status === 'error' ? 'error' : rec.screenCheck?.status === 'fail' ? 'screen-check-failed' : 'certification-failed');
 
 // ---------------------------------------------------------------- surface-feature (v2)
 export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput): Promise<NightResult> {
@@ -206,9 +206,9 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
     } catch (error) { failure = error; }
     if (outcome === 'migration-fallback') {
       rec.flags.push(`ABORT: certified canonical fallback failed: ${errorMessage(failure)}`);
-      rec.outcome = 'certification-failed';
+      rec.outcome = rec.screenCheck?.status==='error'?'error':rec.flags.some(f=>f.startsWith('infrastructure-error'))?'infrastructure-error':'certification-failed';
       await finishRecord(deps, rec, calls, null);
-      throw new Error(`ABORT ${persona.id} ${next.id}: canonical fallback failed: ${errorMessage(failure)}`);
+      throw new InfrastructureError(`ABORT ${persona.id} ${next.id}: canonical fallback failed: ${errorMessage(failure)}`);
     }
     rec.flags.push(`Release deployment failed; falling back to certified persona canonical: ${errorMessage(failure)}`);
     if (rec.release) { rec.release.fallback = true; rec.release.flaggedUser = true; }

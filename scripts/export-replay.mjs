@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {RELEASE_IDS} from './release-config.mjs';
+import {historicalRunIds} from './historical-releases.mjs';
 // Same task and patient on v0 and final; all clinical projections come from Lean.
 import { readFile, writeFile, readdir, mkdtemp, rm } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
@@ -11,7 +13,9 @@ const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const manifest = await read(join(dir, 'manifest.json'));
 const scratch = await mkdtemp(join(tmpdir(), 'replay-'));
 function command(binary, args, options = {}) {
-  const r = spawnSync(binary, args, { cwd: root, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024, ...options });
+  const command=binary==='lake'?'bash':binary;
+  const argv=binary==='lake'?['-c','ulimit -v 8000000; LEAN_NUM_THREADS=6 exec lake "$@"','lake',...args]:args;
+  const r = spawnSync(command, argv, { cwd: root, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024, ...options });
   if (r.status !== 0) throw new Error(`${binary} ${args.join(' ')}: ${r.stderr}`);
   return JSON.parse(r.stdout);
 }
@@ -36,7 +40,8 @@ try {
     await writeFile(input, JSON.stringify({ ...schedule, tasks: [{ ...original, choices: episode.choices }] }));
     const versions = (await readdir(join(dir, 'programs', persona))).filter(f => /^v\d+\.json$/.test(f)).sort((a,b) => Number(a.slice(1,-5))-Number(b.slice(1,-5)));
     const programs = await Promise.all(versions.map(file => read(join(dir, 'programs', persona, file))));
-    const specs = ['v1', 'v1.1', 'v2'];
+    const specs = Object.values(RELEASE_IDS);
+    if(historicalRunIds.has(runId))throw new Error('Archived replay contracts are immutable; do not regenerate them with current releases');
     for (const program of programs) for (const specVersion of [program.specVersion, ...specs.filter(version => version !== program.specVersion)]) contexts.push({ persona, version: program.version, specVersion, spec: await read(join(root, 'releases', specVersion, 'spec.json')), bundle: projection, user: { id: program.owner, role: program.role } });
     const sides = [];
     for (const file of [versions[0], versions.at(-1)]) {

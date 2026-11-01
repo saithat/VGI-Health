@@ -136,7 +136,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!el) continue;
       const es = elementSpec(spec, el);
       if ((isHumanOnly(es) || es?.prefill === 'never') && prefillOf(comp) !== 'none') {
-        return violation('HumanOnlyKept', `${es?.label ?? el} (${comp.id}) is pre-filled, but it must be entered by a human every time`,
+        return violation('HumanOnlyKept', `field ${comp.id} on screen ${s.id} prefills ${el}, which a human must enter every time (${es?.label ?? el})`,
           [...pathTo(s.id), { confirm: { comp: comp.id } }, ...commitClicks(s)], [s.id]);
       }
     }
@@ -165,7 +165,7 @@ export function fakeCheck(i: CheckInput): Verdict {
       if (!es || !isRecord(es.kind) || !('quantity' in es.kind)) continue;
       const pf = JSON.stringify(prefillOf(comp));
       if (/lb/i.test(pf)) {
-        return violation('UnitsRight', `${es.label} (${comp.id}) can be filled from a pound value (${pf}); weight must be kg`,
+        return violation('UnitsRight', `field ${comp.id} on screen ${s.id} fills ${el} from record value triageWeightLb, a bare number with no unit or date; weight must be kg (${es.label}; ${pf})`,
           [...pathTo(s.id), { confirm: { comp: comp.id } }, ...commitClicks(s)], [s.id]);
       }
     }
@@ -196,7 +196,7 @@ export function fakeCheck(i: CheckInput): Verdict {
           (x.visibility === 'always' || r.mode !== 'shownOnCommit'));
         if (!shown) {
           const label = spec.infos.find((x) => x.id === r.info)?.label ?? r.info;
-          return violation('ReviewsBeforeCommit', `${label} is not shown on ${s.title} before "${cm}" (collapsed, in an unopened tab, tiny, or missing)`,
+          return violation('ReviewsBeforeCommit', `${r.info} is not shown on ${s.title} (${label}) before "${cm}" (collapsed, in an unopened tab, tiny, or missing)`,
             [...pathTo(s.id), { click: { comp: btn.id } }], [s.id]);
         }
       }

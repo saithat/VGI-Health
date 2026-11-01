@@ -1,3 +1,5 @@
+import {InfrastructureError} from './night.js';
+import {noAgentDay} from './no-agent.js';
 import { assertCertified } from './certification.js';
 import { runFingerprints } from './fingerprints.js';
 import { calibrationDay, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
@@ -67,6 +69,7 @@ export interface RunSummary {
   runId: string;
   dir: string;
   timelines: PersonaTimeline[];
+  screenFailures: {night:number;persona:string;message:string}[];
   rejections: { night: number; persona: string; candidate: string; seeded: boolean; property: string | null; message: string | null }[];
   seededRejectedKinds: string[];
   invalidPatches: {persona:string;night:number;candidate:string}[];
@@ -142,6 +145,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     status: 'initializing', fingerprints, measurementProtocol,
     mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
+    noAgentRequired:true,
     buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
@@ -179,6 +183,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
 
+  try {
   // Day-1 programs: the canonical program personalized per user (version 0), deployed with a certificate.
   const views = new Map<string, PersonaView>();
   const programs = new Map<string, Map<number, Program>>();
@@ -192,6 +197,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
     if (opts.resume && existsSync(path.join(dir, 'programs', id, 'deployed.json'))) {
+      await store.recover(id,true);
       const versions = new Map<number, Program>();
       for (const file of await readdir(path.join(dir, 'programs', id))) {
         if (!/^v\d+\.json$/.test(file)) continue;
@@ -205,7 +211,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const initialRelease = await releaseForPersona(inForce, id);
       const v0 = personalize(initialRelease.canonical, params, view.userId);
       const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: initialRelease.canonical, nextVersion: 0 });
-      if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
+      if (!dep.ok) throw new InfrastructureError(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
       programs.set(id, new Map([[0, v0]]));
     }
     train.set(id, []);
@@ -215,7 +221,6 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
 
   const failures = new Map<string, number>();
   await writeJson(manifestFile, { ...manifestData, status: 'running' });
-  try {
   for (let day = 1; day <= opts.days; day++) {
     // Login -> shift -> logout.
     for (const [id, view] of views) {
@@ -247,6 +252,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         await writeJson(baselineFile, baseline);
         await writeJson(baselineFile.replace('.json','.program.json'), canonical);
       }
+      await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await world.schedule(calibrationDay(day-1)||1,id)));
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
       timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s, klmSec: m.t / 10 });
       log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${(m.t / 10).toFixed(0)}s`);
@@ -301,6 +307,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (actual.programVersion === r.versionAfter) {
         const baseline = await readJson(path.join(dir, 'baselines', `day-${String(testDay).padStart(2,'0')}`, `${r.persona}.json`), dayResultSchema);
         r.measured.test = replayDay(testDay, 'blind-measurement', baseline, actual);
+        const control=await readJson(path.join(dir,'no-agent','days',`day-${String(testDay).padStart(2,'0')}`,`${r.persona}.json`),dayResultSchema);
+        r.measured.testNoAgent=replayDay(testDay,'blind-measurement-no-agent',control,actual);
       } else r.flags.push(`test-unmeasured: v${r.versionAfter} superseded before blind day ${testDay}`);
     } else r.flags.push(`test-unmeasured: blind day ${testDay} outside this run`);
     await store.writeDecision(r);
@@ -314,20 +322,19 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       ...r.candidates.filter((e) => e.check.status === 'fail').map((e) => ({
         night: r.night, persona: r.persona, candidate: e.candidate.id, seeded: e.candidate.seeded, property: e.check.property, message: e.check.message,
       })),
-      ...r.certification.attempts.filter((a) => a.source === 'screen-check' && a.check.status === 'fail').map((a) => ({
-        night: r.night, persona: r.persona, candidate: a.candidateIds.join('+'), seeded: false, property: a.check.property, message: `${(a.check.screens ?? []).join(', ')}: ${a.check.message ?? ''}`,
-      })),
+
     ]),
+    screenFailures:records.flatMap(r=>r.certification.attempts.filter(a=>a.source==='screen-check'&&a.check.status==='fail').map(a=>({night:r.night,persona:r.persona,message:a.check.message??''}))),
     seededRejectedKinds: [...seedState.rejected],
     invalidPatches: records.flatMap((r)=>r.candidates.filter((c)=>c.check.status==='invalid-patch').map((c)=>({persona:r.persona,night:r.night,candidate:c.candidate.id}))),
-    infrastructureErrors: records.flatMap((r)=>r.screenCheck?.status==='error'?[{persona:r.persona,night:r.night,message:r.screenCheck.message}]:[]),
+    infrastructureErrors: records.flatMap((r)=>(['error','infrastructure-error'].includes(r.outcome)||r.flags.some(f=>f.startsWith('infrastructure-error')))?[{persona:r.persona,night:r.night,message:r.screenCheck?.message??r.flags.join('; ')}]:[]),
     llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
   await writeJson(path.join(dir, 'summary.json'), summary);
-  await writeJson(manifestFile, { ...manifestData, status: summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
+  await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   return summary;
   } catch (error) {
-    await writeJson(manifestFile, { ...manifestData, status: 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
+    await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
     throw error;
   }
 }

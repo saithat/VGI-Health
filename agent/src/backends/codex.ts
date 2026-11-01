@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { confinedArgs, auditTranscript } from './isolation.js';
 /**
  * Codex backend: shells out to
@@ -25,18 +26,33 @@ function configuredModel(): string | null {
   return m?.[1] ?? null;
 }
 
+export function servedModel(stdout:string):string|null {
+  for(const line of stdout.split('\n').filter(Boolean)) {
+    const e=z.object({model:z.string().optional(),response:z.object({model:z.string().optional()}).optional(),session:z.object({model:z.string().optional()}).optional()}).safeParse(JSON.parse(line));
+    if(e.success){const model=e.data.response?.model ?? e.data.session?.model ?? e.data.model;if(model)return model;}
+  }
+  return null;
+}
+export function transcriptFailure(stdout:string):boolean {
+ return stdout.split('\n').filter(Boolean).some(line=>{
+  const e=z.object({type:z.string(),item:z.object({type:z.string()}).optional()}).parse(JSON.parse(line));
+  return ['turn.failed','error'].includes(e.type)||e.item?.type==='error';
+ });
+}
+
 export class CodexLlm implements JsonLlm {
   readonly name = 'codex' as const;
   readonly model: string;
-  private readonly explicitModel: string | null;
+
 
   constructor(opts: { model?: string; binary?: string; timeoutMs?: number; serviceTier?: string; reasoningEffort?: string } = {}) {
     this.serviceTier = opts.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? null;
     this.reasoningEffort = opts.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high';
     if (this.serviceTier !== null && !['fast', 'flex', 'default'].includes(this.serviceTier)) throw new Error('Invalid Codex service tier');
     if (!['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(this.reasoningEffort)) throw new Error('Invalid reasoning effort');
-    this.explicitModel = opts.model ?? process.env['CODEX_MODEL'] ?? null;
-    this.model = this.explicitModel ?? configuredModel() ?? 'codex-default';
+    const model=opts.model ?? process.env['CODEX_MODEL'] ?? configuredModel();
+    if (!model) throw new Error('Codex requires --model, CODEX_MODEL or model in config.toml; refusing an unrecorded CLI default');
+    this.model=model;
     this.binary = opts.binary ?? process.env['CODEX_BIN'] ?? 'codex';
     this.timeoutMs = opts.timeoutMs ?? 20 * 60_000;
   }
@@ -57,7 +73,7 @@ export class CodexLlm implements JsonLlm {
       await writeFile(schemaFile, JSON.stringify(req.schema));
       const args = [
         'exec', '--json', '-c', 'features.shell_tool=false', '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
-        '--skip-git-repo-check', '-C', dir, ...(this.explicitModel ? ['-m', this.explicitModel] : []), '-',
+        '--skip-git-repo-check', '-C', dir, '-m', this.model, '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
       let executable=this.binary;
@@ -67,6 +83,8 @@ export class CodexLlm implements JsonLlm {
       const transcript = await this.run(args, stdin, dir, executable);
       const audit = auditTranscript(transcript.stdout);
       if (audit.status !== 'pass') throw Object.assign(new Error('Codex attempted forbidden tools; request rejected'), { transcript, audit });
+      const servedBy=servedModel(transcript.stdout);
+      if (transcriptFailure(transcript.stdout)) throw Object.assign(new Error('Codex reported a failed turn'),{transcript});
       const text = await readFile(outFile, 'utf8');
       let json: unknown;
       try {
@@ -74,7 +92,7 @@ export class CodexLlm implements JsonLlm {
       } catch {
         throw new Error(`codex backend: last message for ${req.callId} is not JSON`);
       }
-      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier, isolationAudit: audit }, transcript };
+      return { json, backend: 'codex', model: this.model, servedBy, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier, isolationAudit: audit }, transcript };
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

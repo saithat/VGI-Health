@@ -5,6 +5,47 @@ untracked partial `smoke-core` and `smoke-core-world1-blocked` directories were
 removed. Historical run1-P3 clinical records/programs/certificates/transcripts
 were retained; main's historical display aliases remain authoritative.
 
+## Second review follow-up
+
+- Wrapper resume verifies the existing binary/WASM and emitted `appSha256`,
+  excludes copied run JSON, and checks agent source plus screen-gate harness
+  hashes. It does not build or regenerate the manual. A shell-wrapper regression
+  uses REAL native/app/world/fixture fingerprinting and zero model calls.
+- Codex always passes explicit `-m` (CLI/env/config model); missing configuration
+  fails closed. Served-model JSON metadata is recorded when the CLI supplies it.
+  One authorized trivial live probe succeeded via the exact bwrap/read-only /
+  fast/high invocation: configured `gpt-6.1-sol`, 15 output tokens, zero reasoning
+  output tokens, no tool events. CLI 0.166.0 emitted thread.started, turn.started,
+  item.completed(agent_message), turn.completed. It did NOT expose served model;
+  `servedBy` remains null, never inferred. Sanitized captured events live in
+  `agent/test/fixtures/codex-isolated-probe.json`. todo_list and error metadata
+  are accepted by the isolation audit; errors still fail the LLM request.
+  An initial pre-inference Node TLS startup failure required read-only host
+  crypto-policy files; no model request occurred in that failed launch. No
+  simulation LLM runs were made. Official event reference:
+  https://learn.chatgpt.com/docs/non-interactive-mode
+- Each run now records a deterministic no-agent fork under `no-agent/`: v0,
+  no optional surfacing or LLM changes, recheck/recertify at releases, exact
+  canonical fallback on any gate failure, abort if fallback fails. It uses the
+  same schedules/seeds and actual certified deployment/browser gates. Reports
+  show canonical comparisons AND agent-only savings versus this arm, paired on
+  tasks completed in both arms. A no-change fake/replay designer has zero
+  agent-only saving across days 4 and 7 even when vendor canonical cost drifts.
+- Native/build/publication exceptions produce `infrastructure-error`; genuine
+  screen infrastructure produces nightly `error`, distinct from an assertion
+  `screen-check-failed`. Manifest status preserves infrastructure errors even
+  with zero accepted changes. Error records retain the failing deployment stage.
+- Resume removes unpublished staged versions/artifacts after recovering any
+  durable decision. Dashboard version enumeration excludes unpublished staging.
+
+Even nights get no new calibration data; they reuse the preceding odd day.
+Under the standard calendar a night-2 accepted version is superseded by night-3
+release recertification before blind day 4. Its independent test is shown as
+UNMEASURED, not zero or a validation-derived saving. Night 9 uses day 10.
+P5 blind days have only 9–14 tasks; reports list exact day/task/completion counts,
+loads and unmeasured/superseded notes. These are descriptive samples, with no
+claim of equal sample size, statistical significance or ten independent tests.
+
 ## Code ready
 
 - Generated `docs/agent/CAPABILITIES.md` and active persona rule context appear
@@ -40,7 +81,7 @@ were retained; main's historical display aliases remain authoritative.
   and build sidecar stage first; the complete decision is durable BEFORE the
   atomic deploy pointer moves. Resume recovers a durable pending publication.
 - Manifest fingerprints bind the native EHR binary, all release specs, world,
-  app build, WASM and referenced patient fixtures. Resume refuses changed fingerprints, identity/calendar,
+  emitted app hash, WASM, agent source, screen-gate scripts/tests/config and referenced patient fixtures. Run JSON copied into dist is excluded. Resume refuses changed fingerprints, identity/calendar,
   backend/model/personas or seed policy. Rebind never rewrites resume provenance.
 - Codex uses a bwrap filesystem containing only read-only runtime directories,
   TLS/DNS files, and its private request directory, with a private CODEX_HOME
@@ -51,11 +92,11 @@ were retained; main's historical display aliases remain authoritative.
   calls. No unconfined fallback exists. Live backends refuse fake EHR/worlds.
 - `llm-error` is explicit, including release recertification after a model error.
   Three consecutive error nights for a persona abort with a manifest reason.
-  Unsafe-rejected counts include only checker `fail` verdicts; invalid patches
+  Unsafe-rejected counts include only clinical checker `fail` verdicts; screen assertion failures have a separate `screenFailures` list. Invalid patches
   and screen infrastructure errors have separate report fields. Seed/LLM unsafe
-  categories use exact property IDs, never message matching.
-- Current IDs are v1/v2/v3. `agent/src/release-config.ts` owns runtime identities
-  and Lean-module mapping; `world/releases.json` owns the shared calendar:
+  categories require the exact property AND exact element/info identifier from a documented checker message slot. Unknown formats remain unclassified; antibiotic-review or other human-only failures cannot suppress an allergy/identity seed.
+- Current IDs are v1/v2/v3. `scripts/release-config.mjs` owns current identities and Lean-module mapping
+  (re-exported by the agent and used by replay export); `world/releases.json` owns the shared calendar:
   v2 prior authorization on day 4, v3 antibiotic policy on day 7. Archived IDs
   are handled only by the historical alias map. Main's dose/completion fixes
   were merged. Attending co-signatures remain human-only.
@@ -113,11 +154,11 @@ resuming an interrupted run with changed input fingerprints.
 
 ## Verification (zero LLM cost)
 
-- Agent: 73 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
+- Agent: updated tests pass; includes a FAKE and REPLAY eight-day / five-persona run
   crossing releases on days 4 and 7, certification tampering, completion gating
   on all three deploy modes, fallback/abort, transcript isolation, resume hashes,
   durable-decision crash recovery, rebind success/cache/refusal and no edits.
-- App: 175 tests pass; includes matched canonical/blind-day workload and binding
+- App: updated tests pass; includes matched canonical/blind-day workload and binding
   pointer/refusal loading. World: 95 tests pass. Agent/app/world lint and
   typechecks pass. Production app build passes. Default Lean build passes,
   341 jobs, six workers, 8 GB virtual-memory ceiling.
@@ -170,7 +211,8 @@ pnpm --filter agent run-days --days 10 --backend codex \
 
 These options emit `-c service_tier="fast" -c model_reasoning_effort="high"` to
 the confined Codex CLI. Resume only unchanged inputs with the same command plus
-`--resume`. Prepared full-run wrapper: `scripts/run-overnight.sh core-10day`
+`--resume`. The wrapper performs `verify-resume` and never rebuilds on this path,
+including its final static-copy stage; copy run data into static hosting separately. Prepared full-run wrapper: `scripts/run-overnight.sh core-10day`
 (or `scripts/run-overnight.sh core-10day --resume`).
 
 (c) Rebind after building current app/WASM (no browser/server during builds):
