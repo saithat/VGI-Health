@@ -59,7 +59,7 @@ export interface SimulateInput {
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
 export interface DeployInput extends CheckInput { outDir: string }
-export interface RenderInput { specVersion: string; program: Program; fhir: string; outDir: string; ui?: boolean }
+export interface RenderInput { specVersion: string; program: Program; fhir: string; outDir: string; ui?: boolean; workspace?: { schedule: DaySchedule; worldDir: string } }
 export type DeployResult = { deployed: true; certificate: Certificate } | { deployed: false; verdict: Verdict };
 
 export interface EhrClient {
@@ -185,9 +185,9 @@ class CliEhr implements EhrClient {
   }
 
   renderScreens(i: RenderInput): Promise<string[]> {
-    return this.withFiles({ program: i.program, user: { id: i.program.owner, role: i.program.role } }, async (p) => {
+    return this.withFiles({ program: i.program, user: { id: i.program.owner, role: i.program.role }, ...(i.workspace ? { schedule: i.workspace.schedule } : {}) }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
-      const res = await run(this.binary, ['render-screens', ...(i.ui ? ['--ui'] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
+      const res = await run(this.binary, ['render-screens', ...(i.ui ? ['--ui'] : []), ...(i.workspace ? ['--schedule', p['schedule'] ?? '', '--world', i.workspace.worldDir] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir});
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));

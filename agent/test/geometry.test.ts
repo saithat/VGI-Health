@@ -63,3 +63,11 @@ it('records a geometry screen infrastructure error before aborting and never cal
  const manifest=JSON.parse(await readFile(root+'/FAKE/manifest.json','utf8')),record=JSON.parse(await readFile(root+'/FAKE/decisions/night-01/P1.json','utf8'));
  expect(manifest.status).toBe('infrastructure-error');expect(record.outcome).toBe('error');expect(record.flags).toContain('FAKE geometry browser unavailable');
 });
+
+it('uses the measured workspace for the actual day without depending on task naming', () => {
+ const base=atlas.states[0];if(!base)throw new Error('Missing measured fixture');
+ const workspace={...atlas,states:[{...base,sample:'workspace-d01',components:{'workspace.search':{center:{x:720,y:450},reveal:{x:720,y:450},chain:[],offsets:{}}}},{...base,sample:'workspace-d02',components:{'workspace.search':{center:{x:730,y:450},reveal:{x:730,y:450},chain:[],offsets:{}}}}]};
+ const trace=[{task:'custom-name',screen:base.screen,event:{enter:{comp:'workspace.search',value:{text:{s:'MRN'}}}},ops:['point','click']}];
+ expect(pointerTravel(trace,workspace,2)['custom-name']?.mouseTravelPx).toBe(10);
+ expect(pointerTravel(trace,workspace,2)['custom-name']?.missingTargets).toEqual([]);
+});

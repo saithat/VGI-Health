@@ -152,7 +152,7 @@ def selectTaskPatient (ctx : Context) (task : Task) (r : EpisodeResult) : Episod
     | none => none
   if control.isNone then
     let query := ((Workspace.patient? ctx.facts patient).map (·.mrn)).getD ctx.facts.patientId
-    out := emit ctx task out (.search query) ([.point, .click] ++ List.replicate query.length .key)
+    out := emit ctx task out (.enter "workspace.search" (.text query)) ([.point, .click] ++ List.replicate query.length .key)
   let control := (Workspace.openControls ctx.prog ctx.facts out.state).find? fun c =>
     match c.action with | .openPatient id _ => id == patient | _ => false
   match control with

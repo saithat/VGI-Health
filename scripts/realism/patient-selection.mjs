@@ -61,10 +61,13 @@ for(const release of ['v1','v2','v3'])for(const persona of ['P1','P2','P3','P4',
   if(release==='v1'&&persona==='P1'){
     const file=resolve(root,'.cache/content2/no-selection.json');writeFileSync(file,JSON.stringify({...program,patientSelection:false}));
     let rejected=false;try{execFileSync(`${root}/lean/.lake/build/bin/ehr`,['check','--spec',`releases/${release}/spec.json`,'--canonical',`releases/${release}/canonical.json`,'--program',file],{cwd:root,stdio:'pipe'});}catch(error){rejected=true;assert.match(error.stdout.toString(),/patientSelection/);}assert.ok(rejected);
+    const reserved=structuredClone(program);reserved.screens[0].components.find(c=>c.kind==='banner').id='workspace.lookup';
+    writeFileSync(file,JSON.stringify(reserved));rejected=false;
+    try{execFileSync(`${root}/lean/.lake/build/bin/ehr`,['check','--spec',`releases/${release}/spec.json`,'--canonical',`releases/${release}/canonical.json`,'--program',file],{cwd:root,stdio:'pipe'});}catch(error){rejected=true;assert.match(error.stdout.toString(),/workspaceIds/);}assert.ok(rejected);
   }
   if(release==='v1')writeFileSync(resolve(root,`app/shots/realism/content2/patient-selection/${persona}-landing.json`),JSON.stringify(landing));
   cases.push({release,persona,rows:rows.length,rowSelection:true,nameOrMrnLookup:true,foreignFactsHidden:true,identityStillHuman:true});
 }
-const report={cases,comparisons:'facts/init/step/render-ui native and Wasm agree',mismatches:0,removedSelectionRejected:true};
+const report={cases,comparisons:'facts/init/step/render-ui native and Wasm agree',mismatches:0,removedSelectionRejected:true,reservedNamespaceRejected:true};
 writeFileSync(resolve(root,'docs/measurements/content2/patient-selection-parity.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({cases:cases.length,mismatches:0}));

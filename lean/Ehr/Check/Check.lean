@@ -360,7 +360,10 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
     { property := "navigation", passes := decide (NavigationSane prog)
       explain := fun _ => navigationFinding prog },
     { property := "patientSelection", passes := canonical.patientSelection? != some true || prog.patientSelection? == some true
-      explain := fun _ => plain "patientSelection" "Patient selection inside the workspace must be retained" }
+      explain := fun _ => plain "patientSelection" "Patient selection inside the workspace must be retained" },
+    { property := "workspaceIds", passes := prog.patientSelection? != some true ||
+        (allComps prog).all (fun pair => !pair.2.id.startsWith "workspace.")
+      explain := fun _ => plain "workspaceIds" "The workspace action namespace is reserved for patient selection" }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

@@ -73,7 +73,9 @@ describe("offline live UI catalog", () => {
         },
       });
       session.dispatch({
-        click: { comp: `workspace.open|${facts.facts.sourcePatientId}|0` },
+        click: {
+          comp: `workspace.open|${facts.facts.sourcePatientId}|0|lookup`,
+        },
       });
       session.dispatch({ scroll: { screen: "home" } });
       expect(session.getSnapshot().state.patientContext?.bound).toBe(

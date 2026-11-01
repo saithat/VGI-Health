@@ -16,7 +16,7 @@ export function browserGeometry(ehr:EhrClient,bundles:string[]|((input:Parameter
  const provider:GeometryProvider=async input=>{
   const dir=await mkdtemp(path.join(tmpdir(),'geometry-render-'));
   try{
-   const files:string[]=[];for(const [i,bundle]of (typeof bundles==='function'?bundles(input):bundles).entries())files.push(...await ehr.renderScreens({specVersion:input.specVersion,program:input.program,fhir:bundle,ui:true,outDir:path.join(dir,`b${i}`)}));
+   const files:string[]=[];for(const [i,bundle]of (typeof bundles==='function'?bundles(input):bundles).entries())files.push(...await ehr.renderScreens({specVersion:input.specVersion,program:input.program,fhir:bundle,ui:true,outDir:path.join(dir,`b${i}`),...(i===0&&input.schedule&&input.worldDir?{workspace:{schedule:input.schedule,worldDir:input.worldDir}}:{})}));
    const id=++sequence;const response=await new Promise<unknown>((resolve,reject)=>{waiting.set(id,{resolve,reject});child.stdin.write(JSON.stringify({id,files,bundle:compilePresentations(input.program)})+'\n');});
    const data=z.object({error:z.string().optional(),appSha256:z.string().optional(),states:z.array(screenGeometrySchema).optional()}).parse(response);
    if(data.error||!data.states||!data.appSha256)throw new Error(data.error??'No browser geometry');

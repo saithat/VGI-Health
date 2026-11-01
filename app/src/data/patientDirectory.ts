@@ -24,7 +24,7 @@ export function selectedRowSource(
     return undefined;
   const prefix = `workspace.open|${patient}|`;
   if (!event.click.comp.startsWith(prefix)) return undefined;
-  const index = Number(event.click.comp.slice(prefix.length));
+  const index = Number(event.click.comp.slice(prefix.length).split("|")[0]);
   if (!Number.isSafeInteger(index) || index < 0) return undefined;
   const row = directory.activities.find((a) => a.info === context.activity)
     ?.rows[index];

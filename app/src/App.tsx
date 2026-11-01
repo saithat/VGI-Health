@@ -283,24 +283,25 @@ export function App() {
             if (!chosen)
               throw new Error("Patient is not in the offline fixture catalog");
             const raw = await readArtifact(`/${chosen.bundlePath}`);
+            const activityWorkflows: Record<string, string> = {
+              inBasketResults: "W2",
+              inBasketRxRequests: "W7",
+              edTrackBoard: "W3",
+              shiftWorklist: "W4",
+              unitCensus: "W4",
+              orSchedule: "W6",
+              consultList: "W6",
+            };
+            const personaWorkflows: Record<string, string> = {
+              P1: "W1",
+              P2: "W3",
+              P3: "W4",
+              P4: "W5",
+              P5: "W6",
+            };
             const workflow =
-              (
-                {
-                  inBasketResults: "W2",
-                  inBasketRxRequests: "W7",
-                  edTrackBoard: "W3",
-                  shiftWorklist: "W4",
-                  unitCensus: "W4",
-                  orSchedule: "W6",
-                  consultList: "W6",
-                } as Record<string, string>
-              )[selectedContext.activity] ??
-              (
-                { P1: "W1", P2: "W3", P3: "W4", P4: "W5", P5: "W6" } as Record<
-                  string,
-                  string
-                >
-              )[persona];
+              activityWorkflows[selectedContext.activity] ??
+              personaWorkflows[persona];
             const { bundle, worldContext } = await prepareWorldChart(
               raw,
               chosen.bundlePath,

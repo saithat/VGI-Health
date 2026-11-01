@@ -88,7 +88,8 @@ def openControls (p : Program) (f : Facts) (s : State) : List Control :=
   | some target => (rows p f s).zipIdx.filterMap fun (row, index) => do
       let patient ← patient? f row.patient
       pure {
-        id := "workspace.open|" ++ patient.id ++ "|" ++ toString index
+        id := "workspace.open|" ++ patient.id ++ "|" ++ toString index ++ "|" ++
+          (if (s.patientContext?.map (·.query)).getD "" != "" then "lookup" else info)
         label := "Open chart: " ++ patient.name ++ (if patient.mrn == "" then "" else " (MRN " ++ patient.mrn ++ ")")
         action := .openPatient patient.id target, row? := some index }
 

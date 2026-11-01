@@ -253,6 +253,11 @@ function Chart({
       .then(setSavedResource)
       .catch((error: unknown) => setResourceError(errorText(error)));
   }
+  const closeChart = () => {
+    setPanel(false);
+    setError("");
+    onClose();
+  };
   return (
     <>
       <div
@@ -323,27 +328,29 @@ function Chart({
           <Alert color="red">Semantic WASM renderer unavailable</Alert>
         )}
       </div>
-      <div className="live-controls">
-        {!inspecting && (
+      {Boolean(ui?.banner.length) && (
+        <div className="live-controls">
+          {!inspecting && (
+            <Button
+              size="xs"
+              variant="default"
+              loading={pending}
+              title={pending ? "Saving encounter changes" : undefined}
+              onClick={() => setPanel(true)}
+            >
+              Encounter options
+            </Button>
+          )}
           <Button
             size="xs"
-            variant="default"
             loading={pending}
             title={pending ? "Saving encounter changes" : undefined}
-            onClick={() => setPanel(true)}
+            onClick={inspecting ? () => setPanel(true) : closeChart}
           >
-            Encounter options
+            {inspecting ? "Live encounter" : "Close chart"}
           </Button>
-        )}
-        <Button
-          size="xs"
-          loading={pending}
-          title={pending ? "Saving encounter changes" : undefined}
-          onClick={inspecting ? () => setPanel(true) : onClose}
-        >
-          {inspecting ? "Live encounter" : "Close chart"}
-        </Button>
-      </div>
+        </div>
+      )}
       <Drawer
         transitionProps={{ duration: 0 }}
         zIndex={1100}
@@ -389,7 +396,7 @@ function Chart({
               </ul>
             </div>
           )}
-          <Button variant="default" onClick={onClose}>
+          <Button variant="default" onClick={closeChart}>
             Return to worklist
           </Button>
           {inspecting && <a href="/dashboard">Demo / replay dashboard</a>}
@@ -700,7 +707,11 @@ function PatientWorkspaceHome({
       session={loaded.session}
       presentations={loaded.presentations}
       viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
-      onClose={onLogout}
+      onClose={() => {
+        void loaded.session
+          .dispatch({ click: { comp: "workspace.return" } })
+          .catch((error: unknown) => setError(errorText(error)));
+      }}
     />
   );
 }
