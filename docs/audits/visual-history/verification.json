@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "scope": "Display-only colors/density and read-only recorded revision inspection. Patient opening integration pending content/main publication.",
   "build": {
     "revision": "d12339153b15a09802d72e16ac0b57cb2e7c3a1a",

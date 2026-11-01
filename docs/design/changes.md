@@ -293,7 +293,7 @@ Minimal non-core edits: add those six cap values in Ehr/Formulary.lean and
 preserve the optional choices in agent/src/lean-types.ts. No
 property/spec rule or theorem statement changed. Core guards cover heavy-teen
 caps, ordinary ranges, missing weight, typed JSON round trips and service-order
-prior-auth requests without spurious drug alerts. HANDOFF-sim.md is absent on
+prior-auth requests without spurious drug alerts. docs/STATUS.md is absent on
 main at the fetched revision; the orchestrator's explicit requests were used.
 
 ## Core requests: full GenTS render and schedule exports
@@ -616,7 +616,7 @@ statements, GenTS/sample strict TypeScript check, workspace build/lint, agent
 `make wasm-check` and all 255 feature API comparisons pass. App's existing
 catalog-count assertion fails (expects 16 bad programs; main now has 24); its
 other 89 tests pass. That owning-lane repair and all unfinished composite work
-are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.
+are explicit in `STATUS.md`; full composite execution is not claimed.
 ## Render: semantic UI boundary (section 10)
 
 - Added Init-only `UiNode` / `UiScreen` exactly as section 10, with JSON instances

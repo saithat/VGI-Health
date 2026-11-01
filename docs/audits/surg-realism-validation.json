@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "validatedAt": "2026-11-01T13:24:10.979211+00:00",
   "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity, selected encounter context, conservative LOINC display aliases, readable live receipts and patient-search language polish",
   "baselineCommit": "add0d2e",

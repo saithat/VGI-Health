@@ -9,7 +9,7 @@ whole session, including the agent trying to fix it. Earlier instructions had
 already escalated from heartbeats to 12.6 GB RSS to “Do NOT start with a full
 `lake build`.” An unusually literal hard stop.
 
-Evidence: `/home/saithat/Projects/lane-logs/continue-check.log:40–46`
+Evidence: `lane-logs/continue-check.log:40–46` (historical local log, not shipped)
 (read-only local lane log; the quoted diagnosis is at line 46). The restart is
 also recorded in commit [`f58a24e`](https://github.com/saithat/VGI-Health/commit/f58a24ea99107db4ede16fa76b5764ddbf47d1d1),
 “WIP: save work interrupted by machine restart (out of memory).” Whole-program
@@ -28,7 +28,7 @@ Evidence: commit [`37743f8`](https://github.com/saithat/VGI-Health/commit/37743f
 [verification review §4](VERIFICATION.md#4-can-the-hypotheses-actually-hold), and
 [`Sound.lean`](../lean/Ehr/Check/Sound.lean) (`emptySpec`, `emptyProgram`, final
 example). The review also appears in `lane-logs/verify.log:11383–11384` under
-`/home/saithat/Projects/`. This is a valid, deliberately empty witness—not a false
+``. This is a valid, deliberately empty witness—not a false
 Lean theorem. The mistake would be selling it as evidence that a clinician can
 finish a real task. That missing general completion proof is disclosed.
 
