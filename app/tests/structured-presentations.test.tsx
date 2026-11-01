@@ -390,6 +390,10 @@ describe("structured clinical data boundary", () => {
     expect(measurements.textContent).not.toContain("31.177548");
     expect(references.textContent).toContain("31.177548");
     expect(references.textContent).toContain("CDC 2000, girls 2–20 years");
+    const ageLabels = [
+      ...screen.getByRole("img").querySelectorAll('text[y="222"]'),
+    ].map((tick) => tick.textContent);
+    expect(ageLabels).toEqual(["114"]);
   });
   it("labels a single dated observation once without inventing a time range", () => {
     paint([
@@ -406,8 +410,8 @@ describe("structured clinical data boundary", () => {
                 rows: [
                   [
                     ["Measure", "Example"],
-                    ["Value", "5"],
-                    ["Unit", "mg/dL"],
+                    ["Value", "120"],
+                    ["Unit", "g/L"],
                     ["Recorded", "Nov 1, 2026 23:30"],
                   ],
                 ],
@@ -417,7 +421,16 @@ describe("structured clinical data boundary", () => {
         },
       },
     ]);
-    expect(screen.getAllByText("23:30")).toHaveLength(1);
+    const plot = screen.getByRole("img");
+    const clockLabels = [...plot.querySelectorAll("text")]
+      .map((tick) => tick.textContent)
+      .filter((label) => label?.includes("23:30"));
+    expect(clockLabels).toEqual(["Nov 1, 2026 23:30"]);
+    const valueLabels = [
+      ...plot.querySelectorAll('text[text-anchor="end"]'),
+    ].map((tick) => tick.textContent);
+    expect(new Set(valueLabels).size).toBe(valueLabels.length);
+    expect(valueLabels).toContain("120");
     expect(screen.queryByText("Nov 2")).toBeNull();
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {

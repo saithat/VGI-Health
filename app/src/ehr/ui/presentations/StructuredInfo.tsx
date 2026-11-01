@@ -62,6 +62,7 @@ export function RecordTable({
   const columns = [
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
   ];
+  if (columns.length === 0) columns.push("Record");
   return (
     <div className="presentation-table-wrap">
       <table
@@ -72,11 +73,15 @@ export function RecordTable({
         <thead>
           <tr>
             {(columns.length ? columns : ["Record"]).map((key) => (
-              <th key={key} scope="col">
+              <th key={key} scope="col" data-column={key}>
                 {key}
               </th>
             ))}
-            {!!actions?.size && <th scope="col">Actions</th>}
+            {!!actions?.size && (
+              <th scope="col" data-column="Actions">
+                Actions
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>

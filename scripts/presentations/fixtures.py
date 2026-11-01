@@ -25,7 +25,7 @@ def add(kind, **fields):
 def cc(text): return dict(text=text)
 def ref(kind, id, display=None):
     return dict(reference=f'{kind}/{id}', **(dict(display=display) if display else {}))
-def qty(value, unit): return dict(value=value, unit=unit, code=unit, system='http://unitsofmeasure.org')
+def qty(value, unit): return dict(value=value, unit={'Cel':'°C','{score}':'score'}.get(unit,unit), code=unit, system='http://unitsofmeasure.org')
 
 people = [('Morgan', 'Alex', '2017-05-01', 'female'), ('Chen', 'David', '1974-03-22', 'male'),
           ('Patel', 'Anika', '1988-06-18', 'female'), ('Williams', 'James', '1961-12-06', 'male'),
@@ -52,15 +52,25 @@ for code, name, unit, values in [('8867-4','Heart rate','/min',[82,79,76]),('927
     ('8310-5','Temperature','Cel',[37.3,37.1,37.0]),('2708-6','Oxygen saturation','%',[97,98,98]),
     ('72514-3','Pain score','{score}',[6,3,2]),('9187-6','Oral intake','mL',[240,180,240]),('9192-6','Urine output','mL',[350,250,400])]:
     for i, v in enumerate(values):
-        add('Observation', id=f'{code}-{i}', status='final', category=[dict(coding=[dict(code='vital-signs')])], code=dict(text=name,coding=[dict(code=code)]),
+        add('Observation', id=f'{code}-{i}', status='final', category=[dict(coding=[dict(code='exam' if code in ['9187-6','9192-6'] else 'vital-signs')])], code=dict(text=name,coding=[dict(code=code)]),
             valueQuantity=qty(v,unit), effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00')
+for i,(systolic,diastolic) in enumerate([(128,76),(126,74),(124,72)]):
+    add('Observation',id=f'bp-{i}',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Blood pressure',coding=[dict(code='85354-9')]),
+        effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00',component=[dict(code=dict(text='Systolic',coding=[dict(code='8480-6')]),valueQuantity=qty(systolic,'mmHg')),dict(code=dict(text='Diastolic',coding=[dict(code='8462-4')]),valueQuantity=qty(diastolic,'mmHg'))])
+add('Observation',id='adult-weight',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Body weight',coding=[dict(code='29463-7')]),valueQuantity=qty(82.4,'kg'),effectiveDateTime='2026-11-01T06:00:00')
 for i, (date,w,h) in enumerate([('2024-05-01',22.2,120.4),('2024-11-01',23.1,123.2),('2025-05-01',24.7,126.4),('2025-11-01',26.2,129.5),('2026-05-01',28.1,132.7),('2026-11-01',30.4,135.6)]):
     for code, name, value, unit in [('29463-7','Body weight',w,'kg'),('8302-2','Body height',h,'cm')]:
-        add('Observation',id=f'growth-{code}-{i}',status='final',code=dict(text=name,coding=[dict(code=code)]),valueQuantity=qty(value,unit),effectiveDateTime=date+'T08:00:00')
+        add('Observation',id=f'growth-{code}-{i}',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text=name,coding=[dict(code=code)]),valueQuantity=qty(value,unit),effectiveDateTime=date+'T08:00:00')
 for code,name,unit,lo,hi,values in [('6298-4','Potassium','mmol/L',3.5,5.1,[3.3,3.6,4.0]),('718-7','Hemoglobin','g/dL',12,17.5,[11.2,11.5,11.7]),('38483-4','Creatinine','mg/dL',.6,1.3,[1.4,1.2,1.0])]:
     for i,v in enumerate(values):
         add('Observation', id=f'lab-{code}-{i}',status='final',category=[dict(coding=[dict(code='laboratory')])], code=dict(text=name,coding=[dict(code=code)]),
             effectiveDateTime=f'2026-10-{29+i:02}T06:30:00',valueQuantity=qty(v,unit),referenceRange=[dict(low=qty(lo,unit),high=qty(hi,unit))])
+add('Observation',id='lab-hgb-prior-unit',status='final',category=[dict(coding=[dict(code='laboratory')])],code=dict(text='Hemoglobin',coding=[dict(code='718-7')]),
+    effectiveDateTime='2025-11-01T06:30:00',valueQuantity=qty(120,'g/L'),referenceRange=[dict(low=qty(120,'g/L'),high=qty(175,'g/L'))])
+add('Observation',id='lab-culture',status='final',category=[dict(coding=[dict(code='laboratory')])],code=dict(text='Urine culture',coding=[dict(code='630-4')]),
+    effectiveDateTime='2026-10-31T14:20:00',valueString='No growth',referenceRange=[dict(text='No growth')],interpretation=[dict(coding=[dict(code='N')])])
+add('Observation',id='lab-protein',status='final',category=[dict(coding=[dict(code='laboratory')])],code=dict(text='Protein, urine',coding=[dict(code='2888-6')]),
+    effectiveDateTime='2026-10-31T14:20:00',valueQuantity={**qty(5,'mg/dL'),'comparator':'<'},referenceRange=[dict(low=qty(0,'mg/dL'),high=qty(14,'mg/dL'))],interpretation=[dict(coding=[dict(code='N')])])
 for i,(med,dose,unit,route,freq,status,hours,given_hour) in enumerate([
     ('Acetaminophen 500 mg tablet',500,'mg','Oral','Every 6 hours','active',[8,14],8),
     ('Cefazolin 1 g injection',1,'g','Intravenous','Every 8 hours','active',[6,14],6),

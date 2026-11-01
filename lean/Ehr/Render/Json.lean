@@ -22,7 +22,7 @@ deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
   UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
+  BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, LabResultRow, ProblemRow, ImmRow,
   EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, ScheduleRow, BoardRow,
   MarOrderRow, AdministrationRow, ObservationRow, Display
 
@@ -32,7 +32,7 @@ private def readDisplay : Lean.Json → Except String Display := Lean.fromJson?
 instance (priority := 1100) : Lean.FromJson Display where
   fromJson? j := do
     let j := ["notes", "history", "schedule", "board", "marOrders", "administrations",
-      "observations", "labFlags"].foldl (fun j key =>
+      "observations", "labFlags", "labResults"].foldl (fun j key =>
       match j.getObjVal? key with
       | .ok _ => j
       | .error _ => match j with

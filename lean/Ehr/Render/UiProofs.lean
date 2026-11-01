@@ -212,24 +212,23 @@ theorem uiSide_source (cx : Ctx) (n : UiNode) (hn : n ∈ uiAtomsList (uiSide cx
     subst n; trivial
   · split at hn
     · simp at hn
-    rename_i hFocused
-    generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
+    · generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals")] : List (String × String)) = pairs at hn
-    right
-    induction pairs with
-    | nil => simp at hn
-    | cons pair pairs ih =>
-      simp only [List.filterMap_cons] at hn
-      split at hn
-      · exact ih hn
-      · rename_i node heq
-        split at heq
-        · contradiction
-        · cases heq
-          simp [uiAtoms] at hn
-          rcases hn with rfl | hn
-          · trivial
-          · exact ih (by simpa only [List.any_eq_true, Bool.and_eq_true] using hn)
+      right
+      induction pairs with
+      | nil => simp at hn
+      | cons pair pairs ih =>
+        simp only [List.filterMap_cons] at hn
+        split at hn
+        · exact ih hn
+        · rename_i node heq
+          split at heq
+          · contradiction
+          · cases heq
+            simp [uiAtoms] at hn
+            rcases hn with rfl | hn
+            · trivial
+            · exact ih (by simpa only [List.any_eq_true, Bool.and_eq_true] using hn)
 
 /-- Every addressable node on the screen has a shown interpreter witness.
 Only the clinical shell, progress overview and read-only supplements are added. -/

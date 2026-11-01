@@ -121,6 +121,10 @@ def assignedPatientExample : Json := patientWithoutMrn.setObjVal! "generalPracti
 #guard (bannerOf context.today [encounterProviderExample] patientWithoutMrn).pcp == ""
 #guard (bannerOf context.today [primaryCareProviderExample] assignedPatientExample).pcp == "Morgan, Taylor"
 
+/-- Transaction-bundle URNs still resolve an explicitly assigned clinician. -/
+def urnPrimaryCareExample : Json := primaryCareProviderExample.setObjVal! "id" (.str "urn:uuid:assigned-pcp")
+#guard (bannerOf context.today [urnPrimaryCareExample] assignedPatientExample).pcp == "Morgan, Taylor"
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests
@@ -141,6 +145,19 @@ def clinicLab : Json := json r#"{"resourceType":"Observation","id":"urn:uuid:cur
 def clinicPriorLab : Json := (clinicLab.setObjVal! "id" (.str "prior-result")).setObjVal! "effectiveDateTime" (.str "2026-07-31")
 def clinicOtherLab : Json := (clinicLab.setObjVal! "id" (.str "other-result")).setObjVal! "code" (json r#"{"coding":[{"code":"6299-2","display":"Urea nitrogen"}]}"#)
 def clinicResultRecords : List Json := [clinicResult, clinicReport, clinicLab, clinicPriorLab, clinicOtherLab]
+/-- Same-time duplicate observations are distinct records, with their own units. -/
+def clinicDuplicateLab : Json := (clinicLab.setObjVal! "id" (.str "duplicate-result")).setObjVal!
+  "valueQuantity" (json r#"{"value":72,"unit":"mmol/mol"}"#)
+#guard (Ambulatory.resultRows [clinicLab, clinicDuplicateLab]).length == 2
+#guard (Ambulatory.resultRows [clinicDuplicateLab]).any (fun row =>
+  row.lookup "value" == some "72" && row.lookup "unit" == some "mmol/mol")
+
+/-- Censored and component results keep their source value rather than a scalar approximation. -/
+def clinicPanelExample : Json := clinicLab.setObjVal! "component"
+  (json r#"[{"code":{"text":"Urine protein"},"valueQuantity":{"value":5,"comparator":"<","unit":"mg/dL"}}]"#)
+#guard (Ambulatory.resultRows [clinicPanelExample]).length == 2
+#guard (Ambulatory.resultRows [clinicPanelExample]).any (fun row => row.lookup "value" == some "<5")
+
 #guard Ambulatory.selectedResultSources clinicResultRecords clinicPatient == [clinicLab]
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).length == 2
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).all fun row => row.lookup "Test" == some "Hemoglobin A1c"

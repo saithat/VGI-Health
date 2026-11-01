@@ -85,3 +85,16 @@ source or unit boundaries; the browser calculates geometry only.
 Both wrappers are transparent to semantic presence and preserve every ordinary
 child control/info node. Row-placement, button-audit and ARIA traversals recurse
 through them. No D-rule, clinical requirement or theorem statement is changed.
+### Per-observation laboratory data
+
+`Display.labResults : List LabResultRow` adds each recorded result's code, human name, raw value, unit, time, reference text, flag and status. `labs`/`labResults`/`resultTrend` use these complete rows when available; older Display JSON defaults this list to empty and retains the legacy aggregate fallback. Existing clinical Facts extraction and its legacy lab aggregates are unchanged. Components retain their own values/units and the report's time/status. Clinical test codes disambiguate otherwise identical names only when needed; resource IDs and component IDs never become clinical rows.
+
+Quantity comparators and signed, qualitative, integer, boolean, range, ratio, date/time, period and sampled values remain text as appropriate. Source interpretations take precedence. Inferred display flags require an uncensored quantity with a clear normal interval and compatible units; age/population-qualified or ambiguous intervals remain explicit text. The existing demo intervals are used for display only with their known matching unit. React does not calculate flags or convert units. Every report/component survives, including duplicate records; a separate cardinality theorem checks this.
+
+Typed nursing flowsheets show ordinary recorded values compactly and retain nonfinal/corrected status inline. Explicit payload rows are still preserved verbatim. Callers scope observations to the intended flowsheet; the example uses vitals and I&O, while lab history stays in Results. The visual fixtures now use RN, NP, surgeon and physician roles as appropriate and keep the selected ED banner tied to that patient's encounter.
+
+### Overview workspace
+
+A shown component may include the dot-delimited hint `layout.overview` in its tag, for example `layout.overview.present.trackBoard` or `layout.overview.layout.columns`. Lean then omits only its automatic read-only chart-side summaries. Explicit source side panels and controls, the patient banner, clinical alerts and required review supplements remain present under the same D1–D6 statements. This lets department boards, schedules and In Basket use the available workspace without a browser-owned visibility rule. An unshown component cannot activate the hint. Existing programs keep their current layout until they opt in.
+
+Chart tick spacing and coordinate scaling are drawing operations. Numeric axis labels must remain distinct, a single dated result retains its full recorded date/time, and growth age ticks select actual supplied measurement ages. Every original value and published reference point remains in the accompanying tables.

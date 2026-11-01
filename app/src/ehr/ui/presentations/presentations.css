@@ -77,10 +77,30 @@
   font-variant-numeric: tabular-nums;
 }
 .table-schedule th:nth-child(2),
-.table-schedule td:nth-child(2),
-.table-trackBoard th:nth-child(2),
-.table-trackBoard td:nth-child(2) {
+.table-schedule td:nth-child(2) {
   width: 17%;
+}
+.table-trackBoard [data-column="Patient"] {
+  width: 13%;
+}
+.table-trackBoard [data-column="Chief complaint"] {
+  width: 14%;
+}
+.table-trackBoard [data-column="Room"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Age/sex"],
+.table-trackBoard [data-column="Acuity"],
+.table-trackBoard [data-column="Arrival"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Status"] {
+  width: 9%;
+}
+.table-trackBoard th,
+.table-trackBoard td {
+  padding-left: 6px;
+  padding-right: 6px;
 }
 .table-schedule th:nth-child(6),
 .table-schedule td:nth-child(6) {
@@ -128,6 +148,21 @@
 }
 .table-messages[data-columns="6"].with-row-actions th:nth-child(7) {
   width: 15%;
+}
+.table-results [data-column="Test"] {
+  width: 28%;
+}
+.table-results [data-column="Unit"] {
+  width: 9%;
+}
+.table-results [data-column="Flag"] {
+  width: 6%;
+}
+.table-flowsheet [data-column="Measure"] {
+  width: 28%;
+}
+.table-flowsheet [data-column="Unit"] {
+  width: 9%;
 }
 .table-timeGrid th,
 .table-timeGrid td,
@@ -202,7 +237,7 @@
   border-bottom: 0;
 }
 .presentation-folder-name {
-  flex: 1 1 130px;
+  flex: 1 1 88px;
   font-weight: 600;
 }
 .presentation-folder-count {
@@ -481,4 +516,42 @@
   .clinical-columns:has(.presentation-folderList) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* A composed folder/messages view needs one clinical frame, not nested cards. */
+.clinical-section:has(
+  > .clinical-section-body > .clinical-columns .presentation-folderList
+) {
+  border: 0;
+  background: transparent;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-body {
+  padding: 0;
+}
+.clinical-columns:has(.presentation-folderList) > .clinical-section {
+  border: 0;
+  background: transparent;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-body {
+  padding: 0;
 }

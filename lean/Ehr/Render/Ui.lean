@@ -101,7 +101,11 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
     | "vitals" => cx.disp.vitals.map vitalCells
     | "problemList" => cx.disp.problems.map problemCells
-    | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
+    | "labs" | "labResults" | "resultTrend" =>
+      if !cx.disp.labResults.isEmpty then
+        let labels := (cx.disp.labResults.map (fun r => (r.name, r.code))).eraseDups
+        cx.disp.labResults.map (labResultCells labels)
+      else cx.disp.labs.flatMap fun r =>
         [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
          ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
         r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
@@ -391,15 +395,19 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
   it.comp.kind != .banner && !uiNavButton cx it && !uiSideAt cx it.comp.id
 
 
-/-- Fallback summaries are read-only. A program can request a focused workspace
-because its own Chart Review provides the reports. Explicit side components and
-reported home medications are retained; required commit reviews are unaffected. -/
+/-- Only a shown source component can request an overview workspace. -/
+def uiOverview (cx : Ctx) : Bool :=
+  cx.v.items.any (fun it => it.shown && uiOverviewTag it.comp.tag)
+
+/-- Fallback summaries are read-only and are emitted only for information not
+already present in the program's side column. Overview screens omit these
+automatic supplements; every explicit source component remains present. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
-    (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+    (if uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
-    (if cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
+    (if uiOverview cx || cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)

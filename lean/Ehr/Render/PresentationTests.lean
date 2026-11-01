@@ -36,6 +36,12 @@ def observations : Display := { Display.empty with observations :=
 #guard (flowsheetCells observations).length == 2
 #guard ((flowsheetCells observations).headD []).length == 4
 
+/-- Ordinary recorded values stay compact; nonfinal documentation remains explicit. -/
+def correctedObservations : Display := { Display.empty with observations :=
+  [{ measure := "Heart rate", value := "80", unit := "/min", time := "2026-11-01T08:00:00", status := "corrected" }] }
+#guard (flowsheetCells correctedObservations).any (fun row => row.any (·.2 == "80 · corrected"))
+#guard !(flowsheetCells observations).any (fun row => row.any (fun (_, value) => value.endsWith " · final"))
+
 /-- Explicit H/L source flags survive; the painter performs no range comparison. -/
 def low := Tests.json r#"{"valueQuantity":{"value":3.1,"unit":"mmol/L"},"interpretation":[{"coding":[{"code":"L"}]}]}"#
 #guard labFlag low == "L"
@@ -53,6 +59,13 @@ theorem column_presence_example (children : List UiNode) :
 /-- Unrelated source tags keep their existing single-column layout. -/
 def unchangedLayout := uiColumnChildren "rooming" [.text "Chief complaint"]
 #guard match unchangedLayout with | [.text s] => s == "Chief complaint" | _ => false
+
+/-- Overview can compose with a presentation or columns tag without partial matches. -/
+def overviewTagExample := uiOverviewTag "department.layout.overview.present.trackBoard"
+#guard overviewTagExample
+#guard uiOverviewTag "layout.overview.layout.columns"
+#guard !(uiOverviewTag "layout.overviewer.present.trackBoard")
+#guard !(uiOverviewTag "overview")
 
 /-- Only a complete, explicit nonnegative row target selects row placement. -/
 def firstRowTarget := uiRowTarget? "ward.present.row|worklist-records|0"

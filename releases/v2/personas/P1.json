@@ -7,7 +7,7 @@
    "id": "home",
    "components":
    [{"visibility": "always",
-     "tag": "home.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -149,7 +149,7 @@
    "id": "w1Rooming",
    "components":
    [{"visibility": "always",
-     "tag": "w1Rooming.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -572,7 +572,7 @@
    "id": "w1MedRec",
    "components":
    [{"visibility": "always",
-     "tag": "w1MedRec.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -835,7 +835,7 @@
    "id": "w1Hpi",
    "components":
    [{"visibility": "always",
-     "tag": "w1Hpi.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -1117,7 +1117,7 @@
    "id": "w1Exam",
    "components":
    [{"visibility": "always",
-     "tag": "w1Exam.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -1359,7 +1359,7 @@
    "id": "w1Orders",
    "components":
    [{"visibility": "always",
-     "tag": "w1Orders.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -1919,7 +1919,7 @@
    "id": "w1Labs",
    "components":
    [{"visibility": "always",
-     "tag": "w1Labs.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -2230,7 +2230,7 @@
    "id": "w1Verify",
    "components":
    [{"visibility": "always",
-     "tag": "w1Verify.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -2472,7 +2472,7 @@
        "element": "medsToHold"}},
      "id": "w1Sign.preop.medsToHold"},
     {"visibility": "always",
-     "tag": "w1Sign.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -2763,7 +2763,7 @@
    "id": "w1Close",
    "components":
    [{"visibility": "always",
-     "tag": "w1Close.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3031,7 +3031,7 @@
    "id": "w2Inbasket",
    "components":
    [{"visibility": "always",
-     "tag": "w2Inbasket.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3205,7 +3205,7 @@
    "id": "w2Result",
    "components":
    [{"visibility": "always",
-     "tag": "w2Result.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3384,7 +3384,7 @@
    "id": "w2Message",
    "components":
    [{"visibility": "always",
-     "tag": "w2Message.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3558,7 +3558,7 @@
    "id": "w7Queue",
    "components":
    [{"visibility": "always",
-     "tag": "w7Queue.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3724,7 +3724,7 @@
    "id": "w7Review",
    "components":
    [{"visibility": "always",
-     "tag": "w7Review.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",
@@ -3919,7 +3919,7 @@
    "id": "w7Decision",
    "components":
    [{"visibility": "always",
-     "tag": "w7Decision.banner",
+     "tag": "layout.clinicalActivity",
      "tab": 0,
      "size": "normal",
      "label": "Patient banner",

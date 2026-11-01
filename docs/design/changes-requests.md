@@ -2138,3 +2138,5 @@ All three active specs round-trip exactly; agent tests and typecheck pass.
 - The shared shell role/weight/isolation/search follow-up above is integrated.
   The allergy header summarizes all supplied substances/non-active status;
   complete reactions remain in ordinary allergy lists and required reviews.
+
+AMB M05 integration: shared `labResultRowsFor` now also feeds selected-result payloads, preserving duplicate/component/censored records under the existing Task scope. The ambulatory projection section follows the generic lab helpers. Generic reference resolution now accepts the same relative/URN forms as the ambulatory resolver. No Facts calculation or clinical rule changes. `UiScreen.screen` is an optional scroll identity only; ambulatory source banners opt out of the read-only progress strip via `layout.clinicalActivity`.
