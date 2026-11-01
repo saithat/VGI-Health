@@ -13,3 +13,5 @@ Across the existing seven-workflow suite, the before/after totals are identical:
 v1/v2: 239 clicks, 973 keystrokes, 873.1 KLM seconds; v3: 241 clicks,
 983 keystrokes, 881.8 KLM seconds. The new source rows and read-only context
 introduce no additional task steps in that suite.
+
+The final control receipt in `buttons/` covers the live canonical EHR for all five personas, with an explicit eight-observed-state limit per persona. Remaining checkpoints are reported by the harness; this is a sampled control audit, not exhaustive state search. `buttons-app-before-main.json` retains the completed 452-control app-shell sample from source revision `775312e` before the later presentation merge. It is kept separate from the final painter's control counts.

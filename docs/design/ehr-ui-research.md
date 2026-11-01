@@ -1318,6 +1318,8 @@ The standing-order banner reads active code-status/isolation orders for the sele
 
 The shared graph is a separate `FactsInput.worldContext` value. List selection requires the supplied day and persona, and membership bounds each queue. Only matching-patient clinical resources enter the patient chart. A versioned live record takes precedence over its cached department snapshot. Overlays replace or withdraw by source identity before projection; they never form a second medication/allergy list. The original one-patient simulator path and its task resources remain unchanged. No clinical rule, guard or theorem statement is weakened; the additional optional info declarations only name read-only queue views.
 
+The additional `p5-chole-op-note` before/after pair uses an actual cholecystectomy task to check the template mismatch directly.
+
 The common postoperative order set no longer supplies an appendicitis diagnosis. The common operative-note template no longer supplies appendix findings, procedure codes, specimens or outcomes; the surgeon enters actual case documentation. Walkthrough tests now enter those facts explicitly and retain their original signing assertions.
 
 Before/after minimum-search and KLM measurements are recorded in [content2 measurements](../measurements/content2/README.md).

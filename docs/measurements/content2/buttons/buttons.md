@@ -1,12 +1,12 @@
 # Button audit
 
-Generated 2026-11-01T15:27:21.257Z. Preview build; one Chromium worker.
+Generated 2026-11-01T15:36:38.763Z. Preview build; one Chromium worker.
 
 | Scope | Works | Disabled with reason | Dead | Error |
 |---|---:|---:|---:|---:|
 | App baseline | 0 | 0 | 0 | 0 |
-| App final | 389 | 73 | 0 | 0 |
-| Lean final | 333 | 6 | 0 | 0 |
+| App final | 18 | 0 | 0 | 0 |
+| Lean final | 573 | 9 | 0 | 0 |
 
 App coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.
 
@@ -14,458 +14,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 
 | Route / persona / program | Screen | Label | Comp id | Kind / owner | Status | Observed effect |
 |---|---|---|---|---|---|---|
-| /?audit=buttons&inspect=1 · P1 · — | sign-in | P1 · Primary care | — | button / app | works | POST /__dev/persona-password |
-| /?audit=buttons&inspect=1 · P1 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P1 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P1 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P2 · — | sign-in | P2 · Emergency | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
-| /?audit=buttons&inspect=1 · P2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | encounter picker | Admission bed Select a bed for admit4W-02-AED 20ED 18ED 224W-01-AED 05ED 14ED 07ED 08ED 09ED 11Bed 4W-01-ABed 4W-03-ABed 4W-04-ABed 4W-02-ABed 4W-05-ABed 4W-06-ABed 5S-01-A4W-06-A5S-01-A4W-07-AED 01ED 02ED 03ED 04ED 06ED 10ED 12ED 13ED 15ED 16ED 17ED 19ED 214W-03-A4W-04-A4W-05-A4W-08-A4W-09-A4W-10-A4W-11-A | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P2 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
-| /?audit=buttons&inspect=1 · P3 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P3 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P3 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P4 · — | sign-in | P4 · Pediatric NP | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
-| /?audit=buttons&inspect=1 · P4 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P4 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P4 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
-| /?audit=buttons&inspect=1 · P5 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P5 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
-| /?audit=buttons&inspect=1 · RN2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · RN2 · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
-| /?audit=buttons&inspect=1 · baseline · — | worklist | Worklist date | — | input / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | worklist | Open patient | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | worklist | Search patients | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | worklist | Terrance Len Abshire · 1943-12-29 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · baseline · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | VGI HEALTH | — | a / app | works | URL → / |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Live EHR | — | a / app | works | URL → / |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Dashboard | — | a / app | works | URL → /dashboard |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Recorded run | — | select / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Show mock data | — | switch / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3&mock=1 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Change patient ↓ | — | a / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | v1 | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | v2 | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | v3 | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P1 Primary care physician, day 0, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P1 Primary care physician, day 4, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP1.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P2 ED physician, day 0, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P2 ED physician, day 4, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP2.json&persona=P2&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P3 Inpatient RN, day 0, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv0.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P3 Inpatient RN, day 1, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv0.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P4 Pediatric NP, day 0, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP4.json&persona=P4&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P4 Pediatric NP, day 4, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP4.json&persona=P4&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P5 General surgeon, day 0, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | P5 General surgeon, day 4, revision 0, certified; open EHR | — | button / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open this revision | — | button / app | works | URL → /ehr?mode=replay&release=v2&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv4.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Compare with previous revision → | — | a / app | works | URL → /dashboard?run=run1-P3&view=Evolution&persona=P3 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Replay this day’s trajectories → | — | a / app | works | URL → /dashboard?run=run1-P3&view=Trajectories&persona=P3 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Search by name or MRN | — | input / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | All sources | — | button / app | disabled-with-reason | Current patient source |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Synthea | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Synthetic Hospital | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | pediatric | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | allergic | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | anticoagulated | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | surgical | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | ED | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | inpatient | — | button / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Mr. Aaron Bruno Ankunding58 years · male · MRN 47839287 | — | button / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Abdul Bradford Sauer13 years · male · MRN 47466339pediatric | — | button / app | works | URL → /browse?patient=d0fe99e5-c869-b0e2-1379-6ff2293e6704&run=run1-P3 |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open reference | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open reference | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open reference | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fcanonical.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP1.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP1.json&persona=P1&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP2.json&persona=P2&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP2.json&persona=P2&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP3.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP3.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP3.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open rev 7 | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv7.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP4.json&persona=P4&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP4.json&persona=P4&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP4.json&persona=P4&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v2&program=releases%2Fv2%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Bad programs (should be rejected) 33 safety examples | — | summary / app | works | DOM changed |
-| /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Recorded revisions Certified forks and deployment history | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Search by name or MRN | — | input / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | All sources | — | button / app | disabled-with-reason | Current patient source |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Synthea | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Synthetic Hospital | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | pediatric | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | allergic | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | anticoagulated | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | surgical | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ED | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | inpatient | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Abdul Bradford Sauer13 years · male · MRN 47466339pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=d0fe99e5-c869-b0e2-1379-6ff2293e6704 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Abe Bruen11 years · male · MRN 46220082pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=03a74d02-12a9-6ff0-5eb9-c44fff429559 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard?run=run1-P3&view=Evolution&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | VGI HEALTH | — | a / app | works | URL → / |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Recorded run | — | select / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Open EHR | — | a / app | works | URL → /ehr?mode=replay&persona=P3&run=run1-P3; real EHR rendered |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Live EHR | — | a / app | works | URL → / |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | UI browser | — | a / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Evolution | — | button / app | disabled-with-reason | Current dashboard area |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Trajectories | — | button / app | works | URL → /dashboard?run=run1-P3&view=Trajectories&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Releases | — | button / app | works | URL → /dashboard?run=run1-P3&view=Releases&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Try to break it | — | button / app | works | URL → /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | P1 | — | button / app | disabled-with-reason | No recorded versions for this persona |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | P2 | — | button / app | disabled-with-reason | No recorded versions for this persona |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | P3 | — | button / app | disabled-with-reason | Current persona |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | P4 | — | button / app | disabled-with-reason | No recorded versions for this persona |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | P5 | — | button / app | disabled-with-reason | No recorded versions for this persona |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Complexity measure | — | select / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Complexity metric | — | select / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Compare personas | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Chart data and measurement definitions | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMCertificate recorded | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Kept rev 0 · Night 1No change deployedvs previous: 0 clicks / 0s KLMvs baseline: 0 clicks / 0s KLMskipped | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 1Put human allergy review in the home and shift-worklist sidebars.noFalseAlarms | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 1Place administration work before generic chart-reference tabs.noFalseAlarms | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 1Collapse optional chart-reference tabs above the assessment fields.noFalseAlarms | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 1Hide the administration allergy panel only while its review receipt is valid.noFalseAlarms | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 1Declutter "Administer medication": move the allergy list into a secondary tab so the sign button sits higherreviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 1 · Night 2Copy the three common nursing navigation actions beside their patient banners.; Start general chart tabs collapsed on administration and assessment screens.vs previous: 2 clicks / 2.4s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v1 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 2Support early allergy review in the home sidebar and reuse valid receipts during administration.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 2Pre-fill patient-ID re-entry on "Sign orders" from the chart so signing needs one confirm clickhumanOnlyKept | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 2 · Night 3 · v2Optional feature left out of nursing workflowvs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v2 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 3 · Night 4Place the existing shift allergy review immediately below the patient banner.vs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v2 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 4Hide the administration allergy panel only while a valid RN review receipt exists.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 4Pre-fill weight on "Rooming" from the triage weight as entered (lb) instead of re-typing it in kgunits | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 4 · Night 5Render medication review, scans, documentation and the human commit before general navigation and chart context.vs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v2 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 5Hide the administration allergy panel only while a valid RN allergy receipt exists.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 5 · Night 6 · v3R2-3: Show antibiotic indication beside MAR dose details before administration.vs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 6v2: recheck of the previous programreviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 6 · Night 7Place assessment entry and filing immediately after the flowsheet patient banner.vs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 7Use valid RN allergy-review receipts to shorten the administration screen.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 7 · Night 8Display the removable interaction reminder without an immediate popup.vs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMCertified · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 8Hide the administration allergy panel only while a valid RN review receipt exists.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Kept rev 7 · Night 9No change deployedvs previous: 0 clicks / 0s KLMvs baseline: 2 clicks / 2.4s KLMskipped | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 9Hide administration allergies only while a valid nursing review receipt exists.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMCertificate recorded | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | ↳ Rejected · Night 9Hide administration allergies only while a valid nursing review receipt exists.reviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | JSON patch · home.sidebar | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | JSON patch · w4Admin.dose, w4Admin.antibioticIndication, w4Admin.allergies, w4Admin.glucose, w4Admin.coag, w4Admin.prn | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | JSON patch · w4Worklist.work, w4Mar.grid | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | JSON patch · w4Admin.allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Next task event | — | button / app | disabled-with-reason | Use the counterexample path for a rejected proposal |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Replay counterexample | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Next event | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Previous event | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Reset path | — | button / app | disabled-with-reason | Already at the initial state |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Initial state | — | button / app | disabled-with-reason | Current state |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | {"click":{"comp":"home.toolbar.ward"}} | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Replay counterexample | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Next event | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Previous event | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Reset path | — | button / app | disabled-with-reason | Already at the initial state |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Initial state | — | button / app | disabled-with-reason | Current state |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | {"click":{"comp":"home.toolbar.ward"}} | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/run1-P3/decisions/night-09/P3.json |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Reset | — | button / app | disabled-with-reason | Already at the first event |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Step | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Play | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Pause | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Reset | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Replay event | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Compare baseline rev 0 | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Compare baseline rev 0 | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Med rec | w1Rooming.nav.w1MedRec | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | HPI / ROS | w1Rooming.nav.w1Hpi | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Exam / A&P | w1Rooming.nav.w1Exam | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Orders | w1Rooming.nav.w1Orders | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Labs | w1Rooming.nav.w1Labs | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Visit close | w1Rooming.nav.w1Close | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.sidebar | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search chart | w1Rooming.chartSearch | enter / app | disabled-with-reason | Search chart · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Back | w1Rooming.back | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Patient workspace | w1Rooming.home | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Results | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Imaging | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Notes | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Encounters | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Social history | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Family history | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Care gaps | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Immunizations | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Coverage | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.vitalsGroup | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Weight (kg) | w1Rooming.weight | enter / app | disabled-with-reason | Weight (kg) · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Height (cm) | w1Rooming.height | enter / app | disabled-with-reason | Height (cm) · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP systolic | w1Rooming.bpSystolic | enter / app | disabled-with-reason | BP systolic · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP diastolic | w1Rooming.bpDiastolic | enter / app | disabled-with-reason | BP diastolic · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Heart rate | w1Rooming.heartRate | enter / app | disabled-with-reason | Heart rate · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Respiratory rate | w1Rooming.respRate | enter / app | disabled-with-reason | Respiratory rate · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Temperature | w1Rooming.temperature | enter / app | disabled-with-reason | Temperature · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | SpO₂ | w1Rooming.spo2 | enter / app | disabled-with-reason | SpO₂ · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Pain (0–10) | w1Rooming.painScore | enter / app | disabled-with-reason | Pain (0–10) · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Chief complaint | w1Rooming.chiefComplaint | enter / app | disabled-with-reason | Chief complaint · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.intake | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Tobacco use | w1Rooming.tobaccoUse | enter / app | disabled-with-reason | Tobacco use · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Fall in the past year? | w1Rooming.fallRiskScreen | enter / app | disabled-with-reason | Fall in the past year? · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Travel in the past 30 days? | w1Rooming.travelScreen | enter / app | disabled-with-reason | Travel in the past 30 days? · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Advance directive discussed | w1Rooming.advanceDirectiveAsked | enter / app | disabled-with-reason | Advance directive discussed · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Interpreter needed? | w1Rooming.interpreterNeeded | enter / app | disabled-with-reason | Interpreter needed? · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Preferred pharmacy confirmed | w1Rooming.pharmacyConfirmedRooming | enter / app | disabled-with-reason | Preferred pharmacy confirmed · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.phq | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | PHQ-2 score | w1Rooming.depressionScreen | enter / app | disabled-with-reason | PHQ-2 score · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.allergyGroup | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Mark allergies reviewed | w1Rooming.review.allergyList | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Next: medication reconciliation | w1Rooming.next | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-00127/14 clicks · 39/20 keys · 255.1/92.3s KLM · Completed | — | option / app | disabled-with-reason | Current trajectory |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-0246/3 clicks · 10/0 keys · 40.2/10.3s KLM · Completed | — | option / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-03315/9 clicks · 20/11 keys · 69.5/16.1s KLM · Completed | — | option / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Trajectory day | — | select / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search tasks | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search tasks | — | input / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Releases&persona=P3 · P3 · run1-P3 | Releases | Inspect P3 v2 migration | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Releases&persona=P3 · P3 · run1-P3 | Releases | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Releases&persona=P3 · P3 · run1-P3 | Releases | Inspect P3 v3 migration | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Releases&persona=P3 · P3 · run1-P3 | Releases | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 · P3 · run1-P3 | Try to break it | Show recorded verdict | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 · P3 · run1-P3 | Try to break it | Show recorded verdict | — | button / app | disabled-with-reason | Already showing this recorded verdict |
-| /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 · P3 · run1-P3 | Try to break it | Replay counterexample | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 · P3 · run1-P3 | Try to break it | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=run1-P3&view=Try+to+break+it&persona=P3 · P3 · run1-P3 | Try to break it | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | VGI HEALTH | — | a / app | works | URL → / |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Recorded run | — | select / app | works | URL → /dashboard?run=run1-P3&view=Evolution&persona=P3 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Open EHR | — | a / app | works | URL → /ehr?mode=replay&persona=P3&run=mock; real EHR rendered |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Live EHR | — | a / app | works | URL → / |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | UI browser | — | a / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Evolution | — | button / app | disabled-with-reason | Current dashboard area |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Trajectories | — | button / app | disabled-with-reason | No trajectories recorded for this run |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Releases | — | button / app | works | URL → /dashboard?run=mock&view=Releases&persona=P3 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Try to break it | — | button / app | works | URL → /dashboard?run=mock&view=Try+to+break+it&persona=P3 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | P1 | — | button / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P1 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | P2 | — | button / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P2 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | P3 | — | button / app | disabled-with-reason | Current persona |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | P4 | — | button / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P4 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | P5 | — | button / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P5 |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Complexity measure | — | select / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Complexity metric | — | select / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Compare personas | — | input / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Chart data and measurement definitions | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 1 · Night 1Medication passes repeatedly backtrack between the MAR and patient chart.vs previous: Unavailablevs baseline: UnavailableMOCK · v1 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 2 · Night 2Medication passes repeatedly backtrack between the MAR and patient chart.vs previous: Unavailablevs baseline: UnavailableMOCK · v1 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | ↳ Rejected · Night 2Accept weight in poundsunitSafety | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Kept rev 2 · Night 3 · v2Optional feature left out of nursing workflowvs previous: 0 clicks / 0s KLMvs baseline: UnavailableMOCK · v2 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 3 · Night 6 · v3Indication stays visible beside the dose on the MAR.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | ↳ Rejected · Night 6Place indication in collapsed Details drawerreviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | ↳ Rejected · Night 6v2: recheck of the previous programreviewsBeforeCommit | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 4 · Night 8Medication passes repeatedly backtrack between the MAR and patient chart.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Next task event | — | button / app | disabled-with-reason | No more task events recorded for these versions |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | rev 5 · Night 8Rooming already reviewed the allergy list; repeat navigation adds no information.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | JSON patch · work, allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Validation · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Independent test · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | MOCK certificate · v3 | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P1 · P1 · mock | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/mock/decisions/night-08/P1.json |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Next task event | — | button / app | disabled-with-reason | No more task events recorded for these versions |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | rev 4 · Night 8Sepsis orders repeatedly traverse four screens under time pressure.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | JSON patch · work, allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Validation · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Independent test · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | MOCK certificate · v3 | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P2 · P2 · mock | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/mock/decisions/night-08/P2.json |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Next task event | — | button / app | disabled-with-reason | No more task events recorded for these versions |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | rev 4 · Night 8Medication passes repeatedly backtrack between the MAR and patient chart.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | JSON patch · work, allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Validation · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Independent test · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | MOCK certificate · v3 | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P3 · P3 · mock | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/mock/decisions/night-08/P3.json |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Next task event | — | button / app | disabled-with-reason | No more task events recorded for these versions |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | rev 4 · Night 8Weight review and dose entry are separated by repeated navigation.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | JSON patch · work, allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Validation · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Independent test · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | MOCK certificate · v3 | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P4 · P4 · mock | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/mock/decisions/night-08/P4.json |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | rev 0 · BaselineCanonical program—0 clicks / 0s KLMMOCK certificate | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Baseline certificate | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Next task event | — | button / app | disabled-with-reason | No more task events recorded for these versions |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Reset screens | — | button / app | disabled-with-reason | Screens are already reset |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | rev 5 · Night 8The same surgical prophylaxis choices recur between cases.vs previous: Unavailablevs baseline: UnavailableMOCK · v3 | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | All recorded evidence | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | JSON patch · work, allergies | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Validation · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Independent test · before / after counts and % above floor | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | MOCK certificate · v3 | — | summary / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Before / after on screen | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Next task event | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Reset screens | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Close decision record | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Evolution&persona=P5 · P5 · mock | Evolution | Open recorded decision JSON | — | a / app | works | URL → /runs/mock/decisions/night-08/P5.json |
-| /dashboard?run=mock&view=Releases&persona=P3 · P3 · mock | Releases | Inspect P1 v2 migration | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Releases&persona=P3 · P3 · mock | Releases | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Releases&persona=P3 · P3 · mock | Releases | Inspect P5 v3 migration | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Releases&persona=P3 · P3 · mock | Releases | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Try+to+break+it&persona=P3 · P3 · mock | Try to break it | Show recorded verdict | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Try+to+break+it&persona=P3 · P3 · mock | Try to break it | Show recorded verdict | — | button / app | disabled-with-reason | Already showing this recorded verdict |
-| /dashboard?run=mock&view=Try+to+break+it&persona=P3 · P3 · mock | Try to break it | Replay counterexample | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Try+to+break+it&persona=P3 · P3 · mock | Try to break it | Close EHR replay | — | button / app | works | DOM changed |
-| /dashboard?run=mock&view=Try+to+break+it&persona=P3 · P3 · mock | Try to break it | Close decision record | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | In Basket: Rx Requests | home.work.w7Queue | click / {"button":{"action":{"goto":{"screen":"w7Queue"}}}} / lean | works | Lean state changed; result "ok" |
@@ -815,3 +363,254 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P3 · canonical-P3 | w4Handoff | Confirm prefilled value | w4Handoff.handoffBackground | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"handoffBackground"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P3 · canonical-P3 | w4Handoff | Confirm prefilled value | w4Handoff.handoffAssessment | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"handoffAssessment"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P3 · canonical-P3 | w4Handoff | Confirm prefilled value | w4Handoff.handoffRecommendation | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"handoffRecommendation"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | In Basket: Rx Requests | home.work.w7Queue | click / {"button":{"action":{"goto":{"screen":"w7Queue"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Open encounter | home.work.w5Rooming | click / {"button":{"action":{"goto":{"screen":"w5Rooming"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Search chart | w2Inbasket.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Search In Basket | w2Inbasket.basketSearch | enter / {"search":{"scope":"inbasket"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Review result | w2Inbasket.openResult | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Expand section | w2Inbasket.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Encounters | w2Inbasket.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Notes | w2Inbasket.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Results | w2Inbasket.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Medications | w2Inbasket.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Problems | w2Inbasket.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Allergies | w2Inbasket.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Imaging | w2Inbasket.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Back | w2Inbasket.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Patient workspace | w2Inbasket.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Search chart | w7Queue.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Review request | w7Queue.open | click / {"button":{"action":{"goto":{"screen":"w7Review"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Expand section | w7Queue.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Encounters | w7Queue.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Notes | w7Queue.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Results | w7Queue.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Medications | w7Queue.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Problems | w7Queue.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Allergies | w7Queue.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Imaging | w7Queue.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Back | w7Queue.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Growth Charts | w5Rooming.nav.w5Growth | click / {"button":{"action":{"goto":{"screen":"w5Growth"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Visit Note | w5Rooming.nav.w5Note | click / {"button":{"action":{"goto":{"screen":"w5Note"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Orders | w5Rooming.nav.w5Orders | click / {"button":{"action":{"goto":{"screen":"w5Orders"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Immunizations | w5Rooming.nav.w5Immunizations | click / {"button":{"action":{"goto":{"screen":"w5Immunizations"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Sign Visit | w5Rooming.nav.w5Close | click / {"button":{"action":{"goto":{"screen":"w5Close"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Search chart | w5Rooming.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Expand section | w5Rooming.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | View saved record 1 | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Medication 2: continue / stop / modify | w5Rooming.decision1 | enter / {"field":{"slot":{"fixed":{"n":1}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Mark medications reviewed | w5Rooming.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | View saved record 1 | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Encounters | w5Rooming.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Notes | w5Rooming.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Results | w5Rooming.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Medications | w5Rooming.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Problems | w5Rooming.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Allergies | w5Rooming.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Imaging | w5Rooming.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Immunizations | w5Rooming.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Back | w5Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Search chart | w2Result.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Expand section | w2Result.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Clinical action | w2Result.resultAction | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"resultAction"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Follow-up test (LOINC) | w2Result.resultFollowUpOrder | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"resultFollowUpOrder"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Result Note / Message to patient | w2Result.message | click / {"button":{"action":{"goto":{"screen":"w2Message"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Reviewed / Done | w2Result.commit.ackResult | click / {"button":{"action":{"commit":{"commit":"ackResult"}}}} / lean | disabled-with-reason | entry required: Result action |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Encounters | w2Result.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Notes | w2Result.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Results | w2Result.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Medications | w2Result.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Problems | w2Result.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Allergies | w2Result.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Imaging | w2Result.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Back | w2Result.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Search chart | w7Review.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Expand section | w7Review.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Last visit | w7Review.refillTabs | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Labs | w7Review.refillTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Fill history | w7Review.refillTabs | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | View saved record 1 | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Encounters | w7Review.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Notes | w7Review.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Results | w7Review.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Medications | w7Review.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Problems | w7Review.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Allergies | w7Review.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Imaging | w7Review.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Respond to request | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Search chart | w5Growth.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Expand section | w5Growth.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Encounters | w5Growth.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Notes | w5Growth.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Results | w5Growth.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Medications | w5Growth.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Problems | w5Growth.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Allergies | w5Growth.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Imaging | w5Growth.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Immunizations | w5Growth.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Back | w5Growth.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Search chart | w5Note.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Expand section | w5Note.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Well-child note template | w5Note.wellChild | click / {"macro":{"id":"w5WellChildTemplate"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | History from patient / caregiver | w5Note.hpi | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"hpi"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | ROS | w5Note.ros | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Exam findings | w5Note.exam | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Encounter diagnosis (ICD-10-CM) | w5Note.visitDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"visitDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Problem-based assessment and plan | w5Note.assessmentPlan | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Anticipatory guidance | w5Note.anticipatoryGuidance | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"anticipatoryGuidance"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Medical history | w5Note.historyTabs | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Surgical history | w5Note.historyTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Family history | w5Note.historyTabs | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Social history | w5Note.historyTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Expand section | w5Note.historyTabs.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Encounters | w5Note.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Notes | w5Note.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Results | w5Note.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Medications | w5Note.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Problems | w5Note.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Allergies | w5Note.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Imaging | w5Note.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Immunizations | w5Note.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Back | w5Note.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | OR Schedule | home.work.w6Schedule | click / {"button":{"action":{"goto":{"screen":"w6Schedule"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Consults | home.work.w6Consults | click / {"button":{"action":{"goto":{"screen":"w6Consults"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Clinic Schedule | home.work.w1Rooming | click / {"button":{"action":{"goto":{"screen":"w1Rooming"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Open selected case | home.openSelectedCase | click / {"button":{"action":{"goto":{"screen":"w6PreOp"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Consult note | w6Schedule.nav.w6Consult | click / {"button":{"action":{"goto":{"screen":"w6Consult"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Sign Consult | w6Schedule.nav.w6ConsultClose | click / {"button":{"action":{"goto":{"screen":"w6ConsultClose"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Orders | w6Schedule.nav.w6Orders | click / {"button":{"action":{"goto":{"screen":"w6Orders"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Sign Orders | w6Schedule.nav.w6Sign | click / {"button":{"action":{"goto":{"screen":"w6Sign"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Brief Op Note | w6Schedule.nav.w6OpNote | click / {"button":{"action":{"goto":{"screen":"w6OpNote"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Postprocedure Orders | w6Schedule.nav.w6PostOp | click / {"button":{"action":{"goto":{"screen":"w6PostOp"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Rounding | w6Schedule.nav.w6Rounding | click / {"button":{"action":{"goto":{"screen":"w6Rounding"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Discharge | w6Schedule.nav.w6Discharge | click / {"button":{"action":{"goto":{"screen":"w6Discharge"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Search chart | w6Schedule.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Expand section | w6Schedule.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Back | w6Schedule.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Patient workspace | w6Schedule.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Encounters | w6Schedule.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Notes | w6Schedule.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Results | w6Schedule.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Medications | w6Schedule.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Problems | w6Schedule.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Allergies | w6Schedule.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Imaging | w6Schedule.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Surgical history | w6Schedule.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Search chart | w6Consults.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Expand section | w6Consults.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Back | w6Consults.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Encounters | w6Consults.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Notes | w6Consults.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Results | w6Consults.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Medications | w6Consults.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Problems | w6Consults.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Allergies | w6Consults.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Imaging | w6Consults.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Surgical history | w6Consults.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Medications | w1Rooming.nav.w1MedRec | click / {"button":{"action":{"goto":{"screen":"w1MedRec"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | History / ROS | w1Rooming.nav.w1Hpi | click / {"button":{"action":{"goto":{"screen":"w1Hpi"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Exam / Assessment & Plan | w1Rooming.nav.w1Exam | click / {"button":{"action":{"goto":{"screen":"w1Exam"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Orders | w1Rooming.nav.w1Orders | click / {"button":{"action":{"goto":{"screen":"w1Orders"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Lab Orders | w1Rooming.nav.w1Labs | click / {"button":{"action":{"goto":{"screen":"w1Labs"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Sign Visit | w1Rooming.nav.w1Close | click / {"button":{"action":{"goto":{"screen":"w1Close"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Search chart | w1Rooming.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Expand section | w1Rooming.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Pain (0–10) | w1Rooming.painScore | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"painScore"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | View saved record 1 | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Tobacco use | w1Rooming.tobaccoUse | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"tobaccoUse"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Fall in the past year? | w1Rooming.fallRiskScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"fallRiskScreen"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Travel in the past 30 days? | w1Rooming.travelScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"travelScreen"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Advance directive discussed | w1Rooming.advanceDirectiveAsked | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"advanceDirectiveAsked"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Interpreter needed? | w1Rooming.interpreterNeeded | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"interpreterNeeded"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Preferred pharmacy confirmed | w1Rooming.pharmacyConfirmedRooming | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"pharmacyConfirmedRooming"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"depressionScreen"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Encounters | w1Rooming.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Notes | w1Rooming.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Results | w1Rooming.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Medications | w1Rooming.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Problems | w1Rooming.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Allergies | w1Rooming.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Imaging | w1Rooming.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Surgical history | w1Rooming.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Back | w1Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Search chart | w2Inbasket.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Search In Basket | w2Inbasket.basketSearch | enter / {"search":{"scope":"inbasket"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Review result | w2Inbasket.openResult | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Expand section | w2Inbasket.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Encounters | w2Inbasket.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Notes | w2Inbasket.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Results | w2Inbasket.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Medications | w2Inbasket.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Problems | w2Inbasket.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Allergies | w2Inbasket.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Imaging | w2Inbasket.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Back | w2Inbasket.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Add imaging / procedure order | w6PreOp.newServiceOrder | click / {"button":{"action":"newOrderLine"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Kind: imaging / procedure | w6PreOp.orderKind | enter / {"field":{"slot":"current","prefill":"none","element":"orderKind"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Service code | w6PreOp.orderCode | enter / {"field":{"slot":"current","prefill":"none","element":"orderCode"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Request authorization (human entry) | w6PreOp.priorAuthRequest | enter / {"field":{"slot":"current","prefill":"none","element":"priorAuthRequest"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Request service prior authorization | w6PreOp.requestServicePriorAuth | click / {"button":{"action":"requestPriorAuth"}} / lean | disabled-with-reason | no order on this line |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Search chart | w6PreOp.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Expand section | w6PreOp.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Interval history and physical | w6PreOp.hpUpdate | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"hpUpdate"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Signed consent matches procedure and site | w6PreOp.consentVerified | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"consentVerified"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Medication hold / restart plan | w6PreOp.medsToHold | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medsToHold"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Back | w6PreOp.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Encounters | w6PreOp.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Notes | w6PreOp.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Results | w6PreOp.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Medications | w6PreOp.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Problems | w6PreOp.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Allergies | w6PreOp.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Imaging | w6PreOp.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Surgical history | w6PreOp.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Search chart | w6Consult.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Expand section | w6Consult.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | HPI | w6Consult.hpi | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"hpi"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Review of systems | w6Consult.ros | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Physical examination | w6Consult.exam | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Assessment and plan | w6Consult.assessmentPlan | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Diagnosis (ICD-10-CM) | w6Consult.visitDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"visitDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Surgical decision | w6Consult.surgeryDecision | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"surgeryDecision"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Collapse section | w6Consult.homeMeds | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Medication 1: continue / stop / modify | w6Consult.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Medication 2: continue / stop / modify | w6Consult.decision1 | enter / {"field":{"slot":{"fixed":{"n":1}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Back | w6Consult.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Encounters | w6Consult.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Notes | w6Consult.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Results | w6Consult.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Medications | w6Consult.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Problems | w6Consult.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Allergies | w6Consult.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Imaging | w6Consult.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Surgical history | w6Consult.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Search chart | w6ConsultClose.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Expand section | w6ConsultClose.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Billing diagnosis (ICD-10-CM) | w6ConsultClose.claimDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"claimDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Level of service | w6ConsultClose.levelOfService | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"levelOfService"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Follow-up | w6ConsultClose.followUp | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"followUp"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Instructions / NPO plan | w6ConsultClose.patientInstructions | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientInstructions"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Sign consult note | w6ConsultClose.commit.signNote | click / {"button":{"action":{"commit":{"commit":"signNote"}}}} / lean | disabled-with-reason | entry required: Chief complaint |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Back | w6ConsultClose.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Encounters | w6ConsultClose.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Notes | w6ConsultClose.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Results | w6ConsultClose.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Medications | w6ConsultClose.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Problems | w6ConsultClose.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Allergies | w6ConsultClose.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Imaging | w6ConsultClose.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Surgical history | w6ConsultClose.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
