@@ -99,9 +99,6 @@ are compiled #guards, avoiding whole-program kernel reduction in the default.
 `Statements.lean` changes only the role predicate in `commitGuard_iff` to
 `commitRoleOk sp facts user c`; the strengthened equivalence is kernel checked.
 General T1 completion remains the previously recorded unfinished construction.
-Core certification is still blocked for NP pre-op episodes by the preserved
-consent role rule (`np_preop_obstruction`, retained and kernel checked in the
-default build). No safety rule, property domain or role permission was changed.
 Render visual-review follow-up: shell/side/nav presence is covered by T10;
 semantic T11 distinguishes the requested full and compact record projections.
 `D2_workspace_required` additionally proves full rows in workspace for every

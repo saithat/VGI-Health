@@ -3,295 +3,79 @@
   "profile": "core",
   "programs": {
     "releases/v1/personas/P1.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
       "output": "ok"
     },
     "releases/v1/personas/P2.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
       "output": "ok"
     },
     "releases/v1/personas/P3.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
       "output": "ok"
     },
     "releases/v1/personas/P4.json": {
-      "status": "rejected",
+      "status": "certified",
       "sha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
+      "output": "ok"
     },
     "releases/v1/personas/P5.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
       "output": "ok"
     },
     "releases/v1.1/personas/P1.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
       "output": "ok"
     },
     "releases/v1.1/personas/P2.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
       "output": "ok"
     },
     "releases/v1.1/personas/P3.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
       "output": "ok"
     },
     "releases/v1.1/personas/P4.json": {
-      "status": "rejected",
+      "status": "certified",
       "sha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
+      "output": "ok"
     },
     "releases/v1.1/personas/P5.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
       "output": "ok"
     },
     "releases/v2/personas/P1.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
       "output": "ok"
     },
     "releases/v2/personas/P2.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
       "output": "ok"
     },
     "releases/v2/personas/P3.json": {
-      "status": "computed",
+      "status": "certified",
       "sha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
-      "status": "rejected",
+      "status": "certified",
       "sha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v2/personas/P5.json": {
-      "status": "computed",
-      "sha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
       "output": "ok"
     },
-    "releases/v1/canonical.json": {
-      "status": "rejected",
-      "sha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1.1/canonical.json": {
-      "status": "rejected",
-      "sha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v2/canonical.json": {
-      "status": "rejected",
-      "sha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
+    "releases/v2/personas/P5.json": {
+      "status": "certified",
+      "sha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "output": "ok"
     },
     "programs/bad/01-hidden-allergies.json": {
       "status": "rejected",
@@ -805,6 +589,53 @@
           ]
         }
       }
+    },
+    "programs/bad/33-np-preop-macro.json": {
+      "status": "rejected",
+      "sha256": "656da39447a52ada177c503f05dcd4a58be9a9b09fbc97e6b38a49500f979c00",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w6PostOp",
+            "w6Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badNpPreopSign clicks w6Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w6PostOp"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6PostOp.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6Sign.npAutoSign"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v1/canonical.json": {
+      "status": "reference",
+      "sha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
+      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+    },
+    "releases/v1.1/canonical.json": {
+      "status": "reference",
+      "sha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
+      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+    },
+    "releases/v2/canonical.json": {
+      "status": "reference",
+      "sha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
+      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {
       "status": "full-profile only"

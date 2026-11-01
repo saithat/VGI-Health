@@ -35,8 +35,8 @@ listed in [TODO_PROOFS.md](../TODO_PROOFS.md). General checker/interpreter/deplo
 renderer proofs and three Tiny kernel rejection proofs remain in the default.
 Full-profile persona/blueprint checks passed; the heavy proof suite is unfinished.
 
-Default rebuild after the amended Specs/Canonical change: **32.95 s**, peak
-process RSS **1.62 GiB**. The W7 denial proof covers every `TaskChoices` value
+Default rebuild after the encounter-role change and render-lane merge: **27.04 s**, peak
+process RSS **1.63 GiB**. The W7 denial proof covers every `TaskChoices` value
 whose refill choice is `deny`, with only `propext` in its axiom audit.
 `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake exe profile-goals)`
 compares the actual `taskCommits` results across core/full for all **1,284**
@@ -46,21 +46,37 @@ The generated evidence is `lean/Ehr/Check/profile-goals-report.json`.
 `lake comparator` passes with `COMPARATOR_BWRAP=../scripts/lean-bwrap.py`; the
 wrapper retains its sandbox and supplies the six workers and 64 MiB stacks that
 Comparator otherwise clears. `lake check` also passes with that wrapper.
-Generated TS types were regenerated without a diff. `make wasm` rebuilt the
-assets in 3.57 s using the warm cache; `make wasm-check` passes (the runtime asset bytes are unchanged,
-and the regenerated manifest records the new Lean sources).
+Generated TS types include `EncounterRoleRule` and optional `encounterRoles`.
+`make wasm` rebuilt the assets in **7.93 s** using the warm cache;
+`make wasm-check` passes. The runtime includes the new guard and merged renderer.
+App tests pass **153/153**; agent tests pass **32/32**. The pnpm 11 automatic
+pre-run install was disabled with `pnpm_config_verify_deps_before_run=false`
+to use the existing dependencies. The real native/WASM refusal and semantic
+button reason match in all three releases; rerun
+`node lean/Ehr/Check/check-encounter-wasm.mjs` for that integration check.
 
-Certification is **12/15 personas and 0/3 shared templates**, including D5 checks.
-P4 cannot certify: the universal completion domain includes pre-op, but the base
-consent input permits only physicians/surgeons (`np_preop_obstruction`). Shared
-templates declare physician role while retaining nurse-only writes. These are
-reported in the native verdicts, not bypassed. All **16/16 core bad programs**
-fail their expected property with valid navigation replays; 16 catalog seeds are
-full-only. Seed 13 now removes all CURES routes; the old W1-only mutation had a
-valid receipt escape. Run `python lean/Ehr/Check/certify.py --bad-only` for the
-fast differential regression. The full command records all 18 canonicals,
-previous-release comparisons, verdicts and the certification report, returning
-nonzero while certification remains blocked.
+Certification is **15/15 persona baselines**, including D5. The three shared
+`canonical.json` files are vendor masters used as `--canonical` references;
+they mix clinician roles and are recorded as **reference**, not deployable
+single-role programs. Verdicts mark the persona projections **certified**.
+
+Hospital policy (not law), owner decision 2026-10-31: only physicians and
+surgeons sign pre-op orders. The optional `CommitSpec.encounterRoles` rule
+uses the same matcher as `When.encounter`; the guard reports
+"Pre-op orders are signed by a physician or surgeon". The three pre-op entry
+requirements and their entry permissions are unchanged. Completion and depth
+exclude only forbidden role/encounter contexts. `np_preop_never_signs` proves
+refusal for every program, state and event. Named executable P4 clinic,
+P4 pre-op refusal and P5 pre-op success witnesses run in the default build.
+`Statements.lean` changes only `commitGuard_iff`'s role conjunct from `roleOk`
+to `commitRoleOk sp facts user c`; the remaining statements are unchanged.
+
+All **17/17 core bad programs** fail their expected property with valid
+navigation replays, including the NP pre-op macro bypass attempt; 16 catalog
+seeds remain full-only. Run `python lean/Ehr/Check/certify.py --bad-only` for the
+fast differential regression. The full command records the 15 persona checks,
+previous-release comparisons and three master-reference records. Seed 13 still
+removes all CURES routes; the old W1-only mutation had a valid receipt escape.
 
 Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 
@@ -70,6 +86,7 @@ Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 | v1.1 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 | v2 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 
+World 1 contains **15 pre-op tasks, all P5**, and none on day 1; P4 has none.
 The remaining simulator problems are recorded in
 [changes-requests.md](design/changes-requests.md); `Sim/**` was not edited.
 Details and hashes: `lean/Ehr/Check/{certification-report,sim-smoke-report}.json`.

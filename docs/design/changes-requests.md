@@ -1895,17 +1895,17 @@ per-commit guarantee. No old obligation or safety rule has been weakened.
 
 ## CHECK-CORE-2026-10-31: certification and day-1 smoke blockers
 
-The owner-selected core profile is active. No base rule, role permission,
-property or simulator implementation was changed. Native certification accepts
-P1/P2/P3/P5 in v1, v1.1 and v2, but not P4. `consentVerified.enteredBy` is
-`[surgeon, physician]`; `preOpExtraEntries` requires that input for `signOrders`
-in pre-op episodes. Completable quantifies over those episodes for NP too.
-`Check/DomainObstruction.lean` proves this impossibility. Content alone cannot
-supply an authorized NP input. Owner/core must resolve the task/episode domain
-or role model without broadening the safety permission to make a check pass.
-The shared `canonical.json` templates also retain RN-only inputs while declaring
-physician role; a single-role deployable baseline needs an explicit template /
-deployment convention that preserves the nursing persona source.
+The owner-selected core profile is active. The owner resolved the NP pre-op
+blocker on 2026-10-31: only physicians and surgeons perform `signOrders` for a
+pre-op encounter. `CommitSpec.encounterRoles?` encodes this hospital policy.
+The three existing entry requirements and permissions remain unchanged.
+`np_preop_never_signs` proves the guard refuses every NP pre-op signature;
+`entry_relevant_when_allowed` justifies excluding forbidden-context entries
+from depth and completion checks. All 15 persona baselines now certify.
+The three shared canonical masters mix roles and are reference programs, not
+single-role deployable baselines; only their persona projections are certified.
+World 1 has 15 pre-op tasks, all P5, and none on day 1. P4 has no pre-op tasks.
+The named P5 pre-op walkthrough signs after the three required human captures.
 
 Simulator smoke commands used the real native binary, `--spec v1` (also v1.1,
 v2), `--program releases/v1/personas/P1.json`,
