@@ -6,7 +6,7 @@ the rules; Lean rejects shortcuts that remove required safety steps.”
 ## Before the clock starts
 
 Run `make install && make run`. Use **one browser**, one tab, at
-**http://localhost:5173/**. All people and patients are synthetic. No model key
+**http://localhost:5173/?inspect=1**. All people and patients are synthetic. No model key
 is needed for this script: the overnight segment plays a committed **real Codex
 run**, `run1-P3`, not a new model call. The live segment writes to local Medplum.
 
@@ -26,26 +26,9 @@ history, and all the paperwork. Let's actually save a visit.”
    **Aaron** in **Patient search**, click **Search Medplum**, then the Aaron
    Ankunding result. Use **Start new encounter** for a fresh rehearsal; select
    that **in-progress** encounter in **Live encounter**, then **Open EHR**.
-3. In the workflow navigation open **Rooming**. Enter **Weight (kg)** `72`,
-   **BP systolic** `120`, **BP diastolic** `80`, and **Chief complaint**
-   `Hypertension follow-up`. Click **Mark allergies reviewed** →
-   **Next: medication reconciliation**.
-4. Click **Mark medications reviewed**; choose `continue` in **each displayed
-   Medication N: continue / stop / modify** field (all four on this chart).
-   Click **Next: HPI / ROS**. Enter **History of present illness** `BP improving. No adverse effects.` and **Review of
-   systems** `No chest pain or dyspnea.` Click **Next: exam and A&P**.
-5. Enter **Physical exam** `Well appearing. Normal heart and lungs.`,
-   **Assessment and plan** `Continue treatment; check metabolic panel.`, and
-   **Visit diagnosis (ICD-10)** `I10`. Click **Visit close**. Enter **Level of
-   service** `99213` (select the matching dropdown option), **Follow-up**
-   `4 weeks`, and **Patient instructions** `Check home BP daily.` Click
-   **Sign note**. For the **Health maintenance reminder**, click
-   **Acknowledge**, then **Sign note** again. Never narrate a disabled button
-   as a saved note.
-6. Click **Live encounter**. Point to **Saved resources** and the
-   `DocumentReference`, `Observation`, `Condition` or `ChargeItem` links that
-   actually appear. Close with **Close live encounter**. The note and rooming
-   measurements were written to Medplum, not just changed on a slide.
+3. Open a patient with **Open chart:**, then complete the displayed rooming fields and required reviews. Use **Review medications**, then **History / ROS**, then **Exam / Assessment & Plan**. Enter the required medication decisions and clinical narrative on the displayed screens.
+4. Enter **Encounter diagnosis (ICD-10-CM)** `I10`. Open **Sign Visit**. Set **E/M service level** `99213`, **Return in** `4 weeks`, and **After-visit instructions** `Check home BP daily.` Complete any displayed required review or acknowledgement before signing. Never narrate a disabled button as a saved note.
+5. Keep **?inspect=1** in the live URL for the presenter resource view. After **Sign Visit**, point to the notification titled **Medplum** and click **View saved record 1** (or another returned record). To show the persistent receipt, click **Live encounter** and find **Saved resources** with the returned DocumentReference, Observation, Condition and ChargeItem links. Only describe resource types actually returned.
 
 **Say:** “Some friction can go. Reviewing the right patient's information and
 making a human decision still matter.” Filing the note first also persists the
@@ -59,9 +42,8 @@ Navigate to
 1. Point to **P3**, Rosa the inpatient nurse, and the recorded real-run label.
    In **Measure**, use **Exact expert minimum (min-clicks)**; choose **Clicks**
    in **Complexity metric**. The fixed W4 case goes **25 → 23 clicks** from v0
-   to v1 (8% fewer); **39 keystrokes stay 39**. It still requires **13 fields**
-   and **one popup**.
-2. Click **v1 · Night 2** in **Versions and decisions**. Show the evidence,
+   to v1. Describe only metrics visible in the selected view.
+2. Click **rev 1 · Night 2** in **Revisions and decisions**. Show the evidence,
    hypothesis, candidates and choice. Click **Before / after on screen** and
    **Next task event** to compare the real EHR screens. Close **Close EHR
    replay**, then **Close decision record**.
@@ -106,22 +88,11 @@ lean/.lake/build/bin/ehr check --spec releases/v1/spec.json \
 Exit **1** with a violation is the expected success of this rejection demo.
 The UI recorded path above is the timed presentation route.
 
-## 2:55–3:25 · One hospital, five branching histories (intended flow)
+## 2:55–3:25 · One hospital, five branching histories
 
-Open **http://localhost:5173/browse**. Tonight's UI-browser work is intended to
-show a **branching persona timeline**: start at the shared canonical release,
-follow P1–P5 forks, click an accepted version to open that exact program on the
-same synthetic patient, and click a rejected side branch for its reason and
-counterexample. At a vendor-release marker, follow how each persona's fork is
-updated and rechecked before the next login.
+Open **http://localhost:5173/browse**. The branching persona timeline is implemented. Select the recorded run and persona using the visible selectors, then select a revision node to inspect its details and open that exact EHR. Rejected branches show the recorded reason; vendor release markers show rechecks. Name `mock (illustrative)` as an authored illustration whenever used.
 
-**Say:** “The hospital has one set of rules. The nurse and the surgeon can have
-different screens, and you can inspect every fork.” This is the intended click
-flow, **not a claim that the new graph has landed**. Until it does, at `/browse`
-choose **Acting persona** `P3`, **Current program source** `run1-P3`, and open a
-listed version; `/dashboard` already exposes accepted versions and rejected
-rows. Other personas' final overnight histories must use real recordings when
-available; `mock` is an authored illustration and must be named as such.
+**Say:** “The hospital has one set of rules. The nurse and the surgeon can have different screens, and you can inspect every fork.”
 
 ## 3:25–3:55 · Why the verification matters
 

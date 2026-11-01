@@ -34,7 +34,7 @@ const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
-    ? `${value.clicks} clicks · ${value.scrolls} scrolls / ${value.scrollPx??"—"}px · ${value.mouseTravelPx??"—"}px mouse · ${value.keystrokes} keys (secondary)`
+    ? `${value.clicks} clicks · ${value.scrolls} scrolls · ${value.scrollPx === null || value.mouseTravelPx === null ? "pixel metrics not measured for archived runs" : `${value.scrollPx}px scroll · ${value.mouseTravelPx}px mouse`} · ${value.keystrokes} keys (secondary)`
     : "No prediction recorded";
 }
 function Badge({
@@ -337,7 +337,7 @@ function Why({
           {record.evidence.totals.tasks} tasks · {record.evidence.totals.clicks}{" "}
           clicks · {record.evidence.totals.keystrokes} keys ·{" "}
           {record.evidence.totals.scrolls} scrolls ·{" "}
-          {record.evidence.totals.mouseTravelPx??"—"}px mouse travel · {record.evidence.totals.scrollPx??"—"}px scroll. Train
+          {record.evidence.totals.mouseTravelPx == null || record.evidence.totals.scrollPx == null ? "Pixel metrics not measured for archived runs." : `${record.evidence.totals.mouseTravelPx}px mouse travel · ${record.evidence.totals.scrollPx}px scroll.`} Train
           days: {record.evidence.trainDays.join(", ")}.
         </p>
         {record.evidence.complaints.map((c, i) => (
@@ -491,9 +491,7 @@ function BeforeAfter({
   return (
     <div className="dash-review">
       <p>
-        Recorded patient context · real EHR interpreter. Use the controls in
-        either screen, or step through a recorded task for each version. The
-        day’s patient mix may differ.
+        Archived interpreter comparison: each pane uses its own recorded task and may have different patient context. Navigation includes screens from other personas. Next task event advances each available trace independently; a pane with no further recorded events stays still. This is not a synchronized clinical task comparison.
       </p>
       <div className="dash-controls">
         <button
@@ -894,7 +892,7 @@ function VersionList({
     before: ReturnType<typeof exactAt>,
   ) =>
     after && before
-      ? `${fmt(before.total.clicks - after.total.clicks)} clicks / ${before.total.mouseTravelPx!==null&&after.total.mouseTravelPx!==null?fmt(before.total.mouseTravelPx-after.total.mouseTravelPx):'—'}px mouse`
+      ? `${after.total.clicks - before.total.clicks > 0 ? "+" : ""}${fmt(after.total.clicks - before.total.clicks)} clicks${before.total.mouseTravelPx!==null&&after.total.mouseTravelPx!==null ? ` / ${fmt(after.total.mouseTravelPx-before.total.mouseTravelPx)}px mouse` : " · pixel metrics not measured for archived runs"}`
       : "Unavailable";
   return (
     <section className="version-history" aria-label="Version history">
@@ -1200,7 +1198,7 @@ export function Dashboard({
           >
             {index.map((e) => (
               <option key={e.id} value={e.id}>
-                {e.id}
+                {e.id === "mock" ? "mock (illustrative)" : e.id}
               </option>
             ))}
           </select>

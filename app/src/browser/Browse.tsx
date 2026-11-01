@@ -366,6 +366,7 @@ function Timeline({
               </strong>
               {delta ? (
                 <dl>
+                  {(delta.scrollPx === null || delta.mouseTravelPx === null) && <div><dt>Pixel metrics</dt><dd>not measured for archived runs</dd></div>}
                   <div>
                     <dt>Clicks</dt>
                     <dd>
@@ -380,7 +381,7 @@ function Timeline({
                       {delta.scrolls.toFixed(1)}
                     </dd>
                   </div>
-                  <div>
+                  {delta.scrollPx !== null && <div>
                     <dt>Scroll distance</dt>
                     <dd>
                       {delta.scrollPx !== null && delta.scrollPx > 0 ? "+" : ""}
@@ -389,7 +390,7 @@ function Timeline({
                         : delta.scrollPx.toFixed(1)}{" "}
                       px
                     </dd>
-                  </div>
+                  </div>}
                   <div>
                     <dt>Keys (secondary)</dt>
                     <dd>
@@ -397,7 +398,7 @@ function Timeline({
                       {delta.keys.toFixed(1)}
                     </dd>
                   </div>
-                  <div>
+                  {delta.mouseTravelPx !== null && <div>
                     <dt>Mouse travel</dt>
                     <dd>
                       {delta.mouseTravelPx !== null && delta.mouseTravelPx > 0
@@ -408,7 +409,7 @@ function Timeline({
                         : delta.mouseTravelPx.toFixed(1)}{" "}
                       px
                     </dd>
-                  </div>
+                  </div>}
                 </dl>
               ) : (
                 <p className="browser-muted">
@@ -535,7 +536,7 @@ export function Browse() {
                 {visibleRuns.map((run) => (
                   <option key={run.id} value={run.id}>
                     {run.id}
-                    {run.mock ? " · MOCK" : " · real"}
+                    {run.mock ? " · mock (illustrative)" : " · real"}
                   </option>
                 ))}
               </select>
