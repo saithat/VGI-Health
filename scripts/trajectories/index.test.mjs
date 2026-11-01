@@ -19,6 +19,7 @@ test('index schema covers all 424 tasks and exact event slices with complete con
     assert.equal(task.context.programPath, row.programPath);
     assert.equal(task.context.specPath, row.specPath);
     assert.equal(task.context.fixtureFile, row.patient.fixtureFile);
+    assert.deepEqual(task.context.user, row.user);
     assert.equal(task.nativeMismatch, null);
     const day = await read(`runs/run1-P3/days/day-${String(row.day).padStart(2, '0')}/${row.persona}.json`);
     assert.deepEqual(task.trace, day.trace.filter(e => e.task === row.id));
@@ -31,6 +32,9 @@ test('index schema covers all 424 tasks and exact event slices with complete con
   assert.equal(verification.nativeEventsVerified, events);
   assert.equal(verification.wasmEventsVerified, events);
   assert.deepEqual(verification.mismatches, []);
+  assert.equal(verification.baselineTasks, 3);
+  if (verification.baselineWasmEventsVerified !== undefined)
+    assert.equal(verification.baselineWasmEventsVerified, index.tasks.reduce((n, t) => n + (t.baseline?.eventCount ?? 0), 0));
   const invalid = structuredClone(index);
   invalid.tasks[0].programPath = '../escape.json';
   assert.equal(trajectoryIndexSchema.safeParse(invalid).success, false);

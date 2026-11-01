@@ -29,8 +29,42 @@ export async function verifyTask(interp, task, spec, program) {
   const replay = replayTrajectory(interp, task, spec, program);
   return { id: task.id, eventsVerified: replay.eventsVerified, firstMismatch: replay.firstMismatch };
 }
+// Recheck the committed exact facts/seeds without a native build. The earlier
+// native check is retained as evidence, not reported as a newly executed check.
+export async function verifySavedTrajectories(runId) {
+  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected --run <id>');
+  const output = path.join(root, 'runs', runId, 'trajectories');
+  const index = await read(path.join(output, 'index.json'));
+  const previous = await read(path.join(output, 'verification.json'));
+  if (index.runId !== runId || !index.tasks.length) throw new Error('Invalid trajectory index');
+  const interp = await loadInterpreter();
+  const mismatches = [];
+  let events = 0, verified = 0, baselineEvents = 0, baselineVerified = 0;
+  for (const entry of index.tasks) {
+    for (const [side, row] of [['recorded', entry], ['baseline', entry.baseline]]) {
+      if (!row) continue;
+      const task = await read(path.join(output, row.file));
+      const result = await verifyTask(interp, task, await read(path.join(root, row.specPath)), await read(path.join(root, row.programPath)));
+      if (task.id !== row.id || task.trace.length !== row.eventCount) throw new Error(`Index/trajectory mismatch: ${row.id}`);
+      const firstMismatch = task.nativeMismatch ?? result.firstMismatch;
+      if (firstMismatch) mismatches.push({ id: row.id, side, firstDivergentEvent: firstMismatch });
+      if (side === 'recorded') { events += task.trace.length; verified += result.eventsVerified; }
+      else { baselineEvents += task.trace.length; baselineVerified += result.eventsVerified; }
+    }
+  }
+  const verification = { ...previous, status: mismatches.length ? 'failed' : 'passed',
+    verificationMode: 'saved-context-wasm', nativeVerificationSource: 'Recorded during native context extraction; not rerun by --verify-only',
+    tasks: index.tasks.length, events, wasmEventsVerified: verified,
+    baselineTasks: index.tasks.filter(t => t.baseline).length, baselineEvents, baselineWasmEventsVerified: baselineVerified,
+    mismatches, provenance: { ...previous.provenance, wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')) },
+  };
+  await write(path.join(output, 'verification.json'), verification);
+  console.log(`${runId}: ${index.tasks.length} tasks / ${verified} events + ${verification.baselineTasks} baselines / ${baselineVerified} events; ${mismatches.length} mismatches`);
+  if (mismatches.length) throw new Error(`Determinism failed; see ${relative(path.join(output, 'verification.json'))}`);
+  return verification;
+}
 export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
-  if (!/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run run1-P3');
+  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run run1-P3');
   const runDir = path.join(root, 'runs', runId);
   const manifest = await read(path.join(runDir, 'manifest.json'));
   if (manifest.ehr.mode !== 'real') throw new Error('Only real interpreter runs can be verified');
@@ -168,11 +202,14 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const args = process.argv.slice(2);
-  let runId, baseline = [];
+  let runId, baseline = [], verifyOnly = false;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--run') runId = args[++i];
     else if (args[i] === '--baseline') baseline.push(...(args[++i] ?? '').split(',').filter(Boolean));
+    else if (args[i] === '--verify-only') verifyOnly = true;
     else throw new Error(`Unknown option ${args[i]}`);
   }
-  await indexTrajectories({ runId, baseline });
+  if (verifyOnly && baseline.length) throw new Error('--verify-only cannot simulate new baselines');
+  if (verifyOnly) await verifySavedTrajectories(runId);
+  else await indexTrajectories({ runId, baseline });
 }

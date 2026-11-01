@@ -21,7 +21,9 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await expect(
     view.getByText("424 logged tasks for P3.", { exact: false }),
   ).toBeVisible();
-  await expect(view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option")).toHaveCount(38);
+  await expect(
+    view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
+  ).toHaveCount(38);
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
   await expect(
     frame.getByRole("banner", { name: "Patient banner" }),
@@ -69,7 +71,9 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await view
     .getByRole("searchbox", { name: "Search tasks" })
     .fill("d07-P3-W4-001");
-  await expect(view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option")).toHaveCount(1);
+  await expect(
+    view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
+  ).toHaveCount(1);
   await expect(
     view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · v5 \/ v2/ }),
   ).toBeVisible();
@@ -78,7 +82,10 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   ).toBeVisible();
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect(view.getByLabel("Replay position")).toContainText("1 /");
+  await view.getByRole("button", { name: "Step", exact: true }).click();
+  await expect(view.getByLabel("Replay position")).toContainText("2 /");
   await page.screenshot({ path: "shots/trajectories.png", fullPage: true });
   await expect(page.getByRole("alert")).toHaveCount(0);
   expect(errors).toEqual([]);
+  await page.close();
 });
