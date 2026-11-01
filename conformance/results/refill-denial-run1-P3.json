@@ -1,0 +1,2517 @@
+{
+  "schemaVersion": 1,
+  "suite": "held-out-core-rule-conformance",
+  "runId": "run1-P3",
+  "generatedAt": "2026-11-01T16:31:14.423Z",
+  "independentOfChecker": true,
+  "deploymentGate": false,
+  "boundary": "Native interpreter + FHIR projection. Does not exercise browser painter, persistence, or shell patient-selection wiring.",
+  "native": {
+    "binary": "/home/saithat/Projects/VGI-conformance/.cache/conformance/ehr",
+    "sha256": "a8d7b3d83142d8e719e247868dc1d888690f606d0a016d7a38fc7bac53ba925d",
+    "calls": 126
+  },
+  "scenarios": [
+    {
+      "id": "refill.denial-via-approval-action",
+      "rule": "Core refill denial reason across every action route",
+      "expected": "A deny decision cannot complete through approveRefill without a reason; dedicated denial with a reason and ordinary approval remain possible",
+      "intent": {
+        "commit": "approveRefill",
+        "element": "refillDecision",
+        "value": "deny",
+        "omit": "refillDenyReason"
+      }
+    }
+  ],
+  "targets": [
+    {
+      "id": "canonical/v1/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P1.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "30ff0635a84bd45ea0fc6f8d4c7ed21b2e9f86b8c7e2090256b8de9215c550d0",
+      "specSha256": "e9f20cae0378ca3392b3af36785a495346deec959313de40899a5c18e8dc929c",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v1/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P2.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "5f7f65a0ce1331680a26397b7a21973be7c60061a825ee9b59c45896e0de058e",
+      "specSha256": "e9f20cae0378ca3392b3af36785a495346deec959313de40899a5c18e8dc929c",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v1/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P3.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "0ebd8242eabc5cd4909edf41121cd804d0ec9a1636b2886ae9d193250e50f750",
+      "specSha256": "e9f20cae0378ca3392b3af36785a495346deec959313de40899a5c18e8dc929c",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v1/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P4.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "d3c7ffe56ec664115a44789e3b49ea4905adb0c5b090d5e58bab72a5f23cd993",
+      "specSha256": "e9f20cae0378ca3392b3af36785a495346deec959313de40899a5c18e8dc929c",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v1/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P5.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "b6bb7301b7857934197b7b5759404d3b6fc2af55b6449848be7f38d7ac9e46be",
+      "specSha256": "e9f20cae0378ca3392b3af36785a495346deec959313de40899a5c18e8dc929c",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v2/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P1.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "d036c36f7714d8636978ac9241ff9c1388ed978f125740146d65f80f398a7a53",
+      "specSha256": "ec53e63cbc19b49e6da891ad773d2a18a3235c8f0bcbaafd5da4ab81908f2796",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v2/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P2.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "2e9cfda685e9bc73f7e25bea32f2f20912d2f0dd40492cb60df7ea6316f45ac3",
+      "specSha256": "ec53e63cbc19b49e6da891ad773d2a18a3235c8f0bcbaafd5da4ab81908f2796",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v2/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P3.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "02121d6fb501d0577c6b1801d0d783e9746b6722ac4a46ded0013809a375a96e",
+      "specSha256": "ec53e63cbc19b49e6da891ad773d2a18a3235c8f0bcbaafd5da4ab81908f2796",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v2/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P4.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "427d5f251bf22086c6d401a40fb6e126a73cbc366aca32e0756b6e4b63c3efe6",
+      "specSha256": "ec53e63cbc19b49e6da891ad773d2a18a3235c8f0bcbaafd5da4ab81908f2796",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v2/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P5.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "e829e063776347156d077843a23f2a862aabecbe15a242b1d586bf02e6e1d9c8",
+      "specSha256": "ec53e63cbc19b49e6da891ad773d2a18a3235c8f0bcbaafd5da4ab81908f2796",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v3/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P1.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "1d79b4e87f13a4fb9078f4da795a9621a55039c89c3ca9a449724cab483f2dd9",
+      "specSha256": "cd2a30c05a57d236e69977798a4d763b24244f5d03eafbfdb20c86746dcb0646",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v3/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P2.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "2c1a3061bbf4494a41b3b88ecb37460b7f322e959402ab7ab94b02e9289e2a15",
+      "specSha256": "cd2a30c05a57d236e69977798a4d763b24244f5d03eafbfdb20c86746dcb0646",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v3/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P3.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "bd377d90995d0ef780e82df912fb0be3f74fb8faa30e3bc16ecef0ddffce7353",
+      "specSha256": "cd2a30c05a57d236e69977798a4d763b24244f5d03eafbfdb20c86746dcb0646",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v3/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P4.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "a996f8c9a0ffa0c7365f560a0a520277478848d537c278cd8a5cbc57f6046533",
+      "specSha256": "cd2a30c05a57d236e69977798a4d763b24244f5d03eafbfdb20c86746dcb0646",
+      "passed": 0,
+      "failed": 1,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v3/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P5.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "80b3160dd9d2ec7dfd23497b0cb8bb5a01a7e67a7429e15568fff8bcf5617f54",
+      "specSha256": "cd2a30c05a57d236e69977798a4d763b24244f5d03eafbfdb20c86746dcb0646",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v0",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 0,
+      "release": "v1",
+      "semanticRelease": "v1",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v1",
+        "specHash": "fnv1a64:a6deca45cf0af7f3",
+        "programHash": "fnv1a64:54d1b7a1b5a51d9c",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T00:30:31Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v0.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v0.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v1.json",
+      "programSha256": "5499d865bcd29cb17c53e6e6fb02985876747fc9dbd3af1b0bc99eb779ed239c",
+      "specSha256": "8b02b48bb1cd7537aaa89ccf1cbe30b98b3d77fbe10c1d596835cc88021fde53",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v1",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 1,
+      "release": "v1",
+      "semanticRelease": "v1",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v1",
+        "specHash": "fnv1a64:a6deca45cf0af7f3",
+        "programHash": "fnv1a64:878c5dc9a1a2928b",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T00:42:18Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v1.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v1.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v1.json",
+      "programSha256": "a620a7cd3f5c1098495d6d73b8ea0e71f9c19c3e6d09fd638754d578ab1546b7",
+      "specSha256": "8b02b48bb1cd7537aaa89ccf1cbe30b98b3d77fbe10c1d596835cc88021fde53",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v2",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 2,
+      "release": "v1.1",
+      "semanticRelease": "v2",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v1.1",
+        "specHash": "fnv1a64:d32ece0d336ef38b",
+        "programHash": "fnv1a64:376c61537b0611ab",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T00:45:54Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v2.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v2.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v1.1.json",
+      "programSha256": "d5855577347d3b278f951c6cc9d7f8dd78346534bb46c4c33157b00754750c22",
+      "specSha256": "f8651f2b8e32e17bb8068ec127986ca17d0e79b7aff2f7552890586e3306b7ca",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v3",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 3,
+      "release": "v1.1",
+      "semanticRelease": "v2",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v1.1",
+        "specHash": "fnv1a64:d32ece0d336ef38b",
+        "programHash": "fnv1a64:647a61b620f6f18a",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T00:50:21Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v3.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v3.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v1.1.json",
+      "programSha256": "cc7ab4e51a7f71c65d9a849e6122b3345b1a7d0d91828b1da14832af834dc12b",
+      "specSha256": "f8651f2b8e32e17bb8068ec127986ca17d0e79b7aff2f7552890586e3306b7ca",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v4",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 4,
+      "release": "v1.1",
+      "semanticRelease": "v2",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v1.1",
+        "specHash": "fnv1a64:d32ece0d336ef38b",
+        "programHash": "fnv1a64:1ac39e1ff45822c9",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T00:55:33Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v4.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v4.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v1.1.json",
+      "programSha256": "82f88dcd7820288c5d0c7b53e63493b86ad415ce91266d025a2b09621239ea00",
+      "specSha256": "f8651f2b8e32e17bb8068ec127986ca17d0e79b7aff2f7552890586e3306b7ca",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v5",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 5,
+      "release": "v2",
+      "semanticRelease": "v3",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v2",
+        "specHash": "fnv1a64:1ba021f93a20bfc7",
+        "programHash": "fnv1a64:9fa437a9c37c0a1c",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T01:00:59Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v5.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v5.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v2.json",
+      "programSha256": "b719a1dd60e139629871c738bb78a5f2dfc3a5415f089c3aa39e3fabbbf318a0",
+      "specSha256": "b1464eda9494bb70653e1e165a7e50300c303822f7996aa2eb012afd7fb21f83",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v6",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 6,
+      "release": "v2",
+      "semanticRelease": "v3",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v2",
+        "specHash": "fnv1a64:1ba021f93a20bfc7",
+        "programHash": "fnv1a64:3097545a3c7994dd",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T01:05:19Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v6.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v6.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v2.json",
+      "programSha256": "2202257c5c1cbc9c8610f0f4158f4a2a7e1d5c07adb1c5810eb5ab897dd8c1e9",
+      "specSha256": "b1464eda9494bb70653e1e165a7e50300c303822f7996aa2eb012afd7fb21f83",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "run1-P3/P3/v7",
+      "persona": "P3",
+      "kind": "deployed",
+      "revision": 7,
+      "release": "v2",
+      "semanticRelease": "v3",
+      "archived": true,
+      "certificate": {
+        "specVersion": "v2",
+        "specHash": "fnv1a64:1ba021f93a20bfc7",
+        "programHash": "fnv1a64:6b6d99ab5c22eb87",
+        "verdict": "ok",
+        "checkerVersion": "check-1",
+        "time": "2026-11-01T01:10:28Z"
+      },
+      "certification": "recorded runs/run1-P3/certs/P3/v7.json; not a new certification",
+      "programPath": "runs/run1-P3/programs/P3/v7.json",
+      "specPath": "runs/run1-P3/trajectories/specs/v2.json",
+      "programSha256": "1004b99590f7bffd2335e05e207b97d188de067c45bbe37a9221e4e583676398",
+      "specSha256": "b1464eda9494bb70653e1e165a7e50300c303822f7996aa2eb012afd7fb21f83",
+      "passed": 0,
+      "failed": 0,
+      "notApplicable": 1
+    }
+  ],
+  "results": [
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P1",
+        "role": "physician"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w1Rooming.encounterNavigator",
+          "w1Rooming.reason",
+          "w1Rooming.vitalsGroup",
+          "w1Rooming.allergyGroup",
+          "w1Rooming.intake",
+          "w1Rooming.phq",
+          "w1MedRec.encounterNavigator",
+          "w1MedRec.rows",
+          "w1Hpi.encounterNavigator",
+          "w1Hpi.noteTools",
+          "w1Hpi.historyNote",
+          "w1Hpi.systems",
+          "w1Exam.encounterNavigator",
+          "w1Exam.physical",
+          "w1Exam.assessment",
+          "w1Orders.encounterNavigator",
+          "w1Orders.prefList",
+          "w1Orders.dosing",
+          "w1Orders.medication",
+          "w1Orders.dispense",
+          "w1Orders.dx",
+          "w1Orders.controlled",
+          "w1Labs.encounterNavigator",
+          "w1Labs.labOrder",
+          "w1Verify.encounterNavigator",
+          "w1Sign.encounterNavigator",
+          "w1Sign.signature.signOrders",
+          "w1Close.encounterNavigator",
+          "w1Close.billing",
+          "w1Close.followup",
+          "w1Close.avs",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9"
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P4",
+        "role": "np"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w5Rooming.encounterNavigator",
+          "w5Rooming.reason",
+          "w5Rooming.measures",
+          "w5Rooming.allergyGroup",
+          "w5Rooming.medRec",
+          "w5Growth.encounterNavigator",
+          "w5Note.encounterNavigator",
+          "w5Note.hpiSection",
+          "w5Note.rosSection",
+          "w5Note.examSection",
+          "w5Note.assessmentSection",
+          "w5Orders.encounterNavigator",
+          "w5Orders.prefList",
+          "w5Orders.dosing",
+          "w5Orders.medication",
+          "w5Orders.dispense",
+          "w5Orders.dx",
+          "w5Orders.controlled",
+          "w5Sign.encounterNavigator",
+          "w5Sign.signature.signOrders",
+          "w5Immunizations.encounterNavigator",
+          "w5Immunizations.record",
+          "w5Immunizations.education",
+          "w5Close.encounterNavigator",
+          "w5Close.billing",
+          "w5Close.followup",
+          "w5Close.avs",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354"
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P1",
+        "role": "physician"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w1Rooming.encounterNavigator",
+          "w1Rooming.reason",
+          "w1Rooming.vitalsGroup",
+          "w1Rooming.allergyGroup",
+          "w1Rooming.intake",
+          "w1Rooming.phq",
+          "w1MedRec.encounterNavigator",
+          "w1MedRec.rows",
+          "w1Hpi.encounterNavigator",
+          "w1Hpi.noteTools",
+          "w1Hpi.historyNote",
+          "w1Hpi.systems",
+          "w1Exam.encounterNavigator",
+          "w1Exam.physical",
+          "w1Exam.assessment",
+          "w1Orders.encounterNavigator",
+          "w1Orders.prefList",
+          "w1Orders.dosing",
+          "w1Orders.medication",
+          "w1Orders.dispense",
+          "w1Orders.dx",
+          "w1Orders.controlled",
+          "w1Labs.servicePriorAuth",
+          "w1Labs.encounterNavigator",
+          "w1Labs.labOrder",
+          "w1Verify.encounterNavigator",
+          "w1Sign.encounterNavigator",
+          "w1Sign.signature.signOrders",
+          "w1Close.encounterNavigator",
+          "w1Close.billing",
+          "w1Close.followup",
+          "w1Close.avs",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37"
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P4",
+        "role": "np"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w5Rooming.encounterNavigator",
+          "w5Rooming.reason",
+          "w5Rooming.measures",
+          "w5Rooming.allergyGroup",
+          "w5Rooming.medRec",
+          "w5Growth.encounterNavigator",
+          "w5Note.encounterNavigator",
+          "w5Note.hpiSection",
+          "w5Note.rosSection",
+          "w5Note.examSection",
+          "w5Note.assessmentSection",
+          "w5Orders.encounterNavigator",
+          "w5Orders.prefList",
+          "w5Orders.dosing",
+          "w5Orders.medication",
+          "w5Orders.dispense",
+          "w5Orders.dx",
+          "w5Orders.controlled",
+          "w5Sign.encounterNavigator",
+          "w5Sign.signature.signOrders",
+          "w5Immunizations.encounterNavigator",
+          "w5Immunizations.record",
+          "w5Immunizations.education",
+          "w5Close.encounterNavigator",
+          "w5Close.billing",
+          "w5Close.followup",
+          "w5Close.avs",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9"
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P1",
+        "role": "physician"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w1Rooming.encounterNavigator",
+          "w1Rooming.reason",
+          "w1Rooming.vitalsGroup",
+          "w1Rooming.allergyGroup",
+          "w1Rooming.intake",
+          "w1Rooming.phq",
+          "w1MedRec.encounterNavigator",
+          "w1MedRec.rows",
+          "w1Hpi.encounterNavigator",
+          "w1Hpi.noteTools",
+          "w1Hpi.historyNote",
+          "w1Hpi.systems",
+          "w1Exam.encounterNavigator",
+          "w1Exam.physical",
+          "w1Exam.assessment",
+          "w1Orders.encounterNavigator",
+          "w1Orders.prefList",
+          "w1Orders.dosing",
+          "w1Orders.medication",
+          "w1Orders.dispense",
+          "w1Orders.dx",
+          "w1Orders.controlled",
+          "w1Labs.servicePriorAuth",
+          "w1Labs.encounterNavigator",
+          "w1Labs.labOrder",
+          "w1Verify.encounterNavigator",
+          "w1Sign.encounterNavigator",
+          "w1Sign.signature.signOrders",
+          "w1Close.encounterNavigator",
+          "w1Close.billing",
+          "w1Close.followup",
+          "w1Close.avs",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a"
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "fail",
+      "observed": "Deny decision completed through approveRefill with no denial reason",
+      "scope": "exact-program",
+      "facts": {
+        "patientId": "heldout-A",
+        "identity": {
+          "initials": "HA",
+          "sex": "F",
+          "ageYears": 42
+        },
+        "allergyVersion": 3,
+        "allergyClasses": [],
+        "medsVersion": 4,
+        "notesVersion": 2,
+        "historyVersion": 1,
+        "currentMedClasses": [],
+        "weightToday": [
+          700,
+          "kg"
+        ],
+        "careGaps": [],
+        "abnormalResult": false,
+        "now": 20000,
+        "receipts": [],
+        "record": [
+          [
+            "requestMedication",
+            "metformin"
+          ],
+          [
+            "requestQuantity",
+            "30"
+          ]
+        ],
+        "medToGive": "metformin"
+      },
+      "user": {
+        "id": "P4",
+        "role": "np"
+      },
+      "trace": [
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "home.work.w7Queue"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Queue",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Queue.open"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Review",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "navigate toward element refillDecision",
+          "event": {
+            "click": {
+              "comp": "w7Review.decide"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "approve"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillQuantity",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillQuantity",
+              "value": {
+                "qty": {
+                  "tenths": 300,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillRefills",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillRefills",
+              "value": {
+                "qty": {
+                  "tenths": 0,
+                  "unit": "none"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillPharmacy",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillPharmacy",
+              "value": {
+                "code": {
+                  "c": "community"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillProtocolMet",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillProtocolMet",
+              "value": {
+                "flag": {
+                  "b": true
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "enter refillDecision",
+          "event": {
+            "enter": {
+              "comp": "w7Decision.refillDecision",
+              "value": {
+                "code": {
+                  "c": "deny"
+                }
+              }
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [],
+          "popup": null
+        },
+        {
+          "intent": "attempt approveRefill",
+          "event": {
+            "click": {
+              "comp": "w7Decision.commit.approveRefill"
+            }
+          },
+          "result": "ok",
+          "screen": "w7Decision",
+          "commits": [
+            "approveRefill"
+          ],
+          "popup": null
+        }
+      ],
+      "finalState": {
+        "acked": [],
+        "captured": [
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillQuantity",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 300,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillRefills",
+            "slot": 0,
+            "value": {
+              "qty": {
+                "tenths": 0,
+                "unit": "none"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillPharmacy",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "community"
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillProtocolMet",
+            "slot": 0,
+            "value": {
+              "flag": {
+                "b": true
+              }
+            }
+          },
+          {
+            "byHuman": true,
+            "confirmed": true,
+            "element": "refillDecision",
+            "slot": 0,
+            "value": {
+              "code": {
+                "c": "deny"
+              }
+            }
+          }
+        ],
+        "clock": 0,
+        "commits": [
+          "approveRefill"
+        ],
+        "currentSlot": 0,
+        "expanded": [
+          "home.activityTabs",
+          "home.work",
+          "w2Inbasket.inBasketColumns",
+          "w2Inbasket.encounterNavigator",
+          "w2Inbasket.messages",
+          "w2Inbasket.selected",
+          "w2Result.encounterNavigator",
+          "w2Result.followup",
+          "w2Message.encounterNavigator",
+          "w2Message.templates",
+          "w2Message.draft",
+          "w5Rooming.encounterNavigator",
+          "w5Rooming.reason",
+          "w5Rooming.measures",
+          "w5Rooming.allergyGroup",
+          "w5Rooming.medRec",
+          "w5Growth.encounterNavigator",
+          "w5Note.encounterNavigator",
+          "w5Note.hpiSection",
+          "w5Note.rosSection",
+          "w5Note.examSection",
+          "w5Note.assessmentSection",
+          "w5Orders.encounterNavigator",
+          "w5Orders.prefList",
+          "w5Orders.dosing",
+          "w5Orders.medication",
+          "w5Orders.dispense",
+          "w5Orders.dx",
+          "w5Orders.controlled",
+          "w5Sign.encounterNavigator",
+          "w5Sign.signature.signOrders",
+          "w5Immunizations.encounterNavigator",
+          "w5Immunizations.record",
+          "w5Immunizations.education",
+          "w5Close.encounterNavigator",
+          "w5Close.billing",
+          "w5Close.followup",
+          "w5Close.avs",
+          "w7Queue.inBasketColumns",
+          "w7Queue.encounterNavigator",
+          "w7Queue.messages",
+          "w7Queue.selected",
+          "w7Review.encounterNavigator",
+          "w7Decision.encounterNavigator",
+          "w7Decision.decisionGroup"
+        ],
+        "history": [
+          "w7Review",
+          "w7Queue",
+          "home"
+        ],
+        "receipts": [],
+        "screen": "w7Decision",
+        "tabSel": []
+      },
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7"
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v0",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v6",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "run1-P3/P3/v7",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    }
+  ],
+  "summary": {
+    "targets": 23,
+    "scenarios": 1,
+    "passed": 0,
+    "failed": 6,
+    "notApplicable": 17
+  }
+}

@@ -3,6 +3,7 @@ lean/.lake/
 **/.lake/
 # Node
 node_modules/
+**/node_modules
 dist/
 .vite/
 *.tsbuildinfo
@@ -36,3 +37,4 @@ app/shots/
 
 # Lane-local validation inputs and baseline executable
 .cache/content2/
+.cache/conformance/
