@@ -13,7 +13,8 @@
     "screen-check": "node scripts/screen-check.mjs",
     "export-mock-pages": "node scripts/export-mock-pages.mjs",
     "verdicts": "node scripts/verdicts.mjs",
-    "test:live": "playwright test live-ehr.spec.ts",
+    "test:live": "vitest run --config vitest.live.config.ts",
+    "test:replay": "playwright test live-ehr.spec.ts",
     "shots": "node scripts/shots.mjs"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "@mantine/notifications": "^8.3.17",
     "@mantine/spotlight": "^8.3.17",
     "@medplum/core": "5.2.13",
+    "@medplum/fhirtypes": "5.2.13",
     "@medplum/react": "5.2.13",
     "@medplum/react-hooks": "5.2.13",
     "jsqr": "^1.4.0",
