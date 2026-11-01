@@ -9,6 +9,7 @@ pnpm conformance --program releases/v3/personas/P1.json --spec releases/v3/spec.
 pnpm conformance --run run1-P3
 pnpm conformance --canonical
 pnpm test:conformance
+node conformance/verify.mjs run1-P3 # compare both completed full-run artifacts
 ```
 
 Set `EHR_BIN` (or `--binary`) to a native `ehr` executable. Default locations are
