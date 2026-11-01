@@ -58,6 +58,10 @@ def main():
              for release in ("v1", "v2", "v3") for i in range(1, 6)]
     core, deferred = json.loads((ROOT / "lean/Ehr/Check/bad-program-profiles.json").read_text())
     expected = {f"programs/bad/{name}.json": prop for name, prop in core}
+    # Checker-local regressions use their minimal spec, not a release catalog.
+    dependency_bad = "lean/Ehr/Check/bad/35-dose-without-drug.json"
+    overrides = {dependency_bad: ("lean/Ehr/Check/bad/dose-only-spec.json", dependency_bad)}
+    expected[dependency_bad] = "completable"
     cases += [(path, "bad") for path in expected]
     if "--bad-only" in sys.argv[1:]:
         cases = [(path, "bad") for path in expected]
@@ -65,8 +69,7 @@ def main():
     for path, group in cases:
         program = json.loads((ROOT / path).read_text())
         release = program["specVersion"]
-        sp = f"releases/{release}/spec.json"
-        canonical = f"releases/{release}/canonical.json"
+        sp, canonical = overrides.get(path, (f"releases/{release}/spec.json", f"releases/{release}/canonical.json"))
         args = [str(BINARY), "check", "--spec", sp,
                 "--program", path, "--canonical", canonical]
         previous = {"v2": "v1", "v3": "v2"}.get(release)

@@ -1,4 +1,5 @@
 import Ehr.Check.FixedLineCompletion
+import Ehr.Check.DoseCompletionObstruction
 
 /-! Comparator-only statements for completed completion fragments. The
 placeholder bodies are challenge declarations, excluded from default imports. -/
@@ -12,9 +13,10 @@ theorem satisfies_of_checked_fixed_lines (k : ValueKind) (r : Role) (m : ReviewM
     Satisfies (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) := by
   sorry
 
-/-- An actual accepted counterexample refutes unrestricted completion soundness. -/
-theorem completion_acceptance_counterexample :
-    ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p := by
+/-- The dose-only counterexample is rejected by the dependency check. -/
+theorem completion_dependency_rejected :
+    check DoseCompletionObstruction.spec none DoseCompletionObstruction.program
+      DoseCompletionObstruction.program ≠ .ok := by
   sorry
 
 theorem satisfies_of_checked_receipt_lines (k : ValueKind) (r : Role) (m : ReviewMode)
