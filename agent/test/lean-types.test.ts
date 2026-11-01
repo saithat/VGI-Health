@@ -25,10 +25,14 @@ describe('validators vs Lean-written samples', () => {
     expect(sampleTask.id.length).toBeGreaterThan(0);
   });
 
-  it('real vendor specs round-trip without dropping constrained values', () => {
+  it('real vendor specs and programs round-trip without dropping constrained values or release actions', () => {
     for (const version of ['v1', 'v1.1', 'v2']) {
       const spec: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/spec.json`, 'utf8'));
       same(specSchema.parse(spec), spec);
+      for (const file of ['canonical', ...['P1', 'P2', 'P3', 'P4', 'P5'].map(id => `personas/${id}`)]) {
+        const program: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/${file}.json`, 'utf8'));
+        same(programSchema.parse(program), program);
+      }
     }
   });
 

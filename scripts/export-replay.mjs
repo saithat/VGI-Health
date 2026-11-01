@@ -37,7 +37,7 @@ try {
     const versions = (await readdir(join(dir, 'programs', persona))).filter(f => /^v\d+\.json$/.test(f)).sort((a,b) => Number(a.slice(1,-5))-Number(b.slice(1,-5)));
     const programs = await Promise.all(versions.map(file => read(join(dir, 'programs', persona, file))));
     const specs = ['v1', 'v1.1', 'v2'];
-    for (const program of programs) for (const specVersion of specs) contexts.push({ persona, version: program.version, specVersion, spec: await read(join(root, 'releases', specVersion, 'spec.json')), bundle: projection, user: { id: program.owner, role: program.role } });
+    for (const program of programs) for (const specVersion of [program.specVersion, ...specs.filter(version => version !== program.specVersion)]) contexts.push({ persona, version: program.version, specVersion, spec: await read(join(root, 'releases', specVersion, 'spec.json')), bundle: projection, user: { id: program.owner, role: program.role } });
     const sides = [];
     for (const file of [versions[0], versions.at(-1)]) {
       const program = await read(join(dir, 'programs', persona, file));

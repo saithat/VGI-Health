@@ -94,7 +94,7 @@ const prefillSchema: z.ZodType<L.Prefill> = z.union([
   z.object({ linked: z.object({ element: str }) }),
 ]);
 const actionSchema: z.ZodType<L.Action> = z.union([
-  z.enum(['back', 'newOrderLine']),
+  z.enum(['back', 'newOrderLine', 'requestPriorAuth']),
   z.object({ goto: z.object({ screen: str }) }),
   z.object({ commit: z.object({ commit: str }) }),
   z.object({ markReviewed: z.object({ info: str }) }),
@@ -110,8 +110,9 @@ const knownKindSchema: z.ZodType<L.Kind> = z.union([
   z.object({ group: z.object({ collapsible: z.boolean(), startCollapsed: z.boolean() }) }),
   z.object({ macro: z.object({ id: str }) }),
   z.object({ search: z.object({ scope: str }) }),
+  z.object({ priorAuth: z.object({ info: str }) }),
 ]);
-const KNOWN_KINDS = new Set(['banner', 'tabs', 'field', 'panel', 'table', 'trend', 'alert', 'button', 'group', 'macro', 'search']);
+const KNOWN_KINDS = new Set(['banner', 'tabs', 'field', 'panel', 'table', 'trend', 'alert', 'button', 'group', 'macro', 'search', 'priorAuth']);
 const futureKindSchema: z.ZodType<FutureKind> = z.record(str, z.unknown()).refine(
   (o) => Object.keys(o).length === 1 && !KNOWN_KINDS.has(Object.keys(o)[0] ?? ''),
   { message: 'not a valid component kind' },

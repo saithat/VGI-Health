@@ -1,5 +1,5 @@
 {
-  "version": 0,
-  "program": "programs/P3/v0.json",
-  "certificate": "certs/P3/v0.json"
+  "version": 1,
+  "program": "programs/P3/v1.json",
+  "certificate": "certs/P3/v1.json"
 }
