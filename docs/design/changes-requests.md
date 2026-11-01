@@ -745,3 +745,37 @@ run no Lake commands, and the report asserts disjoint full coverage and identica
 WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
+
+## Composite expansion integration (lean-core, owner task Oct 31)
+
+Core is adding `Kind.use (def : String) (args : List (String × String))`,
+`ComponentDef`, `Program.componentDefs := []`, and Init-only `Program.expand`.
+Source programs must be retained for certification/hashing. Expansion returns
+ordinary components and clears defs; errors must fail closed as `wellFormed`.
+
+- **Render (urgent build dependency):** Page.lean's exhaustive Kind match needs
+  a `.use ..` arm (unexpanded use has no runtime content; reject at load).
+  Core is explicitly forbidden to edit Render. Expand source programs in the
+  renderer/API and `render-screens` before traversing screens/components, and
+  propagate the wrapper's `tag = "composite:<name>"` into UiNode as a presentation
+  key. Preserve every component/clinical field and all rendering properties.
+- **Check/deploy:** expand candidate, previous, and canonical inputs before all
+  structural/semantic checks. On `.error e`, return violation `wellFormed` with
+  the expansion reason. State `Satisfies` over successful expansion (Core's
+  `Program.Satisfies` is the property-lifting definition/theorem). Hash the SOURCE
+  Program including defs; deploy/store the SOURCE program, never hash expanded
+  components as a replacement. No property or theorem may be weakened.
+- **Sim:** expand before simulate/min-clicks and reject expansion errors; policies,
+  state exploration, metrics, and navigation must inspect the expanded screens.
+- **Agent/app:** preserve `componentDefs` and `use.args` through schemas and patches;
+  accept only checked composites, render wrapper presentation keys as supplied
+  by Lean. No backend behavior is added by expansion.
+
+This checkout's main still has no Check/Deploy/Sim modules or CLI commands;
+these integrations must land from their owning lanes. Existing T0/T2/T3/T6/A2/A4
+statements apply to every expanded Program without changing their hypotheses.
+
+- **App baseline regression after main merge:** `pnpm --filter app test` now
+  fails `tests/app.test.tsx:25`: the catalog expectation is 16 seeded bad programs,
+  but content has merged 24. Please update the fixture-count assertion to cover
+  the full catalog. The real-WASM projection test and the other 89 tests pass.
