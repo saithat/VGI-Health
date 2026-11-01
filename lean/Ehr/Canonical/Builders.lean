@@ -178,7 +178,8 @@ rail does not compete with the encounter editor. Component IDs stay stable. -/
 def ambulatoryShell (s : ScreenId) (nav : List (ScreenId × String))
     (chart : List Block) (navTitle : String := "Visit navigator") : List Component :=
   ((shell s nav [] chart).filter (fun c => c.id != cid s "sidebar")).map fun c =>
-    if c.id == cid s "nav" then
+    if c.kind == .banner then { c with tag := "layout.clinicalActivity" }
+    else if c.id == cid s "nav" then
       { c with id := cid s "encounterNavigator", tag := "navigator", label := navTitle }
     else if c.parent? == some (cid s "nav") then
       { c with parent? := some (cid s "encounterNavigator") }

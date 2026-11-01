@@ -65,6 +65,36 @@ it("dispatches the exact Lean component ID from a clinical navigator link", () =
   expect(onEvent).toHaveBeenCalledWith({ click: { comp: "rooming.nav.note" } });
 });
 
+it("uses semantic screen identity for scroll lifecycle and omits empty navigation", () => {
+  const emit = vi.fn();
+  const base: UiScreen = {
+    screen: "first-screen",
+    banner: [],
+    title: "Results",
+    nav: [],
+    workspace: [],
+    side: [],
+    modal: null,
+  };
+  const paint = (model: UiScreen) => (
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>
+  );
+  const { rerender, container } = render(paint(base));
+  expect(screen.queryByRole("navigation")).toBeNull();
+  expect(expectedAria(base).some((item) => item.role === "navigation")).toBe(
+    false,
+  );
+  const scroll = vi.mocked(window.scrollTo);
+  scroll.mockClear();
+  rerender(paint({ ...base, workspace: [{ text: { s: "Updated result" } }] }));
+  expect(scroll).not.toHaveBeenCalled();
+  rerender(paint({ ...base, screen: "second-screen" }));
+  expect(scroll).toHaveBeenCalledWith(0, 0);
+  expect(container.textContent).not.toContain("second-screen");
+});
+
 const field: NodeOf<"field"> = {
   comp: "entry",
   label: "Clinical value",
@@ -804,7 +834,8 @@ it("shows Lean's code labels and sends only the selected source code", () => {
   );
   expect(emit).not.toHaveBeenCalled();
   const input = screen.getByRole("combobox", { name: "Route" });
-  if (!(input instanceof HTMLInputElement)) throw new Error("Expected a code input");
+  if (!(input instanceof HTMLInputElement))
+    throw new Error("Expected a code input");
   expect(input.value).toBe("Oral (PO)");
   fireEvent.click(input);
   fireEvent.click(screen.getByRole("option", { name: "Intravenous (IV)" }));
@@ -864,20 +895,20 @@ it("requires explicit selection of an unlisted code and preserves a sibling conf
 it("keeps reference populations separate and retains every patient measurement", () => {
   const references = ["WHO infant reference", "CDC child reference"].flatMap(
     (source, n) =>
-    ["5th", "50th", "95th"].map((percentile, p) => {
-      const points: [number, number][] = [
-        [n * 240, 300 + p * 100],
-        [n * 240 + 120, 500 + p * 100],
-      ];
-      return ({
-        measure: "Weight",
-        unit: "kg",
-        percentile,
-        source,
-        population: "Boys",
-      points,
-    });
-    }),
+      ["5th", "50th", "95th"].map((percentile, p) => {
+        const points: [number, number][] = [
+          [n * 240, 300 + p * 100],
+          [n * 240 + 120, 500 + p * 100],
+        ];
+        return {
+          measure: "Weight",
+          unit: "kg",
+          percentile,
+          source,
+          population: "Boys",
+          points,
+        };
+      }),
   );
   const { container } = paint([
     {

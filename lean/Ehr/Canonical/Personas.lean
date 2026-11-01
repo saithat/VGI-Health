@@ -24,7 +24,8 @@ def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
       { id := "home.activityTabs", kind := .group false false, label := "Activities", tag := "activities" }
     let rest := screen.components.filter (·.id != "home.work")
     { screen with components := rest.flatMap fun c =>
-        if c.id == "home.schedule" then
+        if c.kind == .banner then [{ c with tag := "layout.clinicalActivity" }]
+        else if c.id == "home.schedule" then
           [activities, work, { c with label := "Appointments", parent? := some "home.work" }]
         else match c.kind with
         | .button (.goto target) =>

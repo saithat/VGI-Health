@@ -28,6 +28,25 @@ def focusedClinicUi : UiScreen :=
   renderUi uiRoomCtx.sp focusedClinicProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 #guard focusedClinicUi.side.isEmpty
 
+/-- Ambulatory activities use their real navigator without a wizard progress strip. -/
+def clinicalActivityProgram : Program :=
+  { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      { screen with components := screen.components.map fun c =>
+          if c.kind == .banner then { c with tag := "layout.clinicalActivity" } else c } }
+def clinicalActivityUi : UiScreen :=
+  renderUi uiRoomCtx.sp clinicalActivityProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
+#guard !clinicalActivityUi.workspace.any (fun n => match n with | .stepper .. => true | _ => false)
+#guard clinicalActivityUi.screen? == some uiRoomCtx.s.screen
+
+/-- Banner conversion preserves the source units; it cannot confirm dosing weight. -/
+def poundsBannerExample : Display :=
+  { uiRoomCtx.disp with banner := { uiRoomCtx.disp.banner with weight? := some (1880, .lb, "") } }
+#guard uiBannerWeight uiRoomCtx.facts poundsBannerExample == "85.3 kg (from 188.0 lb)"
+def poundsFactsExample : Facts := { uiRoomCtx.facts with weightToday? := some (1880, .lb) }
+#guard uiBannerWeight poundsFactsExample { poundsBannerExample with asOf := "", banner :=
+  { poundsBannerExample.banner with weight? := none } } == "85.3 kg (from 188.0 lb)"
+#guard poundsFactsExample.weightToday? == some (1880, .lb)
+
 /-- A valid insulin dose stays in units in its daily preview and review status. -/
 def nativeUnitReviewCtx : Ctx :=
   { uiSignCtx with viewCache := ⟨_, rfl⟩, s := { uiSignCtx.s with captured :=

@@ -603,6 +603,8 @@ inductive UiNode
 
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
+  /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
+  screen? : Option ScreenId := none
   banner : List (String × String)
   nav : List (String × List (String × String))
   title : String

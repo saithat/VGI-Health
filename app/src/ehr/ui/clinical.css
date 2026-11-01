@@ -141,6 +141,18 @@
   background: var(--clinical-sidebar);
   border-right: 1px solid var(--clinical-border);
 }
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar {
+  position: sticky;
+  top: var(--clinical-header-height);
+  height: calc(100dvh - var(--clinical-header-height));
+  min-height: 0;
+  overflow-y: auto;
+}
 .nav-eyebrow {
   padding: 4px 8px;
   font-weight: 600;
@@ -183,8 +195,13 @@
   text-align: left;
   cursor: pointer;
 }
-.clinical-nav-link:hover { background: #dceaf6; }
-.clinical-nav-link:focus-visible { outline: 2px solid #24618c; outline-offset: 1px; }
+.clinical-nav-link:hover {
+  background: #dceaf6;
+}
+.clinical-nav-link:focus-visible {
+  outline: 2px solid #24618c;
+  outline-offset: 1px;
+}
 .workflow-links li {
   display: flex;
   align-items: center;

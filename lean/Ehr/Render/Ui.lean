@@ -17,7 +17,7 @@ def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
    ("Age / sex", s!"{d.banner.ageYears} / {d.banner.sex}"),
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
-   ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
+   ("Last encounter", d.banner.encounterClass), ("Last provider", d.banner.attending), ("Last location", d.banner.location)]
 
 /-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
 def uiBannerWeight (facts : Facts) (d : Display) : String :=
@@ -25,7 +25,12 @@ def uiBannerWeight (facts : Facts) (d : Display) : String :=
     facts.weightToday?.map fun (value, unit) => (value, unit, d.asOf)
   match weight with
   | none => "Not recorded"
-  | some (value, unit, date) => s!"{value / 10}.{value % 10} {unit.name}" ++
+  | some (value, unit, date) =>
+      let weight := if unit == .lb then
+        let kg := (value * 45359237 + 50000000) / 100000000
+        s!"{kg / 10}.{kg % 10} kg (from {value / 10}.{value % 10} lb)"
+        else s!"{value / 10}.{value % 10} {unit.name}"
+      weight ++
       (if date == "" then "" else " · " ++ uiDate date)
 
 /-- Header allergies summarize substances and status; reactions remain complete
@@ -423,16 +428,22 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
   ((uiRequiredReviews cx).filter fun r => !uiFullInfoShown cx r.info).map fun r =>
     uiInfo cx "" (infoLabel cx r.info) r.info "list"
 
-def uiWorkspace (cx : Ctx) : List UiNode :=
+/-- Clinical activity frames use their real navigator/row actions. The optional
+read-only progress overview remains available to other source programs. -/
+def uiProgress (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
-  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  if cx.v.items.any (fun it => it.shown && uiTagIs it.comp.tag "layout.clinicalActivity") then []
+  else [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)]
+
+def uiWorkspace (cx : Ctx) : List UiNode :=
+  uiProgress cx ++ (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
-  { banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
+  { screen? := some s.screen, banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

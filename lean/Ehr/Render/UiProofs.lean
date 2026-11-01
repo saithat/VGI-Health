@@ -168,17 +168,24 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
   by_cases hd : uiSideAt cx it.comp.id = true
   · have h := (uiComponentsWhere_mem cx (fun jt => jt.comp.kind != .banner && !uiNavButton cx jt && uiSideAt cx jt.comp.id) n).mpr
         ⟨it, hi, hs, by simp [hb, hv, hd], hn⟩
-    simp only [UiPresent, renderUi, Ctx.rebuild, uiSide, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiPresent, renderUi, Ctx.rebuild, uiSide, uiAtomsList_append, List.mem_append]
     exact Or.inl (Or.inl (Or.inr (Or.inl (Or.inl h))))
   · have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) n).mpr
         ⟨it, hi, hs, by simp [uiInWorkspace, hb, hv, hd], hn⟩
-    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
     exact Or.inl (Or.inl (Or.inl (Or.inr (Or.inl h))))
 
 /-- Read-only additions are clinical info or the visit-progress overview. -/
 def UiReadOnly : UiNode → Prop
   | .info "" _ _ _ _ | .stepper _ _ => True
   | _ => False
+
+/-- A source progress overview adds only read-only context. -/
+theorem uiProgress_readOnly (cx : Ctx) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiProgress cx)) : UiReadOnly n := by
+  unfold uiProgress at hn
+  split at hn <;> simp [uiAtoms, uiAtomsList] at hn
+  subst n; trivial
 
 /-- Missing-review additions have no component event id. -/
 theorem uiMissing_readOnly (cx : Ctx) (n : UiNode)
@@ -229,10 +236,10 @@ Only the clinical shell, progress overview and read-only supplements are added. 
 theorem uiPresent_source (cx : Ctx) (n : UiNode)
     (hn : UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s) n) :
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
-  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append,
+  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append,
     List.mem_append, List.mem_singleton] at hn
-  rcases hn with ((((rfl | (hn | hn)) | hn) | hn) | hn)
-  · right; trivial
+  rcases hn with ((((hn | (hn | hn)) | hn) | hn) | hn)
+  · exact Or.inr (uiProgress_readOnly cx n hn)
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
   · exact Or.inr (uiMissing_readOnly cx n hn)
@@ -337,8 +344,7 @@ theorem T11_ui_full_info (cx : Ctx) (it : ItemView) (i : InfoId)
   obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it i hw hi
   refine ⟨label, display, ?_⟩
   have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs, hw, hn⟩
-  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms,
-    uiAtomsList_append, List.mem_append, List.mem_singleton]
+  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
   exact Or.inr (Or.inl h)
 
 /-- D2: every required review is in the workspace with full rows. A compact
@@ -352,7 +358,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
     obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it r.info hs.1.2 hs.2
     refine ⟨it.comp.id, label, display, ?_⟩
     have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs.1.1, hs.1.2, hn⟩
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
     exact Or.inr (Or.inl h)
   · refine ⟨"", uiLabel (infoLabel cx r.info) (uiLabel (infoLabel cx r.info) "Clinical information"), (if uiOrderInfo r.info then "table" else "list"), ?_⟩
     have hm : uiInfo cx "" (infoLabel cx r.info) r.info "list" ∈ uiMissingReviews cx := by
@@ -368,7 +374,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
         · simpa only [uiAtomsList_cons] using List.mem_append_left (uiAtomsList ns) ha
         · simpa only [uiAtomsList_cons] using List.mem_append_right (uiAtoms n) (ih ht atom ha)
     have h := atoms_mem _ _ hm (uiInfo cx "" (infoLabel cx r.info) r.info "list") (by simp [uiInfo, uiAtoms])
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
     exact Or.inr (Or.inr h)
 
 /-- D2 also implies presence in the complete screen. -/

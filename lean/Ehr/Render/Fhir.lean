@@ -818,18 +818,33 @@ def coverageOf (rs : List Json) : String :=
     | some e => str (field (first e "insurance") "coverage") "display"
     | none => ""
 
+/-- Resolve a reference against the supplied bundle, without guessing a patient. -/
+def referenced? (rs : List Json) (ref : Json) : Option Json :=
+  let key := str ref "reference"
+  if key == "" then none else rs.find? fun r =>
+    str r "id" != "" && (str r "id" == key || key == resourceType r ++ "/" ++ str r "id")
+
+/-- Human-readable reference text. Internal FHIR references are never displayed. -/
+def humanRef (rs : List Json) (ref : Json) : String :=
+  let display := str ref "display"
+  if display != "" then display else
+    match referenced? rs ref with
+    | none => ""
+    | some r => if resourceType r == "Patient" || resourceType r == "Practitioner"
+      then displayName r else str r "name"
+
 /-- The banner fields. -/
 def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
   let enc := (latestEncounter rs).getD .null
-  let encProvider := str (field (first enc "participant") "individual") "display"
-  let gp := str (first p "generalPractitioner") "display"
+  let encProvider := humanRef rs (field (first enc "participant") "individual")
+  let gp := humanRef rs (first p "generalPractitioner")
   { name := displayName p
     mrn := mrnOf p
     dob := str p "birthDate"
     ageYears := ageYears (str p "birthDate") today
     sex := sexOf p
     language := ccText (field (first p "communication") "language")
-    pcp := if gp != "" then gp else encProvider
+    pcp := gp
     coverage := coverageOf rs
     encounterClass := str (field enc "class") "code"
     attending := encProvider
@@ -1050,21 +1065,6 @@ def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload
 
 end Ambulatory
 /-! ## Structured display projections -/
-
-/-- Resolve a reference against the supplied bundle, without guessing a patient. -/
-def referenced? (rs : List Json) (ref : Json) : Option Json :=
-  let key := str ref "reference"
-  if key == "" then none else rs.find? fun r =>
-    str r "id" != "" && (str r "id" == key || key == resourceType r ++ "/" ++ str r "id")
-
-/-- Human-readable reference text. Internal FHIR references are never displayed. -/
-def humanRef (rs : List Json) (ref : Json) : String :=
-  let display := str ref "display"
-  if display != "" then display else
-    match referenced? rs ref with
-    | none => ""
-    | some r => if resourceType r == "Patient" || resourceType r == "Practitioner"
-      then displayName r else str r "name"
 
 /-- Age and sex are read only from the referenced patient. -/
 def refAgeSex (today : String) (rs : List Json) (ref : Json) : String :=

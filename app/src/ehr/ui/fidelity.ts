@@ -303,21 +303,23 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
     );
   return [
     entry("banner", "Patient banner"),
-    ...nest(
-      entry("navigation", "Clinical navigation"),
-      screen.nav
-        .filter(([, items]) => items.length)
-        .flatMap(([group, items]) =>
-          nest(
-            entry("list", `${group} screens`),
-            items.map(([, name]) => ({
-              role: "button",
-              name,
-              disabled: false,
-            })),
-          ),
-        ),
-    ),
+    ...(screen.nav.some(([, items]) => items.length)
+      ? nest(
+          entry("navigation", "Clinical navigation"),
+          screen.nav
+            .filter(([, items]) => items.length)
+            .flatMap(([group, items]) =>
+              nest(
+                entry("list", `${group} screens`),
+                items.map(([, name]) => ({
+                  role: "button",
+                  name,
+                  disabled: false,
+                })),
+              ),
+            ),
+        )
+      : []),
     ...nest(entry("main"), [
       ...(screen.side.length
         ? nest(

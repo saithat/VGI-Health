@@ -581,6 +581,7 @@ inductive UiNode
   | text     (s : String)
 
 structure UiScreen where
+  screen? : Option ScreenId := none -- scroll lifecycle only, never visible
   banner : List (String × String)      -- patient banner fields (always first; D1)
   nav : List (String × List (String × String))   -- groups: (groupLabel, [(compId, label)])
   title : String

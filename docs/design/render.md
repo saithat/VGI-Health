@@ -183,3 +183,5 @@ recorded birth-sex population and applicable supplied measures/ages. Missing or
 conflicting coding does not fall back to administrative gender. Unknown height
 units are not assumed to be centimeters. The painter scales the supplied points;
 it never estimates a patient's percentile or selects a reference population.
+
+The optional `UiScreen.screen` identifies a Lean destination for painter scroll lifecycle only. It is never a visible label. `layout.clinicalActivity` on a shown source component suppresses the read-only progress strip, leaving clinical navigation and all controls intact. Desktop sticky patient context is a geometry-only painter behavior; no clinical selection, permissions, or source values are inferred.

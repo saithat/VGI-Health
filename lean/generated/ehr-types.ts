@@ -2271,6 +2271,10 @@ export type UiNode =
  * A semantic screen. The banner is the first and sole banner landmark.
  */
 export interface UiScreen {
+  /**
+   * Stable view identity for scroll/focus lifecycle; never a visible label.
+   */
+  screen?: ScreenId;
   banner: [string, string][];
   nav: [string, [string, string][]][];
   title: string;

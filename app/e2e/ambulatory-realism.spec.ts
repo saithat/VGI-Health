@@ -64,6 +64,23 @@ for (const persona of ["P1", "P4"]) {
         animations: "disabled",
       });
       if (phase === "after") {
+        if (["w5Growth.json", "w7Decision.json"].includes(name)) {
+          await page.evaluate(() => window.scrollTo(0, 650));
+          await expect(page.locator(".clinical-shell")).toHaveAttribute(
+            "data-pinned",
+            "true",
+          );
+          const banner = await page.getByRole("banner").boundingBox();
+          expect(banner?.y).toBe(0);
+          await page.screenshot({
+            path: join(
+              output,
+              `${phase}-${persona}-${name.replace(".json", "-scrolled.png")}`,
+            ),
+            animations: "disabled",
+          });
+          await page.evaluate(() => window.scrollTo(0, 0));
+        }
         const diagnosis = screen.workspace
           .flatMap(descendants)
           .find(

@@ -113,6 +113,14 @@ def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-r
 #guard (output emptyBundle).display.banner.weight? == none
 #guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none
 
+/-- A visit clinician is not evidence of an assigned primary care provider. -/
+def encounterProviderExample : Json := json r#"{"resourceType":"Encounter","participant":[{"individual":{"display":"Dr Visit"}}]}"#
+def primaryCareProviderExample : Json := json r#"{"resourceType":"Practitioner","id":"assigned-pcp","name":[{"given":["Taylor"],"family":"Morgan"}]}"#
+def assignedPatientExample : Json := patientWithoutMrn.setObjVal! "generalPractitioner"
+  (json r#"[{"reference":"Practitioner/assigned-pcp"}]"#)
+#guard (bannerOf context.today [encounterProviderExample] patientWithoutMrn).pcp == ""
+#guard (bannerOf context.today [primaryCareProviderExample] assignedPatientExample).pcp == "Morgan, Taylor"
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests

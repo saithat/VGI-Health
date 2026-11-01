@@ -116,6 +116,7 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
 );
 /** Offline boundary only; the clinician path forwards Lean output unchanged. */
 export const uiScreenSchema: z.ZodType<UiScreen> = z.strictObject({
+  screen: label.nullable().optional(),
   banner: z.array(pair),
   nav: z.array(z.tuple([label, z.array(pair)])),
   title: label,
