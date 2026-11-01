@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { z } from "zod";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
+import { formatDisplayValue } from "../src/ehr/ui/display";
 import {
   uiScreenSchema,
   type UiNode,
@@ -146,7 +147,10 @@ for (const file of fixtures)
     // Every record cell and banner value must survive painting, including rows after
     // the first one. Values are data, not FHIR/clinical interpretation in React.
     for (const [, value] of screen.banner)
-      if (value) await expect(page.getByRole("banner")).toContainText(value);
+      if (value)
+        await expect(page.getByRole("banner")).toContainText(
+          formatDisplayValue(value),
+        );
     const infos = [...screen.workspace, ...screen.side]
       .flatMap(nodes)
       .flatMap((node) => ("info" in node ? [node.info] : []));
@@ -154,7 +158,8 @@ for (const file of fixtures)
       const panel = page.locator("[data-info-id]").nth(index);
       for (const row of info.rows)
         for (const [, value] of row)
-          if (value) await expect(panel).toContainText(value);
+          if (value)
+            await expect(panel).toContainText(formatDisplayValue(value));
     }
     expect(browserErrors).toEqual([]);
   });
