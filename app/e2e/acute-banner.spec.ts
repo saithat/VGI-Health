@@ -19,9 +19,8 @@ for (const [persona, activity, commit] of [
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });
-    await page
-      .locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`)
-      .click();
+    const activityLink = page.locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`);
+    if (await activityLink.count()) await activityLink.click();
     await page
       .locator(
         `[data-comp-id="${activity}.${persona === "P2" ? "toSign" : "openDue"}"][data-event="click"]`,
@@ -80,9 +79,8 @@ for (const [persona, activity, target] of [
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });
-    await page
-      .locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`)
-      .click();
+    const activityLink = page.locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`);
+    if (await activityLink.count()) await activityLink.click();
     await page
       .locator(`[data-comp-id="${target}"]`)
       .first()

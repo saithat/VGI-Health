@@ -363,10 +363,7 @@ for (const [
   test(`${start}: the selected context opens its declared acute activity`, async ({
     page,
   }) => {
-    const source = native<FactsOutput>("facts", {
-      bundle: read(join(fixtures, `${persona}.json`)),
-      context: read(join(fixtures, `${persona}-context.json`)),
-    });
+    const source = fixtureFacts(persona);
     const base = {
       spec: read(join(root, "releases/v1/spec.json")),
       program: read(join(root, `releases/v1/personas/${persona}.json`)),
@@ -482,10 +479,7 @@ test("ED imaging retains the report, linked findings and separate image status",
     spec: read(join(root, "releases/v1/spec.json")),
     program: read(join(root, "releases/v1/personas/P2.json")),
     user: read(join(fixtures, "P2-user.json")),
-    ...native<FactsOutput>("facts", {
-      bundle: read(join(fixtures, "P2.json")),
-      context: read(join(fixtures, "P2-context.json")),
-    }),
+    ...fixtureFacts("P2"),
   };
   const input: RenderInput = { ...base, state: selectedState(base) };
   const events: Event[] = [];
