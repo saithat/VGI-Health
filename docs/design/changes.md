@@ -525,3 +525,27 @@ ordering. Minute windows retain their signed-offset interpretation. A before-
 anchor obligation with deadline zero becomes overdue immediately after the
 anchor, even if the business date has not changed. This prevents a same-day
 post-procedure event from satisfying a pre-procedure rule.
+
+## Permanent core native/WASM regression coverage
+
+`node lean/Ehr/Core/test-wasm-features.mjs` compares the installed WASM assets
+with native init/view/step on 84 native-encoded cases (252 API comparisons): all
+five feature groups, Schedule II allowed values/drugClass, calendar cutoffs,
+invalid dates/UDI, clinical alerts, missing payload fields and timing boundaries.
+FeatureFixtures.lean uses the same Tiny definitions as the Core #guard tests;
+there is no separate TypeScript model of the guard. The harness builds and runs
+Lake commands sequentially, and checks the asset manifest before comparison.
+
+The older WASM equivalence runner's single giant JSON join overflows JavaScript's
+string limit on main's expanded canonical data. The owning-lane fix is requested
+in changes-requests.md. Verification uses a batched copy preserving every one
+of its 4,096 cases and every event, rather than reducing the dataset.
+
+The permanent feature suite exposed a WASM heap failure on ISO-date rejection
+(and an artifact-output rejection), despite matching native behavior on valid
+dates. The parser now splits fixed-width date groups before checking digits and
+Gregorian validity, instead of destructively matching a ten-character list.
+GS1 expiry parsing shares that exact full-date grammar. Validation was not
+weakened: leap years, invalid dates, exact widths and public rejection preserving
+the original state are regression-tested. All 252 native/WASM feature API
+comparisons pass with this implementation.

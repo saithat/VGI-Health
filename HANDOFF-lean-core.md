@@ -199,3 +199,15 @@ statement changes; all 25 core axiom audits use only the three permitted axioms.
 Remaining core lane work: finish the currently running WASM build, install assets,
 verify the manifest and native/WASM equivalence, then replace this historical
 handoff with an exact final status. Owning-lane adoption remains requested.
+
+WASM portability checkpoint: the installed assets and manifest are rebuilt and
+make wasm-check passes. The permanent Core/test-wasm-features.mjs suite passes
+252 API comparisons over 84 cases. Its invalid-date cases exposed a WASM heap
+failure; equivalent fixed-width ISO/GS1 parsing resolves it without relaxing any
+validation. Full build/kernel/Comparator and axiom checks pass after the fix.
+The standard legacy runner overflows its giant input join; its memory-bounded
+patch is requested from WASM. All 2,048 Tiny cases have passed a full batched run;
+the remaining 2,048 canonical cases are running in disjoint ranges, with full
+byte comparisons and no Lake commands in workers. Remaining verification:
+finish the full corpus, rerun TS tests sequentially and renderer/FHIR comparisons,
+then replace this historical handoff with the precise final status.

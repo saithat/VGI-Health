@@ -433,6 +433,12 @@ def invalidCapture : State := { initial with captured :=
   (.default "reviewed")
 #guard !prefillValueValid facts atOrder { narrative with defaultValue? := some "reviewed" } 0
   (.default "other")
+-- Public rejection keeps the exact original state and must match WASM.
+def dateSpec : Spec := { tinySpec with elements := [{ narrative with validation? := some .isoDate }] }
+#guard step dateSpec tinyProgram facts user .human initial (.enter "narrative" (.text "2025-02-29")) ==
+  (initial, .blocked "invalid value for narrative")
+#guard (step dateSpec tinyProgram facts user .human initial (.enter "narrative" (.text "2024-02-29"))).2 == .ok
+#guard !isoDateValid "2024-2-29" && !isoDateValid "2024-02-029" && !isoDateValid "2024-02-29-"
 end ValueValidation
 
 namespace OrderExpiry

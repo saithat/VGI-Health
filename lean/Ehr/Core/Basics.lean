@@ -399,12 +399,15 @@ def validDate (y m d : Nat) : Bool :=
     else if [4, 6, 9, 11].contains m then 30 else 31
   1 ≤ y && 1 ≤ m && m ≤ 12 && 1 ≤ d && d ≤ days
 
+/-- Read fixed-width digit groups without destructively matching a long list.
+This keeps the same full Gregorian date grammar on native and 32-bit WASM. -/
 def isoDateValid (t : String) : Bool :=
-  match t.toList with
-  | [a,b,c,d,'-',e,f,'-',g,h] =>
-    match digitsVal [a,b,c,d] 0, digitsVal [e,f] 0, digitsVal [g,h] 0 with
-    | some y, some m, some day => validDate y m day
-    | _, _, _ => false
+  match t.splitOn "-" with
+  | [year, month, day] =>
+    year.length == 4 && month.length == 2 && day.length == 2 &&
+      match digitsVal year.toList 0, digitsVal month.toList 0, digitsVal day.toList 0 with
+      | some y, some m, some d => validDate y m d
+      | _, _, _ => false
   | _ => false
 
 def decimalValid (t : String) (scale : Nat) (leading trailing : Bool) : Bool :=
@@ -436,12 +439,8 @@ def udiValid (t : String) : Bool :=
       rest.all (fun p =>
         let value := (p.drop 3).toString
         if p.startsWith "17)" then
-          match value.toList with
-          | [a,b,c,d,e,f] =>
-            match digitsVal [a,b] 0, digitsVal [c,d] 0, digitsVal [e,f] 0 with
-            | some y, some m, some day => validDate (2000 + y) m day
-            | _, _, _ => false
-          | _ => false
+          value.length == 6 && isoDateValid ("20" ++ (value.take 2).toString ++ "-" ++
+            ((value.drop 2).take 2).toString ++ "-" ++ (value.drop 4).toString)
         else (p.startsWith "10)" || p.startsWith "21)") &&
           1 ≤ value.length && value.length ≤ 20 && value.toList.all (fun c => c.isAlphanum || c == '-'))
   | _ => false

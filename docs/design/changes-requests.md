@@ -640,3 +640,20 @@ must show the alert's clinical label/context rather than the raw key (the curren
 legacy popup prints its key); adopt that renderer change before enabling clinical
 alerts in production specs. It must not expose internal source/capture dumps as
 clinical alert copy.
+
+### WASM runner memory fix (owning lane)
+
+The expanded canonical spec makes wasm/test/equivalence.mjs fail at line 98
+with RangeError: Invalid string length when joining all 4,096 JSON inputs.
+Retain every case and event. Process small native batches (e.g. 16 cases),
+compare/discard each batch's outputs, and translate output case indices to the
+batch-local index; do not collect the full native output either (512 MB limit).
+A full-case-count workaround is /tmp/lean-streamed-equivalence.mjs, with results
+in /tmp/lean-streamed-equivalence-results.json. Please apply this memory-bounded
+approach in the owned runner. Permanent new-feature coverage is independently
+provided in lean/Ehr/Core/test-wasm-features.mjs (252 API comparisons/84 cases).
+
+The exact minimal owned-runner patch is prepared at
+/tmp/wasm-equivalence-memory.patch. It keeps the original seed, case generation,
+case/event counts and full byte comparisons; only native batching and output
+case-index bookkeeping change.
