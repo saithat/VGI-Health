@@ -67,7 +67,7 @@ theorem commitReviewsMet (ep : Episode) : CommitReviewsMet ep := by
 theorem interruptiveHandled (ep : Episode) : InterruptiveHandled ep := by
   intro s _ actor e c hc al hal hac hat k hk
   exact ((commitGuard_iff ..).mp
-    (T0_commit_needs_guard _ _ _ _ actor s e c hc.1 hc.2)).2.2.2 al hal hac hat k hk
+    (T0_commit_needs_guard _ _ _ _ actor s e c hc.1 hc.2)).2.2.2.1 al hal hac hat k hk
 
 /-- The guard requires the actual unit, rather than accepting a bare number. -/
 theorem commitUnitsRight (ep : Episode) : CommitUnitsRight ep := by
