@@ -108,6 +108,21 @@ export function expectedNodeAria(
           )
             ? [entry("table", `${node.info.label} reference data`)]
             : []),
+          ...(presentation === "timeGrid" &&
+          node.info.rows.some((row) =>
+            row.some(
+              ([key, value]) =>
+                ![
+                  "Medication",
+                  "Dose",
+                  "Route",
+                  "Frequency",
+                  "Order status",
+                ].includes(key) && value.split(" · ").length > 3,
+            ),
+          )
+            ? [entry("list", `${node.info.label} administration details`)]
+            : []),
         ];
       }
       return node.info.display === "summary"

@@ -24,6 +24,16 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
         [{ id := "banner", kind := .banner, tag := "banner" },
          { id := "records", kind := .table info, label := title, tag := "present." ++ kind.tag }] }] }
 
+/-- A normal source group supplies both panes of an In Basket screen. -/
+def inBasketProgram : Program :=
+  { Examples.Tiny.program with
+    id := "in-basket-example", start := "example", screens :=
+      [{ id := "example", title := "In Basket", workflow := "W2", components :=
+        [{ id := "banner", kind := .banner, tag := "banner" },
+         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.columns" },
+         { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
+         { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
+
 mutual
 /-- Strip only layout wrappers for the same-record before view. -/
 def unstyled : UiNode → List UiNode
@@ -82,5 +92,11 @@ def main (args : List String) : IO Unit := do
     let screen := runRenderUi input
     IO.FS.writeFile (out / (kind.tag ++ ".json")) (toJson screen).pretty
     IO.FS.writeFile (out / (kind.tag ++ "-before.json")) (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+  if let some (_, base) := inputs.getLast? then
+    let input := { base with program := inBasketProgram, state := init base.spec inBasketProgram base.facts base.user }
+    inputs := inputs ++ [("inBasket", input)]
+    let screen := runRenderUi input
+    IO.FS.writeFile (out / "inBasket.json") (toJson screen).pretty
+    IO.FS.writeFile (out / "inBasket-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
   IO.FS.writeFile (out / "api-inputs.jsonl") ("\n".intercalate (inputs.map encodeJson) ++ "\n")
-  IO.println s!"Exported {cases.length} structured examples and before views to {out}"
+  IO.println s!"Exported {inputs.length} structured examples and before views to {out}"

@@ -4,6 +4,8 @@ Lean emits a `presentation` node containing ordinary semantic children. The cont
 
 Tables preserve every column, duplicate cell and record. The MAR groups order metadata at left and uses Lean-projected hourly columns. Charts separate measures and units and use supplied values only for geometry; reference curves come from the payload. All chart data remain in the source table. Status tints decorate explicit supplied words and flags.
 
+The composed In Basket fixture uses a source group tagged `layout.columns`, with separate folder/list info children. Lean emits the columns; the painter gives that existing container a narrow folder rail and wide message pane. A regular group can also carry `present.<kind>` when a view needs both info and ordinary semantic controls.
+
 Reproduce the fixtures from the repository root:
 
 ```sh
