@@ -34,6 +34,7 @@ interface Point {
   expert: number | null;
   floor: number | null;
   sample: string;
+  unavailableReason:string|null;
 }
 function pointsFor(
   run: RunData,
@@ -45,6 +46,9 @@ function pointsFor(
   return versionsFor(run, persona).map((version) => {
     const iteration = exact?.iterations.find((i) => i.version === version);
     const workload = workloadAt(run, persona, version);
+    const missing=iteration?.tasks.filter(task=>task.status==='not-computed')??[];
+    const complete=missing.length===0;
+    const unavailableReason=missing.length?`not computed (${[...new Set(missing.map(task=>task.reason??'search bound'))].join(', ')})`:null;
     const key = metric === "clicks" || metric === "keystrokes" || metric === "scrolls" || metric === "scrollPx" || metric === "mouseTravelPx" ? metric : null;
     return {
       version,
@@ -57,21 +61,21 @@ function pointsFor(
         ),
       values:
         measure === "expert"
-          ? (iteration?.workflows.flatMap((w) => typeof w.metrics[metric]==='number'?[{workflow:w.workflow,value:w.metrics[metric]??0}]:[]) ?? [])
+          ? (complete?iteration?.workflows.flatMap((w) => typeof w.metrics[metric]==='number'?[{workflow:w.workflow,value:w.metrics[metric]??0}]:[])??[]:[])
           : key
             ? workload.workflows.flatMap((w) => typeof w.mean[key]==='number'?[{workflow:w.workflow,value:w.mean[key]??0}]:[])
             : [],
       total:
         measure === "expert"
-          ? (iteration?.total[metric] ?? null)
+          ? (complete?iteration?.total[metric]??null:null)
           : key
             ? (workload.total?.[key] ?? null)
             : null,
-      expert: measure === "workload" && run.manifest.measurementProtocol && key ? workload.canonical?.[key] ?? null : iteration?.total[metric] ?? null,
-      floor: iteration?.floor[metric] ?? null,
+      expert: measure === "workload" && run.manifest.measurementProtocol && key ? workload.canonical?.[key] ?? null : complete?iteration?.total[metric]??null:null,
+      floor: complete?iteration?.floor[metric]??null:null,unavailableReason,
       sample:
         measure === "expert"
-          ? [...new Set(iteration?.tasks.map((t) => t.space) ?? [])].join(
+          ? unavailableReason?`${unavailableReason}; ${iteration?.coverage?.computed??0}/${iteration?.coverage?.expected??iteration?.tasks.length??0} tasks computed; missing tasks excluded from floor aggregates`:[...new Set(iteration?.tasks.map((t) => t.space) ?? [])].join(
               ", ",
             ) || "Unavailable"
           : workload.total
@@ -430,9 +434,9 @@ export function WorkflowComplexity({
                       .map((w) => `${w.workflow}: ${fmt(w.value)}`)
                       .join("; ") || "Unavailable"}
                   </td>
-                  <td>{p.total === null ? "Unavailable" : fmt(p.total)}</td>
-                  <td>{p.expert === null ? "Unavailable" : fmt(p.expert)}</td>
-                  <td>{p.floor === null ? "Unavailable" : fmt(p.floor)}</td>
+                  <td>{p.total === null ? p.unavailableReason??"Unavailable" : fmt(p.total)}</td>
+                  <td>{p.expert === null ? p.unavailableReason??"Unavailable" : fmt(p.expert)}</td>
+                  <td>{p.floor === null ? p.unavailableReason??"Unavailable" : fmt(p.floor)}</td>
                   <td>{p.sample}</td>
                 </tr>
               ))}
@@ -443,7 +447,7 @@ export function WorkflowComplexity({
           {run.complexity?.suite} {run.complexity?.search}
         </p>
         <p>
-          Missing values are unavailable, never zero. Realistic workload uses
+          Missing values are unavailable, never zero. Floor searches run only after adaptation; bounded tasks say “not computed (search bound)” and are excluded from aggregates. Partial unions are not charted as complete floors. Realistic workload uses
           recorded day results at the exact program version; no predictions are
           used. Different personas cover different workflow unions. Mouse travel uses measured component centers at 1440×900, straight lines, no tremor; missing geometry is unavailable.
         </p>

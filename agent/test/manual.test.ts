@@ -20,3 +20,14 @@ it('generates the core manual and persona rules from active formal sources with 
   expect(c.rules).not.toContain('"commit":"signOrders"');
   expect(c.rules).toContain('human-only');
 });
+
+it('keeps the full generated Program interface balanced, including inner patient-selection documentation',async()=>{
+ const ts=await import('typescript');const {programVocabulary}=await import('../src/manual.js');
+ const text=programVocabulary(),program=text.slice(text.indexOf('export interface Program'));
+ expect(program).toContain('patientSelection?');expect(program.trim().endsWith('}')).toBe(true);
+ const scanner=ts.createScanner(ts.ScriptTarget.Latest,true,ts.LanguageVariant.Standard,program);let balance=0;
+ for(let token=scanner.scan();token!==ts.SyntaxKind.EndOfFileToken;token=scanner.scan()){if(token===ts.SyntaxKind.OpenBraceToken)balance++;if(token===ts.SyntaxKind.CloseBraceToken)balance--;expect(balance).toBeGreaterThanOrEqual(0);}
+ expect(balance).toBe(0);
+ const result=ts.transpileModule(text,{reportDiagnostics:true,compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}});
+ expect(result.diagnostics?.filter(d=>d.category===ts.DiagnosticCategory.Error)).toEqual([]);
+});

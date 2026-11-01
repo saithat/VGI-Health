@@ -223,32 +223,6 @@ export function predictionVerdict(predicted:Savings|null,measured:ReplayDay|null
  return {held:known.length?held:null,note:'Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%.'};
 }
 
-export async function minClicksByWorkflow(deps: LoopDeps, specVersion: string, before: Program, after: Program, day: TrainDay | undefined): Promise<DecisionRecord['measured']['minClicks']> {
-  if (!day) return [];
-  const args = { specVersion, schedule: day.schedule, worldDir: deps.worldDir };
-  // The pre-migration program may be intentionally non-conforming under the
-  // new spec. Measure its old valid workflow rather than searching an impossible task.
-  const b = await deps.ehr.minClicks({ ...args, specVersion: before.specVersion, program: before });
-  const a = await deps.ehr.minClicks({ ...args, program: after });
-  const wf = new Map(day.schedule.tasks.map((t) => [t.id, t.workflow]));
-  const agg = new Map<string, { b: number; a: number; n: number }>();
-  for (const row of b.tasks) {
-    const w = row.workflow ?? wf.get(row.task) ?? '?';
-    const x = agg.get(w) ?? { b: 0, a: 0, n: 0 };
-    x.b += row.clicks;
-    x.n += 1;
-    agg.set(w, x);
-  }
-  for (const row of a.tasks) {
-    const w = row.workflow ?? wf.get(row.task) ?? '?';
-    const x = agg.get(w) ?? { b: 0, a: 0, n: 0 };
-    x.a += row.clicks;
-    agg.set(w, x);
-  }
-  return [...agg.entries()].map(([workflow, x]) => ({
-    workflow, before: Math.round((x.b / Math.max(1, x.n)) * 10) / 10, after: Math.round((x.a / Math.max(1, x.n)) * 10) / 10,
-  })).filter((r) => r.before !== r.after);
-}
 
 export function backendInfo(agent: AgentBackend, calls: readonly LlmCallRef[]): DecisionRecord['backend'] {
   const first = calls[0];
@@ -295,7 +269,7 @@ export function emptyRecord(deps: LoopDeps, input: { night: number; persona: Per
     deployed: null,
     outcome: 'no-change',
     release: null,
-    flags: [],
+    flags: ['reporting: theoretical minima are post-run only; no search attempted overnight'],
     llmCalls: [],
     createdAt: new Date().toISOString(),
   };
@@ -534,7 +508,6 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
-  rec.measured.minClicks = await minClicksByWorkflow(deps, specVersion, current, finalProgram, input.train[input.train.length - 1]);
   if (!replay) {
     rec.validation.reason = 'no validation day available';
     rec.outcome = 'validation-rejected';

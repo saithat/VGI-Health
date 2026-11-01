@@ -18,7 +18,7 @@ export class Native {
     if (this.cache.has(key)) return structuredClone(this.cache.get(key));
     const result = spawnSync(this.binary, [command], {
       input: json, encoding: 'utf8', maxBuffer: 32 * 1024 * 1024, timeout: 30000,
-      env: { ...process.env, LEAN_NUM_THREADS: '8' },
+      env: { ...process.env, LEAN_NUM_THREADS: process.env.LEAN_NUM_THREADS ?? '6' },
     });
     this.calls++;
     if (result.error || result.status !== 0) throw new Error(`native ${command}: ${result.error?.message ?? result.stderr ?? result.stdout}`);

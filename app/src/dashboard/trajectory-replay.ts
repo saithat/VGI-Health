@@ -17,7 +17,7 @@ export interface TrajectorySegment {
   start: number;
   end: number;
   facts: unknown;
-  seed: { kind: "init"; clock: number };
+  seed: { kind: "init"; clock: number; clinical?:boolean|undefined };
   goalsMet: boolean;
 }
 export interface Trajectory {
@@ -69,11 +69,22 @@ export function replayTrajectory(
       ),
       JSON.stringify(task.context.user),
     ];
-    const initial: State = JSON.parse(interp.init(...args));
-    state = { ...initial, clock: segment.seed.clock };
+    // A later clinical episode resets captures but carries the verified selected patient.
+    // The temporary init argument dispatches to the existing clinical initializer;
+    // every replayed event still uses the original certified executable in args.
+    const initial: State = JSON.parse(segment.seed.clinical
+      ? interp.init(args[0],JSON.stringify({...JSON.parse(args[1]),patientSelection:false}),args[2],args[3])
+      : interp.init(...args));
+    const patientContext=state?.patientContext;
+    state = { ...initial,...(segment.seed.clinical&&patientContext?{patientContext}:{}),clock: segment.seed.clock };
     for (let i = segment.start; i < Math.min(segment.end, count); i++) {
       const event = task.trace[i];
       if (!event || !state) throw new Error("Missing recorded event or state");
+      if(state.patientContext?.patient&&state.patientContext.bound!==state.patientContext.patient){
+        // Same data-arrival operation as the app host; it is not a clinician activation.
+        const hydrated:StepOutput=JSON.parse(interp.step(...args,JSON.stringify(state),JSON.stringify({scroll:{screen:state.screen}})));
+        state=hydrated.state;
+      }
       state.clock = event.t - task.context.startMin * 600;
       const screen = state.screen;
       const output: StepOutput = JSON.parse(

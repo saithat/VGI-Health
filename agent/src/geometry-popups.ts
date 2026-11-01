@@ -1,7 +1,7 @@
 /** Supplement representative native exports with possible alert-popup states.
  * Uses the existing native facts/init/render-ui APIs; never changes programs or rules.
  */
-import {spawn} from 'node:child_process';
+import {runNative} from './native-process.js';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {z} from 'zod';
@@ -9,9 +9,12 @@ import {expandProgram} from './composites.js';
 import {isRecord} from './jsonpatch.js';
 import {specSchema,type Program} from './schema.js';
 import {writeJson} from './util.js';
-function jsonCommand(binary:string,command:string,input:unknown):Promise<unknown>{return new Promise((resolve,reject)=>{
- const child=spawn(binary,[command],{stdio:['pipe','pipe','pipe']});let stdout='',stderr='';child.stdout.on('data',(d:Buffer)=>{stdout+=d.toString();});child.stderr.on('data',(d:Buffer)=>{stderr+=d.toString();});child.on('error',reject);child.on('close',code=>{if(code!==0)reject(new Error(`Native ${command}: ${stderr}`));else{try{resolve(JSON.parse(stdout));}catch(error){reject(error);}}});child.stdin.end(JSON.stringify(input));
-});}
+async function jsonCommand(binary:string,command:string,input:unknown):Promise<unknown>{
+ const result=await runNative(binary,[command],{input:JSON.stringify(input)});
+ if(result.code!==0)throw new Error(`Native ${command}: ${result.stderr}`);
+ return JSON.parse(result.stdout);
+}
+
 export async function exportPopupGeometry(binary:string,input:{program:Program;specFile:string;fhir:string;outDir:string}):Promise<void>{
  const spec=await readFile(input.specFile,'utf8').then(s=>specSchema.parse(JSON.parse(s))),program=expandProgram(input.program);
  const explicit=program.screens.flatMap(screen=>screen.components.flatMap(component=>{

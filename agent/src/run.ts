@@ -42,6 +42,7 @@ import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
   days: number;
+  parallel?:boolean;
   llm: JsonLlm;
   worldDir: string;
   runsRoot?: string;
@@ -100,6 +101,13 @@ export function historyItem(r: DecisionRecord): HistoryItem {
   };
 }
 
+async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)=>Promise<void>):Promise<void>{
+ if(!parallel){for(const item of items)await work(item);return;}
+ const results=await Promise.allSettled(items.map(work));
+ const failure=results.find((r):r is PromiseRejectedResult=>r.status==='rejected');
+ if(failure)throw failure.reason;
+}
+
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const log = opts.log ?? (() => undefined);
   const underlyingEhr = opts.ehr ?? createEhr();
@@ -108,6 +116,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
+  if(opts.parallel&&opts.screens?.mode==='real')throw new Error('Parallel real runs require per-persona screen checkers; omit the shared screen override');
+  if(opts.parallel&&personaIds.length>5)throw new Error('Parallel mode permits at most five persona workers');
   const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
@@ -126,7 +136,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const fingerprints = await runFingerprints(ehr, world.dir);
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
-    fingerprints: z.unknown(),
+    fingerprints: z.unknown(),parallel:z.boolean().optional(),
     releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
     createdAt: z.string(), world: z.string(), backend: z.string(), model: z.string(), personas: z.array(z.string()),
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
@@ -139,6 +149,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
+    if((previous.parallel??false)!==(opts.parallel??false))throw new Error('Resume parallel mode must match the recorded run');
     if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.model !== opts.llm.model || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
         JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
@@ -147,7 +158,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   }
   const manifestData = {
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
-    status: 'initializing', fingerprints, measurementProtocol,
+    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:1,fingerprints, measurementProtocol,
     mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
@@ -159,6 +170,17 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     warning: ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
   };
   await writeJson(manifestFile, manifestData);
+  const workerDeps=new Map<string,LoopDeps>();
+  const states:SeedState[]=[];
+  for(const id of personaIds){
+    if(!opts.parallel){workerDeps.set(id,deps);continue;}
+    const workerScreens=opts.screens??createScreenChecker(nativeEhr,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),artifactsDir:path.join(dir,'reports/screens'),cacheDir:path.join(dir,'screen-cache',id)});
+    const geometry=opts.geometry??workerScreens.geometry;
+    const workerEhr=geometry?geometryEhr(nativeEhr,geometry,dir):nativeEhr;
+    const state:SeedState={rejected:new Set(),injected:0};states.push(state);
+    workerDeps.set(id,{...deps,ehr:workerEhr,screens:workerScreens,seedState:state});
+  }
+
 
   const releases = new Map<string, Release>();
   const release = async (id: string) => {
@@ -170,6 +192,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   };
   let inForce = await release(RELEASE_IDS.base);
 
+  try {
   // Fail with every initial obstruction before spending browser/model time. No bypass.
   if (ehr.mode === 'real') {
     const blocked: string[] = [];
@@ -188,7 +211,6 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
 
-  try {
   // Day-1 programs: the canonical program personalized per user (version 0), deployed with a certificate.
   const views = new Map<string, PersonaView>();
   const programs = new Map<string, Map<number, Program>>();
@@ -196,9 +218,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const history = new Map<string, HistoryItem[]>();
   const records: DecisionRecord[] = [];
   const timelines = new Map<string, PersonaTimeline>();
-  for (const id of personaIds) {
+  await personaPhase(personaIds,opts.parallel??false,async id=>{
+    const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
     const params = world.personas.get(id);
-    if (!params) continue;
+    if (!params) return;
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
     if (opts.resume && existsSync(path.join(dir, 'programs', id, 'deployed.json'))) {
@@ -222,13 +245,15 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     train.set(id, []);
     history.set(id, []);
     timelines.set(id, { persona: id, days: [], nights: [] });
-  }
+  });
 
   const failures = new Map<string, number>();
   await writeJson(manifestFile, { ...manifestData, status: 'running' });
   for (let day = 1; day <= opts.days; day++) {
     // Login -> shift -> logout.
-    for (const [id, view] of views) {
+    await personaPhase([...views],opts.parallel??false,async ([id,view])=>{
+      const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
+      const ehr=deps.ehr;
       const schedule = await world.schedule(day, id);
       if (!schedule) throw new Error(`world has no schedule for day ${day} / ${id}`);
       const { program, certificate } = await store.login(id);
@@ -261,12 +286,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
       timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
       log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls`);
-    }
+    });
     if (day === opts.days) break;
 
     // Night `day`: the release (if any) takes effect at the next login.
     const nextRelease = day + 1 === releaseDays.v2 ? await release(RELEASE_IDS.feature) : day + 1 === releaseDays.v3 ? await release(RELEASE_IDS.migration) : null;
-    for (const [id, view] of views) {
+    await personaPhase([...views],opts.parallel??false,async ([id,view])=>{
+      const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
+      const seedState=deps.seedState;
       const { program: current } = await store.login(id);
       const nightInput = {
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
@@ -298,10 +325,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         rejected: r.candidates.filter((e) => e.check.status === 'fail').length, seeded: r.candidates.filter((e) => e.candidate.seeded).length,
       });
       log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status === 'fail').length} rejected`);
-    }
+    });
     if (nextRelease) inForce = nextRelease;
   }
 
+  records.sort((a,b)=>a.night-b.night||personaIds.indexOf(a.persona)-personaIds.indexOf(b.persona));
+  for(const state of states){for(const kind of state.rejected)seedState.rejected.add(kind);seedState.injected+=state.injected;}
   // Blind tests use recorded actual even-day measurements and their active-release canonicals.
   for (const r of records) {
     if (!r.deployed || r.versionAfter === r.versionBefore) continue;
@@ -322,7 +351,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const summary: RunSummary = {
     runId,
     dir,
-    timelines: [...timelines.values()],
+    timelines: personaIds.flatMap(id=>{const timeline=timelines.get(id);return timeline?[timeline]:[];}),
     rejections: records.flatMap((r) => [
       ...r.candidates.filter((e) => e.check.status === 'fail').map((e) => ({
         night: r.night, persona: r.persona, candidate: e.candidate.id, seeded: e.candidate.seeded, property: e.check.property, message: e.check.message,
@@ -339,7 +368,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', nightDeploys: records.filter(r=>r.deployed).length, infrastructureErrors:summary.infrastructureErrors, llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   return summary;
   } catch (error) {
-    await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
+    if(JSON.parse(await readFile(manifestFile,'utf8')).status!=='blocked')await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
     throw error;
   }
 }

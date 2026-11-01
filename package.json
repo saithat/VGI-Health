@@ -9,7 +9,7 @@
     "conformance": "node conformance/index.mjs",
     "test:conformance": "node --experimental-strip-types --test conformance/*.test.mjs",
     "complexity": "node scripts/complexity/compute.mjs",
-    "test:complexity": "node --test scripts/complexity/compute.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts",
+    "test:complexity": "node --test scripts/complexity/*.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts",
     "trajectories": "node scripts/trajectories/index.mjs",
     "test:trajectories": "pnpm --filter agent exec tsx --test ../scripts/trajectories/index.test.mjs && pnpm --filter app exec playwright test trajectories.spec.ts --project=desktop --workers=1"
   }

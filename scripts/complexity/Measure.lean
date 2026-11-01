@@ -26,8 +26,9 @@ structure Effort where
 structure Answer where
   supported : Bool
   reason : String := ""
-  metrics : Effort := {}
-  floor : Effort := {}
+  status : String := "computed"
+  metrics : Option Effort := none
+  floor : Option Effort := none
   space : SearchSpace := .full
   keystrokeSpace : SearchSpace := .full
   exact : Bool := true
@@ -60,9 +61,11 @@ def measureRequest (r : Request) : IO Answer := do
       if !(sp.element? g.element).any (fun el => valueSatisfies ctx.facts user el.kind (goalValue sp ctx.facts user g)) then
         throw (IO.userError s!"{r.task.id}: fixed value invalid for {g.element}")
   IO.eprintln s!"{r.task.id}: {contexts.length} episodes, search"
-  let click ← ioExcept (optionExcept (jointMinimum contexts .clicks r.bound) s!"{r.task.id}: click search failed")
+  let some click := jointMinimum contexts .clicks r.bound
+    | return { supported := true, status := "not-computed", reason := "search bound", exact := false }
   IO.eprintln s!"{r.task.id}: clicks {click.cost}, key search"
-  let keys ← ioExcept (optionExcept (jointMinimum contexts .keystrokes r.bound) s!"{r.task.id}: key search failed")
+  let some keys := jointMinimum contexts .keystrokes r.bound
+    | return { supported := true, status := "not-computed", reason := "search bound", exact := false }
   IO.eprintln s!"{r.task.id}: keys {keys.cost}, replay"
   let mut state := taskInitial contexts
   let mut ops : List Op := []
@@ -107,10 +110,10 @@ def measureRequest (r : Request) : IO Answer := do
       !(el.prefill == .autoLinked && !needsHuman el)).length
   return {
     supported := true,
-    metrics := {
+    metrics := some {
       clicks := click.cost, keystrokes := keys.cost, klmSeconds := (klmMs ops).toFloat / 1000,
       screens, requiredFields := entered.eraseDups.length, popups },
-    floor := {
+    floor := some {
       clicks := fm.clicks, keystrokes := fm.keystrokes, klmSeconds := fm.klmDeciSec.toFloat / 10,
       screens := contexts.length, requiredFields := floorFields, popups := fm.popups },
     space := click.space, keystrokeSpace := keys.space,

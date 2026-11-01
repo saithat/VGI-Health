@@ -26,7 +26,7 @@ import { readFileSync, createWriteStream } from 'node:fs';
 import { mkdtemp, rm, mkdir, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import type { EhrClient } from './ehr.js';
+import type { EhrClient,SimulateInput } from './ehr.js';
 import { sha256 } from './program.js';
 import { isRecord } from './jsonpatch.js';
 import type { CheckResult, Program, ScreenCheckResult } from './schema.js';
@@ -38,7 +38,7 @@ import { REPO_ROOT, errorMessage, resolveUserPath } from './util.js';
 export interface ScreenChecker {
   readonly mode: 'real' | 'fake';
   geometry?:GeometryProvider;
-  check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult>;
+  check(input: { specVersion: string; program: Program } & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>): Promise<ScreenCheckResult>;
 }
 
 /** A failed screen check, in the same shape as a checker rejection (for the record). */
@@ -57,7 +57,7 @@ export function bundlesFromEnv(): string[] {
   return (process.env['EHR_SAMPLE_FHIR'] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 }
 
-export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string } = {}): ScreenChecker {
+export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string;cacheDir?:string } = {}): ScreenChecker {
   const fake = opts.fake ?? ehr.mode === 'fake';
   const bundles = [...(opts.bundles ?? bundlesFromEnv())].map(resolveUserPath);
   if (!fake && !bundles.length) bundles.push(path.join(REPO_ROOT,'fixtures/synthea/Ashly_Rippin_149fcc1f.json'));
@@ -72,7 +72,7 @@ export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bund
       preferredBundles[flag==='pediatric'?'np':'surgeon']=bundles.indexOf(file);
     }
   }
-  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir,preferredBundles);
+  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir,preferredBundles,opts.cacheDir);
 }
 
 function run(cmd: string, args: string[], cwd: string, onOutput?: (chunk: string) => void, env: NodeJS.ProcessEnv = process.env): Promise<{ code: number; output: string }> {
@@ -100,10 +100,11 @@ export function failingFilesFromOutput(output: string, files: readonly string[])
 class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
   private readonly atlases=new Map<string,GeometryAtlas>();
-  geometry:GeometryProvider=async input=>{const hash=geometryCacheKey(input.program);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
-  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={}) {}
+  private atlasKey(input:Parameters<GeometryProvider>[0]){return geometryCacheKey(input.program)+(input.schedule&&input.worldDir?`:${sha256(JSON.stringify([input.worldDir,input.schedule]))}`:'');}
+  geometry:GeometryProvider=async input=>{const hash=this.atlasKey(input);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
+  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={},private readonly cacheDir?:string) {}
 
-  async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
+  async check(input: { specVersion: string; program: Program } & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>): Promise<ScreenCheckResult> {
     const base = { mode: this.mode, bundles: this.bundles };
     if (this.bundles.length === 0) {
       return { ...base, status: 'error', pages: 0, failingScreens: [], failingFiles: [], message: 'no sample FHIR bundle configured (--fhir or EHR_SAMPLE_FHIR); a version that was not screen-checked is never deployed' };
@@ -116,7 +117,7 @@ class CliScreenChecker implements ScreenChecker {
       const files: string[] = [];
       for (const [i, bundle] of this.bundles.entries()) {
         try {
-          files.push(...await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: bundle, ui: true, outDir: path.join(dir, `b${i}`) }));
+          files.push(...await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: bundle, ui: true, outDir: path.join(dir, `b${i}`),...(i===0&&input.schedule&&input.worldDir?{workspace:{schedule:input.schedule,worldDir:input.worldDir}}:{}) }));
         } catch (e) {
           return { ...base, status: 'error', pages: files.length, failingScreens: [], failingFiles: [], message: `render-screens failed for ${bundle}: ${errorMessage(e)}` };
         }
@@ -132,21 +133,21 @@ class CliScreenChecker implements ScreenChecker {
         representatives.set(hash, representative);
         coverage.push({ file: path.relative(dir, file), sha256: hash, representative: path.relative(dir, representative) });
       }
-      const reportDir = this.artifactsDir ? path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`,geometryCacheKey(input.program).replace(':','.')) : null;
+      const reportDir = this.artifactsDir ? path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`,this.atlasKey(input).replaceAll(':','.')) : null;
       if (reportDir) {
         await mkdir(reportDir, { recursive: true });
         await writeFile(path.join(reportDir, 'coverage.json'), JSON.stringify({ pages: files.length, distinct: representatives.size, coverage }, null, 2));
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env, EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:'1', EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       const measured=z.object({geometry:z.array(screenGeometrySchema).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));
       if(measured.geometry?.length){
         const build=z.object({appSha256:z.string()}).parse(JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')));
         const atlas:GeometryAtlas={schemaVersion:1,programHash:geometryProgramHash(input.program),componentsSha256:geometryComponentsHash(input.program),appSha256:build.appSha256,viewport:{width:1440,height:900},states:[...measured.geometry].sort((a,b)=>Number(b.sample===`b${this.preferredBundles[input.program.role]??0}`)-Number(a.sample===`b${this.preferredBundles[input.program.role]??0}`)),source:'chromium'};
-        this.atlases.set(geometryCacheKey(input.program),atlas);if(reportDir)await writeFile(path.join(reportDir,'geometry.json'),JSON.stringify(atlas));
+        this.atlases.set(this.atlasKey(input),atlas);if(reportDir)await writeFile(path.join(reportDir,'geometry.json'),JSON.stringify(atlas));
       }
       if (res.code === 0) {
         const result:ScreenCheckResult={ ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
@@ -186,7 +187,7 @@ class FakeScreenChecker implements ScreenChecker {
   readonly mode = 'fake' as const;
   constructor(private readonly ehr: EhrClient) {}
 
-  async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
+  async check(input: { specVersion: string; program: Program } & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>): Promise<ScreenCheckResult> {
     const dir = await mkdtemp(path.join(tmpdir(), 'screens-fake-'));
     try {
       const files = await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: 'FAKE', outDir: dir });

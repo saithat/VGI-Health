@@ -18,54 +18,101 @@ Presentation components are declared in the source Program's presentationCompone
 export type Slot =
   | { fixed: { n: number } }
   | "current";
-
-
 export type Prefill =
   | "none"
-  
+  /** A named fact from the record, e.g. `"weightToday"`. */
+  | { fromRecord: { fact: string } }
+  /** A fixed default value (parsed according to the element's kind). */
+  | { default: { value: string } }
+  /** The value captured for another element. */
+  | { linked: { element: ElementId } };
 export type Action =
   | { goto: { screen: ScreenId } }
   | "back"
   | { commit: { commit: CommitId } }
-  
+  /** Records that the user reviewed this info (creates a receipt). */
+  | { markReviewed: { info: InfoId } }
+  /** Starts a new order line. */
+  | "newOrderLine"
+  /** Requests prior authorization for the current order line (release v2). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
+  | "requestPriorAuth";
 export type Visibility =
   | { encounter: { kind: string } }
   | "always"
   | { unlessReceipt: { info: InfoId } };
-
-
 export type Size =
   | "normal"
   | "compact"
   | "tiny";
-
 export type Kind =
-  
+  /** The patient banner (shows the `"patientBanner"` landmark). */
+  | "banner"
+  /** An input for one data element on one order line. */
+  | { field: { element: ElementId; slot: Slot; prefill: Prefill } }
+  /** A read-only info block. */
+  | { panel: { info: InfoId } }
+  | { table: { info: InfoId } }
+  | { trend: { info: InfoId } }
+  /** An alert. `popup` asks to show it as a popup (only removable alerts use this). */
+  | { alert: { alert: AlertId; popup: boolean } }
+  | { button: { action: Action } }
+  /** A container. Children name it as their `parent?`. */
+  | { group: { collapsible: boolean; startCollapsed: boolean } }
+  /** A tab container. Children pick their tab with `tab`. */
+  | "tabs"
+  /** A button that runs a macro. */
+  | { macro: { id: MacroId } }
+  | { search: { scope: string } }
+  /** Prior-authorization status of the current order line (release v2; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
+  | { priorAuth: { info: InfoId } };
 export interface Component {
   id: CompId;
   kind: Kind;
   label: string;
-  
+  /**
+   * A group or tabs component on the same screen.
+   */
+  parent?: CompId;
+  /**
+   * Tab index inside a parent `tabs` component.
+   */
+  tab: number;
+  visibility: Visibility;
+  size: Size;
+  hotkey?: string;
+  /**
+   * Stable semantic tag used by agent patches and stability tracking.
+   */
+  tag: string;
+  /**
+   * Marks a copy (copies don't count against the stability budget).
+   */
+  copyOf?: CompId;
+}
 export interface ComponentDef {
   name: string;
   params: string[];
   body: Component[];
 }
-
-
 export interface Screen {
   id: ScreenId;
   title: string;
-  
+  /**
+   * Workflow tag, `"W1"` … `"W7"`.
+   */
+  workflow: string;
+  components: Component[];
+}
 export type MacroStep =
-  
+  /** Enter a value into a field (the string is parsed by the element's kind). */
+  | { setValue: { comp: CompId; value: string } }
+  | { click: { comp: CompId } }
+  | { goto: { screen: ScreenId } };
 export interface Macro {
   id: MacroId;
   label: string;
   steps: MacroStep[];
 }
-
-
 export interface Program {
   id: string;
   version: number;
@@ -76,12 +123,16 @@ export interface Program {
   screens: Screen[];
   macros: Macro[];
   componentDefs?: ComponentDef[];
-  
+  /**
+   * Opt in to the certified patient-selection workspace; omitted by archived programs.
+   */
+  patientSelection?: boolean;
+}
 ```
 
 ## What you cannot change
 
-Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.
+Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. The shared patientSelection binding is immutable; never disable it. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.
 
 ## Enforced properties 1–13, A1–A4
 

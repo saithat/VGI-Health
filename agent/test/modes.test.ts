@@ -112,7 +112,7 @@ describe('re-running one night of an existing run (night command)', () => {
 });
 
 
-it('compares release validation against its certified canonical', async () => {
+it('keeps theoretical searches out of release validation', async () => {
   const ehr = createFakeEhr();
   const original = ehr.minClicks.bind(ehr);
   const calls = vi.spyOn(ehr, 'minClicks').mockImplementation(async (input) => {
@@ -123,6 +123,6 @@ it('compares release validation against its certified canonical', async () => {
     worldDir: await fakeWorld(3), runsRoot: await tmp('spec-minima'), runId: 'minima',
     releaseDays: { v2: 2, v3: 3 } });
   expect(result.timelines[0]?.days).toHaveLength(3);
-  expect(calls.mock.calls.every(([input]) => input.specVersion === input.program.specVersion)).toBe(true);
+  expect(calls).not.toHaveBeenCalled();
   expect(rec(2, 'P3').validation.accepted).toBe(true);
 });

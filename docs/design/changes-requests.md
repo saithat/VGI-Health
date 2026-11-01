@@ -2727,6 +2727,20 @@ After merging `32369320` / `fc291cbe`, the patient-scope filter removes legitima
 The shared painter now supports source `columns` containing at least three read-only `section` cards as a compact 3/2/1-column flow, leaving their DOM/accessibility order intact. `layout.chartIndex.columns` and the storyboard sections in `Density.lean` fit this contract. Icons decorate actual activity buttons; no toolbar controls are invented. Twelve-pixel type is the retained fidelity floor. CSS is isolated in `app/src/ehr/ui/dense-shell.css`.
 
 Before captures found that the first P3 replay My Patients / MAR row (Leanne Harber) has an empty `marSchedule` at the world day, while the department graph contains no MedicationRequest resources. Please check the source projection/context for representative active MAR rows when adding the dense baseline. The shell will not fabricate medications, hide the empty state, or fill clinical inputs for screenshots. A different appropriately populated patient can be selected through the native Patient Lookup / worklist for a representative screenshot.
+
+### Optional reporting optimization: current P1/P4 benchmark minimum searches exceed ten minutes
+
+On c9f30993 with the current native build, the all-persona FAKE native consumer
+fixture passes trajectory replay (15 tasks / 1,095 events) and conformance (514
+pass, zero fail). Complexity completes P2/P3/P5 but P1/P4 exceed 180s and 600s
+native-search deadlines. W2 reports seven clicks, then stalls in independent
+keystroke minimization. Diagnostics: /tmp/vgi-parallel-consumer-complexity2.txt.
+Please optimize the certified search or expose a certified clicks-only query
+with secondary key counts clearly labeled. Preserve every property/search-space
+claim; do not substitute a heuristic minimum. Update: minimum searches have been removed from `run-days`; they are optional
+post-run reporting with per-task time/bound limits and explicit unavailable results.
+This performance request no longer blocks adaptation or deployment.
+No live-model run was started. The complete report remains refused on timeout.
 ## DEMO-HONESTY: archived chart display names (painter owner)
 
 Archived replay panes can expose raw values `disch`, `given`, `Last encounter SS`, and `Department primary-care`. Render these as Discharged, Administered, Short stay, and Primary care respectively while retaining source codes in inspector data. Apply in the shared semantic display formatter, including dashboard/browser replay. DEMO-HONESTY leaves app/src/ehr untouched as required.

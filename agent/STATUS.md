@@ -1,3 +1,123 @@
+## Reporting-only floors — 2026-11-01
+
+The smoke abort at `ehr min-clicks` is fixed by removing theoretical searches
+from the nightly critical path, including normal, surface-feature and migration
+nights. `run-days` never invokes `ehr min-clicks` or complexity. Candidate choice,
+completion checks, safety/certification and deploy gates use simulator results;
+none depends on a searched floor. New decision records keep the legacy
+`measured.minClicks` list empty and explicitly note that it is post-run only.
+The simulator's cheap ideal-interface counts may remain in raw logs; they do not
+invoke search or control acceptance.
+
+Post-run `pnpm complexity --run <id>` has a shared per-task wall-clock budget of
+10 seconds and search bound 5,000, covering both adapter and native comparisons.
+The task subprocess is killed on timeout. A bound/timeout becomes **not computed
+(search bound)** with null metrics/floors, never zero. Other report errors are
+explicitly **not computed (report error)**. Computed-only aggregates carry
+expected/computed/missing counts; partial unions are not presented as full floors
+or compared with full simulated workload in the dashboard. Each deployed spec
+snapshot and recorded executable is used, including v0. No historical run data
+is regenerated. A run report does not recompute unrelated canonical references;
+request them explicitly with `--with-canonical`.
+
+```sh
+# Start the complete parallel run (the wrapper prepares and verifies builds):
+scripts/run-overnight.sh core-10day
+# Equivalent prepared loop, with NO reporting searches:
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id core-10day \
+  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
+# Optional post-run floors, with explicit per-task limits:
+pnpm complexity --run core-10day --task-timeout-ms 10000 --search-bound 5000
+```
+
+The wrapper performs floor reporting only after the loop finishes. A reporting
+failure warns and preserves the completed run; safety/conformance failures remain
+failures. Infrastructure, certification, full validation completion, ARIA and
+visibility gates are unchanged. Expected loop wall time remains a planning
+estimate of about 60–120 minutes for five parallel personas, dominated by model
+and cold screen gates, with no floor searches extending or aborting a night.
+
+Regression coverage includes throwing `minClicks` backends for all five personas,
+three parallel days, both ordinary and release calendars, and exact replay.
+The bounded native report was verified with bound 1: every uncomputed task is
+labeled, excluded, and nullable, and the command completes successfully. No live
+model run or probe was started.
+
+Verified: agent 105/105 tests (including 5-persona × 3-day parallel FAKE and
+REPLAY calendars), app 299/299 tests, complexity unit tests 7/7, agent typecheck,
+agent/app lint, app build, native default build and `make wasm-check`. The wrapper
+resume regression verifies real build fingerprints and a failed optional floor
+command without rebuilding or making model calls. Run fixtures stayed in `/tmp`.
+
+## Parallel run readiness — 2026-11-01
+
+The full wrapper uses five concurrent persona workers in ONE run directory.
+Initial deployments, days and nights run concurrently across personas, with
+barriers before the next phase/release. Programs, days, decisions, certificates,
+blind baselines and no-agent arms keep the original layout. A single coordinator
+writes the manifest/summary. Each worker has independent seed rejection state,
+screen checker, geometry cache and `screen-cache/<persona>` receipts. Recorded
+call IDs and native journals remain unique. Failures join the other workers before
+marking the run failed; `--resume --parallel` keeps their completed checkpoints.
+The recorded parallel mode must match on resume.
+
+`EHR_SCREEN_WORKERS=1` means one Chromium per persona, not one for the whole run.
+Five persona workers may therefore use five browsers. Workers use separate ports,
+temporary directories and cache directories. No build runs while browsers do.
+Fresh preflight has NO `ulimit -v` around `lake build`; the orchestrator's systemd
+scope supplies the memory cap. `make wasm-check` verifies Lean-source/WASM parity
+on both fresh and resumed paths; resume still performs no rebuild. Six Lean
+threads and the bounded Lean stack remain configured. Native commands (including
+popup rendering) have a ten-minute default deadline; override with positive
+`EHR_COMMAND_TIMEOUT_MS`. Timeout kills the native process group and records
+`infrastructure-error`, never a checker rejection or “no change”.
+
+The generated manual now extracts TypeScript declarations through the TypeScript
+parser, preserving inner docstrings and the complete Program interface. Its
+balanced-syntax regression includes `patientSelection?`; manual/hash regenerated.
+Fresh native trajectory replay also follows workspace selection/hydration and
+carries the selected patient across clinical episode resets. Recorded historical
+trajectories retain their original protocol. Complexity computes personas in
+parallel using isolated scratch inputs, after compiling its single helper.
+
+Exact full run (from this worktree, inside the existing systemd scope):
+
+```sh
+scripts/run-overnight.sh core-10day
+# Resume the same worker checkpoints/builds:
+scripts/run-overnight.sh core-10day --resume
+```
+
+Equivalent prepared agent command:
+
+```sh
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id core-10day \
+  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
+```
+
+Planning estimate: about 60–120 minutes plus preflight/postprocessing, rather than
+five serial persona totals. The wrapper runs conformance with explicit `--run-only`: every deployed revision
+and every applicable scenario, without repeating unrelated canonical references.
+Omit that flag to additionally check the complete 15-canonical reference matrix.
+The slowest worker governs each phase; cold full UI
+coverage can add substantial time (P5 currently exports 1,015 distinct trees).
+This is an estimate from the prior 43-minute single-persona run, not a measured
+five-persona live benchmark. No live-model run or probe was started.
+
+Verification distinguishes the deterministic 5-persona × 3-day FAKE/REPLAY /
+resume test from the native consumer contract fixture (one real task per persona
+per day, explicitly FAKE, with real native certificates and traces; no renderer
+certification or overnight-performance claim). The supplementary full-browser
+native probe hit the host temporary-file quota before completing; it was not
+presented as a successful run. Stale unit-test temporary files were cleaned up.
+No verification run data is committed.
+
 ## Physical interaction metrics — owner decision, 2026-11-01
 
 Verification: 15/15 current certified canonicals have complete real Chromium
@@ -277,7 +397,7 @@ pnpm --filter agent run-days --days 2 --backend codex \
 
 ```sh
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
-pnpm --filter agent run-days --days 10 --backend codex \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
   --service-tier fast --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id core-10day \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
@@ -309,7 +429,7 @@ pnpm --filter app build
 
 Indexers enforce `ulimit -v 8000000;` locally on each Lean/lake helper. Do not
 apply that virtual-address cap to the whole Node/Chromium runner: V8/WASM needs
-large reserved address space. One lake and one browser at a time; never build
+large reserved address space. One lake at a time; up to five persona browsers in parallel mode (one otherwise); never build
 while a browser/server is running.
 
 ## Left for the orchestrator

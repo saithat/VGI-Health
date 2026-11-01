@@ -83,7 +83,7 @@ if (result.status !== 0 && existsSync(report)) {
   // navigation and rendering infrastructure exceptions remain errors.
   if (!(json.errors?.length) && errors.length && errors.every((e) => e.matcherResult || /(?:expect\(|expect\.)/.test(e.message ?? ""))) gateStatus = "fail";
 }
-if (process.env.EHR_SCREEN_RESULT) writeFileSync(process.env.EHR_SCREEN_RESULT, JSON.stringify({status:gateStatus, geometry:ui?files.flatMap(file=>[`${digest(readFileSync(file))}.json`,`${digest(readFileSync(file))}.background.json`].map(name=>({path:resolve(process.env.EHR_GEOMETRY_DIR,name),sample:basename(dirname(file))}))).filter(item=>existsSync(item.path)).map(item=>({...JSON.parse(readFileSync(item.path,'utf8')),sample:item.sample})):[]}));
+if (process.env.EHR_SCREEN_RESULT) writeFileSync(process.env.EHR_SCREEN_RESULT, JSON.stringify({status:gateStatus, geometry:ui?files.flatMap(file=>[`${digest(readFileSync(file))}.json`,`${digest(readFileSync(file))}.background.json`].map(name=>({path:resolve(process.env.EHR_GEOMETRY_DIR,name),sample:/^(workspace-d\d+)-/.exec(basename(file))?.[1]??basename(dirname(file))}))).filter(item=>existsSync(item.path)).map(item=>({...JSON.parse(readFileSync(item.path,'utf8')),sample:item.sample})):[]}));
 if (cache) {
   const receipt = recordBatch(cache.directory, cache.context, cache.entries, cache.entries.filter((entry) => !entry.reused).map((entry) => entry.sha256), result.status === 0);
   process.stdout.write(`Whole-version coverage receipt: ${receipt}\n`);
