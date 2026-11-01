@@ -92,7 +92,7 @@
   "stopReason": "ENOENT: no such file or directory, open '/home/saithat/Projects/VGI-Health/runs/core-10day/decisions/night-04/P1.json'",
   "partialNote": "stopped/partial: 4 of 10 days",
   "note": "stopped/partial: 4 of 10 days",
-  "publishedAt": "2026-11-01T23:24:14.607Z",
-  "snapshotSha256": "a3587859f031fd1686c5c3aee1855aab7176371693520835539adadfb99c3681",
-  "originalArchive": "/home/saithat/Projects/run-tmp/publish-core-10day-live-s3FaWN.previous"
+  "publishedAt": "2026-11-01T23:37:40.572Z",
+  "snapshotSha256": "3d0f00c5fb8136995caf3d0dd4267b44c2c0e657950b077ef1cadc673fe95b9b",
+  "originalArchive": "/home/saithat/Projects/run-tmp/publish-core-10day-live-2rDaJt.previous"
 }
