@@ -49,7 +49,7 @@ def artifactPanels (s : Screen) : List Component :=
   let absent := wanted.filter fun i => !s.components.any fun c =>
     c.kind == .panel i || c.kind == .table i || c.kind == .trend i
   if absent.isEmpty then [] else
-    group s.id "legalReview" "Required artifact review" (collapsible := false) ::
+    group s.id "legalReview" "Review" (collapsible := false) ::
     absent.map fun i => panel s.id ("legal." ++ i) i
       ((specV1.info? i).map (·.label) |>.getD i) (parent := some "legalReview")
 
@@ -78,7 +78,7 @@ def withPrescriptionFields (s : Screen) : Screen :=
         let pre := match slot with | .fixed n => rowPrefix n | .current => ""
         c :: (prescriptionFields s.id pre slot ++
           [field s.id (pre ++ "legal.earliestFillDate") "earliestFillDate"
-            "Earliest fill date (ISO-8601; Schedule II series)" (slot := slot)])
+            "Earliest fill date" (slot := slot)])
       | _ => [c] }
 
 /-- Add legal outcomes where controlled substance questions already occur. -/
@@ -86,7 +86,7 @@ def withEducationOutcome (s : Screen) : Screen :=
   if !hasField s "naloxoneEducation" || hasField s "naloxoneEducationOutcome" then s else
   { s with components := s.components ++
     [field s.id "legal.naloxoneEducationOutcome" "naloxoneEducationOutcome"
-      "Naloxone education outcome: provided / declined / educatedWithin24Months"] }
+      "Naloxone education outcome"] }
 
 /-- Add reviewed artifact content and actions, preserving every existing component. -/
 def augment (s : Screen) : Screen :=
@@ -121,13 +121,8 @@ def newScreen (id workflow : String) : Screen :=
   let issues := ks.any issuanceCommits.contains || id == "w7Orders"
   { id, workflow, title := screenTitle id
     components := shell id [] hospitalSidebar [] ++
-      (if issues then lineFields id "" .current ++ controlledFields id else []) ++
-      (if id == "w7Orders" then
-        [field id "weight" "weight" "Weight today (kg)",
-         field id "dosingWeight" "dosingWeight" "Dosing weight (kg)",
-         button id "newLine" .newOrderLine "Accept and add another order",
-         goto id "toSign" "w7Sign" "Review and sign"]
-       else if id == "w7Sign" then
+      (if issues then orderComposer id { signScreen := if id == "w7Orders" then "w7Sign" else id, askWeight := true } else []) ++
+      (if id == "w7Sign" then
          [goto id "toOrders" "w7Orders" "Edit new prescription"] else []) }
 
 /-- New artifacts and cross-service links are reachable from the original

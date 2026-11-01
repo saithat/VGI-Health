@@ -928,3 +928,62 @@ FactsInput. Official regenerated output has **141 types and 40 typed samples**;
 strict tsc passes. No Core definitions or proof statements changed. Rebuilding
 WASM after this tool-only change produces byte-for-byte identical tested assets;
 the source manifest has been refreshed and make wasm-check passes.
+
+## CR-17 — content blueprint integration and missing language capabilities
+
+Content reviewed `origin/lane/render` at db48c49 integration: `uiNav`, `uiSteps`,
+`uiClinicalBanner`, and `uiSide` already emit the shell independently of canonical
+workspace groups. The canonical removes duplicate sidebar/navigator group headers,
+retains chart-review tabs and the banner component required by landmark checks,
+and keeps actual goto buttons addressable. Render currently paints the banner
+component as supplementary info; please project it into the single shell banner
+without dropping its safety semantics. Shell nav/stepper destinations still lack
+an interpreter Event, so real workspace goto buttons must remain until core/render
+provide that event or actual source component IDs. Do not invent React navigation.
+
+**Core/render:** `Visibility` currently has only `always` / `unlessReceipt`.
+Please add component/section applicability via the existing `When` / clinical
+predicate AST, unknown-applicability fail-closed, shared by interpreter/checker
+and render. Content cannot safely emit patient-dependent sections with the present
+language. The folded sections remain open; every original conditional requirement
+and independent action is preserved. Do not hide a required review using a
+presentation-only condition. Per-slot controlled selection likewise needs actual
+select/deselect events; current order-set macros leave values unconfirmed.
+
+**Core/render:** `InfoSpec` has label/version/payload but no literal text member;
+`Kind` has no static text. Add spec-level verbatim attestation text and render it
+adjacent to the appropriate signature, distinct from the short info label. Bind
+`controlledSigningLegalNotice` to the exact 21 CFR 1311.140(a)(3) source text; do
+not treat its human label as the legal notice. Also support the original hospital
+explanation “I reviewed these orders for this patient.” without adding an invented
+mandatory checkbox. Content preserves the no-receipt notice review requirement.
+
+**Render/app/world:** bind the blueprint tables to real data: catalog search
+results; unsigned medication AND service-order summary columns/status; result
+value/unit/flags/ranges/status/timestamps and dated trends; in-basket list +
+selected preview; ED board; dated MAR scheduled-time columns and actual BCMA
+captures; flowsheet time columns; pediatric dated growth/reference and dose basis,
+range, concentration and daily total; surgical phase and discharge summaries.
+Do not invent data or percentiles in labels. Content retains ordinary fields,
+scans, signatures, per-field macro confirmations and the long baseline workflows.
+
+Identity input is verified against Core.Basics.identityText: initials/sex/age
+(e.g. RK/M/58). Its existing canonical label is correct; the research's claimed
+patient-token discrepancy is a renderer-documentation issue. Do not change the
+validator. Record-prefilled patient/prescriber name/address/registration facts are
+text with nonempty validation, named recordFact sources and human confirmation;
+these do not replace human-only patient-ID re-entry or credential authorization.
+
+CR-16's 26 unexpressible feature rows and 83 L-group rows remain exact dependencies;
+no source rule is removed, weakened, or represented by a substitute checkbox.
+
+CR-17 attestation handoff, verified against the current
+[eCFR §1311.140(a)(3)](https://www.ecfr.gov/current/title-21/chapter-II/part-1311/subpart-C/section-1311.140):
+
+> By completing the two-factor authentication protocol at this time, you are legally signing the prescription(s) and authorizing the transmission of the above information to the pharmacy for dispensing. The two-factor authentication protocol may only be completed by the practitioner whose name and DEA registration number appear above.
+
+Content's `Specs/ClinicalTables.lean` records the blueprint's full table schemas,
+including unsigned service orders, MAR time cells and growth reference provenance.
+The canonical declares the actual tables/previews/checklists; adapters must populate
+those named views with coherent records. The current renderer's built-in dose/growth
+rows do not yet supply every schema column. Missing reference data must stay unknown.

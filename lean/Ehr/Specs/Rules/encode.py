@@ -7,6 +7,7 @@ import collections
 import json
 from pathlib import Path
 import re
+from human_labels import label, RECORD_FACTS
 
 ROOT = Path(__file__).resolve().parents[4]
 CATALOG = ROOT / 'docs/rules/catalog.json'
@@ -49,6 +50,11 @@ names = {s: collections.defaultdict(list) for s in out}
 for k, pairs in items.items():
     for i, (value, rs) in enumerate(pairs.values()):
         s = source(rs[0])
+        value = dict(value)
+        original_label = value.get("label", "")
+        if "label" in value: value["label"] = label(value["id"], original_label)
+        if k == "elements" and value["id"] in RECORD_FACTS:
+            value.update(kind="text", prefill="recordConfirm")
         if k in base_ids and value['id'] in base_ids[k]: continue
         name = value.get('id', k[:-1] + str(i + 1))
         typ = {'elements': 'ElementSpec', 'infos': 'InfoSpec', 'commits': 'CommitSpec',
@@ -61,10 +67,12 @@ for k, pairs in items.items():
                 f'  enteredBy := {roles(value["enteredBy"])}\n  prefill := .{value["prefill"]}\n' + \
                 f'  friction := .{value["friction"]}\n  humanOnly := {str(value["humanOnly"]).lower()}\n' + \
                 f'  fhirTarget := {q(value["fhirTarget"])}'
-            explanation = rs[0]['fitReason']
+            explanation = original_label + '. ' + rs[0]['fitReason']
+            if value['id'] in RECORD_FACTS:
+                body += '\n  recordFact? := some ' + q(RECORD_FACTS[value['id']]) + '\n  validation? := some .nonempty'
         elif k == 'infos':
             body = f'  id := {q(value["id"])}\n  label := {q(value["label"])}\n  version := {q(value["version"])}'
-            explanation = value['label']
+            explanation = original_label
         elif k == 'commits':
             body = f'  id := {q(value["id"])}\n  label := {q(value["label"])}\n  roles := {roles(value["roles"])}'
             explanation = 'Dedicated artifact action. Role names do not attest licensure or physical care.'
@@ -72,7 +80,7 @@ for k, pairs in items.items():
             body = f'  commit := {q(value["commit"])}\n  element := {q(value["element"])}\n  when := {when(value["when"])}\n' + \
                 f'  perOrderLine := {str(value["perOrderLine"]).lower()}'
             if value['allowed'] is not None: body += '\n  allowed? := some ' + ls([q(x) for x in value['allowed']])
-            explanation = rs[0]['fitReason']
+            explanation = original_label + '. ' + rs[0]['fitReason']
         elif k == 'reviews':
             assert value['mode'] == 'shownOnCommit' and value['waivedBy'] is None
             body = f'  commit := {q(value["commit"])}\n  info := {q(value["info"])}\n  mode := .shownOnCommit\n  when := {when(value["when"])}'

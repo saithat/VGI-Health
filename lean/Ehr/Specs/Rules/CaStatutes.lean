@@ -8,36 +8,40 @@ namespace Ehr.Specs.Rules.CaStatutes
 
 /-- Law: California Business & Professions Code §4040(a)(1)(A). Catalog: ca-statutes-bpc-4040-patient-name.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-name.
-Capture patient name on each prescription artifact; the chart banner does not write prescription content. Outbound serialization/delivery remains backend work. -/
+Prescription patient name. Capture patient name on each prescription artifact; the chart banner does not write prescription content. Outbound serialization/delivery remains backend work. -/
 def prescriptionPatientName : ElementSpec where
   id := "prescriptionPatientName"
-  label := "Prescription patient name"
-  kind := .coded "nonempty-narrative"
+  label := "Patient name"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "MedicationRequest.subject.display"
+  recordFact? := some "patientName"
+  validation? := some .nonempty
 
 /-- Law: California Business & Professions Code §4040(a)(1)(A). Catalog: ca-statutes-bpc-4040-patient-address.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-address.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Prescription patient address. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def prescriptionPatientAddress : ElementSpec where
   id := "prescriptionPatientAddress"
-  label := "Prescription patient address"
-  kind := .coded "nonempty-narrative"
+  label := "Patient address"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "MedicationRequest.extension.patientAddress"
+  recordFact? := some "patientAddress"
+  validation? := some .nonempty
 
 /-- Law: California Business & Professions Code §4040(a)(1)(B). Catalog: ca-statutes-bpc-4040-directions.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-directions.
-Require a distinct non-empty complete sig on each prescription; dose/route/freq alone do not establish usable written directions. This gate prepares content; transmission is outside the checker. -/
+Prescription directions. Require a distinct non-empty complete sig on each prescription; dose/route/freq alone do not establish usable written directions. This gate prepares content; transmission is outside the checker. -/
 def prescriptionDirections : ElementSpec where
   id := "prescriptionDirections"
-  label := "Prescription directions"
+  label := "Directions"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -46,10 +50,10 @@ def prescriptionDirections : ElementSpec where
   fhirTarget := "MedicationRequest.dosageInstruction.text"
 
 /-- Law: California Business & Professions Code §4040(a)(1)(D). Catalog: ca-statutes-bpc-4040-license-classification.
-Capture the license classification as prescription content; this does not verify license validity or scope. -/
+Prescriber license classification. Capture the license classification as prescription content; this does not verify license validity or scope. -/
 def prescriberLicenseClassification : ElementSpec where
   id := "prescriberLicenseClassification"
-  label := "Prescriber license classification"
+  label := "License type"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -59,34 +63,38 @@ def prescriberLicenseClassification : ElementSpec where
 
 /-- Law: California Business & Professions Code §4040(a)(1)(D). Catalog: ca-statutes-bpc-4040-federal-registry.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-dea.
-Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
+Prescriber federal registration. Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
 def prescriberFederalRegistration : ElementSpec where
   id := "prescriberFederalRegistration"
-  label := "Prescriber federal registration"
-  kind := .coded "nonempty-narrative"
+  label := "DEA registration"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "MedicationRequest.extension.deaRegistration"
+  recordFact? := some "prescriberDeaRegistration"
+  validation? := some .nonempty
 
 /-- Law: California Health & Safety Code §11164(b)(3). Catalog: ca-statutes-hsc-11164-agent-name.
-Dedicated prescriber-side delegated Schedule III–V transmission record captures agent name. It does not perform or prove transmission or the agent authorization. -/
+Controlled transmission agent name. Dedicated prescriber-side delegated Schedule III–V transmission record captures agent name. It does not perform or prove transmission or the agent authorization. -/
 def controlledTransmissionAgentName : ElementSpec where
   id := "controlledTransmissionAgentName"
-  label := "Controlled transmission agent name"
-  kind := .coded "nonempty-narrative"
+  label := "Transmitting agent"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "Composition.section[controlledTransmissionAgentName].text"
+  recordFact? := some "transmittingAgentName"
+  validation? := some .nonempty
 
 /-- Law: California Health & Safety Code §11158(b)(1). Catalog: ca-statutes-hsc-11158-no-more-expected.
-Prescriber human attestation of the specific no-further-need judgment on the direct-dispensing artifact; the separate 72-hour supply limit still requires value validation. -/
+No further controlled need expected. Prescriber human attestation of the specific no-further-need judgment on the direct-dispensing artifact; the separate 72-hour supply limit still requires value validation. -/
 def noFurtherControlledNeedExpected : ElementSpec where
   id := "noFurtherControlledNeedExpected"
-  label := "No further controlled need expected"
+  label := "No further supply expected"
   kind := .flag
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -95,10 +103,10 @@ def noFurtherControlledNeedExpected : ElementSpec where
   fhirTarget := "Composition.section[noFurtherControlledNeedExpected].text"
 
 /-- Law: California Business & Professions Code §2290.5(b). Catalog: ca-statutes-bpc-2290-5-telehealth-document.
-Dedicated service-linked telehealth consent documentation with truthful verbal/written modes. Actual pre-care sequence remains the separate event-time rules. -/
+Telehealth consent record. Dedicated service-linked telehealth consent documentation with truthful verbal/written modes. Actual pre-care sequence remains the separate event-time rules. -/
 def telehealthConsentRecord : ElementSpec where
   id := "telehealthConsentRecord"
-  label := "Telehealth consent record"
+  label := "Telehealth consent"
   kind := .coded "telehealth-consent-mode"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -107,7 +115,7 @@ def telehealthConsentRecord : ElementSpec where
   fhirTarget := "Composition.section[telehealthConsentRecord].text"
 
 /-- Law: California Business & Professions Code §741(b). Catalog: ca-statutes-bpc-741-education-exceptions.
-Replace the old naloxoneEducation EntryReq with this coded truthful outcome under existing naloxoneRisk. The 24-month exception is a human-reported outcome, not an automatically validated historical clock; other risk eligibility remains a separate core rule. -/
+Naloxone education outcome. Replace the old naloxoneEducation EntryReq with this coded truthful outcome under existing naloxoneRisk. The 24-month exception is a human-reported outcome, not an automatically validated historical clock; other risk eligibility remains a separate core rule. -/
 def naloxoneEducationOutcome : ElementSpec where
   id := "naloxoneEducationOutcome"
   label := "Naloxone education outcome"
@@ -119,10 +127,10 @@ def naloxoneEducationOutcome : ElementSpec where
   fhirTarget := "Composition.section[naloxoneEducationOutcome].text"
 
 /-- Law: California Health & Safety Code §123115(b)(1). Catalog: ca-statutes-hsc-123115-mental-record-denial-date.
-Dedicated denial artifact captures the request date as a non-empty date string; neither deadline calculation nor denial eligibility is implied. -/
+Mental health access request date. Dedicated denial artifact captures the request date as a non-empty date string; neither deadline calculation nor denial eligibility is implied. -/
 def mentalHealthAccessRequestDate : ElementSpec where
   id := "mentalHealthAccessRequestDate"
-  label := "Mental health access request date"
+  label := "Request date"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -131,10 +139,10 @@ def mentalHealthAccessRequestDate : ElementSpec where
   fhirTarget := "Composition.section[mentalHealthAccessRequestDate].text"
 
 /-- Law: California Health & Safety Code §123115(b)(1). Catalog: ca-statutes-hsc-123115-mental-record-denial-consequences.
-Require patient-specific anticipated consequences on the denial artifact; this documents professional judgment without machine validation of the judgment. -/
+Mental health access denial consequences. Require patient-specific anticipated consequences on the denial artifact; this documents professional judgment without machine validation of the judgment. -/
 def mentalHealthAccessDenialConsequences : ElementSpec where
   id := "mentalHealthAccessDenialConsequences"
-  label := "Mental health access denial consequences"
+  label := "Denial rationale"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -143,10 +151,10 @@ def mentalHealthAccessDenialConsequences : ElementSpec where
   fhirTarget := "Composition.section[mentalHealthAccessDenialConsequences].text"
 
 /-- Law: California Family Code §6924(d). Catalog: ca-statutes-fam-6924-mental-health-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+Minor mental health parent contact decision. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def minorMentalHealthParentContactDecision : ElementSpec where
   id := "minorMentalHealthParentContactDecision"
-  label := "Minor mental health parent contact decision"
+  label := "Parent contact decision"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -155,10 +163,10 @@ def minorMentalHealthParentContactDecision : ElementSpec where
   fhirTarget := "Composition.section[minorMentalHealthParentContactDecision].text"
 
 /-- Law: California Family Code §6928(c). Catalog: ca-statutes-fam-6928-assault-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+Minor assault parent contact time. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def minorAssaultParentContactTime : ElementSpec where
   id := "minorAssaultParentContactTime"
-  label := "Minor assault parent contact time"
+  label := "Parent contact time"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -167,10 +175,10 @@ def minorAssaultParentContactTime : ElementSpec where
   fhirTarget := "Composition.section[minorAssaultParentContactTime].text"
 
 /-- Law: California Family Code §6929(c). Catalog: ca-statutes-fam-6929-substance-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+Minor substance parent involvement decision. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def minorSubstanceParentInvolvementDecision : ElementSpec where
   id := "minorSubstanceParentInvolvementDecision"
-  label := "Minor substance parent involvement decision"
+  label := "Parent involvement"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -179,10 +187,10 @@ def minorSubstanceParentInvolvementDecision : ElementSpec where
   fhirTarget := "Composition.section[minorSubstanceParentInvolvementDecision].text"
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-circumstances.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold application circumstances. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdApplicationCircumstances : ElementSpec where
   id := "holdApplicationCircumstances"
-  label := "Hold application circumstances"
+  label := "Circumstances"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -191,10 +199,10 @@ def holdApplicationCircumstances : ElementSpec where
   fhirTarget := "Composition.section[holdApplicationCircumstances].text"
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-probable-cause.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold application probable cause. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdApplicationProbableCause : ElementSpec where
   id := "holdApplicationProbableCause"
-  label := "Hold application probable cause"
+  label := "Probable cause"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -203,10 +211,10 @@ def holdApplicationProbableCause : ElementSpec where
   fhirTarget := "Composition.section[holdApplicationProbableCause].text"
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-history.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold history considered. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdHistoryConsidered : ElementSpec where
   id := "holdHistoryConsidered"
-  label := "Hold history considered"
+  label := "History considered"
   kind := .coded "yes-no"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -215,22 +223,24 @@ def holdHistoryConsidered : ElementSpec where
   fhirTarget := "Composition.section[holdHistoryConsidered].text"
 
 /-- Law: California Welfare & Institutions Code §5150(j)(1). Catalog: ca-statutes-wic-5150-advisement-performer.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold advisement performer. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdAdvisementPerformer : ElementSpec where
   id := "holdAdvisementPerformer"
-  label := "Hold advisement performer"
-  kind := .coded "nonempty-narrative"
+  label := "Advising clinician"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "Composition.section[holdAdvisementPerformer].text"
+  recordFact? := some "advisingClinicianName"
+  validation? := some .nonempty
 
 /-- Law: California Welfare & Institutions Code §5150(j)(2). Catalog: ca-statutes-wic-5150-advisement-date.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold advisement date. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdAdvisementDate : ElementSpec where
   id := "holdAdvisementDate"
-  label := "Hold advisement date"
+  label := "Advisement date"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -239,10 +249,10 @@ def holdAdvisementDate : ElementSpec where
   fhirTarget := "Composition.section[holdAdvisementDate].text"
 
 /-- Law: California Welfare & Institutions Code §5150(j)(3). Catalog: ca-statutes-wic-5150-advisement-completion.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold advisement completion. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdAdvisementCompletion : ElementSpec where
   id := "holdAdvisementCompletion"
-  label := "Hold advisement completion"
+  label := "Advisement status"
   kind := .coded "completed-not-completed"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -251,10 +261,10 @@ def holdAdvisementCompletion : ElementSpec where
   fhirTarget := "Composition.section[holdAdvisementCompletion].text"
 
 /-- Law: California Welfare & Institutions Code §5150(j)(4). Catalog: ca-statutes-wic-5150-advisement-language.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+Hold advisement language. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def holdAdvisementLanguage : ElementSpec where
   id := "holdAdvisementLanguage"
-  label := "Hold advisement language"
+  label := "Advisement language"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -263,7 +273,7 @@ def holdAdvisementLanguage : ElementSpec where
   fhirTarget := "Composition.section[holdAdvisementLanguage].text"
 
 /-- Law: California Health & Safety Code §1259(c)(4). Catalog: ca-statutes-hsc-1259-primary-language.
-Capture once in a dedicated chart-update artifact, not a redundant each-visit interpreter checkbox. Reuse the recorded value in patientBanner; unknown/declined are explicit allowed local codes. -/
+Primary language. Capture once in a dedicated chart-update artifact, not a redundant each-visit interpreter checkbox. Reuse the recorded value in patientBanner; unknown/declined are explicit allowed local codes. -/
 def primaryLanguage : ElementSpec where
   id := "primaryLanguage"
   label := "Primary language"
@@ -275,7 +285,7 @@ def primaryLanguage : ElementSpec where
   fhirTarget := "Patient.communication.language"
 
 /-- Law: California Health & Safety Code §1259(c)(4). Catalog: ca-statutes-hsc-1259-dialect.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Patient dialect. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def patientDialect : ElementSpec where
   id := "patientDialect"
   label := "Patient dialect"
@@ -364,7 +374,7 @@ def recordCommunicationNeeds : CommitSpec where
   roles := [.physician, .np, .surgeon, .rn]
 
 /-- Law: California Business & Professions Code §4040(a)(1)(A). Catalog: ca-statutes-bpc-4040-patient-name.
-Capture patient name on each prescription artifact; the chart banner does not write prescription content. Outbound serialization/delivery remains backend work. -/
+. Capture patient name on each prescription artifact; the chart banner does not write prescription content. Outbound serialization/delivery remains backend work. -/
 def entrie74 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientName"
@@ -372,7 +382,7 @@ def entrie74 : EntryReq where
   perOrderLine := true
 
 /-- Law: California Business & Professions Code §4040(a)(1)(A). Catalog: ca-statutes-bpc-4040-patient-address.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie75 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientAddress"
@@ -380,7 +390,7 @@ def entrie75 : EntryReq where
   perOrderLine := true
 
 /-- Law: California Business & Professions Code §4040(a)(1)(B). Catalog: ca-statutes-bpc-4040-directions.
-Require a distinct non-empty complete sig on each prescription; dose/route/freq alone do not establish usable written directions. This gate prepares content; transmission is outside the checker. -/
+. Require a distinct non-empty complete sig on each prescription; dose/route/freq alone do not establish usable written directions. This gate prepares content; transmission is outside the checker. -/
 def entrie76 : EntryReq where
   commit := "signOrders"
   element := "prescriptionDirections"
@@ -388,7 +398,7 @@ def entrie76 : EntryReq where
   perOrderLine := true
 
 /-- Law: California Business & Professions Code §4040(a)(1)(D). Catalog: ca-statutes-bpc-4040-license-classification.
-Capture the license classification as prescription content; this does not verify license validity or scope. -/
+. Capture the license classification as prescription content; this does not verify license validity or scope. -/
 def entrie77 : EntryReq where
   commit := "signOrders"
   element := "prescriberLicenseClassification"
@@ -397,7 +407,7 @@ def entrie77 : EntryReq where
 
 /-- Law: California Business & Professions Code §4040(a)(1)(D). Catalog: ca-statutes-bpc-4040-federal-registry.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-dea.
-Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
+. Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
 def entrie78 : EntryReq where
   commit := "signOrders"
   element := "prescriberFederalRegistration"
@@ -406,7 +416,7 @@ def entrie78 : EntryReq where
 
 /-- Law: California Business & Professions Code §4040(a)(1)(D). Catalog: ca-statutes-bpc-4040-federal-registry.
 Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-dea.
-Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
+. Capture registration content for controlled prescriptions. Schedule V needs its own existing drug-class data tag and duplicate EntryReq (added below); actual authority is a separate rule. -/
 def entrie79 : EntryReq where
   commit := "signOrders"
   element := "prescriberFederalRegistration"
@@ -414,7 +424,7 @@ def entrie79 : EntryReq where
   perOrderLine := true
 
 /-- Law: California Health & Safety Code §11164(b)(3). Catalog: ca-statutes-hsc-11164-agent-name.
-Dedicated prescriber-side delegated Schedule III–V transmission record captures agent name. It does not perform or prove transmission or the agent authorization. -/
+. Dedicated prescriber-side delegated Schedule III–V transmission record captures agent name. It does not perform or prove transmission or the agent authorization. -/
 def entrie80 : EntryReq where
   commit := "recordDelegatedControlledTransmission"
   element := "controlledTransmissionAgentName"
@@ -422,7 +432,7 @@ def entrie80 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Health & Safety Code §11158(b)(1). Catalog: ca-statutes-hsc-11158-no-more-expected.
-Prescriber human attestation of the specific no-further-need judgment on the direct-dispensing artifact; the separate 72-hour supply limit still requires value validation. -/
+. Prescriber human attestation of the specific no-further-need judgment on the direct-dispensing artifact; the separate 72-hour supply limit still requires value validation. -/
 def entrie81 : EntryReq where
   commit := "authorizeDirectDispensing"
   element := "noFurtherControlledNeedExpected"
@@ -430,7 +440,7 @@ def entrie81 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Business & Professions Code §2290.5(b). Catalog: ca-statutes-bpc-2290-5-telehealth-document.
-Dedicated service-linked telehealth consent documentation with truthful verbal/written modes. Actual pre-care sequence remains the separate event-time rules. -/
+. Dedicated service-linked telehealth consent documentation with truthful verbal/written modes. Actual pre-care sequence remains the separate event-time rules. -/
 def entrie82 : EntryReq where
   commit := "recordTelehealthConsent"
   element := "telehealthConsentRecord"
@@ -439,7 +449,7 @@ def entrie82 : EntryReq where
   allowed? := some ["verbal", "written"]
 
 /-- Law: California Business & Professions Code §741(b). Catalog: ca-statutes-bpc-741-education-exceptions.
-Replace the old naloxoneEducation EntryReq with this coded truthful outcome under existing naloxoneRisk. The 24-month exception is a human-reported outcome, not an automatically validated historical clock; other risk eligibility remains a separate core rule. -/
+. Replace the old naloxoneEducation EntryReq with this coded truthful outcome under existing naloxoneRisk. The 24-month exception is a human-reported outcome, not an automatically validated historical clock; other risk eligibility remains a separate core rule. -/
 def entrie83 : EntryReq where
   commit := "signOrders"
   element := "naloxoneEducationOutcome"
@@ -448,7 +458,7 @@ def entrie83 : EntryReq where
   allowed? := some ["provided", "declined", "educatedWithin24Months"]
 
 /-- Law: California Health & Safety Code §123115(b)(1). Catalog: ca-statutes-hsc-123115-mental-record-denial-date.
-Dedicated denial artifact captures the request date as a non-empty date string; neither deadline calculation nor denial eligibility is implied. -/
+. Dedicated denial artifact captures the request date as a non-empty date string; neither deadline calculation nor denial eligibility is implied. -/
 def entrie84 : EntryReq where
   commit := "documentMentalHealthAccessDenial"
   element := "mentalHealthAccessRequestDate"
@@ -456,7 +466,7 @@ def entrie84 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Health & Safety Code §123115(b)(1). Catalog: ca-statutes-hsc-123115-mental-record-denial-consequences.
-Require patient-specific anticipated consequences on the denial artifact; this documents professional judgment without machine validation of the judgment. -/
+. Require patient-specific anticipated consequences on the denial artifact; this documents professional judgment without machine validation of the judgment. -/
 def entrie85 : EntryReq where
   commit := "documentMentalHealthAccessDenial"
   element := "mentalHealthAccessDenialConsequences"
@@ -464,7 +474,7 @@ def entrie85 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Family Code §6924(d). Catalog: ca-statutes-fam-6924-mental-health-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def entrie86 : EntryReq where
   commit := "documentMinorMentalHealthConsent"
   element := "minorMentalHealthParentContactDecision"
@@ -472,7 +482,7 @@ def entrie86 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Family Code §6928(c). Catalog: ca-statutes-fam-6928-assault-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def entrie87 : EntryReq where
   commit := "documentMinorAssaultCareConsent"
   element := "minorAssaultParentContactTime"
@@ -480,7 +490,7 @@ def entrie87 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Family Code §6929(c). Catalog: ca-statutes-fam-6929-substance-parent-contact.
-Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
+. Capture the statutory parental-contact/involvement record on this dedicated service-consent artifact, including actual contact date/time or the documented decision/reason as appropriate. Minor/service eligibility and actual consent authority remain separate core-feature rules. -/
 def entrie88 : EntryReq where
   commit := "documentMinorSubstanceCareConsent"
   element := "minorSubstanceParentInvolvementDecision"
@@ -488,7 +498,7 @@ def entrie88 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-circumstances.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie89 : EntryReq where
   commit := "documentHoldApplication"
   element := "holdApplicationCircumstances"
@@ -496,7 +506,7 @@ def entrie89 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-probable-cause.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie90 : EntryReq where
   commit := "documentHoldApplication"
   element := "holdApplicationProbableCause"
@@ -504,7 +514,7 @@ def entrie90 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Welfare & Institutions Code §5150(e). Catalog: ca-statutes-wic-5150-application-history.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie91 : EntryReq where
   commit := "documentHoldApplication"
   element := "holdHistoryConsidered"
@@ -513,7 +523,7 @@ def entrie91 : EntryReq where
   allowed? := some ["yes", "no"]
 
 /-- Law: California Welfare & Institutions Code §5150(j)(1). Catalog: ca-statutes-wic-5150-advisement-performer.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie92 : EntryReq where
   commit := "recordHoldAdvisement"
   element := "holdAdvisementPerformer"
@@ -521,7 +531,7 @@ def entrie92 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Welfare & Institutions Code §5150(j)(2). Catalog: ca-statutes-wic-5150-advisement-date.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie93 : EntryReq where
   commit := "recordHoldAdvisement"
   element := "holdAdvisementDate"
@@ -529,7 +539,7 @@ def entrie93 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Welfare & Institutions Code §5150(j)(3). Catalog: ca-statutes-wic-5150-advisement-completion.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie94 : EntryReq where
   commit := "recordHoldAdvisement"
   element := "holdAdvisementCompletion"
@@ -538,7 +548,7 @@ def entrie94 : EntryReq where
   allowed? := some ["completed", "notCompleted"]
 
 /-- Law: California Welfare & Institutions Code §5150(j)(4). Catalog: ca-statutes-wic-5150-advisement-language.
-New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
+. New dedicated 5150 application/advisement artifact captures this atomic record item; this does not authorize detention, establish actor qualification, or enforce the detention clock. -/
 def entrie95 : EntryReq where
   commit := "recordHoldAdvisement"
   element := "holdAdvisementLanguage"
@@ -546,7 +556,7 @@ def entrie95 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Health & Safety Code §1259(c)(4). Catalog: ca-statutes-hsc-1259-primary-language.
-Capture once in a dedicated chart-update artifact, not a redundant each-visit interpreter checkbox. Reuse the recorded value in patientBanner; unknown/declined are explicit allowed local codes. -/
+. Capture once in a dedicated chart-update artifact, not a redundant each-visit interpreter checkbox. Reuse the recorded value in patientBanner; unknown/declined are explicit allowed local codes. -/
 def entrie96 : EntryReq where
   commit := "recordCommunicationNeeds"
   element := "primaryLanguage"
@@ -554,7 +564,7 @@ def entrie96 : EntryReq where
   perOrderLine := false
 
 /-- Law: California Health & Safety Code §1259(c)(4). Catalog: ca-statutes-hsc-1259-dialect.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie97 : EntryReq where
   commit := "recordCommunicationNeeds"
   element := "patientDialect"

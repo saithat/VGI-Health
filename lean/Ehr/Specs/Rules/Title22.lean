@@ -7,7 +7,7 @@ Artifact commits capture one artifact; they do not prove event coverage. -/
 namespace Ehr.Specs.Rules.Title22
 
 /-- Law: 22 CCR §70749(a)(4). Catalog: ca-title22-70749-treatment-orders.
-Dedicated nonmedication treatment-order artifact; new commit is existing CommitSpec data, with a non-empty treatment description. -/
+Treatment order. Dedicated nonmedication treatment-order artifact; new commit is existing CommitSpec data, with a non-empty treatment description. -/
 def treatmentOrder : ElementSpec where
   id := "treatmentOrder"
   label := "Treatment order"
@@ -19,10 +19,10 @@ def treatmentOrder : ElementSpec where
   fhirTarget := "Composition.section[treatmentOrder].text"
 
 /-- Law: 22 CCR §70749(a)(5). Catalog: ca-title22-70749-working-diagnosis.
-New progress-note commit requires current working diagnosis; optional progressNote is insufficient. -/
+Progress working diagnosis. New progress-note commit requires current working diagnosis; optional progressNote is insufficient. -/
 def progressWorkingDiagnosis : ElementSpec where
   id := "progressWorkingDiagnosis"
-  label := "Progress working diagnosis"
+  label := "Working diagnosis"
   kind := .coded "icd10"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -31,7 +31,7 @@ def progressWorkingDiagnosis : ElementSpec where
   fhirTarget := "Condition.code"
 
 /-- Law: 22 CCR §70749(a)(6)(A). Catalog: ca-title22-70749-nursing-care.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+Nursing care provided. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def nursingCareProvided : ElementSpec where
   id := "nursingCareProvided"
   label := "Nursing care provided"
@@ -43,7 +43,7 @@ def nursingCareProvided : ElementSpec where
   fhirTarget := "Composition.section[nursingCareProvided].text"
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-observations.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+Nursing observations. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def nursingObservations : ElementSpec where
   id := "nursingObservations"
   label := "Nursing observations"
@@ -55,7 +55,7 @@ def nursingObservations : ElementSpec where
   fhirTarget := "Composition.section[nursingObservations].text"
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-incidents.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+Nursing incidents. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def nursingIncidents : ElementSpec where
   id := "nursingIncidents"
   label := "Nursing incidents"
@@ -67,10 +67,10 @@ def nursingIncidents : ElementSpec where
   fhirTarget := "Composition.section[nursingIncidents].text"
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-interpretation.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+Nursing interpretation. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def nursingInterpretation : ElementSpec where
   id := "nursingInterpretation"
-  label := "Nursing interpretation"
+  label := "Assessment findings"
   kind := .coded "nonempty-narrative"
   enteredBy := [.rn]
   prefill := .never
@@ -79,7 +79,7 @@ def nursingInterpretation : ElementSpec where
   fhirTarget := "Composition.section[nursingInterpretation].text"
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-drug.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+Administered drug. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def administeredDrug : ElementSpec where
   id := "administeredDrug"
   label := "Administered drug"
@@ -91,7 +91,7 @@ def administeredDrug : ElementSpec where
   fhirTarget := "MedicationAdministration.medicationCodeableConcept"
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-dose.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+Administered dose. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def administeredDose : ElementSpec where
   id := "administeredDose"
   label := "Administered dose"
@@ -103,7 +103,7 @@ def administeredDose : ElementSpec where
   fhirTarget := "MedicationAdministration.dosage.dose"
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-time.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+Actual administration time. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def actualAdministrationTime : ElementSpec where
   id := "actualAdministrationTime"
   label := "Actual administration time"
@@ -115,7 +115,7 @@ def actualAdministrationTime : ElementSpec where
   fhirTarget := "MedicationAdministration.effectiveDateTime"
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-route.
-Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
+Actual administration route. Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
 def actualAdministrationRoute : ElementSpec where
   id := "actualAdministrationRoute"
   label := "Actual administration route"
@@ -127,7 +127,7 @@ def actualAdministrationRoute : ElementSpec where
   fhirTarget := "MedicationAdministration.dosage.route"
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-type.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Restraint type. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def restraintType : ElementSpec where
   id := "restraintType"
   label := "Restraint type"
@@ -139,7 +139,7 @@ def restraintType : ElementSpec where
   fhirTarget := "Composition.section[restraintType].text"
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-start.
-Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
+Restraint application time. Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
 def restraintApplicationTime : ElementSpec where
   id := "restraintApplicationTime"
   label := "Restraint application time"
@@ -151,7 +151,7 @@ def restraintApplicationTime : ElementSpec where
   fhirTarget := "Composition.section[restraintApplicationTime].text"
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-end.
-Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
+Restraint removal time. Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
 def restraintRemovalTime : ElementSpec where
   id := "restraintRemovalTime"
   label := "Restraint removal time"
@@ -163,10 +163,10 @@ def restraintRemovalTime : ElementSpec where
   fhirTarget := "Composition.section[restraintRemovalTime].text"
 
 /-- Law: 22 CCR §70749(a)(11). Catalog: ca-title22-70749-anesthesia-preop-diagnosis.
-Required diagnosis content on a new physician-authored anesthesia record. Qualified-anesthetist authorization is a separate core-feature rule, not implied by this content gate. -/
+Anesthesia preop diagnosis. Required diagnosis content on a new physician-authored anesthesia record. Qualified-anesthetist authorization is a separate core-feature rule, not implied by this content gate. -/
 def anesthesiaPreopDiagnosis : ElementSpec where
   id := "anesthesiaPreopDiagnosis"
-  label := "Anesthesia preop diagnosis"
+  label := "Pre-op diagnosis"
   kind := .coded "icd10"
   enteredBy := [.physician]
   prefill := .never
@@ -175,7 +175,7 @@ def anesthesiaPreopDiagnosis : ElementSpec where
   fhirTarget := "Composition.section[anesthesiaPreopDiagnosis].text"
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-course.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Hospital course. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def hospitalCourse : ElementSpec where
   id := "hospitalCourse"
   label := "Hospital course"
@@ -187,7 +187,7 @@ def hospitalCourse : ElementSpec where
   fhirTarget := "Composition.section[hospitalCourse].text"
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-recommendations.
-Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Future care recommendations. Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def futureCareRecommendations : ElementSpec where
   id := "futureCareRecommendations"
   label := "Future care recommendations"
@@ -199,7 +199,7 @@ def futureCareRecommendations : ElementSpec where
   fhirTarget := "Composition.section[futureCareRecommendations].text"
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-arrangements.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Future care arrangements. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def futureCareArrangements : ElementSpec where
   id := "futureCareArrangements"
   label := "Future care arrangements"
@@ -211,7 +211,7 @@ def futureCareArrangements : ElementSpec where
   fhirTarget := "Composition.section[futureCareArrangements].text"
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-diagnosis.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+Nursing diagnosis. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def nursingDiagnosis : ElementSpec where
   id := "nursingDiagnosis"
   label := "Nursing diagnosis"
@@ -223,7 +223,7 @@ def nursingDiagnosis : ElementSpec where
   fhirTarget := "Composition.section[nursingDiagnosis].text"
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-plan.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+Nursing plan. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def nursingPlan : ElementSpec where
   id := "nursingPlan"
   label := "Nursing plan"
@@ -235,7 +235,7 @@ def nursingPlan : ElementSpec where
   fhirTarget := "Composition.section[nursingPlan].text"
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-intervention.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+Nursing intervention. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def nursingIntervention : ElementSpec where
   id := "nursingIntervention"
   label := "Nursing intervention"
@@ -247,7 +247,7 @@ def nursingIntervention : ElementSpec where
   fhirTarget := "Composition.section[nursingIntervention].text"
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-evaluation.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+Nursing evaluation. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def nursingEvaluation : ElementSpec where
   id := "nursingEvaluation"
   label := "Nursing evaluation"
@@ -259,19 +259,21 @@ def nursingEvaluation : ElementSpec where
   fhirTarget := "Composition.section[nursingEvaluation].text"
 
 /-- Law: 22 CCR §70263(g). Catalog: ca-title22-70263-verbal-giver.
-Capture giver identity on a dedicated verbal-order record; this does not verify state scope of the receiver or prescriber countersignature. -/
+Verbal order giver. Capture giver identity on a dedicated verbal-order record; this does not verify state scope of the receiver or prescriber countersignature. -/
 def verbalOrderGiver : ElementSpec where
   id := "verbalOrderGiver"
   label := "Verbal order giver"
-  kind := .coded "nonempty-narrative"
+  kind := .text
   enteredBy := [.rn, .physician, .np]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "Composition.section[verbalOrderGiver].text"
+  recordFact? := some "verbalOrderGiver"
+  validation? := some .nonempty
 
 /-- Law: 22 CCR §70263(h)(1). Catalog: ca-title22-70263-standing-circumstances.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Standing order circumstances. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def standingOrderCircumstances : ElementSpec where
   id := "standingOrderCircumstances"
   label := "Standing order circumstances"
@@ -283,7 +285,7 @@ def standingOrderCircumstances : ElementSpec where
   fhirTarget := "Composition.section[standingOrderCircumstances].text"
 
 /-- Law: 22 CCR §70263(h)(2). Catalog: ca-title22-70263-standing-conditions.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Standing order conditions. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def standingOrderConditions : ElementSpec where
   id := "standingOrderConditions"
   label := "Standing order conditions"
@@ -295,7 +297,7 @@ def standingOrderConditions : ElementSpec where
   fhirTarget := "Composition.section[standingOrderConditions].text"
 
 /-- Law: 22 CCR §70263(l). Catalog: ca-title22-70263-bedside-order.
-Dedicated prescriber authorization record before bedside storage. Actual bedside handling remains outside the UI claim. -/
+Bedside medication order. Dedicated prescriber authorization record before bedside storage. Actual bedside handling remains outside the UI claim. -/
 def bedsideMedicationOrder : ElementSpec where
   id := "bedsideMedicationOrder"
   label := "Bedside medication order"
@@ -307,7 +309,7 @@ def bedsideMedicationOrder : ElementSpec where
   fhirTarget := "Composition.section[bedsideMedicationOrder].text"
 
 /-- Law: 22 CCR §70263(m)(1). Catalog: ca-title22-70263-home-drug-order.
-New prescriber-only order artifact for patient-owned medication; downstream delivery of medication remains trusted. -/
+Patient owned medication order. New prescriber-only order artifact for patient-owned medication; downstream delivery of medication remains trusted. -/
 def patientOwnedMedicationOrder : ElementSpec where
   id := "patientOwnedMedicationOrder"
   label := "Patient owned medication order"
@@ -319,10 +321,10 @@ def patientOwnedMedicationOrder : ElementSpec where
   fhirTarget := "Composition.section[patientOwnedMedicationOrder].text"
 
 /-- Law: 22 CCR §70233(a)(1). Catalog: ca-title22-70233-preanesthesia-documentation.
-Add required non-empty rationale for anesthesia choice and anticipated procedure; qualification and timing are separate unresolved rules. -/
+Anesthesia choice rationale. Add required non-empty rationale for anesthesia choice and anticipated procedure; qualification and timing are separate unresolved rules. -/
 def anesthesiaChoiceRationale : ElementSpec where
   id := "anesthesiaChoiceRationale"
-  label := "Anesthesia choice rationale"
+  label := "Anesthesia rationale"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician]
   prefill := .never
@@ -331,10 +333,10 @@ def anesthesiaChoiceRationale : ElementSpec where
   fhirTarget := "Composition.section[anesthesiaChoiceRationale].text"
 
 /-- Law: 22 CCR §70233(a)(4). Catalog: ca-title22-70233-blood-amount.
-New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
+Anesthesia blood amount. New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
 def anesthesiaBloodAmount : ElementSpec where
   id := "anesthesiaBloodAmount"
-  label := "Anesthesia blood amount"
+  label := "Blood volume"
   kind := .quantity .mL
   enteredBy := [.physician]
   prefill := .never
@@ -343,10 +345,10 @@ def anesthesiaBloodAmount : ElementSpec where
   fhirTarget := "Composition.section[anesthesiaBloodAmount].text"
 
 /-- Law: 22 CCR §70233(a)(4). Catalog: ca-title22-70233-blood-duration.
-New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
+Anesthesia blood duration. New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
 def anesthesiaBloodDuration : ElementSpec where
   id := "anesthesiaBloodDuration"
-  label := "Anesthesia blood duration"
+  label := "Transfusion duration"
   kind := .quantity .none
   enteredBy := [.physician]
   prefill := .never
@@ -355,10 +357,10 @@ def anesthesiaBloodDuration : ElementSpec where
   fhirTarget := "Composition.section[anesthesiaBloodDuration].text"
 
 /-- Law: 22 CCR §70233(a)(5). Catalog: ca-title22-70233-postanesthesia-complications.
-Dedicated postanesthetic note requires presence/absence as a finite allowed set; clinical details may be added but are not claimed by this atomic rule. -/
+Post anesthesia complications. Dedicated postanesthetic note requires presence/absence as a finite allowed set; clinical details may be added but are not claimed by this atomic rule. -/
 def postAnesthesiaComplications : ElementSpec where
   id := "postAnesthesiaComplications"
-  label := "Post anesthesia complications"
+  label := "Recovery complications"
   kind := .coded "anesthesia-complication-status"
   enteredBy := [.physician]
   prefill := .never
@@ -367,10 +369,10 @@ def postAnesthesiaComplications : ElementSpec where
   fhirTarget := "Composition.section[postAnesthesiaComplications].text"
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-arrival-time.
-Record actual arrival timestamp as a non-empty ISO-8601 string; no automatic clock comparison is claimed. -/
+Ed arrival time. Record actual arrival timestamp as a non-empty ISO-8601 string; no automatic clock comparison is claimed. -/
 def edArrivalTime : ElementSpec where
   id := "edArrivalTime"
-  label := "Ed arrival time"
+  label := "Arrival time"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -379,10 +381,10 @@ def edArrivalTime : ElementSpec where
   fhirTarget := "Encounter.period.start"
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-complaint.
-Existing chiefComplaint is only gated at signNote; require non-empty ED arrival-log complaint using a new edArrivalComplaint element to avoid altering the existing text element. -/
+Ed arrival complaint. Existing chiefComplaint is only gated at signNote; require non-empty ED arrival-log complaint using a new edArrivalComplaint element to avoid altering the existing text element. -/
 def edArrivalComplaint : ElementSpec where
   id := "edArrivalComplaint"
-  label := "Ed arrival complaint"
+  label := "Arrival complaint"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -391,10 +393,10 @@ def edArrivalComplaint : ElementSpec where
   fhirTarget := "Encounter.reasonCode"
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-departure-time.
-Record actual departure timestamp as a non-empty ISO-8601 string; scheduled or intended departure time is not the requested value. -/
+Ed departure time. Record actual departure timestamp as a non-empty ISO-8601 string; scheduled or intended departure time is not the requested value. -/
 def edDepartureTime : ElementSpec where
   id := "edDepartureTime"
-  label := "Ed departure time"
+  label := "Departure time"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -403,7 +405,7 @@ def edDepartureTime : ElementSpec where
   fhirTarget := "Encounter.period.end"
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-target.
-New physician oxygen-order artifact requires a non-empty concentration or desired arterial oxygen partial-pressure description; this is content capture, not numeric clinical validation or newborn eligibility. -/
+Newborn oxygen target. New physician oxygen-order artifact requires a non-empty concentration or desired arterial oxygen partial-pressure description; this is content capture, not numeric clinical validation or newborn eligibility. -/
 def newbornOxygenTarget : ElementSpec where
   id := "newbornOxygenTarget"
   label := "Newborn oxygen target"
@@ -415,10 +417,10 @@ def newbornOxygenTarget : ElementSpec where
   fhirTarget := "Composition.section[newbornOxygenTarget].text"
 
 /-- Law: 22 CCR §70707(b)(5). Catalog: ca-title22-70707-consent-risks.
-Scoped treatment-consent documentation records medically significant risks discussed. It does not validate emergency exceptions, capacity, signatures or that disclosure was understood. -/
+Consent risk disclosure. Scoped treatment-consent documentation records medically significant risks discussed. It does not validate emergency exceptions, capacity, signatures or that disclosure was understood. -/
 def consentRiskDisclosure : ElementSpec where
   id := "consentRiskDisclosure"
-  label := "Consent risk disclosure"
+  label := "Risks discussed"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -427,10 +429,10 @@ def consentRiskDisclosure : ElementSpec where
   fhirTarget := "Composition.section[consentRiskDisclosure].text"
 
 /-- Law: 22 CCR §70707(b)(5). Catalog: ca-title22-70707-consent-alternatives.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Consent alternatives disclosure. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def consentAlternativesDisclosure : ElementSpec where
   id := "consentAlternativesDisclosure"
-  label := "Consent alternatives disclosure"
+  label := "Alternatives discussed"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -439,10 +441,10 @@ def consentAlternativesDisclosure : ElementSpec where
   fhirTarget := "Composition.section[consentAlternativesDisclosure].text"
 
 /-- Law: 22 CCR §70707(b)(13). Catalog: ca-title22-70707-discharge-information.
-Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Continuing care information given. Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def continuingCareInformationGiven : ElementSpec where
   id := "continuingCareInformationGiven"
-  label := "Continuing care information given"
+  label := "Continuing care discussed"
   kind := .flag
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -543,7 +545,7 @@ Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-complaint.
 Dedicated artifact action. Role names do not attest licensure or physical care. -/
 def recordEdArrival : CommitSpec where
   id := "recordEdArrival"
-  label := "Record ed arrival"
+  label := "Record ED arrival"
   roles := [.physician, .np, .surgeon, .rn]
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-target.
@@ -562,7 +564,7 @@ def documentTreatmentConsent : CommitSpec where
   roles := [.physician, .np, .surgeon]
 
 /-- Law: 22 CCR §70749(a)(4). Catalog: ca-title22-70749-treatment-orders.
-Dedicated nonmedication treatment-order artifact; new commit is existing CommitSpec data, with a non-empty treatment description. -/
+. Dedicated nonmedication treatment-order artifact; new commit is existing CommitSpec data, with a non-empty treatment description. -/
 def entrie30 : EntryReq where
   commit := "signTreatmentOrder"
   element := "treatmentOrder"
@@ -570,7 +572,7 @@ def entrie30 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(4). Catalog: ca-title22-70749-diet-orders.
-Reuse optional postOpDiet but require it on a dedicated signDietOrder commit; signing medication orders does not sign a diet order. -/
+. Reuse optional postOpDiet but require it on a dedicated signDietOrder commit; signing medication orders does not sign a diet order. -/
 def entrie31 : EntryReq where
   commit := "signDietOrder"
   element := "postOpDiet"
@@ -578,7 +580,7 @@ def entrie31 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(5). Catalog: ca-title22-70749-working-diagnosis.
-New progress-note commit requires current working diagnosis; optional progressNote is insufficient. -/
+. New progress-note commit requires current working diagnosis; optional progressNote is insufficient. -/
 def entrie32 : EntryReq where
   commit := "signProgressNote"
   element := "progressWorkingDiagnosis"
@@ -586,7 +588,7 @@ def entrie32 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(A). Catalog: ca-title22-70749-nursing-care.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def entrie33 : EntryReq where
   commit := "chartAssessment"
   element := "nursingCareProvided"
@@ -594,7 +596,7 @@ def entrie33 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-observations.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def entrie34 : EntryReq where
   commit := "chartAssessment"
   element := "nursingObservations"
@@ -602,7 +604,7 @@ def entrie34 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-incidents.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def entrie35 : EntryReq where
   commit := "chartAssessment"
   element := "nursingIncidents"
@@ -610,7 +612,7 @@ def entrie35 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(B). Catalog: ca-title22-70749-nursing-interpretation.
-Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
+. Required explicit narrative or none/not-applicable finding in each filed nursing note; stronger UI documentation policy, not an assertion that every patient has an incident. -/
 def entrie36 : EntryReq where
   commit := "chartAssessment"
   element := "nursingInterpretation"
@@ -618,7 +620,7 @@ def entrie36 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-drug.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def entrie37 : EntryReq where
   commit := "administerMed"
   element := "administeredDrug"
@@ -626,7 +628,7 @@ def entrie37 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-dose.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def entrie38 : EntryReq where
   commit := "administerMed"
   element := "administeredDose"
@@ -634,7 +636,7 @@ def entrie38 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-time.
-Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
+. Capture the actual administered value, not merely the scheduled order. Time is an entered ISO-8601 string; this capture does not validate a clock relation. -/
 def entrie39 : EntryReq where
   commit := "administerMed"
   element := "actualAdministrationTime"
@@ -642,7 +644,7 @@ def entrie39 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-route.
-Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
+. Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
 def entrie40 : EntryReq where
   commit := "administerMed"
   element := "actualAdministrationRoute"
@@ -650,7 +652,7 @@ def entrie40 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-site.
-Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
+. Capture the actual administered value, not merely the scheduled order. Route/site required for all records with explicit not-applicable where appropriate (stricter policy). -/
 def entrie41 : EntryReq where
   commit := "administerMed"
   element := "adminSite"
@@ -658,7 +660,7 @@ def entrie41 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-type.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie42 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintType"
@@ -666,7 +668,7 @@ def entrie42 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-start.
-Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
+. Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
 def entrie43 : EntryReq where
   commit := "recordRestraintStart"
   element := "restraintApplicationTime"
@@ -674,7 +676,7 @@ def entrie43 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(6)(D). Catalog: ca-title22-70749-restraint-end.
-Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
+. Capture actual timestamp as a non-empty ISO-8601 string on the dedicated start/end record. Collect even for soft support ties as a stricter policy; no timing comparison or order-expiry guarantee is claimed. -/
 def entrie44 : EntryReq where
   commit := "recordRestraintEnd"
   element := "restraintRemovalTime"
@@ -682,7 +684,7 @@ def entrie44 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(11). Catalog: ca-title22-70749-anesthesia-preop-diagnosis.
-Required diagnosis content on a new physician-authored anesthesia record. Qualified-anesthetist authorization is a separate core-feature rule, not implied by this content gate. -/
+. Required diagnosis content on a new physician-authored anesthesia record. Qualified-anesthetist authorization is a separate core-feature rule, not implied by this content gate. -/
 def entrie45 : EntryReq where
   commit := "signAnesthesiaRecord"
   element := "anesthesiaPreopDiagnosis"
@@ -690,7 +692,7 @@ def entrie45 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-course.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie46 : EntryReq where
   commit := "discharge"
   element := "hospitalCourse"
@@ -698,7 +700,7 @@ def entrie46 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-course.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie47 : EntryReq where
   commit := "disposition"
   element := "hospitalCourse"
@@ -706,7 +708,7 @@ def entrie47 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-recommendations.
-Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie48 : EntryReq where
   commit := "discharge"
   element := "futureCareRecommendations"
@@ -714,7 +716,7 @@ def entrie48 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-recommendations.
-Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a distinct recommendation narrative; a coded follow-up interval and generic instruction text alone do not identify all recommendations. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie49 : EntryReq where
   commit := "disposition"
   element := "futureCareRecommendations"
@@ -722,7 +724,7 @@ def entrie49 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-arrangements.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie50 : EntryReq where
   commit := "discharge"
   element := "futureCareArrangements"
@@ -730,7 +732,7 @@ def entrie50 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70749(a)(16). Catalog: ca-title22-70749-discharge-arrangements.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie51 : EntryReq where
   commit := "disposition"
   element := "futureCareArrangements"
@@ -738,7 +740,7 @@ def entrie51 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-diagnosis.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def entrie52 : EntryReq where
   commit := "chartAssessment"
   element := "nursingDiagnosis"
@@ -746,7 +748,7 @@ def entrie52 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-plan.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def entrie53 : EntryReq where
   commit := "chartAssessment"
   element := "nursingPlan"
@@ -754,7 +756,7 @@ def entrie53 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-intervention.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def entrie54 : EntryReq where
   commit := "chartAssessment"
   element := "nursingIntervention"
@@ -762,7 +764,7 @@ def entrie54 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70215(d). Catalog: ca-title22-70215-nursing-evaluation.
-Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
+. Required nursing-documentation content routed to the permanent record; durability itself remains a backend assumption. -/
 def entrie55 : EntryReq where
   commit := "chartAssessment"
   element := "nursingEvaluation"
@@ -770,7 +772,7 @@ def entrie55 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70263(g). Catalog: ca-title22-70263-verbal-giver.
-Capture giver identity on a dedicated verbal-order record; this does not verify state scope of the receiver or prescriber countersignature. -/
+. Capture giver identity on a dedicated verbal-order record; this does not verify state scope of the receiver or prescriber countersignature. -/
 def entrie56 : EntryReq where
   commit := "recordVerbalOrder"
   element := "verbalOrderGiver"
@@ -778,7 +780,7 @@ def entrie56 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70263(h)(1). Catalog: ca-title22-70263-standing-circumstances.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie57 : EntryReq where
   commit := "signStandingOrder"
   element := "standingOrderCircumstances"
@@ -786,7 +788,7 @@ def entrie57 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70263(h)(2). Catalog: ca-title22-70263-standing-conditions.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie58 : EntryReq where
   commit := "signStandingOrder"
   element := "standingOrderConditions"
@@ -794,7 +796,7 @@ def entrie58 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70263(l). Catalog: ca-title22-70263-bedside-order.
-Dedicated prescriber authorization record before bedside storage. Actual bedside handling remains outside the UI claim. -/
+. Dedicated prescriber authorization record before bedside storage. Actual bedside handling remains outside the UI claim. -/
 def entrie59 : EntryReq where
   commit := "authorizeBedsideMedication"
   element := "bedsideMedicationOrder"
@@ -802,7 +804,7 @@ def entrie59 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70263(m)(1). Catalog: ca-title22-70263-home-drug-order.
-New prescriber-only order artifact for patient-owned medication; downstream delivery of medication remains trusted. -/
+. New prescriber-only order artifact for patient-owned medication; downstream delivery of medication remains trusted. -/
 def entrie60 : EntryReq where
   commit := "authorizePatientOwnedMedication"
   element := "patientOwnedMedicationOrder"
@@ -810,7 +812,7 @@ def entrie60 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70233(a)(1). Catalog: ca-title22-70233-preanesthesia-documentation.
-Add required non-empty rationale for anesthesia choice and anticipated procedure; qualification and timing are separate unresolved rules. -/
+. Add required non-empty rationale for anesthesia choice and anticipated procedure; qualification and timing are separate unresolved rules. -/
 def entrie61 : EntryReq where
   commit := "signAnesthesiaRecord"
   element := "anesthesiaChoiceRationale"
@@ -818,7 +820,7 @@ def entrie61 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70233(a)(4). Catalog: ca-title22-70233-blood-amount.
-New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
+. New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
 def entrie62 : EntryReq where
   commit := "recordAnesthesiaBloodAdministration"
   element := "anesthesiaBloodAmount"
@@ -826,7 +828,7 @@ def entrie62 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70233(a)(4). Catalog: ca-title22-70233-blood-duration.
-New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
+. New per-administration record commit; amount is mL and duration is labeled minutes (UnitKind.none; no min constructor). This captures one blood-administration artifact; event-stream completeness is separately unresolved. -/
 def entrie63 : EntryReq where
   commit := "recordAnesthesiaBloodAdministration"
   element := "anesthesiaBloodDuration"
@@ -834,7 +836,7 @@ def entrie63 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70233(a)(5). Catalog: ca-title22-70233-postanesthesia-complications.
-Dedicated postanesthetic note requires presence/absence as a finite allowed set; clinical details may be added but are not claimed by this atomic rule. -/
+. Dedicated postanesthetic note requires presence/absence as a finite allowed set; clinical details may be added but are not claimed by this atomic rule. -/
 def entrie64 : EntryReq where
   commit := "signPostAnesthesiaNote"
   element := "postAnesthesiaComplications"
@@ -843,7 +845,7 @@ def entrie64 : EntryReq where
   allowed? := some ["none", "present"]
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-arrival-time.
-Record actual arrival timestamp as a non-empty ISO-8601 string; no automatic clock comparison is claimed. -/
+. Record actual arrival timestamp as a non-empty ISO-8601 string; no automatic clock comparison is claimed. -/
 def entrie65 : EntryReq where
   commit := "recordEdArrival"
   element := "edArrivalTime"
@@ -851,7 +853,7 @@ def entrie65 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-arrival-means.
-Reuse optional arrivalMode and require it on the new ED arrival-log commit, not on medication signing. -/
+. Reuse optional arrivalMode and require it on the new ED arrival-log commit, not on medication signing. -/
 def entrie66 : EntryReq where
   commit := "recordEdArrival"
   element := "arrivalMode"
@@ -859,7 +861,7 @@ def entrie66 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-complaint.
-Existing chiefComplaint is only gated at signNote; require non-empty ED arrival-log complaint using a new edArrivalComplaint element to avoid altering the existing text element. -/
+. Existing chiefComplaint is only gated at signNote; require non-empty ED arrival-log complaint using a new edArrivalComplaint element to avoid altering the existing text element. -/
 def entrie67 : EntryReq where
   commit := "recordEdArrival"
   element := "edArrivalComplaint"
@@ -867,7 +869,7 @@ def entrie67 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-departure-time.
-Record actual departure timestamp as a non-empty ISO-8601 string; scheduled or intended departure time is not the requested value. -/
+. Record actual departure timestamp as a non-empty ISO-8601 string; scheduled or intended departure time is not the requested value. -/
 def entrie68 : EntryReq where
   commit := "disposition"
   element := "edDepartureTime"
@@ -875,7 +877,7 @@ def entrie68 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-target.
-New physician oxygen-order artifact requires a non-empty concentration or desired arterial oxygen partial-pressure description; this is content capture, not numeric clinical validation or newborn eligibility. -/
+. New physician oxygen-order artifact requires a non-empty concentration or desired arterial oxygen partial-pressure description; this is content capture, not numeric clinical validation or newborn eligibility. -/
 def entrie69 : EntryReq where
   commit := "signNewbornOxygenOrder"
   element := "newbornOxygenTarget"
@@ -883,7 +885,7 @@ def entrie69 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70707(b)(5). Catalog: ca-title22-70707-consent-risks.
-Scoped treatment-consent documentation records medically significant risks discussed. It does not validate emergency exceptions, capacity, signatures or that disclosure was understood. -/
+. Scoped treatment-consent documentation records medically significant risks discussed. It does not validate emergency exceptions, capacity, signatures or that disclosure was understood. -/
 def entrie70 : EntryReq where
   commit := "documentTreatmentConsent"
   element := "consentRiskDisclosure"
@@ -891,7 +893,7 @@ def entrie70 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70707(b)(5). Catalog: ca-title22-70707-consent-alternatives.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie71 : EntryReq where
   commit := "documentTreatmentConsent"
   element := "consentAlternativesDisclosure"
@@ -899,7 +901,7 @@ def entrie71 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70707(b)(13). Catalog: ca-title22-70707-discharge-information.
-Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie72 : EntryReq where
   commit := "discharge"
   element := "continuingCareInformationGiven"
@@ -907,7 +909,7 @@ def entrie72 : EntryReq where
   perOrderLine := false
 
 /-- Law: 22 CCR §70707(b)(13). Catalog: ca-title22-70707-discharge-information.
-Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Human records continuing-care information was given before completing discharge. This is a documentation gate, not proof of patient comprehension or delivery by external systems. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie73 : EntryReq where
   commit := "disposition"
   element := "continuingCareInformationGiven"

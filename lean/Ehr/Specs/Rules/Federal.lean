@@ -7,10 +7,10 @@ Artifact commits capture one artifact; they do not prove event coverage. -/
 namespace Ehr.Specs.Rules.Federal
 
 /-- Law: 21 CFR §1306.04(a). Catalog: federal-rx-1306-04-medical-purpose.
-Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
+Controlled medical purpose. Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
 def controlledMedicalPurpose : ElementSpec where
   id := "controlledMedicalPurpose"
-  label := "Controlled medical purpose"
+  label := "Medical purpose"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -19,10 +19,10 @@ def controlledMedicalPurpose : ElementSpec where
   fhirTarget := "Composition.section[controlledMedicalPurpose].text"
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-strength.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+Controlled product strength. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def controlledProductStrength : ElementSpec where
   id := "controlledProductStrength"
-  label := "Controlled product strength"
+  label := "Strength"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -31,10 +31,10 @@ def controlledProductStrength : ElementSpec where
   fhirTarget := "MedicationRequest.extension.controlledProductStrength"
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-dosage-form.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+Controlled dosage form. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def controlledDosageForm : ElementSpec where
   id := "controlledDosageForm"
-  label := "Controlled dosage form"
+  label := "Dosage form"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -43,34 +43,38 @@ def controlledDosageForm : ElementSpec where
   fhirTarget := "MedicationRequest.extension.controlledDosageForm"
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-name.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+Controlled prescriber name. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def controlledPrescriberName : ElementSpec where
   id := "controlledPrescriberName"
-  label := "Controlled prescriber name"
-  kind := .coded "nonempty-narrative"
+  label := "Prescriber name"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "MedicationRequest.extension.controlledPrescriberName"
+  recordFact? := some "prescriberName"
+  validation? := some .nonempty
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-address.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+Controlled prescriber address. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def controlledPrescriberAddress : ElementSpec where
   id := "controlledPrescriberAddress"
-  label := "Controlled prescriber address"
-  kind := .coded "nonempty-narrative"
+  label := "Prescriber address"
+  kind := .text
   enteredBy := [.physician, .np, .surgeon]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "MedicationRequest.extension.controlledPrescriberAddress"
+  recordFact? := some "prescriberAddress"
+  validation? := some .nonempty
 
 /-- Law: 21 CFR §1306.05(c). Catalog: federal-rx-1306-05-ghb-need.
-Add the ghb formulary class to relevant product entries (ordinary drug-class data), then require non-empty medical need on those lines. No new When is needed. -/
+Ghb medical need. Add the ghb formulary class to relevant product entries (ordinary drug-class data), then require non-empty medical need on those lines. No new When is needed. -/
 def ghbMedicalNeed : ElementSpec where
   id := "ghbMedicalNeed"
-  label := "Ghb medical need"
+  label := "GHB medical need"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -79,10 +83,10 @@ def ghbMedicalNeed : ElementSpec where
   fhirTarget := "Composition.section[ghbMedicalNeed].text"
 
 /-- Law: 21 CFR §1306.11(d)(4). Catalog: federal-rx-1306-11-emergency-label.
-Dedicated emergency-follow-up prescription artifact requires the exact notation via allowed values. It does not verify the seven-day deadline or send the artifact. -/
+Emergency authorization notation. Dedicated emergency-follow-up prescription artifact requires the exact notation via allowed values. It does not verify the seven-day deadline or send the artifact. -/
 def emergencyAuthorizationNotation : ElementSpec where
   id := "emergencyAuthorizationNotation"
-  label := "Emergency authorization notation"
+  label := "Emergency authorization"
   kind := .coded "emergency-authorization-notation"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -91,7 +95,7 @@ def emergencyAuthorizationNotation : ElementSpec where
   fhirTarget := "Composition.section[emergencyAuthorizationNotation].text"
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+Refill schedule eligibility. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def refillScheduleEligibility : ElementSpec where
   id := "refillScheduleEligibility"
   label := "Refill schedule eligibility"
@@ -103,7 +107,7 @@ def refillScheduleEligibility : ElementSpec where
   fhirTarget := "Task.extension.refillScheduleEligibility"
 
 /-- Law: 21 CFR §1306.12(b)(1)(ii). Catalog: federal-rx-1306-12-earliest-fill.
-A dedicated multiple-Schedule-II prescription artifact requires an earliest-fill date on every series line (including the first, a disclosed stricter policy). Date is a non-empty ISO-8601 string; interpreting or enforcing pharmacy fill eligibility is separate. -/
+Earliest fill date. A dedicated multiple-Schedule-II prescription artifact requires an earliest-fill date on every series line (including the first, a disclosed stricter policy). Date is a non-empty ISO-8601 string; interpreting or enforcing pharmacy fill eligibility is separate. -/
 def earliestFillDate : ElementSpec where
   id := "earliestFillDate"
   label := "Earliest fill date"
@@ -115,10 +119,10 @@ def earliestFillDate : ElementSpec where
   fhirTarget := "Composition.section[earliestFillDate].text"
 
 /-- Law: 21 CFR §1306.12(b)(1)(iii). Catalog: federal-rx-1306-12-diversion-risk.
-Dedicated series-issuance commit requires a human prescriber conclusion that the series does not create undue diversion/abuse risk. It documents the judgment, not automated assessment of risk. -/
+Series diversion risk assessed. Dedicated series-issuance commit requires a human prescriber conclusion that the series does not create undue diversion/abuse risk. It documents the judgment, not automated assessment of risk. -/
 def seriesDiversionRiskAssessed : ElementSpec where
   id := "seriesDiversionRiskAssessed"
-  label := "Series diversion risk assessed"
+  label := "Diversion risk assessed"
   kind := .flag
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -127,10 +131,10 @@ def seriesDiversionRiskAssessed : ElementSpec where
   fhirTarget := "Composition.section[seriesDiversionRiskAssessed].text"
 
 /-- Law: 21 CFR §1311.140(a)(2). Catalog: federal-rx-1311-140-ready-selection.
-Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
+Controlled ready to sign. Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
 def controlledReadyToSign : ElementSpec where
   id := "controlledReadyToSign"
-  label := "Controlled ready to sign"
+  label := "Ready to sign"
   kind := .flag
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -139,7 +143,7 @@ def controlledReadyToSign : ElementSpec where
   fhirTarget := "Composition.section[controlledReadyToSign].text"
 
 /-- Law: 42 U.S.C. §300aa-25(a)(1). Catalog: federal-rx-300aa-25-date.
-Capture actual vaccination date as a non-empty ISO-8601 date string; this does not infer the date from note creation or prove permanent retention. -/
+Vaccine administration date. Capture actual vaccination date as a non-empty ISO-8601 date string; this does not infer the date from note creation or prove permanent retention. -/
 def vaccineAdministrationDate : ElementSpec where
   id := "vaccineAdministrationDate"
   label := "Vaccine administration date"
@@ -151,125 +155,129 @@ def vaccineAdministrationDate : ElementSpec where
   fhirTarget := "Immunization.occurrenceDateTime"
 
 /-- Law: 42 U.S.C. §300aa-25(a)(3). Catalog: federal-rx-300aa-25-provider-address.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Vaccine provider address. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def vaccineProviderAddress : ElementSpec where
   id := "vaccineProviderAddress"
   label := "Vaccine provider address"
-  kind := .coded "nonempty-narrative"
+  kind := .text
   enteredBy := [.np, .physician, .rn]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "Immunization.extension.administeringProviderAddress"
+  recordFact? := some "immunizationProviderAddress"
+  validation? := some .nonempty
 
 /-- Law: 42 U.S.C. §300aa-25(a)(3). Catalog: federal-rx-300aa-25-provider-title.
-Require title or explicit not-applicable on every vaccination record as a disclosed stricter data policy, avoiding a fictional title-appropriate When. -/
+Vaccine provider title. Require title or explicit not-applicable on every vaccination record as a disclosed stricter data policy, avoiding a fictional title-appropriate When. -/
 def vaccineProviderTitle : ElementSpec where
   id := "vaccineProviderTitle"
   label := "Vaccine provider title"
-  kind := .coded "nonempty-narrative"
+  kind := .text
   enteredBy := [.np, .physician, .rn]
-  prefill := .never
+  prefill := .recordConfirm
   friction := .compliance
   humanOnly := false
   fhirTarget := "Immunization.extension.administeringProviderTitle"
+  recordFact? := some "immunizationProviderTitle"
+  validation? := some .nonempty
 
 /-- Law: 21 CFR §1311.120(b)(9)(i). Catalog: federal-rx-1311-120-display-issue-date.
 Actual issue date of every selected controlled prescription; sourced from the order artifact, never the future earliest-fill date. -/
 def controlledSigningIssueDate : InfoSpec where
   id := "controlledSigningIssueDate"
-  label := "Actual issue date of every selected controlled prescription; sourced from the order artifact, never the future earliest-fill date."
+  label := "Issue date"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(ii). Catalog: federal-rx-1311-120-display-patient-name.
 Patient full name on every selected controlled prescription; do not substitute initials/sex/age. -/
 def controlledSigningPatientName : InfoSpec where
   id := "controlledSigningPatientName"
-  label := "Patient full name on every selected controlled prescription; do not substitute initials/sex/age."
+  label := "Patient name"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(iii). Catalog: federal-rx-1311-120-display-drug-name.
 Drug name for every selected controlled prescription line. -/
 def controlledSigningDrugName : InfoSpec where
   id := "controlledSigningDrugName"
-  label := "Drug name for every selected controlled prescription line."
+  label := "Medication"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(iv). Catalog: federal-rx-1311-120-display-strength.
 Product strength for every selected controlled prescription line, distinct from dose. -/
 def controlledSigningStrength : InfoSpec where
   id := "controlledSigningStrength"
-  label := "Product strength for every selected controlled prescription line, distinct from dose."
+  label := "Strength"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(iv). Catalog: federal-rx-1311-120-display-form.
 Dosage form for every selected controlled prescription line. -/
 def controlledSigningDosageForm : InfoSpec where
   id := "controlledSigningDosageForm"
-  label := "Dosage form for every selected controlled prescription line."
+  label := "Dosage form"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(iv). Catalog: federal-rx-1311-120-display-quantity.
 Prescribed quantity for every selected controlled prescription line. -/
 def controlledSigningQuantity : InfoSpec where
   id := "controlledSigningQuantity"
-  label := "Prescribed quantity for every selected controlled prescription line."
+  label := "Quantity"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(iv). Catalog: federal-rx-1311-120-display-directions.
 Complete directions for use for every selected controlled prescription line. -/
 def controlledSigningDirections : InfoSpec where
   id := "controlledSigningDirections"
-  label := "Complete directions for use for every selected controlled prescription line."
+  label := "Directions"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(v). Catalog: federal-rx-1311-120-display-refills.
 Authorized repeat count for every selected Schedule III–V prescription; showing zero for Schedule II as well is a stricter display policy. -/
 def controlledSigningRefills : InfoSpec where
   id := "controlledSigningRefills"
-  label := "Authorized repeat count for every selected Schedule III–V prescription; showing zero for Schedule II as well is a stricter display policy."
+  label := "Refills"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(vi). Catalog: federal-rx-1311-120-display-earliest-fill.
 Earliest fill date for every later Schedule II series member; show not applicable on other selected orders. -/
 def controlledSigningEarliestFill : InfoSpec where
   id := "controlledSigningEarliestFill"
-  label := "Earliest fill date for every later Schedule II series member; show not applicable on other selected orders."
+  label := "Earliest fill date"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(vii). Catalog: federal-rx-1311-120-display-prescriber-name.
 Prescriber full name for every selected controlled prescription. -/
 def controlledSigningPrescriberName : InfoSpec where
   id := "controlledSigningPrescriberName"
-  label := "Prescriber full name for every selected controlled prescription."
+  label := "Prescriber name"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(vii). Catalog: federal-rx-1311-120-display-prescriber-address.
 Prescriber address for every selected controlled prescription. -/
 def controlledSigningPrescriberAddress : InfoSpec where
   id := "controlledSigningPrescriberAddress"
-  label := "Prescriber address for every selected controlled prescription."
+  label := "Prescriber address"
   version := ""
 
 /-- Law: 21 CFR §1311.120(b)(9)(vii). Catalog: federal-rx-1311-120-display-prescriber-dea.
 Prescriber DEA registration or lawful institutional/government identification for every selected controlled prescription. -/
 def controlledSigningDea : InfoSpec where
   id := "controlledSigningDea"
-  label := "Prescriber DEA registration or lawful institutional/government identification for every selected controlled prescription."
+  label := "DEA registration"
   version := ""
 
 /-- Law: 21 CFR §1311.140(a)(3). Catalog: federal-rx-1311-140-signing-notice.
 Display the exact legal attestation in 21 CFR 1311.140(a)(3) immediately above the Sign button; use the source text verbatim in the renderer, not this label as placeholder content. -/
 def controlledSigningLegalNotice : InfoSpec where
   id := "controlledSigningLegalNotice"
-  label := "Display the exact legal attestation in 21 CFR 1311.140(a)(3) immediately above the Sign button; use the source text verbatim in the renderer, not this label as placeholder content."
+  label := "Controlled prescription attestation"
   version := ""
 
 /-- Law: 21 CFR §1306.11(d)(4). Catalog: federal-rx-1306-11-emergency-label.
 Dedicated artifact action. Role names do not attest licensure or physical care. -/
 def signEmergencyRxFollowup : CommitSpec where
   id := "signEmergencyRxFollowup"
-  label := "Sign emergency rx followup"
+  label := "Sign emergency Rx follow-up"
   roles := [.physician, .np, .surgeon]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
@@ -284,11 +292,11 @@ Law: 21 CFR §1306.12(b)(1)(iii). Catalog: federal-rx-1306-12-diversion-risk.
 Dedicated artifact action. Role names do not attest licensure or physical care. -/
 def signScheduleIISeries : CommitSpec where
   id := "signScheduleIISeries"
-  label := "Sign schedule i i series"
+  label := "Schedule II prescription series"
   roles := [.physician, .np, .surgeon]
 
 /-- Law: 21 CFR §1306.04(a). Catalog: federal-rx-1306-04-medical-purpose.
-Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
+. Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
 def entrie98 : EntryReq where
   commit := "signOrders"
   element := "controlledMedicalPurpose"
@@ -296,7 +304,7 @@ def entrie98 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.04(a). Catalog: federal-rx-1306-04-medical-purpose.
-Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
+. Capture a non-empty legitimate-purpose statement on each controlled order, including Schedule V via the extra class-specific requirement below. This documents purpose; the checker does not decide medical legitimacy. -/
 def entrie99 : EntryReq where
   commit := "signOrders"
   element := "controlledMedicalPurpose"
@@ -304,7 +312,7 @@ def entrie99 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-name.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie100 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientName"
@@ -312,7 +320,7 @@ def entrie100 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-name.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie101 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientName"
@@ -320,7 +328,7 @@ def entrie101 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-address.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie102 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientAddress"
@@ -328,7 +336,7 @@ def entrie102 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-patient-address.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie103 : EntryReq where
   commit := "signOrders"
   element := "prescriptionPatientAddress"
@@ -336,7 +344,7 @@ def entrie103 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-strength.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie104 : EntryReq where
   commit := "signOrders"
   element := "controlledProductStrength"
@@ -344,7 +352,7 @@ def entrie104 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-strength.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie105 : EntryReq where
   commit := "signOrders"
   element := "controlledProductStrength"
@@ -352,7 +360,7 @@ def entrie105 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-dosage-form.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie106 : EntryReq where
   commit := "signOrders"
   element := "controlledDosageForm"
@@ -360,7 +368,7 @@ def entrie106 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-dosage-form.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie107 : EntryReq where
   commit := "signOrders"
   element := "controlledDosageForm"
@@ -368,7 +376,7 @@ def entrie107 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-directions.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie108 : EntryReq where
   commit := "signOrders"
   element := "prescriptionDirections"
@@ -376,7 +384,7 @@ def entrie108 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-directions.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie109 : EntryReq where
   commit := "signOrders"
   element := "prescriptionDirections"
@@ -384,7 +392,7 @@ def entrie109 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-name.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie110 : EntryReq where
   commit := "signOrders"
   element := "controlledPrescriberName"
@@ -392,7 +400,7 @@ def entrie110 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-name.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie111 : EntryReq where
   commit := "signOrders"
   element := "controlledPrescriberName"
@@ -400,7 +408,7 @@ def entrie111 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-address.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie112 : EntryReq where
   commit := "signOrders"
   element := "controlledPrescriberAddress"
@@ -408,7 +416,7 @@ def entrie112 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(a). Catalog: federal-rx-1306-05-prescriber-address.
-Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
+. Required prescription-content capture; add a parallel Schedule V requirement using the same existing orderClass constructor. Registration content does not validate legal authority; serialization/delivery is downstream. -/
 def entrie113 : EntryReq where
   commit := "signOrders"
   element := "controlledPrescriberAddress"
@@ -416,7 +424,7 @@ def entrie113 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.05(c). Catalog: federal-rx-1306-05-ghb-need.
-Add the ghb formulary class to relevant product entries (ordinary drug-class data), then require non-empty medical need on those lines. No new When is needed. -/
+. Add the ghb formulary class to relevant product entries (ordinary drug-class data), then require non-empty medical need on those lines. No new When is needed. -/
 def entrie114 : EntryReq where
   commit := "signOrders"
   element := "ghbMedicalNeed"
@@ -424,7 +432,7 @@ def entrie114 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.11(d)(4). Catalog: federal-rx-1306-11-emergency-label.
-Dedicated emergency-follow-up prescription artifact requires the exact notation via allowed values. It does not verify the seven-day deadline or send the artifact. -/
+. Dedicated emergency-follow-up prescription artifact requires the exact notation via allowed values. It does not verify the seven-day deadline or send the artifact. -/
 def entrie115 : EntryReq where
   commit := "signEmergencyRxFollowup"
   element := "emergencyAuthorizationNotation"
@@ -433,7 +441,7 @@ def entrie115 : EntryReq where
   allowed? := some ["Authorization for Emergency Dispensing"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie116 : EntryReq where
   commit := "signOrders"
   element := "refills"
@@ -442,7 +450,7 @@ def entrie116 : EntryReq where
   allowed? := some ["0"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie117 : EntryReq where
   commit := "approveRefill"
   element := "refillRefills"
@@ -451,7 +459,7 @@ def entrie117 : EntryReq where
   allowed? := some ["0"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie118 : EntryReq where
   commit := "approveRefill"
   element := "refillScheduleEligibility"
@@ -460,7 +468,7 @@ def entrie118 : EntryReq where
   allowed? := some ["notScheduleII"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie119 : EntryReq where
   commit := "approveRefill"
   element := "drug"
@@ -468,7 +476,7 @@ def entrie119 : EntryReq where
   perOrderLine := false
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie120 : EntryReq where
   commit := "approveRefill"
   element := "refillDecision"
@@ -477,7 +485,7 @@ def entrie120 : EntryReq where
   allowed? := some ["approve", "modify"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie121 : EntryReq where
   commit := "denyRefill"
   element := "refillDecision"
@@ -486,7 +494,7 @@ def entrie121 : EntryReq where
   allowed? := some ["deny"]
 
 /-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
-For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
+. For new Schedule II prescriptions, require refills=0 per line under existing orderClass scheduleII. W7 has no current drug orderLines, so a conditional constraint alone is vacuous: require a human notScheduleII eligibility code on every refill decision, route Schedule II to signOrders as a new prescription, and bind a drug capture to its selected order slot when using the extra refillRefills constraint. This is an explicitly human-verified schedule gate, not automatic classification of the incoming Task. -/
 def entrie122 : EntryReq where
   commit := "denyRefill"
   element := "refillDenyReason"
@@ -494,7 +502,7 @@ def entrie122 : EntryReq where
   perOrderLine := false
 
 /-- Law: 21 CFR §1306.12(b)(1)(ii). Catalog: federal-rx-1306-12-earliest-fill.
-A dedicated multiple-Schedule-II prescription artifact requires an earliest-fill date on every series line (including the first, a disclosed stricter policy). Date is a non-empty ISO-8601 string; interpreting or enforcing pharmacy fill eligibility is separate. -/
+. A dedicated multiple-Schedule-II prescription artifact requires an earliest-fill date on every series line (including the first, a disclosed stricter policy). Date is a non-empty ISO-8601 string; interpreting or enforcing pharmacy fill eligibility is separate. -/
 def entrie123 : EntryReq where
   commit := "signScheduleIISeries"
   element := "earliestFillDate"
@@ -502,7 +510,7 @@ def entrie123 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1306.12(b)(1)(iii). Catalog: federal-rx-1306-12-diversion-risk.
-Dedicated series-issuance commit requires a human prescriber conclusion that the series does not create undue diversion/abuse risk. It documents the judgment, not automated assessment of risk. -/
+. Dedicated series-issuance commit requires a human prescriber conclusion that the series does not create undue diversion/abuse risk. It documents the judgment, not automated assessment of risk. -/
 def entrie124 : EntryReq where
   commit := "signScheduleIISeries"
   element := "seriesDiversionRiskAssessed"
@@ -510,7 +518,7 @@ def entrie124 : EntryReq where
   perOrderLine := false
 
 /-- Law: 21 CFR §1311.140(a)(2). Catalog: federal-rx-1311-140-ready-selection.
-Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
+. Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
 def entrie125 : EntryReq where
   commit := "signOrders"
   element := "controlledReadyToSign"
@@ -518,7 +526,7 @@ def entrie125 : EntryReq where
   perOrderLine := true
 
 /-- Law: 21 CFR §1311.140(a)(2). Catalog: federal-rx-1311-140-ready-selection.
-Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
+. Require an explicit human ready-for-signature selection per controlled prescription; Schedule V is added below. Edit-triggered invalidation is the separate next rule; this classification covers selection only. -/
 def entrie126 : EntryReq where
   commit := "signOrders"
   element := "controlledReadyToSign"
@@ -526,7 +534,7 @@ def entrie126 : EntryReq where
   perOrderLine := true
 
 /-- Law: 42 U.S.C. §300aa-25(a)(1). Catalog: federal-rx-300aa-25-date.
-Capture actual vaccination date as a non-empty ISO-8601 date string; this does not infer the date from note creation or prove permanent retention. -/
+. Capture actual vaccination date as a non-empty ISO-8601 date string; this does not infer the date from note creation or prove permanent retention. -/
 def entrie127 : EntryReq where
   commit := "recordImmunization"
   element := "vaccineAdministrationDate"
@@ -534,7 +542,7 @@ def entrie127 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 U.S.C. §300aa-25(a)(3). Catalog: federal-rx-300aa-25-provider-address.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie128 : EntryReq where
   commit := "recordImmunization"
   element := "vaccineProviderAddress"
@@ -542,7 +550,7 @@ def entrie128 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 U.S.C. §300aa-25(a)(3). Catalog: federal-rx-300aa-25-provider-title.
-Require title or explicit not-applicable on every vaccination record as a disclosed stricter data policy, avoiding a fictional title-appropriate When. -/
+. Require title or explicit not-applicable on every vaccination record as a disclosed stricter data policy, avoiding a fictional title-appropriate When. -/
 def entrie129 : EntryReq where
   commit := "recordImmunization"
   element := "vaccineProviderTitle"

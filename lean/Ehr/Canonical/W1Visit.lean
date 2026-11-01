@@ -155,6 +155,7 @@ def labs : Screen :=
       field s "labPriority" "labPriority" "Priority" (parent := some "labOrder"),
       field s "labFasting" "labFasting" "Fasting required" (parent := some "labOrder"),
       table s "recent" "labResults" "Recent results",
+      table s "pending" "orderSummary" "Pending orders",
       goto s "toMeds" "w1Orders" "Medication orders",
       goto s "toSign" "w1Verify" "Review and sign"
     ] }
@@ -201,6 +202,7 @@ def close : Screen :=
   let s := "w1Close"
   { id := s, title := "Visit close", workflow := "W1"
     components := frame s ++ [
+      panel s "noteReview" "noteSummary" "Note review",
       field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
       field s "levelOfService" "levelOfService" "Level of service",
       field s "followUp" "followUp" "Follow-up",

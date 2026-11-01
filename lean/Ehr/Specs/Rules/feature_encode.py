@@ -3,6 +3,7 @@ import collections
 import json
 from pathlib import Path
 import re
+from human_labels import label as human_label
 from feature_data import TEMP, PAT, VAL, EXP, DISPLAY, SKIP, q
 ROOT=Path(__file__).resolve().parents[4]
 rs=json.loads((ROOT/'docs/rules/catalog.json').read_text()); byid={r['id']:r for r in rs}
@@ -50,7 +51,7 @@ elements={}; entries=[]; alerts=[]; validations=[]
 def add_element(id,e,label,kind,sample,validation='.nonempty',default=None,target='Observation.valueString'):
  if e not in base_elements and e not in elements:
   name='element'+e[0].upper()+e[1:]
-  body='{ id := '+q(e)+', label := '+q(label)+', kind := '+kind+', enteredBy := [.physician, .np, .rn, .surgeon], prefill := '+('.defaultConfirm' if default else '.never')+', humanOnly := '+boolstr(not default)+', friction := .compliance, fhirTarget := '+q(target)+', validation? := some ('+validation+'), defaultValue? := '+opt(q(default) if default else None)+' }'
+  body='{ id := '+q(e)+', label := '+q(human_label(e,label))+', kind := '+kind+', enteredBy := [.physician, .np, .rn, .surgeon], prefill := '+('.defaultConfirm' if default else '.never')+', humanOnly := '+boolstr(not default)+', friction := .compliance, fhirTarget := '+q(target)+', validation? := some ('+validation+'), defaultValue? := '+opt(q(default) if default else None)+' }'
   emit(id,name,'ElementSpec',body,'Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default).')
   elements[e]=(name,sample)
 for n,p in enumerate(PAT):
@@ -124,7 +125,7 @@ for e,label,sample in [('patientSelected','Selected patient','.true')]:
 for i,(id,info) in enumerate(infos.items()):
  d=next(d for d in DISPLAY if d.get('info')==id)
  name='payloadInfo'+str(i+1);info['name']=name
- emit(d['id'],name,'InfoSpec','{ id := '+q(id)+', label := '+q(info['label'])+', version := "", payload? := some { fields := '+ls(info['fields'])+', identifiers := '+ls(['.'+x for x in info['ids']])+', rowFields := '+ls([q(x) for x in info['rows']])+', groupBy? := '+opt(None if info['group'] is None else q(info['group']))+' } }')
+ emit(d['id'],name,'InfoSpec','{ id := '+q(id)+', label := '+q(human_label(id,info['label']))+', version := "", payload? := some { fields := '+ls(info['fields'])+', identifiers := '+ls(['.'+x for x in info['ids']])+', rowFields := '+ls([q(x) for x in info['rows']])+', groupBy? := '+opt(None if info['group'] is None else q(info['group']))+' } }')
 # New actions each retain an explicit human documentation completion, identity,
 # plus patient/allergy review. They are separate artifacts, not original-entry bypasses.
 all_commits=sorted({x['commit'] for xs in [TEMP,PAT,VAL,EXP] for x in xs if x.get('commit')})
@@ -134,7 +135,7 @@ labels={c:re.sub(r'([a-z])([A-Z])',r'\1 \2',c).capitalize() for c in new}
 for c in new:
  name='commit'+c[0].upper()+c[1:]
  roles='[.physician, .np, .surgeon]' if c.startswith(('authorize','sign','continue','dispense','partialFill','completeSchedule','completeEmergency')) else '[.physician, .np, .rn, .surgeon]'
- emit(owner(c),name,'CommitSpec','{ id := '+q(c)+', label := '+q(labels[c])+', roles := '+roles+' }','Roles allow documentation only; this is not qualified-authorization or a license certificate.')
+ emit(owner(c),name,'CommitSpec','{ id := '+q(c)+', label := '+q(human_label(c,labels[c]))+', roles := '+roles+' }','Roles allow documentation only; this is not qualified-authorization or a license certificate.')
  chunks.append('')
 for key,typ,values in [('elements','ElementSpec',[v[0] for v in elements.values()]),('infos','InfoSpec',[i['name'] for i in infos.values()]),('commits','CommitSpec',['commit'+c[0].upper()+c[1:] for c in new]),('entries','EntryReq',entries),('alerts','AlertSpec',alerts),('displays','DisplayReq',displays)]:
  chunks.append(f'\n/-- Product design property. Additive feature {key}. -/\ndef {key} : List {typ} :=\n  '+ls(values)+'\n')

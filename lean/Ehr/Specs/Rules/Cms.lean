@@ -7,10 +7,10 @@ Artifact commits capture one artifact; they do not prove event coverage. -/
 namespace Ehr.Specs.Rules.Cms
 
 /-- Law: 42 CFR §482.13(e)(4)(i). Catalog: cms-482.13-e4i-care-plan.
-New scoped restraint-order commit requires the written care-plan change; .always applies to this artifact, not to every medication order. -/
+Restraint care plan change. New scoped restraint-order commit requires the written care-plan change; .always applies to this artifact, not to every medication order. -/
 def restraintCarePlanChange : ElementSpec where
   id := "restraintCarePlanChange"
-  label := "Restraint care plan change"
+  label := "Care plan change"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -19,7 +19,7 @@ def restraintCarePlanChange : ElementSpec where
   fhirTarget := "Composition.section[restraintCarePlanChange].text"
 
 /-- Law: 42 CFR §482.13(e)(6). Catalog: cms-482.13-e6-no-standing.
-Require oneTime on the dedicated restraint-order artifact. The new commit must be the only canonical issuer of restraint orders; ordinary medication signOrders never emits them. -/
+Restraint order mode. Require oneTime on the dedicated restraint-order artifact. The new commit must be the only canonical issuer of restraint orders; ordinary medication signOrders never emits them. -/
 def restraintOrderMode : ElementSpec where
   id := "restraintOrderMode"
   label := "Restraint order mode"
@@ -31,10 +31,10 @@ def restraintOrderMode : ElementSpec where
   fhirTarget := "Composition.section[restraintOrderMode].text"
 
 /-- Law: 42 CFR §482.13(e)(6). Catalog: cms-482.13-e6-no-prn.
-Require notPrn on the dedicated restraint-order artifact, using an explicit allowed code. A false flag is invalid for a required entry, so this is not a flag default. -/
+Restraint prn. Require notPrn on the dedicated restraint-order artifact, using an explicit allowed code. A false flag is invalid for a required entry, so this is not a flag default. -/
 def restraintPrn : ElementSpec where
   id := "restraintPrn"
-  label := "Restraint prn"
+  label := "PRN status"
   kind := .coded "no-prn"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -43,10 +43,10 @@ def restraintPrn : ElementSpec where
   fhirTarget := "Composition.section[restraintPrn].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(ii). Catalog: cms-482.13-e16ii-document-behavior.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint behavior. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintBehavior : ElementSpec where
   id := "restraintBehavior"
-  label := "Restraint behavior"
+  label := "Observed behavior"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -55,10 +55,10 @@ def restraintBehavior : ElementSpec where
   fhirTarget := "Composition.section[restraintBehavior].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(ii). Catalog: cms-482.13-e16ii-document-intervention.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint intervention. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintIntervention : ElementSpec where
   id := "restraintIntervention"
-  label := "Restraint intervention"
+  label := "Intervention"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -67,10 +67,10 @@ def restraintIntervention : ElementSpec where
   fhirTarget := "Composition.section[restraintIntervention].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(iii). Catalog: cms-482.13-e16iii-document-alternatives.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint alternatives. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintAlternatives : ElementSpec where
   id := "restraintAlternatives"
-  label := "Restraint alternatives"
+  label := "Alternatives attempted"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -79,10 +79,10 @@ def restraintAlternatives : ElementSpec where
   fhirTarget := "Composition.section[restraintAlternatives].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(iv). Catalog: cms-482.13-e16iv-document-condition.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint condition. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintCondition : ElementSpec where
   id := "restraintCondition"
-  label := "Restraint condition"
+  label := "Patient condition"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -91,10 +91,10 @@ def restraintCondition : ElementSpec where
   fhirTarget := "Composition.section[restraintCondition].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(v). Catalog: cms-482.13-e16v-document-response.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint response. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintResponse : ElementSpec where
   id := "restraintResponse"
-  label := "Restraint response"
+  label := "Response"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -103,10 +103,10 @@ def restraintResponse : ElementSpec where
   fhirTarget := "Composition.section[restraintResponse].text"
 
 /-- Law: 42 CFR §482.13(e)(16)(v). Catalog: cms-482.13-e16v-document-continuation.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+Restraint continuation reason. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def restraintContinuationReason : ElementSpec where
   id := "restraintContinuationReason"
-  label := "Restraint continuation reason"
+  label := "Reason to continue"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -115,7 +115,7 @@ def restraintContinuationReason : ElementSpec where
   fhirTarget := "Composition.section[restraintContinuationReason].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(A). Catalog: cms-482.23-c6iA-self-order.
-Prescriber-only dedicated self-administration authorization artifact; this gate records authorization, not the subsequent physical dosing. -/
+Self administration order. Prescriber-only dedicated self-administration authorization artifact; this gate records authorization, not the subsequent physical dosing. -/
 def selfAdministrationOrder : ElementSpec where
   id := "selfAdministrationOrder"
   label := "Self administration order"
@@ -127,10 +127,10 @@ def selfAdministrationOrder : ElementSpec where
   fhirTarget := "Composition.section[selfAdministrationOrder].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(B). Catalog: cms-482.23-c6iB-self-capacity.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Self administration capacity. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def selfAdministrationCapacity : ElementSpec where
   id := "selfAdministrationCapacity"
-  label := "Self administration capacity"
+  label := "Ability to self-administer"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -139,10 +139,10 @@ def selfAdministrationCapacity : ElementSpec where
   fhirTarget := "Composition.section[selfAdministrationCapacity].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(C). Catalog: cms-482.23-c6iC-self-instruction.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Self administration teaching. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def selfAdministrationTeaching : ElementSpec where
   id := "selfAdministrationTeaching"
-  label := "Self administration teaching"
+  label := "Teaching"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -151,10 +151,10 @@ def selfAdministrationTeaching : ElementSpec where
   fhirTarget := "Composition.section[selfAdministrationTeaching].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(D). Catalog: cms-482.23-c6iD-self-security.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Self administration security. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def selfAdministrationSecurity : ElementSpec where
   id := "selfAdministrationSecurity"
-  label := "Self administration security"
+  label := "Medication storage"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -163,10 +163,10 @@ def selfAdministrationSecurity : ElementSpec where
   fhirTarget := "Composition.section[selfAdministrationSecurity].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(ii)(C). Catalog: cms-482.23-c6iiC-own-med-identify.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Patient owned medication identity. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def patientOwnedMedicationIdentity : ElementSpec where
   id := "patientOwnedMedicationIdentity"
-  label := "Patient owned medication identity"
+  label := "Medication verification"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -175,10 +175,10 @@ def patientOwnedMedicationIdentity : ElementSpec where
   fhirTarget := "Composition.section[patientOwnedMedicationIdentity].text"
 
 /-- Law: 42 CFR §482.23(c)(6)(ii)(C). Catalog: cms-482.23-c6iiC-own-med-integrity.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Patient owned medication integrity. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def patientOwnedMedicationIntegrity : ElementSpec where
   id := "patientOwnedMedicationIntegrity"
-  label := "Patient owned medication integrity"
+  label := "Supply integrity"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon, .rn]
   prefill := .never
@@ -187,7 +187,7 @@ def patientOwnedMedicationIntegrity : ElementSpec where
   fhirTarget := "Composition.section[patientOwnedMedicationIntegrity].text"
 
 /-- Law: 42 CFR §482.24(c)(4)(ii). Catalog: cms-482.24-c4ii-admitting-diagnosis.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Admitting diagnosis. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def admittingDiagnosis : ElementSpec where
   id := "admittingDiagnosis"
   label := "Admitting diagnosis"
@@ -199,7 +199,7 @@ def admittingDiagnosis : ElementSpec where
   fhirTarget := "Encounter.diagnosis.condition"
 
 /-- Law: 42 CFR §482.24(c)(4)(vii). Catalog: cms-482.24-c4vii-summary-outcome.
-Add distinct hospitalization outcome text; dischargeCondition is only the condition at departure, not the course/outcome of hospitalization. -/
+Hospitalization outcome. Add distinct hospitalization outcome text; dischargeCondition is only the condition at departure, not the course/outcome of hospitalization. -/
 def hospitalizationOutcome : ElementSpec where
   id := "hospitalizationOutcome"
   label := "Hospitalization outcome"
@@ -211,10 +211,10 @@ def hospitalizationOutcome : ElementSpec where
   fhirTarget := "Composition.section[hospitalizationOutcome].text"
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-posthospital-needs.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Post hospital needs. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def postHospitalNeeds : ElementSpec where
   id := "postHospitalNeeds"
-  label := "Post hospital needs"
+  label := "Care needs"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -223,10 +223,10 @@ def postHospitalNeeds : ElementSpec where
   fhirTarget := "Composition.section[postHospitalNeeds].text"
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-availability.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Post hospital service availability. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def postHospitalServiceAvailability : ElementSpec where
   id := "postHospitalServiceAvailability"
-  label := "Post hospital service availability"
+  label := "Available services"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -235,10 +235,10 @@ def postHospitalServiceAvailability : ElementSpec where
   fhirTarget := "Composition.section[postHospitalServiceAvailability].text"
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-access.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Post hospital service access. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def postHospitalServiceAccess : ElementSpec where
   id := "postHospitalServiceAccess"
-  label := "Post hospital service access"
+  label := "Access to services"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -247,10 +247,10 @@ def postHospitalServiceAccess : ElementSpec where
   fhirTarget := "Composition.section[postHospitalServiceAccess].text"
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-record.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Discharge planning evaluation. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def dischargePlanningEvaluation : ElementSpec where
   id := "dischargePlanningEvaluation"
-  label := "Discharge planning evaluation"
+  label := "Discharge assessment"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -259,10 +259,10 @@ def dischargePlanningEvaluation : ElementSpec where
   fhirTarget := "Composition.section[dischargePlanningEvaluation].text"
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-discussion.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+Discharge evaluation discussion. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def dischargeEvaluationDiscussion : ElementSpec where
   id := "dischargeEvaluationDiscussion"
-  label := "Discharge evaluation discussion"
+  label := "Plan discussed"
   kind := .coded "nonempty-narrative"
   enteredBy := [.physician, .np, .surgeon]
   prefill := .never
@@ -272,10 +272,10 @@ def dischargeEvaluationDiscussion : ElementSpec where
 
 /-- Law: 42 CFR §482.51(b)(6). Catalog: cms-482.51-b6-techniques.
 Law: 22 CCR §70749(a)(12). Catalog: ca-title22-70749-op-technique.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+Op technique. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def opTechnique : ElementSpec where
   id := "opTechnique"
-  label := "Op technique"
+  label := "Technique"
   kind := .coded "nonempty-narrative"
   enteredBy := [.surgeon]
   prefill := .never
@@ -285,10 +285,10 @@ def opTechnique : ElementSpec where
 
 /-- Law: 42 CFR §482.51(b)(6). Catalog: cms-482.51-b6-tissues.
 Law: 22 CCR §70749(a)(12). Catalog: ca-title22-70749-op-tissue.
-opSpecimens covers sent specimens, not every removed or altered tissue; add a distinct required description, permitting an explicit none finding. -/
+Op tissues removed altered. opSpecimens covers sent specimens, not every removed or altered tissue; add a distinct required description, permitting an explicit none finding. -/
 def opTissuesRemovedAltered : ElementSpec where
   id := "opTissuesRemovedAltered"
-  label := "Op tissues removed altered"
+  label := "Tissue removed or altered"
   kind := .coded "nonempty-narrative"
   enteredBy := [.surgeon]
   prefill := .never
@@ -344,7 +344,7 @@ def recordAdmission : CommitSpec where
   roles := [.physician, .np, .surgeon]
 
 /-- Law: 42 CFR §482.13(e)(4)(i). Catalog: cms-482.13-e4i-care-plan.
-New scoped restraint-order commit requires the written care-plan change; .always applies to this artifact, not to every medication order. -/
+. New scoped restraint-order commit requires the written care-plan change; .always applies to this artifact, not to every medication order. -/
 def entrie1 : EntryReq where
   commit := "signRestraintOrder"
   element := "restraintCarePlanChange"
@@ -352,7 +352,7 @@ def entrie1 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(6). Catalog: cms-482.13-e6-no-standing.
-Require oneTime on the dedicated restraint-order artifact. The new commit must be the only canonical issuer of restraint orders; ordinary medication signOrders never emits them. -/
+. Require oneTime on the dedicated restraint-order artifact. The new commit must be the only canonical issuer of restraint orders; ordinary medication signOrders never emits them. -/
 def entrie2 : EntryReq where
   commit := "signRestraintOrder"
   element := "restraintOrderMode"
@@ -361,7 +361,7 @@ def entrie2 : EntryReq where
   allowed? := some ["oneTime"]
 
 /-- Law: 42 CFR §482.13(e)(6). Catalog: cms-482.13-e6-no-prn.
-Require notPrn on the dedicated restraint-order artifact, using an explicit allowed code. A false flag is invalid for a required entry, so this is not a flag default. -/
+. Require notPrn on the dedicated restraint-order artifact, using an explicit allowed code. A false flag is invalid for a required entry, so this is not a flag default. -/
 def entrie3 : EntryReq where
   commit := "signRestraintOrder"
   element := "restraintPrn"
@@ -370,7 +370,7 @@ def entrie3 : EntryReq where
   allowed? := some ["notPrn"]
 
 /-- Law: 42 CFR §482.13(e)(16)(ii). Catalog: cms-482.13-e16ii-document-behavior.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie4 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintBehavior"
@@ -378,7 +378,7 @@ def entrie4 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(16)(ii). Catalog: cms-482.13-e16ii-document-intervention.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie5 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintIntervention"
@@ -386,7 +386,7 @@ def entrie5 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(16)(iii). Catalog: cms-482.13-e16iii-document-alternatives.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie6 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintAlternatives"
@@ -394,7 +394,7 @@ def entrie6 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(16)(iv). Catalog: cms-482.13-e16iv-document-condition.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie7 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintCondition"
@@ -402,7 +402,7 @@ def entrie7 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(16)(v). Catalog: cms-482.13-e16v-document-response.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie8 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintResponse"
@@ -410,7 +410,7 @@ def entrie8 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.13(e)(16)(v). Catalog: cms-482.13-e16v-document-continuation.
-Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
+. Dedicated restraint episode documentation captures this non-empty item; it does not certify the one-hour evaluation deadline or clinical appropriateness. -/
 def entrie9 : EntryReq where
   commit := "chartRestraintEpisode"
   element := "restraintContinuationReason"
@@ -418,7 +418,7 @@ def entrie9 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(A). Catalog: cms-482.23-c6iA-self-order.
-Prescriber-only dedicated self-administration authorization artifact; this gate records authorization, not the subsequent physical dosing. -/
+. Prescriber-only dedicated self-administration authorization artifact; this gate records authorization, not the subsequent physical dosing. -/
 def entrie10 : EntryReq where
   commit := "authorizeSelfAdministration"
   element := "selfAdministrationOrder"
@@ -426,7 +426,7 @@ def entrie10 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(B). Catalog: cms-482.23-c6iB-self-capacity.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie11 : EntryReq where
   commit := "documentSelfAdministration"
   element := "selfAdministrationCapacity"
@@ -434,7 +434,7 @@ def entrie11 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(C). Catalog: cms-482.23-c6iC-self-instruction.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie12 : EntryReq where
   commit := "documentSelfAdministration"
   element := "selfAdministrationTeaching"
@@ -442,7 +442,7 @@ def entrie12 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(i)(D). Catalog: cms-482.23-c6iD-self-security.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie13 : EntryReq where
   commit := "documentSelfAdministration"
   element := "selfAdministrationSecurity"
@@ -450,7 +450,7 @@ def entrie13 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(ii)(C). Catalog: cms-482.23-c6iiC-own-med-identify.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie14 : EntryReq where
   commit := "documentSelfAdministration"
   element := "patientOwnedMedicationIdentity"
@@ -458,7 +458,7 @@ def entrie14 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.23(c)(6)(ii)(C). Catalog: cms-482.23-c6iiC-own-med-integrity.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie15 : EntryReq where
   commit := "documentSelfAdministration"
   element := "patientOwnedMedicationIntegrity"
@@ -466,7 +466,7 @@ def entrie15 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.24(c)(4)(ii). Catalog: cms-482.24-c4ii-admitting-diagnosis.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie16 : EntryReq where
   commit := "recordAdmission"
   element := "admittingDiagnosis"
@@ -474,7 +474,7 @@ def entrie16 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.24(c)(4)(vii). Catalog: cms-482.24-c4vii-summary-outcome.
-Add distinct hospitalization outcome text; dischargeCondition is only the condition at departure, not the course/outcome of hospitalization. -/
+. Add distinct hospitalization outcome text; dischargeCondition is only the condition at departure, not the course/outcome of hospitalization. -/
 def entrie17 : EntryReq where
   commit := "discharge"
   element := "hospitalizationOutcome"
@@ -482,7 +482,7 @@ def entrie17 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-posthospital-needs.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie18 : EntryReq where
   commit := "discharge"
   element := "postHospitalNeeds"
@@ -490,7 +490,7 @@ def entrie18 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-posthospital-needs.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie19 : EntryReq where
   commit := "disposition"
   element := "postHospitalNeeds"
@@ -498,7 +498,7 @@ def entrie19 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-availability.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie20 : EntryReq where
   commit := "discharge"
   element := "postHospitalServiceAvailability"
@@ -506,7 +506,7 @@ def entrie20 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-availability.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie21 : EntryReq where
   commit := "disposition"
   element := "postHospitalServiceAvailability"
@@ -514,7 +514,7 @@ def entrie21 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-access.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie22 : EntryReq where
   commit := "discharge"
   element := "postHospitalServiceAccess"
@@ -522,7 +522,7 @@ def entrie22 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(2). Catalog: cms-482.43-a2-service-access.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie23 : EntryReq where
   commit := "disposition"
   element := "postHospitalServiceAccess"
@@ -530,7 +530,7 @@ def entrie23 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-record.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie24 : EntryReq where
   commit := "discharge"
   element := "dischargePlanningEvaluation"
@@ -538,7 +538,7 @@ def entrie24 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-record.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie25 : EntryReq where
   commit := "disposition"
   element := "dischargePlanningEvaluation"
@@ -546,7 +546,7 @@ def entrie25 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-discussion.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie26 : EntryReq where
   commit := "discharge"
   element := "dischargeEvaluationDiscussion"
@@ -554,7 +554,7 @@ def entrie26 : EntryReq where
   perOrderLine := false
 
 /-- Law: 42 CFR §482.43(a)(3). Catalog: cms-482.43-a3-evaluation-discussion.
-Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
+. Require a documented assessment or explicit no-needs/not-indicated finding on every discharge (a disclosed stricter hospital UI choice). This avoids inventing a discharge-planning When and does not prove service delivery. On the ED disposition path, duplicate this gate at disposition with truthful not-applicable findings for other dispositions (a stricter hospital UI policy). -/
 def entrie27 : EntryReq where
   commit := "disposition"
   element := "dischargeEvaluationDiscussion"
@@ -563,7 +563,7 @@ def entrie27 : EntryReq where
 
 /-- Law: 42 CFR §482.51(b)(6). Catalog: cms-482.51-b6-techniques.
 Law: 22 CCR §70749(a)(12). Catalog: ca-title22-70749-op-technique.
-Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
+. Add a required data capture using existing ElementSpec, CommitSpec and EntryReq; no new syntax or predicate is needed. -/
 def entrie28 : EntryReq where
   commit := "signOpNote"
   element := "opTechnique"
@@ -572,7 +572,7 @@ def entrie28 : EntryReq where
 
 /-- Law: 42 CFR §482.51(b)(6). Catalog: cms-482.51-b6-tissues.
 Law: 22 CCR §70749(a)(12). Catalog: ca-title22-70749-op-tissue.
-opSpecimens covers sent specimens, not every removed or altered tissue; add a distinct required description, permitting an explicit none finding. -/
+. opSpecimens covers sent specimens, not every removed or altered tissue; add a distinct required description, permitting an explicit none finding. -/
 def entrie29 : EntryReq where
   commit := "signOpNote"
   element := "opTissuesRemovedAltered"

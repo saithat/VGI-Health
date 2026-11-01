@@ -44,7 +44,10 @@ def withAntibioticFields (p : Program) : Program :=
           match c.kind with
           | .field "drug" slot _ =>
             let pre := match slot with | .fixed n => rowPrefix n | .current => ""
-            [c, { indicationField s.id pre slot with parent? := c.parent?, tab := c.tab }]
+            [c, { indicationField s.id pre slot with
+              id := if c.id == cid s.id (pre ++ "drug") then cid s.id (pre ++ "abxIndication")
+                    else c.id ++ ".abxIndication",
+              parent? := c.parent?, tab := c.tab }]
           | _ => [c] } }
 
 /-- Default the indication in antibiotic preference/order-set macros, preserving
@@ -64,7 +67,9 @@ def withAntibioticDefaults (p : Program) : Program :=
                     else if m.id == "w3SepsisSet" then "sepsis"
                     else if m.id == "w3CellulitisSet" then "skin-infection"
                     else "respiratory-infection"
-                  sc.toList.flatMap fun s => [st, .setValue (cid s.id (pre ++ "abxIndication")) indication]
+                  sc.toList.flatMap fun s => [st, .setValue
+                    (if c.id == cid s.id (pre ++ "drug") then cid s.id (pre ++ "abxIndication")
+                     else c.id ++ ".abxIndication") indication]
                 else [st]
               | _ => [st]
             | none => [st]

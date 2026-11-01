@@ -1,3 +1,4 @@
+import Ehr.Specs.ClinicalTables
 import Ehr.Core.Types
 import Ehr.Specs.Rules.Cms
 import Ehr.Specs.Rules.Title22
@@ -2348,7 +2349,7 @@ The hospital spec, version "v1". -/
 def specV1 : Spec where
   version := "v1"
   elements := (elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements ++ Rules.Features.elements).map Rules.Features.strengthenElement
-  infos := infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos
+  infos := (infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos ++ ClinicalTables.infos).map ClinicalTables.withSchema
   commits := (commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits ++ Rules.Features.commits).map Rules.Features.strengthenCommit
   entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries ++ Rules.Features.entries ++
     Rules.Features.newCommitIds.map (fun c => { commit := c, element := "patientIdReentry" })
