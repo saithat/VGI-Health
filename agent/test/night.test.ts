@@ -160,3 +160,15 @@ describe('evaluation integrity: no validation or test data in prompts', () => {
     expect(existsSync(new RunStore(replayed.dir).dayPath(4, 'P1'))).toBe(true);
   });
 });
+
+
+it('sends only physical-interaction metrics and binds the documented geometry objective',()=>{
+ const records=readLlmRecords(recorded.dir);
+ expect(records.length).toBeGreaterThan(0);
+ for(const call of records){
+  const prompt=call.system+call.prompt;
+  expect(prompt).not.toMatch(/klmDeciSec|avgKlmSec|klmSec|KLM time|timeSinksByScreen/);
+  expect(prompt).toContain('1440');
+  expect(prompt).toContain('mouseTravelPx');
+ }
+});

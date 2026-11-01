@@ -165,6 +165,5 @@ export function traceCounters(
     clicks: count("click"),
     keystrokes: count("key"),
     scrolls: count("scroll"),
-    seconds: (prefix.at(-1)?.klmDeciSec ?? 0) / 10,
   };
 }

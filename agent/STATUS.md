@@ -1,3 +1,65 @@
+## Physical interaction metrics — owner decision, 2026-11-01
+
+Verification: 15/15 current certified canonicals have complete real Chromium
+geometry (world/2; v1 day 2, v2 day 4, v3 day 8); baseline numbers and bindings are
+in docs/STATUS.md and docs/audits/interaction-baselines.json. A deliberately FAKE
+night through the real binary deployed composites/presentation/shortcut changes,
+with full screen gates and 12/12 identical trees reused on the next check. An
+8-day × 5-persona FAKE run plus exact replay measured all 422 tasks across both
+runs' recorded persona-days with zero missing targets and no model calls. A
+separate certified RN canonical benchmark produced 21 clicks, 2 scrolls / 15,476px,
+and 8,001.87px mouse travel on its minimum-click path; its click floor is separate.
+These checks are wiring evidence, not overnight clinical-performance results.
+
+
+Headlines, selection, reports and dashboard switches use clicks, scroll count,
+scroll distance (px), and mouse travel (px). Keystrokes are secondary. Timeline deltas for blind runs use the active
+canonical, and include scroll count/distance as well as mouse travel. Timing
+estimates remain in raw native/decision logs only, marked **not used** by the
+manifest interaction model; no time estimate enters the design prompt or report.
+Archived run data is unchanged; absent pixel geometry displays unavailable.
+
+The real screen gate captures Chromium component bounding-box centers and scroll
+offsets at 1440×900 for each rendered screen/state, keyed by expanded program
+SHA256, screen, state and component ID. Assertion-cache receipts include geometry;
+app, browser, harness or presentation-bundle changes invalidate reuse. Every
+candidate simulated for selection obtains geometry from that same gate. Canonical
+and no-agent arms use the same provider. Presentation-only alternatives use separate bundle hashes even when their native
+program hashes match; selection and replay verify that geometry binding. Atlases
+are saved under run/geometry/. Resume also fingerprints the shared pixel
+model in app/src/metrics, so changing the calculation cannot silently mix costs.
+Rebind refreshes deployment gates; historical interaction measurements retain
+their original geometry/build hash and are not silently re-estimated.
+
+A pointer starts at viewport center once per complete day trace, persists between
+tasks, and moves in straight lines between pointed/clicked/typed-into control
+centers, without tremor, overshoot or an assumed human speed. Scroll offsets reset
+on screen navigation. Offscreen targets use Chromium's measured centered reveal
+position and ancestor offsets; an explicit scroll advances one scroller viewport,
+clamped at its measured limit. Scroll count counts changed scroll containers,
+including reveal movements; scroll pixels sum their Euclidean offset changes.
+These are modeled interactions on real rendered geometry, not observed humans.
+The lookup prefers a normal state containing the target, then an expanded or
+popup state; exact control IDs precede semantic alert aliases. Representative
+adult/pediatric/surgical gate bundles describe layout states, preferring the
+pediatric sample for NP and surgical sample for surgeon, rather than
+rerendering every task's changing clinical content. Missing geometry is null,
+never inferred from tab order or silently replaced with zero.
+
+Optimization requires complete validation, paired completed tasks, no click or
+scroll-count regression, and at most 2% + 1px regression per pixel metric. At least
+one headline dimension must strictly improve (pixel improvement must exceed 1px).
+Completion and every clinical/presentation safety gate remain unchanged. The
+click-search floor is still clicks; geometry on its replayed path is descriptive,
+not a separately optimized travel minimum. Floor pixels are unavailable.
+
+Zero-model verification commands (artifacts outside runs/, explicitly FAKE/REPLAY):
+
+```sh
+pnpm --filter agent exec tsx src/geometry-verify.ts fake-replay /tmp/vgi-geometry-check
+pnpm --filter agent exec tsx src/geometry-verify.ts canonicals /tmp/vgi-canonical-geometry
+```
+
 # Agent run handoff — 2026-11-01
 
 No live Codex/Claude nights were run after the orchestrator stopped them. The
@@ -77,6 +139,8 @@ claim of equal sample size, statistical significance or ten independent tests.
 - Screen/ARIA/visibility/legibility/no-cover gates render adult, pediatric and
   surgical bundles at desktop and narrow widths, one browser at a time. Missing
   render/startup/browser infrastructure is `error`; assertion failures are `fail`.
+  Each source/bundle alternative keeps its own screen report and result JSON,
+  so candidates sharing a proposed version never overwrite each other.
   Exact-tree cache receipts bind the current app/browser/assertions/component
   bundle; known-bad controls still run. Environment bundle paths are absolute.
 - Program, source, components, native certificate, frozen spec/prev/canonical,
@@ -156,23 +220,30 @@ resuming an interrupted run with changed input fingerprints.
 
 ## Verification (zero LLM cost)
 
-- Agent: 82 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
+- Agent: 93 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
   crossing releases on days 4 and 7, certification tampering, completion gating
   on all three deploy modes, fallback/abort, transcript isolation, resume hashes,
   durable-decision crash recovery, rebind success/cache/refusal and no edits.
-- App: 176 tests pass; includes matched canonical/blind-day workload and binding
-  pointer/refusal loading. World: 95 tests pass. Agent/app/world lint and
+- App: 272 tests pass; includes matched canonical/blind-day workload and binding
+  pointer/refusal loading. World: 95 unit + 5 realism checks pass. Agent/app/world lint and
   typechecks pass. Production app build passes. Default Lean build passes,
-  341 jobs, six workers, 8 GB virtual-memory ceiling.
+  359 jobs, six workers, 8 GB virtual-memory ceiling. Three desktop browser
+  checks pass (timeline/catalog navigation and all physical metric switches);
+  cold real-WASM startup has an explicit readiness allowance.
 - Trajectory schema and real-WASM archived determinism tests pass (424 task
   coverage; historical run files were not regenerated). Daily-canonical baseline
-  regression and complexity/historical-alias tests pass.
-- `/tmp/vgi-review-FAKE-native-dry`: uncommitted FAKE one-night fixture, real
+  regression and complexity/historical-alias tests pass. A temporary, explicitly
+  FAKE current RN canonical fixture indexed 51 tasks / 1,094 native/WASM events
+  plus every paired baseline with zero mismatches and complete, identical paired
+  pixel metrics. Its real complexity command also passed. The fixture was moved
+  outside runs/ after verification and is not committed as run data.
+- `/tmp/vgi-geometry-delivery-real-dry`: uncommitted FAKE one-night fixture, real
   native EHR, scripted backend, zero model calls. Composite + sandboxed
-  presentation + hotkey deploy v1; both v0/v1 gates pass over 27 exported states
-  each (9 distinct adult/pediatric/surgical trees, two widths). Real tasks finish
+  presentation + hotkey deploy v1; both v0/v1 gates pass over 30 exported states
+  each (12 distinct adult/pediatric/surgical trees, two widths). Real tasks finish
   before and after. Rebind against the updated native binary/current app passes
-  both versions and retains original sidecars; repeating it returns two cached
+  both versions and retains original sidecars; latest-main native/WASM/app rebind
+  also passes both and preserves cache-resume; repeating it returns two cached
   receipts with no additional native/browser work. An initial environment-path
   infrastructure error was refused and logged, then fixed and retried.
 - Reproduce the standalone fixture outside runs/: `pnpm --filter agent dry-run`.

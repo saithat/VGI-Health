@@ -1,3 +1,4 @@
+import {exportPopupGeometry} from './geometry-popups.js';
 /**
  * Adapter for the native Lean `ehr` CLI (lean/.lake/build/bin/ehr; override
  * with EHR_BIN). Inputs go to JSON files in a temp dir; outputs are read from
@@ -188,6 +189,7 @@ class CliEhr implements EhrClient {
       await mkdir(i.outDir, { recursive: true });
       const res = await run(this.binary, ['render-screens', ...(i.ui ? ['--ui'] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+      if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir});
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });
   }

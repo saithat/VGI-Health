@@ -153,9 +153,6 @@ function Playback({
         : undefined;
   const prefix = loaded.task.trace.slice(0, count);
   const ops = prefix.flatMap((e) => e.ops);
-  const seconds = prefix.length
-    ? ((prefix.at(-1)?.t ?? 0) - loaded.task.context.startMin * 600) / 10
-    : 0;
   return (
     <article className="trajectory-side" aria-label={label}>
       <h3>
@@ -165,7 +162,7 @@ function Playback({
         {ops.filter((o) => o === "click").length} clicks ·{" "}
         {ops.filter((o) => o === "key").length} keys ·{" "}
         {ops.filter((o) => o === "scroll").length} scrolls ·{" "}
-        {seconds.toFixed(1)}s KLM
+        {prefix.length} events
       </p>
       <p className="trajectory-event">
         {next ? `Next: ${JSON.stringify(next.event)}` : "Trajectory finished"}
@@ -549,8 +546,7 @@ export function Trajectories({
             <span>
               {t.metrics.clicks}/{t.theoreticalMinimum.clicks} clicks ·{" "}
               {t.metrics.keystrokes}/{t.theoreticalMinimum.keystrokes} keys ·{" "}
-              {(t.metrics.klmDeciSec / 10).toFixed(1)}/
-              {(t.theoreticalMinimum.klmDeciSec / 10).toFixed(1)}s KLM ·{" "}
+              {t.metrics.mouseTravelPx??"—"}px mouse · {t.metrics.scrolls} scrolls / {t.metrics.scrollPx??"—"}px ·{" "}
               {t.completed ? "Completed" : "Incomplete"}
             </span>
           </button>

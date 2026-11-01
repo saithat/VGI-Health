@@ -192,9 +192,9 @@ describe("Interp replay and painter integration", () => {
         ],
         1,
       ),
-    ).toEqual({ clicks: 1, keystrokes: 0, scrolls: 0, seconds: 2 });
+    ).toEqual({ clicks: 1, keystrokes: 0, scrolls: 0 });
     expect(
       traceCounters([{ klmDeciSec: 28, ops: ["key", "key", "scroll"] }], 100),
-    ).toEqual({ clicks: 0, keystrokes: 2, scrolls: 1, seconds: 2.8 });
+    ).toEqual({ clicks: 0, keystrokes: 2, scrolls: 1 });
   });
 });

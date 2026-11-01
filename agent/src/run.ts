@@ -1,3 +1,4 @@
+import {geometryEhr,type GeometryProvider} from './geometry.js';
 import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
 import { assertCertified } from './certification.js';
@@ -54,6 +55,7 @@ export interface RunOptions {
   ehr?: EhrClient;
   /** Offline screen check (default: fake under EHR_FAKE=1, else render-screens + app screen-check). */
   screens?: ScreenChecker;
+  geometry?:GeometryProvider;
   /** Sample FHIR bundles for render-screens (default: EHR_SAMPLE_FHIR). */
   fhirBundles?: string[];
   log?: (line: string) => void;
@@ -61,7 +63,7 @@ export interface RunOptions {
 
 export interface PersonaTimeline {
   persona: string;
-  days: { day: number; programVersion: number; specVersion: string; load: string; clicks: number; keystrokes: number; scrolls: number; klmSec: number }[];
+  days: { day: number; programVersion: number; specVersion: string; load: string; clicks: number; keystrokes: number; scrolls: number; scrollPx:number|null;mouseTravelPx:number|null }[];
   nights: { night: number; mode: string; outcome: string; versionBefore: number; versionAfter: number; rejected: number; seeded: number }[];
 }
 
@@ -110,11 +112,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
-  const ehr = underlyingEhr.mode === 'real' ? recordingEhr(underlyingEhr, path.join(dir, 'ehr')) : underlyingEhr;
+  const nativeEhr = underlyingEhr.mode === 'real' ? recordingEhr(underlyingEhr, path.join(dir, 'ehr')) : underlyingEhr;
   const store = new RunStore(dir);
   const recorder = new RecordingLlm(opts.llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
-  const screens = opts.screens ?? createScreenChecker(ehr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens') });
+  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens') });
+  const provider=opts.geometry??screens.geometry;
+  const ehr=provider?geometryEhr(nativeEhr,provider,dir):nativeEhr;
   const deps: LoopDeps = {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
@@ -142,6 +146,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
+    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
     status: 'initializing', fingerprints, measurementProtocol,
     mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
@@ -254,8 +259,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       }
       await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await world.schedule(calibrationDay(day-1)||1,id)));
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
-      timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s, klmSec: m.t / 10 });
-      log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${(m.t / 10).toFixed(0)}s`);
+      timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
+      log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls`);
     }
     if (day === opts.days) break;
 

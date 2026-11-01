@@ -201,11 +201,12 @@ export const personaParamsSchema: z.ZodType<L.PersonaParams> = z.object({
   id: str, role: roleSchema, keyboardShare: nat, reviewsAllergiesEarly: z.boolean(), scansSidebar: z.boolean(),
   backtrackRate: nat, searchWhenBuried: z.boolean(), overrideRate: nat,
 });
-const taskMetricsSchema: z.ZodType<L.TaskMetrics> = z.object({
+const taskMetricsSchema: z.ZodType<TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
+  mouseTravelPx:z.number().nonnegative().nullable().exactOptional(),scrollPx:z.number().nonnegative().nullable().exactOptional(),rawScrolls:nat.exactOptional(),
   klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
-export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
+export const dayResultSchema: z.ZodType<DayResult> = z.object({
   day: nat,
   persona: str,
   programVersion: nat,
@@ -215,6 +216,7 @@ export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   })),
   tasks: z.array(taskMetricsSchema),
   floor: z.array(taskMetricsSchema),
+  geometry:z.object({programHash:str,componentsSha256:str.exactOptional(),appSha256:str,source:str,viewport:z.object({width:nat,height:nat}),missingTargets:z.array(str)}).exactOptional(),
   complaints: z.array(str),
 });
 
@@ -249,8 +251,8 @@ export type Task = L.Task;
 export type DaySchedule = L.DaySchedule;
 export type PersonaParams = L.PersonaParams;
 export type TraceEvent = L.TraceEvent;
-export type TaskMetrics = L.TaskMetrics;
-export type DayResult = L.DayResult;
+export type TaskMetrics = L.TaskMetrics & {mouseTravelPx?:number|null;scrollPx?:number|null;rawScrolls?:number};
+export type DayResult = Omit<L.DayResult,'tasks'> & {tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
 export type Certificate = L.Certificate;
 
 export function violationOf(verdict: Verdict): Violation | null {
