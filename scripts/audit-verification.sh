@@ -100,7 +100,7 @@ for name, items in surfaces.items():
     axs = ', '.join({'propext':'P', 'Classical.choice':'C', 'Quot.sound':'Q'}[a] for a in axioms.get(name, []))
     lines.append(f'| `{name}` | {source(name)} | S{group_ids[tuple(items)]} / {len(items)} | {axs or ("none" if name in axioms else "definition")} |')
 for i, items in enumerate(groups, 1):
-    lines += ['', f'**S{i} ({len(items)}):** ' + ', '.join(f'[B{j}](#audit-b{j})' for j in parts[i-1])]
+    lines += ['', (f'**S{i} ({len(items)}):** ' + ', '.join(f'[B{j}](#audit-b{j})' for j in parts[i-1])).rstrip()]
 for j, (_, items) in enumerate(bundles, 1):
     lines += ['', f'<a id="audit-b{j}"></a>', '<details>', f'<summary>B{j}: {len(items)} shared definitions and types</summary>', '',
               ', '.join('`' + x + '`' for x in items), '', '</details>']

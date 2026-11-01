@@ -163,3 +163,10 @@ per-line/archived-line repair, and encounter/waiver routes. The finite alert
 construction is finished, but its ready-guard and lookup-consistency premises
 still need to be supplied after that general repair construction. Neither
 `Completable` nor any checker rule has been weakened.
+
+Hypothesis witnesses: `Proofs/HypothesisExamples.lean` now directly instantiates
+cosign, receipt, shown-review, A2 shown-alert, A4 step, both D3 forms, D6 labels,
+and all three T4 theorems. Every premise is discharged on concrete Tiny clinical
+programs/states; the render witnesses use actual present nodes, and the
+certificate witness is an actual planned `currentCert` write. All are in the
+default import tree. The original render-owned files are untouched.
