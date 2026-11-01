@@ -549,3 +549,71 @@ GS1 expiry parsing shares that exact full-date grammar. Validation was not
 weakened: leap years, invalid dates, exact widths and public rejection preserving
 the original state are regression-tested. All 252 native/WASM feature API
 comparisons pass with this implementation.
+
+## Composite components (owner task, Oct 31; lean-core)
+
+The first checkpoint adds Init-only `ComponentDef { name, params, body }` and
+`Program.componentDefs : List ComponentDef := []`. Program JSON accepts omission
+of `componentDefs` and omits it when empty, preserving legacy source encodings
+and certificate hash inputs. It never expands in the Program decoder: source
+programs, including definitions, must remain available for certificate hashing.
+
+Composite expansion is being implemented as source syntax with no new clinical
+or backend capability. The pending `Kind.use { def, args }` expands to an open
+`group false false` wrapper retaining the use's id, parent, tab, visibility, size,
+label, hotkey and copy marker; its tag is `composite:<name>`. Body IDs and local
+parent/copy links are prefixed with `<use-id>/`. Root body nodes link to the
+wrapper. Every string field is substituted simultaneously; argument strings are
+literal and never recursively interpreted. Semantic IDs (elements, info, alerts,
+commits, screens, macros, record-fact keys) are substituted but not prefixed.
+
+Expansion rejects unknown or duplicate definitions, invalid/duplicate parameter
+names, missing/extra/duplicate arguments, malformed/unknown placeholders, nested
+uses (even in unused definitions), duplicate/empty instantiated body IDs, invalid
+parents/cycles, dangling local copy links, and component ID collisions on a
+screen. Component IDs remain screen-scoped, as in existing programs (the banner
+ID can repeat on different screens). Expansion is total and Init-only; it never
+recurses through definitions. Definitions are removed from executable output.
+Legacy programs with no composite syntax pass through unchanged.
+
+Core's pending `Program.Satisfies property` requires a successful expansion and
+that exact property of the resulting Program. The equivalence theorem is
+by definition; existing universal T0/T2/T3/T6/A2/A4 results apply to its expanded
+witness without weakening their statements. A separate preservation theorem
+retains every non-use component exactly in successful component-list expansion.
+The Tiny rooming vitals-strip example has a concrete expanded witness, ordinary
+catalog kinds, and a visible record-confirm weight input. Guards cover malformed
+inputs, parent links, Unicode, simultaneous substitution, collisions and rejected
+loads. This example is not a substitute for full checker certification.
+
+Integration is explicitly pending the scope decision and owning-lane work in
+`changes-requests.md`: Core load helpers return errors rather than falling back
+on source; existing API/CLI entry points still need to call them. Check/deploy
+must reject expansion errors as `wellFormed`, evaluate expanded programs, and
+hash/store source. Sim/min-clicks and render-screens must traverse expansions.
+Render must handle the new constructor in its exhaustive match and carry the
+wrapper's composite tag into UiNode as a presentation key. No Render source has
+been edited. The constructor/expansion checkpoint cannot land buildably until
+that compatibility arm lands or the owner authorizes it.
+
+The tested pending constructor, expansion, load helpers, Tiny example and guards
+are preserved in `lean/Ehr/Core/composites-pending.patch`; `git apply --check`
+passes against this checkpoint. Applying it requires the renderer compatibility
+arm before a full build can pass. Its targeted `lake build Ehr.Core.Tests`
+passes, including six axiom audits (only permitted axioms). The live checkpoint
+contains the optional definition format, GenTS's optional `componentDefs` field,
+and real definition/program JSON samples. The new constructor is intentionally
+not active in this buildable checkpoint; the requested feature remains unfinished.
+
+The installed-WASM feature corpus gains an unused-definition source program so
+native/WASM decoder compatibility is checked in addition to native JSON guards.
+The prior 84 feature cases remain intact. This checks the format checkpoint;
+it does not claim WASM composite execution before expansion is wired in.
+
+Checkpoint verification: full `lake build`, `lake check`, Comparator's 18 original
+statements, GenTS/sample strict TypeScript check, workspace build/lint, agent
+31 tests and world 92 tests pass. Installed WASM is 1,924,963 bytes;
+`make wasm-check` and all 255 feature API comparisons pass. App's existing
+catalog-count assertion fails (expects 16 bad programs; main now has 24); its
+other 89 tests pass. That owning-lane repair and all unfinished composite work
+are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.

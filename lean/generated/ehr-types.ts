@@ -815,6 +815,16 @@ export interface Component {
 }
 
 /**
+ * A source-only template. String fields may use `{{param}}` placeholders.
+ * Bodies cannot contain `use`; expansion is finite and structural.
+ */
+export interface ComponentDef {
+  name: string;
+  params: string[];
+  body: Component[];
+}
+
+/**
  * A screen. List order of `components` is render order.
  */
 export interface Screen {
@@ -857,6 +867,7 @@ export interface Program {
   start: ScreenId;
   screens: Screen[];
   macros: Macro[];
+  componentDefs?: ComponentDef[];
 }
 
 /**

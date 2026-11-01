@@ -29,8 +29,35 @@ deriving instance Lean.ToJson, Lean.FromJson for
   DesignRules, Spec
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  Slot, Prefill, Action, Visibility, Size, Kind, Component, Screen, MacroStep,
-  Ehr.Macro, Program
+  Slot, Prefill, Action, Visibility, Size, Kind, Component, ComponentDef, Screen, MacroStep,
+  Ehr.Macro
+
+/-- Preserve the legacy source JSON/hash when definitions are empty. -/
+instance : Lean.ToJson Program where
+  toJson p := Lean.Json.mkObj <| [
+    ("id", Lean.toJson p.id), ("version", Lean.toJson p.version),
+    ("owner", Lean.toJson p.owner), ("role", Lean.toJson p.role),
+    ("specVersion", Lean.toJson p.specVersion), ("start", Lean.toJson p.start),
+    ("screens", Lean.toJson p.screens), ("macros", Lean.toJson p.macros)] ++
+    if p.componentDefs.isEmpty then [] else [("componentDefs", Lean.toJson p.componentDefs)]
+
+/-- The only new optional program field defaults to empty; malformed definitions
+remain errors. Parsing never expands or discards the source used in certificates. -/
+instance : Lean.FromJson Program where
+  fromJson? j := do
+    let componentDefs ← match j.getObjVal? "componentDefs" with
+      | .error _ => pure []
+      | .ok v => Lean.fromJson? v
+    return {
+      id := ← j.getObjValAs? String "id"
+      version := ← j.getObjValAs? Nat "version"
+      owner := ← j.getObjValAs? UserId "owner"
+      role := ← j.getObjValAs? Role "role"
+      specVersion := ← j.getObjValAs? String "specVersion"
+      start := ← j.getObjValAs? ScreenId "start"
+      screens := ← j.getObjValAs? (List Screen) "screens"
+      macros := ← j.getObjValAs? (List Ehr.Macro) "macros"
+      componentDefs := componentDefs }
 
 deriving instance Lean.ToJson, Lean.FromJson for
   DrugInfo, PatientIdentity, Receipt, Facts
