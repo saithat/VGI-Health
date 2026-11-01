@@ -31,8 +31,9 @@ backgrounds are inert; the dialog and its background (after dismissal) are
 checked separately. It exits nonzero on any mismatch. This checks presentation
 fidelity; it does not replace Lean's clinical or design proofs.
 
-`shots` writes five 1440×900 PNGs into gitignored `app/shots/`, focused on the
-clinical task: rooming, orders, sign, an interaction popup, and bad-program sign.
+`shots` writes 1440×900 PNGs into gitignored `app/shots/` for rooming, orders,
+sign, an interaction popup, and bad-program sign. Each has an initial viewport
+(`*-load.png`) and a view focused on the clinical task.
 It uses the same painter, theme and styles as the live route. The source fixtures
 are actual Lean output, not retouched presentation data.
 
