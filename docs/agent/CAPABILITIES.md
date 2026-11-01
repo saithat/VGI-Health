@@ -76,9 +76,7 @@ export interface Program {
   screens: Screen[];
   macros: Macro[];
   componentDefs?: ComponentDef[];
-}
-
-
+  
 ```
 
 ## What you cannot change
