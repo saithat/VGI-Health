@@ -123,6 +123,19 @@ export class Audit {
       this.rows.push(row);
       return row;
     }
+    // Target positioning/readiness precedes the input event. Keep that wait
+    // separate from the unchanged response deadline after the real click.
+    const preparingAt = Date.now();
+    try {
+      await control.scrollIntoViewIfNeeded({ timeout: 15000 });
+      await control.click({ trial: true, timeout: 15000 });
+    } catch (error) {
+      row.status = "error";
+      row.effect = `Target not ready: ${String(error).split("\n")[0]}`;
+      this.rows.push(row);
+      return row;
+    }
+    const preparationMs = Date.now() - preparingAt;
     const before = await this.fingerprint();
     await this.page.evaluate(
       ({ dom, state }) => {
@@ -227,6 +240,8 @@ export class Audit {
       row.status = "dead";
       row.effect = `Effect took ${(effectAt ?? Date.now()) - clickedAt} ms (limit approximately 2 seconds): ${row.effect}`;
     }
+    if (preparationMs > 2400)
+      row.effect += `; target readiness took ${preparationMs} ms before input`;
     await this.page.evaluate(() =>
       window.__buttonAuditObservation?.disconnect(),
     );
