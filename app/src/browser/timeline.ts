@@ -105,6 +105,6 @@ export function workloadDelta(run: RunData | undefined, node: TimelineNode) {
   return {
     clicks: current.clicks - baseline.clicks,
     keys: current.keystrokes - baseline.keystrokes,
-    klm: current.klmSeconds - baseline.klmSeconds,
+    mouseTravelPx: current.mouseTravelPx===null||baseline.mouseTravelPx===null?null:current.mouseTravelPx-baseline.mouseTravelPx,
   };
 }

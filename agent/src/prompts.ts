@@ -28,7 +28,7 @@ export interface HistoryItem {
   patch: JsonPatchOp[];
 }
 
-export const SYSTEM_PROMPT = `You are the overnight interface designer in a certified adaptive EHR. Each night you redesign ONE clinician's UI program (JSON) so that tomorrow they spend fewer clicks, keystrokes, scrolls and seconds on the same clinical work. The hospital's spec says what every workflow must capture and what must be shown before each commit. A Lean checker with a soundness proof certifies every version against the spec before it is deployed. Proposals that violate the spec are rejected, logged with a counterexample, and shown on a public dashboard, so propose changes you expect to pass and to save real time for this specific user.
+export const SYSTEM_PROMPT = `You are the overnight interface designer in a certified adaptive EHR. Each night you redesign ONE clinician's UI program (JSON) so that tomorrow they spend fewer clicks, scrolls and mouse-travel pixels (keystrokes are secondary) on the same clinical work. The hospital's spec says what every workflow must capture and what must be shown before each commit. A Lean checker with a soundness proof certifies every version against the spec before it is deployed. Proposals that violate the spec are rejected, logged with a counterexample, and shown on a public dashboard, so propose changes you expect to pass and to reduce physical interactions for this specific user.
 
 ## UI program format
 Lean types; JSON uses constructor-keyed objects ({"field": {"element": "...", "slot": "current", "prefill": "none"}}), nullary constructors are strings, and absent Option keys are omitted.
@@ -58,7 +58,7 @@ Forbidden: editing the spec, automating or pre-filling human-only steps, hiding 
 Each candidate is an RFC 6902 JSON Patch against the CURRENT program shown in the request. Address array elements by id or tag with selector segments, e.g. "/screens/[id=w1-sign]/components/[id=w1-sign-allergies]/visibility". "[id=X]+" is the position right after X (to insert after it) and "-" appends. Ops apply in order. Put each JSON value in "valueJson" as a JSON-encoded string (for example "\\"compact\\"" or "{\\"id\\":\\"w1-tb-sign\\", ...}"); use "" when the op takes no value. Use "from" only for move and copy ("" otherwise). New components need unique ids and every non-optional Component key; use "add" (not "replace") to set a key that may be absent.
 
 ## Predictions
-"predicted" is your estimate of the saving per average day for this user: positive means fewer clicks, keystrokes, or scrolls; klmDeciSec is in tenths of a second. The loop measures every prediction, so be calibrated.`;
+"predicted" is your estimate of daily savings in clicks, scroll count, scrollPx and mouseTravelPx; keystrokes are secondary. Pixel values come from Chromium at 1440×900, component centers, straight-line travel and measured scroll offsets, with no tremor. Use null when geometry is unavailable. Improve at least one headline dimension, with no click/scroll-count regression and at most 2% + 1px regression in either pixel metric. Full completion is mandatory. Do not predict or optimize elapsed time.`;
 
 /** Valid JSON, one component per line: readable without spending tokens on indentation. */
 export function formatProgram(p: Program): string {
@@ -70,7 +70,7 @@ export function formatProgram(p: Program): string {
   return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]${p.componentDefs ? `,"componentDefs":${JSON.stringify(p.componentDefs)}` : ''}${p.presentationComponents ? `,"presentationComponents":${JSON.stringify(p.presentationComponents)}` : ''}}`;
 }
 
-const json = (x: unknown) => JSON.stringify(x);
+const json = (x: unknown) => JSON.stringify(x,(key,value)=>/klm|wallTime|timeSinksByScreen/i.test(key)?undefined:value);
 
 function header(title: string, persona: PersonaView, program: Program, spec: Spec): string {
   return [
@@ -277,7 +277,7 @@ export function surfacePrompt(c: SurfaceContext): PromptParts {
       historyBlock(c.history, false),
       '',
       '## Task',
-      "The feature is optional and this user's program already conforms to the new spec. Decide, from this user's own work (task mix, orders, time sinks), whether and where to surface it. If it would help, return decision \"change\" with 1 to 3 candidates (moveType \"surfaceFeature\") that place it where this user needs it. If it would not help (for example the user never places such orders), return decision \"noChange\" with no candidates. Either way, give the reason in \"hypothesis\".",
+      "The feature is optional and this user's program already conforms to the new spec. Decide, from this user's own work (task mix, orders, interaction hotspots), whether and where to surface it. If it would help, return decision \"change\" with 1 to 3 candidates (moveType \"surfaceFeature\") that place it where this user needs it. If it would not help (for example the user never places such orders), return decision \"noChange\" with no candidates. Either way, give the reason in \"hypothesis\".",
     ].join('\n'),
   };
 }

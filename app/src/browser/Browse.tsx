@@ -373,10 +373,10 @@ function Timeline({
                     </dd>
                   </div>
                   <div>
-                    <dt>KLM</dt>
+                    <dt>mouse travel</dt>
                     <dd>
-                      {delta.klm > 0 ? "+" : ""}
-                      {delta.klm.toFixed(1)} s
+                      {delta.mouseTravelPx!==null&&delta.mouseTravelPx>0 ? "+" : ""}
+                      {delta.mouseTravelPx===null?"—":delta.mouseTravelPx.toFixed(1)} px
                     </dd>
                   </div>
                 </dl>

@@ -1,3 +1,46 @@
+## Physical interaction metrics — owner decision, 2026-11-01
+
+Headlines, selection, reports and dashboard switches use clicks, scroll count,
+scroll distance (px), and mouse travel (px). Keystrokes are secondary. Timing
+estimates remain in raw native/decision logs only, marked **not used** by the
+manifest interaction model; no time estimate enters the design prompt or report.
+Archived run data is unchanged; absent pixel geometry displays unavailable.
+
+The real screen gate captures Chromium component bounding-box centers and scroll
+offsets at 1440×900 for each rendered screen/state, keyed by expanded program
+SHA256, screen, state and component ID. Assertion-cache receipts include geometry;
+app, browser, harness or presentation-bundle changes invalidate reuse. Every
+candidate simulated for selection obtains geometry from that same gate. Canonical
+and no-agent arms use the same provider. Atlases are saved under run/geometry/.
+
+A pointer starts at viewport center once per complete day trace, persists between
+tasks, and moves in straight lines between pointed/clicked/typed-into control
+centers, without tremor, overshoot or an assumed human speed. Scroll offsets reset
+on screen navigation. Offscreen targets use Chromium's measured centered reveal
+position and ancestor offsets; an explicit scroll advances one scroller viewport,
+clamped at its measured limit. Scroll count counts changed scroll containers,
+including reveal movements; scroll pixels sum their Euclidean offset changes.
+These are modeled interactions on real rendered geometry, not observed humans.
+The lookup prefers a normal state containing the target, then an expanded or
+popup state; exact control IDs precede semantic alert aliases. Representative
+adult/pediatric/surgical gate bundles describe layout states, rather than
+rerendering every task's changing clinical content. Missing geometry is null,
+never inferred from tab order or silently replaced with zero.
+
+Optimization requires complete validation, paired completed tasks, no click or
+scroll-count regression, and at most 2% + 1px regression per pixel metric. At least
+one headline dimension must strictly improve (pixel improvement must exceed 1px).
+Completion and every clinical/presentation safety gate remain unchanged. The
+click-search floor is still clicks; geometry on its replayed path is descriptive,
+not a separately optimized travel minimum. Floor pixels are unavailable.
+
+Zero-model verification commands (artifacts outside runs/, explicitly FAKE/REPLAY):
+
+```sh
+pnpm --filter agent exec tsx src/geometry-verify.ts fake-replay /tmp/vgi-geometry-check
+pnpm --filter agent exec tsx src/geometry-verify.ts canonicals /tmp/vgi-canonical-geometry
+```
+
 # Agent run handoff — 2026-11-01
 
 No live Codex/Claude nights were run after the orchestrator stopped them. The

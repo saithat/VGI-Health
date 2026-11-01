@@ -27,9 +27,8 @@ describe("simulated realistic workload", () => {
     expect(point.total?.clicks).toBeCloseTo(
       tasks.reduce((n, t) => n + t.clicks, 0) / 89,
     );
-    expect(point.total?.klmSeconds).toBeCloseTo(
-      tasks.reduce((n, t) => n + t.klmDeciSec, 0) / 890,
-    );
+    expect(point.total?.mouseTravelPx).toBeNull();
+    expect(point.total?.scrollPx).toBeNull();
     expect(workloadAt(run, "P3", 99).total).toBeNull();
     expect(workloadAt(run, "P1", 0).total).toBeNull();
   });
@@ -77,7 +76,7 @@ describe("simulated realistic workload", () => {
       tasks: 3,
       completed: 2,
       unclassified: 1,
-      total: { clicks: 12, keystrokes: 10, klmSeconds: 30 },
+      total: { clicks: 12, keystrokes: 10,mouseTravelPx:null,scrollPx:null },
     });
   });
   it("loads exact data independently: realistic savings can change with a flat expert minimum", () => {
@@ -85,9 +84,7 @@ describe("simulated realistic workload", () => {
     expect(exact?.iterations.find((i) => i.version === 3)?.total.clicks).toBe(
       exact?.iterations.find((i) => i.version === 4)?.total.clicks,
     );
-    expect(workloadAt(run, "P3", 3).total?.klmSeconds).not.toBe(
-      workloadAt(run, "P3", 4).total?.klmSeconds,
-    );
+    expect(workloadAt(run,'P3',3).total?.mouseTravelPx).toBeNull();
     expect(run.manifest.ehr.mode).toBe("real");
   });
 });

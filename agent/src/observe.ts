@@ -11,11 +11,12 @@ import type { DayResult, DaySchedule, Metrics, PctAboveFloor, Program, SignedMet
 import { componentById, fieldElement, isBackButton, markReviewedOf } from './program.js';
 
 export function sumMetrics(tasks: readonly TaskMetrics[]): Metrics {
-  const m: Metrics = { tasks: 0, completed: 0, clicks: 0, keystrokes: 0, scrolls: 0, popups: 0, overrides: 0, searches: 0, backtracks: 0, klmDeciSec: 0 };
+  const m: Metrics = { tasks: 0, completed: 0, clicks: 0, keystrokes: 0, scrolls: 0, popups: 0, overrides: 0, searches: 0, backtracks: 0, klmDeciSec: 0,mouseTravelPx:0,scrollPx:0 };
   for (const t of tasks) {
     m.tasks++;
     if (t.completed) m.completed++;
     else continue;
+    for(const key of ['mouseTravelPx','scrollPx'] as const)m[key]=typeof m[key]==='number'&&typeof t[key]==='number'?m[key]+t[key]:null;
     m.clicks += t.clicks;
     m.keystrokes += t.keystrokes;
     m.scrolls += t.scrolls;
@@ -30,6 +31,8 @@ export function sumMetrics(tasks: readonly TaskMetrics[]): Metrics {
 
 export function addMetrics(a: Metrics, b: Metrics): Metrics {
   return {
+    mouseTravelPx:typeof a.mouseTravelPx==='number'&&typeof b.mouseTravelPx==='number'?a.mouseTravelPx+b.mouseTravelPx:null,
+    scrollPx:typeof a.scrollPx==='number'&&typeof b.scrollPx==='number'?a.scrollPx+b.scrollPx:null,
     tasks: a.tasks + b.tasks, completed: a.completed + b.completed, clicks: a.clicks + b.clicks, keystrokes: a.keystrokes + b.keystrokes,
     scrolls: a.scrolls + b.scrolls, popups: a.popups + b.popups, overrides: a.overrides + b.overrides, searches: a.searches + b.searches,
     backtracks: a.backtracks + b.backtracks, klmDeciSec: a.klmDeciSec + b.klmDeciSec,
@@ -40,6 +43,8 @@ export function addMetrics(a: Metrics, b: Metrics): Metrics {
 export function saving(before: Metrics, after: Metrics, days = 1): SignedMetrics {
   const d = Math.max(1, days);
   return {
+    mouseTravelPx:typeof before.mouseTravelPx==='number'&&typeof after.mouseTravelPx==='number'?Math.round((before.mouseTravelPx-after.mouseTravelPx)*100/d)/100:null,
+    scrollPx:typeof before.scrollPx==='number'&&typeof after.scrollPx==='number'?Math.round((before.scrollPx-after.scrollPx)*100/d)/100:null,
     clicks: Math.round((before.clicks - after.clicks) / d),
     keystrokes: Math.round((before.keystrokes - after.keystrokes) / d),
     scrolls: Math.round((before.scrolls - after.scrolls) / d),
@@ -79,7 +84,7 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
   const byWorkflow = [...byWf.entries()].map(([workflow, ts]) => {
     const m = sumMetrics(ts);
     const n = Math.max(1, ts.length);
-    return { workflow, tasks: ts.length, avgClicks: round1(m.clicks / n), avgKeystrokes: round1(m.keystrokes / n), avgScrolls: round1(m.scrolls / n), avgKlmSec: round1(m.klmDeciSec / n / 10) };
+    return { workflow, tasks: ts.length, avgClicks: round1(m.clicks / n), avgKeystrokes: round1(m.keystrokes / n), avgScrolls: round1(m.scrolls / n), avgKlmSec: round1(m.klmDeciSec / n / 10), avgMouseTravelPx:typeof m.mouseTravelPx==='number'?round1(m.mouseTravelPx/n):null, avgScrollPx:typeof m.scrollPx==='number'?round1(m.scrollPx/n):null };
   }).sort((a, b) => a.workflow.localeCompare(b.workflow));
 
   // Trace-derived statistics.
@@ -176,7 +181,7 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
     pctAboveFloor: latest ? pctAboveFloor(latest.result) : null,
     byWorkflow,
     timeSinksByScreen: topN([...screenTime.entries()], 10, ([, v]) => v.dt).map(([screen, v]) => ({
-      screen, events: v.events, klmSec: round1(v.dt / 10), share: totalDt > 0 ? Math.round((v.dt / totalDt) * 1000) / 1000 : 0,
+      screen, events: v.events, klmSec: 0, share: totalDt > 0 ? Math.round((v.events / Math.max(1,allTasks.length)) * 1000) / 1000 : 0,
     })),
     redundantPrompts: [...redundant.entries()].map(([element, r]) => ({ element, components: [...r.comps], tasksAffected: r.tasks.size, extraEntries: r.extra })),
     unusedReceipts: [...receipts.entries()].map(([info, r]) => ({ info, created: r.created, reprompted: r.reprompted })),

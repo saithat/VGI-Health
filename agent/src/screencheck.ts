@@ -1,3 +1,6 @@
+import {ScreenInfrastructureError} from './errors.js';
+import {geometryProgramHash,screenGeometrySchema,type GeometryProvider} from './geometry.js';
+import type {GeometryAtlas} from '../../app/src/metrics/geometry.js';
 import { z } from 'zod';
 import { compilePresentations } from './presentation-compiler.js';
 /**
@@ -34,6 +37,7 @@ import { REPO_ROOT, errorMessage, resolveUserPath } from './util.js';
 
 export interface ScreenChecker {
   readonly mode: 'real' | 'fake';
+  geometry?:GeometryProvider;
   check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult>;
 }
 
@@ -93,6 +97,8 @@ export function failingFilesFromOutput(output: string, files: readonly string[])
 
 class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
+  private readonly atlases=new Map<string,GeometryAtlas>();
+  geometry:GeometryProvider=async input=>{const hash=geometryProgramHash(input.program);if(!this.atlases.has(hash)){const result=await this.check(input);if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
   constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string) {}
 
   async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
@@ -134,6 +140,12 @@ class CliScreenChecker implements ScreenChecker {
       const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env, EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
+      const measured=z.object({geometry:z.array(screenGeometrySchema).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));
+      if(measured.geometry?.length){
+        const build=z.object({appSha256:z.string()}).parse(JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')));
+        const atlas:GeometryAtlas={schemaVersion:1,programHash:geometryProgramHash(input.program),appSha256:build.appSha256,viewport:{width:1440,height:900},states:measured.geometry,source:'chromium'};
+        this.atlases.set(atlas.programHash,atlas);if(reportDir)await writeFile(path.join(reportDir,'geometry.json'),JSON.stringify(atlas));
+      }
       if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
       const failingFiles = failingFilesFromOutput(res.output, files);
       return {

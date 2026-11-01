@@ -17,6 +17,7 @@ const exists = async p => { try { await access(p); return true; } catch { return
 const write = (p, data) => writeFile(p, JSON.stringify(data) + '\n');
 const relative = p => path.relative(root, p).split(path.sep).join('/');
 const sha = async p => createHash('sha256').update(await readFile(p)).digest('hex');
+const stableForGeometry=value=>Array.isArray(value)?value.map(stableForGeometry):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stableForGeometry(value[k])])):value;
 const dateOf = day => `2026-11-${String(2 + Math.floor((day - 1) / 5) * 7 + (day - 1) % 5).padStart(2, '0')}`;
 export async function loadInterpreter() {
   const wasm = await loadEhrInterp({ wasmBinary: await readFile(path.join(root, 'app/public/ehr/ehr-interp.wasm')) });
@@ -102,6 +103,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     snapshots.set(version, { spec, file });
     return { spec, file };
   }
+  const {pointerTravel}=await import('../../app/src/metrics/geometry.ts');
   const interp = await loadInterpreter();
   const work = await mkdtemp(path.join(tmpdir(), 'vgi-trajectories-'));
   const tasks = [], mismatches = [], baselineTasks = [];
@@ -154,9 +156,14 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
           const entry = { id: task.id, persona, day: task.day, workflow: task.workflow, programVersion: prog.version, release: prog.specVersion,
             programPath: trajectory.context.programPath, specPath: trajectory.context.specPath, user: trajectory.context.user,
             patient: { syntheaId: task.patientId, fixtureFile: trajectory.context.fixtureFile }, todayResources: task.todayResources,
-            metrics: recorded.tasks.find(t => t.task === task.id), theoreticalMinimum: recorded.floor.find(t => t.task === task.id),
+            metrics: (()=>{const row=recorded.tasks.find(t=>t.task===task.id);return row;})(), theoreticalMinimum: recorded.floor.find(t => t.task === task.id),
             completed: recorded.tasks.find(t => t.task === task.id)?.completed ?? false, eventCount: trace.length, file,
           };
+          const geometryFile=path.join(runDir,'geometry',`${createHash('sha256').update(JSON.stringify(stableForGeometry(program))).digest('hex')}.json`);
+          if((typeof entry.metrics?.mouseTravelPx!=='number'||typeof entry.metrics?.scrollPx!=='number')&&await exists(geometryFile)){
+            const atlas=await read(geometryFile),cost=pointerTravel(recorded.trace,atlas)[task.id];
+            if(cost&&entry.metrics)entry.metrics={...entry.metrics,mouseTravelPx:cost.mouseTravelPx,scrollPx:cost.scrollPx,scrolls:cost.scrolls};
+          }
           if (!entry.metrics || !entry.theoreticalMinimum) throw new Error(`Missing metrics for ${task.id}`);
           return { entry, firstMismatch, verification, nativeEvents: context.eventsVerified };
         }
@@ -201,7 +208,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     if (!tasks.length) throw new Error('No recorded tasks');
     const nativeModules = await Promise.all(['Ehr/Cli/Sim', 'Ehr/Sim/Policy', 'Ehr/Sim/Goals', 'Ehr/Core/Interp', 'Ehr/Render/Fhir'].map(async module => ({ module, sha256: await sha(path.join(leanDir, '.lake/build/lib/lean', `${module}.olean`)) })));
     const provenance = { nativeModules, world: relative(world), fixtureIndex: relative(fixtureIndexPath), adapterSha256: await sha(path.join(root, 'scripts/trajectories/Contexts.lean')), wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')), nativeBinarySha256: await sha(binary), specs: [...specSources.values()] };
-    const index = { schemaVersion: 1, runId, minimumDefinition: 'Recorded theoretical ideal-interface floor (Ehr.Sim.floorMetrics), not an exact minimum for this deployed UI. KLM is estimated.', tasks };
+    const index = { schemaVersion: 1, runId, minimumDefinition: 'Recorded theoretical ideal-interface floor (Ehr.Sim.floorMetrics), not an exact minimum for this deployed UI. Mouse/scroll pixels use recorded Chromium geometry at 1440×900 when available; missing geometry is unavailable.', tasks };
     await write(path.join(output, 'index.json'), index);
     const verification = { schemaVersion: 1, runId, status: mismatches.length ? 'failed' : 'passed', tasks: tasks.length, events: eventCount, nativeEventsVerified: nativeEvents,
       wasmEventsVerified: wasmEvents, baselineTasks: tasks.filter(t => t.baseline).length, mismatches, provenance,
