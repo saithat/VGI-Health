@@ -35,6 +35,11 @@ function SemanticFrame({
   const frame = useRef<HTMLIFrameElement>(null);
   const [doc, setDoc] = useState<Document | null>(null);
   useEffect(() => {
+    // The painter normally uses its window. Inside a portal the replay frame
+    // owns scrolling, so screen transitions must reset that window explicitly.
+    doc?.defaultView?.scrollTo(0, 0);
+  }, [doc, screen.title]);
+  useEffect(() => {
     if (!doc) return;
     const nodes = doc.querySelectorAll<HTMLElement>("[data-comp-id]");
     nodes.forEach((node) => {
