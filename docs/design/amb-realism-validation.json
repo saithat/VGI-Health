@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "1fbcd8de3acf207d159aab781b246eec3f826bad",
+  "sourceRevisionAtValidation": "5fe0598bccb4eae9e7c30a61a5d43af95901538e",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "e1a312aa74968d5e9072ba8e9a94559e2787182063ed21e0b52609e9c5502882",
-  "nativeBinarySha256": "73636758ed5248d511475c366f4f637b43fd36d22106f782487a16f4a6c31f5b",
+  "leanSourceHash": "5951ba1b513bb6a939a02cba53607e83b01ce19282d249f956ea2abf0d3320ff",
+  "nativeBinarySha256": "0a9148e3bfe935ae85d103b1cfe3fd8fadb8ab69d71193876168dcea213892c6",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "2bdb20cf3520c489626a6575c6a992e1451780e9d3537a811835a00977f75e71"
+    "reportSha256": "196b4e82fb957fa2480fdf0982af8e27d8789dce878219853329a5e17ec1f621"
   },
   "world2": {
     "world": "runs/world/2",
@@ -497,15 +497,14 @@
     "beforeScreens": 29,
     "signatureViews": 2,
     "fidelity": {
-      "passed": 69,
+      "passed": 79,
       "intentionalViewportSkips": 3
     },
     "diagnosisPickerViews": 2,
     "scrolledContextViews": 3,
-    "sharedShellReview": {
-      "skipped": 1,
-      "reason": "Optional shared-shell capture requires REALISM_SHOTS; AMB thirty-screen screenshots and fidelity passed."
-    }
+    "postReviewViews": 5,
+    "receiptDetailCaptures": 6,
+    "totalCaptures": 77
   },
   "archived": {
     "run": "run1-P3",
@@ -522,7 +521,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 217,
+    "appTests": 220,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -530,12 +529,12 @@
   },
   "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened.",
   "structuredPresentations": {
-    "upstream": "10517bc",
-    "nativeWasmFixtures": 15,
-    "renderTheoremsCompared": 51,
-    "frozenStatementSha256": "126c87d43ea9be944d32b3aa8563720a74edb9831a7c5cd6afcba19ae0ecf00f",
+    "upstream": "da01a57",
+    "nativeWasmFixtures": 16,
+    "renderTheoremsCompared": 53,
+    "frozenStatementSha256": "568f4a0dacecf6582ae0e77cc3cd3335440bbbe4c1ff20012b4274c8a59b57a4",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 127,
+    "originalHeadersUnchanged": 137,
     "mainIntegration": "924425f"
   },
   "ambulatoryMetadata": {
@@ -577,5 +576,13 @@
       "record version aliases"
     ],
     "report": "docs/design/amb-realism-clinical-facts.json"
+  },
+  "reviewFeedback": {
+    "optedInActions": 6,
+    "actualReviewClicks": 8,
+    "invalidReceiptProbes": 38,
+    "wrongRoleScope": "Only when the source requirement set excludes a modeled role; all modeled roles may review allergies under some requirement.",
+    "corePredicateUnchanged": true,
+    "newSoundnessAndReadOnlyTheorems": 2
   }
 }

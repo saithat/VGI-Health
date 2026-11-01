@@ -931,6 +931,9 @@
 /* Receipt feedback is a semantic status supplied by Lean beside its action. */
 .clinical-review-status {
   display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
   align-items: center;
   gap: 6px;
   padding: 5px 8px;
