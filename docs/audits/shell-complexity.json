@@ -2,7 +2,7 @@
   "command": "pnpm complexity --release-root releases (includes native ehr min-clicks per task)",
   "sameSemanticPrograms": true,
   "identicalReports": false,
-  "ehrSha256": "140c569956184b21aa0bc776b1e1d6a073e09fe118f15c5d6fbe25c4ca808c20",
+  "ehrSha256": "f592f45aec7aa04f8125bf82834156cd16c6695fd6af8ca6cd4053af59913b78",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "releaseSource": {
     "directory": "releases",

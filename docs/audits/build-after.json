@@ -1,8 +1,8 @@
 {
-  "elapsedSeconds": 7.6,
-  "maxRssKiB": 766356,
-  "revision": "a462b19b3edb4e19f54dac31945e335ea8a9a1ed",
+  "elapsedSeconds": 7.68,
+  "maxRssKiB": 767216,
+  "revision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
   "mainRevision": "251d9a0029c2d0fa1aec0116668668e6c474af25",
-  "leanHash": "afec57a5b662fde10e2de8b2338e6495899044ed7623e5fc0f7c4ae04adf40cc",
-  "builtAt": "2026-11-01T09:16:41.258Z"
+  "leanHash": "412471a4f4bc61c71e4205af41e8c3905bb9cacffa2aaed6b2c9393a7c061ef1",
+  "builtAt": "2026-11-01T09:51:47.474Z"
 }
