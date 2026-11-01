@@ -1,3 +1,4 @@
+import { loadWasmInterp } from "../core/wasmInterp";
 import { useEffect, useMemo, useState } from "react";
 import type {
   CheckResult,
@@ -6,7 +7,8 @@ import type {
   Savings,
 } from "../../../agent/src/schema";
 import {
-  loadRun,
+  loadRunSummary,
+  loadRunDetails,
   breakCapability,
   submitBreakAttempt,
   defaultRunSchema,
@@ -112,8 +114,9 @@ function Counterexample({
   factory?: InterpFactory | undefined;
 }) {
   const [step, setStep] = useState(0);
+  const [manualEvents, setManualEvents] = useState<import("../../../lean/generated/ehr-types").Event[]>([]);
   const path = rejection.check.counterexample ?? [];
-  const events = path.slice(0, step);
+  const events = [...path.slice(0, step), ...manualEvents];
   const event = path[step - 1];
   const comp =
     event &&
@@ -136,13 +139,14 @@ function Counterexample({
         <p>{rejection.check.message ?? "No property message recorded."}</p>
       </div>
       <div className="dash-controls">
-        <button onClick={() => setStep(0)}>Reset path</button>
-        <button disabled={!step} onClick={() => setStep((n) => n - 1)}>
+        <button disabled={!step && !manualEvents.length} title={!step && !manualEvents.length ? "Already at the initial state" : undefined} onClick={() => { setStep(0); setManualEvents([]); }}>Reset path</button>
+        <button disabled={!step} title={!step ? "Already at the first event" : undefined} onClick={() => { setStep((n) => n - 1); setManualEvents([]); }}>
           Previous event
         </button>
         <button
           disabled={step >= path.length}
-          onClick={() => setStep((n) => n + 1)}
+          title={step >= path.length ? "No more recorded events" : undefined}
+          onClick={() => { setStep((n) => n + 1); setManualEvents([]); }}
         >
           Next event
         </button>
@@ -155,7 +159,9 @@ function Counterexample({
           <li>
             <button
               aria-current={step === 0 ? "step" : undefined}
-              onClick={() => setStep(0)}
+              disabled={step === 0 && !manualEvents.length}
+              title={step === 0 && !manualEvents.length ? "Current state" : undefined}
+              onClick={() => { setStep(0); setManualEvents([]); }}
             >
               Initial state
             </button>
@@ -164,7 +170,9 @@ function Counterexample({
             <li key={i}>
               <button
                 aria-current={step === i + 1 ? "step" : undefined}
-                onClick={() => setStep(i + 1)}
+                disabled={step === i + 1 && !manualEvents.length}
+                title={step === i + 1 && !manualEvents.length ? "Current event" : undefined}
+                onClick={() => { setStep(i + 1); setManualEvents([]); }}
               >
                 {eventLabel(e)}
               </button>
@@ -184,6 +192,7 @@ function Counterexample({
             specVersion={rejection.record.specVersion}
             patch={rejection.patch}
             events={events}
+            onEvent={event => setManualEvents(current => [...current, event])}
             highlight={[...rejection.targets, comp]}
             factory={factory}
           />
@@ -426,6 +435,8 @@ function BeforeAfter({
       </p>
       <div className="dash-controls">
         <button
+          disabled={!step && JSON.stringify(beforeEvents) === JSON.stringify(prefix) && JSON.stringify(afterEvents) === JSON.stringify(prefix)}
+          title={!step && JSON.stringify(beforeEvents) === JSON.stringify(prefix) && JSON.stringify(afterEvents) === JSON.stringify(prefix) ? "Screens are already reset" : undefined}
           onClick={() => {
             setStep(0);
             setBeforeEvents(prefix);
@@ -436,6 +447,7 @@ function BeforeAfter({
         </button>
         <button
           disabled={step >= max || !!rejection}
+          title={rejection ? "Use the counterexample path for a rejected proposal" : step >= max ? "No more task events recorded for these versions" : undefined}
           onClick={() => {
             const next = step + 1;
             setStep(next);
@@ -836,8 +848,9 @@ export function Dashboard({
   const [screenMode, setScreenMode] = useState<
     "pair" | "counterexample" | null
   >(null);
+  const [loadedFactory, setLoadedFactory] = useState<InterpFactory>();
   const interpFactory =
-    run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory;
+    run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory ?? loadedFactory;
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -868,7 +881,7 @@ export function Dashboard({
     setError("");
     setSelection(null);
     setScreenMode(null);
-    loadRun(runId, entry.files)
+    loadRunSummary(runId)
       .then((data) => {
         if (active) {
           setRun(data);
@@ -908,6 +921,19 @@ export function Dashboard({
     }
   };
   const selectedPersona = selection?.record?.persona ?? persona;
+  const [detail, setDetail] = useState<RunData | null>(null);
+  const [detailError, setDetailError] = useState("");
+  useEffect(() => {
+    let active = true;
+    setDetail(null);
+    setDetailError("");
+    if (run && selection) {
+      Promise.all([loadRunDetails(run, selectedPersona), run.manifest.ehr.mode === "fake" || suppliedFactory ? Promise.resolve(null) : loadWasmInterp()])
+        .then(([data, interp]) => { if (active) { setDetail(data); if (interp) setLoadedFactory(() => () => interp); } })
+        .catch((error: unknown) => { if (active) setDetailError(error instanceof Error ? error.message : String(error)); });
+    }
+    return () => { active = false; };
+  }, [run, selection, selectedPersona, suppliedFactory]);
   const record = selection?.record;
   return (
     <div className="dashboard">
@@ -930,13 +956,15 @@ export function Dashboard({
             ))}
           </select>
         </label>
-        <a href={`/?persona=${persona}&run=${runId}`}>Open EHR</a>
+        <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>Open EHR</a>
       </header>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button
             key={name}
             aria-current={view === name ? "page" : undefined}
+            disabled={view === name}
+            title={view === name ? "Current dashboard area" : undefined}
             onClick={() => {
               setView(name);
               setSelection(null);
@@ -955,10 +983,10 @@ export function Dashboard({
                 key={p.id}
                 disabled={
                   !run?.manifest.personas.includes(p.id) ||
-                  !versionsFor(run, p.id).length
+                  !versionsFor(run, p.id).length || persona === p.id
                 }
                 aria-pressed={persona === p.id}
-                title={p.name}
+                title={!run?.manifest.personas.includes(p.id) || !versionsFor(run, p.id).length ? "No recorded versions for this persona" : persona === p.id ? "Current persona" : p.name}
                 onClick={() => {
                   setPersona(p.id);
                   setSelection(null);
@@ -1040,7 +1068,9 @@ export function Dashboard({
         }}
         closeButtonProps={{ "aria-label": "Close decision record" }}
       >
-        {run && selection && (
+        {detailError && <p role="alert">{detailError}</p>}
+        {selection && !detail && !detailError && <p role="status">Loading decision replay…</p>}
+        {run && detail && selection && (
           <>
             <div className="dash-controls">
               <button onClick={() => setScreenMode("pair")}>
@@ -1067,12 +1097,12 @@ export function Dashboard({
               <>
                 <h3>Canonical baseline</h3>
                 <p>The recorded starting program, before nightly adaptation.</p>
-                <p>{programAt(run, selectedPersona, 0).id}</p>
+                <p>{programAt(detail, selectedPersona, 0).id}</p>
                 <details>
                   <summary>Baseline certificate</summary>
                   <pre>
                     {JSON.stringify(
-                      run.certs.get(`certs/${selectedPersona}/v0.json`) ??
+                      detail.certs.get(`certs/${selectedPersona}/v0.json`) ??
                         "Unavailable",
                       null,
                       2,
@@ -1102,12 +1132,14 @@ export function Dashboard({
         classNames={{ body: "dash-review", title: "dash-drawer-title" }}
         closeButtonProps={{ "aria-label": "Close EHR replay" }}
       >
-        {run &&
+        {detailError && <p role="alert">{detailError}</p>}
+        {selection && !detail && !detailError && <p role="status">Loading EHR replay…</p>}
+        {detail &&
           selection &&
           (screenMode === "pair" ? (
             <BeforeAfter
               key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
-              run={run}
+              run={detail}
               persona={selectedPersona}
               record={record ?? null}
               rejection={selection.rejection}
@@ -1118,7 +1150,7 @@ export function Dashboard({
               <div className="dash-review">
                 <Counterexample
                   key={selection.rejection.id}
-                  run={run}
+                  run={detail}
                   rejection={selection.rejection}
                   factory={interpFactory}
                 />

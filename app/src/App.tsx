@@ -1,3 +1,4 @@
+import { navigate } from "./navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert, Button, Drawer } from "@mantine/core";
 import { UiScreenView } from "./ehr/ui/Screen";
@@ -103,7 +104,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                   value={persona}
                   onChange={(event) => {
                     const id = event.currentTarget.value;
-                    window.location.assign(
+                    navigate(
                       ehrUrl(
                         currentProgram(catalog, id, program.run),
                         defaultPatient(catalog, id).id,
@@ -126,7 +127,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                   catalog={catalog}
                   value={patient.id}
                   onChange={(selected) =>
-                    window.location.assign(
+                    navigate(
                       ehrUrl(program, selected.id, persona),
                     )
                   }
@@ -135,7 +136,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
               <p>
                 {program.release} · {program.path}
               </p>
-              <Button size="xs" onClick={() => window.location.reload()}>
+              <Button size="xs" onClick={() => navigate(window.location.href)}>
                 Reset episode
               </Button>
               <a

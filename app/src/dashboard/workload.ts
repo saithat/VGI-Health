@@ -92,7 +92,7 @@ export function workloadAt(
 }
 
 export function versionsFor(run: RunData, persona: string) {
-  return [...run.programs.keys()]
+  return (run.files ?? [...run.programs.keys()])
     .flatMap((path) => {
       const match = new RegExp(`^programs/${persona}/v(\\d+)\\.json$`).exec(
         path,

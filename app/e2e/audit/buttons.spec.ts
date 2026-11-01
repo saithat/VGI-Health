@@ -6,14 +6,23 @@ import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
 const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
 
-test("app shell: every shell control has an effect or an explained disabled state", async ({ page }) => {
+test("app shell: every shell control has an effect or an explained disabled state", async ({ page: initialPage }) => {
+  let page = initialPage;
   page.setDefaultTimeout(15000);
   const audit = new Audit(page);
+  const freshGoto = async (url: string) => {
+    const context = page.context();
+    await page.close();
+    page = await context.newPage();
+    page.setDefaultTimeout(15000);
+    audit.setPage(page);
+    await page.goto(url);
+  };
   try {
     // Home entries get separate clean logins, including the baseline.
     for (const persona of [...personas, "baseline"]) {
       await page.context().clearCookies();
-      await page.goto("/?audit=buttons");
+      await freshGoto("/?audit=buttons");
       await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
       await page.reload();
       console.log(`Auditing ${persona}`);
@@ -45,10 +54,11 @@ test("app shell: every shell control has an effect or an explained disabled stat
       const back = page.getByRole('button', { name: /Back to worklist/ }).first();
       if (await back.isVisible()) await audit.click(back, undefined, "app");
     }
+    writeReport(audit.rows, "app");
     audit.persona = "—";
-    await audit.allShell(async () => { await page.goto('/browse'); await page.getByLabel('Patient', { exact: true }).waitFor(); });
+    await audit.allShell(async () => { await freshGoto('/browse'); await page.getByLabel('Patient', { exact: true }).waitFor(); });
     // Every catalog link, including canonical, bad programs, projections and run versions, was clicked by allShell.
-    await page.goto('/ehr?mode=replay&audit=buttons&persona=P1');
+    await freshGoto('/ehr?mode=replay&audit=buttons&persona=P1');
     await page.locator('.clinical-app').waitFor();
     await audit.click(page.getByRole('button', { name: 'Inspector', exact: true }), undefined, "app");
     await audit.click(page.getByRole('button', { name: 'Reset episode', exact: true }), undefined, "app");
@@ -56,7 +66,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
     await audit.click(page.getByRole('button', { name: 'Close inspector', exact: true }), undefined, "app");
     // Both real and authored runs: every persona, selector, version/release row and drawer action.
     for (const run of ['run1-P3', 'mock']) {
-      const setup = async () => { await page.goto(`/dashboard?run=${run}`); await page.getByRole('region', { name: 'Version history' }).waitFor(); };
+      const setup = async () => { await freshGoto(`/dashboard?run=${run}`); await page.getByRole('region', { name: 'Version history' }).waitFor(); };
       await audit.allShell(setup);
       await setup();
       const pills = page.getByRole('group', { name: 'Persona', exact: true }).getByRole('button');
@@ -105,15 +115,24 @@ test("app shell: every shell control has an effect or an explained disabled stat
   expect(audit.rows.filter(r => r.status === 'dead' || r.status === 'error')).toEqual([]);
 });
 
-test("Lean EHR: breadth-first observed screens, isolated button clicks and real live personas", async ({ page, request }) => {
+test("Lean EHR: breadth-first observed screens, isolated button clicks and real live personas", async ({ page: initialPage, request }) => {
+  let page = initialPage;
   page.setDefaultTimeout(15000);
   const audit = new Audit(page);
+  const freshGoto = async (url: string) => {
+    const context = page.context();
+    await page.close();
+    page = await context.newPage();
+    page.setDefaultTimeout(15000);
+    audit.setPage(page);
+    await page.goto(url);
+  };
   const catalog = catalogSchema.parse(await (await request.get('/catalog.json')).json());
   try {
     for (const persona of personas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
-      await page.goto('/?audit=buttons');
+      await freshGoto('/?audit=buttons');
       await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
       await page.reload();
       await page.getByRole('button', { name: new RegExp(`^${persona} ·`) }).click();
@@ -171,6 +190,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           if (after && JSON.stringify(after.state) !== JSON.stringify(snapshot.state)) queue.push(await page.evaluate(() => window.__buttonAuditSession?.checkpoint() ?? -1));
         }
         console.log(`${persona} ${screen}: ${tested.size} controls, ${queue.length} queued`);
+        writeReport(audit.rows, "ehr");
       }
     }
   } finally { writeReport(audit.rows, 'ehr'); }

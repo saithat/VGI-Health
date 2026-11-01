@@ -1,6 +1,6 @@
-import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import type { Plugin } from "vite";
+import { sendArtifact } from "./artifact-response";
 // Shared with the dependency-free verdict generator.
 import { buildCatalog, root } from "./catalog.mjs";
 
@@ -8,6 +8,13 @@ export function catalogPlugin(): Plugin {
   return {
     name: "offline-ui-catalog",
     configureServer(server) {
+      attach(server);
+    },
+    configurePreviewServer(server) {
+      attach(server);
+    },
+  };
+  function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
       let catalog: Promise<unknown> | undefined;
       server.middlewares.use(async (req, res, next) => {
         const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
@@ -19,7 +26,7 @@ export function catalogPlugin(): Plugin {
         try {
           res.setHeader("Content-Type", "application/json");
           if (pathname === "/catalog.json") {
-            res.end(JSON.stringify(await (catalog ??= buildCatalog())));
+            await sendArtifact(req, res, pathname, Buffer.from(JSON.stringify(await (catalog ??= buildCatalog()))));
           } else {
             const directory = pathname.split("/")[1] ?? "";
             const file = resolve(root, decodeURIComponent(pathname.slice(1)));
@@ -28,32 +35,12 @@ export function catalogPlugin(): Plugin {
               !file.endsWith(".json")
             )
               throw new Error("Invalid static path");
-            res.end(await readFile(file));
+            await sendArtifact(req, res, pathname, file);
           }
         } catch {
           res.statusCode = 404;
           res.end(JSON.stringify({ error: "Offline artifact unavailable" }));
         }
       });
-    },
-    async closeBundle() {
-      const output = resolve(root, "app/dist");
-      for (const directory of ["releases", "programs", "fixtures/synthea"]) {
-        await cp(resolve(root, directory), resolve(output, directory), {
-          recursive: true,
-        });
-      }
-      await writeFile(
-        resolve(output, "catalog.json"),
-        JSON.stringify(await buildCatalog()),
-      );
-      for (const route of ["browse", "ehr"]) {
-        await mkdir(resolve(output, route), { recursive: true });
-        await cp(
-          resolve(output, "index.html"),
-          resolve(output, route, "index.html"),
-        );
-      }
-    },
-  };
+  }
 }

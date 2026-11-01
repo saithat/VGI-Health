@@ -69,6 +69,7 @@ export interface RunData {
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
   complexity: ComplexityData | null;
+  files?: string[];
 }
 export type ReadJson = (path: string) => Promise<unknown>;
 
@@ -142,6 +143,29 @@ export async function loadRun(
   );
   run.days.sort((a, b) => a.day - b.day);
   return run;
+}
+/** Summary contains measured outcomes, never program trees, patient contexts or traces. */
+export async function loadRunSummary(id: string, read: ReadJson = readRunJson): Promise<RunData> {
+  const data = z.object({ manifest: manifestSchema, records: z.array(decisionRecordSchema), days: z.array(dayResultSchema), complexity: complexitySchema.nullable(), files: z.array(z.string()) }).parse(await read(`/runs/${id}/summary.json`));
+  if (data.manifest.runId !== id || data.records.some(r => r.runId !== id || !data.manifest.personas.includes(r.persona))) throw new Error("Summary belongs to another run");
+  data.records.sort((a, b) => a.night - b.night || a.persona.localeCompare(b.persona));
+  data.days.sort((a, b) => a.day - b.day);
+  return { ...data, programs: new Map(), certs: new Map(), replay: null };
+}
+/** Hydrate only this persona when opening a decision or replay. */
+export async function loadRunDetails(run: RunData, persona: string, read: ReadJson = readRunJson): Promise<RunData> {
+  if (!run.files) return run;
+  const detail = { ...run, programs: new Map(run.programs), certs: new Map(run.certs), days: [...run.days] };
+  await Promise.all(run.files.map(async file => {
+    if (file === "replay.json") detail.replay = replaySchema.parse(await read(`/runs/${run.manifest.runId}/${file}`));
+    else if (file.startsWith(`programs/${persona}/`)) detail.programs.set(file, programSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`)));
+    else if (file.startsWith(`certs/${persona}/`)) detail.certs.set(file, certificateSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`)));
+    else if (new RegExp(`^days/day-\\d+/${persona}\\.json$`).test(file)) {
+      const day = dayResultSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`));
+      detail.days = detail.days.filter(d => d.persona !== day.persona || d.day !== day.day).concat(day);
+    }
+  }));
+  return detail;
 }
 export function programAt(
   run: RunData,

@@ -1,6 +1,7 @@
-import { readdir, readFile, cp, mkdir, writeFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
+import { sendArtifact } from "./artifact-response";
 
 export interface RecordedRun {
   id: string;
@@ -97,7 +98,10 @@ export function runsPlugin(): Plugin {
   }
   return {
     name: "recorded-runs",
-    configureServer(server) {
+    configureServer(server) { attach(server); },
+    configurePreviewServer(server) { attach(server); },
+  };
+  function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
       server.middlewares.use(async (req, res, next) => {
         if (!req.url?.startsWith("/runs/")) {
           next();
@@ -107,12 +111,28 @@ export function runsPlugin(): Plugin {
           const url = new URL(req.url, "http://localhost");
           if (url.pathname === "/runs/index.json") {
             res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify(await index()));
+            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify(await index())));
             return;
           }
           if (url.pathname === "/runs/default.json") {
             res.setHeader("Content-Type", "application/json");
-            res.end(JSON.stringify({ runId: selectDefaultRun(await index()) }));
+            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify({ runId: selectDefaultRun(await index()) })));
+            return;
+          }
+          const summary = /^\/runs\/([\w-]+)\/summary.json$/.exec(url.pathname);
+          if (summary) {
+            const id = summary[1] ?? "";
+            const entry = (await index()).find(r => r.id === id);
+            if (!entry) throw new Error("Unknown run");
+            const get = async (file: string) => JSON.parse(await readFile(resolve(root, id, file), "utf8"));
+            const records = [], days = [];
+            let complexity = null;
+            for (const file of entry.files) {
+              if (/^(decisions|break)\/.+\.json$/.test(file)) records.push(await get(file));
+              else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file)) days.push({ ...await get(file), trace: [] });
+              else if (file === "complexity.json") complexity = await get(file);
+            }
+            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify({ manifest: await get("manifest.json"), records, days, complexity, files: entry.files })));
             return;
           }
           const file = resolve(root, decodeURIComponent(url.pathname.slice(6)));
@@ -122,32 +142,11 @@ export function runsPlugin(): Plugin {
             return;
           }
           res.setHeader("Content-Type", "application/json");
-          res.end(await readFile(file));
+          await sendArtifact(req, res, url.pathname, file);
         } catch {
           res.statusCode = 404;
           res.end("Run file not found");
         }
       });
-    },
-    async closeBundle() {
-      const output = resolve(import.meta.dirname, "../dist/runs");
-      await mkdir(output, { recursive: true });
-      await cp(root, output, { recursive: true });
-      await writeFile(
-        resolve(output, "index.json"),
-        JSON.stringify(await index()),
-      );
-      await writeFile(
-        resolve(output, "default.json"),
-        JSON.stringify({ runId: selectDefaultRun(await index()) }),
-      );
-      // Directory index also supports static hosts without an SPA rewrite.
-      const dashboard = resolve(import.meta.dirname, "../dist/dashboard");
-      await mkdir(dashboard, { recursive: true });
-      await cp(
-        resolve(output, "../index.html"),
-        resolve(dashboard, "index.html"),
-      );
-    },
-  };
+  }
 }

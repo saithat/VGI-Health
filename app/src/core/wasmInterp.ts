@@ -102,15 +102,26 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
   };
 }
 
-/** Load once at app startup; all Interp methods then return synchronously. */
-export async function loadWasmInterp(
+declare const __LEAN_HASH__: string;
+const instances = new Map<string, Promise<Interp>>();
+/** Shared by all routes and live encounters; one initialized WASM instance per tab. */
+export function loadWasmInterp(assetBase = `${import.meta.env.BASE_URL}ehr/`): Promise<Interp> {
+  let instance = instances.get(assetBase);
+  if (!instance) {
+    instance = initialize(assetBase).catch(error => { instances.delete(assetBase); throw error; });
+    instances.set(assetBase, instance);
+  }
+  return instance;
+}
+
+async function initialize(
   assetBase = `${import.meta.env.BASE_URL}ehr/`,
 ): Promise<Interp> {
   const base = new URL(
     assetBase.endsWith("/") ? assetBase : `${assetBase}/`,
     document.baseURI,
   );
-  const loaderUrl = new URL("interp-loader.mjs", base).href;
+  const loaderUrl = new URL(`interp-loader.mjs?v=${__LEAN_HASH__}`, base).href;
   const loader: {
     loadEhrInterp(options: {
       locateFile: (filename: string) => string;
@@ -118,7 +129,7 @@ export async function loadWasmInterp(
   } = await import(/* @vite-ignore */ loaderUrl);
   return createWasmInterp(
     await loader.loadEhrInterp({
-      locateFile: (filename) => new URL(filename, base).href,
+      locateFile: (filename) => new URL(`${filename}?v=${__LEAN_HASH__}`, base).href,
     }),
   );
 }

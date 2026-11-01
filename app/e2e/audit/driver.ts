@@ -10,7 +10,9 @@ export class Audit {
   persona = "—";
   program = "—";
   screen = "shell";
-  constructor(readonly page: Page) {
+  constructor(public page: Page) { this.setPage(page); }
+  setPage(page: Page) {
+    this.page = page;
     page.on("pageerror", e => this.errors.push(e.message));
     page.on("console", m => { if (m.type() === "error") this.errors.push(m.text()); });
     page.on("response", r => { if (["POST", "PUT", "PATCH", "DELETE"].includes(r.request().method()) && r.ok()) this.writes.push(`${r.request().method()} ${new URL(r.url()).pathname}`); });
@@ -52,8 +54,10 @@ export class Audit {
   async allShell(setup: () => Promise<void>) {
     await setup();
     const count = await this.page.locator(selector).count();
+    console.log(`Shell inventory: ${count} controls at ${this.page.url()}`);
     for (let i = 0; i < count; i++) {
       if (i) await setup();
+      if (i % 20 === 0) console.log(`Shell ${i}/${count}`);
       const control = this.page.locator(selector).nth(i);
       if (!(await control.isVisible()) || await control.evaluate(el => !!el.closest('.clinical-app, .ehr-shell'))) continue;
       if (await control.evaluate(el => el instanceof HTMLSelectElement)) {

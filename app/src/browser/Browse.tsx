@@ -112,7 +112,7 @@ export function Browse() {
   return (
     <main className="browser-page">
       <nav>
-        <a href="/browse">VGI HEALTH · UI browser</a>
+        <strong>VGI HEALTH · UI browser</strong>
         <a href="/dashboard">Recorded dashboard</a>
       </nav>
       <h1>Open a clinical UI</h1>

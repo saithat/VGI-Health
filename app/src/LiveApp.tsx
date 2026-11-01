@@ -161,6 +161,7 @@ function Login({
               variant="light"
               justify="flex-start"
               disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
               onClick={() => void login(persona, false)}
             >
               {personaLabels[persona]}
@@ -170,6 +171,7 @@ function Login({
             mt="md"
             variant="outline"
             disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
             onClick={() => void login("P1", true)}
           >
             Original canonical EHR (baseline)
@@ -430,6 +432,7 @@ function SelectEncounter({
         <Group>
           <Button
             disabled={!encounter || pending || starting}
+            title={!encounter ? "Select or start an encounter first" : pending || starting ? "Loading encounter" : undefined}
             onClick={() => {
               if (encounter)
                 onOpen({
@@ -448,6 +451,7 @@ function SelectEncounter({
             variant="default"
             loading={starting}
             disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
             onClick={() => {
               setStarting(true);
               setError("");
@@ -640,7 +644,7 @@ function Home({
             }
           }}
         />
-        <Button variant="light" onClick={() => setRevision((r) => r + 1)}>
+        <Button variant="light" onClick={() => { setWorklist(undefined); setRevision((r) => r + 1); notifications.show({ message: "Worklist refreshed" }); }}>
           Refresh worklist
         </Button>
       </Group>
@@ -741,6 +745,7 @@ function Home({
                         disabled={
                           pending || !ref?.reference?.startsWith("Patient/")
                         }
+                        title={pending ? "Loading patient" : !ref?.reference?.startsWith("Patient/") ? "No patient is linked to this work item" : undefined}
                         onClick={() => {
                           if (ref?.reference)
                             void select(ref.reference.slice(8), r);
@@ -791,7 +796,8 @@ function Home({
                   <Button
                     size="xs"
                     variant="subtle"
-                    disabled={pending}
+                    disabled={pending || !m.subject.reference?.startsWith("Patient/")}
+                    title={pending ? "Loading patient" : !m.subject.reference?.startsWith("Patient/") ? "No patient is linked to this medication" : undefined}
                     onClick={() => {
                       if (m.subject.reference?.startsWith("Patient/"))
                         void select(m.subject.reference.slice(8), m);
@@ -812,7 +818,7 @@ function Home({
           setPending(true);
           setError("");
           void searchPatients(query)
-            .then(setPatients)
+            .then(results => { setPatients(results); notifications.show({ message: `${results.length} patients found` }); })
             .catch((e: unknown) => setError(errorText(e)))
             .finally(() => setPending(false));
         }}
@@ -833,6 +839,7 @@ function Home({
             <Button
               variant="subtle"
               disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
               onClick={() => void select(p.id ?? "")}
             >
               {nameOf(p)} · {p.birthDate}
