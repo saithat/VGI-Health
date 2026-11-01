@@ -1,9 +1,22 @@
-import { mkdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { uiScreenSchema } from "../src/ehr/ui/types";
+import type { NodeOf, UiNode } from "../src/ehr/ui/types";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/core/buttonAudit";
 import type {} from "../src/ehr/offline";
+
+function infoNodes(nodes: UiNode[]): NodeOf<"info">[] {
+  return nodes.flatMap((node) => {
+    if ("info" in node) return [node.info];
+    if ("section" in node) return infoNodes(node.section.children);
+    if ("presentation" in node) return infoNodes(node.presentation.children);
+    if ("columns" in node) return infoNodes(node.columns.children);
+    if ("rowAction" in node) return infoNodes(node.rowAction.children);
+    if ("tabs" in node) return infoNodes(node.tabs.body);
+    return [];
+  });
+}
 
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
@@ -34,7 +47,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     ["P2", "w3TrackBoard", "w3Triage"],
     ["P3", "w4Worklist", "w4Mar"],
     ["P4", "w5Rooming", "w5Growth"],
-    ["P5", "w6PreOp", "w6PreOp"],
+    ["P5", "w6Schedule", "w6PreOp"],
   ] as const) {
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
@@ -49,14 +62,19 @@ test("shared shell and browser visual review", async ({ page }) => {
       page.locator(`[data-comp-id="${entry}.chartSearch"][data-event]`),
     ).toBeVisible();
     if (process.env.REALISM_SHOTS !== "before") {
-      const navigator = page.getByRole("navigation", { name: "Chart navigation" });
-      await expect(navigator.locator("button[data-comp-id]").first()).toBeVisible();
+      const navigator = page.getByRole("navigation", {
+        name: "Clinical navigation",
+      });
+      await expect(
+        navigator.locator("button[data-comp-id]").first(),
+      ).toBeVisible();
+
       await expect(navigator).not.toHaveClass(/empty-navigator/);
     }
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
-    if (screen !== entry) await destination.click();
+    await destination.click();
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
@@ -77,13 +95,36 @@ test("shared shell and browser visual review", async ({ page }) => {
   }
   if (process.env.REALISM_SHOTS !== "before") {
     await page.goto(
-      "/ehr?mode=replay&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
+      "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
-    const notes = page.getByRole("list", { name: "Notes", exact: true });
-    await expect(notes).toBeVisible();
-    await expect(notes).toContainText("HISTORY OF PRESENT ILLNESS");
-    await notes.scrollIntoViewIfNeeded();
+    const note = page.locator('[data-info-id="encounterNotes"] li').first();
+    await expect(note).toBeVisible();
+    const semantic = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().ui,
+    );
+    if (!semantic) throw new Error("Missing native Notes screen");
+    writeFileSync(
+      `${folder}/chart-notes.ui.json`,
+      JSON.stringify(semantic, null, 2) + "\n",
+    );
+    expect(
+      observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+    ).toEqual(expectedAria(semantic));
+    const expectedBodies = infoNodes([...semantic.side, ...semantic.workspace])
+      .filter((info) => info.infoId === "encounterNotes")
+      .flatMap((info) =>
+        info.rows.map((row) => row.find(([key]) => key === "Text")?.[1] ?? ""),
+      );
+    expect(
+      await page
+        .locator(
+          '[data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body',
+        )
+        .allTextContents(),
+    ).toEqual(expectedBodies);
+    await note.scrollIntoViewIfNeeded();
+
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-notes.png`,

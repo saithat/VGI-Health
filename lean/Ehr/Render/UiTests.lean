@@ -4,12 +4,107 @@ import Ehr.Render.NavRules
 
 namespace Ehr.Render
 
+/-- Antiplatelets in the chart are visible even outside the prescribing catalog. -/
+def chartClopidogrel : MedRow where
+  id := "platelet-record"
+  name := "Clopidogrel 75 MG Oral Tablet"
+  rxnorm := ""
+  drug := ""
+  sig := "Daily"
+  status := "active"
+  authored := "2026-10-31"
+  prescriber := ""
+  versionId := "1"
+#guard uiAntithrombotic chartClopidogrel
+#guard uiAntithrombotic { chartClopidogrel with name := "aspirin 81 MG Oral Tablet" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Clopidogrel-like investigational product" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Acetaminophen 500 MG Oral Tablet" }
+
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
+#guard uiSourceText uiRoomCtx "record:unmappedInternalId" == "From chart"
+#guard uiSourceText uiRoomCtx "linked:unmappedInternalId" == "Linked value"
+#guard uiSourceText uiRoomCtx "macro" == "From template / preference list"
+#guard uiSourceText uiRoomCtx "default" == "Default value"
+/-- A compact surgical request keeps field labels and every supplied value. -/
+def uiSurgicalCaseCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, facts := Tests.periopFacts }
+#guard uiSummaryRows uiSurgicalCaseCtx "scheduleTasks" == uiRows uiSurgicalCaseCtx "scheduleTasks"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Procedure" ==
+  some "Laparoscopic appendectomy"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Status" == some "active"
+/-- A planned surgical request cannot inherit a historical visit's location. -/
+def uiPreopBannerFacts : Facts := { Tests.periopFacts with encounterKind? := some "preop" }
+def uiHistoricalVisitDisplay : Display :=
+  { uiRoomCtx.disp with banner := { uiRoomCtx.disp.banner with
+      encounterClass := "AMB", attending := "Previous clinician", location := "Previous clinic" } }
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Encounter context" ==
+  some "Preoperative chart review"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Planned OR" == some "Not recorded"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Location" == none
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Attending" == none
+#guard uiCaseValue { uiPreopBannerFacts with patientId := "another-patient" } "Room" == "Not recorded"
+#guard (uiClinicalBanner Tests.periopFacts uiHistoricalVisitDisplay).lookup "Last location" == some "Previous clinic"
+#guard uiViewer .surgeon == "General surgeon"
+#guard uiViewer .rn == "Registered nurse"
+/-- A displayed name is bound to the user who carries the permissions. -/
+def clinicianHeaderUser : User := { id := "display-clinician", role := .surgeon }
+def clinicianHeaderDisplay : Display :=
+  { uiRoomCtx.disp with clinicians? := some [{ id := "display-clinician", name := "Dr. Morgan Rivera" }] }
+#guard uiClinicianViewer clinicianHeaderUser clinicianHeaderDisplay == "Dr. Morgan Rivera · General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "another-user" } clinicianHeaderDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser uiRoomCtx.disp == "General surgeon"
+/-- Ambiguous source identities and missing names do not select another person. -/
+def ambiguousClinicianDisplay : Display :=
+  { clinicianHeaderDisplay with clinicians? := some [
+    { id := "display-clinician", name := "Dr. Morgan Rivera" },
+    { id := "display-clinician", name := "Another clinician" }] }
+#guard uiClinicianViewer clinicianHeaderUser ambiguousClinicianDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "display-clinician", name := " " }] } == "General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "" }
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "", name := "Unknown identity" }] } == "General surgeon"
+/-- A visible surgical diagnosis field receives choices without a default. -/
+def surgicalPickerElement : ElementSpec :=
+  { id := "pickerDiagnosis", label := "Diagnosis", kind := .coded "icd10",
+    enteredBy := [.surgeon], prefill := .defaultConfirm, friction := .compliance,
+    fhirTarget := "Condition.code" }
+def surgicalPickerCtx : Ctx :=
+  { uiRoomCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "surgical-picker-reviewer", role := .surgeon }
+    sp := { uiRoomCtx.sp with elements := uiRoomCtx.sp.elements ++ [surgicalPickerElement] }
+    prog := { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+        [{ id := "pickerDiagnosis", label := "Diagnosis", kind := .field "pickerDiagnosis" (.fixed 0) .none }] }
+      else screen } }
+#guard ((uiFieldChoices surgicalPickerCtx).lookup "pickerDiagnosis").any (fun set =>
+  set.showCode && set.allowOther && set.options.lookup "K80.20" ==
+    some "Gallbladder stones, no cholecystitis or obstruction")
+#guard (uiAtomsList (renderUi surgicalPickerCtx.sp surgicalPickerCtx.prog surgicalPickerCtx.facts
+  surgicalPickerCtx.disp surgicalPickerCtx.user surgicalPickerCtx.s).workspace).any (fun node => match node with
+  | .field "pickerDiagnosis" _ _ value _ _ pending _ _ => value.isNone && !pending
+  | _ => false)
+#guard (uiFieldChoices { surgicalPickerCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "different-role", role := .physician } }).isEmpty
+#guard (surgicalProcedureChoices.lookup "47562") == some "Laparoscopic cholecystectomy"
+#guard (surgicalChoices (.coded "boolean")).lookup "true" == some "Yes"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
     { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"), label := "Weight", tag := "weight" }
+/-- A pounds record cannot be displayed or resubmitted as a kg input value. -/
+def uiPoundsWeightItem : ItemView :=
+  { uiWeightItem with value? := some (.qty 1600 .lb) }
+#guard match uiField uiRoomCtx uiPoundsWeightItem "weight" with
+  | .field _ _ _ value unit provenance pending human _ =>
+    value.isNone && unit == some "kg" && provenance == uiPoundsWeightItem.provenance? &&
+      pending == uiPoundsWeightItem.pendingConfirm && human == uiPoundsWeightItem.humanOnly
+  | _ => false
+#guard (uiEntryHint uiRoomCtx uiPoundsWeightItem).any (fun text =>
+  text.startsWith "Recorded value: 160" && text.endsWith "lb. Enter the weight in kg.")
+#guard uiEntryHint uiRoomCtx uiWeightItem == none
 def uiSignItem : ItemView :=
   itemView uiSignCtx.sp uiSignCtx.facts uiSignCtx.s (uiSignCtx.prog.compsOf uiSignCtx.s.screen)
     { id := "signButton", kind := .button (.commit "signOrders"), label := "Sign", hotkey? := some "Ctrl+Enter", tag := "sign" }
@@ -31,6 +126,161 @@ theorem uiSourceItem_mem (cx : Ctx) (component : Component)
     itemView cx.sp cx.facts cx.s (cx.prog.compsOf cx.s.screen) component ∈ cx.v.items := by
   rw [Ctx.v_exact]
   exact List.mem_map.mpr ⟨component, hc, rfl⟩
+
+/-- A public caption accompanies the original pending weight field. -/
+def publicWeightSourceExample : String := uiFieldSourceText uiRoomCtx "record:weightToday"
+#guard publicWeightSourceExample == "Source: Chart weight recorded today · chart as of " ++ uiRoomCtx.disp.asOf
+#guard !(Fhir.containsStr publicWeightSourceExample "weightToday")
+#guard (uiScreenTest.fieldSources?.getD []).lookup "weightField" == some publicWeightSourceExample
+#guard match uiField uiRoomCtx uiWeightItem "weight" with
+  | .field _ _ _ _ _ provenance pending _ _ =>
+      provenance == some "record:weightToday" && pending
+  | _ => false
+
+/-- Linked captions use the source element's public label, never its key. -/
+def linkedWeightSourceExample : String := uiFieldSourceText uiRoomCtx "linked:weight"
+#guard linkedWeightSourceExample == "Source: Linked entry — Weight (kg)"
+def unknownRecordSourceExample : String := uiFieldSourceText uiRoomCtx "record:privateConverterKey"
+#guard !(Fhir.containsStr unknownRecordSourceExample "privateConverterKey")
+
+example : (uiWeightItem.comp.id, publicWeightSourceExample) ∈ uiFieldSources uiRoomCtx :=
+  uiFieldSources_shown uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
+    "record:weightToday" (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl (by decide)
+
+/-- Current documentation is separate from old chart notes and preserves entry status. -/
+def enteredVisitNoteCtx : Ctx :=
+  { uiRoomCtx with
+    s := { uiRoomCtx.s with captured :=
+      [{ element := "hpi", slot := 0, value := .text "Entered narrative (disorder).\nSecond line.",
+         byHuman := true, confirmed := true },
+       { element := "exam", slot := 0, value := .text "Unconfirmed copied exam",
+         byHuman := false, confirmed := false },
+       { element := "hpi", slot := 2, value := .text "Additional entered history",
+         byHuman := true, confirmed := true }] }
+    viewCache := ⟨_, rfl⟩ }
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "Entered narrative (disorder).\nSecond line." && row.lookup "Entry status" == some "Entered"
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "Unconfirmed copied exam" && row.lookup "Entry status" == some "Needs confirmation"
+def emptyVisitNoteCtx : Ctx :=
+  { uiRoomCtx with s := { uiRoomCtx.s with captured := [] }, viewCache := ⟨_, rfl⟩ }
+#guard (uiNoteSummaryRows emptyVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "No visit documentation entered yet."
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row => row.lookup "Text" == some "Additional entered history"
+#guard enteredVisitNoteCtx.s.captured.length == 3
+
+/-- Medication context uses only the declared source slot and retains its caption. -/
+def medicationContextCtx : Ctx :=
+  { uiRoomCtx with disp := { uiRoomCtx.disp with
+      meds := [{ (default : MedRow) with name := "Example medication 5 mg" }] } }
+def medicationContextItem : ItemView :=
+  { uiWeightItem with slot := 0, comp := { uiWeightItem.comp with
+    kind := .field "medRecDecision" (.fixed 0) .none, label := "Medication 1: continue / stop / modify",
+    tag := "context.currentMedication" } }
+#guard uiMedicationFieldLabel medicationContextCtx medicationContextItem "medRecDecision" != medicationContextItem.comp.label
+#guard (uiMedicationFieldLabel medicationContextCtx medicationContextItem "medRecDecision").endsWith
+  ((medicationContextCtx.disp.meds.head?).map (·.name) |>.getD "")
+#guard uiMedicationFieldLabel medicationContextCtx { medicationContextItem with slot := 999 } "medRecDecision" ==
+  medicationContextItem.comp.label
+#guard uiMedicationFieldLabel medicationContextCtx medicationContextItem "weight" == medicationContextItem.comp.label
+#guard uiMedicationFieldLabel medicationContextCtx { medicationContextItem with
+  comp := { medicationContextItem.comp with tag := "unmarked" } } "medRecDecision" == medicationContextItem.comp.label
+
+/-- Receipt feedback reflects the same validity checks used by core visibility. -/
+def reviewFeedbackReceipt : Receipt :=
+  { info := "allergyList", dataVersion := (infoVersion uiRoomCtx.sp uiRoomCtx.facts "allergyList").getD 0,
+    time := 1000, role := .physician, user := "reviewer" }
+def reviewFeedbackCtx : Ctx :=
+  { uiRoomCtx with
+    sp := { uiRoomCtx.sp with reviews := [uiReview] }
+    facts := { uiRoomCtx.facts with now := 1000 }
+    s := { uiRoomCtx.s with clock := 0, receipts := [reviewFeedbackReceipt] }
+    viewCache := ⟨_, rfl⟩ }
+def reviewFeedbackItem : ItemView :=
+  itemView reviewFeedbackCtx.sp reviewFeedbackCtx.facts reviewFeedbackCtx.s []
+    { id := "reviewAllergies", kind := .button (.markReviewed "allergyList"),
+      label := "Mark allergies reviewed", tag := "feedback.review" }
+def reviewFeedbackWith (receipts : List Receipt) : Ctx :=
+  { reviewFeedbackCtx with
+    s := { reviewFeedbackCtx.s with receipts }
+    viewCache := ⟨_, rfl⟩ }
+#guard !(uiReviewStatus reviewFeedbackCtx reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith []) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with time := 0 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with time := 1001 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with
+  dataVersion := reviewFeedbackReceipt.dataVersion + 1 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with role := .surgeon }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus reviewFeedbackCtx { reviewFeedbackItem with
+  comp := { reviewFeedbackItem.comp with tag := "review" } }).isEmpty
+#guard match (uiItem reviewFeedbackCtx reviewFeedbackItem []).head? with
+  | some (.button id label ..) => id == "reviewAllergies" && label == "Mark allergies reviewed"
+  | _ => false
+
+/-- Focused documentation uses the program's reports instead of a duplicate
+generated rail. The ordinary field and commit-review proofs still apply. -/
+def focusedClinicProgram : Program :=
+  { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      { screen with components := screen.components.map fun c =>
+          if c.kind == .banner then { c with tag := "layout.focusedWorkspace" } else c } }
+def focusedClinicUi : UiScreen :=
+  renderUi uiRoomCtx.sp focusedClinicProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
+#guard focusedClinicUi.side.isEmpty
+
+/-- Ambulatory activities use their real navigator without a wizard progress strip. -/
+def clinicalActivityProgram : Program :=
+  { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      { screen with components := screen.components.map fun c =>
+          if c.kind == .banner then { c with tag := "layout.clinicalActivity" } else c } }
+def clinicalActivityUi : UiScreen :=
+  renderUi uiRoomCtx.sp clinicalActivityProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
+#guard !clinicalActivityUi.workspace.any (fun n => match n with | .stepper .. => true | _ => false)
+#guard clinicalActivityUi.screen? == some uiRoomCtx.s.screen
+
+/-- Banner conversion preserves the source units; it cannot confirm dosing weight. -/
+def poundsBannerExample : Display :=
+  { uiRoomCtx.disp with banner := { uiRoomCtx.disp.banner with weight? := some (1880, .lb, "") } }
+#guard uiBannerWeight uiRoomCtx.facts poundsBannerExample == "85.3 kg (from 188.0 lb)"
+def poundsFactsExample : Facts := { uiRoomCtx.facts with weightToday? := some (1880, .lb) }
+#guard uiBannerWeight poundsFactsExample { poundsBannerExample with asOf := "", banner :=
+  { poundsBannerExample.banner with weight? := none } } == "85.3 kg (from 188.0 lb)"
+#guard poundsFactsExample.weightToday? == some (1880, .lb)
+
+/-- The response preview cannot turn a requested dose into an entered response. -/
+def refillSourcePreviewExample : List (List (String × String)) :=
+  [[("Detail", "Dose"), ("Requested", "10 mg"), ("On file", "10 mg"),
+    ("Proposed", "Awaiting clinician entry"), ("Source", "Referenced prescription")]]
+#guard (uiRefillComparisonRows uiRoomCtx refillSourcePreviewExample).all
+  (fun row => row.lookup "Entered response" == some "Not entered")
+
+/-- A changed dose retains its native scale/unit and the distinct requested value. -/
+def refillEnteredPreviewCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with captured :=
+      [{ element := "refillDose", slot := 0, value := .qty 200 .mg, byHuman := true, confirmed := true }] } }
+#guard (uiRefillComparisonRows refillEnteredPreviewCtx refillSourcePreviewExample).all
+  (fun row => row.lookup "Entered response" == some "20.0 mg" && row.lookup "Requested" == some "10 mg")
+
+/-- A separately supplied draft remains visible alongside the actual entered response. -/
+def externallyProposedRefillExample : List (List (String × String)) :=
+  [[("Detail", "Dose"), ("Proposed", "15 mg draft")]]
+#guard (uiRefillComparisonRows refillEnteredPreviewCtx externallyProposedRefillExample).all
+  (fun row => row.lookup "Proposed" == some "15 mg draft" && row.lookup "Entered response" == some "20.0 mg")
+
+/-- A valid insulin dose stays in units in its daily preview and review status. -/
+def nativeUnitReviewCtx : Ctx :=
+  { uiSignCtx with viewCache := ⟨_, rfl⟩, s := { uiSignCtx.s with captured :=
+      [{ element := "drug", slot := 0, value := .code "insulin lispro", byHuman := true, confirmed := true },
+       { element := "dose", slot := 0, value := .qty 20 .units, byHuman := true, confirmed := true },
+       { element := "freq", slot := 0, value := .code "daily", byHuman := true, confirmed := true }] } }
+#guard (uiDoseRows nativeUnitReviewCtx).any fun row =>
+  row.lookup "At entered frequency" == some "2.0 units/day" &&
+  row.lookup "Dose check" == some "No out-of-range flag"
+
+-- A narrative editor keeps the original interpreter's human-entry marker.
+#guard match uiField uiRoomCtx uiWeightItem "hpi" with
+  | .field _ _ kind _ _ _ _ human _ => kind == "textarea" && human == uiWeightItem.humanOnly
+  | _ => false
+
 
 -- Input updates rebuild the dependent cache; a rooming view cannot leak
 -- into a sign state. The equality also holds for every arbitrary context.
@@ -248,6 +498,14 @@ def uiNavSavedCollapsedCtx : Ctx :=
     uiNavSavedCollapsedCtx.disp uiNavSavedCollapsedCtx.user uiNavSavedCollapsedCtx.s).nav ==
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
+#guard uiShellScreen.activeNav? == none
+/-- A selected navigator item follows its declared target, even when labels differ. -/
+def uiCurrentNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components ++
+      [{ id := "shell.nav.current", kind := .button (.goto "shell"), label := "Current section",
+         tag := "nav.current", parent? := some "shell.nav" }] } } }
+#guard uiActiveNav uiCurrentNavCtx == some "shell.nav.current"
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 
 /-- An explicit activity navigator removes only the generated progress strip. -/

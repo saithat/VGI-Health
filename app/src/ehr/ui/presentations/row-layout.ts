@@ -32,12 +32,16 @@ export function rowLayout(
     for (const node of nodes) {
       if ("presentation" in node)
         visit(node.presentation.children, node.presentation.kind);
+      else if ("valueSet" in node) visit(node.valueSet.children, current);
+      else if ("chartReferences" in node)
+        visit(node.chartReferences.children, current);
       else if ("section" in node) visit(node.section.children, current);
       else if ("columns" in node) visit(node.columns.children, current);
       else if ("tabs" in node) visit(node.tabs.body, current);
       else if ("rowAction" in node) controls.push(node.rowAction);
       else if (
         "info" in node &&
+        !["status", "document"].includes(node.info.display) &&
         !["growth", "trend", "notes"].includes(current)
       )
         infos.push(node.info);

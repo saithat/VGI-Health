@@ -10,6 +10,6 @@ import sys
 
 args = sys.argv[1:]
 boundary = args.index("--")
-args[boundary:boundary] = ["--setenv", "LEAN_NUM_THREADS", "6",
+args[boundary:boundary] = ["--setenv", "LEAN_NUM_THREADS", "4",
                           "--setenv", "LEAN_STACK_SIZE_KB", "65536"]
 os.execvp("bwrap", ["bwrap", *args])

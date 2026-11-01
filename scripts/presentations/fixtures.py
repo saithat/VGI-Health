@@ -4,18 +4,33 @@ CDC values are published reference points, never invented patient percentiles.
 Run with --refresh-reference only when deliberately updating the reference input.
 """
 from pathlib import Path
+from datetime import datetime
 import base64
 import copy
 import csv
 import io
 import json
+import re
 import sys
 from urllib.request import urlopen
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'lean/Ehr/Render/TestData'
 OUT.mkdir(parents=True, exist_ok=True)
 resources = []
+
+def fixture_offsets(value):
+    """Give fictional timed values their declared Los Angeles source offset."""
+    if isinstance(value, dict):
+        return {key: fixture_offsets(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [fixture_offsets(item) for item in value]
+    if isinstance(value, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?', value):
+        offset = datetime.fromisoformat(value[:19]).replace(tzinfo=ZoneInfo('America/Los_Angeles')).strftime('%z')
+        return value + (':00' if len(value) == 16 else '') + offset[:3] + ':' + offset[3:]
+    return value
+
 def add(kind, **fields):
     if kind in ['Observation', 'AllergyIntolerance', 'DocumentReference'] and 'subject' not in fields:
         fields['subject'] = dict(reference='Patient/p0' if str(fields.get('id','')).startswith('growth-') else 'Patient/p1')
@@ -84,6 +99,7 @@ for i,(med,dose,unit,route,freq,status,hours,given_hour) in enumerate([
         performer=[dict(actor=dict(display='Jordan Reed, RN'))],statusReason=[cc('Per provider order')] if status=='on-hold' else [])
 body='Subjective\nPain improved this morning. Tolerating oral intake. No nausea or vomiting.\n\nObjective\nAfebrile. Abdomen soft, nondistended. Incisions clean and dry.\n\nAssessment & Plan\nPostoperative day 1 after laparoscopic appendectomy. Advance diet, ambulate, continue multimodal analgesia. Review discharge readiness this afternoon.'
 add('DocumentReference',id='note',status='current',docStatus='final',date='2026-11-01T09:20:00',type=cc('Progress note'),description='General Surgery • Daily Progress',author=[dict(display='Daniel Park, MD')],context=dict(encounter=[dict(display='Inpatient • General Surgery')]),content=[dict(attachment=dict(contentType='text/plain',data=base64.b64encode(body.encode()).decode()))])
+resources = fixture_offsets(resources)
 (OUT/'presentations.json').write_text(json.dumps(dict(resourceType='Bundle',type='collection',entry=[dict(resource=r) for r in resources]),indent=2)+'\n')
 
 # The same child has mixed recorded units and out-of-order same-day weights.
@@ -97,6 +113,7 @@ last=next(r for r in growth_resources if r.get('id')=='growth-29463-7-5')
 late=copy.deepcopy(last); late.update(id='growth-unit-late',effectiveDateTime='2026-11-01T10:00:00')
 early=copy.deepcopy(last); early.update(id='growth-unit-early',effectiveDateTime='2026-11-01T08:00:00'); early['valueQuantity']['value']=29.9
 growth_resources.extend([late,early])
+growth_resources = fixture_offsets(growth_resources)
 (OUT/'growth-units.json').write_text(json.dumps(dict(resourceType='Bundle',entry=[dict(resource=r) for r in growth_resources]),indent=2)+'\n')
 
 payloads={

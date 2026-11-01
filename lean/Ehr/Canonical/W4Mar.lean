@@ -125,7 +125,7 @@ def flowsheet : Screen :=
       field s "painReassessment" "painReassessment" "Response after intervention (0–10)" (parent := some "pain"),
       group s "assessment" "Shift nursing assessment" (collapsible := false),
       macroBtn s "copyAssessment" "w4CopyAssessment" "Insert assessment outline",
-      narrative (field s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment")),
+      narrative s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment"),
       commitBtn s "chartAssessment" "File assessment",
       goto s "toHandoff" "w4Handoff" "Handoff / SBAR"
     ] }
@@ -138,10 +138,10 @@ def handoff : Screen :=
       panel s "last" "handoffSummary" "Last handoff",
       macroBtn s "template" "w4HandoffTemplate" "Insert SBAR outline",
       group s "sbar" "Shift report — SBAR" (collapsible := false),
-      narrative (field s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar")),
-      narrative (field s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar")),
-      narrative (field s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar")),
-      narrative (field s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar")),
+      narrative s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar"),
+      narrative s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar"),
+      narrative s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar"),
+      narrative s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar"),
       presentation "worklist" (table s "remainingTasks" "shiftWorklist" "Shift tasks and status"),
       goto s "toWorklist" "w4Worklist" "Unit Census & MAR"
     ] }

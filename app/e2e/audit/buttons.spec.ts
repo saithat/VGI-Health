@@ -52,6 +52,10 @@ function controlShape(nodes: UiNode[]): unknown[] {
     if ("section" in node) return controlShape(node.section.children);
     if ("columns" in node) return controlShape(node.columns.children);
     if ("presentation" in node) return controlShape(node.presentation.children);
+    if ("valueSet" in node) return controlShape(node.valueSet.children);
+    if ("chartReferences" in node)
+      return controlShape(node.chartReferences.children);
+
     if ("rowAction" in node) return controlShape(node.rowAction.children);
     return [];
   });
@@ -79,6 +83,10 @@ function controlKeys(nodes: UiNode[]): string[] {
     if ("section" in node) return controlKeys(node.section.children);
     if ("columns" in node) return controlKeys(node.columns.children);
     if ("presentation" in node) return controlKeys(node.presentation.children);
+    if ("valueSet" in node) return controlKeys(node.valueSet.children);
+    if ("chartReferences" in node)
+      return controlKeys(node.chartReferences.children);
+
     if ("rowAction" in node) return controlKeys(node.rowAction.children);
     return [];
   });
@@ -110,7 +118,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     // Home entries get separate clean logins, including the baseline.
     for (const persona of [...personas, "baseline"]) {
       await page.context().clearCookies();
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -153,7 +161,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       for (const w of sampleIndices(workButtons, 1)) {
         // Each work item starts with an unselected patient in a fresh document.
         if (w) {
-          await freshGoto("/?audit=buttons");
+          await freshGoto("/?audit=buttons&inspect=1");
           await page.getByLabel("Patient search", { exact: true }).waitFor();
           await page
             .getByLabel("Worklist date", { exact: true })
@@ -173,7 +181,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         );
       }
       await audit.click(
-        page.getByRole("button", { name: "Search Medplum", exact: true }),
+        page.getByRole("button", { name: "Search patients", exact: true }),
         undefined,
         "app",
       );
@@ -224,13 +232,13 @@ test("app shell: sampled controls have an effect or an explained disabled state"
           );
         expect(active.id).toBe(source.id);
       }
-      for (const label of ["Live encounter"]) {
+      for (const label of ["Encounter options", "Live encounter"]) {
         const button = page.getByRole("button", { name: label, exact: true });
         if (await button.count()) {
           await audit.click(button, undefined, "app");
           await audit.click(
             page.getByRole("button", {
-              name: "Close live encounter",
+              name: /^(?:Close live encounter|Close encounter options)$/,
               exact: true,
             }),
             undefined,
@@ -239,10 +247,13 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         }
       }
       await page
-        .getByRole("button", { name: "Live encounter", exact: true })
+        .getByRole("button", {
+          name: /^(?:Live encounter|Encounter options)$/,
+          exact: true,
+        })
         .click();
       const back = page
-        .getByRole("button", { name: /Back to worklist/ })
+        .getByRole("button", { name: /Back to worklist|Return to worklist/ })
         .first();
       await back.waitFor();
       await audit.click(back, undefined, "app");
@@ -627,7 +638,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     });
     if (await resourceClose.isVisible()) await resourceClose.click();
     const close = page.getByRole("button", {
-      name: "Close live encounter",
+      name: /^(?:Close live encounter|Close encounter options)$/,
       exact: true,
     });
     if (await close.isVisible()) await close.click();
@@ -636,7 +647,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
   const catalog = catalogSchema.parse(
     await (await request.get("/catalog.json")).json(),
   );
-  const selectedPersonas = process.env.AUDIT_PERSONAS?.split(",") ?? personas;
+  const canonicalBaseline = process.env.AUDIT_CANONICAL_BASELINE === "1";
+  const selectedPersonas =
+    process.env.AUDIT_PERSONAS?.split(",") ??
+    (canonicalBaseline
+      ? personas.filter((persona) => persona !== "RN2")
+      : personas);
   expect(selectedPersonas.every((persona) => personas.includes(persona))).toBe(
     true,
   );
@@ -658,15 +674,27 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     for (const persona of selectedPersonas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
       });
       await page.reload();
-      await page
-        .getByRole("button", { name: new RegExp(`^${persona} ·`) })
-        .click();
+      if (canonicalBaseline) {
+        await page
+          .getByLabel("Baseline clinician", { exact: true })
+          .selectOption(persona);
+        await page
+          .getByRole("button", {
+            name: "Original canonical EHR (baseline)",
+            exact: true,
+          })
+          .click();
+      } else {
+        await page
+          .getByRole("button", { name: new RegExp(`^${persona} ·`) })
+          .click();
+      }
       await page
         .getByLabel("Patient search", { exact: true })
         .waitFor({ timeout: 30000 });
@@ -682,7 +710,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         .getByLabel("Patient search", { exact: true })
         .fill(names[0] ?? "");
       await page
-        .getByRole("button", { name: "Search Medplum", exact: true })
+        .getByRole("button", { name: "Search patients", exact: true })
         .click();
       await page
         .locator(".patient-search + ul button")
@@ -697,6 +725,14 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       await page.waitForFunction(() => !!window.__buttonAuditSession, {
         timeout: 30000,
       });
+      if (canonicalBaseline) {
+        const expectedProgram = await (
+          await request.get(`/releases/v3/personas/${persona}.json`)
+        ).json();
+        expect(
+          await page.evaluate(() => window.__buttonAuditSession?.program),
+        ).toEqual(expectedProgram);
+      }
       audit.program =
         z
           .object({
@@ -732,7 +768,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             );
         }
       const leanSelector =
-        'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], .field-search input, input[role="combobox"]';
+        'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], textarea[data-event="enter"], .field-search input, input[role="combobox"]';
       const queue = [
         await page.evaluate(
           () => window.__buttonAuditSession?.checkpoint() ?? -1,
@@ -957,7 +993,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             .waitFor({ state: "hidden", timeout: 30000 });
           const validation = page
             .getByRole("dialog", {
-              name: "Live Medplum encounter",
+              name: /^(?:Live Medplum encounter|Encounter options)$/,
               exact: true,
             })
             .getByRole("alert");
@@ -982,10 +1018,8 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           for (const link of savedLinks) {
             if (!link || checkedResources.has(link)) continue;
             const button = page
-              .getByRole("button", {
-                name: new URL(link).pathname,
-                exact: true,
-              })
+              .locator(`button[data-resource-link=${JSON.stringify(link)}]`)
+              .filter({ visible: true })
               .first();
             if (!(await button.isVisible())) continue;
             checkedResources.add(link);

@@ -47,7 +47,7 @@ export function reviewSources(bundle: Bundle, info: string): Resource[] {
       case "lastVisit":
         return r.resourceType === "Encounter";
       case "adherence":
-        return r.resourceType === "MedicationStatement";
+        return r.resourceType === "MedicationDispense";
       case "intraopRecord":
         return (
           r.resourceType === "Procedure" ||
@@ -68,10 +68,15 @@ export function reviewSources(bundle: Bundle, info: string): Resource[] {
         return false;
     }
   });
-  if (!selected.length && ["allergyList", "currentMeds"].includes(info))
+  if (
+    !selected.length &&
+    ["allergyList", "currentMeds", "adherence"].includes(info)
+  )
     return resources.filter((r) => r.resourceType === "Patient");
   if (!selected.length)
-    throw new Error(`No versioned source record for review: ${info}`);
+    throw new Error(
+      "No versioned source record is available for this review. Refresh the chart or obtain the report before retrying.",
+    );
   return selected;
 }
 
@@ -187,7 +192,12 @@ export function fhirDisplayContext(
   const fields: [string, string][] = [
     ["name", name],
     ["dateOfBirth", patient.birthDate ?? ""],
-    ["mrn", patient.identifier?.[0]?.value ?? ""],
+    [
+      "mrn",
+      patient.identifier?.find((identifier) =>
+        identifier.type?.coding?.some((coding) => coding.code === "MR"),
+      )?.value ?? "",
+    ],
   ];
   add("careIdentity", patient, fields);
   add(
@@ -254,11 +264,25 @@ export function fhirDisplayContext(
           report.result?.some((ref) => ref.reference === `Observation/${r.id}`),
       );
       const parts = r.component?.length ? r.component : [r];
+      const reportLabel =
+        report?.resourceType === "DiagnosticReport"
+          ? (report.identifier?.[0]?.value ??
+            report.code.text ??
+            report.code.coding?.[0]?.display ??
+            report.code.coding?.[0]?.code)
+          : undefined;
       return parts.map((part, index) => ({
         id: `${r.id}/${index}`,
         slot,
         fields: [
-          ["testId", report?.id ?? r.id ?? ""],
+          [
+            "testId",
+            reportLabel ??
+              r.code.text ??
+              r.code.coding?.[0]?.display ??
+              r.code.coding?.[0]?.code ??
+              "",
+          ],
           [
             "component",
             part.code.text ??

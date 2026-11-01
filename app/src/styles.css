@@ -7,6 +7,10 @@ body {
     sans-serif;
 }
 .live-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
   position: fixed;
   bottom: 16px;
   left: 16px;
@@ -192,4 +196,8 @@ body {
 }
 .worklist-table tbody tr:nth-child(even) {
   background: var(--clinical-hover);
+}
+/* Keep save feedback clear of the patient banner and fixed chart controls. */
+.clinical-notifications[data-position="bottom-right"] {
+  bottom: 56px;
 }

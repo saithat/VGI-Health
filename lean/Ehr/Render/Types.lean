@@ -523,6 +523,12 @@ structure ObservationRow where
   categories : List String := []
   deriving DecidableEq, Repr, Inhabited
 
+/-- A supplied practitioner name. Its logical identity is transport metadata. -/
+structure ClinicianRow where
+  id : UserId
+  name : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The patient's records as the page shows them. Computed in Lean from the
 FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first. -/
 structure Display where
@@ -543,6 +549,9 @@ structure Display where
   encounters : List EncRow
   procedures : List ProcRow
   growth : List GrowthPoint
+  /-- Explicit US Core birth-sex coding for published growth references.
+  Administrative gender alone does not select a reference population. -/
+  growthReferenceSex? : Option String := none
   notes : List NoteRow := []
   history : List HistoryRow := []
   schedule : List ScheduleRow := []
@@ -552,6 +561,8 @@ structure Display where
   observations : List ObservationRow := []
   /-- Latest lab interpretation by code, computed in Lean. -/
   labFlags : List (String × String) := []
+  /-- Optional practitioner identities; the header requires a unique user match. -/
+  clinicians? : Option (List ClinicianRow) := none
   /-- Full per-observation results, including qualitative values and components. -/
   labResults : List LabResultRow := []
   deriving DecidableEq, Repr, Inhabited
@@ -572,10 +583,31 @@ inductive UiPresentationKind
   | folderList | messages | results | trend | growth | notes
   deriving DecidableEq, Repr, Inhabited
 
+/-- A displayed term and the exact code sent by its ordinary field. -/
+structure UiCodeChoice where
+  code : String
+  label : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Published growth-curve samples, separate from patient measurements.
+Points use tenths of a month and hundredths of the stated unit. -/
+structure UiChartReference where
+  measure : String
+  unit : String
+  percentile : String
+  source : String
+  population : String
+  points : List (Nat × Nat)
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
   | presentation (kind : UiPresentationKind) (children : List UiNode)
+  /-- Choices decorate the original field; they do not enter or validate it. -/
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  /-- Reference curves decorate an unchanged complete clinical info child. -/
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
   /-- Place existing controls with a source info row; unmatched controls stay inline. -/
   | rowAction (target : CompId) (row : Nat) (children : List UiNode)
   | section (id : String) (title : String) (children : List UiNode)
@@ -593,10 +625,31 @@ inductive UiNode
   | text (s : String)
   deriving Repr, Inhabited
 
+/-- Code quick picks carry their display mode, not clinical defaults or rules. -/
+structure UiCodeChoices where
+  options : List (String × String)
+  showCode : Bool := false
+  allowOther : Bool := true
+  deriving Repr, Inhabited
+
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
+  /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
+  screen? : Option ScreenId := none
+  /-- Public source captions for fields whose exact provenance remains in their node. -/
+  fieldSources? : Option (List (CompId × String)) := none
   banner : List (String × String)
+  /-- Signed-in clinical role, supplied by the same Lean user as permissions. -/
+  viewer? : Option String := none
   nav : List (String × List (String × String))
+  /-- The declared navigator component that opens the current screen, if any. -/
+  activeNav? : Option CompId := none
+  /-- Readable labels for prefill sources; raw provenance remains on each field. -/
+  sourceLabels? : Option (List (String × String)) := none
+  /-- Entry guidance for a field, including recorded values in another unit. -/
+  entryHints? : Option (List (CompId × String)) := none
+  /-- Optional department quick picks: raw code and readable description. -/
+  fieldChoices? : Option (List (CompId × UiCodeChoices)) := none
   title : String
   workspace : List UiNode
   side : List UiNode
@@ -619,6 +672,8 @@ structure FactsContext where
   receipts : List Receipt := []
   /-- Episode kind supplied by the caller, e.g. "preop". -/
   encounterKind? : Option String := none
+  /-- The selected FHIR Encounter. Its identity stays in transport metadata. -/
+  encounterId? : Option String := none
   /-- Extra named record values, added after the ones derived from the bundle. -/
   record : List (String × String) := []
   deriving DecidableEq, Repr, Inhabited

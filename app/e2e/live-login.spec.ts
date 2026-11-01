@@ -42,7 +42,7 @@ test("local P1 quick-login, patient search, real chart and session restoration",
   ).toBeVisible();
   await page.getByLabel("Patient search", { exact: true }).fill("Aaron");
   await page
-    .getByRole("button", { name: "Search Medplum", exact: true })
+    .getByRole("button", { name: "Search patients", exact: true })
     .click();
   await page
     .getByRole("button", { name: /Aaron.*Ankunding/ })
@@ -77,7 +77,7 @@ test("baseline entry opens the selected clinician's certified role view", async 
   ).toBeVisible();
   await page.getByLabel("Patient search", { exact: true }).fill("Aaron");
   await page
-    .getByRole("button", { name: "Search Medplum", exact: true })
+    .getByRole("button", { name: "Search patients", exact: true })
     .click();
   await page
     .getByRole("button", { name: /Aaron.*Ankunding/ })
@@ -87,5 +87,10 @@ test("baseline entry opens the selected clinician's certified role view", async 
   await expect(page.locator(".clinical-app")).toBeVisible();
   expect(
     await page.evaluate(() => window.__buttonAuditSession?.program),
-  ).toMatchObject({ id: "canonical-P3", owner: "P3", role: "rn", specVersion: "v3" });
+  ).toMatchObject({
+    id: "canonical-P3",
+    owner: "P3",
+    role: "rn",
+    specVersion: "v3",
+  });
 });

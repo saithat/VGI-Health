@@ -58,6 +58,8 @@ mutual
 /-- Strip only layout wrappers for the same-record before view. -/
 def unstyled : UiNode → List UiNode
   | .presentation _ children => unstyledList children
+  | .valueSet _ _ children => unstyledList children
+  | .chartReferences _ children => unstyledList children
   | .rowAction _ _ children => unstyledList children
   | .section id title children => [.section id title (unstyledList children)]
   | .columns children => [.columns (unstyledList children)]

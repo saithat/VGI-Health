@@ -1,0 +1,450 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Ellis, Riley"
+    ],
+    [
+      "DOB",
+      "Oct 31, 1996"
+    ],
+    [
+      "MRN",
+      ""
+    ],
+    [
+      "Age / sex",
+      "30 / F"
+    ],
+    [
+      "Language",
+      ""
+    ],
+    [
+      "PCP",
+      ""
+    ],
+    [
+      "Coverage",
+      "Private PPO through employer"
+    ],
+    [
+      "Last encounter",
+      "EMER"
+    ],
+    [
+      "Last provider",
+      "Dr. Aisha Patel"
+    ],
+    [
+      "Last location",
+      ""
+    ],
+    [
+      "Allergies",
+      "NKDA"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "Not recorded"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [],
+  "screen": "home",
+  "side": [
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "importedHistory",
+        "label": "Home medications (reported)",
+        "rows": [
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Prenatal vitamin (with folic acid, iron, DHA)"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 1 tablet PO daily; date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ],
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Low-dose aspirin"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 81 mg PO daily (initiated at 12 weeks for preeclampsia prophylaxis given prior gestational hypertension); date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ],
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Calcium carbonate"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 500 mg PO twice daily; date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "allergyList",
+        "label": "Allergies",
+        "rows": [
+          [
+            [
+              "Record",
+              "NKDA"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "currentMeds",
+        "label": "Active medications",
+        "rows": []
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "problemList",
+        "label": "Problems",
+        "rows": [
+          [
+            [
+              "Record",
+              "History of gestational hypertension (prior pregnancy) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Obesity (BMI 31 kg/m²) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Mild preeclampsia without severe features"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Severe preeclampsia without HELLP features"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pregnancy (34 weeks gestation)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Multiparity"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "vitals",
+        "label": "Recent vitals",
+        "rows": []
+      }
+    }
+  ],
+  "title": "Schedule",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "home.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "home.work.w2Inbasket",
+              "enabled": true,
+              "hotkey": null,
+              "label": "In Basket: Results",
+              "role": "nav"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "home.work.w7Queue",
+              "enabled": true,
+              "hotkey": null,
+              "label": "In Basket: Rx Requests",
+              "role": "nav"
+            }
+          }
+        ],
+        "id": "home.activityTabs",
+        "title": "Activities"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "section": {
+              "children": [
+                {
+                  "presentation": {
+                    "children": [
+                      {
+                        "info": {
+                          "comp": "home.schedule",
+                          "display": "table",
+                          "infoId": "scheduleTasks",
+                          "label": "Appointments",
+                          "rows": []
+                        }
+                      }
+                    ],
+                    "kind": "schedule"
+                  }
+                },
+                {
+                  "rowAction": {
+                    "children": [
+                      {
+                        "button": {
+                          "blockedReason": null,
+                          "comp": "home.work.w1Rooming",
+                          "enabled": true,
+                          "hotkey": null,
+                          "label": "Open encounter",
+                          "role": "nav"
+                        }
+                      }
+                    ],
+                    "row": 0,
+                    "target": "home.schedule"
+                  }
+                }
+              ],
+              "id": "home.work",
+              "title": "Scheduled visits"
+            }
+          }
+        ],
+        "kind": "schedule"
+      }
+    },
+    {
+      "info": {
+        "comp": "home.openOrders",
+        "display": "table",
+        "infoId": "openOrders",
+        "label": "Open orders",
+        "rows": []
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "presentation": {
+              "children": [
+                {
+                  "info": {
+                    "comp": "home.chart.encounterNotes",
+                    "display": "list",
+                    "infoId": "encounterNotes",
+                    "label": "Notes",
+                    "rows": [
+                      [
+                        [
+                          "Date",
+                          "Sep 23, 2026 12:00"
+                        ],
+                        [
+                          "Type",
+                          "Progress note"
+                        ],
+                        [
+                          "Author",
+                          "Dr. Aisha Patel"
+                        ],
+                        [
+                          "Encounter",
+                          "Not recorded"
+                        ],
+                        [
+                          "Title",
+                          "Emergency Medicine: Severe headache and blurred vision for the past 2 hours at 34 weeks gestation. Source date 2020-03-15; structured dates shifted 2383 days. Note text retained verbatim."
+                        ],
+                        [
+                          "Text",
+                          "Attachment 1: ed · 2020-03-15\nENCOUNTER NOTE\nDate: 2020-03-15\nProvider: Dr. Aisha Patel, MD\nDepartment: Emergency Medicine\nVisit Type: ed\n\nCHIEF COMPLAINT:\nSevere headache and blurred vision for the past 2 hours at 34 weeks gestation\n\nHISTORY OF PRESENT ILLNESS:\nFollowing recent care for mild preeclampsia and prior gestational hypertension, she presents at 34 weeks of gestation to the emergency department with a severe headache and blurred vision for the past 2 hours.\n\nPAST MEDICAL HISTORY:\nActive Problem List:\n- Mild preeclampsia without severe features (diagnosed 2020-01-15)\n- History of gestational hypertension (prior pregnancy)\n- Obesity (BMI 31 kg/m²)\n\nShe has a history of gestational hypertension in her previous pregnancy.\n\nPAST SURGICAL HISTORY:\n- Cesarean section (low transverse, 2 years prior)\n- Laparoscopic appendectomy (age 18)\n\nMEDICATIONS:\nHome Medications:\n- Prenatal vitamin (with folic acid, iron, DHA) 1 tablet PO daily\n- Low-dose aspirin 81 mg PO daily (initiated at 12 weeks for preeclampsia prophylaxis given prior gestational hypertension)\n- Calcium carbonate 500 mg PO twice daily\n\nALLERGIES:\nNKDA\n\nFAMILY HISTORY:\n- Mother: Preeclampsia during pregnancies, hypertension\n- Father: Essential hypertension diagnosed age 45\n- Sister: Gestational diabetes\n\nSOCIAL HISTORY:\nSmoking: Never smoker. Alcohol: No alcohol use during pregnancy; occasional social drinker prior to conception. Occupation: Human resources coordinator.\n\nVITAL SIGNS:\nHer blood pressure is 168/112 mm Hg, heart rate is 88 beats per minute, and respiratory rate is 18 breaths per minute.\n\nPHYSICAL EXAMINATION:\nPhysical examination reveals 2+ lower extremity edema and deep tendon reflexes are 3+. Fundoscopic examination shows no papilledema.\n\nLABORATORY DATA:\nLaboratory findings are as follows:\n\n- Hemoglobin: 11.2 g/dL\n- Platelet count: 95,000/uL\n- Serum creatinine: 1.2 mg/dL\n- Aspartate aminotransferase (AST): 70 U/L\n- Alanine aminotransferase (ALT): 65 U/L\n- Urinalysis: 2+ protein\n\nOTHER STUDIES:\nFetal monitoring indicates a reactive fetal heart tracing."
+                        ],
+                        [
+                          "Status",
+                          "current / final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Aug 25, 2026 12:00"
+                        ],
+                        [
+                          "Type",
+                          "Progress note"
+                        ],
+                        [
+                          "Author",
+                          "Dr. Marcus Johnson"
+                        ],
+                        [
+                          "Encounter",
+                          "Not recorded"
+                        ],
+                        [
+                          "Title",
+                          "Emergency Medicine: Persistent dull headache for three days unrelieved by rest or OTC medication and intermittent upper abdominal discomfort. Source date 2020-02-15; structured dates shifted 2383 days. Note text retained verbatim."
+                        ],
+                        [
+                          "Text",
+                          "Attachment 1: ed · 2020-02-15\nENCOUNTER NOTE\nDate: 2020-02-15\nProvider: Dr. Marcus Johnson, MD\nDepartment: Emergency Medicine\nVisit Type: ed\n\nCHIEF COMPLAINT:\nPersistent dull headache for three days unrelieved by rest or OTC medication and intermittent upper abdominal discomfort\n\nHISTORY OF PRESENT ILLNESS:\nThis patient with a history of gestational hypertension in a prior pregnancy returns one month after her outpatient diagnosis of mild preeclampsia with worsening symptoms. She reports that the headache has lasted for three days and is not relieved with rest or over-the-counter medication. She has also noticed mild swelling in her legs and fingers. She denies visual changes, shortness of breath, fever, or contractions. Fetal movements remain normal. She has had regular prenatal care with no prior complications.\n\nPAST MEDICAL HISTORY:\nActive Problem List:\n- Mild preeclampsia without severe features (diagnosed 2020-01-15)\n- History of gestational hypertension (prior pregnancy)\n- Obesity (BMI 31 kg/m²)\n\nPAST SURGICAL HISTORY:\n- Cesarean section (low transverse, 2 years prior)\n- Laparoscopic appendectomy (age 18)\n\nMEDICATIONS:\nHome Medications:\n- Prenatal vitamin (with folic acid, iron, DHA) 1 tablet PO daily\n- Low-dose aspirin 81 mg PO daily (initiated at 12 weeks for preeclampsia prophylaxis given prior gestational hypertension)\n- Calcium carbonate 500 mg PO twice daily\n\nALLERGIES:\nNKDA\n\nFAMILY HISTORY:\n- Mother: Preeclampsia during pregnancies, hypertension\n- Father: Essential hypertension diagnosed age 45\n- Sister: Gestational diabetes\n\nSOCIAL HISTORY:\nSmoking: Never smoker. Alcohol: No alcohol use during pregnancy; occasional social drinker prior to conception. Occupation: Human resources coordinator.\n\nVITAL SIGNS:\nHer blood pressure is 150/98 mm Hg, confirmed on repeat measurement\n\nPHYSICAL EXAMINATION:\nShe has 1+ pedal edema bilaterally.\n\nLABORATORY DATA:\nUrinalysis reveals 2+ protein.\n\nIMAGING:\nAn ultrasound shows normal fetal growth and amniotic fluid volume.\n\nOTHER STUDIES:\nFetal heart rate monitoring is reactive."
+                        ],
+                        [
+                          "Status",
+                          "current / final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Jul 25, 2026 12:00"
+                        ],
+                        [
+                          "Type",
+                          "Progress note"
+                        ],
+                        [
+                          "Author",
+                          "Dr. Sarah Chen"
+                        ],
+                        [
+                          "Encounter",
+                          "Not recorded"
+                        ],
+                        [
+                          "Title",
+                          "Obstetrics & Gynecology: Follow-up evaluation of elevated blood pressure noted at prior prenatal visit with occasional headaches and mild swelling of hands and feet. Source date 2020-01-15; structured dates shifted 2383 days. Note text retained verbatim."
+                        ],
+                        [
+                          "Text",
+                          "Attachment 1: outpatient · 2020-01-15\nENCOUNTER NOTE\nDate: 2020-01-15\nProvider: Dr. Sarah Chen, MD\nDepartment: Obstetrics & Gynecology\nVisit Type: outpatient\n\nCHIEF COMPLAINT:\nFollow-up evaluation of elevated blood pressure noted at prior prenatal visit with occasional headaches and mild swelling of hands and feet\n\nHISTORY OF PRESENT ILLNESS:\nShe reports occasional headaches and some swelling in her hands and feet but denies visual changes, abdominal pain, or shortness of breath. Her pregnancy was previously uncomplicated.\n\nPAST MEDICAL HISTORY:\nActive Problem List:\n- History of gestational hypertension (prior pregnancy)\n- Obesity (BMI 31 kg/m²)\n\nPAST SURGICAL HISTORY:\n- Cesarean section (low transverse, 2 years prior)\n- Laparoscopic appendectomy (age 18)\n\nMEDICATIONS:\nHome Medications:\n- Prenatal vitamin (with folic acid, iron, DHA) 1 tablet PO daily\n- Low-dose aspirin 81 mg PO daily (initiated at 12 weeks for preeclampsia prophylaxis given prior gestational hypertension)\n- Calcium carbonate 500 mg PO twice daily\n\nALLERGIES:\nNKDA\n\nFAMILY HISTORY:\n- Mother: Preeclampsia during pregnancies, hypertension\n- Father: Essential hypertension diagnosed age 45\n- Sister: Gestational diabetes\n\nSOCIAL HISTORY:\nSmoking: Never smoker. Alcohol: No alcohol use during pregnancy; occasional social drinker prior to conception. Occupation: Human resources coordinator.\n\nVITAL SIGNS:\nHer current blood pressure is 152/98 mm Hg.\n\nLABORATORY DATA:\nUrinalysis reveals 2+ protein.\n\nIMAGING:\nUltrasound shows a fetus at appropriate size for gestational age with normal amniotic fluid volume and movement. Doppler velocimetry of the uterine arteries demonstrates high-resistance blood flow with reduced diastolic flow velocity."
+                        ],
+                        [
+                          "Status",
+                          "current / final"
+                        ]
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "kind": "notes"
+            }
+          }
+        ],
+        "id": "home.chart",
+        "labels": [
+          "Problem list",
+          "Results",
+          "Notes",
+          "Medications",
+          "Allergies",
+          "Encounters",
+          "Coverage",
+          "History"
+        ],
+        "selected": 2
+      }
+    }
+  ]
+}

@@ -20,7 +20,7 @@ for (const program of (await buildCatalog()).programs) {
   if (/^releases\/[^/]+\/canonical\.json$/.test(program.path) ||
       program.path === "programs/canonical/v1.json") {
     verdicts[program.path] = { status: "reference", sha256,
-      output: "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program." };
+      output: "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program." };
     continue;
   }
   if (!available) {

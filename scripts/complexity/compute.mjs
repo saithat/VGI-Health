@@ -13,7 +13,8 @@ const exec = promisify(execFile);
 const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 12000000);
 if (!Number.isSafeInteger(leanMemoryKb) || leanMemoryKb < 1) throw new Error('EHR_LEAN_MEMORY_KB must be a positive integer');
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], { timeout: 180000, ...options })
+  ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], { timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_STACK_SIZE_KB: '65536' }, ...options })
+
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');

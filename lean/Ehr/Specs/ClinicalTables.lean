@@ -18,6 +18,9 @@ def importedHistory : InfoSpec :=
 /-- Optional supporting views in the blueprint's clinical reading order. -/
 def infos : List InfoSpec :=
   [encounterNotes, importedHistory,
+   { id := "inBasketFolders", label := "In Basket folders", version := "inbasketVersion" },
+   { id := "inBasketResults", label := "Results messages", version := "inbasketVersion" },
+   { id := "inBasketRxRequests", label := "Rx Requests", version := "inbasketVersion" },
    { id := "orderCatalog", label := "Order catalog", version := "formularyVersion",
      payload? := some { rowFields := ["name", "strength", "form", "route", "formularyStatus"] } },
    { id := "messagePreview", label := "Selected message", version := "inbasketVersion",

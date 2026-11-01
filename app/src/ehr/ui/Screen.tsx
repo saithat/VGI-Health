@@ -3,10 +3,13 @@ import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect, useRef } from "react";
 import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
+import { FieldSourceContext } from "./clinical-metadata";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { allergyDisplay, sectionCaption } from "./clinical-display";
 import { clinicalCssVariables } from "./theme";
+import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
+import { FieldChoicesContext } from "./FieldChoices";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 
@@ -151,18 +154,20 @@ export function PatientBanner({
 }
 export function WorkflowNav({
   groups,
+  active,
   onEvent,
-  title,
 }: {
   groups: UiScreen["nav"];
+  active: string | undefined;
   onEvent: Emit;
-  title?: string;
 }) {
   const available = groups.filter(([, items]) => items.length > 0);
+  if (!available.length) return null;
   return (
     <AppShell.Navbar
       component="nav"
-      aria-label="Chart navigation"
+      aria-label="Clinical navigation"
+
       className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >
@@ -197,9 +202,10 @@ export function WorkflowNav({
                 <li key={id}>
                   <button
                     type="button"
+                    aria-current={id === active ? "page" : undefined}
+                    className="clinical-nav-link"
                     data-comp-id={id}
                     data-event="click"
-                    aria-current={label === title ? "page" : undefined}
                     aria-label={label}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
@@ -225,32 +231,51 @@ function StockUiScreenView({
   onEvent: Emit;
   viewer?: string | undefined;
 }) {
-  const shellRef = useRef<HTMLDivElement | null>(null);
   const modal = screen.modal;
-  const stepper = screen.workspace.find((node) => "stepper" in node);
-  const active =
-    stepper && "stepper" in stepper
-      ? stepper.stepper.steps[stepper.stepper.current]?.[0]
-      : undefined;
+  const active = screen.activeNav;
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const mainScroll = useRef<HTMLElement | null>(null);
+  const draw = (nodes: UiNode[]) => (
+    <SourceLabelsContext.Provider value={screen.sourceLabels ?? []}>
+      <EntryHintsContext.Provider value={screen.entryHints ?? []}>
+        <FieldChoicesContext.Provider value={screen.fieldChoices ?? []}>
+          <UiChildren nodes={nodes} onEvent={onEvent} />
+        </FieldChoicesContext.Provider>
+      </EntryHintsContext.Provider>
+    </SourceLabelsContext.Provider>
+  );
   // A new screen starts at its heading. Ordinary field updates retain position.
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
-  }, [active, screen.title]);
-  // Measure layout only: navigation and focused fields clear a wrapped banner.
+    mainScroll.current?.scrollTo?.(0, 0);
+  }, [screen.screen, active, screen.title]);
+  // Geometry only: preserve patient identity above a long chart without hiding
+  // a tall banner on a small viewport. No clinical state is derived here.
   useLayoutEffect(() => {
     const shell = shellRef.current;
-    const banner = shell?.querySelector<HTMLElement>(".clinical-banner");
-    if (!shell || !banner) return;
-    const measure = () =>
-      shell.style.setProperty(
-        "--clinical-banner-height",
-        `${banner.getBoundingClientRect().height}px`,
-      );
+    const header = shell?.querySelector<HTMLElement>(".clinical-banner");
+    if (!shell || !header) return;
+    const root = document.documentElement;
+    const previousPadding = root.style.scrollPaddingTop;
+    const measure = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      const pinned =
+        window.innerWidth >= 1100 && height < window.innerHeight * 0.45;
+      shell.dataset.pinned = String(pinned);
+      shell.style.setProperty("--clinical-header-height", `${height}px`);
+      root.style.scrollPaddingTop = pinned
+        ? `${height + 12}px`
+        : previousPadding;
+    };
     measure();
-    if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(measure);
-    observer.observe(banner);
-    return () => observer.disconnect();
+    observer.observe(header);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+      root.style.scrollPaddingTop = previousPadding;
+    };
   }, []);
   return (
     <AppShell
@@ -268,14 +293,21 @@ function StockUiScreenView({
           if (element) element.inert = Boolean(modal);
         }}
       >
-        <PatientBanner fields={bannerFields(screen)} viewer={viewer} />
-        <WorkflowNav
-          key={`${active ?? ""}:${screen.title}`}
-          groups={screen.nav}
-          onEvent={onEvent}
-          title={screen.title}
+        <PatientBanner
+          fields={bannerFields(screen)}
+          viewer={screen.viewer ?? viewer}
         />
-        <AppShell.Main>
+        <WorkflowNav
+          key={active}
+          groups={screen.nav}
+          active={active}
+          onEvent={onEvent}
+        />
+        <AppShell.Main
+          ref={(element) => {
+            mainScroll.current = element;
+          }}
+        >
           <div className="clinical-workspace-heading">
             <div>
               <Text size="xs" c="dimmed" mb={3}>
@@ -285,20 +317,17 @@ function StockUiScreenView({
                 {sectionCaption(screen.title)}
               </Title>
             </div>
-            <Badge color="gray" size="md">
-              Patient chart
-            </Badge>
           </div>
           <div
             className={`clinical-workspace${screen.side.length ? " with-side" : ""}`}
           >
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
-                <UiChildren nodes={screen.side} onEvent={onEvent} />
+                {draw(screen.side)}
               </aside>
             )}
             <div className="clinical-workspace-body">
-              <UiChildren nodes={screen.workspace} onEvent={onEvent} />
+              {draw(screen.workspace)}
             </div>
           </div>
           <div className="workspace-footer">
@@ -331,7 +360,7 @@ function StockUiScreenView({
           <Modal.Body>
             {modal && (
               <div className="clinical-modal-body" data-autofocus tabIndex={-1}>
-                <UiChildren nodes={[modal]} onEvent={onEvent} />
+                {draw([modal])}
               </div>
             )}
           </Modal.Body>
@@ -349,11 +378,15 @@ export function UiScreenView(props: {
 }) {
   return (
     <PresentationProvider bundle={props.presentations ?? null}>
-      <StockUiScreenView
-        screen={props.screen}
-        onEvent={props.onEvent}
-        viewer={props.viewer}
-      />
+      <FieldSourceContext.Provider
+        value={new Map(props.screen.fieldSources ?? [])}
+      >
+        <StockUiScreenView
+          screen={props.screen}
+          onEvent={props.onEvent}
+          viewer={props.viewer}
+        />
+      </FieldSourceContext.Provider>
     </PresentationProvider>
   );
 }

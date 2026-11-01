@@ -15,7 +15,7 @@ if(historicalRunIds.has(runId))throw new Error('Archived replay contracts are im
 const scratch = await mkdtemp(join(tmpdir(), 'replay-'));
 function command(binary, args, options = {}) {
   const command=binary==='lake'?'bash':binary;
-  const argv=binary==='lake'?['-c','ulimit -v 8000000; LEAN_NUM_THREADS=6 exec lake "$@"','lake',...args]:args;
+  const argv=binary==='lake'?['-c','ulimit -v 8000000; LEAN_NUM_THREADS=4 exec lake "$@"','lake',...args]:args;
   const r = spawnSync(command, argv, { cwd: root, encoding: 'utf8', maxBuffer: 128 * 1024 * 1024, ...options });
   if (r.status !== 0) throw new Error(`${binary} ${args.join(' ')}: ${r.stderr}`);
   return JSON.parse(r.stdout);

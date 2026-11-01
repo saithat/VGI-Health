@@ -329,9 +329,7 @@
           {
             "valueQuantity": {
               "value": 128,
-              "unit": "mmHg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mm[Hg]"
+              "unit": "mmHg"
             },
             "code": {
               "coding": [
@@ -346,9 +344,7 @@
           {
             "valueQuantity": {
               "value": 82,
-              "unit": "mmHg",
-              "system": "http://unitsofmeasure.org",
-              "code": "mm[Hg]"
+              "unit": "mmHg"
             },
             "code": {
               "coding": [

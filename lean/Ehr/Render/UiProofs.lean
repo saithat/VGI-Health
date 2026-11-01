@@ -4,10 +4,96 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- Every shown field with provenance receives its public source caption.
+The original provenance and confirmation flags are still covered by D6. -/
+theorem uiFieldSources_shown (cx : Ctx) (it : ItemView) (element slot prefill source)
+    (hm : it ∈ cx.v.items) (hs : it.shown = true)
+    (hk : it.comp.kind = .field element slot prefill) (hp : it.provenance? = some source) :
+    (it.comp.id, uiFieldSourceText cx source) ∈ uiFieldSources cx := by
+  apply List.mem_filterMap.mpr
+  exact ⟨it, hm, by simp [hs, hk, hp]⟩
+
+/-- Every captured note section remains present with its exact entered text. -/
+theorem uiVisitNoteRows_captured (cx : Ctx) (entry : Captured)
+    (he : entry.element ∈ uiVisitNoteElements) (hc : entry ∈ cx.s.captured) :
+    ∃ row ∈ uiVisitNoteRows cx, ("Text", valueText entry.value) ∈ row := by
+  refine ⟨uiVisitNoteRow cx entry.element entry, ?_, ?_⟩
+  · exact List.mem_flatMap.mpr ⟨entry.element, he,
+      List.mem_map.mpr ⟨entry, List.mem_filter.mpr ⟨hc, by simp⟩, rfl⟩⟩
+  · simp [uiVisitNoteRow]
+
+/-- The empty-note message never replaces actual entered documentation. -/
+theorem uiNoteSummaryRows_captured (cx : Ctx) (entry : Captured)
+    (he : entry.element ∈ uiVisitNoteElements) (hc : entry ∈ cx.s.captured) :
+    ∃ row ∈ uiNoteSummaryRows cx, ("Text", valueText entry.value) ∈ row := by
+  obtain ⟨row, hr, ht⟩ := uiVisitNoteRows_captured cx entry he hc
+  refine ⟨row, ?_, ht⟩
+  have nonempty : (uiVisitNoteRows cx).isEmpty = false := by
+    cases h : uiVisitNoteRows cx with
+    | nil => simp [h] at hr
+    | cons _ _ => simp
+  simpa [uiNoteSummaryRows, nonempty] using List.mem_append_left (uiPayloadRows cx "noteSummary") hr
+
+/-- Source field captions remain intact when a medication context is appended. -/
+theorem uiMedicationFieldLabel_preservesCaption (cx : Ctx) (it : ItemView) (element : ElementId) :
+    ∃ suffix, uiMedicationFieldLabel cx it element = it.comp.label ++ suffix := by
+  exact ⟨_, rfl⟩
+
+/-- Receipt feedback is tied to an opted-in review action and the core validity
+predicate; it cannot assert a review from a stale or missing receipt. -/
+theorem uiReviewStatus_sound (cx : Ctx) (it : ItemView) (n : UiNode)
+    (hn : n ∈ uiReviewStatus cx it) :
+    ∃ info, it.comp.kind = .button (.markReviewed info) ∧
+      (it.comp.tag.splitOn ".").contains "feedback" = true ∧
+      hasValidReceipt cx.sp cx.facts cx.s info = true := by
+  cases hk : it.comp.kind <;> simp [uiReviewStatus, hk] at hn
+  rename_i action
+  cases action <;> simp [uiReviewStatus, hk] at hn
+  exact ⟨_, rfl, by simpa using hn.1.1, hn.1.2⟩
+
+/-- Receipt feedback contributes only a read-only node with an empty control id. -/
+theorem uiReviewStatus_readOnly (cx : Ctx) (it : ItemView) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiReviewStatus cx it)) :
+    ∃ label, n = .info "" label "reviewReceiptStatus" "status" [] := by
+  cases hk : it.comp.kind <;> simp [uiReviewStatus, hk, uiAtomsList] at hn
+  rename_i action
+  cases action <;> simp [uiReviewStatus, hk, uiAtomsList] at hn
+  split at hn <;> simp [uiAtoms, uiAtomsList] at hn
+  subst n
+  exact ⟨_, rfl⟩
+
+/-- A response preview preserves every supplied clinical cell; only its explicit
+empty-entry marker may become the clinician's actual captured response. -/
+theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String × String)))
+    (row : List (String × String)) (hr : row ∈ rows) (cell : String × String) (hc : cell ∈ row)
+    (hs : cell.1 ≠ "Proposed" ∨ cell.2 ≠ "Awaiting clinician entry") :
+    ∃ output ∈ uiRefillComparisonRows cx rows, cell ∈ output := by
+  unfold uiRefillComparisonRows
+  refine ⟨_, List.mem_map.mpr ⟨row, hr, rfl⟩, ?_⟩
+  dsimp only
+  split
+  · refine List.mem_map.mpr ⟨cell, hc, ?_⟩
+    rcases cell with ⟨key, text⟩
+    rcases hs with h | h <;> simp_all
+  · exact List.mem_append_left _ hc
+
 /-- A presentation does not change presence of any clinical info or control. -/
 @[simp] theorem uiWrapInfo_atoms (kind node) :
     uiAtoms (uiWrapInfo kind node) = uiAtoms node := by
   cases kind <;> simp [uiWrapInfo, uiAtoms, uiAtomsList]
+
+/-- Code labels neither hide a field nor add a clinical action. -/
+@[simp] theorem uiWrapFieldChoices_atoms (cx element node) :
+    uiAtoms (uiWrapFieldChoices cx element node) = uiAtoms node := by
+  unfold uiWrapFieldChoices
+  split <;> simp [uiAtoms, uiAtomsList]
+  split <;> simp [uiAtoms, uiAtomsList]
+
+/-- Published curves leave every original clinical record and control present. -/
+@[simp] theorem uiWrapGrowthReferences_atoms (cx kind info node) :
+    uiAtoms (uiWrapGrowthReferences cx kind info node) = uiAtoms node := by
+  unfold uiWrapGrowthReferences
+  split <;> simp [uiAtoms, uiAtomsList]
 
 /-- Row placement preserves the complete original semantic action. -/
 @[simp] theorem uiWrapRow_atoms (tag node) :
@@ -40,6 +126,21 @@ namespace Ehr.Render
   induction bs with
   | nil => simp
   | cons b bs ih => simp [ih]
+
+/-- Every source node survives footer placement exactly as supplied. -/
+theorem uiPlaceFooter_node_mem (cx : Ctx) (nodes : List UiNode) (node : UiNode) :
+    node ∈ uiPlaceFooter cx nodes ↔ node ∈ nodes := by
+  unfold uiPlaceFooter
+  by_cases h : uiFooterNode cx node = true <;> simp [h]
+
+/-- Footer placement retains all semantic atoms, including arbitrary containers. -/
+@[simp] theorem uiPlaceFooter_mem (cx : Ctx) (nodes : List UiNode) (node : UiNode) :
+    node ∈ uiAtomsList (uiPlaceFooter cx nodes) ↔ node ∈ uiAtomsList nodes := by
+  have atoms (ns : List UiNode) : uiAtomsList ns = ns.flatMap uiAtoms := by
+    induction ns with
+    | nil => simp [uiAtomsList]
+    | cons n ns ih => simp [uiAtomsList, ih]
+  simp only [atoms, List.mem_flatMap, uiPlaceFooter_node_mem]
 
 /-- Nesting a container never changes its own semantic nodes or loses children. -/
 theorem uiItem_atoms (cx : Ctx) (it : ItemView) (kids : List UiNode) :
@@ -103,7 +204,9 @@ theorem D1_landmark (sp prog facts disp user s) :
     ("Patient", disp.banner.name) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("DOB", uiDate disp.banner.dob) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("MRN", disp.banner.mrn) ∈ (renderUi sp prog facts disp user s).banner := by
-  simp [renderUi, uiClinicalBanner, uiBanner]
+  by_cases hp : facts.encounterKind? == some "preop" <;>
+    by_cases ha : facts.encounterKind? == some "emergency" || facts.encounterKind? == some "inpatient" <;>
+    simp [renderUi, uiClinicalBanner, uiEncounterBanner, uiBanner, hp, ha]
 
 /-- Every actual nav entry is precisely one shown, enabled goto component. -/
 theorem uiNav_mem (cx : Ctx) (n : UiNode) :
@@ -134,7 +237,7 @@ theorem uiNavButton_item (cx : Ctx) (it : ItemView) (h : uiNavButton cx it = tru
   cases hk : it.comp.kind <;> simp [uiNavButton, hk] at h
   rename_i a
   cases a <;> simp [uiNavButton, hk] at h
-  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2]
+  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2, uiReviewStatus]
 
 /-- T10: every semantic contribution of every shown item appears in UiScreen,
 whether its proper region is the shell, navigation, workspace, or side. -/
@@ -155,22 +258,19 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
   by_cases hd : uiSideAt cx it.comp.id = true
   · have h := (uiComponentsWhere_mem cx (fun jt => jt.comp.kind != .banner && !uiNavButton cx jt && uiSideAt cx jt.comp.id) n).mpr
         ⟨it, hi, hs, by simp [hb, hv, hd], hn⟩
-    simp only [UiPresent, renderUi, Ctx.rebuild, uiSide, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiPresent, renderUi, Ctx.rebuild, uiSide, uiAtomsList_append, List.mem_append]
     exact Or.inl (Or.inl (Or.inr (Or.inl (Or.inl h))))
   · have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) n).mpr
         ⟨it, hi, hs, by simp [uiInWorkspace, hb, hv, hd], hn⟩
-    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inl (Or.inl (Or.inl (Or.inr (Or.inl h))))
 
-/-- The optional progress strip contributes no addressable control or evidence. -/
+/-- A source progress overview adds only read-only context. -/
 theorem uiProgress_readOnly (cx : Ctx) (n : UiNode)
     (hn : n ∈ uiAtomsList (uiProgress cx)) : UiReadOnly n := by
-  dsimp only [uiProgress] at hn
-  split at hn
-  · simp [uiAtomsList] at hn
-  · simp [uiAtomsList, uiAtoms] at hn
-    subst n
-    trivial
+  unfold uiProgress at hn
+  split at hn <;> simp [uiAtoms, uiAtomsList] at hn
+  subst n; trivial
 
 /-- Missing-review additions have no component event id. -/
 theorem uiMissing_readOnly (cx : Ctx) (n : UiNode)
@@ -217,10 +317,10 @@ Only the clinical shell, progress overview and read-only supplements are added. 
 theorem uiPresent_source (cx : Ctx) (n : UiNode)
     (hn : UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s) n) :
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
-  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append,
+  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem,
     List.mem_append, List.mem_singleton] at hn
-  rcases hn with ((((hp | (hn | hn)) | hn) | hn) | hn)
-  · exact Or.inr (uiProgress_readOnly cx n hp)
+  rcases hn with ((((hn | (hn | hn)) | hn) | hn) | hn)
+  · exact Or.inr (uiProgress_readOnly cx n hn)
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
   · exact Or.inr (uiMissing_readOnly cx n hn)
@@ -235,6 +335,12 @@ theorem uiItem_only_id (cx : Ctx) (it : ItemView) (n : UiNode)
     (hid : uiComp n = some id) : id = it.comp.id := by
   cases hk : it.comp.kind <;>
     simp [uiItem, hk, uiField, uiItemInfo, uiButton, uiAtoms] at hn
+  case button action =>
+    rcases hn with rfl | hn
+    · simpa [uiComp] using hid.symm
+    · obtain ⟨label, rfl⟩ := uiReviewStatus_readOnly cx it n hn
+      simp [uiComp] at hid
+      exact False.elim (hne hid)
   case group coll start =>
     by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
       by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
@@ -325,8 +431,7 @@ theorem T11_ui_full_info (cx : Ctx) (it : ItemView) (i : InfoId)
   obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it i hw hi
   refine ⟨label, display, ?_⟩
   have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs, hw, hn⟩
-  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms,
-    uiAtomsList_append, List.mem_append, List.mem_singleton]
+  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
   exact Or.inr (Or.inl h)
 
 /-- D2: every required review is in the workspace with full rows. A compact
@@ -340,7 +445,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
     obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it r.info hs.1.2 hs.2
     refine ⟨it.comp.id, label, display, ?_⟩
     have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs.1.1, hs.1.2, hn⟩
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inr (Or.inl h)
   · refine ⟨"", uiLabel (infoLabel cx r.info) (uiLabel (infoLabel cx r.info) "Clinical information"), (if uiOrderInfo r.info then "table" else "list"), ?_⟩
     have hm : uiInfo cx "" (infoLabel cx r.info) r.info "list" ∈ uiMissingReviews cx := by
@@ -356,7 +461,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
         · simpa only [uiAtomsList_cons] using List.mem_append_left (uiAtomsList ns) ha
         · simpa only [uiAtomsList_cons] using List.mem_append_right (uiAtoms n) (ih ht atom ha)
     have h := atoms_mem _ _ hm (uiInfo cx "" (infoLabel cx r.info) r.info "list") (by simp [uiInfo, uiAtoms])
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inr (Or.inr h)
 
 /-- D2 also implies presence in the complete screen. -/
@@ -398,11 +503,13 @@ theorem uiItem_honest (cx : Ctx) (it : ItemView) (hm : it ∈ cx.v.items)
         exact ⟨by decide, uiBlocked_reason cx _, by simp⟩
       · simp at hn
   case button action =>
-    subst n
-    apply uiButton_honest
-    intro hp
-    cases action <;> simp [actionRole] at hp
-    exact ⟨it, hm, hs, rfl, _, hk⟩
+    rcases hn with rfl | hn
+    · apply uiButton_honest
+      intro hp
+      cases action <;> simp [actionRole] at hp
+      exact ⟨it, hm, hs, rfl, _, hk⟩
+    · obtain ⟨label, rfl⟩ := uiReviewStatus_readOnly cx it n hn
+      trivial
   case search scope =>
     rcases hn with rfl | hn
     · trivial
@@ -562,6 +669,8 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
       · obtain ⟨_, rfl, _⟩ := hi
         exact uiLabel_nonempty _ _ (by decide)
       · split at hi <;> simp [uiAtoms] at hi
+    · obtain ⟨_, heq⟩ := uiReviewStatus_readOnly cx it _ hi
+      cases heq
     · rename_i coll start
       by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
         by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>

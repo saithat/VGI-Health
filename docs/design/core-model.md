@@ -6,7 +6,7 @@ One canonical EHR serves everyone. Each persona starts at v0 with that canonical
 role permissions and pre-set view (`forPersona`). The overnight agent edits only
 that persona's fork. Vendor releases merge into every fork, followed by
 re-certification. “The canonical is certified” means every role's view passes;
-the shared master is a reference template, not a deployable single-role program.
+the shared vendor reference is a reference template, not a deployable single-role program.
 
 ## 1. Design principle: safety by construction, plus a checker for the rest
 
@@ -563,13 +563,17 @@ Lean emits a **semantic UI tree**. React (Mantine/@medplum/react) draws it with 
 
 ```lean
 inductive UiNode
+  | presentation (kind : UiPresentationKind) (children : List UiNode)      -- structured reading layout
+  | rowAction (target : CompId) (row : Nat) (children : List UiNode)       -- placement of an existing action
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
   | section  (id : String) (title : String) (children : List UiNode)        -- a titled group / card
   | columns  (children : List UiNode)                                       -- side-by-side layout hint
   | tabs     (id : String) (labels : List String) (selected : Nat) (body : List UiNode)  -- only the selected body is present
   | stepper  (steps : List (String × String)) (current : Nat)               -- (screenId, label)
   | field    (comp : CompId) (label : String) (kind : String) (value : Option String) (unit : Option String)
              (provenance : Option String) (pendingConfirm : Bool) (humanOnly : Bool) (required : Bool)
-  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- "list" | "table" | "trend" | "summary"
+  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- list/table/trend/summary/document/status
              (rows : List (List (String × String)))                          -- every relevant record (T11)
   | alert    (comp : CompId) (alertId : AlertId) (label : String) (severity : String) -- inline only
   | button   (comp : CompId) (label : String) (role : String) (enabled : Bool) (blockedReason : Option String) (hotkey : Option String)
@@ -577,8 +581,10 @@ inductive UiNode
   | text     (s : String)
 
 structure UiScreen where
+  screen? : Option ScreenId := none -- scroll lifecycle only, never visible
+  fieldSources? : Option (List (CompId × String)) := none -- public source captions; raw field provenance stays intact
   banner : List (String × String)      -- patient banner fields (always first; D1)
-  nav : List (String × List (String × String))   -- groups: (groupLabel, [(screenId, label)])
+  nav : List (String × List (String × String))   -- groups: (groupLabel, [(compId, label)])
   title : String
   workspace : List UiNode
   side : List UiNode                   -- optional clinical summary column
@@ -586,6 +592,20 @@ structure UiScreen where
 ```
 
 `renderUi : Spec → Program → Facts → Display → User → State → UiScreen` (Init-only, exported to WASM as `ehr_render_ui`).
+
+`fieldSources` supplies Lean's public caption for an existing sourced field. The
+painter renders it verbatim and uses it as the field's accessible description.
+The original field still carries its exact machine provenance, value/unit,
+human-only flag and pending-confirmation flag. This optional metadata adds no
+control or state transition; older JSON remains accepted. D6 is unchanged.
+
+`UiCodeChoice` carries the exact code and its display label. `valueSet` wraps the
+unchanged field; selecting a choice sends its original entry event. Searching a
+picker does not capture a clinical value. `UiChartReference` carries published
+samples with their measure, unit, percentile, source and population. These
+metadata wrappers retain their complete ordinary children and add no actions.
+Clinical choices and reference selection happen in Lean; the painter draws the
+supplied labels and geometry. The design rules below are unchanged.
 
 **Minimal design rules (theorems over every program, record, and state). Just enough to rule out bad UI:**
 - **D1 Landmark:** exactly one banner, first, with at least two patient identifiers (name + DOB or MRN), on every screen.

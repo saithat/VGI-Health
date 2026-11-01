@@ -23,8 +23,16 @@ async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   await component(page, "w1Orders.indication").fill("Hypertension");
   await component(page, "w1Orders.pharmacy").fill("Community pharmacy");
   await component(page, "w1Orders.substitution").fill("true");
+  await page.getByRole("option", { name: "Yes", exact: true }).click();
   await component(page, "w1Orders.prn").fill("false");
+  await page.getByRole("option", { name: "No", exact: true }).click();
   await component(page, "w1Orders.orderDiagnosis").fill("I10");
+  await page
+    .getByRole("option", {
+      name: "I10 — Essential (primary) hypertension",
+      exact: true,
+    })
+    .click();
   await component(page, "w1Orders.toSign").click();
   await component(page, "w1Verify.continue").click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(

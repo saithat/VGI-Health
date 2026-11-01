@@ -12,7 +12,7 @@ for (const name of ["Aaron", "Terrance"]) {
     await page.getByRole("button", { name: /^P1 · / }).click();
     await page.getByLabel("Patient search", { exact: true }).fill(name);
     await page
-      .getByRole("button", { name: "Search Medplum", exact: true })
+      .getByRole("button", { name: "Search patients", exact: true })
       .click();
     await page
       .getByRole("button", {
@@ -40,7 +40,7 @@ for (const name of ["Aaron", "Terrance"]) {
     expect(result.status).toBe("works");
     await expect(page.locator('[data-info-id="searchResults"]')).toBeVisible();
     await expect(
-      page.getByRole("dialog", { name: "Live Medplum encounter" }),
+      page.getByRole("dialog", { name: "Encounter options" }),
     ).not.toBeVisible();
     await page.evaluate(
       (id) => window.__buttonAuditSession?.restore(id),

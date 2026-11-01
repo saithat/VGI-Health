@@ -24,6 +24,126 @@ Integrated main `062a4ef` display polish. W4’s fixed normal assessment and “
 The focused screenshot also caught a legacy blood-pressure panel joined in array order. It now shares the coded systolic/diastolic reader with structured observations; unknown or mixed-unit components keep their individual labels/units. `node scripts/check-acute-wasm.mjs` checks both original acute source bundles, all reachable role screens and Imaging tabs. Frozen replay extraction now uses four workers, matching this lane’s resource budget.
 
 The acute lane now supplies the existing `imaging` info from patient-bound DiagnosticReport/ImagingStudy resources, preserving report text and exact linked study/observation context. Board availability distinguishes source order/image/report milestones. W3 provider and W3/W4 Chart Review Imaging opt into the existing `present.notes` layout; there is no new control or info catalog item. Exact Bundle full-URL aliases are retained privately for reference resolution, without suffix matching or visible resource IDs. The desktop banner also stacks above the navigator; stronger browser checks test actual coverage rather than only viewport bounds. Existing clinical rules/spec data and theorem signatures remain unchanged.
+## SURG → presentation / shell: perioperative views (2026-11-01)
+
+W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
+`present.results`, `present.notes` and `present.table` tags. New case/consult
+list screens use existing `scheduleTasks` and `consultRequest` info IDs, with
+ordinary Lean goto actions in the selected chart's source row, through the
+`present.row` contract. Clinical cells remain read-only; missing rows retain the
+same control inline. The action opens the selected chart, without switching
+patients. P5's landing destinations are
+`w6Schedule`, `w6Consults`, `w1Rooming` (Clinic Schedule), and results In Basket.
+
+SURG added a separated perioperative section in `Render/Fhir.lean`. Dated
+surgical ServiceRequests (category SNOMED 387713003) project Room / Start /
+Procedure / Indication / Patient / Surgeon / Status. Indication comes only from
+the request's `reasonCode`, not an inferred or confirmed postoperative diagnosis.
+Consultation ServiceRequests (code
+11429006) project the request list. Both codes match `infra/seed-world.mjs`.
+Selected-patient Consent and today's Procedure records supply consent-on-file
+and intra-op evidence. FHIR references resolve to display names or `Not recorded`,
+never raw resource IDs. No room, start time, consent verification, time-out or
+postoperative completion is invented. These are version-bound optional payloads;
+no spec rule was added. Live sessions retain Lean-derived payloads when merging
+adapter context; an explicit payload for the same info ID takes precedence.
+
+Surgical clinic uses the normal W1 navigator, adding a Surgical history chart
+tab and multiline clinical note prompts through P5's preset. `*.multiline` on
+a text field selects the generic textarea painter; its entry event, provenance,
+human-only marker and guard remain unchanged. Other lanes can use the additive
+`narrative` builder without implementing clinical behavior in React.
+
+The generic painter now renders every `UiScreen.nav` entry as its declared Lean
+click. The ARIA gate checks every navigation button. `UiScreen.activeNav` is an
+optional, Lean-derived component ID based on the actual goto target; it is
+omitted for archived screens that have no current navigator entry. A declared
+navigator replaces the numbered progress overview. P5's existing W1 links are
+grouped into a Visit navigator in the preset; no clinical binding is changed.
+Do not put consent or anticoagulant review copies in a permanent sidebar: doing
+so could accidentally satisfy a shown-review requirement on every screen.
+
+`UiScreen.sourceLabels` optionally supplies readable source text for field
+provenance. The original field provenance stays byte-for-byte identical for D6;
+the generic painter looks up the supplied label. Unknown source identifiers are
+never exposed as clinical text. The painter's fixed `Active encounter` badge was
+removed because it asserted a status without a Lean/FHIR source. Desktop
+navigators stay in view while the clinical document scrolls.
+
+`UiScreen.entryHints` supplies per-component guidance for recorded weight units.
+Metric weight controls emit kg and leave incompatible recorded numbers out of
+the editable kg value; the original value/unit remains visible in the hint.
+This fixes the prior pounds-entry dead end without converting, confirming, or
+changing captured state in the renderer. D6's raw provenance and flags are
+unchanged. A real-WASM probe records the human kg entry in `surg-controls.json`.
+
+The seeded OR ServiceRequest supplies the case and planned room, but no active
+perioperative Encounter. For explicit pre-op facts, Lean now labels the banner
+`Preoperative chart review`, `Planned OR` and `Surgeon`, using the existing
+patient/version-bound request payload. It no longer presents the previous
+ambulatory class/attending/location as this surgical episode. This does not
+create an admission, assert the patient is in the OR, or invent an encounter
+selector. A future active-encounter source should remain distinct from the
+request. Consult `authoredOn` is labeled `Received`, never a due deadline.
+
+`UiScreen.viewer` optionally supplies the signed-in clinical role from the same
+Lean `User` used for permissions. The shell uses that label; user IDs stay in
+proof/transport metadata. Legacy saved screens may omit the optional field.
+
+`UiScreen.fieldChoices` optionally supplies department code favorites for actual
+visible coded fields: component ID plus `options` (raw code, readable label),
+`showCode` and `allowOther`. The surgeon preset supplies surgical ICD-10-CM/CPT
+quick picks and readable local anesthesia/diet/activity/yes-no terms. All options
+and display modes come from Lean. The painter filters these supplied terms and
+submits the existing raw code only on selection. Filtering never captures a
+value, picks a diagnosis, changes confirmation, or replaces clinical validation.
+Manual codes remain available. This is a small department preference list,
+not a terminology service. Archived screens omit this additive metadata.
+
+The shared browser control audit now traverses `presentation` and `rowAction`
+containers when deriving control shapes and coverage keys, matching the existing
+Lean observers and DOM controls. The surgical audit also compares both actual
+case/consult FHIR projections between native Lean and WASM before exercising
+buttons and fields. These are verification changes, without clinical behavior.
+
+`FactsContext.encounterId` optionally identifies the selected FHIR Encounter.
+Lean uses only that patient's matching encounter for banner context and the
+encounter-diagnosis prefill; the complete encounter history remains available.
+Unknown or foreign selections do not fall back to a different visit. Explicit
+`encounterKind` retains priority, including simulated pre-op requirements.
+Otherwise a recognized HL7 encounter class supplies the setting. The live
+adapter passes its selected reference and no longer infers pre-op from P5's role.
+No guard, permission or specification is changed.
+
+Live receipts use the existing Lean spec's human labels. Saved-record buttons
+retain their transport references in data attributes; their visible text and the
+encounter picker omit internal IDs/paths. Notifications sit below the patient
+banner. Normal sessions show readable save confirmation; the encounter drawer,
+saved-record actions and Inspector require explicit `inspect=1` debug mode. The
+technical viewer retains the original saved resource for audit. Actual P5
+allergy-review walks verify the persisted Provenance binding in debug mode and
+absence of technical controls in normal mode, with 1440×900 captures. The
+existing return-to-worklist action remains available as `Close chart` in normal
+sessions; only the technical drawer and saved-record tools require debug mode.
+
+
+SURG adds optional `Display.clinicians` from typed `ClinicianRow` projections of
+supplied Practitioner records. The live adapter appends the intact authenticated
+profile, replacing only a duplicate of that same resource identity. Lean's
+`uiClinicianViewer` requires a unique match to the permission-bearing `User.id`;
+missing/ambiguous names retain the role-only caption. `UiScreen.viewer` remains
+an ordinary optional string, so the painter and archived screen format need no
+new clinical logic. Human patient-identity confirmation, permissions and clinical
+facts remain independent of this displayed name.
+
+
+SURG adds four conservative `labDisplayName` aliases in the existing typed FHIR
+lab reader: standard creatinine, hemoglobin A1c, hemoglobin and MDRD eGFR labels.
+The exact LOINC system/code and standard source wording (or a code-only label)
+are required. Custom qualified labels and unknown systems/codes keep their text.
+Only `LabPoint.name` changes; codes, values, units, time, ranges, flags and trends
+remain source data. Explicit supplied info payloads keep their own labels. No
+new UI kind, clinical rule, code migration or browser interpretation is added.
 
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
@@ -2241,6 +2361,85 @@ flow. Research links and source regressions are in the acute research section.
 # Acute patient-list integration (2026-11-01, second layout pass)
 
 The acute lane adds the bound `unitCensus` projection and its read-only display-catalog entry. It shows the selected patient's encounter/assignment and supplied open-task count, while `shiftWorklist` keeps the complete current-encounter Task rows. The existing MAR action targets the patient row; no patient change is inferred from task order. The source is still a patient chart, not a department feed. W3/W4 additionally opt into `layout.activities.nav` to use their actual navigator without a redundant generated progress strip. Missing/empty navigation retains progress. No clinical rule, required review, human-only constraint or D-rule changes.
+## AMB realism integration (2026-11-01)
+
+- Ambulatory screens select `present.schedule/messages/folderList/growth/table`
+  per `origin/lane/present:docs/design/presentation-contract.md`.
+- `Fhir.Ambulatory` is a separated supporting projection section. It emits
+  patient/version-bound InfoPayloads for `scheduleTasks`, `inbasketItems`,
+  `inBasketFolders`, `inBasketResults`, `inBasketRxRequests`, `messagePreview`,
+  `refillRequest`, selected `resultDetail`/`resultTrend`, `relevantLabs`,
+  `lastVisit`, `adherence` and supplied vaccine forecasts.
+  Three optional In Basket info declarations were added to ClinicalTables;
+  no safety requirement changed. Please retain these payloads when integrating
+  presentation FHIR projection helpers; explicit caller payloads take precedence.
+- The pediatric Visit Note is now `w5Note`, before prescribing. Sign Visit keeps
+  charges, follow-up, instructions and the note signature. Macro targets and
+  walkthroughs follow the real relocated fields; P4 gains one screen.
+- `ambulatoryShell` retains a real navigator through Blueprint migration, with
+  existing goto event IDs. It omits the optional second full-chart rail to leave
+  room for documentation; chart tabs and required commit reviews remain.
+  The Chart Review component carries `layout.focusedWorkspace`, which suppresses
+  only generated fallback summaries in Lean. Explicit side components, imported
+  reported medications and required commit reviews remain. The renderer proof's
+  new case preserves the same statements; there is no React visibility rule.
+  Global shell changes should preserve the clinical section list and avoid
+  duplicating its workspace links.
+- Seeded Appointment descriptions now use Office visit / Pediatric office visit,
+  instead of internal persona/workflow/goal names. No schedule or choices change.
+- The old painter treated `UiScreen.nav` pairs as noninteractive overview text.
+  Retaining the semantic encounter navigator exposed that gap. AMB now paints
+  each pair as a button dispatching its exact supplied component ID, with no
+  inferred destination or React clinical state. ARIA expectation and a dispatch
+  regression test were updated together. Shell integration should keep this.
+- Narrative controls now use Lean's `field.kind = "textarea"` for HPI, ROS,
+  exam, Assessment & Plan, anticipatory guidance, AVS instructions, patient
+  messages and refill notes. The painter draws the specified editor and emits
+  the same complete text Value, including newlines. Unit wires remain unchanged;
+  the `mgPerKg` suffix is printed as `mg/kg`.
+- Shared-shell visual follow-up: the current top bar lacks signed-in role, the
+  banner lacks current kg weight/isolation, and the horizontal numbered overview
+  duplicates the section rail. AMB retains semantic clinical navigation and
+  ordinary order-review/signing actions for integration with the shell lane.
+  Order signing is not a direct section shortcut; In Basket navigation lists
+  folders rather than processing stages.
+
+
+### AMB typed metadata and row layout integration
+
+- Incorporated presentation row actions. Ambulatory Schedule presets place their
+  original encounter opener in row zero; In Basket preserves original folder
+  goto IDs in the folder pane and original review buttons in the selected row.
+  A row does not switch patients or infer a clinical destination.
+- Added transparent `UiNode.valueSet` and `UiNode.chartReferences` data wrappers.
+  Keep their ordinary field/info children, event IDs, provenance, human-only and
+  confirmation semantics. Button/ARIA/row-placement traversals recurse through
+  both. No clinical rule, D-rule or existing theorem statement changes.
+- `GrowthStandards.lean` contains published WHO/CDC samples generated from six
+  source tables with URLs/hashes. Explicit birth-sex coding selects a population;
+  unknown/conflicting coding does not use administrative gender. Patient values
+  stay separate. Height normalization requires a recorded unit; curves never
+  calculate a patient's percentile.
+- Renamed the AMB projection row types to `AmbulatoryScheduleRow` and
+  `AmbulatoryMessageRow` so generated TypeScript has no collision with the
+  presentation lane's `ScheduleRow`. Field meanings and payloads are unchanged.
+- Order search supplies its results through the actual Lean query. Removed the
+  separate unbacked empty orderCatalog panel, which contradicted those results.
+  The original order fields, preference macros, pending orders and signing
+  actions remain. LOINC search uses the public lab preference catalog.
+- The shared shell role/weight/isolation/search follow-up above is integrated.
+  The allergy header summarizes all supplied substances/non-active status;
+  complete reactions remain in ordinary allergy lists and required reviews.
+
+AMB M05 integration: shared `labResultRowsFor` now also feeds selected-result payloads, preserving duplicate/component/censored records under the existing Task scope. The ambulatory projection section follows the generic lab helpers. Generic reference resolution now accepts the same relative/URN forms as the ambulatory resolver. No Facts calculation or clinical rule changes. `UiScreen.screen` is an optional scroll identity only; ambulatory source banners opt out of the read-only progress strip via `layout.clinicalActivity`.
+
+AMB M06: `refillComparison` now supplies its existing complete schema from the focused prescription and explicit active predecessor, with the entered-response preview computed in Lean from State. Source cells are preserved by a named theorem. Latest refill lab evidence retains ties/unknown dates while full chart history stays complete. Last-fill evidence uses completed, matching MedicationDispense only. No clinical spec, capture requirement, review mode, permission, alert tier or D-rule changes. Shared assessment-component/category projection `10517bc` is integrated.
+
+AMB M07: main `924425f` navigation integrates with sticky ambulatory context and named group regions. `vitalRow` now follows the existing typed observation/BP projection, retaining explicit component detail when pairing is unsafe. The prior synthetic BP assertion remains; its fixture gains explicit LOINC component codes. Primitive clinical facts are unchanged. Denial-only wording clarifies the existing requirement without new visibility rules.
+
+### AMB M08: receipt feedback contract
+
+`reviewBtn (... feedback := true)` adds `feedback.review` to the existing source tag. The semantic renderer may append a read-only `info` with empty `comp`, `infoId=reviewReceiptStatus`, `display=status`, and a public label only when `hasValidReceipt` accepts that review. React paints this exact node as `role=status`. This does not change the button, visibility rule, clinical payload, receipt predicate or commit requirements. W1/W5/W7 opt in; archived programs retain their original presentation.
 ## SHELL-POLISH-2026-11-01: semantic placement of workspace navigation
 
 To amb/acute/surg content lanes: shared rendering now presents ordinary goto/Back
@@ -2258,3 +2457,40 @@ landmark with one short message rather than a fabricated empty Record table.
 says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
 wording is normalized only when supplied. Source codes/text remain in accessible
 row labels and native tooltips; no FHIR resource or captured value is rewritten.
+
+## Presentation handoff — banner provider provenance (1 Nov realism review)
+
+For SHELL / semantic banner ownership: `Render/Fhir.lean:bannerOf` falls back from a missing `Patient.generalPractitioner` to the first encounter participant, then also labels that participant Attending. The adult Synthea sample used by the canonical capture has no `generalPractitioner` and only a `PPRF` participant type; the current frame consequently shows that encounter provider as PCP and Attending.
+
+Please keep the PCP tied to its supplied patient care-provider reference (resolving provided resources/display text) and use encounter-role evidence for the attending label. Missing assignments should remain explicit. [FHIR R4 Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) define those separate associations. This is a semantic data follow-up for the shared banner; no spec/guard relaxation or widget API change is requested. Presentation leaves that shared-shell mapping unchanged in its frozen build.
+
+## Presentation handoff — patient context during long-note scrolling (1 Nov realism review)
+
+For SHELL ownership: the actual chart capture [notes-import.png](../../app/shots/realism/present/notes-import.png) is scrolled to the first imported note. The full patient banner and application bar are above the viewport. Please keep patient-identification context visible while long chart content scrolls, consistent with the shared-shell brief, and retain usable space at narrow widths. The source tree still contains the banner; this is a shared scrolling/layout follow-up, not missing Lean data. The note body remains complete and its exact native text and ARIA tree pass. Presentation leaves the frozen shared-shell layout unchanged.
+
+## Presentation cutoff integration (1 Nov, 13:29 UTC)
+
+The final fetch observed main `e4d10c5`, including the ambulatory merge. The presentation checkpoint is fully checked against main `062a4ef`; its final application source is `cfad9e9`. Please integrate the remaining presentation commits with the new main, regenerate generated artifacts and rerun the combined gates. The new ambulatory/main combination is not claimed as checked by this lane. Branch application source remains frozen at the requested cutoff.
+### AMB M09: medication context and source footer response
+
+Existing `medRecDecision` fields may opt into `context.currentMedication`. Lean appends the name at that existing slot in Display.meds; missing data and untagged programs retain the source caption. No React source/slot inference is used. The existing caption is preserved by theorem. AMB Back / Patient workspace controls now carry source footer metadata and follow Chart Review in Lean’s semantic UI, addressing the shared painter's footer request. The renderer’s stable partition preserves exact node and semantic-atom membership; program component order stays unchanged, and no action, field or review is removed.
+
+AMB integration correction for shared display: `formatMedicationLine` retains product form and never adds a missing dose unit or route from that form. FHIR separates Dosage.route and Medication.form. Supplied mg amounts and explicit PO/PEG directions remain; table and legacy display use identical conservative formatting. This preserves the semantic instruction content while retaining the shared terminology/caption polish.
+
+### AMB M10: current visit document projection
+
+`noteSummary` reads current captured note sections, including all captured slots, and preserves exact text and confirmation status. Canonical W1/W5 opt into `layout.document`; semantic info `display=document` draws a read-only, keyboard-scrollable region. This uses current editor state, not a new FHIR projection or a historical-note fallback. Extra supporting rows are retained. It creates no capture, confirmation, author or signature. Unsupported document/status row-action targets keep their inline source controls.
+
+### AMB M11–M12: connected host diagnostics and baseline audit
+
+Default encounter save notifications/options no longer expose Medplum resource paths or logical Encounter IDs. `inspect=1` retains technical writeback links/JSON. A typed `refreshRequired` result preserves the reopen-chart warning after a saved write with failed refresh. New encounter selection follows the returned server Encounter, including when other chart encounters are future-dated. The existing host controls and Core clinical actions remain.
+
+The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release equality and `AUDIT_REPORT_DIR` for scoped evidence. Its recursive shape/key traversal now matches all four transparent semantic wrappers and includes supplied textareas. Default quick-login coverage is explicitly deployed-context coverage; program IDs alone cannot establish current canonical coverage.
+
+### AMB M13: optional public field-source metadata
+
+`UiScreen.fieldSources` supplies public captions keyed to existing sourced fields. See the additive presentation contract. Exact raw provenance and all field flags remain in `UiNode.field`; D6 and the legacy HTML provenance contract are unchanged. Stock inputs use the supplied caption visibly and as their accessible description. The browser screenshot suite checks each rendered sourced field's description, including quantity inputs. Old JSON remains accepted. No FHIR projection, clinical control or D-rule is added.
+
+### AMB M14: terminology display and verbatim public captions
+
+The existing display fallback recognizes the observed SNOMED FSN tags `(organism)` and `(substance)` at term boundaries. Other qualifiers and recognized words inside running prose remain. Full clinical source strings/codes, row accessibility labels and native tooltips are retained. Public `fieldSources` captions bypass term cleanup, as do authored note/document bodies. This changes no Lean tree, guard, actor permission, capture, review, source projection or navigation action. The matched terminology baseline is preserved in `before-terms-*` images.

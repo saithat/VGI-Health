@@ -7,7 +7,7 @@
     "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
   },
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "ehrSha256": "d03488d2b2bf2c55a1e741fa867b480258e398fc2ad3716097483b126eaa7de9",
+  "ehrSha256": "0b73ef02d40251fbb66e29c42a5ec1517627f576c5def20b14880b07f841c806",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
@@ -49,21 +49,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -135,20 +135,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -328,12 +328,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -381,21 +381,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -467,20 +467,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -660,12 +660,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -709,21 +709,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -795,20 +795,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -988,12 +988,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -1036,21 +1036,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -1122,20 +1122,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -1315,12 +1315,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -1361,21 +1361,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -1447,20 +1447,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -1640,12 +1640,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -1684,21 +1684,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -1770,20 +1770,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -1963,12 +1963,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -2027,7 +2027,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -2042,7 +2042,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -2057,7 +2057,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -2085,7 +2085,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -2100,7 +2100,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -2115,7 +2115,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -2139,7 +2139,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -2154,7 +2154,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -2169,7 +2169,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -2192,7 +2192,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -2207,7 +2207,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -2222,7 +2222,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -2243,7 +2243,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -2258,7 +2258,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -2273,7 +2273,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -2292,7 +2292,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -2307,7 +2307,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -2322,7 +2322,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -2361,7 +2361,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -2462,7 +2462,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -2559,7 +2559,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -2655,7 +2655,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -2749,7 +2749,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -2841,7 +2841,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -2953,21 +2953,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -3039,20 +3039,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -3448,21 +3448,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -3534,20 +3534,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -3939,21 +3939,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -4025,20 +4025,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -4429,21 +4429,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -4515,20 +4515,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -4917,21 +4917,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -5003,20 +5003,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -5403,21 +5403,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -5489,20 +5489,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -7218,11 +7218,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -7230,6 +7225,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -7299,20 +7299,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -7492,12 +7492,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -7631,11 +7631,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -7643,6 +7638,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -7712,20 +7712,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -7905,12 +7905,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -8040,11 +8040,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -8052,6 +8047,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -8121,20 +8121,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -8314,12 +8314,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -8449,11 +8449,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -8461,6 +8456,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -8530,20 +8530,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -8723,12 +8723,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -8856,11 +8856,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -8868,6 +8863,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -8937,20 +8937,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -9130,12 +9130,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -9258,11 +9258,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -9270,6 +9265,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -9339,20 +9339,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -9532,12 +9532,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -9855,6 +9855,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -9874,23 +9884,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -9922,12 +9917,12 @@
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 30,
+            "clicks": 29,
             "keystrokes": 93,
-            "klmSeconds": 96.55,
+            "klmSeconds": 95.35,
             "popups": 1,
             "requiredFields": 18,
-            "screens": 8
+            "screens": 7
           },
           "path": [
             [
@@ -10112,6 +10107,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -10131,23 +10136,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -10181,7 +10171,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 30,
+            "clicks": 29,
             "episodePaths": [
               [
                 {
@@ -10365,6 +10355,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -10384,23 +10384,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -10617,6 +10602,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -10636,23 +10631,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -10867,6 +10847,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -10886,23 +10876,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -11115,6 +11090,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -11134,23 +11119,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -11249,21 +11219,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -11363,21 +11333,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -11473,21 +11443,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -11582,21 +11552,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -11689,21 +11659,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -11794,21 +11764,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -11914,26 +11884,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -11948,6 +11898,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -12012,26 +11982,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -12046,6 +11996,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -12106,26 +12076,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -12140,6 +12090,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -12199,26 +12169,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -12233,6 +12183,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -12290,26 +12260,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -12324,6 +12274,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -12379,26 +12349,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -12413,6 +12363,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -12529,10 +12499,10 @@
         {
           "workflow": "W6",
           "metrics": {
-            "clicks": 52,
+            "clicks": 51,
             "keystrokes": 209,
-            "klmSeconds": 178.3,
-            "screens": 14,
+            "klmSeconds": 177.1,
+            "screens": 13,
             "requiredFields": 33,
             "popups": 1
           },
@@ -12566,10 +12536,10 @@
         }
       ],
       "total": {
-        "clicks": 240,
+        "clicks": 239,
         "keystrokes": 973,
-        "klmSeconds": 874.3,
-        "screens": 69,
+        "klmSeconds": 873.1,
+        "screens": 68,
         "requiredFields": 147,
         "popups": 4
       },
@@ -12617,21 +12587,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -12703,20 +12673,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -12896,12 +12866,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -12949,21 +12919,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -13035,20 +13005,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -13228,12 +13198,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -13277,21 +13247,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -13363,20 +13333,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -13556,12 +13526,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -13604,21 +13574,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -13690,20 +13660,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -13883,12 +13853,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -13929,21 +13899,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -14015,20 +13985,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -14208,12 +14178,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -14252,21 +14222,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -14338,20 +14308,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -14531,12 +14501,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -14595,7 +14565,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -14610,7 +14580,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -14625,7 +14595,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -14653,7 +14623,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -14668,7 +14638,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -14683,7 +14653,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -14707,7 +14677,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -14722,7 +14692,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -14737,7 +14707,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -14760,7 +14730,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -14775,7 +14745,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -14790,7 +14760,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -14811,7 +14781,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -14826,7 +14796,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -14841,7 +14811,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -14860,7 +14830,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -14875,7 +14845,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -14890,7 +14860,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -14929,7 +14899,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -15030,7 +15000,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -15127,7 +15097,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -15223,7 +15193,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -15317,7 +15287,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -15409,7 +15379,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -15521,21 +15491,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -15607,20 +15577,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -16016,21 +15986,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -16102,20 +16072,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -16507,21 +16477,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -16593,20 +16563,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -16997,21 +16967,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -17083,20 +17053,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -17485,21 +17455,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -17571,20 +17541,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -17971,21 +17941,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -18057,20 +18027,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -19786,11 +19756,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -19798,6 +19763,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -19867,20 +19837,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -20060,12 +20030,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -20199,11 +20169,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -20211,6 +20176,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -20280,20 +20250,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -20473,12 +20443,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -20608,11 +20578,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -20620,6 +20585,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -20689,20 +20659,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -20882,12 +20852,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -21017,11 +20987,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -21029,6 +20994,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -21098,20 +21068,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -21291,12 +21261,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -21424,11 +21394,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -21436,6 +21401,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -21505,20 +21475,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -21698,12 +21668,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -21826,11 +21796,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -21838,6 +21803,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -21907,20 +21877,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -22100,12 +22070,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -22423,6 +22393,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -22442,23 +22422,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -22490,12 +22455,12 @@
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 30,
+            "clicks": 29,
             "keystrokes": 93,
-            "klmSeconds": 96.55,
+            "klmSeconds": 95.35,
             "popups": 1,
             "requiredFields": 18,
-            "screens": 8
+            "screens": 7
           },
           "path": [
             [
@@ -22680,6 +22645,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -22699,23 +22674,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -22749,7 +22709,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 30,
+            "clicks": 29,
             "episodePaths": [
               [
                 {
@@ -22933,6 +22893,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -22952,23 +22922,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -23185,6 +23140,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -23204,23 +23169,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -23435,6 +23385,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -23454,23 +23414,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -23683,6 +23628,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -23702,23 +23657,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -23817,21 +23757,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -23931,21 +23871,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -24041,21 +23981,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -24150,21 +24090,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -24257,21 +24197,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -24362,21 +24302,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -24482,26 +24422,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -24516,6 +24436,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -24580,26 +24520,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -24614,6 +24534,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -24674,26 +24614,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -24708,6 +24628,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -24767,26 +24707,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -24801,6 +24721,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -24858,26 +24798,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -24892,6 +24812,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -24947,26 +24887,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -24981,6 +24901,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -25097,10 +25037,10 @@
         {
           "workflow": "W6",
           "metrics": {
-            "clicks": 52,
+            "clicks": 51,
             "keystrokes": 209,
-            "klmSeconds": 178.3,
-            "screens": 14,
+            "klmSeconds": 177.1,
+            "screens": 13,
             "requiredFields": 33,
             "popups": 1
           },
@@ -25134,10 +25074,10 @@
         }
       ],
       "total": {
-        "clicks": 240,
+        "clicks": 239,
         "keystrokes": 973,
-        "klmSeconds": 874.3,
-        "screens": 69,
+        "klmSeconds": 873.1,
+        "screens": 68,
         "requiredFields": 147,
         "popups": 4
       },
@@ -25185,21 +25125,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -25271,20 +25211,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -25464,12 +25404,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -25517,21 +25457,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -25603,20 +25543,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "I10"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "I10"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -25796,12 +25736,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -25845,21 +25785,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -25931,20 +25871,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -26124,12 +26064,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -26172,21 +26112,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -26258,20 +26198,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -26451,12 +26391,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -26497,21 +26437,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -26583,20 +26523,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -26776,12 +26716,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -26820,21 +26760,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -26906,20 +26846,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -27099,12 +27039,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -27163,7 +27103,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -27178,7 +27118,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -27193,7 +27133,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -27221,7 +27161,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -27236,7 +27176,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -27251,7 +27191,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -27275,7 +27215,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -27290,7 +27230,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -27305,7 +27245,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -27328,7 +27268,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Inbasket.nav.w2Result"
+                    "comp": "w2Inbasket.openResult"
                   }
                 },
                 {
@@ -27343,7 +27283,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Result.nav.w2Message"
+                    "comp": "w2Result.message"
                   }
                 },
                 {
@@ -27358,7 +27298,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w2Message.nav.w2Result"
+                    "comp": "w2Message.return"
                   }
                 },
                 {
@@ -27379,7 +27319,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -27394,7 +27334,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -27409,7 +27349,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -27428,7 +27368,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Inbasket.nav.w2Result"
+                  "comp": "w2Inbasket.openResult"
                 }
               },
               {
@@ -27443,7 +27383,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Result.nav.w2Message"
+                  "comp": "w2Result.message"
                 }
               },
               {
@@ -27458,7 +27398,7 @@
               },
               {
                 "click": {
-                  "comp": "w2Message.nav.w2Result"
+                  "comp": "w2Message.return"
                 }
               },
               {
@@ -27497,7 +27437,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -27598,7 +27538,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -27695,7 +27635,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -27791,7 +27731,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w7Queue.nav.w7Review"
+                    "comp": "w7Queue.open"
                   }
                 },
                 {
@@ -27885,7 +27825,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -27977,7 +27917,7 @@
               },
               {
                 "click": {
-                  "comp": "w7Queue.nav.w7Review"
+                  "comp": "w7Queue.open"
                 }
               },
               {
@@ -28089,21 +28029,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -28175,20 +28115,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -28584,21 +28524,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -28670,20 +28610,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -29075,21 +29015,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -29161,20 +29101,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -29565,21 +29505,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.weight",
+                    "comp": "w1Rooming.chiefComplaint",
                     "value": {
-                      "qty": {
-                        "tenths": 685,
-                        "unit": "kg"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Rooming.chiefComplaint",
+                    "comp": "w1Rooming.weight",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 685,
+                        "unit": "kg"
                       }
                     }
                   }
@@ -29651,20 +29591,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -30053,21 +29993,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -30139,20 +30079,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -30539,21 +30479,21 @@
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.weight",
+                  "comp": "w1Rooming.chiefComplaint",
                   "value": {
-                    "qty": {
-                      "tenths": 685,
-                      "unit": "kg"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Rooming.chiefComplaint",
+                  "comp": "w1Rooming.weight",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 685,
+                      "unit": "kg"
                     }
                   }
                 }
@@ -30625,20 +30565,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -32354,11 +32294,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -32366,6 +32301,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -32435,20 +32375,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -32638,12 +32578,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -32777,11 +32717,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -32789,6 +32724,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -32858,20 +32798,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -33061,12 +33001,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -33196,11 +33136,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -33208,6 +33143,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -33277,20 +33217,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -33480,12 +33420,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -33615,11 +33555,6 @@
                   }
                 },
                 {
-                  "confirm": {
-                    "comp": "w1Rooming.weight"
-                  }
-                },
-                {
                   "enter": {
                     "comp": "w1Rooming.chiefComplaint",
                     "value": {
@@ -33627,6 +33562,11 @@
                         "s": "See note."
                       }
                     }
+                  }
+                },
+                {
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -33696,20 +33636,20 @@
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.assessmentPlan",
+                    "comp": "w1Exam.visitDiagnosis",
                     "value": {
-                      "text": {
-                        "s": "assessmentPlan: reviewed, see plan."
+                      "code": {
+                        "c": "other"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Exam.visitDiagnosis",
+                    "comp": "w1Exam.assessmentPlan",
                     "value": {
-                      "code": {
-                        "c": "other"
+                      "text": {
+                        "s": "assessmentPlan: reviewed, see plan."
                       }
                     }
                   }
@@ -33899,12 +33839,12 @@
                 },
                 {
                   "click": {
-                    "comp": "home.work.w6PostOp"
+                    "comp": "home.work.w6Schedule"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w6PostOp.toSign"
+                    "comp": "w6Schedule.nav.w6Sign"
                   }
                 },
                 {
@@ -34032,11 +33972,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -34044,6 +33979,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -34113,20 +34053,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -34316,12 +34256,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -34444,11 +34384,6 @@
                 }
               },
               {
-                "confirm": {
-                  "comp": "w1Rooming.weight"
-                }
-              },
-              {
                 "enter": {
                   "comp": "w1Rooming.chiefComplaint",
                   "value": {
@@ -34456,6 +34391,11 @@
                       "s": "See note."
                     }
                   }
+                }
+              },
+              {
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -34525,20 +34465,20 @@
               },
               {
                 "enter": {
-                  "comp": "w1Exam.assessmentPlan",
+                  "comp": "w1Exam.visitDiagnosis",
                   "value": {
-                    "text": {
-                      "s": "assessmentPlan: reviewed, see plan."
+                    "code": {
+                      "c": "other"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Exam.visitDiagnosis",
+                  "comp": "w1Exam.assessmentPlan",
                   "value": {
-                    "code": {
-                      "c": "other"
+                    "text": {
+                      "s": "assessmentPlan: reviewed, see plan."
                     }
                   }
                 }
@@ -34728,12 +34668,12 @@
               },
               {
                 "click": {
-                  "comp": "home.work.w6PostOp"
+                  "comp": "home.work.w6Schedule"
                 }
               },
               {
                 "click": {
-                  "comp": "w6PostOp.toSign"
+                  "comp": "w6Schedule.nav.w6Sign"
                 }
               },
               {
@@ -35061,6 +35001,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -35080,23 +35030,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -35128,12 +35063,12 @@
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 31,
+            "clicks": 30,
             "keystrokes": 98,
-            "klmSeconds": 100.9,
+            "klmSeconds": 99.7,
             "popups": 1,
             "requiredFields": 19,
-            "screens": 8
+            "screens": 7
           },
           "path": [
             [
@@ -35328,6 +35263,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -35347,23 +35292,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -35397,7 +35327,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 31,
+            "clicks": 30,
             "episodePaths": [
               [
                 {
@@ -35591,6 +35521,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -35610,23 +35550,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -35853,6 +35778,16 @@
                 },
                 {
                   "enter": {
+                    "comp": "w6PreOp.hpUpdate",
+                    "value": {
+                      "text": {
+                        "s": "See note."
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
                     "comp": "w6PreOp.consentVerified",
                     "value": {
                       "flag": {
@@ -35872,23 +35807,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w6PreOp.hpUpdate",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
                   "click": {
-                    "comp": "w6PreOp.nav.w6Orders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w6Orders.toSign"
+                    "comp": "w6PreOp.nav.w6Sign"
                   }
                 },
                 {
@@ -36113,6 +36033,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -36132,23 +36062,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -36371,6 +36286,16 @@
               },
               {
                 "enter": {
+                  "comp": "w6PreOp.hpUpdate",
+                  "value": {
+                    "text": {
+                      "s": "See note."
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
                   "comp": "w6PreOp.consentVerified",
                   "value": {
                     "flag": {
@@ -36390,23 +36315,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w6PreOp.hpUpdate",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
                 "click": {
-                  "comp": "w6PreOp.nav.w6Orders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w6Orders.toSign"
+                  "comp": "w6PreOp.nav.w6Sign"
                 }
               },
               {
@@ -36505,21 +36415,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -36619,21 +36529,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -36729,21 +36639,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -36838,21 +36748,21 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opFindings",
+                    "comp": "w6OpNote.opEbl",
                     "value": {
-                      "text": {
-                        "s": "See note."
+                      "qty": {
+                        "tenths": 10,
+                        "unit": "mL"
                       }
                     }
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w6OpNote.opEbl",
+                    "comp": "w6OpNote.opFindings",
                     "value": {
-                      "qty": {
-                        "tenths": 10,
-                        "unit": "mL"
+                      "text": {
+                        "s": "See note."
                       }
                     }
                   }
@@ -36945,21 +36855,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -37050,21 +36960,21 @@
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opFindings",
+                  "comp": "w6OpNote.opEbl",
                   "value": {
-                    "text": {
-                      "s": "See note."
+                    "qty": {
+                      "tenths": 10,
+                      "unit": "mL"
                     }
                   }
                 }
               },
               {
                 "enter": {
-                  "comp": "w6OpNote.opEbl",
+                  "comp": "w6OpNote.opFindings",
                   "value": {
-                    "qty": {
-                      "tenths": 10,
-                      "unit": "mL"
+                    "text": {
+                      "s": "See note."
                     }
                   }
                 }
@@ -37170,26 +37080,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -37204,6 +37094,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -37268,26 +37178,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -37302,6 +37192,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -37362,26 +37272,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -37396,6 +37286,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -37455,26 +37365,6 @@
                 },
                 {
                   "enter": {
-                    "comp": "w6Discharge.dischargeFollowUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w6Discharge.dischargeInstructions",
-                    "value": {
-                      "text": {
-                        "s": "dischargeInstructions: reviewed, see plan."
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
                     "comp": "w6Discharge.dischargeCondition",
                     "value": {
                       "code": {
@@ -37489,6 +37379,26 @@
                     "value": {
                       "code": {
                         "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeFollowUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w6Discharge.dischargeInstructions",
+                    "value": {
+                      "text": {
+                        "s": "dischargeInstructions: reviewed, see plan."
                       }
                     }
                   }
@@ -37546,26 +37456,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -37580,6 +37470,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -37635,26 +37545,6 @@
               },
               {
                 "enter": {
-                  "comp": "w6Discharge.dischargeFollowUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w6Discharge.dischargeInstructions",
-                  "value": {
-                    "text": {
-                      "s": "dischargeInstructions: reviewed, see plan."
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
                   "comp": "w6Discharge.dischargeCondition",
                   "value": {
                     "code": {
@@ -37669,6 +37559,26 @@
                   "value": {
                     "code": {
                       "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeFollowUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w6Discharge.dischargeInstructions",
+                  "value": {
+                    "text": {
+                      "s": "dischargeInstructions: reviewed, see plan."
                     }
                   }
                 }
@@ -37785,10 +37695,10 @@
         {
           "workflow": "W6",
           "metrics": {
-            "clicks": 53,
+            "clicks": 52,
             "keystrokes": 214,
-            "klmSeconds": 182.65,
-            "screens": 14,
+            "klmSeconds": 181.45,
+            "screens": 13,
             "requiredFields": 34,
             "popups": 1
           },
@@ -37822,10 +37732,10 @@
         }
       ],
       "total": {
-        "clicks": 242,
+        "clicks": 241,
         "keystrokes": 983,
-        "klmSeconds": 883,
-        "screens": 69,
+        "klmSeconds": 881.8,
+        "screens": 68,
         "requiredFields": 149,
         "popups": 4
       },

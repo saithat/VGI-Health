@@ -305,6 +305,7 @@ const patientQueries: [ResourceType, string][] = [
   ["Observation", "patient"],
   ["Condition", "patient"],
   ["Immunization", "patient"],
+  ["ImmunizationRecommendation", "patient"],
   ["Encounter", "patient"],
   ["Appointment", "patient"],
   ["ServiceRequest", "patient"],
@@ -357,9 +358,9 @@ export async function executeTransaction(bundle: Bundle): Promise<Bundle> {
 export async function startEncounter(
   patient: Patient,
   user: LiveUser,
-): Promise<void> {
+): Promise<Encounter> {
   const inpatient = ["P3", "RN2"].includes(user.persona);
-  await executeTransaction({
+  const response = await executeTransaction({
     resourceType: "Bundle",
     type: "transaction",
     entry: [
@@ -394,6 +395,18 @@ export async function startEncounter(
       },
     ],
   });
+  const entry = response.entry?.[0];
+  if (entry?.resource?.resourceType === "Encounter") return entry.resource;
+  const parts = entry?.response?.location?.split("/") ?? [];
+  const id = parts[parts.indexOf("Encounter") + 1];
+  if (!parts.includes("Encounter") || !id)
+    throw new Error(
+      "The created encounter could not be retrieved. Refresh the worklist.",
+    );
+  const created = await readResource("Encounter", id);
+  if (created.resourceType !== "Encounter")
+    throw new Error("Encounter unavailable");
+  return created;
 }
 export async function persistCommit(input: CommitInput): Promise<{
   response: Bundle;

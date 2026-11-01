@@ -34,6 +34,21 @@ try {
       context: read(join(fixtures, `${persona}-context.json`)),
     });
     if (persona === 'P3') {
+      const bundle = read(join(fixtures, `${persona}.json`));
+      const legacy = read(join(fixtures, `${persona}-context.json`));
+      const selected = new Map(legacy.record).get('selectedEncounterId');
+      const explicit = { ...legacy, encounterId: selected,
+        record: legacy.record.map(([key, value]) => [key, key === 'selectedEncounterId' ? 'another-admission' : value]) };
+      const selectedSource = equal('facts', { bundle, context: explicit });
+      const rows = (projection, info) => projection.facts.infoPayloads.find(item => item.info === info)?.rows ?? [];
+      for (const info of ['triageSummary', 'marDoseDetails', 'marSchedule', 'prnHistory']) {
+        assert.deepEqual(rows(selectedSource, info), rows(source, info), `${info}: explicit encounter overrides the legacy selector`);
+      }
+      const unresolved = equal('facts', { bundle, context: { ...explicit, encounterId: 'not-in-this-chart' } });
+      for (const info of ['triageSummary', 'marDoseDetails', 'marSchedule', 'prnHistory', 'labResults', 'vitals']) {
+        assert.equal(rows(unresolved, info).length, 0, `${info}: unknown explicit encounter cannot fall back to history`);
+      }
+      assert.equal(unresolved.display.banner.location, '');
       const prn = source.facts.infoPayloads.find(payload => payload.info === 'prnHistory');
       assert.equal(prn?.rows.length, 1, 'coded PRN condition retains the actual administration');
       assert.equal(new Map(prn.rows[0].fields).get('Recorded dose'), '650');
@@ -71,7 +86,7 @@ try {
       const scale = { w3Triage: ['triageAcuity', 'code:1|2|3|4|5', '3'],
         w4Flowsheet: ['painReassessment', 'code:0|1|2|3|4|5|6|7|8|9|10', '4'] }[screen];
       if (scale) {
-        const walk = nodes => nodes.flatMap(node => [node, ...walk(node.section?.children ?? node.columns?.children ?? node.presentation?.children ?? node.rowAction?.children ?? node.tabs?.body ?? [])]);
+        const walk = nodes => nodes.flatMap(node => [node, ...walk(node.section?.children ?? node.columns?.children ?? node.presentation?.children ?? node.valueSet?.children ?? node.chartReferences?.children ?? node.rowAction?.children ?? node.tabs?.body ?? [])]);
         const field = walk(screenUi.workspace).find(node => node.field?.comp === `${screen}.${scale[0]}`)?.field;
         assert.equal(field?.kind, scale[1]);
         assert.equal(field?.value, null, `${scale[0]}: no default selection`);

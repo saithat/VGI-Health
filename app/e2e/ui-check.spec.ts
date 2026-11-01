@@ -43,6 +43,10 @@ async function render(page: Page, screen: UiScreen) {
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("valueSet" in tree)
+    return [tree, ...tree.valueSet.children.flatMap(nodes)];
+  if ("chartReferences" in tree)
+    return [tree, ...tree.chartReferences.children.flatMap(nodes)];
   if ("rowAction" in tree)
     return [tree, ...tree.rowAction.children.flatMap(nodes)];
   if ("presentation" in tree)
@@ -178,6 +182,8 @@ for (const file of fixtures)
     const bannerText = normalize(
       (await page.getByRole("banner").textContent()) ?? "",
     );
+    if (screen.viewer) expect(bannerText).toContain(normalize(screen.viewer));
+
     for (const [label, value] of screen.banner)
       if (value)
         expect(bannerText).toContain(
@@ -187,9 +193,11 @@ for (const file of fixtures)
               : formatDisplayValue(value),
           ),
         );
-    const infos = [...screen.side, ...screen.workspace]
-      .flatMap(nodes)
-      .flatMap((node) => ("info" in node ? [node.info] : []));
+    const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
+    const infos = allNodes.flatMap((node) =>
+      "info" in node ? [node.info] : [],
+    );
+
     const panels = (await page.locator("[data-info-id]").allTextContents()).map(
       normalize,
     );
@@ -204,9 +212,11 @@ for (const file of fixtures)
           if (value)
             expect(panels[index]).toContain(
               normalize(
-                medication
-                  ? formatMedicationDirections(medication, value)
-                  : formatDisplayValue(value),
+                key === "Text" || key === "Title"
+                  ? value
+                  : medication
+                    ? formatMedicationDirections(medication, value)
+                    : formatDisplayValue(value),
               ),
             );
         }
@@ -406,7 +416,7 @@ test.describe("clinical presentation", () => {
       ).toHaveCount(24);
       await expect(
         page.locator('time[datetime="2026-10-31T00:30:00Z"]').first(),
-      ).toHaveText("30 Oct 2026");
+      ).toHaveText("31 Oct 2026 00:30:00Z");
       await expect(page.getByRole("banner")).toContainText("03 Jul 1968");
       await expect(page.locator(".status-green").first()).toHaveText(
         "Given 09:12",

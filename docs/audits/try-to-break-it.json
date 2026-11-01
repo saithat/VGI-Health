@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "UNSAFE (demonstration): remove the allergy panel from the administer screen and remove the worklist allergy panel, its review button and its group.",
+    "summary": "Remove the allergy panel from the administration screen and remove the start-of-shift allergy panel and review button from the worklist.",
     "patch": [
       {
         "op": "remove",

@@ -246,6 +246,7 @@
     "infoId": "growthChart",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Nurse practitioner",
  "title": "Growth Chart",
  "side":
  [{"info":
@@ -274,8 +275,10 @@
     "infoId": "vitals",
     "display": "list",
     "comp": ""}}],
+ "screen": "example",
  "nav": [],
  "modal": null,
+ "fieldSources": [],
  "banner":
  [["Patient", "Morgan, Alex"],
   ["DOB", "May 1, 2017"],
@@ -284,9 +287,9 @@
   ["Language", ""],
   ["PCP", "Maya Brooks, MD"],
   ["Coverage", ""],
-  ["Encounter", ""],
-  ["Attending", ""],
-  ["Location", ""],
+  ["Last encounter", ""],
+  ["Last provider", ""],
+  ["Last location", ""],
   ["Allergies", "No allergy records on file"],
   ["Code status", "Full code"],
   ["Weight", "30.4 kg · Nov 1, 2026 08:00"],
