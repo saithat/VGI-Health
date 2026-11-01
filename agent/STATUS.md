@@ -7,13 +7,14 @@ night through the real binary deployed composites/presentation/shortcut changes,
 with full screen gates and 12/12 identical trees reused on the next check. An
 8-day × 5-persona FAKE run plus exact replay measured all 422 tasks across both
 runs' recorded persona-days with zero missing targets and no model calls. A
-separate certified RN canonical benchmark produced 21 clicks, 2 scrolls / 18,452px,
-and 7,722.04px mouse travel on its minimum-click path; its click floor is separate.
+separate certified RN canonical benchmark produced 21 clicks, 2 scrolls / 15,476px,
+and 8,001.87px mouse travel on its minimum-click path; its click floor is separate.
 These checks are wiring evidence, not overnight clinical-performance results.
 
 
 Headlines, selection, reports and dashboard switches use clicks, scroll count,
-scroll distance (px), and mouse travel (px). Keystrokes are secondary. Timing
+scroll distance (px), and mouse travel (px). Keystrokes are secondary. Timeline deltas for blind runs use the active
+canonical, and include scroll count/distance as well as mouse travel. Timing
 estimates remain in raw native/decision logs only, marked **not used** by the
 manifest interaction model; no time estimate enters the design prompt or report.
 Archived run data is unchanged; absent pixel geometry displays unavailable.
@@ -138,6 +139,8 @@ claim of equal sample size, statistical significance or ten independent tests.
 - Screen/ARIA/visibility/legibility/no-cover gates render adult, pediatric and
   surgical bundles at desktop and narrow widths, one browser at a time. Missing
   render/startup/browser infrastructure is `error`; assertion failures are `fail`.
+  Each source/bundle alternative keeps its own screen report and result JSON,
+  so candidates sharing a proposed version never overwrite each other.
   Exact-tree cache receipts bind the current app/browser/assertions/component
   bundle; known-bad controls still run. Environment bundle paths are absolute.
 - Program, source, components, native certificate, frozen spec/prev/canonical,
@@ -217,23 +220,30 @@ resuming an interrupted run with changed input fingerprints.
 
 ## Verification (zero LLM cost)
 
-- Agent: 82 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
+- Agent: 93 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
   crossing releases on days 4 and 7, certification tampering, completion gating
   on all three deploy modes, fallback/abort, transcript isolation, resume hashes,
   durable-decision crash recovery, rebind success/cache/refusal and no edits.
-- App: 176 tests pass; includes matched canonical/blind-day workload and binding
-  pointer/refusal loading. World: 95 tests pass. Agent/app/world lint and
+- App: 272 tests pass; includes matched canonical/blind-day workload and binding
+  pointer/refusal loading. World: 95 unit + 5 realism checks pass. Agent/app/world lint and
   typechecks pass. Production app build passes. Default Lean build passes,
-  341 jobs, six workers, 8 GB virtual-memory ceiling.
+  359 jobs, six workers, 8 GB virtual-memory ceiling. Three desktop browser
+  checks pass (timeline/catalog navigation and all physical metric switches);
+  cold real-WASM startup has an explicit readiness allowance.
 - Trajectory schema and real-WASM archived determinism tests pass (424 task
   coverage; historical run files were not regenerated). Daily-canonical baseline
-  regression and complexity/historical-alias tests pass.
-- `/tmp/vgi-review-FAKE-native-dry`: uncommitted FAKE one-night fixture, real
+  regression and complexity/historical-alias tests pass. A temporary, explicitly
+  FAKE current RN canonical fixture indexed 51 tasks / 1,094 native/WASM events
+  plus every paired baseline with zero mismatches and complete, identical paired
+  pixel metrics. Its real complexity command also passed. The fixture was moved
+  outside runs/ after verification and is not committed as run data.
+- `/tmp/vgi-geometry-delivery-real-dry`: uncommitted FAKE one-night fixture, real
   native EHR, scripted backend, zero model calls. Composite + sandboxed
-  presentation + hotkey deploy v1; both v0/v1 gates pass over 27 exported states
-  each (9 distinct adult/pediatric/surgical trees, two widths). Real tasks finish
+  presentation + hotkey deploy v1; both v0/v1 gates pass over 30 exported states
+  each (12 distinct adult/pediatric/surgical trees, two widths). Real tasks finish
   before and after. Rebind against the updated native binary/current app passes
-  both versions and retains original sidecars; repeating it returns two cached
+  both versions and retains original sidecars; latest-main native/WASM/app rebind
+  also passes both and preserves cache-resume; repeating it returns two cached
   receipts with no additional native/browser work. An initial environment-path
   infrastructure error was refused and logged, then fixed and retried.
 - Reproduce the standalone fixture outside runs/: `pnpm --filter agent dry-run`.

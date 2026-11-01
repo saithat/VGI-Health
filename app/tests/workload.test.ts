@@ -106,3 +106,11 @@ it('separates canonical drift from agent saving against the no-agent control and
  sample.programs=new Map([...sample.programs,['programs/P3/v99.json',{...program,version:99}]]);
  expect(versionsFor(sample,'P3')).toEqual([0,1,2,3,4,5,6,7]);
 });
+
+it('timeline deltas use the active canonical and all physical metrics for blind runs',async()=>{
+ const {workloadDelta}=await import('../src/browser/timeline');
+ const day=run.days[0],task=day?.tasks[0];if(!day||!task)throw new Error('Missing fixture');
+ const current={...task,completed:true,clicks:12,keystrokes:8,scrolls:1,scrollPx:900,mouseTravelPx:100};
+ const sample={...run,manifest:{...run.manifest,measurementProtocol:{name:'blind'}},days:[{...day,day:2,programVersion:0,tasks:[{...current,clicks:9999}]},{...day,day:4,programVersion:1,tasks:[current]}],baselines:[{...day,day:4,tasks:[{...current,clicks:15,keystrokes:10,scrolls:2,scrollPx:1000,mouseTravelPx:110}]}]};
+ expect(workloadDelta(sample,{persona:'P3',baseline:false,program:{version:1}})).toEqual({clicks:-3,keys:-2,scrolls:-1,scrollPx:-100,mouseTravelPx:-10});
+});

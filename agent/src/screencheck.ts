@@ -100,7 +100,7 @@ export function failingFilesFromOutput(output: string, files: readonly string[])
 class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
   private readonly atlases=new Map<string,GeometryAtlas>();
-  geometry:GeometryProvider=async input=>{const hash=geometryCacheKey(input.program);if(!this.atlases.has(hash)){const result=await this.check(input);if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
+  geometry:GeometryProvider=async input=>{const hash=geometryCacheKey(input.program);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
   constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={}) {}
 
   async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
@@ -132,7 +132,7 @@ class CliScreenChecker implements ScreenChecker {
         representatives.set(hash, representative);
         coverage.push({ file: path.relative(dir, file), sha256: hash, representative: path.relative(dir, representative) });
       }
-      const reportDir = this.artifactsDir ? path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`) : null;
+      const reportDir = this.artifactsDir ? path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`,geometryCacheKey(input.program).replace(':','.')) : null;
       if (reportDir) {
         await mkdir(reportDir, { recursive: true });
         await writeFile(path.join(reportDir, 'coverage.json'), JSON.stringify({ pages: files.length, distinct: representatives.size, coverage }, null, 2));
@@ -148,13 +148,17 @@ class CliScreenChecker implements ScreenChecker {
         const atlas:GeometryAtlas={schemaVersion:1,programHash:geometryProgramHash(input.program),componentsSha256:geometryComponentsHash(input.program),appSha256:build.appSha256,viewport:{width:1440,height:900},states:[...measured.geometry].sort((a,b)=>Number(b.sample===`b${this.preferredBundles[input.program.role]??0}`)-Number(a.sample===`b${this.preferredBundles[input.program.role]??0}`)),source:'chromium'};
         this.atlases.set(geometryCacheKey(input.program),atlas);if(reportDir)await writeFile(path.join(reportDir,'geometry.json'),JSON.stringify(atlas));
       }
-      if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
+      if (res.code === 0) {
+        const result:ScreenCheckResult={ ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
+        if(reportDir)await writeFile(path.join(reportDir,'result.json'),JSON.stringify(result));return result;
+      }
       const failingFiles = failingFilesFromOutput(res.output, files);
-      return {
+      const result:ScreenCheckResult={
         ...base, status: z.object({status:z.enum(['fail','error'])}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(() => '{"status":"error"}'))).status, pages: files.length, failingFiles: failingFiles.map((f) => path.relative(dir, f)),
         failingScreens: [...new Set(failingFiles.map(screenOfFile))],
         message: `screen-check exit ${res.code}: ${res.output.slice(-3000)}`,
       };
+      if(reportDir)await writeFile(path.join(reportDir,'result.json'),JSON.stringify(result));return result;
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

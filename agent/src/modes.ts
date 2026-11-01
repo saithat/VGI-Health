@@ -155,7 +155,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
-  // A feature panel may cost a little screen space; accept unless it makes the day >5% slower.
+  // Vendor surfacing preserves completion and the physical-interaction tolerances.
   const tolerable = replay ? interactionAcceptable(replay) : false;
   rec.validation.improved = replay ? improved(replay) : null;
   rec.validation.stabilityOk = true;

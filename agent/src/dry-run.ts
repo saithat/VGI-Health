@@ -53,7 +53,7 @@ const backend: JsonLlm = {
   async complete(req) {
     const json = req.purpose === 'choose' ? { chosen: ['dry-change'], rationale: 'FAKE fixture chooses its only candidate', rejected: [] } : {
       decision: 'change', hypothesis: 'FAKE wiring fixture: composite + declarative presentation + navigation hotkey',
-      candidates: [{ id: 'dry-change', summary: 'FAKE wiring probe', moveType: 'shortcut', rationale: 'FAKE fixture; not performance evidence', targets: [panel.id, nav.id], patch, predicted: { clicks: 1, keystrokes: -1, scrolls: 0, klmDeciSec: 1 } }],
+      candidates: [{ id: 'dry-change', summary: 'FAKE wiring probe', moveType: 'shortcut', rationale: 'FAKE fixture; not performance evidence', targets: [panel.id, nav.id], patch, predicted: { clicks: 1, keystrokes: -1, scrolls: 0, scrollPx: null, mouseTravelPx: null } }],
     };
     return { json, backend: 'scripted', model: 'FAKE-zero-cost-fixture', servedBy: null, replayOf: null, promptMatched: null, usage: { llmCost: 0, fake: true } };
   },

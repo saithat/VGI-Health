@@ -33,7 +33,7 @@ const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
-    ? `${value.clicks} clicks · ${value.keystrokes} keys · ${value.scrolls} scrolls · ${value.mouseTravelPx??"—"}px mouse · ${value.scrollPx??"—"}px scroll`
+    ? `${value.clicks} clicks · ${value.scrolls} scrolls / ${value.scrollPx??"—"}px · ${value.mouseTravelPx??"—"}px mouse · ${value.keystrokes} keys (secondary)`
     : "No prediction recorded";
 }
 function Badge({
