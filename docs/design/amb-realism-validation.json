@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "774e7e7b39dd5ed58997b654025509e190891d56",
+  "sourceRevisionAtValidation": "2e6cef00087795b2d5badbd9e5f5d00b37dd6938",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "138b2d7f74d8cd4f37a7b6bfe51591a306aee67ed61f557975d320229d418212",
-  "nativeBinarySha256": "72bccd58aa7b935f22bdc311c1daf8b5d98d98574b4b8e58baa8f7f1b0a2ae7f",
+  "leanSourceHash": "27ccde8c7bc2a8289712332f6dcc8e4803d3f7d7ba773705569b0745d53709b1",
+  "nativeBinarySha256": "eee72c7fa5d006a10a176d2e3462183db292da463ca5568d6add3a554e6a8dc6",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "c0d804ad1cd6a914b5569181327734a8a33f47cc646a878cb35d06424ff1196c"
+    "reportSha256": "3689bab17b1427998f96eac308bd5524fded98918aa7b93085b38aac261818c0"
   },
   "world2": {
     "world": "runs/world/2",
@@ -500,7 +500,8 @@
       "passed": 57,
       "intentionalViewportSkips": 3
     },
-    "diagnosisPickerViews": 2
+    "diagnosisPickerViews": 2,
+    "scrolledContextViews": 2
   },
   "archived": {
     "run": "run1-P3",
@@ -517,7 +518,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 215,
+    "appTests": 216,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -525,12 +526,12 @@
   },
   "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened.",
   "structuredPresentations": {
-    "upstream": "6062379",
+    "upstream": "b4b5043",
     "nativeWasmFixtures": 15,
-    "renderTheoremsCompared": 45,
-    "frozenStatementSha256": "56623d0bff48423f9b129bef12eedba62b79f4a8f3f17b54b1969319e8ae4e23",
+    "renderTheoremsCompared": 48,
+    "frozenStatementSha256": "4139e00df9e9cd4fede62267c8a005028421efaa73b90959529ca15eb0492c55",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 107
+    "originalHeadersUnchanged": 116
   },
   "ambulatoryMetadata": {
     "nativeWasmScreens": 26,
@@ -540,5 +541,12 @@
     "publishedSamples": 2916,
     "unknownPopulationCase": true,
     "referenceGeneratorReproduced": true
+  },
+  "clinicalFrame": {
+    "sourceProgressOptOut": true,
+    "optionalScreenIdentity": true,
+    "desktopPinnedContext": true,
+    "explicitPcpAssignment": true,
+    "sourcePoundsRetainedWithKgDisplay": true
   }
 }
