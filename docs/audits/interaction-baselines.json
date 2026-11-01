@@ -1,0 +1,349 @@
+{
+  "mode": "REAL-native-zero-LLM",
+  "ehrSha256": "102a8f3b99539d91362b2593b2dbc314fd03db1f984daef4c6ecb1438c67c548",
+  "worldSha256": "7f4f9dabc4ad609422fb5be4598e54a30a285bb9f4022b72b078bc074dc3e26d",
+  "captureSha256": "0a45885b154892e71ea9e6b446486d0867de3c4a3fcb3f0212929e281e17e8f3",
+  "viewport": [
+    1440,
+    900
+  ],
+  "bundles": {
+    "P1": "Ashly_Rippin_149fcc1f.json",
+    "P2": "Ashly_Rippin_149fcc1f.json",
+    "P3": "Ashly_Rippin_149fcc1f.json",
+    "P4": "Abdul_Sauer_d0fe99e5.json",
+    "P5": "Albert_Weber_84816a36.json"
+  },
+  "rows": [
+    {
+      "persona": "P1",
+      "release": "v1",
+      "day": 2,
+      "completed": 40,
+      "tasks": 40,
+      "clicks": 786,
+      "keystrokes": 3746,
+      "scrolls": 783,
+      "scrollPx": 1817054,
+      "mouseTravelPx": 286598.01999999996,
+      "geometry": {
+        "programHash": "65cdee5cff1ef52d124166d774afed61b96b53e49d4c675d3cec8a0a7ab075d5",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v1",
+      "day": 2,
+      "completed": 18,
+      "tasks": 18,
+      "clicks": 1131,
+      "keystrokes": 4743,
+      "scrolls": 1538,
+      "scrollPx": 1683277,
+      "mouseTravelPx": 464714.35,
+      "geometry": {
+        "programHash": "b83bb8c23dd81c28d163e2b6980b4f725ea5b7b5fa329ae74219f7ec26be203d",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v1",
+      "day": 2,
+      "completed": 51,
+      "tasks": 51,
+      "clicks": 684,
+      "keystrokes": 1167,
+      "scrolls": 465,
+      "scrollPx": 1249373,
+      "mouseTravelPx": 300302.4300000001,
+      "geometry": {
+        "programHash": "6cb1b9516acffe7d654ea7d2453946c12a7a14b0fae842ddccb41e8b03ffd0bc",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v1",
+      "day": 2,
+      "completed": 20,
+      "tasks": 20,
+      "clicks": 745,
+      "keystrokes": 3998,
+      "scrolls": 822,
+      "scrollPx": 753959,
+      "mouseTravelPx": 308802.12,
+      "geometry": {
+        "programHash": "c6018de14369cc6372291069579324c00aa9bf659505a2fc03cd7d7165df5623",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v1",
+      "day": 2,
+      "completed": 14,
+      "tasks": 14,
+      "clicks": 728,
+      "keystrokes": 2467,
+      "scrolls": 1398,
+      "scrollPx": 1081374,
+      "mouseTravelPx": 269262.42,
+      "geometry": {
+        "programHash": "0ba09aebf415fe682c64f3ae1542b42afceff98e602faec7299baa729c335684",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P1",
+      "release": "v2",
+      "day": 4,
+      "completed": 40,
+      "tasks": 40,
+      "clicks": 844,
+      "keystrokes": 3765,
+      "scrolls": 888,
+      "scrollPx": 1902035,
+      "mouseTravelPx": 298690.69999999995,
+      "geometry": {
+        "programHash": "c80cfa4bd984b4827b9d0bbdf04cd17a9840c0fb37e6c2a86b6e3dc349cf9884",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v2",
+      "day": 4,
+      "completed": 13,
+      "tasks": 13,
+      "clicks": 941,
+      "keystrokes": 3701,
+      "scrolls": 1345,
+      "scrollPx": 1498072,
+      "mouseTravelPx": 384382.03,
+      "geometry": {
+        "programHash": "2915140db3f1a3bfe73e55c436fc5e8d79effcddf77dd940c34bd7ea18380b36",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v2",
+      "day": 4,
+      "completed": 41,
+      "tasks": 41,
+      "clicks": 557,
+      "keystrokes": 978,
+      "scrolls": 391,
+      "scrollPx": 996450,
+      "mouseTravelPx": 243253.4299999999,
+      "geometry": {
+        "programHash": "fd4301ae00567af3fff8cd7eba17845299dd1ba7521eb019dada19bcb6a35b10",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v2",
+      "day": 4,
+      "completed": 17,
+      "tasks": 17,
+      "clicks": 408,
+      "keystrokes": 2401,
+      "scrolls": 467,
+      "scrollPx": 444998,
+      "mouseTravelPx": 173851.00999999998,
+      "geometry": {
+        "programHash": "b866ee6b2e0c3232a061665b57883b9856a4e70df4f56f2df7eaa0a0f54de5f3",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v2",
+      "day": 4,
+      "completed": 11,
+      "tasks": 11,
+      "clicks": 488,
+      "keystrokes": 1671,
+      "scrolls": 961,
+      "scrollPx": 830982,
+      "mouseTravelPx": 180470.78999999998,
+      "geometry": {
+        "programHash": "42f9601393a6f2b9293eacff6385fb2c3f15266ac0eb86634f9809eca38e22e0",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P1",
+      "release": "v3",
+      "day": 8,
+      "completed": 39,
+      "tasks": 39,
+      "clicks": 795,
+      "keystrokes": 3464,
+      "scrolls": 817,
+      "scrollPx": 1915207,
+      "mouseTravelPx": 298469.4200000001,
+      "geometry": {
+        "programHash": "efb0115436cc6344afb41f691c9cb415ee524ba125d1a2f6a5a98e1aab70b214",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P2",
+      "release": "v3",
+      "day": 8,
+      "completed": 15,
+      "tasks": 15,
+      "clicks": 1484,
+      "keystrokes": 5553,
+      "scrolls": 2321,
+      "scrollPx": 2554336,
+      "mouseTravelPx": 587669.65,
+      "geometry": {
+        "programHash": "99b1c3d10620b9d4ba7602353a4968bdc769e06230d2e49f9a8f809c12d0c973",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P3",
+      "release": "v3",
+      "day": 8,
+      "completed": 38,
+      "tasks": 38,
+      "clicks": 506,
+      "keystrokes": 857,
+      "scrolls": 374,
+      "scrollPx": 815032,
+      "mouseTravelPx": 200390.67999999996,
+      "geometry": {
+        "programHash": "047a76228ffb076a6c4d3acd7fe7fa54ee07dc71894ad19a5d1cbd3d8eae7ef6",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P4",
+      "release": "v3",
+      "day": 8,
+      "completed": 15,
+      "tasks": 15,
+      "clicks": 483,
+      "keystrokes": 2663,
+      "scrolls": 662,
+      "scrollPx": 630400,
+      "mouseTravelPx": 219256.14999999997,
+      "geometry": {
+        "programHash": "8dbe06d9038d9b7d6099bb37dba8aef2e3026de78370bd81dade91a071d8675b",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    },
+    {
+      "persona": "P5",
+      "release": "v3",
+      "day": 8,
+      "completed": 12,
+      "tasks": 12,
+      "clicks": 556,
+      "keystrokes": 1901,
+      "scrolls": 1095,
+      "scrollPx": 930404,
+      "mouseTravelPx": 230636.19999999998,
+      "geometry": {
+        "programHash": "160a9994647eb101de189747b34243d60a4b563b3a30ba29978da7640e3fc4d7",
+        "appSha256": "15e8822ecd6800cf6bed8d766345ec964acfe285636d2e2ac4a9ba5113118bf0",
+        "source": "chromium",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "missingTargets": []
+      }
+    }
+  ]
+}

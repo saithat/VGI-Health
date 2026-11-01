@@ -391,6 +391,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return { record: rec, deployed };
   };
 
+  try {
   // 2-3. Hypothesize and generate.
   let proposal: Proposal;
   try {
@@ -418,10 +419,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
       check: invalidPatch(u.error), trainEstimate: null, componentsMoved: null,
     });
   }
-  for (const c of proposal.candidates) {
-    try { rec.candidates.push(await evaluateCandidate(deps, current, c, gate, estimator)); }
-    catch(error){if(error instanceof InfrastructureError){rec.outcome=error instanceof ScreenInfrastructureError?'error':'infrastructure-error';rec.flags.push(errorMessage(error));await finish(null);}throw error;}
-  }
+  for (const c of proposal.candidates) rec.candidates.push(await evaluateCandidate(deps, current, c, gate, estimator));
 
   // Tempting-but-unsafe moves: inject one if the LLM did not produce the rejection itself.
   note();
@@ -548,7 +546,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return finish(null);
   }
   rec.validation.accepted = true;
-  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.keystrokes} keystrokes, ${replay.saving.scrolls} scrolls`;
+  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.scrolls} scrolls, ${replay.saving.scrollPx??"unavailable"}px scroll, ${replay.saving.mouseTravelPx??"unavailable"}px mouse (keys secondary: ${replay.saving.keystrokes})`;
 
   // 8. Simulated user response.
   rec.userResponse = userResponse(deps, night, persona.id, moved);
@@ -567,4 +565,11 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   rec.versionAfter = finalProgram.version;
   rec.outcome = 'deployed';
   return finish(finalProgram);
+  } catch(error) {
+    if(error instanceof InfrastructureError){
+      rec.outcome=error instanceof ScreenInfrastructureError?'error':'infrastructure-error';
+      rec.flags.push(errorMessage(error));await finish(null);
+    }
+    throw error;
+  }
 }

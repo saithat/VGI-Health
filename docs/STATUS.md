@@ -5,6 +5,52 @@ Consolidated 2026-10-31. Content, Lean core and render are still active lanes:
 [HANDOFF-lean-core.md](../HANDOFF-lean-core.md) and
 [HANDOFF-render.md](../HANDOFF-render.md) will be folded in when their lanes finish.
 
+## Physical interaction baselines — 2026-11-01
+
+Owner decision: report clicks, scroll count/distance and mouse travel; keystrokes
+are secondary. Timing estimates are retained only in raw logs, **not used**.
+The agent objective uses these dimensions, no count regression, at most 2% + 1px
+pixel regression, strict improvement in at least one dimension, and unchanged
+full-completion and safety gates. The dashboard offers the same metric switches.
+
+All 15 certified persona canonicals were measured with the real native checker
+and simulator on world/2, seed 1, at 1440×900. The schedule is day 2 for v1, day 4
+for v2 and day 8 for v3; these have different workloads and are not paired vendor
+comparisons. Every task completed; every target has real Chromium geometry.
+The reference bundles are Ashly for P1/P2/P3, Abdul (pediatric) for P4, and Albert
+(surgical) for P5. This is a zero-model geometry reference, not an overnight run.
+[Machine-readable numbers and build/program hashes](audits/interaction-baselines.json).
+
+| Release | Persona | Day | Complete | Clicks | Scroll count | Scroll px | Mouse px | Keys (secondary) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| v1 | P1 | 2 | 40/40 | 786 | 783 | 1,817,054 | 286,598.02 | 3746 |
+| v1 | P2 | 2 | 18/18 | 1131 | 1538 | 1,683,277 | 464,714.35 | 4743 |
+| v1 | P3 | 2 | 51/51 | 684 | 465 | 1,249,373 | 300,302.43 | 1167 |
+| v1 | P4 | 2 | 20/20 | 745 | 822 | 753,959 | 308,802.12 | 3998 |
+| v1 | P5 | 2 | 14/14 | 728 | 1398 | 1,081,374 | 269,262.42 | 2467 |
+| v2 | P1 | 4 | 40/40 | 844 | 888 | 1,902,035 | 298,690.70 | 3765 |
+| v2 | P2 | 4 | 13/13 | 941 | 1345 | 1,498,072 | 384,382.03 | 3701 |
+| v2 | P3 | 4 | 41/41 | 557 | 391 | 996,450 | 243,253.43 | 978 |
+| v2 | P4 | 4 | 17/17 | 408 | 467 | 444,998 | 173,851.01 | 2401 |
+| v2 | P5 | 4 | 11/11 | 488 | 961 | 830,982 | 180,470.79 | 1671 |
+| v3 | P1 | 8 | 39/39 | 795 | 817 | 1,915,207 | 298,469.42 | 3464 |
+| v3 | P2 | 8 | 15/15 | 1484 | 2321 | 2,554,336 | 587,669.65 | 5553 |
+| v3 | P3 | 8 | 38/38 | 506 | 374 | 815,032 | 200,390.68 | 857 |
+| v3 | P4 | 8 | 15/15 | 483 | 662 | 630,400 | 219,256.15 | 2663 |
+| v3 | P5 | 8 | 12/12 | 556 | 1095 | 930,404 | 230,636.20 | 1901 |
+
+Geometry uses actual rendered component centers and ancestor scroll offsets,
+including expanded/tab and alert/acknowledged-background states. A pointer starts
+at viewport center once per day trace and travels in straight lines, with no
+tremor or overshoot. Offscreen targets use measured centered reveal offsets;
+explicit scroll events advance a measured container viewport. Scroll count
+includes reveal movements, and scroll pixels sum actual container-offset changes.
+This models interactions on representative screen content; it does not estimate
+human time or rerender changing content for every task. Missing geometry remains
+unavailable. The click floor stays clicks; travel on a minimum-click path is
+reported where available and is not a movement optimum. See
+[agent protocol and exact commands](../agent/STATUS.md).
+
 ## Synthetic Hospital data lane (Phase 1)
 
 Pinned upstream `911f34c4ac65a508543c4b3b90c373a0cd16534d`; SHA256-checked

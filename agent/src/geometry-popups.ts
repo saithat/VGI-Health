@@ -1,4 +1,4 @@
-/** Supplement representative native exports with possible removable-popup states.
+/** Supplement representative native exports with possible alert-popup states.
  * Uses the existing native facts/init/render-ui APIs; never changes programs or rules.
  */
 import {spawn} from 'node:child_process';
@@ -17,11 +17,11 @@ export async function exportPopupGeometry(binary:string,input:{program:Program;s
  const targets=program.screens.flatMap(screen=>screen.components.flatMap(component=>{
   const kind:unknown=component.kind;if(!isRecord(kind)||!isRecord(kind['alert']))return [];
   const payload=kind['alert'],id=payload['alert'];
-  return payload['popup']===true&&typeof id==='string'&&spec.alerts.some(a=>a.id===id&&a.tier==='removable')?[{screen:screen.id,id}]:[];
+  return typeof id==='string'&&spec.alerts.some(a=>a.id===id&&(a.tier==='interruptive'||a.tier==='removable'&&payload['popup']===true))?[{screen:screen.id,id}]:[];
  }));
  if(!targets.length)return;
  const bundle=JSON.parse(await readFile(input.fhir,'utf8'));
- const index=z.object({referenceDate:z.string()}).parse(JSON.parse(await readFile(path.join(path.dirname(input.fhir),'index.json'),'utf8')));
+ const index=z.object({referenceDate:z.string()}).parse(JSON.parse(await readFile(path.join(path.dirname(input.fhir),'index.json'),'utf8').catch(()=>readFile(path.join(import.meta.dirname,'../../fixtures/synthea/index.json'),'utf8'))));
  const projection=z.object({facts:z.unknown(),display:z.unknown()}).parse(await jsonCommand(binary,'facts',{bundle,context:{today:index.referenceDate,now:0,record:[],receipts:[]}}));
  const user={id:program.owner,role:program.role};
  const state=z.record(z.string(),z.unknown()).parse(await jsonCommand(binary,'init',{spec,program,facts:projection.facts,user}));

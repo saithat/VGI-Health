@@ -121,9 +121,9 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
         const { spec, file: specPath } = await specFor(program.specVersion);
         const nativePath = path.join(work, 'contexts.json');
         const extract = async (scheduleFile, programFile, specFile, recordingFile) => {
-          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j4', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
+          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
             cwd: root, timeout: 180000, maxBuffer: 4e6,
-            env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
+            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
           });
           return read(nativePath);
         };
@@ -159,9 +159,12 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
             metrics: (()=>{const row=recorded.tasks.find(t=>t.task===task.id);return row;})(), theoreticalMinimum: recorded.floor.find(t => t.task === task.id),
             completed: recorded.tasks.find(t => t.task === task.id)?.completed ?? false, eventCount: trace.length, file,
           };
-          const geometryFile=path.join(runDir,'geometry',`${createHash('sha256').update(JSON.stringify(stableForGeometry(program))).digest('hex')}.json`);
+          const geometryFile=path.join(runDir,'geometry',`${createHash('sha256').update(JSON.stringify(stableForGeometry(prog))).digest('hex')}.json`);
           if((typeof entry.metrics?.mouseTravelPx!=='number'||typeof entry.metrics?.scrollPx!=='number')&&await exists(geometryFile)){
-            const atlas=await read(geometryFile),cost=pointerTravel(recorded.trace,atlas)[task.id];
+            const componentsFile=progPath.replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
+            const componentHash=createHash('sha256').update(JSON.stringify(stableForGeometry(components))).digest('hex');
+            const variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`),atlas=await read(await exists(variant)?variant:geometryFile);
+            const cost=(!atlas.componentsSha256||atlas.componentsSha256===componentHash)?pointerTravel(recorded.trace,atlas)[task.id]:null;
             if(cost&&entry.metrics)entry.metrics={...entry.metrics,mouseTravelPx:cost.mouseTravelPx,scrollPx:cost.scrollPx,scrolls:cost.scrolls};
           }
           if (!entry.metrics || !entry.theoreticalMinimum) throw new Error(`Missing metrics for ${task.id}`);
@@ -207,8 +210,8 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     for (const id of baseline) if (id !== 'all' && !tasks.some(t => t.id === id)) throw new Error(`Unknown baseline task ${id}`);
     if (!tasks.length) throw new Error('No recorded tasks');
     const nativeModules = await Promise.all(['Ehr/Cli/Sim', 'Ehr/Sim/Policy', 'Ehr/Sim/Goals', 'Ehr/Core/Interp', 'Ehr/Render/Fhir'].map(async module => ({ module, sha256: await sha(path.join(leanDir, '.lake/build/lib/lean', `${module}.olean`)) })));
-    const provenance = { nativeModules, world: relative(world), fixtureIndex: relative(fixtureIndexPath), adapterSha256: await sha(path.join(root, 'scripts/trajectories/Contexts.lean')), wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')), nativeBinarySha256: await sha(binary), specs: [...specSources.values()] };
-    const index = { schemaVersion: 1, runId, minimumDefinition: 'Recorded theoretical ideal-interface floor (Ehr.Sim.floorMetrics), not an exact minimum for this deployed UI. Mouse/scroll pixels use recorded Chromium geometry at 1440×900 when available; missing geometry is unavailable.', tasks };
+    const provenance = { nativeModules, world: relative(world), fixtureIndex: relative(fixtureIndexPath), geometryModelSha256:await sha(path.join(root,'app/src/metrics/geometry.ts')),adapterSha256: await sha(path.join(root, 'scripts/trajectories/Contexts.lean')), wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')), nativeBinarySha256: await sha(binary), specs: [...specSources.values()] };
+    const index = { schemaVersion: 1, runId,timingUsage:'not used; retained only in raw trace metrics', minimumDefinition: 'Recorded theoretical ideal-interface floor (Ehr.Sim.floorMetrics), not an exact minimum for this deployed UI. Mouse/scroll pixels use recorded Chromium geometry at 1440×900 when available; missing geometry is unavailable.', tasks };
     await write(path.join(output, 'index.json'), index);
     const verification = { schemaVersion: 1, runId, status: mismatches.length ? 'failed' : 'passed', tasks: tasks.length, events: eventCount, nativeEventsVerified: nativeEvents,
       wasmEventsVerified: wasmEvents, baselineTasks: tasks.filter(t => t.baseline).length, mismatches, provenance,

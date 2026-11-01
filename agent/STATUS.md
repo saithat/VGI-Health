@@ -1,5 +1,17 @@
 ## Physical interaction metrics — owner decision, 2026-11-01
 
+Verification: 15/15 current certified canonicals have complete real Chromium
+geometry (world/2; v1 day 2, v2 day 4, v3 day 8); baseline numbers and bindings are
+in docs/STATUS.md and docs/audits/interaction-baselines.json. A deliberately FAKE
+night through the real binary deployed composites/presentation/shortcut changes,
+with full screen gates and 12/12 identical trees reused on the next check. An
+8-day × 5-persona FAKE run plus exact replay measured all 422 tasks across both
+runs' recorded persona-days with zero missing targets and no model calls. A
+separate certified RN canonical benchmark produced 21 clicks, 2 scrolls / 18,452px,
+and 7,722.04px mouse travel on its minimum-click path; its click floor is separate.
+These checks are wiring evidence, not overnight clinical-performance results.
+
+
 Headlines, selection, reports and dashboard switches use clicks, scroll count,
 scroll distance (px), and mouse travel (px). Keystrokes are secondary. Timing
 estimates remain in raw native/decision logs only, marked **not used** by the
@@ -11,7 +23,12 @@ offsets at 1440×900 for each rendered screen/state, keyed by expanded program
 SHA256, screen, state and component ID. Assertion-cache receipts include geometry;
 app, browser, harness or presentation-bundle changes invalidate reuse. Every
 candidate simulated for selection obtains geometry from that same gate. Canonical
-and no-agent arms use the same provider. Atlases are saved under run/geometry/.
+and no-agent arms use the same provider. Presentation-only alternatives use separate bundle hashes even when their native
+program hashes match; selection and replay verify that geometry binding. Atlases
+are saved under run/geometry/. Resume also fingerprints the shared pixel
+model in app/src/metrics, so changing the calculation cannot silently mix costs.
+Rebind refreshes deployment gates; historical interaction measurements retain
+their original geometry/build hash and are not silently re-estimated.
 
 A pointer starts at viewport center once per complete day trace, persists between
 tasks, and moves in straight lines between pointed/clicked/typed-into control
@@ -23,7 +40,8 @@ including reveal movements; scroll pixels sum their Euclidean offset changes.
 These are modeled interactions on real rendered geometry, not observed humans.
 The lookup prefers a normal state containing the target, then an expanded or
 popup state; exact control IDs precede semantic alert aliases. Representative
-adult/pediatric/surgical gate bundles describe layout states, rather than
+adult/pediatric/surgical gate bundles describe layout states, preferring the
+pediatric sample for NP and surgical sample for surgeon, rather than
 rerendering every task's changing clinical content. Missing geometry is null,
 never inferred from tab order or silently replaced with zero.
 

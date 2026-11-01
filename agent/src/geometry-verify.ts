@@ -1,7 +1,9 @@
 /** Explicit zero-model geometry verification; artifacts stay outside runs/. */
 import path from 'node:path';
+import {z} from 'zod';
 import {mkdtemp,mkdir,readFile,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
+import {fileHash,treeHash} from './fingerprints.js';
 import {browserGeometry} from './browser-geometry.js';
 import {createEhr} from './ehr.js';
 import {createFakeEhr} from './fake/ehr-fake.js';
@@ -22,8 +24,8 @@ if(path.resolve(output).startsWith(path.join(REPO_ROOT,'runs')+path.sep))throw n
 await mkdir(output,{recursive:true});
 const ehr=mode==='canonicals'?recordingEhr(createEhr({fake:false}),path.join(output,'native')):createFakeEhr();
 const fixtureDir=path.join(REPO_ROOT,'fixtures/synthea');
-const catalog=JSON.parse(await readFile(path.join(fixtureDir,'index.json'),'utf8')) as {patients:{file:string;flags:{pediatric:boolean;surgical:boolean}}[]};
-const bundleFor=(persona:string)=>path.join(fixtureDir,persona==='P4'?catalog.patients.find(p=>p.flags.pediatric)!.file:persona==='P5'?catalog.patients.find(p=>p.flags.surgical)!.file:'Ashly_Rippin_149fcc1f.json');
+const catalog=z.object({patients:z.array(z.object({file:z.string(),flags:z.object({pediatric:z.boolean(),surgical:z.boolean()})}))}).parse(JSON.parse(await readFile(path.join(fixtureDir,'index.json'),'utf8')));
+const bundleFor=(persona:string)=>{const sample=persona==='P4'?catalog.patients.find(p=>p.flags.pediatric):persona==='P5'?catalog.patients.find(p=>p.flags.surgical):{file:'Ashly_Rippin_149fcc1f.json'};if(!sample)throw new Error(`No geometry bundle for ${persona}`);return path.join(fixtureDir,sample.file);};
 const browser=browserGeometry(ehr,input=>[bundleFor(input.program.owner)],path.join(output,'cache'));
 try{
  if(mode==='canonicals'){
@@ -34,12 +36,12 @@ try{
    const check=await ehr.check({specVersion:release,program,prev:program,canonical:role.canonical});if(check!=='ok')throw new Error(`Canonical check refused ${persona}/${release}`);
    const schedule=await world.schedule(day,persona);if(!schedule)throw new Error('Schedule missing');
    const result=await measured.simulate({specVersion:release,program,persona:params,schedule,worldDir:world.dir,seed:world.manifest.seed*1000+day});
+   await writeJson(path.join(output,`${release}-${persona}.json`),result);
    if(result.geometry?.missingTargets.length||result.tasks.some(t=>typeof t.mouseTravelPx!=='number'||typeof t.scrollPx!=='number'))throw new Error(`Incomplete geometry ${persona}/${release}`);
    const metrics=sumMetrics(result.tasks);rows.push({persona,release,day,completed:metrics.completed,tasks:metrics.tasks,clicks:metrics.clicks,keystrokes:metrics.keystrokes,scrolls:metrics.scrolls,scrollPx:metrics.scrollPx,mouseTravelPx:metrics.mouseTravelPx,geometry:result.geometry});
-   await writeJson(path.join(output,`${release}-${persona}.json`),result);
    console.log(JSON.stringify(rows.at(-1)));
   }
-  await writeJson(path.join(output,'baselines.json'),{mode:'REAL-native-zero-LLM',viewport:[1440,900],bundles:Object.fromEntries(['P1','P2','P3','P4','P5'].map(p=>[p,path.basename(bundleFor(p))])),rows});
+  await writeJson(path.join(output,'baselines.json'),{mode:'REAL-native-zero-LLM',ehrSha256:ehr.binary?await fileHash(ehr.binary):null,worldSha256:await treeHash(world.dir),captureSha256:await fileHash(path.join(REPO_ROOT,'app/e2e/geometry-capture.ts')),viewport:[1440,900],bundles:Object.fromEntries(['P1','P2','P3','P4','P5'].map(p=>[p,path.basename(bundleFor(p))])),rows});
  }else if(mode==='fake-replay'){
   const world=await writeFakeWorld(path.join(output,'world'),{days:8,seed:7});
   const first=await runDays({days:8,worldDir:world,runsRoot:output,runId:'FAKE-geometry',llm:new ScriptedLlm(),ehr,geometry:browser.provider,log:console.log});

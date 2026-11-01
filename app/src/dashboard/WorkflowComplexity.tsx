@@ -277,6 +277,7 @@ export function WorkflowComplexity({
       className="workflow-complexity"
       aria-label="Union workflow complexity"
     >
+      <p>Geometry model: Chromium at 1440×900, representative screen states, straight-line travel between control centers with no tremor. Scroll distance includes measured reveal offsets. Missing pixels are unavailable; these are modeled interactions, not observed humans.</p>
       <div className="complexity-controls">
         <h3>Union workflow complexity</h3>
         <label>

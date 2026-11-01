@@ -1,8 +1,8 @@
 /** Geometry only; no timing model or inferred coordinates. */
 export interface Point {x:number;y:number}
 export interface BoxGeometry {center:Point; reveal:Point; chain:string[]; offsets:Record<string,Point>}
-export interface ScreenGeometry {screen:string;state:string;viewport:{width:number;height:number};components:Record<string,BoxGeometry>;scrollers:Record<string,{maxX:number;maxY:number;width:number;height:number}>}
-export interface GeometryAtlas {schemaVersion:1;programHash:string;appSha256:string;viewport:{width:1440;height:900};states:ScreenGeometry[];aliases?:Record<string,string[]>;source:'chromium'|'recorded-fixture'}
+export interface ScreenGeometry {screen:string;state:string;sample?:string;viewport:{width:number;height:number};components:Record<string,BoxGeometry>;scrollers:Record<string,{maxX:number;maxY:number;width:number;height:number}>}
+export interface GeometryAtlas {schemaVersion:1;programHash:string;componentsSha256?:string;appSha256:string;viewport:{width:1440;height:900};states:ScreenGeometry[];aliases?:Record<string,string[]>;source:'chromium'|'recorded-fixture'}
 export interface PointerEvent {task:string;screen:string;event:unknown;ops:readonly string[]}
 export interface PointerCost {mouseTravelPx:number|null;scrollPx:number|null;scrolls:number;missingTargets:string[]}
 function target(event:unknown):string|null {

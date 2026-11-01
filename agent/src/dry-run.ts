@@ -1,3 +1,4 @@
+import {geometryEhr} from './geometry.js';
 import { existsSync } from 'node:fs';
 import { dryFixture } from './dry-fixture.js';
 /** One deliberately FAKE, zero-LLM-cost night through the real EHR and browser gates. */
@@ -57,12 +58,15 @@ const backend: JsonLlm = {
     return { json, backend: 'scripted', model: 'FAKE-zero-cost-fixture', servedBy: null, replayOf: null, promptMatched: null, usage: { llmCost: 0, fake: true } };
   },
 };
-const ehr = recordingEhr(createEhr({ fake: false }), path.join(out, 'ehr'));
+const native = recordingEhr(createEhr({ fake: false }), path.join(out, 'ehr'));
+const screens=createScreenChecker(native,{bundles:[path.join(REPO_ROOT,'fixtures/synthea/Ashly_Rippin_149fcc1f.json')],artifactsDir:path.join(out,'screens')});
+if(!screens.geometry)throw new Error('Real screen geometry provider required');
+const ehr=geometryEhr(native,screens.geometry,out);
 const store = new RunStore(out, path.join(out, 'app/src/ehr/ui/custom'));
 const persona = { id: 'P1', userId: current.owner, params: { ...params, keyboardShare: 100, backtrackRate: 0 } };
 const fixtureSchedule = (day: number) => ({ day, persona: 'P1', load: 'FAKE fixture', tasks: [{ ...sampleTask, id: `FAKE-d${day}`, persona: 'P1', patientId: patient.patientId, day, todayResources: [], choices: { ...sampleTask.choices, noteSections: [] } }] });
 const deps: LoopDeps = { runId: 'FAKE-dry-run', store, ehr,
-  screens: createScreenChecker(ehr, { bundles: [path.join(REPO_ROOT, 'fixtures/synthea/Ashly_Rippin_149fcc1f.json')], artifactsDir: path.join(out, 'screens') }),
+  screens,
   agent: new LlmAgent(new RecordingLlm(backend, out)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: 2 };
 // Fix the simulated preference fixture before execution; no clinical rule/metric is overridden.
 const planned = toCandidate({ id: 'dry-change', summary: 'fixture', moveType: 'shortcut', rationale: 'fixture', targets: [], patch, predicted: { clicks: 0, keystrokes: 0, scrolls: 0, klmDeciSec: 0 } }, 'llm');

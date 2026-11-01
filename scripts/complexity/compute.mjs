@@ -53,7 +53,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
     const source = path.join(root, 'scripts/complexity/Measure.lean');
     const c = path.join(work, 'Measure.c');
     const helper = path.join(work, 'ehr-benchmark');
-    await run('lake', ['env', 'lean', '-j4', `--root=${root}`, '-c', c, source], { cwd: lean });
+    await run('lake', ['env', 'lean', '-j6', `--root=${root}`, '-c', c, source], { cwd: lean });
     const rsp = await readFile(path.join(lean, '.lake/build/bin/ehr.rsp'), 'utf8');
     const objects = [...rsp.matchAll(/"([^"\n]+\.o\.export)"/g)].map(x => x[1]).filter(p => !p.endsWith('/Main.c.o.export'));
     if (!objects.length) throw new Error('Missing native CLI link objects; rebuild ehr');
@@ -63,11 +63,11 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
     const provenance = {
       releaseNaming: 'integer',
       suite: suite.id, releaseSource, suiteSha256: hash(suiteBytes), ehrSha256: hash(await readFile(binary)),
-      adapterSha256: hash(await readFile(source)),
+      geometryModelSha256:hash(await readFile(path.join(root,'app/src/metrics/geometry.ts'))),adapterSha256: hash(await readFile(source)),
       search: 'Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.',
       measurement: 'Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path; Pixel travel is measured on the minimum-click trace where a matching Chromium atlas exists; it is not a movement minimum. Missing geometry is unavailable. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.',
       fixedChoices: 'Native ehr min-clicks is also recorded. Benchmark adapter pins fixedValues in the derived Goals (the stock TaskChoices lacks diagnosis, service level and refill-count fields), then calls the same certified jointMinimum and public interpreter. No checker or clinical rules are reimplemented.',
-      floor: 'Ehr.Sim.floorMetrics for the same pinned goals and release. Ideal interface has one screen per clinical episode and no travel; field count excludes auto-linked nonhuman fields.',
+      floor: 'Ehr.Sim.floorMetrics for the same pinned goals and release. Ideal interface has one screen per clinical episode with no geometric floor claimed; field count excludes auto-linked nonhuman fields.',
     };
     const cache = new Map();
     async function iteration(program, specVersion, version, sourcePath, world, day = null, night = null) {
@@ -103,7 +103,11 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
             cache.set(key, measured);
           }
           const geometryFile=runDir?path.join(path.resolve(runDir),'geometry',`${hash(JSON.stringify(stable(program)))}.json`):null;
-          let geometry=null;if(geometryFile&&await exists(geometryFile))geometry=await read(geometryFile);
+          let geometry=null;if(geometryFile&&await exists(geometryFile)){
+            const componentsFile=path.resolve(root,sourcePath).replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
+            const componentHash=hash(JSON.stringify(stable(components))),variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`);
+            geometry=await read(await exists(variant)?variant:geometryFile);if(geometry.componentsSha256&&geometry.componentsSha256!==componentHash)geometry=null;
+          }
           const costs=geometry&&measured.geometryTrace?Object.values(pointerTravel(measured.geometryTrace,geometry)):[];
           measured={...measured,metrics:{...measured.metrics,scrolls:costs.length?costs.reduce((n,c)=>n+c.scrolls,0):null,mouseTravelPx:costs.length&&costs.every(c=>typeof c.mouseTravelPx==='number')?costs.reduce((n,c)=>n+c.mouseTravelPx,0):null,scrollPx:costs.length&&costs.every(c=>typeof c.scrollPx==='number')?costs.reduce((n,c)=>n+c.scrollPx,0):null},floor:{...measured.floor,scrolls:null,mouseTravelPx:null,scrollPx:null}};
           tasks.push({ id: task.id, workflow: benchmark.workflow, title: benchmark.title, patientId: task.patientId, ...measured });

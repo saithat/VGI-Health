@@ -173,6 +173,11 @@ for (const file of fixtures)
       await visibility(page);
       // Background must also pass fidelity once the blocking alert is acknowledged.
       await render(page, { ...screen, modal: null });
+      if(process.env.EHR_GEOMETRY_DIR&&testInfo.project.name==='desktop'){
+        const sha=createHash('sha256').update(readFileSync(file)).digest('hex');
+        const geometry=await captureGeometry(page,screen.screen??file,`${file}:background:${sha}`);
+        writeFileSync(resolve(process.env.EHR_GEOMETRY_DIR,`${sha}.background.json`),JSON.stringify(geometry));
+      }
       expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
         expectedAria({ ...screen, modal: null }),
       );

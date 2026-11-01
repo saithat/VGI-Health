@@ -4,7 +4,7 @@ import {mkdtemp,rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {z} from 'zod';
-import {screenGeometrySchema,geometryProgramHash,type GeometryProvider} from './geometry.js';
+import {screenGeometrySchema,geometryProgramHash,geometryComponentsHash,type GeometryProvider} from './geometry.js';
 import {compilePresentations} from './presentation-compiler.js';
 import type {EhrClient} from './ehr.js';
 import {REPO_ROOT} from './util.js';
@@ -20,7 +20,7 @@ export function browserGeometry(ehr:EhrClient,bundles:string[]|((input:Parameter
    const id=++sequence;const response=await new Promise<unknown>((resolve,reject)=>{waiting.set(id,{resolve,reject});child.stdin.write(JSON.stringify({id,files,bundle:compilePresentations(input.program)})+'\n');});
    const data=z.object({error:z.string().optional(),appSha256:z.string().optional(),states:z.array(screenGeometrySchema).optional()}).parse(response);
    if(data.error||!data.states||!data.appSha256)throw new Error(data.error??'No browser geometry');
-   return {schemaVersion:1,programHash:geometryProgramHash(input.program),appSha256:data.appSha256,viewport:{width:1440,height:900},states:data.states,source:'chromium'};
+   return {schemaVersion:1,programHash:geometryProgramHash(input.program),componentsSha256:geometryComponentsHash(input.program),appSha256:data.appSha256,viewport:{width:1440,height:900},states:data.states,source:'chromium'};
   }finally{await rm(dir,{recursive:true,force:true});}
  };
  return {provider,close:()=>new Promise<void>((resolve)=>{child.on('exit',()=>resolve());child.stdin.end();})};
