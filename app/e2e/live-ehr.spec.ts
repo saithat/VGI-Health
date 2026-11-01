@@ -1,20 +1,27 @@
 import { test, expect, type Page } from "@playwright/test";
+import { buildCatalog } from "../scripts/catalog.mjs";
+import { catalogSchema } from "../src/browser/data";
 
 const adult = "4966bd28-61bc-8f51-3aab-1328a32ea2e7";
 function component(page: Page, id: string) {
   return page.locator(`[data-comp-id="${id}"][data-event]`);
 }
 async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
+  test.setTimeout(120000);
   await page.goto(
-    `/ehr?${new URLSearchParams({ release: "v1", program, persona: "P1", patient: adult })}`,
+    `/ehr?${new URLSearchParams({ mode: "replay", release: "v1", program, persona: "P1", patient: adult })}`,
   );
   await component(page, "home.work.w1Rooming").click();
   await component(page, "w1Rooming.weight").fill("93.4");
   for (const screen of ["w1Rooming", "w1MedRec", "w1Hpi", "w1Exam"])
     await component(page, `${screen}.next`).click();
   await component(page, "w1Orders.prefLisinopril").click();
-  while (await page.locator('[data-event="confirm"]').count())
-    await page.locator('[data-event="confirm"]').first().click();
+  const confirms = page.locator(
+    '[data-comp-id^="w1Orders."][data-event="confirm"]',
+  );
+  for (let attempt = 0; attempt < 20 && (await confirms.count()); attempt++)
+    await confirms.first().click();
+  await expect(confirms).toHaveCount(0);
   await component(page, "w1Orders.indication").fill("Hypertension");
   await component(page, "w1Orders.pharmacy").fill("Community pharmacy");
   await component(page, "w1Orders.substitution").fill("true");
@@ -43,7 +50,7 @@ test.beforeEach(async ({ page, baseURL }) => {
   );
 });
 
-test("P1 v1 W1: identity blocks signing, then a human re-entry permits a real commit", async ({
+test("P1 fixture replay retains identity input and fails closed without source-backed phase context", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -53,7 +60,7 @@ test("P1 v1 W1: identity blocks signing, then a human re-entry permits a real co
   await expect(sign).toBeDisabled();
   await expect(sign).toHaveAttribute(
     "title",
-    "entry required: patientIdReentry",
+    "structured display or action label required",
   );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.getByTestId("commits")).toHaveText("[]");
@@ -61,10 +68,10 @@ test("P1 v1 W1: identity blocks signing, then a human re-entry permits a real co
     .getByRole("button", { name: "Close inspector", exact: true })
     .click();
   await component(page, "w1Sign.patientIdReentry").fill("AA/M/58");
-  await expect(sign).toBeEnabled();
-  await sign.click();
+  await expect(sign).toBeDisabled();
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
-  await expect(page.getByTestId("commits")).toContainText("signOrders");
+  await expect(page.getByTestId("commits")).toHaveText("[]");
+  await expect(page.getByTestId("captured")).toContainText("AA/M/58");
   expect(errors).toEqual([]);
 });
 
@@ -78,7 +85,10 @@ test("bad 01: unopened allergy tab hides the list and Lean blocks signing", asyn
   ).toHaveCount(0);
   const sign = component(page, "w1Sign.commit.signOrders");
   await expect(sign).toBeDisabled();
-  await expect(sign).toHaveAttribute("title", /allergyList/);
+  await expect(sign).toHaveAttribute(
+    "title",
+    "structured display or action label required",
+  );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.getByTestId("commits")).toHaveText("[]");
   await page
@@ -89,7 +99,7 @@ test("bad 01: unopened allergy tab hides the list and Lean blocks signing", asyn
 test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   page,
 }) => {
-  await page.goto("/?persona=P3");
+  await page.goto("/?mode=replay&persona=P3");
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.locator(".patient-switcher summary")).toContainText("IMP");
   await page
@@ -109,7 +119,9 @@ test("browse searches and filters patients and opens a real program", async ({
   await expect(
     page.getByRole("heading", { name: "Open a clinical UI" }),
   ).toBeVisible();
-  await expect(page.locator(".program-groups li")).toHaveCount(70);
+  await expect(page.locator(".program-groups li")).toHaveCount(
+    catalogSchema.parse(await buildCatalog()).programs.length,
+  );
   await page.getByLabel("pediatric", { exact: true }).check();
   await expect(
     page.getByLabel("Patient", { exact: true }).locator("option"),

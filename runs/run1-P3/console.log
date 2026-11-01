@@ -1,0 +1,57 @@
+$ tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3
+day 1 P3: v0 565 clicks, 820 keys, 877 scrolls, 6607s
+night 1 P3: nightly -> no-passing-candidate (v0 -> v0); 5 candidates, 5 rejected
+day 2 P3: v0 783 clicks, 1167 keys, 1248 scrolls, 8269s
+/home/saithat/Projects/VGI-run/agent:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] agent@0.1.0 run-days: `tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3`
+Exit status 130
+$ tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3 --resume
+recorded day 1 P3: v0 565 clicks, 820 keys, 877 scrolls, 6607s
+night 1 P3: nightly -> no-passing-candidate (v0 -> v0); 5 candidates, 5 rejected
+recorded day 2 P3: v0 783 clicks, 1167 keys, 1248 scrolls, 8269s
+night 2 P3: nightly -> deployed (v0 -> v1); 5 candidates, 2 rejected
+day 3 P3: v1 636 clicks, 972 keys, 941 scrolls, 6084s
+/home/saithat/Projects/VGI-run/releases/v1.1/canonical.json: screens.5.components.70.kind: not a valid component kind
+/home/saithat/Projects/VGI-run/agent:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] agent@0.1.0 run-days: `tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3 --resume`
+Exit status 1
+$ tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3 --resume
+recorded day 1 P3: v0 565 clicks, 820 keys, 877 scrolls, 6607s
+night 1 P3: nightly -> no-passing-candidate (v0 -> v0); 5 candidates, 5 rejected
+recorded day 2 P3: v0 783 clicks, 1167 keys, 1248 scrolls, 8269s
+night 2 P3: nightly -> deployed (v0 -> v1); 5 candidates, 2 rejected
+recorded day 3 P3: v1 636 clicks, 972 keys, 941 scrolls, 6084s
+night 3 P3: surface-feature -> not-surfaced (v1 -> v2); 0 candidates, 0 rejected
+day 4 P3: v2 629 clicks, 978 keys, 944 scrolls, 6566s
+night 4 P3: nightly -> deployed (v2 -> v3); 5 candidates, 2 rejected
+day 5 P3: v3 577 clicks, 912 keys, 837 scrolls, 6390s
+night 5 P3: nightly -> deployed (v3 -> v4); 3 candidates, 1 rejected
+day 6 P3: v4 552 clicks, 850 keys, 433 scrolls, 5831s
+ehr min-clicks: exit 1: min-clicks: d06-P3-W4-002: click search exceeded bound or found no completion
+
+/home/saithat/Projects/VGI-run/agent:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] agent@0.1.0 run-days: `tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3 --resume`
+Exit status 1
+$ tsx src/cli.ts run-days --days 10 --personas P3 --backend codex --world runs/world/1 --run-id run1-P3 --resume
+recorded day 1 P3: v0 565 clicks, 820 keys, 877 scrolls, 6607s
+night 1 P3: nightly -> no-passing-candidate (v0 -> v0); 5 candidates, 5 rejected
+recorded day 2 P3: v0 783 clicks, 1167 keys, 1248 scrolls, 8269s
+night 2 P3: nightly -> deployed (v0 -> v1); 5 candidates, 2 rejected
+recorded day 3 P3: v1 636 clicks, 972 keys, 941 scrolls, 6084s
+night 3 P3: surface-feature -> not-surfaced (v1 -> v2); 0 candidates, 0 rejected
+recorded day 4 P3: v2 629 clicks, 978 keys, 944 scrolls, 6566s
+night 4 P3: nightly -> deployed (v2 -> v3); 5 candidates, 2 rejected
+recorded day 5 P3: v3 577 clicks, 912 keys, 837 scrolls, 6390s
+night 5 P3: nightly -> deployed (v3 -> v4); 3 candidates, 1 rejected
+recorded day 6 P3: v4 552 clicks, 850 keys, 433 scrolls, 5831s
+night 6 P3: migrate -> migrated (v4 -> v5); 1 candidates, 0 rejected
+day 7 P3: v5 768 clicks, 1146 keys, 738 scrolls, 7301s
+night 7 P3: nightly -> deployed (v5 -> v6); 4 candidates, 1 rejected
+day 8 P3: v6 575 clicks, 857 keys, 446 scrolls, 4692s
+night 8 P3: nightly -> deployed (v6 -> v7); 5 candidates, 1 rejected
+day 9 P3: v7 666 clicks, 1039 keys, 494 scrolls, 5643s
+night 9 P3: nightly -> no-change (v7 -> v7); 4 candidates, 1 rejected
+day 10 P3: v7 725 clicks, 1071 keys, 528 scrolls, 5771s
+
+run run1-P3 -> /home/saithat/Projects/VGI-run/runs/run1-P3
+rejections logged: 13; tempting-move kinds rejected: allergyHidden, idReentryPrefilled, lbWeightAccepted

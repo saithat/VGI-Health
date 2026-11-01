@@ -1175,6 +1175,58 @@ order declarations/composers for the 13 retained tasks, and the one-line
 `taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
 request is closed. Exact details and the final verification are in HANDOFF-sim.md
 and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
+# Live Medplum integration requests (lane/app, 2026-10-31)
+
+No files under `lean/` were changed for this integration. The app uses the
+canonical v2 projection, real `ehr_facts` and the actual WASM interpreter. The
+following gaps need spec/render ownership; none is handled by weakening a guard.
+
+- Add an explicit rooming/vitals commit for P1/P4. There is currently no save
+  action before prescribing. Rooming observations therefore persist with
+  `signNote`; a patient with no recorded weight must file the note first so the
+  order-entry `orderingWeight` payload can cite a real versioned Observation.
+- Export workflow phase as screen metadata, and have `ehr_facts` accept/project
+  selected Encounter, Task, MedicationRequest and structured source context.
+  `FactsContext` currently drops phase, clinical facts, artifact bindings and
+  InfoPayloads, while missing phase activates *all* phase display requirements.
+  The app supplies this documented caller context: screen workflow plus
+  order-entry for order/lab/sign/verify/pre-op/post-op/refill screens; other
+  screens use their own screen ID as phase, and chart home is shell/care.
+  Raw payloads retain actual FHIR version identities. This mapping should move
+  into exported Lean screen metadata rather than relying on screen ID names.
+- Project `Encounter.serviceType` and explicit risk-assessment Observations in
+  Lean. Until then, the data adapter copies those codes, with artifact bindings,
+  into ClinicalFacts. Risk Observation code system is
+  `https://vgi-health.example/fhir/CodeSystem/clinical-risk`; the code names the
+  risk and `valueCodeableConcept.coding.code` is the assessment. Absence is never
+  translated to a negative assessment. Without these records, conservative
+  clinical predicates can require naloxone/caregiver education and institutional
+  DEA details even for a non-controlled outpatient prescription.
+- `markReviewed` needs an exported source-resource selector per InfoSpec.
+  Allergy/medication receipts target their exact `_history/<versionId>` resources.
+  Empty lists cite the patient version as well as Lean's aggregate dataVersion;
+  a subsequent list change invalidates the Lean receipt. Other source types need
+  explicit contracts; do not treat a Patient reference as proof of a CURES report.
+- Several existing fhirTargets describe logical content rather than the actual
+  signed artifact: note fields target `Composition.section[...]`, diagnoses
+  target `Encounter.diagnosis.condition`, and billing diagnosis targets Claim.
+  The mapper deliberately files note sections as UTF-8 text DocumentReference
+  (LOINC 11506-3 / 11504-8 / 18842-5), creates ICD-10-CM Condition records linked
+  from Encounter.diagnosis, and creates ChargeItem for the six shipped CPT levels.
+  Please make these transaction-level mappings explicit in the spec surface.
+- Add explicit admission-bed, original-prescription, selected-MAR-order and
+  Task-focus bindings. The app currently captures these as operational encounter
+  context before entering the canonical EHR. Bed occupancy changes use versioned
+  Location updates in the same admission/discharge transaction. MAR drug
+  identity comes from Lean's own normalized `display.meds[].drug`, never a
+  second TypeScript formulary. Unknown formulary entries fail explicitly.
+- Add a dedicated discharge prescription composer/intent binding. The mapper
+  supports captured medication lines and `category=discharge`, but a clinician
+  currently has to compose the lines through the existing Orders workflow.
+  Avoid silently copying every inpatient drug to a discharge prescription.
+- Regulatory commit IDs beyond the mapped clinical workflow set still need
+  reviewed persistence contracts; the app throws an explicit mapping error and
+  retains inputs rather than recording an in-memory-only success.
 ## CR-17 — content blueprint integration and missing language capabilities
 
 Content reviewed `origin/lane/render` at db48c49 integration: `uiNav`, `uiSteps`,
@@ -1299,3 +1351,48 @@ screenshots are not permission to insert permissive fixture evidence into the ap
 PNGs. The eight feature replay manifests have an additional installed-WASM runner
 at `Canonical/replay_features_wasm.mjs`; passing it is runtime behavior evidence,
 not an up-to-date WASM source manifest or deployment certificate.
+
+## Live integration continuation after restart (lane/app, 2026-10-31)
+
+The saved WIP was reviewed and merged with main. P1's complete W1 and P2's
+admission now traverse the canonical v2 program in the real WASM interpreter and
+persist/query actual Medplum transactions. All persona worklist searches use real
+persona logins. Seeded world day 1 is 2026-11-02; the home date selector exposes it
+without changing the clinical clock. The OR list displays the ServiceRequest's
+saved schedule, including date-only bookings. Work item selection carries its
+Task, Encounter or MAR order into chart context.
+
+The trusted transaction adapter now handles the spec's boolean `visGiven` as a
+recorded date-precision attestation, rather than the invalid FHIR dateTime
+"true". **Content request:** add an explicit VIS presentation date/time field if
+an exact historical delivery time is needed; a checkbox alone cannot supply one.
+Explicit `vaccineAdministrationDate` remains the vaccine occurrence date. Risk
+Observations are restricted to the selected encounter, newest per risk. A prior
+encounter's negative risk is never substituted for missing current evidence.
+CPT storage is limited to the six clinic levels plus 44970, 47562 and 49650, using
+project-authored short labels and the license note in README.
+
+**Remaining core/content integration requests (no guard is bypassed):**
+
+- Export the selected-encounter and workflow-phase contracts described above;
+  the current adapter still supplies caller context outside `FactsContext`.
+- Provide the prospective-commit event-evidence contract for MAR, immunization,
+  and operative-note temporal obligations. Saved scheduled times and human-entered
+  actual times need an explicit, owner-reviewed route to `eventEvidence`; the
+  adapter must not manufacture a completed administration merely to enable its
+  own commit. The transaction mappings validate on Medplum, but those full WASM
+  paths are not yet certified by the live integration suite.
+- Export receipt source selectors and complete bindings for the other structured
+  payloads. Unsupported review sources and regulatory commit mappings fail with
+  retained inputs. Transfers/observation dispositions also fail explicitly until
+  their persistence contracts exist; they are never recorded as consultations.
+- Preserve the rooming-save and dedicated discharge-prescription requests above.
+  The tested P1 path signs the note (and vitals) before signing its prescription.
+  The discharge mapper writes only explicitly composed medication lines.
+
+Performance evidence for render ownership: on the merged canonical Orders tree,
+unused legacy HTML rendering took about 2.5 seconds per event, and semantic
+rendering about 1.4 seconds in a Node WASM measurement. The app now computes
+legacy HTML and the inspection view lazily, with immutable snapshot inputs.
+Please continue profiling semantic rendering/structured-payload checks in Lean;
+UI logic remains there. No files under lean/ were edited for these changes.

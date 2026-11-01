@@ -30,6 +30,40 @@ function setup() {
 }
 
 describe("temporary JSON interpreter seam", () => {
+  it("retains the accepted snapshot when a refreshed semantic tree cannot render", () => {
+    const { interp } = setup();
+    const wrapped: Interp = {
+      ...interp,
+      renderUi(_spec, _program, facts) {
+        if (facts === JSON.stringify({ broken: true }))
+          throw new Error("Cannot project refreshed facts");
+        return JSON.stringify({
+          banner: [],
+          nav: [],
+          title: "Chart",
+          workspace: [],
+          side: [],
+          modal: null,
+        });
+      },
+    };
+    const session = createSession(wrapped, mockSpec, mockProgram, mockFacts, {
+      id: "P1",
+      role: "physician",
+    });
+    const before = session.getSnapshot();
+    const staged = session.preview({ click: { comp: "rooming-next" } });
+    expect(() => session.accept(staged, { broken: true })).toThrow(
+      "Cannot project",
+    );
+    expect(session.getSnapshot()).toBe(before);
+    expect(session.preview({ click: { comp: "rooming-next" } })).toEqual(
+      staged,
+    );
+    session.accept(staged);
+    expect(session.getSnapshot().state).toEqual(staged.state);
+    expect(before.view.screen).toBe(before.state.screen);
+  });
   it("forwards bundles and events; paints render output and exposes view only for inspection", () => {
     const { interp } = setup();
     const page = { text: { s: "Lean owns this page" } };
@@ -48,8 +82,8 @@ describe("temporary JSON interpreter seam", () => {
     });
     expect(session.getSnapshot().page).toEqual(page);
     session.dispatch({ click: { comp: "rooming-next" } });
-    expect(JSON.parse(seen[1]?.[2] ?? "null")).toEqual(bundle);
     expect(session.getSnapshot().page).toEqual(page);
+    expect(JSON.parse(seen[1]?.[2] ?? "null")).toEqual(bundle);
   });
   it("navigates forward/back and retains entered values", () => {
     const { interp, state } = setup();
