@@ -210,14 +210,14 @@ end VerificationAudit
 #spec_surface Ehr.Check.fixed_lines_pending_nonempty
 #audit_axioms Ehr.Check.fixed_lines_pending_nonempty
 
-#spec_surface Ehr.Check.DoseCompletionObstruction.accepted
-#audit_axioms Ehr.Check.DoseCompletionObstruction.accepted
+#spec_surface Ehr.Check.DoseCompletionObstruction.rejected
+#audit_axioms Ehr.Check.DoseCompletionObstruction.rejected
 #spec_surface Ehr.Check.DoseCompletionObstruction.never_commits
 #audit_axioms Ehr.Check.DoseCompletionObstruction.never_commits
 #spec_surface Ehr.Check.DoseCompletionObstruction.not_completable
 #audit_axioms Ehr.Check.DoseCompletionObstruction.not_completable
-#spec_surface Ehr.Check.completion_acceptance_counterexample
-#audit_axioms Ehr.Check.completion_acceptance_counterexample
+#spec_surface Ehr.Check.completion_dependency_rejected
+#audit_axioms Ehr.Check.completion_dependency_rejected
 
 #spec_surface Ehr.Check.satisfies_of_checked_receipt_lines
 #audit_axioms Ehr.Check.satisfies_of_checked_receipt_lines

@@ -9,7 +9,7 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 |---|---|---|---|
 | Composite expansion | Source properties are the properties of successful expansion; non-use components are retained exactly | Candidate proofs compile with permitted axiom audits in `Core/composites-pending.patch`; not integrated into checker-owned `Satisfies`, full `lake check`, or Comparator. Blocked on constructor/render compatibility and owning-lane integration; no `sorry` or new axioms. | lean-core / check |
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`; stronger allowed-value equivalence `commitGuard_iff_values` and value corollaries `T0_entry_values_allowed`, `T0_entry_values_perLine`, with the constraint on the same confirmed capture) | `lean/Ehr/Proofs/T0.lean` |
-| T1 | If the checker accepts a program, it satisfies properties 1–13 | **unrestricted statement refuted; positive fragments proved** (`Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`): general soundness proved for properties 1–5 and 7–13, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and joint entry repair; finite alert discharge is now proved by `human_finish_ready`; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
+| T1 | If the checker accepts a program, it satisfies properties 1–13 | **general completion open; dose dependency repaired; positive fragments proved** (`Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`): general soundness proved for properties 1–5 and 7–13, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and joint entry repair; finite alert discharge is now proved by `human_finish_ready`; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
 | T2 | A review prompt is skipped only with a valid receipt | **proven** for the interpreter: an applicable review requirement whose info was not shown was covered by a valid receipt (same version, inside the window, allowed role) or a human-entered waiver (`T2_receipts_sound`); `shownOnCommit` without a waiver means shown (`T2_shownOnCommit_shown`) | `lean/Ehr/Proofs/T2.lean` |
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
 | T4 | `ehr deploy` publishes only programs with an ok verdict | **proven** (`T4_publish_only_if_ok`, `T4_rejected_not_published`, `T4_published_certificate`; axioms: propext, Classical.choice, Quot.sound) | `lean/Ehr/Proofs/CheckDeploy.lean` |
@@ -149,12 +149,11 @@ construction lemmas. The last supports all alert conditions and tiers, removes
 duplicated pending keys too, and terminates by pending-list length.
 
 The proof-hole form of the exact remaining lemma is recorded **only below**.
-The present checker makes this target false: `completion_acceptance_counterexample`
-supplies acceptance and `¬ Completable` for one program. No source theorem
-purports to prove unrestricted general T1. The opt-in library
-`CompletionObligations` defines `Ehr.Check.Obligations.AcceptedCompletion` as
-an unproved proposition; it supplies no proof and is absent from defaultTargets.
-Run `lake build CompletionObligations` to inspect that development target.
+The missing drug dependency is now rejected by `completion_dependency_rejected`.
+No source theorem proves unrestricted general T1. The remaining target must
+construct completion for arbitrary accepted programs, across all admissible
+records and reachable states. The opt-in `CompletionObligations` library keeps
+`AcceptedCompletion` as an unproved proposition, outside defaultTargets.
 
 ```lean
 -- In namespace Ehr.Check; imports Ehr.Check.Sound.
@@ -202,24 +201,36 @@ Completed completion-fragment statements have a separate opt-in Comparator chall
 `Ehr/Check/completion-comparator.json`; its placeholder bodies are excluded
 from the default import tree, like the two existing challenge modules.
 
-## Kernel-proved obstruction to unrestricted T1
+## Missing drug dependency regression (repaired)
 
-`DoseCompletionObstruction.accepted` proves that the scalar program with a
-`medicationDose` assessment and no drug field passes `check`. Its required dose
-has no selected drug from which to obtain a valid native unit.
-`never_commits` proves that no reachable state can contain its required commit,
-using the generic empty drug-slot bound and `committed_dose_native`.
-`not_completable` discharges the role and scan-domain premises and proves
-`¬ Completable` for that same accepted program.
-`completion_acceptance_counterexample` packages both facts and is Comparator
-checked. `CompletionObligations.refuted` proves that the exact isolated general
-target is currently false. A dependency-aware completion rule is required;
-neither the checker nor Completable was weakened or edited by this lane.
+`DoseCompletionObstruction.rejected` and `completion_dependency_rejected`
+prove `check … ≠ .ok` for the former dose-only counterexample. `never_commits`
+and `not_completable` remain the semantic explanation of its defect. The native
+checker rejects it as `completable`, with a message identifying the dose field,
+the missing reachable formulary drug selector and the same-slot requirement.
 
-The exact theorem skeleton above is retained as a **checker-repair target**,
-not as a plausible unfinished proof for the current rules. Positive completion
-fragments continue independently; they exclude medication-dose inputs unless a
-selected-drug/native-unit construction is supplied.
+The rule checks each medication-dose binding, including optional fields because
+commit-time validation checks every captured dose. The selector must be usable
+by the role, admit a formulary drug under the commit's allowed-value constraints,
+and remain reachable on that binding's slot. A fixed dose cannot depend on a
+current selector after that line is archived. Kernel tests cover missing,
+hidden, unreachable and wrong-slot selectors, plus a real completing positive
+witness. The permanent native fixture is
+`lean/Ehr/Check/bad/35-dose-without-drug.json`, with its minimal spec beside it.
+Regenerate with `ulimit -v 8000000; LEAN_NUM_THREADS=6 lake env lean --run Ehr/Check/ExportDependencyBad.lean`
+from `lean/`; `certify.py` includes it with the release bad-program regressions.
+
+General T1 still needs a constructive, dependency-aware repair proof for all
+accepted programs: joint entry/allowed-value constraints and unit selectors;
+arbitrary multi-screen navigation, reveal and encounter conditions; dynamic
+current-slot advancement and archived-line repair; and preservation of earlier
+repairs while later entries, reviews, receipts and alerts are handled. The
+existing scalar/fixed-line/receipt/finite-alert/macro fragments remain proved.
+Closing this one soundness bug does not establish unrestricted T1.
+
+The opt-in `CompletionObligations` target now records this rejection and keeps
+`AcceptedCompletion` unproved. Audit references use the rejection theorem names;
+the stale `refuted` claim and acceptance-counterexample references are removed.
 
 ## Receipt-aware review completion extension
 
@@ -236,7 +247,7 @@ default presentation and statement remain compatible.
 This supplies receipt-sensitive presentation, not an arbitrary multi-screen
 receipt-collection route. General navigation/reveal, arbitrary entry/allowed-value
 combinations and dynamic current-slot archival remain outside this family;
-the dose dependency counterexample to unrestricted T1 remains unchanged.
+the dose-only regression is now rejected; general dependency repair remains open.
 
 ## Arbitrary finite alert-family completion extension
 
@@ -253,7 +264,7 @@ distinct required acknowledgments before a real commit.
 
 The alert-family cardinality restriction is closed for this structural family.
 General state/navigation and entry-dependency construction remain open, including
-the accepted dose-only counterexample; the general target has not been weakened.
+general drug/dose dependency repair; the general target has not been weakened.
 
 ## Prefill and macro completion extension
 
@@ -273,6 +284,6 @@ line, two interruptive acknowledgments and a real commit.
 Remaining scope: arbitrary multi-screen navigation/reveal, dynamically archived
 current-slot composers, multiple interacting/allowed-value entry requirements,
 and native drug/dose dependency repair. Unrestricted acceptance-to-completion
-is still refuted by the unchanged dose-only counterexample, so a checker repair
-is required before the isolated general target can be proved. No property or
+remains open after repairing the dose-only counterexample. A general dependency
+repair construction is still required for the isolated target. No property or
 checker rule was weakened; Specs/**, Canonical/** and Render/** were not edited.

@@ -3,9 +3,7 @@ import Ehr.Check.ScalarCompletion
 import Ehr.Check.DoseSound
 import Ehr.Check.Check
 
-/-! A kernel-checked counterexample to unrestricted completion acceptance:
-a medication-dose requirement without a drug input has no valid entry path.
-No checker rule or semantic property is changed here. -/
+/-! A dose-only program has no completion path. The dependency rule rejects it. -/
 namespace Ehr.Check.DoseCompletionObstruction
 open Ehr Ehr.Props Ehr.Proofs
 
@@ -15,8 +13,8 @@ def spec : Spec := Scalar.spec .medicationDose .physician .shownOnCommit .careGa
 /-- The existing scalar program has an assessment field and no drug field. -/
 def program : Program := Scalar.program .physician
 
-/-- The current native rules accept this structurally complete dose-only program. -/
-theorem accepted : check spec none program program = .ok := by decide
+/-- The checker rejects a dose field without reachable drug selection. -/
+theorem rejected : check spec none program program ≠ .ok := by decide
 
 private theorem no_drug_fields : FixedDrugSlots program [] := by
   intro sc hc slot pf hk
@@ -54,7 +52,7 @@ private theorem cannot_add (facts : Facts) (user : User) (s : State)
   rw [dose_invalid s bound x.slot x.value] at valid
   contradiction
 
-/-- No reachable state of the accepted program ever contains its required commit. -/
+/-- No reachable state of the dose-only program ever contains its required commit. -/
 theorem never_commits (facts : Facts) (user : User) :
     Always ⟨spec, program, facts, user⟩ (fun s => "recordReview" ∉ s.commits) := by
   intro s hs
@@ -73,8 +71,7 @@ private theorem after_reachable (ep : Episode) (s : State) (hs : Reachable ep s)
   | nil => exact hs
   | cons e es ih => exact ih _ (.step .human e hs)
 
-/-- Acceptance alone does not imply Completable in the current rules. The
-existing scan-domain premise is met; the missing dependency is a drug input. -/
+/-- The missing drug dependency makes this program non-completable. -/
 theorem not_completable : ¬ Completable spec program program := by
   intro complete
   let facts := Ehr.Examples.Tiny.facts
@@ -88,7 +85,40 @@ theorem not_completable : ¬ Completable spec program program := by
     contradiction) ep.start .start "recordReview" required (never_commits facts user _ .start)
   exact never_commits facts user _ (after_reachable ep ep.start .start es) done
 
-#print axioms accepted
+/-! Dependency checks cover missing, hidden and mismatched-slot drug fields. -/
+def declaredDrug : Spec := { spec with elements := spec.elements ++
+  [{ id := drugElement, label := "Drug", kind := .coded "formulary", enteredBy := [.physician],
+     prefill := .never, friction := .safety, humanOnly := true, fhirTarget := "MedicationRequest.medication" }] }
+
+def withDrug (slot : Slot) (size : Size := .normal) : Program :=
+  { program with screens := program.screens.map fun scr => { scr with components :=
+      scr.components ++ [{ id := "drugSelect", label := "Drug", size := size, kind := .field drugElement slot .none }] } }
+
+#guard (doseDependencyIssue declaredDrug program "recordReview" ["clinical"]).isSome
+#guard (doseDependencyIssue declaredDrug (withDrug (.fixed 1)) "recordReview" ["clinical"]).isSome
+#guard (doseDependencyIssue declaredDrug (withDrug (.fixed 0) .tiny) "recordReview" ["clinical"]).isSome
+#guard (doseDependencyIssue declaredDrug (withDrug (.fixed 0)) "recordReview" []).isSome
+#guard (doseDependencyIssue declaredDrug (withDrug .current) "recordReview" ["clinical"]).isNone
+
+def archivedMismatch : Program :=
+  { (withDrug .current) with screens := (withDrug .current).screens.map fun scr =>
+    { scr with components := scr.components ++
+      [{ id := "nextLine", label := "Next order", kind := .button .newOrderLine }] } }
+#guard (doseDependencyIssue declaredDrug archivedMismatch "recordReview" ["clinical"]).isSome
+
+/-- A reachable selector on the correct line remains accepted. -/
+theorem dependency_repaired_accepted :
+    check declaredDrug none (withDrug (.fixed 0)) (withDrug (.fixed 0)) = .ok := by decide
+
+/-- The repaired input is a real completion path, not just a structural witness. -/
+example : "recordReview" ∈ (runAll declaredDrug (withDrug (.fixed 0))
+    Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user .human
+    (init declaredDrug (withDrug (.fixed 0)) Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user)
+    [.enter "drugSelect" (.code "acetaminophen"), .enter "assessmentField" (.qty 10 .mg),
+     .click "recordButton"]).commits := by decide
+
+#print axioms dependency_repaired_accepted
+#print axioms rejected
 #print axioms never_commits
 #print axioms not_completable
 end Ehr.Check.DoseCompletionObstruction
