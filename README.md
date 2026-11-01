@@ -41,6 +41,102 @@ Start with these files, in order:
 | The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: deterministic Lean policies; clicks, scrolls and straight-line mouse travel at 1440×900 | `Sim/` |
 | The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
 
+## Architecture
+
+One Lean code base is the single source of truth. It is compiled twice: to a
+native `ehr` binary (checker, simulator, deploy) and, through Lean → C →
+Emscripten, to WebAssembly that the browser runs. React only draws the
+semantic screen tree Lean returns; it holds no clinical logic.
+
+```mermaid
+flowchart LR
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
+  classDef trusted fill:#eeeeee,stroke:#777,color:#222
+  classDef untrusted fill:#fde2e1,stroke:#b42318,color:#5c100b
+
+  subgraph LEAN["lean/Ehr: Lean 4.35, core + Batteries, no Mathlib"]
+    direction TB
+    SPEC["Specs: V1, V2, V3 rule sets<br/>Spec = elements, commits, entries, reviews, alerts<br/>Profile.lean: core / full"]:::trusted
+    CORE["Core: Types, Interp (init, step, view),<br/>Guard (commitGuard, entryMet, reviewMet, commitRoleOk)"]:::proved
+    PROPS["Props: Satisfies spec prev canonical prog<br/>= properties 1–13 (incl. A1–A4, D5)"]:::trusted
+    PROOFS["Proofs: T0 guard, T2 receipts, T3/T6 macros,<br/>A2/A4 alerts, T4 deploy plan"]:::proved
+    CHECK["Check: rules → check : Spec → … → Result<br/>Sound: accepted_* ⇒ properties 1–5, 7–13<br/>completion: fragments (satisfies_of_checked_*)"]:::proved
+    RENDER["Render: Fhir (facts, display projections),<br/>renderUi → UiScreen (semantic tree)<br/>UiProofs: D1–D4, D6"]:::proved
+    SIM["Sim: deterministic clinician policies,<br/>goals from spec, metrics: clicks, scrolls, keys"]:::trusted
+    CANON["Canonical: vendor reference program,<br/>forPersona → role pre-set views (P1–P5)"]:::checked
+    SPEC --> CORE
+    SPEC --> PROPS
+    CORE --> PROOFS
+    PROPS --> CHECK
+    CORE --> RENDER
+    CORE --> SIM
+    CANON --> CHECK
+  end
+
+  NATIVE["native ehr (lake build)<br/>check · deploy · simulate · render-screens · facts · step"]:::trusted
+  WASM["WASM (Lean→C→Emscripten)<br/>roots Ehr.Api, Ehr.Render.Api"]:::trusted
+  CORE --> NATIVE
+  CHECK --> NATIVE
+  SIM --> NATIVE
+  RENDER --> NATIVE
+  CORE --> WASM
+  RENDER --> WASM
+
+  subgraph AGENT["agent/ (TypeScript): nightly loop, untrusted"]
+    direction TB
+    LOGS["training-day traces<br/>(odd days only)"]:::trusted
+    LLM["Codex in bwrap sandbox<br/>proposes JSON patches to the UI program"]:::untrusted
+    GATE1["ehr check: Lean checker<br/>(certificate: spec + program hashes)"]:::proved
+    GATE2["screen gate: Chromium renders every<br/>reachable state; ARIA tree = UiScreen"]:::checked
+    DEPLOY["ehr deploy: atomic pointer,<br/>build binding (WASM + app hashes)"]:::proved
+    MEASURE["ehr simulate on blind even days<br/>vs certified baseline + no-agent control"]:::trusted
+    LOGS --> LLM --> GATE1 --> GATE2 --> DEPLOY --> MEASURE
+  end
+  NATIVE --> GATE1
+  NATIVE --> MEASURE
+
+  subgraph APP["app/ (React + Mantine)"]
+    direction TB
+    PAINT["painter: draws UiScreen only"]:::trusted
+    LIVE["live mode: Medplum via /medplum proxy<br/>commit → FHIR transaction mapper"]:::trusted
+    REPLAY["replay, UI browser timeline,<br/>trajectories (0-mismatch replay), dashboard"]:::checked
+  end
+  WASM --> PAINT
+  DEPLOY --> REPLAY
+
+  subgraph DATA["data"]
+    FHIR["Synthea + Synthetic Hospital → FHIR<br/>Medplum (Docker); world/2: 1,284 tasks"]:::trusted
+  end
+  FHIR --> RENDER
+  FHIR --> LIVE
+  FHIR --> SIM
+
+  CONF["conformance/: 200 held-out scenarios<br/>(hidden from the agent) on every revision"]:::checked
+  NATIVE --> CONF
+  COMP["Statements.lean ⟷ Solution.lean<br/>lake comparator, lake check"]:::proved
+  PROOFS --> COMP
+```
+
+Colors match the table: green proved in Lean, blue checked, grey trusted, red untrusted.
+
+**One event, end to end.** A click in the browser calls the WASM `step` (the
+same `Interp.step` the proofs are about). If the event is a commit, the
+interpreter first evaluates `commitGuard`; T0 proves no commit is added
+without it. The new state goes through `renderUi`, whose D-theorems guarantee
+the banner, required reviews, honest buttons and alert modality in the
+`UiScreen` tree; the painter draws that tree, and a browser test checks the
+accessibility tree equals it. In live mode, a committed state is mapped to one
+FHIR transaction and sent to Medplum.
+
+**One night, end to end.** The agent sees only training days and the rules
+(generated capabilities manual), proposes patches, and merges compatible ones
+into one candidate program. The native checker must accept it (properties
+1–13; T4 ties deploy to acceptance), every reachable screen must pass the
+browser gate, and validation must not lose task completion. Only then is the
+candidate deployed for that clinician's next login; it is measured on blind
+days against the certified baseline and a no-agent control.
+
 [VERIFICATION.md](docs/VERIFICATION.md) records the proof scope, trusted code and
 open gaps. Checker implications cover 12 of 13 properties; general completion
 still requires a separate proof. Current releases use the **core** rule profile.
