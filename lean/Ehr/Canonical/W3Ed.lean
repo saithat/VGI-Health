@@ -1,19 +1,11 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W3: emergency department encounter (P2)
-
-Track board → triage (weight sometimes typed in lb) → provider evaluation →
-order sets or single orders → sign orders → disposition (admit, discharge, …).
-
-Deliberate friction: the dosing weight is displayed again on signing (linked from weight); order
-sets fill every value, and each one still needs a confirm; ED orders still ask
-for dispense quantity, refills, and pharmacy; triage and evaluation are
-separate screens.
-Kept: a weight in lb never counts (the guard needs kg, and the weight-in-lb
-alert fires); allergy and interaction acknowledgments; patient-ID re-entry;
-the dose check, allergies, current meds, and CURES report on the sign screen;
-the latest vitals on the disposition screen.
+W3: ED track board, triage, evaluation, orders, signing and disposition.
+Order sets fill drafts; each required value still needs confirmation.
+A weight in pounds cannot meet the kilogram requirement.
+Signing retains identity, alerts and required medication reviews;
+the disposition screen shows the latest vitals.
 -/
 
 namespace Ehr.Canonical.W3

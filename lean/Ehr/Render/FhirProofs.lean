@@ -3,13 +3,9 @@ import Ehr.Render.FhirTests
 import Ehr.Examples.Tiny
 
 /-!
-# T5 and T11: the FHIR abstraction preserves its evidence
-
-An active allergy or medication in a successfully parsed bundle has its full
-row in Display, even after date sorting. A weight reported as recorded today
-comes from an actual non-error body-weight observation with that date, value
-and unit. Versions are the declared digest of all resources of the type and
-are invariant under permutation. Digest collision freedom is not claimed.
+T5 and T11: parsed allergy and medication rows retain their source evidence.
+Today's reported weight comes from a matching non-error observation.
+Version digests do not depend on resource order; collision freedom is not proved.
 -/
 namespace Ehr.Render.Fhir
 open Lean

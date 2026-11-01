@@ -2,6 +2,12 @@ import Ehr.Render.UiContracts
 import Ehr.Render.CommitProofs
 import Ehr.Render.PanelProofs
 
+/-!
+Proofs that the EHR tree retains shown controls, entered notes and clinical data.
+D1–D6 connect its nodes to the actual interpreter view.
+Browser layout and drawing remain separate test obligations.
+-/
+
 namespace Ehr.Render
 
 /-- Every shown field with provenance receives its public source caption.

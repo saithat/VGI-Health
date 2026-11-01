@@ -1,27 +1,11 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W1: adult outpatient visit (P1, primary care)
-
-Rooming → medication reconciliation → HPI/ROS → exam and A&P → orders (and
-labs) → order verification → sign orders → visit close (sign note).
-
-Deliberate friction (BRIEF 5):
-- allergies are asked about three times: "mark reviewed" in rooming, a
-  checkbox in the composer, and a checkbox on the verification step;
-- weight is typed in rooming and displayed again as a linked dosing weight;
-- the diagnosis is typed for the visit, for each order line, and again for
-  the claim (the declared auto-linked copies now carry their source);
-- an extra "order verification" screen sits between the composer and the sign
-  screen;
-- copy-forward and templates fill long text (note bloat);
-- recent labs and fill history are one tab away; the CURES report is on the
-  composer's second tab;
-- a removable "health maintenance" popup at visit close.
-
-Kept: patient-ID re-entry, interaction and allergy acknowledgments, signing.
-The allergy list, current meds, dose check, and CURES report are on the sign
-screen itself.
+W1: adult outpatient visit, from rooming to orders and visit close.
+The baseline repeats reviews and billing diagnoses and includes note templates.
+Linked diagnosis and weight copies retain their source.
+Signing keeps patient-ID re-entry, alert acknowledgments and the required
+allergy, medication, dose and CURES reviews.
 -/
 
 namespace Ehr.Canonical.W1

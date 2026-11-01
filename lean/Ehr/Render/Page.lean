@@ -2,14 +2,9 @@ import Ehr.Render.Html
 import Ehr.Core.View
 
 /-!
-# Executable page renderer
-
-The interpreter has already resolved ancestry, collapsed groups, tabs and
-visibility in `view`. Render its shown items in component-list order. Group
-and tab headers control that view; their visible children follow in that same
-list, rather than being filtered a second time by a separate tree traversal.
-Every component has a labeled wrapper. All actions use `Part.toHtmls`, which
-writes their component id and disabled state from the same view.
+Render the shown items from the interpreter's current view, in list order.
+Group and tab headers control that view; the renderer does not filter it again.
+Every component gets its label, ID and enabled state from the same view.
 -/
 namespace Ehr.Render
 

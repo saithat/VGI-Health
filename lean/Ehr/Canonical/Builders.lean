@@ -1,21 +1,10 @@
 import Ehr.Core.Types
 
 /-!
-# Builders for the canonical EHR program
-
-Small functions that make components, so the canonical screens stay short and
-consistent:
-- `cid s name` is the id of component `name` on screen `s` (`"s.name"`); it is
-  also the component's stable tag;
-- basic components: `field`, `lineField`, `panel`, `table`, `trend`, `alertC`,
-  `goto`, `commitBtn`, `reviewBtn`, `group`, `tabsC`, `macroBtn`, `searchC`;
-- the chart shell every screen carries: banner, chart search, Back and Home,
-  a visit navigator, a sidebar, and a chart-review tab strip;
-- the medication order composer for the current order line;
-- macros that fill whole order lines (preference lists and order sets).
-
-Container arguments (`parent`) are local names on the same screen; the builders
-turn them into full ids.
+Component builders keep canonical screens consistent and readable.
+IDs and stable tags use screen.name. Parent arguments name local containers.
+Shared helpers build chart navigation, review panels and order composers;
+macros fill drafts without performing human-only actions.
 -/
 
 namespace Ehr.Canonical

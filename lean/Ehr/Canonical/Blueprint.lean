@@ -1,10 +1,11 @@
 import Ehr.Canonical.Features
 
-/-! Screen migration for the reviewed canonical blueprint. All artifact inputs,
-reviews, roles and actions are retained with their original component IDs. Old
-screen destinations resolve to their clinical hosts; there are no alias screens.
-Visibility.when is not in the current core language (CR-17); sections are open
-and guards keep the original When/clinical applicability, including unknowns. -/
+/-!
+Place canonical fields, reviews and actions in their clinical workspaces.
+Original component IDs and required safety steps remain available.
+Sections stay open; the interpreter checks entry and clinical conditions.
+Old screen destinations resolve to the screens that now contain their work.
+-/
 namespace Ehr.Canonical.Blueprint
 
 /-- Exhaustive relocation ledger. Every non-base artifact has one clinical host. -/
@@ -109,7 +110,7 @@ def route (c : Component) : Component := match c.kind with
 /-- Remove only workspace shell copies. Render.Ui already supplies nav/stepper
 and the clinical rail. Keep the banner component for landmark guard semantics;
 it renders as clinical information, not a second banner landmark. Real nav
-buttons stay addressable until core supplies shell navigation events (CR-17). -/
+buttons stay addressable through their original component IDs. -/
 def isShellCopy (s : Screen) (c : Component) : Bool :=
   c.id == cid s.id "sidebar" || c.parent? == some (cid s.id "sidebar") ||
   (c.id == cid s.id "nav" && !["W3", "W4"].contains s.workflow)

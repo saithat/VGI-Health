@@ -11,11 +11,9 @@ import Ehr.Canonical.W6Surgery
 import Ehr.Canonical.W7Refills
 
 /-!
-# The canonical EHR program, version 1
-
-The vendor's out-of-the-box UI program for spec v1. Every clinician starts with
-it on day 1; the overnight agent then personalizes it. It covers workflows
-W1–W7 (BRIEF section 5) on 46 screens, starting from the patient workspace.
+The shared vendor baseline for spec v1 and workflows W1–W7.
+Role presets select each clinician's view before agent personalization.
+Fields, reviews and alert controls come from the hospital rulebook.
 -/
 
 namespace Ehr.Canonical

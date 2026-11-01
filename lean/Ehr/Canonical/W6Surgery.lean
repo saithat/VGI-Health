@@ -3,28 +3,11 @@ import Ehr.Canonical.W1Visit
 import Ehr.Core.Navigation
 
 /-!
-# W6: surgical day (P5, general surgeon)
-
-- ED consult: review imaging and labs, write the consult note, decide; sign
-  the note.
-- Pre-op: verify consent, review anticoagulants and meds to hold, update the
-  H&P, order the prophylactic antibiotic; sign pre-op orders.
-- Brief op note; sign it.
-- Post-op order set (diet, activity, VTE prophylaxis, labs, nursing, and four
-  medication rows); sign orders.
-- Rounding: overnight events, vitals, labs; modify orders.
-- Discharge: medication reconciliation, discharge prescriptions, follow-up,
-  instructions; discharge.
-Post-op clinic visits use the W1 screens (a W1 variant).
-
-Deliberate friction: weight and its linked dosing copy are both displayed on the sign
-screen; the consult diagnosis is typed again for billing; the post-op order set
-fills every value, and each still needs a confirm; inpatient orders still ask
-for dispense quantity, refills, and pharmacy.
-Kept: consent verified by the surgeon; the anticoagulant list, allergies,
-current meds, dose check, and CURES report on the sign screen; patient-ID
-re-entry; the intra-op record on the op-note screen; current meds on the
-discharge screen.
+W6: surgical consult, pre-op review, operative note, post-op orders,
+rounding and discharge. Clinic visits use W1.
+Order sets create drafts that still require confirmation.
+Separate signatures retain consent verification, identity, alert handling,
+required medication reviews and the relevant operative/discharge records.
 -/
 
 namespace Ehr.Canonical.W6

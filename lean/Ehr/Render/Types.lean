@@ -1,34 +1,10 @@
 import Ehr.Core.Types
 
 /-!
-# Page tree and display types
-
-Lean renders the whole EHR page as a tree (`docs/design/core-model.md`,
-section 9). A small painter in the browser draws the tree and turns clicks and
-keystrokes back into events. It makes no decisions.
-
-This module holds:
-- the page tree (`Html`) with typed attributes and classes;
-- `Ro`, read-only content (no events, no component IDs), and `Part`, the
-  rendering of one component before its ID is filled in;
-- the wire form of the tree (`PageNode`, `PageAttr`), which is what goes to the
-  browser as JSON;
-- `Display`, the patient's FHIR records projected to table rows.
-
-Only the classes and attributes of section 9.1 can be written:
-- a class is a `Cls` constructor, so an unknown class cannot be written;
-- `Cls` has no `ehr-tiny`: the renderer never draws tiny text (a tiny
-  component is never shown, so it is never rendered);
-- an attribute is an `Attr` constructor; there is no `hidden`, no
-  `aria-hidden`, no `style`, and no `<input type="hidden">`.
-
-Tags: section 9 also lists `dialog` and `form`. They are left out on purpose:
-a `<dialog>` without `open` is hidden by the browser, and a `<form>` submits
-(reloads the page) when a button in it is clicked. The modal is a `div` with
-`role="dialog"`.
-
-This module imports only `Init` (through `Ehr.Core.Types`), so it can go into
-the WASM build.
+Types for page nodes, read-only clinical content and component actions.
+The internal tree uses a fixed set of attributes and classes; PageNode is
+the JSON form sent to the browser. Display holds rows read from FHIR.
+The browser draws the tree and sends user events to the interpreter.
 -/
 
 namespace Ehr.Render

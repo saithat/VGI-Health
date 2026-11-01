@@ -16,7 +16,7 @@ open Ehr.Specs.V1 Ehr.Specs.V2 Ehr.Specs.V3
 
 -- Each release supports human documentation of the corrected code through
 -- real composer events. This tests the waiver path, not statutory eligibility
--- or rejection of arbitrary codes: those still need core/check CR-11.
+-- or rejection of arbitrary codes.
 #guard [(specV1, canonicalV1), (specV2, canonicalV2), (specV3, canonicalV3)].all fun (sp, p) =>
   let p := p.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
   let s := run opioidPath p adult physician sp
@@ -127,7 +127,7 @@ def sepsis : State := more sepsisMissing
   canonicalV3 adult physician specV3).commits == ["signOrders"]
 
 /-- MAR episode carries the signed antibiotic's indication as a named fact.
-The renderer lane must render this fact, not just the panel heading (CR-10). -/
+The named fact supplies the indication for the administration display. -/
 def antibioticAdminFacts : Facts :=
   { adminFacts "cefazolin" with record := [("abxIndication", "surgical-prophylaxis")] }
 /-- Old MAR lacks the newly required indication display. -/
