@@ -369,9 +369,12 @@ export function FieldNode({
   );
 }
 function RecordValue({ label, value }: { label: string; value: string }) {
-  const tone = /status|scheduled|administration|^\d{1,2}:\d{2}/i.test(label)
-    ? statusTone(value)
-    : undefined;
+  const tone =
+    /status|confirmation|review state|scheduled|administration|^\d{1,2}:\d{2}/i.test(
+      label,
+    )
+      ? statusTone(value)
+      : undefined;
   return (
     <span className={tone ? `clinical-status status-${tone}` : undefined}>
       <DisplayValue value={value} />
