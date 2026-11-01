@@ -16,7 +16,7 @@ theorem human_enter (sp : Spec) (p : Program) (facts : Facts) (user : User)
     step sp p facts user .human s (.enter comp.id value) =
       ({ s with captured := setCaptured s.captured {
           element := eid, slot := resolveSlot s slot, value, byHuman := true,
-          confirmed := true, provenance? := none } }, .ok) := by
+          confirmed := true, provenance? := el.linkedFrom?.map ("linked:" ++ ·) } }, .ok) := by
   simp [step, stepCore, stepEvent, modal, Event.isAck, enterCore, shown, field, decl, role, valid, validation]
 
 /-- A scalar witness can be entered without relational dose constraints.

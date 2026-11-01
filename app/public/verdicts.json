@@ -559,7 +559,7 @@
             "w1Sign"
           ],
           "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element weight",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
           "counterexample": [
             {
               "click": {
@@ -636,6 +636,173 @@
             {
               "click": {
                 "comp": "recordButton"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/36-cures-without-review.json": {
+      "status": "rejected",
+      "sha256": "302095996c71e21af319d2fa916203cdecd7a3d0cedcc9d42b30e8c1b6c8a55c",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/37-stale-dosing-weight.json": {
+      "status": "rejected",
+      "sha256": "032f6463d68f40c519635415bf1a80cf770f682fb24c6addc4eab6a7681caa35",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "capturesAllOnce",
+          "message": "field w1Orders.dosingWeight on screen w1Orders asks for dosingWeight, which is linked from weight and must not be typed again",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/38-cross-patient-panel.json": {
+      "status": "rejected",
+      "sha256": "342355d66edabc13d2245814c9101157654057c3f412e1393681cf228c6ef305",
+      "output": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "writesOnly",
+          "message": "button foreignAllergies on screen home reviews info patient-A-allergies, which is not in the spec",
+          "counterexample": []
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/39-empty-order-signing.json": {
+      "status": "rejected",
+      "sha256": "a71e5e0186effd5b454883eb42c231355d3f7b5a7d9327684896a09acca39e86",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/40-denial-without-reason.json": {
+      "status": "rejected",
+      "sha256": "ff8de0463be3681a5e47341ec2015e7f8f326c16cca1f877864b23f1b9fde24f",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w7Queue",
+            "w7Review",
+            "w7Decision"
+          ],
+          "property": "completable",
+          "message": "commit denyRefill: no field the user can reach for required element refillDenyReason",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w7Queue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Queue.open"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Review.decide"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Decision.commit.denyRefill"
               }
             }
           ]

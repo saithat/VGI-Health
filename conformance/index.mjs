@@ -171,7 +171,7 @@ export async function main(args = process.argv.slice(2)) {
       semanticRelease: spec.version, revision: program.version, programPath, specPath, program, spec, certification: 'not evaluated by this behavioral runner' }];
   } else targets = [...canonicals(), ...(values.run ? runTargets(values.run) : [])];
   const jobs = Number(values.jobs);
-  if (!Number.isInteger(jobs) || jobs < 1 || jobs > 4) throw new Error('--jobs must be 1–4');
+  if (!Number.isInteger(jobs) || jobs < 1 || jobs > 16) throw new Error('--jobs must be 1–16');
   const report = await runParallel({ targets, binary: path.resolve(binary), runId: values.run ?? null, selected: values.scenario, jobs });
   const output = values.out ? path.resolve(values.out) : values.run
     ? path.join(root, 'runs', values.run, values.scenario ? 'conformance.partial.json' : 'conformance.json')

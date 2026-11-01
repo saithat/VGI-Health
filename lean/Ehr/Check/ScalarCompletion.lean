@@ -97,7 +97,7 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
     intro ack
     have good : hasGoodEntry f u { s₁ with acked := ack, popup? := none } (element k r) none = true := by
       apply List.any_eq_true.mpr
-      exact ⟨x, by simp [s₁, setCaptured], by simp [x, element, capturedSatisfies, valid, entryValueAllowed]⟩
+      exact ⟨storedCapture s₀.captured x, by simp [s₁, setCaptured], by simp [storedCapture, x, element, capturedSatisfies, valid, entryValueAllowed]⟩
     have info : infoShown (spec k r m a t) (program r) f
         { s₁ with acked := ack, popup? := none } "allergyList" = true := by
       simp [infoShown, program, Program.compsOf, Program.screen?, screen, s₁, hs₀, field, button,
@@ -106,7 +106,7 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
     simp only [spec, element, entry, review] at info
     simp [guardBase, commitRoleOk, roleOk, encounterRolesOk, CommitSpec.encounterRoleAllowed, spec, Spec.commit?, role,
       entriesOk, entryMet, entry, Spec.element?, element, good,
-      reviewsOk, reviewMet, review, info, extraGuard, validationsOk, elementValueValid, nonDose,
+      reviewsOk, reviewMet, review, info, extraGuard, signingHasOrder, validationsOk, elementValueValid, nonDose,
       defaultsOk, displaysOk, actionLabelOk, whenHolds]
   have consistent : ∀ z, popupCandidates (spec k r m a t) (program r) f z "recordReview" = [] →
       alertsAcked (spec k r m a t) f z "recordReview" = true := by

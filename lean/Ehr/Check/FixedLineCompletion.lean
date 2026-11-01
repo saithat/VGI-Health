@@ -144,9 +144,9 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
     have good (n : Nat) (hn : n = 0 ∨ n = 1) : hasGoodEntry f u
         { s₂ with acked := ack, popup? := none } (Scalar.element k r) (some n) = true := by
       apply List.any_eq_true.mpr
-      refine ⟨capture n, ?_, ?_⟩
-      · rcases hn with rfl | rfl <;> simp [s₂, s₁, setCaptured, capture]
-      · simp [capture, Scalar.element, capturedSatisfies, valid, entryValueAllowed]
+      refine ⟨if n = 0 then storedCapture s₀.captured (capture 0) else storedCapture s₁.captured (capture 1), ?_, ?_⟩
+      · rcases hn with rfl | rfl <;> simp [s₂, s₁, setCaptured, storedCapture, capture, List.contains_iff_mem]
+      · rcases hn with rfl | rfl <;> simp [storedCapture, capture, Scalar.element, capturedSatisfies, valid, entryValueAllowed]
     have perLine : entryMet (spec k r m a t moreAlerts automation.isSome) f u
         { s₂ with acked := ack, popup? := none } entry = true := by
       simp only [entryMet, spec, Spec.element?, Scalar.element, drug, entry,
@@ -174,8 +174,8 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
             reviewVisibility, o, receiptHideSafe, spec, Scalar.spec, Scalar.review,
             List.all_eq_true]
     rw [guardBase, entries, reviews]
-    simp [spec, Scalar.spec, Spec.commit?, extraGuard, validationsOk, elementValueValid, drug, Scalar.element,
-      nonDose, defaultsOk, displaysOk, actionLabelOk]
+    simp [spec, Scalar.spec, Spec.commit?, extraGuard, signingHasOrder, validationsOk, elementValueValid, drug, Scalar.element,
+      nonDose, defaultsOk, displaysOk, actionLabelOk, entry, drugElement, waiverEligible]
     change (List.contains [r] u.role && true) = true
     simp [role]
   obtain ⟨finish, done⟩ := human_finish_ready_unique (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u s₂
