@@ -1,3 +1,14 @@
+# Cross-lane change requests
+
+## Sim → lean-core / world: typed task choices (2026-10-31)
+
+The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed
+`TaskChoices.curesExemptReason?`, per-drug supply days, naloxone response and
+surgical phase/assessment choices, and populate these in world schedules.
+The simulator must not interpret `noteSections` strings as exemption or supply
+facts. Core has now landed these optional fields in `fb1ed8c`; sim is integrating
+the exact names. Naloxone patient-response choices are still requested. W6 needs to distinguish
+`signPreOpOrders` from `signOrders`; W4 assessment tasks need `chartAssessment`.
 # Change requests (from the checker lane)
 
 Issues found while stating properties 1–12 over the interpreter and writing
@@ -428,6 +439,13 @@ weakened. Prior-auth request certification remains unfinished, explicitly.
 
 ---
 
+## Sim validation → app: mock DecisionRecord screenCheck (2026-10-31)
+
+App build and lint pass after main merge `b0aad8b`, but `pnpm --filter app run test`
+fails loading dashboard fixtures: Zod expects `DecisionRecord.screenCheck`, absent
+from `runs/mock/decisions` (and/or break records). Please regenerate the app-owned
+mock run against the current agent schema. The sim lane has not edited these
+artifacts. Agent's 31 tests and world's 52 tests pass.
 ## World integration status
 
 Core fb1ed8c supplies the requested typed fields, service order kinds and generic
@@ -660,3 +678,84 @@ Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
 lists for record-dependent identity/scan/cosign values are conservatively
 rejected; no clinical permission or guard is relaxed. Zero-refill quantities
 are supported generically.
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.
+
+## Sim → content: prior-auth guard integration is blocking full build
+
+After merging world/core through `c98cfaf` and content through `6cdab91`,
+`lake build` fails six guards in `Ehr/Canonical/ReleaseTests.lean` (14, 15,
+25, 26, 38, 42). `priorAuthRequest.prefill = never` correctly requires a human
+`enter`; `requestPriorAuth` clicks are now blocked for never/human-only values.
+Please expose the human priorAuthRequest field in medication/service composers
+and update the positive release paths to use `Event.enter ... (.flag true)`.
+Keep negative coverage that a convenience request click cannot create a
+never-policy capture. Do not change the spec's never policy or relax the core
+hard stop to satisfy the old click-based tests. Sim's modules and T9 proofs
+build with the new core; the release guards are outside sim ownership.
+
+A concrete proposed content fix is saved at
+`lean/Ehr/Sim/content-prior-auth.patch`: add human input controls, use them in
+positive tests, and retain negative convenience-click coverage. The patch does
+not change a spec or a core rule. Content exports must then be regenerated.
+
+## Sim replay → content/world: preserve blocked scenario work
+
+Seed 1 day 1, role-projected canonical v1, seed 123:
+P1 completes 39/42; P2 0/22; P3 38/38; P4 22/22; P5 14/18.
+Every completed task passes all floor inequalities and keeps every interruption.
+The simulator reports these incomplete tasks; it does not drop their goals.
+
+- **Content, W3 documentation:** task choices request note sections and sim's
+  existing W3 mapping requires `signNote`. W3 has no signNote button and lacks
+  required note fields such as `ros`. Please provide a complete ED note-signing
+  path with all unchanged spec requirements. Do not remove the goal or weaken
+  signNote to obtain a completion number. All 22 day-1 ED tasks expose this.
+- **World/content, service versioning:** day-1 P1 tasks W1-006, W1-010, W1-015
+  and four P5 W1 tasks include typed imaging/procedure orders. Spec v1 has no
+  orderKind/orderCode; those are introduced by v1.1. World's handoff says service
+  orders occur after day 4, but the committed day-1 schedules contain them.
+  Either align the scenario timing with the release, or obtain owner approval
+  for baseline service-order support. Sim cannot invent medication orders or
+  mark uncaptured services complete.
+
+Reproduce with `python3 lean/Ehr/Sim/cli_smoke.py --days 1 --report /tmp/sim.json`
+after a successful full build. Use `--require-complete` to fail on any blocked
+scenario in addition to determinism, floor and interruption failures.
+
+## Sim navigation correction / refill alert context
+
+The W2/W3 missing local composers reported above are **not a completability
+block once cross-workflow navigation is allowed**: the shared W1 order/note
+composers remain reachable through Home and satisfy the same unchanged goals
+and guards. Sim removed its own overly narrow workflow-navigation restriction.
+A local ED path is still a UI improvement, not a reason to drop signNote.
+
+A separate core/content gap remains: W7's interaction rule reads drugs in play,
+but the refill UI captures no `drug`, and init does not derive a refill drug from
+the FHIR Task focus. Thus an uncaptured proposed modification cannot fire that
+alert. Sim's floor now uses actual goal captures, rather than raw uncaptured
+order choices; this is a program-independent derivation, not a runtime clamp.
+Core/render/content should agree on explicit prescription context for refill
+interaction checking. Do not fabricate a MedicationAdministration or weaken the
+interaction condition to address this.

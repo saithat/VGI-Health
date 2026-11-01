@@ -2,6 +2,7 @@ import Ehr
 import Ehr.Api
 import Ehr.Cli.Check
 import Ehr.Render.Cli
+import Ehr.Cli.Sim
 
 /-!
 # `ehr` command-line tool (native)
@@ -84,6 +85,8 @@ def main (args : List String) : IO UInt32 := do
     | .ok i => match Render.Fhir.runFacts i with
       | .error e => IO.eprintln e; IO.println (errorJson e); return 1
       | .ok out => IO.println (encodeJson out); return 0
+  | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
+  | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView

@@ -19,6 +19,11 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 | T9 | Minimum clicks is exact | not started | A |
 | T10 | The page shows what must be shown | **proven**: every shown item has its id/label; only shown ids occur; no tiny class; every guard-counted info tree appears in its component; event disabled iff absent from enabled; shown commit enabled iff no popup, not already committed, and base guard | `lean/Ehr/Render/Proofs.lean`, `CommitProofs.lean` |
 | T11 | Panels are complete | **proven** end to end for active FHIR allergies/medications, with no row limits; pending prefills show provenance and their confirm action | `lean/Ehr/Render/FhirProofs.lean`, `PanelProofs.lean`, `PrefillProofs.lean` |
+| T7 | Counterexamples are genuine | not started | A |
+| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, with no axioms: `specV1_1_extends_specV1` and `specV2_extends_specV1_1`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V1_1,V2}.lean` |
+| T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full and goal-directed spaces reported separately. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `MinClicksTests.lean` |
+| T10 | The page shows what must be shown | not started (no `render` yet) | A |
+| T11 | Panels are complete | not started (no `Display`/`render` yet) | A |
 | A2 | An alert appears only when its condition holds | **proven** for the interpreter: view firing/shown (`A2_view_firing`, `A2_view_shown`), new popups (`A2_popup_holds`) | `lean/Ehr/Proofs/Alerts.lean` |
 | A3 | No repeat interruptions | by construction (`popupCandidates` drops acked pairs; `A2_popup_holds` also gives `(a, k) ∉ acked`); tested in `TinyTests` | — |
 | A4 | A passive alert never pops up | **proven** for the interpreter (`A4_step`, `A4_run`, `A4_passive_never_popup`) | `lean/Ehr/Proofs/Alerts.lean` |

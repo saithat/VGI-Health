@@ -1,0 +1,63 @@
+--- a/lean/Ehr/Canonical/Releases.lean
++++ b/lean/Ehr/Canonical/Releases.lean
+@@ -7,7 +7,8 @@
+ provide the final-rule imaging/procedure demonstration. -/
+ def withPriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
+   s.insertAfter (cid id "pending")
+-    [mk id "priorAuthStatus" (.priorAuth "priorAuthStatus") "Prior-auth status",
++    [lineField id "priorAuthRequestInput" "priorAuthRequest" "Request prior authorization (human)",
++     mk id "priorAuthStatus" (.priorAuth "priorAuthStatus") "Prior-auth status",
+      button id "requestPriorAuth" .requestPriorAuth "Request prior authorization"]
+ 
+ /-- Imaging/procedure ordering with actual service-only prior-auth requests. -/
+@@ -18,6 +19,8 @@
+        (parent := some "servicePriorAuth"),
+      lineField id "orderKind" "orderKind" "Kind: imaging / procedure" (parent := some "servicePriorAuth"),
+      lineField id "orderCode" "orderCode" "Service code" (parent := some "servicePriorAuth"),
++     lineField id "priorAuthRequestInput" "priorAuthRequest" "Request prior authorization (human)"
++       (parent := some "servicePriorAuth"),
+      mk id "servicePriorAuthStatus" (.priorAuth "priorAuthStatus") "Service prior-auth status"
+        (parent := some "servicePriorAuth"),
+      button id "requestServicePriorAuth" .requestPriorAuth "Request service prior authorization"
+--- a/lean/Ehr/Canonical/ReleaseTests.lean
++++ b/lean/Ehr/Canonical/ReleaseTests.lean
+@@ -10,7 +10,7 @@
+ def pa : State × StepResult := one
+   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Orders",
+     .enter "w1Orders.drug" (.code "lisinopril")] canonicalV1_1 adult physician specV1_1)
+-  (.click "w1Orders.requestPriorAuth") canonicalV1_1 adult physician specV1_1
++  (.enter "w1Orders.priorAuthRequestInput" (.flag true)) canonicalV1_1 adult physician specV1_1
+ #guard pa.2 == .ok
+ #guard (cap pa.1 "priorAuthRequest").map (·.value) == some (.flag true)
+ #guard pa.1.commits == []
+@@ -21,7 +21,7 @@
+   (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Labs",
+     .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+     canonicalV1_1 adult physician specV1_1)
+-  (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
++  (.enter "w1Labs.priorAuthRequestInput" (.flag true)) canonicalV1_1 adult physician specV1_1
+ #guard servicePa.2 == .ok
+ #guard (cap servicePa.1 "priorAuthRequest").map (·.value) == some (.flag true)
+ #guard orderLines servicePa.1 == []
+@@ -34,12 +34,20 @@
+   (more optionalRelease [.click "w1Sign.nav.w1Labs", .click "w1Labs.newServiceOrder",
+     .enter "w1Labs.orderKind" (.code "imaging"), .enter "w1Labs.orderCode" (.code "70551")]
+     canonicalV1_1 adult physician specV1_1)
+-  (.click "w1Labs.requestServicePriorAuth") canonicalV1_1 adult physician specV1_1
++  (.enter "w1Labs.priorAuthRequestInput" (.flag true)) canonicalV1_1 adult physician specV1_1
+ #guard mixedServicePa.2 == .ok
+ #guard mixedServicePa.1.currentSlot == 1
+ #guard serviceOrderAt mixedServicePa.1 1
+ #guard (orderLines mixedServicePa.1).length == 1
+ #guard (cap mixedServicePa.1 "priorAuthRequest" 1).map (·.value) == some (.flag true)
++
++/-- Convenience clicks cannot create never-policy captures. -/
++def requestClick : State × StepResult := one
++  (run [.click "home.work.w1Rooming", .click "w1Rooming.nav.w1Orders",
++    .enter "w1Orders.drug" (.code "lisinopril")] canonicalV1_1 adult physician specV1_1)
++  (.click "w1Orders.requestPriorAuth") canonicalV1_1 adult physician specV1_1
++#guard requestClick.2 == .blocked "human entry required: priorAuthRequest"
++#guard (cap requestClick.1 "priorAuthRequest").isNone
+ 
+ -- v2 has teeth: the old UI still reaches sign, but cannot meet the new entry.
+ #guard reason (one (run amoxPath canonicalV1_1 adult physician specV2)

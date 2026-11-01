@@ -11,6 +11,8 @@ import Ehr.Api
 import Ehr.Examples.Tiny
 import Ehr.Examples.TinyTests
 import Ehr.Examples.ApiTests
+import Ehr.Sim.Goals
+import Ehr.Sim.GoalsTests
 import Ehr.Proofs.Frame
 import Ehr.Proofs.T3
 import Ehr.Proofs.T0
@@ -27,6 +29,10 @@ import Ehr.Proofs.CheckDeploy
 import Ehr.Specs.V1
 import Ehr.Canonical.Program
 import Ehr.Render
+import Ehr.Sim.PolicyTests
 import Ehr.Core.Tests
+import Ehr.Sim.MinClicksTests
 import Ehr.Canonical.BadTests
 import Ehr.Canonical.ReleaseTests
+import Ehr.Sim.IntegrationTests
+import Ehr.Sim.Audit
