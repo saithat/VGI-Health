@@ -463,7 +463,7 @@ describe("semantic EHR painter", () => {
         value: { text: { s: "Findings:\nInflamed appendix." } },
       },
     });
-    expect(screen.getByText("Clinician entry required")).toBeTruthy();
+    expect(screen.getByLabelText("Clinician entry required")).toBeTruthy();
   });
   it("keeps imported chart provenance accessible while presenting medication and note cards", () => {
     paint([
@@ -705,7 +705,7 @@ describe("semantic EHR painter", () => {
       "Hypertension",
     );
     expect(list.querySelector(".record-secondary")?.textContent).toBe(
-      "Status: active",
+      "Status: Active",
     );
     expect(list.textContent).toContain("Diabetes");
     expect(container.querySelector("table, dl")).toBeNull();
@@ -717,13 +717,7 @@ describe("semantic EHR painter", () => {
     expect(formatDisplayValue("1968-07-03")).toBe("03 Jul 1968");
     expect(formatDisplayValue("2024-02-29")).toBe("29 Feb 2024");
     const stamp = "2026-10-31T09:14:00-07:00";
-    expect(formatDisplayValue(stamp)).toBe(
-      new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(stamp)),
-    );
+    expect(formatDisplayValue(stamp)).toBe("10/31/2026 0914");
     for (const value of [
       "2026-02-29",
       "2026-02-31T09:00:00Z",
@@ -1082,7 +1076,7 @@ describe("semantic EHR painter", () => {
     );
     for (const kind of ["identity", "scan", "cosign"])
       expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
-    expect(screen.getAllByText("Clinician entry required")).toHaveLength(3);
+    expect(screen.getAllByLabelText("Clinician entry required")).toHaveLength(3);
   });
   it("keeps modal acknowledgement blocking and uses its alert id", () => {
     const emit = vi.fn();

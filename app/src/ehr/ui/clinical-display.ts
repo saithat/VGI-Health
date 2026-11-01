@@ -104,21 +104,25 @@ export function formatClinicalRecord(raw: string): string {
 
 /** Casing is restricted to UI captions, never narrative or clinical values. */
 export function fieldCaption(raw: string): string {
-  const label = raw.replace(/^Enter Medication$/i, "Medication");
+  const label = raw
+    .replace(/^Enter Medication$/i, "Medication")
+    .replace(/\s*\((?:LOINC|ICD-10(?:-CM)?|CPT)\)/gi, "");
   return label.replace(/\b[A-Z][a-z]+\b/g, (word, offset: number) =>
     offset === 0 ? word : word.toLowerCase(),
   );
 }
 export function sectionCaption(raw: string): string {
-  return raw.replace(/\b[a-z][a-z]+\b/gi, (word, offset: number) =>
-    /^(?:kg|mg|mcg|mL|cm|mmHg)$/.test(word) ||
-    /^[A-Z]{2,}$/.test(word) ||
-    /[A-Z].*[A-Z]/.test(word)
-      ? word
-      : offset > 0 && /^(?:and|or|of|to|for|in|with|the|a|an)$/i.test(word)
-        ? word.toLowerCase()
-        : word.charAt(0).toUpperCase() + word.slice(1),
-  );
+  return raw
+    .replace(/\s*\((?:LOINC|ICD-10(?:-CM)?|CPT)\)/gi, "")
+    .replace(/\b[a-z][a-z]+\b/gi, (word, offset: number) =>
+      /^(?:kg|mg|mcg|mL|cm|mmHg)$/.test(word) ||
+      /^[A-Z]{2,}$/.test(word) ||
+      /[A-Z].*[A-Z]/.test(word)
+        ? word
+        : offset > 0 && /^(?:and|or|of|to|for|in|with|the|a|an)$/i.test(word)
+          ? word.toLowerCase()
+          : word.charAt(0).toUpperCase() + word.slice(1),
+    );
 }
 export function fieldPlaceholder(label: string, kind: string): string {
   if (/^(?:enter )?medication$|^drug$/i.test(label))

@@ -13,6 +13,27 @@ type Series = {
   references: Map<string, ReferenceCurve>;
   timeBased: boolean;
 };
+/** Spread right-edge annotations without changing any plotted point. */
+export function chartLabelPositions(values: number[], gap = 18): number[] {
+  const sorted = values
+    .map((value, index) => ({ value, index }))
+    .sort((a, b) => a.value - b.value);
+  const positions = sorted.map(({ value }, index) =>
+    Math.max(40 + index * gap, value),
+  );
+  for (let i = 1; i < positions.length; i += 1)
+    positions[i] = Math.max(positions[i] ?? 40, (positions[i - 1] ?? 40) + gap);
+  for (let i = positions.length - 1; i >= 0; i -= 1)
+    positions[i] = Math.min(
+      positions[i] ?? 196,
+      i === positions.length - 1 ? 196 : (positions[i + 1] ?? 196) - gap,
+    );
+  const result: number[] = [];
+  sorted.forEach(({ index }, i) => {
+    result[index] = positions[i] ?? 40;
+  });
+  return result;
+}
 function cell(row: Pair[], key: string) {
   return row.find(([name]) => name === key)?.[1] ?? "";
 }
@@ -113,6 +134,20 @@ function seriesFor(
         "cm",
         age,
         number(cell(row, "Height (cm)")),
+        cell(row, "Date"),
+      );
+      add(
+        "Head circumference",
+        "cm",
+        age,
+        number(cell(row, "Head circumference (cm)")),
+        cell(row, "Date"),
+      );
+      add(
+        "BMI",
+        "kg/m²",
+        age,
+        number(cell(row, "BMI (kg/m²)") || cell(row, "BMI (kg/m2)")),
         cell(row, "Date"),
       );
       if (cell(row, "Percentile"))
@@ -218,6 +253,9 @@ export function ClinicalChart({
         const path = (points: Point[]) =>
           points.map((p) => `${x(p.x)},${y(p.y)}`).join(" ");
         const curves = [...s.references.values()];
+        const labelPositions = chartLabelPositions(
+          curves.map((curve) => y(curve.points.at(-1)?.y ?? low) + 4),
+        );
         const bands = [...new Set(curves.map((curve) => curve.source))].flatMap(
           (source) => {
             const lower = curves.find(
@@ -282,6 +320,12 @@ export function ClinicalChart({
             <figcaption>
               {s.name}
               {s.unit && <span> ({s.unit})</span>}
+              {kind === "growth" && s.points.at(-1) && (
+                <span className="chart-latest">
+                  {" "}
+                  · Latest {s.points.at(-1)?.y} {s.unit}
+                </span>
+              )}
             </figcaption>
             <svg role="img" aria-label={aria} viewBox="0 0 700 246">
               <title>{aria}</title>
@@ -335,7 +379,7 @@ export function ClinicalChart({
                   </g>
                 );
               })}
-              {[...s.references].map(([key, curve]) => {
+              {[...s.references].map(([key, curve], index) => {
                 const { points, percentile, source } = curve;
                 const last = points.at(-1);
                 return (
@@ -349,11 +393,14 @@ export function ClinicalChart({
                     />
                     {last && (
                       <text
-                        x={last ? x(last.x) + 8 : 634}
-                        y={y(last.y) + 4}
+                        x={634}
+                        y={labelPositions[index] ?? y(last.y) + 4}
                         className="chart-reference-label"
                       >
                         {percentile}
+                        {/^(CDC|WHO)\b/.exec(source)?.[1]
+                          ? ` ${/^(CDC|WHO)\b/.exec(source)?.[1]}`
+                          : ""}
                       </text>
                     )}
                   </g>

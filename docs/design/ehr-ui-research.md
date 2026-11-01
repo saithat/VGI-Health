@@ -1244,3 +1244,71 @@ Initial self-review at 1440×900 led to shorter indication/PRN placeholders, con
 The final sig review tightened the conservative fallback: route composition is restricted to the recognized quantity/frequency grammar or the explicit interval phrases covered by tests. Unfamiliar taper, feeding-tube or other free-text directions retain their source wording and product dose form, with no added route. Explicit mg quantities remain mg quantities; they are never converted to tablet counts. This correction changes only display text, and its raw-code/event checks remain in place.
 
 Final shared-painter polish verification, source `715cff7` / main `924425f`: 206 app tests, 84 agent tests, six live mapper tests, 37 desktop and 21 narrow checks pass. Lint/typecheck/build, direct canonical ARIA equality, rendered contrast, focus and reflow checks are green. The full bounded audit records 2,666 working interactions, 114 explained disabled states, zero dead controls and zero errors. Native build/kernel/Comparator/D1–D6, fresh WASM, 15/15 certifications, 18/18 core rejections, 1,284/1,284 world-2 tasks and the zero-mismatch frozen replay remain green. All 21 effort measurements are unchanged. `docs/audits/shell-polish-verification.json` binds the exact build and five requested before/after pairs; the broader gallery is in `app/shots/realism/shell/polish-latest/`. The footer-placement request remains with the workflow content lanes; shared rendering preserves source order and every control.
+
+## Shared Shell: Clinician Punchlist A1–A12 (2026-11-01)
+
+This pass changes the painter, CSS and deterministic display functions. The Lean
+programs, captured values, FHIR writes, permissions, required reviews, human-only
+flags and independent control/landmark ARIA projection are unchanged. Original
+cell text, codes, units and timestamps remain in accessible labels and native
+tooltips. Unknown terms and unsupported row shapes keep their complete source
+representation. No vendor artwork or screenshots were imported.
+
+Rechecked the [CST Provider View guide](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Workflow_Pages/Provider_View/Overview_of_Provider_View.htm)
+for the distinction between toolbar, patient identity, chart menu and activity
+content; [CST ED LaunchPoint](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm)
+for compact tracking columns; [CST MAR](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Medication_Administration_Record_%28MAR%29_Overview.htm)
+for dated medication/hour grids; and [LOINC 718-7](https://loinc.org/718-7)
+for the distinction between formal terminology names and their display names.
+Those guides support the information hierarchy. The palette and exact spacing
+remain original VGI choices; abbreviation and precision choices are covered by
+unit tests and do not change clinical source values.
+
+| Review item | Shared rendering result |
+| --- | --- |
+| A1 | Missing banner metadata shares a quiet line; age/sex uses “83 y.o. F”; AMB/EMER/IMP have readable encounter names. Recorded allergies remain red, unknown allergy status stays amber, and absence never becomes NKA. |
+| A2 | Source patient context is retained on list activities. The precise semantic request is in `changes-requests.md`; suppressing it now would violate the banner contract. |
+| A3 | Decorative chart/encounter breadcrumb and default duplicate role caption are removed. Desktop chart search sits beside the heading through geometry only, preserving source/ARIA order. Narrow layouts keep it in flow. Semantic toolbar and Chart Review-only tab placement are requested. |
+| A4 | Known vital rows become compact same-time readouts. BP pairs require matching metadata, explicit equal units and unambiguous numeric components; empty future grid cells remain empty. Original rows remain accessible. MAR detail lines retain ordered/recorded dose, units, route, instructions, schedule, site and reason. |
+| A5 | Explicit status display aliases include Scheduled, Pending, In progress, Final and Prelim. No active resource is relabeled Arrived or Roomed. Distinct status columns remain until the content lane supplies precise labels. |
+| A6 | Known lab/vital names have short captions, code-system suffixes leave field/section captions, UCUM display units are readable, and read-only observations have bounded decimal precision. Doses, editable values, censored results and very small values retain their source precision. |
+| A7 | Human-only markers use a visible lock with the original description. Internal provenance moves into a source tooltip; public source captions stay verbatim. Macro/confirmation captions are shorter while their original accessible names and events remain. |
+| A8 | Supplied H/L flags emphasize both value and flag in bold red/blue. Explicit critical flags highlight the row. No numeric threshold is inferred. |
+| A9 | Dated MAR/flowsheet headings use compact wall dates/times and retain source offsets in tooltips. LOS uses hours/minutes. Ordinary chart history keeps its year; shift headings are compact. No timestamp is silently converted through the viewer's timezone. |
+| A10 | ESI tiers have distinct readable colors; arrival/LOS stay together; explicit lab/imaging progress has status icons. Clicking a row invokes its one existing bound navigation action, and its keyboard button remains. Global selected-encounter controls require explicit semantic row binding. |
+| A11 | Curve annotations sit at the right edge with collision spacing and CDC/WHO attribution. The latest supplied measurement is visible. Explicit HC/BMI columns can produce read-only plots. Patient percentile data and measure-tab controls are requested from Lean; SVG geometry never supplies a clinical percentile. |
+| A12 | Action words stay intact, table action columns fit their buttons, activity tabs and structured headings use distinct palette colors, and unknown-allergy FYI uses amber. Text remains at least 12 px in the tested clinical surfaces. |
+
+### Matched Screen Review
+
+The original painter was built from `81691fb` without changing its source. The
+same frozen semantic screens were then painted by the revised build. Nine
+1440×900 pairs are under `app/shots/realism/punch/{before,after}/populated/`.
+The nine frozen source trees are committed in `app/src/fixtures/punch/` and run
+through the standard ARIA, content, visibility and reflow gate at both widths.
+The live replay capture in the parent folders separately exercises current
+main's actual navigation, user role and ARIA tree. Some activity/task payloads are
+empty in this integration; populated activity and task fixtures are preserved
+from the workflow lanes' native exports, with their exact source hashes
+recorded in `docs/audits/shell-punch-inputs.json`. They are presentation evidence, not a claim that
+main's missing task payloads have been fixed here.
+
+| Screen | Before → After and Self-Review |
+| --- | --- |
+| P1 Schedule | Large missing-data chips and chart breadcrumb → compact identity, quiet missing metadata and toolbar search. The source banner and chart tabs still make this patient-scoped list less realistic; A2/A3 requests remain explicit. |
+| P1 Orders | Mid-page chart search and technical captions → heading toolbar, context search placeholders and compact fields. Existing preference macros, required inputs and signing path remain. |
+| P2 Track Board | Wrapped time, raw ESI/status and key/value vitals → compact time/LOS, colored ESI, result-status icons and a single same-time vitals readout. The global open action remains visible pending row binding. |
+| P2 Triage | Raw provenance and split BP summaries → source tooltip/lock, paired BP and compact summary. Separate required systolic/diastolic entry fields remain usable. |
+| P3 MAR | ISO/offset headings and metadata treated as hour columns → dated hourly bands, instructions/category/PRN indication beside the medication, and compact administration context. Supplied given/held/overdue details remain complete. |
+| P3 Flowsheet | Separate BP rows and verbose column timestamps → one BP row and compact time columns. Blank future cells remain blank; I&O, assessment text and documentation controls remain. |
+| P4 Growth | Interior, overlapping percentile labels → spaced right-edge labels with reference attribution and latest measured weight/height. A patient percentile still needs explicit source data; no estimate is invented. |
+| P5 OR Schedule | Tall empty chips and generic breadcrumb → compact shell and clinical status captions. Additional cases and list-level context belong to the surgical content lane. |
+| P5 Op Note | Internal template prefix and human-entry text badges → concise macro caption, visible lock/tooltips and compact heading/search. All note fields, required confirmations and signature controls remain. A mismatched procedure template remains a content issue. |
+
+The ARIA/content check now requires every original source cell to remain in
+visible text or a visible element's accessible label/native tooltip, and also
+checks the visible display projection. Exact control names, disabled states,
+order and ancestry still use the unchanged independent semantic projection;
+known-bad controls must still fail. Display tests cover conservative aliases,
+unknown narrative, source immutability, ambiguity, mismatched BP time/units,
+blank grid cells, wall time/DST, human-only metadata and exact action dispatch.

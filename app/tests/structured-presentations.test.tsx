@@ -87,6 +87,11 @@ describe("structured clinical data boundary", () => {
     expect(onEvent).toHaveBeenCalledExactlyOnceWith({
       click: { comp: "open-pain" },
     });
+    const row = button.closest("tr");
+    if (!row) throw new Error("Missing bound row");
+    fireEvent.click(row);
+    expect(onEvent).toHaveBeenCalledTimes(2);
+    expect(onEvent).toHaveBeenLastCalledWith({ click: { comp: "open-pain" } });
   });
   it("retains unmatched, out-of-range and invalid row actions inline", () => {
     const onEvent = paint([
@@ -436,7 +441,7 @@ describe("structured clinical data boundary", () => {
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {
     expect(suppliedTone("L")).toBe("blue");
-    expect(suppliedTone("H")).toBe("amber");
+    expect(suppliedTone("H")).toBe("red");
     expect(suppliedTone("HH")).toBe("red");
     expect(suppliedTone("Held · Per order")).toBe("amber");
     expect(suppliedTone("6.5")).toBeUndefined();
@@ -554,4 +559,61 @@ describe("structured clinical data boundary", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+it("keeps close reference annotations separate at the right edge", async () => {
+  const { chartLabelPositions } =
+    await import("../src/ehr/ui/presentations/charts");
+  const result = chartLabelPositions([140, 142, 145, 149, 151, 152]);
+  expect(result).toHaveLength(6);
+  expect(result.every((value) => value >= 40 && value <= 196)).toBe(true);
+  expect(
+    result.slice(1).every((value, index) => value - (result[index] ?? 0) >= 18),
+  ).toBe(true);
+});
+
+it("never delegates a row click to a clinical commit", () => {
+  const onEvent = paint([
+    {
+      presentation: {
+        kind: "worklist",
+        children: [
+          {
+            info: {
+              comp: "records",
+              infoId: "worklist",
+              label: "Worklist",
+              display: "table",
+              rows: [[["Task", "Order review"]]],
+            },
+          },
+          {
+            rowAction: {
+              target: "records",
+              row: 0,
+              children: [
+                {
+                  button: {
+                    comp: "sign",
+                    label: "Sign orders",
+                    role: "primary",
+                    enabled: true,
+                    blockedReason: null,
+                    hotkey: null,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  const button = screen.getByRole("button", { name: "Sign orders" });
+  const row = button.closest("tr");
+  if (!row) throw new Error("Missing source row");
+  fireEvent.click(row);
+  expect(onEvent).not.toHaveBeenCalled();
+  fireEvent.click(button);
+  expect(onEvent).toHaveBeenCalledExactlyOnceWith({ click: { comp: "sign" } });
 });

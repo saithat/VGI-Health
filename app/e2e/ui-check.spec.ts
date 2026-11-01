@@ -5,10 +5,16 @@ import { expect, test, type Page } from "@playwright/test";
 import { z } from "zod";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import { formatDisplayValue } from "../src/ehr/ui/display";
+import { formatMedicationDirections } from "../src/ehr/ui/clinical-display";
 import {
-  allergyDisplay,
-  formatMedicationDirections,
-} from "../src/ehr/ui/clinical-display";
+  displayRows,
+  vitalGroups,
+  observationValue,
+  internalSource,
+  columnCaption,
+  clinicalTime,
+  medicationTaskCaption,
+} from "../src/ehr/ui/clinical-formatters";
 import {
   uiScreenSchema,
   type UiNode,
@@ -21,9 +27,11 @@ const supplied = z
   .parse(JSON.parse(process.env.EHR_UI_FILES ?? "[]"));
 const fixtures = supplied.length
   ? supplied
-  : readdirSync("src/fixtures/ui")
-      .filter((name) => name.endsWith(".json"))
-      .map((name) => resolve("src/fixtures/ui", name));
+  : ["src/fixtures/ui", "src/fixtures/punch"].flatMap((directory) =>
+      readdirSync(directory)
+        .filter((name) => name.endsWith(".json"))
+        .map((name) => resolve(directory, name)),
+    );
 const presentations = process.env.EHR_PRESENTATION_BUNDLE
   ? presentationBundleSchema.parse(
       JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, "utf8")),
@@ -170,62 +178,110 @@ for (const file of fixtures)
       );
     }
     await visibility(page);
-    // Every record cell and banner value must survive painting, including rows after
-    // the first one. Values are data, not FHIR/clinical interpretation in React.
-    // The assertions are identical to toContainText's normalized text checks,
-    // collected in two browser round trips rather than one per patient value.
+    // Every source cell must remain in visible text or a visible element's
+    // accessible label/native tooltip. This permits tested display aliases and
+    // paired BP while requiring the original values to remain inspectable.
+    // Control/landmark names, ancestry and order are checked exactly above.
     const normalize = (text: string) =>
       text
         .replace(/[\u200b\u00ad]/g, "")
         .replace(/\s+/g, " ")
         .trim();
+    const readableContent = (root: Element) =>
+      [
+        root.textContent ?? "",
+        ...[root, ...root.querySelectorAll("[aria-label], [title]")]
+          .filter(
+            (element) =>
+              element.getClientRects().length &&
+              !element.closest('[aria-hidden="true"], [hidden]'),
+          )
+          .flatMap((element) => [
+            element.getAttribute("aria-label") ?? "",
+            element.getAttribute("title") ?? "",
+          ]),
+      ].join(" ");
     const bannerText = normalize(
-      (await page.getByRole("banner").textContent()) ?? "",
+      await page.getByRole("banner").evaluate(readableContent),
     );
     if (screen.viewer) expect(bannerText).toContain(normalize(screen.viewer));
-    for (const [label, value] of screen.banner)
-      if (value)
-        expect(bannerText).toContain(
-          normalize(
-            /allerg/i.test(label)
-              ? allergyDisplay(value)
-              : formatDisplayValue(value),
+    for (const [, value] of screen.banner)
+      if (value) expect(bannerText).toContain(normalize(value));
+    const infos = [...screen.side, ...screen.workspace]
+      .flatMap(nodes)
+      .flatMap((node) => ("info" in node ? [node.info] : []));
+    const panels = (
+      await page
+        .locator("[data-info-id]")
+        .evaluateAll((roots) =>
+          roots.map((root) =>
+            [
+              root.textContent ?? "",
+              ...[root, ...root.querySelectorAll("[aria-label], [title]")]
+                .filter(
+                  (element) =>
+                    element.getClientRects().length &&
+                    !element.closest('[aria-hidden="true"], [hidden]'),
+                )
+                .flatMap((element) => [
+                  element.getAttribute("aria-label") ?? "",
+                  element.getAttribute("title") ?? "",
+                ]),
+            ].join(" "),
           ),
-        );
-    const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
-    const structuredInfos = new Set(
-      allNodes
-        .filter((node) => "presentation" in node)
-        .flatMap(nodes)
-        .flatMap((node) => ("info" in node ? [node.info] : [])),
-    );
-    const infos = allNodes.flatMap((node) =>
-      "info" in node ? [node.info] : [],
-    );
-    const panels = (await page.locator("[data-info-id]").allTextContents()).map(
-      normalize,
-    );
+        )
+    ).map(normalize);
+    const visiblePanels = (
+      await page.locator("[data-info-id]").allTextContents()
+    ).map(normalize);
     for (const [index, info] of infos.entries()) {
       expect(panels[index], `Missing rendered info ${index}`).toBeDefined();
       for (const row of info.rows)
-        for (const [key, value] of row) {
-          const medication =
-            !structuredInfos.has(info) &&
-            info.infoId === "currentMeds" &&
-            key === "Instructions"
-              ? row.find(([name]) => name === "Medication")?.[1]
-              : undefined;
-          if (value)
-            expect(panels[index]).toContain(
-              normalize(
-                key === "Text"
-                  ? value
-                  : medication
-                    ? formatMedicationDirections(medication, value)
-                    : formatDisplayValue(value),
-              ),
-            );
+        for (const [, value] of row)
+          if (value) expect(panels[index]).toContain(normalize(value));
+      const visible = visiblePanels[index] ?? "";
+      for (const group of vitalGroups(
+        displayRows(info.rows, true, info.display === "list"),
+      )) {
+        const first = group.entries[0];
+        const taskCaption = first
+          ? medicationTaskCaption(first.cells)
+          : undefined;
+        if (info.display === "list" && taskCaption) {
+          expect(visible).toContain(normalize(taskCaption));
+          continue;
         }
+        if (info.display === "list" && group.caption) {
+          expect(visible).toContain(normalize(group.caption));
+          continue;
+        }
+        for (const entry of group.entries)
+          for (const [key, value] of entry.cells) {
+            if (!value) continue;
+            const expected =
+              key === "Text"
+                ? value
+                : key === "Source" && internalSource(value)
+                  ? columnCaption(value) === value
+                    ? "Source details"
+                    : columnCaption(value)
+                  : info.infoId === "currentMeds" && key === "Instructions"
+                    ? formatMedicationDirections(
+                        entry.cells.find(
+                          ([name]) => name === "Medication",
+                        )?.[1] ?? "",
+                        value,
+                      )
+                    : formatDisplayValue(value);
+            expect(
+              visible.includes(normalize(expected)) ||
+                (/^(Arrival|Time|Start)$/i.test(key) &&
+                  visible.includes(normalize(clinicalTime(value)))) ||
+                (/^(value|result)$/i.test(key) &&
+                  visible.includes(normalize(observationValue(value)))),
+            ).toBe(true);
+          }
+      }
     }
     expect(browserErrors).toEqual([]);
   });
@@ -422,7 +478,10 @@ test.describe("clinical presentation", () => {
       ).toHaveCount(24);
       await expect(
         page.locator('time[datetime="2026-10-31T00:30:00Z"]').first(),
-      ).toHaveText("30 Oct 2026");
+      ).toHaveText("10/31/2026 0030");
+      await expect(
+        page.locator('time[datetime="2026-10-31T00:30:00Z"]').first(),
+      ).toHaveAttribute("title", "2026-10-31T00:30:00Z");
       await expect(page.getByRole("banner")).toContainText("03 Jul 1968");
       await expect(page.locator(".status-green").first()).toHaveText(
         "Given 09:12",
