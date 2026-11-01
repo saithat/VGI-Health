@@ -74,3 +74,10 @@ export function specDiff(before: Spec, after: Spec): Record<string, unknown> {
     designChanged: JSON.stringify(before.design) !== JSON.stringify(after.design),
   };
 }
+
+/** Use the vendor's role-safe projection; the all-role canonical is a template. */
+export async function releaseForPersona(release: Release, persona: string, root: string = REPO_ROOT): Promise<Release> {
+  if (release.fake) return release;
+  const file = path.join(root, 'releases', release.id, 'personas', `${persona}.json`);
+  return { ...release, canonical: await readJson(file, programSchema) };
+}

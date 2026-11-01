@@ -71,9 +71,8 @@ export function runsPlugin(): Plugin {
         const replay = JSON.parse(
           await readFile(resolve(root, id, "replay.json"), "utf8"),
         );
-        replayable = ["P1", "P2", "P3", "P4", "P5"].every(
-          (persona) =>
-            manifest.personas?.includes(persona) &&
+        replayable = Array.isArray(manifest.personas) && manifest.personas.length > 0 && manifest.personas.every(
+          (persona: string) =>
             replay.contexts?.some(
               (context: { persona: string }) => context.persona === persona,
             ) &&

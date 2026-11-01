@@ -22,7 +22,7 @@ import { createScreenChecker, type ScreenChecker } from './screencheck.js';
 import type { TrainDay } from './observe.js';
 import { personalize } from './program.js';
 import type { HistoryItem, PersonaView } from './prompts.js';
-import { loadRelease, type Release } from './releases.js';
+import { loadRelease, releaseForPersona, type Release } from './releases.js';
 import type { DecisionRecord, Program } from './schema.js';
 import type { SeedPolicy, SeedState } from './seeded.js';
 import { RunStore } from './store.js';
@@ -128,8 +128,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (!params) continue;
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
-    const v0 = personalize(inForce.canonical, params, view.userId);
-    const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: inForce.canonical, nextVersion: 0 });
+    const initialRelease = await releaseForPersona(inForce, id);
+    const v0 = personalize(initialRelease.canonical, params, view.userId);
+    const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: initialRelease.canonical, nextVersion: 0 });
     if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
     programs.set(id, new Map([[0, v0]]));
     train.set(id, []);
@@ -158,13 +159,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     for (const [id, view] of views) {
       const { program: current } = await store.login(id);
       const nightInput = {
-        night: day, persona: view, release: inForce, current,
+        night: day, persona: view, release: await releaseForPersona(inForce, id), current,
         train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
         holdout: makeHoldout(deps, view, await world.schedule(day + 1, id)),
       };
       let res: NightResult;
-      if (nextRelease?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next: nextRelease });
-      else if (nextRelease) res = await runMigration(deps, { ...nightInput, next: nextRelease });
+      const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;
+      if (next?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next });
+      else if (next) res = await runMigration(deps, { ...nightInput, next });
       else res = await runNight(deps, nightInput);
       const r = res.record;
       records.push(r);

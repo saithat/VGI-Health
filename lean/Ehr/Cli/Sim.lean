@@ -158,7 +158,11 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         if !task.todayResources.isEmpty then
           throw (IO.userError s!"{task.id}: precomputed Facts cannot merge todayResources; supply a FHIR bundle")
         pure f
-    if f.patientId != task.patientId then throw (IO.userError s!"{task.id}: patient ID mismatch")
+    -- Schedules index fixtures by UUID; render uses the stable Synthea search
+    -- token as patient identity (also used after Medplum assigns a server ID).
+    if f.patientId != task.patientId &&
+        f.patientId != "https://github.com/synthetichealth/synthea|" ++ task.patientId then
+      throw (IO.userError s!"{task.id}: patient ID mismatch: schedule {task.patientId}, facts {f.patientId}")
     out := out ++ [(task.id, f)]
   return out
 
