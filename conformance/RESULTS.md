@@ -1,69 +1,54 @@
-# Conformance repair follow-up — 2026-11-01
+# Held-out rule conformance — patient-selection follow-up, 2026-11-01
 
-The five gap families now have strengthened implementations.
+Both full commands completed against all 200 scenarios per input:
 
-Focused result: 0 failures across 15 canonicals; 93 applicable checks passed. A focused rerun on
-all fifteen canonicals is recorded in [gap-families.json](results/gap-families.json)
-and [its scenario matrix](results/gap-families.md). It preserves every negative
-expectation and exercises the legitimate CURES, weight and denial paths. The
-weight-correction positive control now performs the newly required human
-re-confirmation; it also asserts invalidation before that action.
-
-The broader 195-scenario matrix was not completed before the 10:30 AM PDT hard
-stop. The earlier full-run findings below remain historical, not current results.
-
-# Native rule-conformance evaluation — 2026-11-01
-
-195 scenarios were evaluated against all 15 current role canonicals and every
-deployed revision in archived `run1-P3` (P3 rev 0–7).
+```sh
+pnpm conformance --canonical --jobs 8
+pnpm conformance --run run1-P3 --jobs 8
+node conformance/verify.mjs run1-P3
+```
 
 | Inputs | Pass | Fail | Not applicable |
 |---|---:|---:|---:|
-| 15 current canonicals | 1,428 | 72 | 1,425 |
-| 8 archived P3 revisions | 339 | 8 | 1,213 |
-| All 23 inputs | **1,767** | **80** | **2,638** |
+| 15 current canonicals | 1,575 | **0** | 1,425 |
+| 8 archived P3 revisions | 347 | **0** | 1,253 |
+| Combined run artifact | **1,922** | **0** | **2,678** |
 
-The [JSON](../runs/run1-P3/conformance.json) and
-[scenario × revision table](../runs/run1-P3/conformance.md) contain every outcome.
-The [canonical subset](results/canonical.json) comes from the same evaluations;
-it is not a separate rerun. [Verification](results/verification.json) confirms
-195 unique results per input, unchanged input hashes, and matching source values
-for every result on an unmodified program.
+The [canonical JSON](results/canonical.json) and [matrix](results/canonical.md)
+are an independent full execution. The [run JSON](../runs/run1-P3/conformance.json)
+and [scenario × revision matrix](../runs/run1-P3/conformance.md) include those 15
+canonicals and every archived deployed revision, P3 v0–7. The independent
+canonical executions agree on every outcome, observation, step count and tested
+program hash. [Verification](results/verification.json) confirms 200 unique cases
+per input, all original program/spec bindings, and the native binary hash.
 
-The 80 failed cells represent five gap families, written up precisely in
-[changes-requests.md](../docs/design/changes-requests.md):
+Current programs open the scenario patient through an actual semantic list-row
+action, falling back to Patient Lookup, before clinical steps begin. Selection
+and host source-binding steps are counted separately. Five selection scenarios
+check empty landing privacy and clinical entry refusal, opening the correct row,
+lookup by name, lookup by MRN, and switching A→B. The switch establishes a real A
+capture and visible private allergy, verifies reset and stale-A-source refusal,
+then checks B facts/UI against a mixed-patient bundle. All 75 canonical selection
+checks pass. The archived programs predate selection, retain their original
+start state and are explicitly labeled `legacy-preselected`; their 40 selection
+checks are not applicable. Original archived release labels/specs are preserved.
 
-| Gap | Failed cells | Evidence boundary |
-|---|---:|---|
-| CURES unknown exemption / over-seven-day surgical exemption | 18 | Runtime panel-suppression probes; the P1 v3 probe also passes the separate checker audit |
-| Linked dosing weight confirmation / superseded source | 21 | Original accepted programs; signed 20 kg source with a confirmed 70 kg dependent copy |
-| Mixed-patient FHIR allergy projection | 23 | Adapter probe; does not establish that the live loader supplies a mixed bundle |
-| Empty medication episode can be signed | 12 | Original programs; stronger workflow expectation than the encoded vacuous per-line contract; no unsafe medication write established |
-| Deny decision through the approval action omits denial reason | 6 | Original P1/P4 programs; actual mapper has a deny branch for this action |
+The five previously reported gap families remain at **zero failures**: their
+seven regression scenarios have 83 applicable passes across these 23 inputs.
+They cover CURES exemption eligibility, linked/current dosing weight, defensive
+FHIR patient scoping, empty medication signing and denial through the approval
+action. All legitimate positive workflows complete. No new gap was found in
+this evaluation. Earlier findings and their repairs remain documented in
+[changes-requests.md](../docs/design/changes-requests.md) and Git history.
 
-Every `positive.*` scenario completed. Identity/scan/cosign, unit refusals,
-naloxone, ordinary required entries/reviews, interruptive/passive alert handling,
-human-only automation protections and release scenarios passed outside the
-explicit failures above. The archived RN revisions all share the same adapter
-probe failure, also present in the current RN canonicals; this evaluation found
-no additional revision-specific failure family in those eight revisions.
+Validation: 20 suite/integrity/isolation tests and 16 dashboard/data tests pass.
+The isolation tests execute the actual overnight bwrap configuration and inspect
+prompt/manual builder dependencies. The production dashboard schema accepts all
+23 targets and all eight deployed revision badges have zero failures. The layout
+regression includes patient opening after complete clinical ID renaming and
+component reordering; a separate clinical transcript reproduces with `run-batch`.
 
-The separate real [checker audit](results/certifications.json) accepted 15/15
-canonicals. It was never an oracle for behavioral outcomes. Both original FNV
-bindings match all eight archived certificates. Original archive specs/labels
-(`v1.1` prior-auth, `v2` antibiotic release) were preserved and evaluated by the
-current native executable, not substituted with today's releases.
-
-The saved result retains the full 194-scenario batch and a disjoint, one-scenario
-refill-bypass batch on identical program/spec/binary hashes. Every earlier
-outcome was retained. Both batches are recorded in `evidenceBatches`; the current
-CLI registers all 195 for subsequent single-command runs.
-
-Validation: 16 suite/integrity/isolation tests and 16 dashboard/data tests passed;
-agent/app TypeScript checks and the modified TypeScript lint checks passed. The
-real dashboard HTTP summary advertises `conformance.json`, and its production
-schema parses all 23 targets; the served data has one failure for each archived
-revision. A fresh standalone CLI run of P3 v3 matches all 195 combined outcomes. No
-browser was used for workflow evaluation. Patient-selection wiring, persistence
-and browser painting remain separate integration boundaries. Reporting is
-read-only and never gates deployment.
+This is native interpreter/FHIR/semantic-UI evidence, using a pinned executable
+hash. It does not exercise host networking, browser painting, persistence or real
+clinical services. Reporting is read-only and never gates deployment. No agent,
+prompt, manual or dashboard implementation changes were needed for this follow-up.

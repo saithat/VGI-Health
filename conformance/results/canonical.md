@@ -2,7 +2,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | entry.signOrders.patientIdReentry | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | entry.signOrders.weight | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
-| entry.signOrders.dosingWeight | FAIL | PASS | — | FAIL | FAIL | FAIL | PASS | — | FAIL | FAIL | FAIL | PASS | — | FAIL | FAIL |
+| entry.signOrders.dosingWeight | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | entry.signOrders.drug | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | entry.signOrders.dose | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | entry.signOrders.doseUnit | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
@@ -125,8 +125,8 @@
 | scheduleII.zero-refills | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | cures.review-required | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS |
 | cures.procedure-seven-day | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS |
-| cures.procedure-eight-day | FAIL | FAIL | — | — | FAIL | FAIL | FAIL | — | — | FAIL | FAIL | FAIL | — | — | FAIL |
-| cures.unknown-exemption | FAIL | FAIL | — | — | FAIL | FAIL | FAIL | — | — | FAIL | FAIL | FAIL | — | — | FAIL |
+| cures.procedure-eight-day | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS |
+| cures.unknown-exemption | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS |
 | naloxone.high-mme.naloxoneOffer | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | naloxone.benzodiazepine.naloxoneOffer | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | naloxone.high-mme.naloxoneEducation | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
@@ -169,7 +169,7 @@
 | human-only.priorAuthRequest.prefill | — | — | — | — | — | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | patient-switch.reset | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | design.banner | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
-| workflow.empty-medication-signing | FAIL | FAIL | — | FAIL | FAIL | FAIL | FAIL | — | FAIL | FAIL | FAIL | FAIL | — | FAIL | FAIL |
+| workflow.empty-medication-signing | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | orders.incomplete-line-cannot-advance | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | scheduleII.each-line-zero | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | v3.antibiotic-each-line | — | — | — | — | — | — | — | — | — | — | PASS | PASS | — | PASS | PASS |
@@ -185,7 +185,7 @@
 | receipt.currentMeds.wrong-role | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alerts.changed-data-reinterrupts | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | automation.commit-and-review | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
-| patient-switch.chart-scoping | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL | FAIL |
+| patient-switch.chart-scoping | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | alert.removable.healthMaintenancePopup | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.removable.highAlertOrderNotice | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.removable.activeRxPopup | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
@@ -193,100 +193,33 @@
 | alert.removable.minorInteractionPopup | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — | — |
 | design.banner-identifiers | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | epcs.details-content | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
-| weight.linked-source-refresh | FAIL | FAIL | — | FAIL | FAIL | FAIL | FAIL | — | FAIL | FAIL | FAIL | FAIL | — | FAIL | FAIL |
-| refill.denial-via-approval-action | FAIL | — | — | FAIL | — | FAIL | — | — | FAIL | — | FAIL | — | — | FAIL | — |
+| weight.linked-source-refresh | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
+| refill.denial-via-approval-action | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
+| selection.landing | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| selection.row-open | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| selection.lookup-name | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| selection.lookup-mrn | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
+| selection.switch-isolation | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 
 — = not applicable (role, workflow, release, or optional feature); exact reasons in JSON.
 
-| Revision | Passed | Failed | Not applicable |
-|---|---:|---:|---:|
-| canonical/v1/P1 | 109 | 7 | 79 |
-| canonical/v1/P2 | 93 | 5 | 97 |
-| canonical/v1/P3 | 40 | 1 | 154 |
-| canonical/v1/P4 | 109 | 5 | 81 |
-| canonical/v1/P5 | 114 | 6 | 75 |
-| canonical/v2/P1 | 113 | 7 | 75 |
-| canonical/v2/P2 | 95 | 5 | 95 |
-| canonical/v2/P3 | 40 | 1 | 154 |
-| canonical/v2/P4 | 111 | 5 | 79 |
-| canonical/v2/P5 | 118 | 6 | 71 |
-| canonical/v3/P1 | 115 | 7 | 73 |
-| canonical/v3/P2 | 97 | 5 | 93 |
-| canonical/v3/P3 | 41 | 1 | 153 |
-| canonical/v3/P4 | 113 | 5 | 77 |
-| canonical/v3/P5 | 120 | 6 | 69 |
+| Revision | Start state | Passed | Failed | Not applicable |
+|---|---|---:|---:|---:|
+| canonical/v1/P1 | in-ui-selection | 121 | 0 | 79 |
+| canonical/v1/P2 | in-ui-selection | 103 | 0 | 97 |
+| canonical/v1/P3 | in-ui-selection | 46 | 0 | 154 |
+| canonical/v1/P4 | in-ui-selection | 119 | 0 | 81 |
+| canonical/v1/P5 | in-ui-selection | 125 | 0 | 75 |
+| canonical/v2/P1 | in-ui-selection | 125 | 0 | 75 |
+| canonical/v2/P2 | in-ui-selection | 105 | 0 | 95 |
+| canonical/v2/P3 | in-ui-selection | 46 | 0 | 154 |
+| canonical/v2/P4 | in-ui-selection | 121 | 0 | 79 |
+| canonical/v2/P5 | in-ui-selection | 129 | 0 | 71 |
+| canonical/v3/P1 | in-ui-selection | 127 | 0 | 73 |
+| canonical/v3/P2 | in-ui-selection | 107 | 0 | 93 |
+| canonical/v3/P3 | in-ui-selection | 47 | 0 | 153 |
+| canonical/v3/P4 | in-ui-selection | 123 | 0 | 77 |
+| canonical/v3/P5 | in-ui-selection | 131 | 0 | 69 |
 
 | Scenario | Revision | Observed outcome |
 |---|---|---|
-| entry.signOrders.dosingWeight | canonical/v1/P1 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v1/P1 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v1/P1 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v1/P1 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v1/P1 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v1/P1 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| cures.procedure-eight-day | canonical/v1/P2 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v1/P2 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v1/P2 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v1/P2 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v1/P2 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| patient-switch.chart-scoping | canonical/v1/P3 | FHIR projection displayed patient A allergy in patient B chart |
-| entry.signOrders.dosingWeight | canonical/v1/P4 | dosingWeight not confirmed with expected value |
-| workflow.empty-medication-signing | canonical/v1/P4 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v1/P4 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v1/P4 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| entry.signOrders.dosingWeight | canonical/v1/P5 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v1/P5 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v1/P5 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v1/P5 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v1/P5 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v1/P5 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| entry.signOrders.dosingWeight | canonical/v2/P1 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v2/P1 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v2/P1 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v2/P1 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v2/P1 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v2/P1 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| cures.procedure-eight-day | canonical/v2/P2 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v2/P2 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v2/P2 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v2/P2 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v2/P2 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| patient-switch.chart-scoping | canonical/v2/P3 | FHIR projection displayed patient A allergy in patient B chart |
-| entry.signOrders.dosingWeight | canonical/v2/P4 | dosingWeight not confirmed with expected value |
-| workflow.empty-medication-signing | canonical/v2/P4 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v2/P4 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v2/P4 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| entry.signOrders.dosingWeight | canonical/v2/P5 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v2/P5 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v2/P5 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v2/P5 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v2/P5 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v2/P5 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| entry.signOrders.dosingWeight | canonical/v3/P1 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v3/P1 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v3/P1 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v3/P1 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v3/P1 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v3/P1 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| cures.procedure-eight-day | canonical/v3/P2 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v3/P2 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v3/P2 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v3/P2 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v3/P2 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| patient-switch.chart-scoping | canonical/v3/P3 | FHIR projection displayed patient A allergy in patient B chart |
-| entry.signOrders.dosingWeight | canonical/v3/P4 | dosingWeight not confirmed with expected value |
-| workflow.empty-medication-signing | canonical/v3/P4 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v3/P4 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v3/P4 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| entry.signOrders.dosingWeight | canonical/v3/P5 | dosingWeight not confirmed with expected value |
-| cures.procedure-eight-day | canonical/v3/P5 | CURES bypass accepted: surgery-7-day, 8-days |
-| cures.unknown-exemption | canonical/v3/P5 | CURES bypass accepted: invented-exemption, 7-days |
-| workflow.empty-medication-signing | canonical/v3/P5 | signOrders committed without drug |
-| patient-switch.chart-scoping | canonical/v3/P5 | FHIR projection displayed patient A allergy in patient B chart |
-| weight.linked-source-refresh | canonical/v3/P5 | Signed with current weight 20 kg but confirmed linked dosing weight 70 kg |
-| refill.denial-via-approval-action | canonical/v1/P1 | Deny decision completed through approveRefill with no denial reason |
-| refill.denial-via-approval-action | canonical/v1/P4 | Deny decision completed through approveRefill with no denial reason |
-| refill.denial-via-approval-action | canonical/v2/P1 | Deny decision completed through approveRefill with no denial reason |
-| refill.denial-via-approval-action | canonical/v2/P4 | Deny decision completed through approveRefill with no denial reason |
-| refill.denial-via-approval-action | canonical/v3/P1 | Deny decision completed through approveRefill with no denial reason |
-| refill.denial-via-approval-action | canonical/v3/P4 | Deny decision completed through approveRefill with no denial reason |
