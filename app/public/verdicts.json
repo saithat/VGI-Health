@@ -1,253 +1,858 @@
 {
-  "checker": "unavailable",
+  "checker": "lean ehr check",
+  "profile": "core",
   "programs": {
-    "releases/v1.1/canonical.json": {
-      "status": "verdict not computed",
-      "sha256": "6633eb884aea1e64c288209e8a70a2d533bf9f206296c55c59c87b4645cb4ba0"
-    },
-    "releases/v1.1/personas/P1.json": {
-      "status": "verdict not computed",
-      "sha256": "cd3ca86b7ebcf8ac985cc891633d815c837d78a778d393ad7d39dd8cc85b4bb9"
-    },
-    "releases/v1.1/personas/P2.json": {
-      "status": "verdict not computed",
-      "sha256": "72c10256fa100e7bd21ec2bab427092e21bd18dc1028f7eab1f21dd39cc40169"
-    },
-    "releases/v1.1/personas/P3.json": {
-      "status": "verdict not computed",
-      "sha256": "e731314db4bc5f36ceab231aa557ae64cfa1eb6f19a965d8ec460f04593e28f0"
-    },
-    "releases/v1.1/personas/P4.json": {
-      "status": "verdict not computed",
-      "sha256": "f719c496999e9d66880c37d7d4029d1da79555b28b6c84021b449ba532f2f0e2"
-    },
-    "releases/v1.1/personas/P5.json": {
-      "status": "verdict not computed",
-      "sha256": "1a160e51329e85d32cbffd1731304c5852b66064b736e2edfce0cbf6b061a53d"
-    },
-    "releases/v1/canonical.json": {
-      "status": "verdict not computed",
-      "sha256": "959193d8929448396a950e458b16a0346e6758eb62d6252f958088e4a1f8d1bd"
-    },
     "releases/v1/personas/P1.json": {
-      "status": "verdict not computed",
-      "sha256": "bb66820de6530bf1df0a2520000c23c1a1c6b2cdb95e6988056909c5854a2c3a"
+      "status": "computed",
+      "sha256": "81e67aee71bf4f2b05704d82dfeb1f0be460f457efa18160604f307249b04063",
+      "output": "ok"
     },
     "releases/v1/personas/P2.json": {
-      "status": "verdict not computed",
-      "sha256": "2f7ab1a310a400c18d36e9c204b81c2b7446a6f8ac4ee586d677f4f660551c69"
+      "status": "computed",
+      "sha256": "bc95623e0bfac13bb54699b10574f80160ec1e545e5fea82288aa99632fd3fb0",
+      "output": "ok"
     },
     "releases/v1/personas/P3.json": {
-      "status": "verdict not computed",
-      "sha256": "665cb80e19ea3c9f5f36fb194f59abe184a81f155ed9b9571537f5b11d5d5189"
+      "status": "computed",
+      "sha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "output": "ok"
     },
     "releases/v1/personas/P4.json": {
-      "status": "verdict not computed",
-      "sha256": "4d23b4abc8d2667b615b0adfcd68d612d23cfc6ded7d728ea1e3c605d0e774cb"
+      "status": "rejected",
+      "sha256": "456b0716a6b8d9b67ea691f51284698fdfb8cbf671af96d88412f7a5321c37e0",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
     "releases/v1/personas/P5.json": {
-      "status": "verdict not computed",
-      "sha256": "d8ab3b4b924d8cd3efdf569dc31b355999ef3d8a04651013f471770d7f8ffff3"
+      "status": "computed",
+      "sha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "output": "ok"
     },
-    "releases/v2/canonical.json": {
-      "status": "verdict not computed",
-      "sha256": "13473684f726c043b65ca498493c0e8082bd9cb9c2db3adc99c0c11a223c6689"
+    "releases/v1.1/personas/P1.json": {
+      "status": "computed",
+      "sha256": "c29995fc33396c75f1f7ac69da3d5bc5d26cdee5f50df52128a1f14885b5e0d9",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P2.json": {
+      "status": "computed",
+      "sha256": "e2467d70930e6395ac6b2b94c867fa13a6d27b7a6ec509a3d36c6eb9da874ed1",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P3.json": {
+      "status": "computed",
+      "sha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P4.json": {
+      "status": "rejected",
+      "sha256": "ac4e7f84e16618e4d58f0d81abb401dbdfaff7cc4218bb288ccd9d4b782d6a57",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v1.1/personas/P5.json": {
+      "status": "computed",
+      "sha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "output": "ok"
     },
     "releases/v2/personas/P1.json": {
-      "status": "verdict not computed",
-      "sha256": "99f89315de6f70f4769bccabd8c21e75a6893fe406065bc16a21df2925430854"
+      "status": "computed",
+      "sha256": "45fc1e892f1cc5e2e6490c068eaeb3f0e2815f46dbd421e3b0c13608aeecbc67",
+      "output": "ok"
     },
     "releases/v2/personas/P2.json": {
-      "status": "verdict not computed",
-      "sha256": "14d1af3abdc5fd9fe8d0e94ce4e2f60ccac3eb14c23f53e27601ee95a6d8e0f6"
+      "status": "computed",
+      "sha256": "39852f261e4b9795c5baa6d76b383ffcc718f4c7d06d432da3a00963325d2984",
+      "output": "ok"
     },
     "releases/v2/personas/P3.json": {
-      "status": "verdict not computed",
-      "sha256": "119c8d3df772afcfca0d2f272dade9ffe3d6ddd15a0a6ee43bf2be910573b521"
+      "status": "computed",
+      "sha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "output": "ok"
     },
     "releases/v2/personas/P4.json": {
-      "status": "verdict not computed",
-      "sha256": "94b600716e6e535f08478394c0c74963b84cc4ac4bac3a950c98f12c40d3c40f"
+      "status": "rejected",
+      "sha256": "9aa66952c2c121a0cb91d6f7a4df374bdeaea8fd35eca414a50f5c4eb8be34bc",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
     "releases/v2/personas/P5.json": {
-      "status": "verdict not computed",
-      "sha256": "f64200e65020142763843b8677b2a4b765afc8db3d5c93213962f19d0f7ff548"
+      "status": "computed",
+      "sha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "output": "ok"
+    },
+    "releases/v1/canonical.json": {
+      "status": "rejected",
+      "sha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v1.1/canonical.json": {
+      "status": "rejected",
+      "sha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v2/canonical.json": {
+      "status": "rejected",
+      "sha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/01-hidden-allergies.json": {
-      "status": "verdict not computed",
-      "sha256": "cad2bd2ee37a7520f08d304ca41634e0f0dacf686dfc285135671c20e20c26c4"
+      "status": "rejected",
+      "sha256": "81abc74df04d9b26350f129340ef2edc8a8a98bac20a01295567f7e2c23e82f4",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "allergyList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/02-prefilled-identity.json": {
-      "status": "verdict not computed",
-      "sha256": "cf1119a8308e8f531ce09a92bf2bb0c54b4753a79c456b3599f57e3ada69efb2"
+      "status": "rejected",
+      "sha256": "ee567e2864b076b11680ddce32622121b0eb30de8628e5a1838920239153f8e4",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w1Sign.patientIdReentry on screen w1Sign prefills patientIdReentry, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/03-pounds-as-weight.json": {
-      "status": "verdict not computed",
-      "sha256": "4708da96c1d4d60cb764b09209a6a3169458a30e2c1484c9c5eb620e72b54d39"
+      "status": "rejected",
+      "sha256": "12e0ae8112646a3f7b6bfa3e2639928c9db4aacbcaf7187ac1668e1231b5845c",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3Triage"
+          ],
+          "property": "writesOnly",
+          "message": "field w3Triage.weight on screen w3Triage writes element weightLb, which is not in the spec",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3Triage"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/04-macro-override.json": {
-      "status": "verdict not computed",
-      "sha256": "5e6b6fe7bfd125aa1482578af08e0ba6dff3e09f4c4010bbf01d76f54b9bcf5b"
+      "status": "rejected",
+      "sha256": "94a75010fcac48e5e9cc48df2cfde93d86e2a9102e5f889d1c49e52ae95277c6",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3OrderSets",
+            "w3Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badOverride clicks w3Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3OrderSets"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3OrderSets.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3Sign.override"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/05-self-cosign.json": {
-      "status": "verdict not computed",
-      "sha256": "6510c6dd1d66017cc3c2250259df5b89aa6cfac73bc943edb63c8a4b42646883"
+      "status": "rejected",
+      "sha256": "8b0f36223d3cab42a119e2abb936614c10c7af8ee0ca48af70a5f97fc36671e2",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w4Admin.highAlertCosign on screen w4Admin prefills highAlertCosign, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/06-stale-weight.json": {
-      "status": "verdict not computed",
-      "sha256": "d7453a2cfd951934ae12d3abfa0ea03077f71c45da4cd4b09cff0e6a4a066873"
+      "status": "rejected",
+      "sha256": "b0432008db9cd60ee354bc143977cd51ec5edb91b1d9aecf9edf29e5cc6c0070",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w5Rooming"
+          ],
+          "property": "units",
+          "message": "field w5Rooming.weight on screen w5Rooming fills weight from record value weightYesterday, a bare number with no unit or date; only weightToday keeps its unit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w5Rooming"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/07-unreachable-refill.json": {
-      "status": "verdict not computed",
-      "sha256": "44e58865eeb4e641a87f447569aedffcf4e256abb50dc9e85b44e286941d09cb"
+      "status": "rejected",
+      "sha256": "3c48ce140c711a646d26e578d98cf277516d9287329d664df71ea7af04baacb4",
+      "output": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit approveRefill: from screen home the user cannot get back to the approveRefill button on screen w7Decision",
+          "counterexample": []
+        }
+      }
     },
     "programs/bad/08-forged-consent.json": {
-      "status": "verdict not computed",
-      "sha256": "dca59253de5fac58c5771f8e959354f0d28a0fc54119bc5c129824bc4ec8190e"
+      "status": "rejected",
+      "sha256": "743558daabe8b2bdf04f31ebce21f6055b014a19a8be602b20524d563b7d075b",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w6PreOp"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badConsent types into w6PreOp.consentVerified (consentVerified), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w6PreOp"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6PreOp.autoConsent"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/09-hidden-allergy-alert.json": {
-      "status": "verdict not computed",
-      "sha256": "0be33e5282c314ce0b53758543aebd271a7ed72f70bac841051171acb2ef7b79"
+      "status": "rejected",
+      "sha256": "d6a4d4f33cd505b0acf0ae43c1d1621c55c1a35156ddcefd3501fe93edf4930c",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badQuickAmox clicks w1Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.quickAmox"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/10-invented-alert.json": {
-      "status": "verdict not computed",
-      "sha256": "86500e749ee3e0dc1feaef1f8f4402b95acf9558c9f52af575de6940b6ee3096"
+      "status": "rejected",
+      "sha256": "1fa024dc6efe5108bcfcf64bd818a79621c9233e2fb7abf36d910cd6bfd392da",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "wellFormed",
+          "message": "alert w1Orders.everyDose on screen w1Orders names alert doseRangeEveryOrder, which the spec does not have",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/11-repeated-interaction.json": {
-      "status": "verdict not computed",
-      "sha256": "52577b548dfd21cc7ba19c1b38f797f3b5ef4abf85f7315f816d3b3ce6a7613e"
+      "status": "rejected",
+      "sha256": "776a2c7ff2e049c2607a847bcd8d53796e01e15cac575ffdc94df21273bc07d1",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "noRepeatInterruptions",
+          "message": "A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/12-passive-popup.json": {
-      "status": "verdict not computed",
-      "sha256": "4a0e01d40b7a27f00e89182647eb46a2a8bd395a137f9061b45631937aecb073"
+      "status": "rejected",
+      "sha256": "6d2cd67943d131046a2418f927ee3f8f70587164ec0a17b74920cdad2a3f5b34",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming"
+          ],
+          "property": "severityTiers",
+          "message": "A4: alert w1Rooming.careGaps on screen w1Rooming makes the passive alert careGapsInline pop up; passive alerts are shown inline only",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/13-no-cures.json": {
-      "status": "verdict not computed",
-      "sha256": "5bf8f78b8eb98ba9cf66d1adc3311cd0a717dae50658bc592ef03386375b878f"
+      "status": "rejected",
+      "sha256": "a221248df0abde1beab80ed5cc210f13afe90a035449b2e861b1d8dc15ed5e61",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/14-macro-naloxone.json": {
-      "status": "verdict not computed",
-      "sha256": "4aa67b604e4053ce4e322110e432535e4aa04685eca7b2382bad0850c22c262c"
+      "status": "rejected",
+      "sha256": "6f7aa3a011ef03d1fb901975ac689ad901d5a9b7e1054dfa54d0a44c1297ff43",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badNaloxone types into w1Orders.naloxoneOffer (naloxoneOffer), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.autoNaloxone"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/15-hidden-controlled-details.json": {
-      "status": "verdict not computed",
-      "sha256": "d530da746f87bacce4fbc03e37d562682373ab28d2ca3b14e3f2fc4cd0b39054"
+      "status": "rejected",
+      "sha256": "9735bda44ff0411cf77eb4113bb5600ad11fbd109b2ac14e63547a2f08f74512",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "orderSummary is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
     "programs/bad/16-schedule-ii-refills.json": {
-      "status": "verdict not computed",
-      "sha256": "7ce8da112c8269089185bc2453542b98ffed3d1394d6d30d3521c11b602f3983"
+      "status": "rejected",
+      "sha256": "00525443f53429f503781b3a275ef6bfea91dd7357fd41e441fbc49fa23b80fa",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element weight",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
     },
-    "programs/canonical/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "959193d8929448396a950e458b16a0346e6758eb62d6252f958088e4a1f8d1bd"
+    "programs/bad/17-no-restraint-care-plan.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v0.json": {
-      "status": "verdict not computed",
-      "sha256": "7a20357c50fd8a3207d068aceb1078479ccdce5168825d9d62d55deb673cccd8"
+    "programs/bad/18-no-op-technique.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "47f061230cdb6a8524e1857b697919443176500704184b711f73eeadf6d0e3ed"
+    "programs/bad/19-no-vaccine-provider-address.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v2.json": {
-      "status": "verdict not computed",
-      "sha256": "943c8baa69902f19f150672c92b2191cf1118c2341e71b374d224faa375cfdfa"
+    "programs/bad/20-no-administration-time.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v3.json": {
-      "status": "verdict not computed",
-      "sha256": "4d1e3a2618875963a1bdafd45a5b69a59b5610a3b57c1197c88b8075af3f1e8f"
+    "programs/bad/21-no-controlled-strength.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v4.json": {
-      "status": "verdict not computed",
-      "sha256": "9abd0c5133023520fb930022576b508a859ad22291a53f3d4496d13204d3e0a8"
+    "programs/bad/22-hidden-signing-notice.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v5.json": {
-      "status": "verdict not computed",
-      "sha256": "1855eb35ddcfd9b052abd4a2aa9636d9bde74692f51a5fa2af033fa169ac97c4"
+    "programs/bad/23-no-telehealth-consent.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v0.json": {
-      "status": "verdict not computed",
-      "sha256": "d7b37ee2c355057832c07ba0c1617a97650276f7b14029fa7514e89cb1388cec"
+    "programs/bad/24-default-refill-eligibility.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "9b9317ec7a9a29dfc45fea6b081e48aaf52e7405efdd452688f3792a2cd94756"
+    "programs/bad/25-restart-restraint-clock.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v2.json": {
-      "status": "verdict not computed",
-      "sha256": "6c528d9758541824334a7163973bca43f63be12df39a3b70a1a8dbd5f773e1d7"
+    "programs/bad/26-stale-preoperative-hp.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v3.json": {
-      "status": "verdict not computed",
-      "sha256": "1757a00df6e30d2a54813596fc4b40121e7345eb5188a3b0239c3c0cfbb45d3d"
+    "programs/bad/27-expired-controlled-fill.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v4.json": {
-      "status": "verdict not computed",
-      "sha256": "f330fbf0dff9f6a49ff1f6bb3d78ff96920847e0b2c92e08ad10f2c738e0448b"
+    "programs/bad/28-underage-minor-consent.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v0.json": {
-      "status": "verdict not computed",
-      "sha256": "6a6c50d3300ecdbabdac458395624e9842ad549bc35ca9368900ca5978d9c323"
+    "programs/bad/29-invalid-birth-date.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "9dbac1d297667f442c3658fba11b3fce7f966a45e473bb23ce705a293cff455b"
+    "programs/bad/30-daily-methotrexate-default.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v2.json": {
-      "status": "verdict not computed",
-      "sha256": "cfd1864a3825e5f59a6d88769556d40c7f42cdc46c2e93e02e56d2ec1cb333b5"
+    "programs/bad/31-hidden-result-components.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v3.json": {
-      "status": "verdict not computed",
-      "sha256": "394651829cf25f4ca33de503cbe7824f7ec1310d880d46839c644defbf00f4b2"
-    },
-    "runs/mock/programs/P3/v4.json": {
-      "status": "verdict not computed",
-      "sha256": "c832e116a9aea466541252e7252ee2a92781e1514ed12b41385268bd7863da17"
-    },
-    "runs/mock/programs/P4/v0.json": {
-      "status": "verdict not computed",
-      "sha256": "6d122b9077600ff11250e53ebf8b26798044859c6ccf5a26c274cbfbdc1b92c4"
-    },
-    "runs/mock/programs/P4/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "0816c481dca4eb9b03a2fd49879cf3378e1e0d0e5ce96f3f519ff0556606e084"
-    },
-    "runs/mock/programs/P4/v2.json": {
-      "status": "verdict not computed",
-      "sha256": "7ff4820ffec8bd6aff5efe8d89b5e4f70ee4a253c597bdb03d932eb59bc5562b"
-    },
-    "runs/mock/programs/P4/v3.json": {
-      "status": "verdict not computed",
-      "sha256": "3e519a792b304b923dc32fdaa13ad9541e7290fca44e2b5291b8d9cbc39a1f78"
-    },
-    "runs/mock/programs/P4/v4.json": {
-      "status": "verdict not computed",
-      "sha256": "49009d6f53753fb56da564d0b55d62d348e96dd52841ed396b3680eb25a7eae0"
-    },
-    "runs/mock/programs/P5/v0.json": {
-      "status": "verdict not computed",
-      "sha256": "fd63aa61461f51fa9b9e4e5665fd51ccddc849dbad611ca32a24be4f954a8ed8"
-    },
-    "runs/mock/programs/P5/v1.json": {
-      "status": "verdict not computed",
-      "sha256": "3546248142be7205ea20acda67dd72eb895aa82213db080b9eabbaba39d08281"
-    },
-    "runs/mock/programs/P5/v2.json": {
-      "status": "verdict not computed",
-      "sha256": "7afc9ded61ab070f8bfbc8db7d8cbca25cfec2a2480400c9bf0fdcf1748c06c4"
-    },
-    "runs/mock/programs/P5/v3.json": {
-      "status": "verdict not computed",
-      "sha256": "599fa38ca1f153b9a9f42b9ea3278825e3ff9eedacc1eee0b129bc7313d21c58"
-    },
-    "runs/mock/programs/P5/v4.json": {
-      "status": "verdict not computed",
-      "sha256": "0ccb84cc19da918ca71b1d24a2be5d9083069726a26b773bab854f7b783c3ad7"
-    },
-    "runs/mock/programs/P5/v5.json": {
-      "status": "verdict not computed",
-      "sha256": "99b7686c62fa15bf6abbb187655eb44176b1933b362afcad4b97f0426318738a"
+    "programs/bad/32-misleading-signing-label.json": {
+      "status": "full-profile only"
     }
   }
 }

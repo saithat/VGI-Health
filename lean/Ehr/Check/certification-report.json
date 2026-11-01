@@ -1,0 +1,1341 @@
+{
+  "sourceRevision": "4a281cb069786f2b8f36c247f8873a78beec1386",
+  "sourceDirty": true,
+  "binarySha256": "b4fc3b304f86f0b1a300180b187b90809785d8ce5354d40a7805be8e87bf0a2b",
+  "profile": "core",
+  "fullProfileOnly": [
+    "17-no-restraint-care-plan",
+    "18-no-op-technique",
+    "19-no-vaccine-provider-address",
+    "20-no-administration-time",
+    "21-no-controlled-strength",
+    "22-hidden-signing-notice",
+    "23-no-telehealth-consent",
+    "24-default-refill-eligibility",
+    "25-restart-restraint-clock",
+    "26-stale-preoperative-hp",
+    "27-expired-controlled-fill",
+    "28-underage-minor-consent",
+    "29-invalid-birth-date",
+    "30-daily-methotrexate-default",
+    "31-hidden-result-components",
+    "32-misleading-signing-label"
+  ],
+  "baselineAccepted": 0,
+  "baselineCount": 3,
+  "personaAccepted": 12,
+  "personaCount": 15,
+  "badRejected": 16,
+  "badCount": 16,
+  "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
+  "results": [
+    {
+      "program": "releases/v1/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "81e67aee71bf4f2b05704d82dfeb1f0be460f457efa18160604f307249b04063",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "bc95623e0bfac13bb54699b10574f80160ec1e545e5fea82288aa99632fd3fb0",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "456b0716a6b8d9b67ea691f51284698fdfb8cbf671af96d88412f7a5321c37e0",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v1/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1.1/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "c29995fc33396c75f1f7ac69da3d5bc5d26cdee5f50df52128a1f14885b5e0d9",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P1.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1.1/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "e2467d70930e6395ac6b2b94c867fa13a6d27b7a6ec509a3d36c6eb9da874ed1",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P2.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1.1/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P3.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1.1/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "ac4e7f84e16618e4d58f0d81abb401dbdfaff7cc4218bb288ccd9d4b782d6a57",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P4.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P5.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v2/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "45fc1e892f1cc5e2e6490c068eaeb3f0e2815f46dbd421e3b0c13608aeecbc67",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P1.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v2/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "39852f261e4b9795c5baa6d76b383ffcc718f4c7d06d432da3a00963325d2984",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P2.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v2/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P3.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v2/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "9aa66952c2c121a0cb91d6f7a4df374bdeaea8fd35eca414a50f5c4eb8be34bc",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P4.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v2/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P5.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v1.1/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/canonical.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v2/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/canonical.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/01-hidden-allergies.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "81abc74df04d9b26350f129340ef2edc8a8a98bac20a01295567f7e2c23e82f4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "allergyList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "reviewsBeforeCommit",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/02-prefilled-identity.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "ee567e2864b076b11680ddce32622121b0eb30de8628e5a1838920239153f8e4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w1Sign.patientIdReentry on screen w1Sign prefills patientIdReentry, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/03-pounds-as-weight.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "12e0ae8112646a3f7b6bfa3e2639928c9db4aacbcaf7187ac1668e1231b5845c",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3Triage"
+          ],
+          "property": "writesOnly",
+          "message": "field w3Triage.weight on screen w3Triage writes element weightLb, which is not in the spec",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3Triage"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "writesOnly",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/04-macro-override.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "94a75010fcac48e5e9cc48df2cfde93d86e2a9102e5f889d1c49e52ae95277c6",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3OrderSets",
+            "w3Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badOverride clicks w3Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3OrderSets"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3OrderSets.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3Sign.override"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 0: step did not apply"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/05-self-cosign.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "8b0f36223d3cab42a119e2abb936614c10c7af8ee0ca48af70a5f97fc36671e2",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w4Admin.highAlertCosign on screen w4Admin prefills highAlertCosign, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/06-stale-weight.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "b0432008db9cd60ee354bc143977cd51ec5edb91b1d9aecf9edf29e5cc6c0070",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w5Rooming"
+          ],
+          "property": "units",
+          "message": "field w5Rooming.weight on screen w5Rooming fills weight from record value weightYesterday, a bare number with no unit or date; only weightToday keeps its unit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w5Rooming"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "units",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/07-unreachable-refill.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "3c48ce140c711a646d26e578d98cf277516d9287329d664df71ea7af04baacb4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit approveRefill: from screen home the user cannot get back to the approveRefill button on screen w7Decision",
+          "counterexample": []
+        }
+      },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/08-forged-consent.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "743558daabe8b2bdf04f31ebce21f6055b014a19a8be602b20524d563b7d075b",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w6PreOp"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badConsent types into w6PreOp.consentVerified (consentVerified), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w6PreOp"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6PreOp.autoConsent"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 1: human only: consentVerified"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/09-hidden-allergy-alert.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "d6a4d4f33cd505b0acf0ae43c1d1621c55c1a35156ddcefd3501fe93edf4930c",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badQuickAmox clicks w1Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.quickAmox"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 3: human only: commit"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/10-invented-alert.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "1fa024dc6efe5108bcfcf64bd818a79621c9233e2fb7abf36d910cd6bfd392da",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "wellFormed",
+          "message": "alert w1Orders.everyDose on screen w1Orders names alert doseRangeEveryOrder, which the spec does not have",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "wellFormed",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/11-repeated-interaction.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "776a2c7ff2e049c2607a847bcd8d53796e01e15cac575ffdc94df21273bc07d1",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "noRepeatInterruptions",
+          "message": "A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "noRepeatInterruptions",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/12-passive-popup.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "6d2cd67943d131046a2418f927ee3f8f70587164ec0a17b74920cdad2a3f5b34",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming"
+          ],
+          "property": "severityTiers",
+          "message": "A4: alert w1Rooming.careGaps on screen w1Rooming makes the passive alert careGapsInline pop up; passive alerts are shown inline only",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "severityTiers",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/13-no-cures.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "a221248df0abde1beab80ed5cc210f13afe90a035449b2e861b1d8dc15ed5e61",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/14-macro-naloxone.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "6f7aa3a011ef03d1fb901975ac689ad901d5a9b7e1054dfa54d0a44c1297ff43",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badNaloxone types into w1Orders.naloxoneOffer (naloxoneOffer), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.autoNaloxone"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 3: human only: naloxoneOffer"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/15-hidden-controlled-details.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "9735bda44ff0411cf77eb4113bb5600ad11fbd109b2ac14e63547a2f08f74512",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "orderSummary is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "reviewsBeforeCommit",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/16-schedule-ii-refills.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "00525443f53429f503781b3a275ef6bfea91dd7357fd41e441fbc49fa23b80fa",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element weight",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    }
+  ]
+}
