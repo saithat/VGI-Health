@@ -737,3 +737,11 @@
   min-height: 48px;
   height: 48px;
 }
+
+/* Narrative text keeps source paragraphs in the certified generic info rows. */
+.clinical-info[data-info-id="encounterNotes"] .record-secondary,
+.clinical-info[data-info-id="priorNotes"] .record-secondary,
+.clinical-info[data-info-id="encounterNotes"] td,
+.clinical-info[data-info-id="priorNotes"] td {
+  white-space: pre-wrap;
+}

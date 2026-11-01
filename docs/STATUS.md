@@ -5,6 +5,35 @@ Consolidated 2026-10-31. Content, Lean core and render are still active lanes:
 [HANDOFF-lean-core.md](../HANDOFF-lean-core.md) and
 [HANDOFF-render.md](../HANDOFF-render.md) will be folded in when their lanes finish.
 
+## Synthetic Hospital data lane (Phase 1)
+
+Pinned upstream `911f34c4ac65a508543c4b3b90c373a0cd16534d`; SHA256-checked
+JSONL/SQLite downloads and deterministic Node/Python conversion live under
+`scripts/synthetic-hospital/`. The committed cohort is **150 patients, 637
+encounters/notes, 4,383 resources**, 6.68 MB uncompressed. Conditions: 718 coded
+with upstream ICD-10-CM and 356 text-only; 383 home MedicationStatements use
+RxNorm only for exact project-formulary names. The DB has diagnosis codes but
+no terminology tables. Source tags and per-patient Provenance cite the commit.
+
+All 150 are loaded and searchable in local Medplum. Thirty distinct primary
+selections per P1–P5; overlapping persona fits: **P1 95, P2 120, P3 51, P4 34,
+P5 90**. The full source includes 248 children. Opt in with
+`make seed SYNTHETIC_HOSPITAL=1` / `make install SYNTHETIC_HOSPITAL=1`, or
+`make load-synthetic-hospital`. Conditional creates use <=8-entry transactions
+and resolved cross-chunk references; a full rerun created **zero** resources.
+Historical encounters remain finished; active queues still come from the world.
+
+Validation: 12 Node import tests; app build/lint and all 152 tests pass, including
+real WASM projection of all 324 fixture patients. One Chromium browser signed in
+with each persona, found an imported patient, opened every chart, and verified
+the offline source filter/replay without browser errors. Screenshot:
+`app/shots/synthetic-hospital-chart.png`; browser evidence is alongside it.
+No Lean build, Lean source change, simulation world change or shared-stack reset.
+The precise Notes/history rendering plan is [HANDOFF-data.md](../HANDOFF-data.md).
+A later world may select from this cohort's index/flags/persona fits after its
+loader supports these FHIR types and text-only codes; do not modify world 2 or
+infer active orders/admissions from historical narrative.
+
 ## Rule profile: core (temporary, owner decision 2026-10-31)
 
 Core keeps the hand-written workflows: CURES (including the seven-day procedure

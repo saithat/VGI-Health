@@ -762,6 +762,8 @@ structure Facts where
   allergyVersion : Nat
   allergyClasses : List String
   medsVersion : Nat
+  notesVersion : Nat := 0
+  historyVersion : Nat := 0
   currentMedClasses : List String
   /-- Weight recorded today: tenths, and the unit as recorded. -/
   weightToday? : Option (Nat × UnitKind) := none

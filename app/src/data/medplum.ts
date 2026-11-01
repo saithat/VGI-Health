@@ -311,6 +311,7 @@ const patientQueries: [ResourceType, string][] = [
   ["Procedure", "patient"],
   ["DiagnosticReport", "patient"],
   ["DocumentReference", "patient"],
+  ["FamilyMemberHistory", "patient"],
   ["Coverage", "beneficiary"],
   ["Task", "patient"],
   ["Communication", "patient"],

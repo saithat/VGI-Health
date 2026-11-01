@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/sparkcpark/synthetic_hospital",
+  "commit": "911f34c4ac65a508543c4b3b90c373a0cd16534d",
+  "files": {
+    "patient_profiles.jsonl": "9c7a17296273ead0d212e27abbd45dd3000cf02f4404012a26420d29751a2a30",
+    "benchmark_v1.3.db": "8fb8eb114508f272588b6121ca78cff53a6fc2e5f47d7aa01bfbb5bcef4e6ddb"
+  },
+  "citation": "Park, Chen, Dettmers. Synthetic Hospital: An Open, Verifiable, Physician-Validated Longitudinal EHR Benchmark. Preprint, 2026. arXiv:2609.30027.",
+  "paper": "https://arxiv.org/abs/2609.30027",
+  "license": "MIT code; released data fully synthetic and redistributable"
+}

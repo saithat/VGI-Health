@@ -278,3 +278,17 @@ checked-in JSON and do not require a terminology service at runtime.
 - **Synthea quirks you will see:** children with an ACE-inhibitor "intolerance", a few dialysis or transplant patients with dense histories, and dental procedures.
 - **Medplum deletes are soft deletes**, and fixtures are never re-uploaded. To start over, use `make infra-reset`, which wipes the Postgres volume.
 - **Binary storage** (`MEDPLUM_BINARY_STORAGE=file:./binary/`) lives in the server container, as upstream configures it. It survives restarts but not container recreation. Nothing in this lane stores Binaries.
+
+## Optional Synthetic Hospital historical charts
+
+`make seed SYNTHETIC_HOSPITAL=1` and `make install SYNTHETIC_HOSPITAL=1` include
+150 committed historical patients, separately from simulation worlds. To load
+only those charts, use `make load-synthetic-hospital`; verify with
+`node infra/scripts/load-synthetic-hospital.mjs --verify-only`. Every entry is a
+conditional create; patient identifiers are `urn:vgi:synthetic-hospital|<id>`.
+Medplum limits conditional transactions to eight entries, so the loader sends
+ordered chunks and resolves references between them; interrupted loads resume
+on a rerun. It never resets the server or changes active worklists. All imported
+patients are searchable by every live persona. See the
+[import guide](../scripts/synthetic-hospital/README.md) and
+[Phase 2 plan](../HANDOFF-data.md).

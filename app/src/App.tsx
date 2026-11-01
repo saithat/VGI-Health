@@ -224,12 +224,12 @@ export function App() {
         ? catalog.patients.find((patient) => patient.id === patientId)
         : defaultPatient(catalog, persona);
       if (!patient)
-        throw new Error("Patient is not in the committed Synthea fixtures");
+        throw new Error("Patient is not in the committed patient fixtures");
       const [interp, spec, source, bundle, verdicts] = await Promise.all([
         (interpreter ??= loadWasmInterp()),
         readArtifact(`/releases/${release}/spec.json`),
         readArtifact(`/${program.path}`),
-        readArtifact(`/fixtures/synthea/${patient.file}`),
+        readArtifact(`/${patient.bundlePath}`),
         readArtifact("/verdicts.json")
           .then((data) => verdictsSchema.parse(data))
           .catch(() => verdictsSchema.parse({ programs: {} })),
