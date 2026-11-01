@@ -67,6 +67,7 @@ def emptySpec : Spec where
   design := { maxDepth := 0, minTextSize := 12, stabilityBudget := 0,
               landmarks := ["patientBanner"], catalog := ["banner"] }
 
+/-- A banner-only program for the empty-task assembly witness. -/
 def emptyProgram : Program where
   id := "proof-empty"
   version := 1

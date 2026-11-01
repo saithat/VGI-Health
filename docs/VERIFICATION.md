@@ -190,7 +190,7 @@ Owner hospital policy, **2026-10-31**, implemented by commit [`5aad7a9`](https:/
 +      commitRoleOk sp facts user c = true ∧
 ```
 
-The role must now pass both its ordinary permission and any encounter-specific restriction (`lean/Ehr/Core/Guard.lean:153`). An NP can prescribe in clinic but cannot sign pre-op orders. The three pre-op entries and who may enter them did not change. Completion and depth now exclude only forbidden role/encounter cases (`Props/Basics.lean:103`, `Core/Guard.lean:164`). [`np_preop_never_signs`](../lean/Ehr/Check/DomainObstruction.lean) proves refusal for every program/state/event; named P4/P5 walks are in `Check/EncounterRoleTests.lean:18`, `:23`, `:42`.
+The role must now pass both its ordinary permission and any encounter-specific restriction (`lean/Ehr/Core/Guard.lean:153`). The later attending-route update permits an NP to sign pre-op orders only after a declared human attending cosign; the NP’s own role is insufficient. Ordinary entry permissions remain unchanged. `commitRoleOk` checks both ordinary permission and the encounter’s direct-role or human-cosign route. `np_preop_without_cosign_never_signs` records the refusal without that route, and named P4/P5 walks are in `Check/EncounterRoleTests.lean`.
 
 Two other scope decisions matter: the temporary core profile removes most catalog content (above), and D2 now requires full review rows in the workspace even when a compact sidebar is present (`Render/UiProofs.lean:298`). D5's current overview check must not be described as a proof about interactive navigation. Signing roles, dose units and navigation are active lanes: regenerate the appendix after merging them, then re-review these plain-language claims.
 
@@ -203,7 +203,8 @@ Two other scope decisions matter: the temporary core profile removes most catalo
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
 - [ ] **Align D5 with the clickable tree:** `Props/Navigation.lean:6` and `Check/NavigationSound.lean:6` say actual navigation, but `Render/NavRules.lean:12` checks `uiOverviewNav`; its own docstring records the open integration.
 - [ ] **Add the Lean ARIA projection and design proofs:** current semantic rules end at `renderUi` (`Render/Ui.lean:312`), not the browser accessibility tree; see the last section of `TODO_PROOFS.md`.
-- [ ] **Review docstrings:** the role comment in `Statements.lean:35` omits encounter restrictions and `extraGuard`; unit/property comments can sound broader than their clauses (`Props/Properties.lean:286`). Some public helpers lack their own docstring (`Render/UiContracts.lean:15`, `Check/Sound.lean:44`, `Render/UiTests.lean:9`). Draft owner-review notices remain (`Props/Defs.lean:4`, `Statements.lean:5`).
+- [x] **Correct role/unit/property comments and checker helper docstrings:** `Statements.lean` now describes encounter restrictions, the human attending-cosign route and `extraGuard`; its declaration tokens are unchanged. Property comments now state whole-episode and declared-unit scope, capture retention and linked-prefill declarations precisely. Twenty-five public checker helper docstrings were added.
+- [ ] **Renderer-owned helper docstrings:** the original `Render/UiContracts.uiAtomsList` and several `Render/UiTests` fixtures still lack declaration docstrings. `Render/**` was left untouched for the active checker lane; named renderer counterparts in `Proofs/RenderExamples.lean` are documented. Existing owner-review notices in `Props/Defs.lean` and `Statements.lean` remain explicit.
 - [x] **Opaque contracts:** no project `opaque` or `axiom` declarations were found in `lean/Ehr/**`; there is no bodyless project contract to list. External I/O/toolchains remain trusted, not secretly proved by this result.
 - [x] **Audit the main proof axioms:** the generated results contain only the three allowed axioms. This does not validate parked proofs or replace a final Comparator / `lake check` run after lane merges.
 - [ ] **Review surface size:** the generated counts are large for event/check/deploy statements because they include the real interpreter, rule code and JSON definitions; these need human review, not a claim that a clean proof makes the definitions right.
@@ -216,7 +217,7 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated at `b70a799e142fff54039006d0881bbbc266efa636`. Source SHA-256: `18956657726da785186d1d3e08baf151122a972941c617be6b8c7c35e78eed56`.
+Generated at `0e25697aa2b826ecb1fda7fd77a25ac95c0d2f44`. Source SHA-256: `bb1bfd9da5e91bc21ad8628610824798760621c33d314022d1f4c4717cc397c2`.
 
 63 theorems audited; 65 statement surfaces; 46 distinct lists; 722 distinct definitions/types overall; 0–469 per statement. 76 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
@@ -273,7 +274,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 | `Ehr.Check.tiny_bad_role` | [lean/Ehr/Check/TinyRejections.lean:16](../lean/Ehr/Check/TinyRejections.lean#L16) | S31 / 397 | C, Q, P |
 | `Ehr.Check.tiny_bad_automation` | [lean/Ehr/Check/TinyRejections.lean:21](../lean/Ehr/Check/TinyRejections.lean#L21) | S31 / 397 | C, Q, P |
 | `Ehr.Props.Completable` | [lean/Ehr/Props/Properties.lean:261](../lean/Ehr/Props/Properties.lean#L261) | S32 / 2 | definition |
-| `Ehr.Props.Satisfies` | [lean/Ehr/Props/Properties.lean:428](../lean/Ehr/Props/Properties.lean#L428) | S32 / 2 | definition |
+| `Ehr.Props.Satisfies` | [lean/Ehr/Props/Properties.lean:430](../lean/Ehr/Props/Properties.lean#L430) | S32 / 2 | definition |
 | `Ehr.Check.human_finish_ready` | [lean/Ehr/Check/Completion.lean:52](../lean/Ehr/Check/Completion.lean#L52) | S33 / 265 | C, Q, P |
 | `Ehr.Check.Scalar.completable` | [lean/Ehr/Check/ScalarCompletion.lean:71](../lean/Ehr/Check/ScalarCompletion.lean#L71) | S34 / 288 | C, Q, P |
 | `Ehr.Check.satisfies_of_checked_scalar` | [lean/Ehr/Check/Sound.lean:35](../lean/Ehr/Check/Sound.lean#L35) | S35 / 469 | C, Q, P |

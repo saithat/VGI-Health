@@ -30,6 +30,7 @@ theorem fixedShownAux_sound (sp : Spec) (facts : Facts) (s : State)
           cases b <;> simp_all
         exact ⟨ho, ih par h.2.2⟩
 
+/-- A structurally fixed-shown component is layout-visible in every state. -/
 theorem fixedShown_sound (sp facts s comps c) (h : fixedShown comps c = true) :
     layoutShown sp facts s comps c = true := fixedShownAux_sound _ _ _ _ _ _ h
 
