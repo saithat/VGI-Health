@@ -3,6 +3,10 @@ import Ehr.Check.RuleSound
 import Ehr.Examples.Tiny
 
 namespace Ehr.Workspace
+#guard patientMatches "Riley Ellis" { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
+#guard patientMatches "Ellis, Riley" { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
+#guard patientMatches "sh00001675" { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
+#guard !patientMatches "," { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
 /-- Patient B never inherits captures, acknowledgments, commits or receipts from patient A. -/
 theorem opening_clears_patient_state (p : Program) (s : State) (patient target : String) :
     (openPatient p s patient target).captured = [] ∧

@@ -200,7 +200,8 @@ def displayName (p : Json) : String :=
   let n := officialName p
   let fam := str n "family"
   let given := " ".intercalate (givenNames n)
-  if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
+  if fam == "" && given == "" then str n "text"
+  else if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
 
 /-- A practitioner's supplied name text, else the official structured name. -/
 def practitionerName (r : Json) : String :=
@@ -245,7 +246,10 @@ def patientIdOf (p : Json) : String :=
 def mrnOf (p : Json) : String :=
   match (arr p "identifier").find? (fun i => hasCode (field i "type") "MR") with
   | some i => str i "value"
-  | none => ""
+  | none =>
+    -- The imported Synthetic Hospital converter declares this source identifier
+    -- as its MRN in fixtures/synthetic-hospital/index.json (convert.mjs).
+    (((arr p "identifier").find? (fun i => str i "system" == "http://hospital.smarthealthit.org")).map (str · "value")).getD ""
 
 /-! ## Allergies (T11) -/
 
@@ -1855,6 +1859,8 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
 def patientDirectory (ctx : FactsContext) (rs : List Json) (extra : List PatientChoice := []) : PatientDirectory :=
   let patients := (ofType "Patient" rs).map fun p =>
     { id := str p "id", name := displayName p, mrn := mrnOf p : PatientChoice }
+  let patients := patients.map fun p =>
+    { p with mrn := if p.mrn == "" then ((extra.find? (·.id == p.id)).map (·.mrn)).getD "" else p.mrn }
   let patients := patients ++ extra.filter (fun p => !patients.any (·.id == p.id))
   let payloads := worldQueuePayloads ctx rs (Json.mkObj [("id", .str "")])
   let sources : List (String × List Json) :=
@@ -1865,16 +1871,17 @@ def patientDirectory (ctx : FactsContext) (rs : List Json) (extra : List Patient
      ("orSchedule", (worldList ctx rs "or-schedule").getD []),
      ("consultList", (worldList ctx rs "consults").getD []),
      ("inBasketResults", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")),
+     ("inBasketMessages", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Communication")),
      ("inBasketRxRequests", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests"))]
   let titles := [("scheduleTasks", "Schedule"), ("edTrackBoard", "Track Board"),
     ("shiftWorklist", "My Patients / MAR"), ("unitCensus", "Unit Census"),
     ("orSchedule", "OR Schedule"), ("consultList", "Consults"),
-    ("inBasketResults", "In Basket · Results"), ("inBasketRxRequests", "In Basket · Rx Requests")]
+    ("inBasketMessages", "In Basket · Patient Messages"), ("inBasketResults", "In Basket · Results"), ("inBasketRxRequests", "In Basket · Rx Requests")]
   let activities := sources.filterMap fun (key, source) => do
     let payload ← payloads.find? (·.info == key)
     let rows := (source.zip payload.rows).map fun (r, row) =>
       let patient := ((patients.find? fun p => worldRowMatches (Json.mkObj [("resourceType", .str "Patient"), ("id", .str p.id)]) r).map (·.id)).getD ""
-      { patient := patient, fields := row.fields : PatientListRow }
+      { patient := patient, fields := row.fields, source? := some (resourceType r ++ "/" ++ str r "id") : PatientListRow }
     pure ({ info := key, title := (titles.lookup key).getD key, rows := rows } : PatientActivity)
   { patients := patients, activities := activities }
 

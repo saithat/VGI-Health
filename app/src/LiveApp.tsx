@@ -1,3 +1,4 @@
+import { worldWorkDate } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -612,33 +613,96 @@ function SelectEncounter({
   );
 }
 
-function PatientWorkspaceHome({ user, baseline, onLogout }: { user: LiveUser; baseline: boolean; onLogout: () => void }) {
-  const [loaded, setLoaded] = useState<{ session: Session; presentations: PresentationBundle | null }>();
+function PatientWorkspaceHome({
+  user,
+  baseline,
+  onLogout,
+}: {
+  user: LiveUser;
+  baseline: boolean;
+  onLogout: () => void;
+}) {
+  const [loaded, setLoaded] = useState<{
+    session: Session;
+    presentations: PresentationBundle | null;
+  }>();
   const [legacy, setLegacy] = useState(false);
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
     async function load() {
       const persona = user.persona === "RN2" ? "P3" : user.persona;
-      const [interp, content] = await Promise.all([loadWasmInterp(), liveProgram(persona, baseline)]);
-      const selectionEnabled = typeof content.program === "object" && content.program !== null &&
-        "patientSelection" in content.program && content.program.patientSelection === true;
-      if (!selectionEnabled) { if (active) setLegacy(true); return; }
-      const date = new Date().toLocaleDateString("en-CA");
-      const [graph, patients] = await Promise.all([loadListContext(user, date), searchPatients("")]);
-      const directory: Bundle = { ...graph, entry: [...(graph.entry ?? []).filter((e) => e.resource?.resourceType !== "Patient"),
-        ...patients.map((resource) => ({ resource }))] };
-      const session = await createLiveSession(interp, content.spec, content.program, directory, user);
-      if (active) setLoaded({ session, presentations: content.presentations ?? null });
+      const [interp, content] = await Promise.all([
+        loadWasmInterp(),
+        liveProgram(persona, baseline),
+      ]);
+      const program =
+        typeof content.program === "object" &&
+        content.program !== null &&
+        !Array.isArray(content.program)
+          ? { ...content.program, patientSelection: true }
+          : content.program;
+      const selectionEnabled =
+        typeof program === "object" &&
+        program !== null &&
+        "patientSelection" in program &&
+        program.patientSelection === true;
+      if (!selectionEnabled) {
+        if (active) setLegacy(true);
+        return;
+      }
+      const date =
+        new URLSearchParams(window.location.search).get("date") ??
+        (await worldWorkDate());
+      const [graph, patients] = await Promise.all([
+        loadListContext(user, date),
+        searchPatients(""),
+      ]);
+      const directory: Bundle = {
+        ...graph,
+        entry: [
+          ...(graph.entry ?? []).filter(
+            (e) => e.resource?.resourceType !== "Patient",
+          ),
+          ...patients.map((resource) => ({ resource })),
+        ],
+      };
+      const session = await createLiveSession(
+        interp,
+        content.spec,
+        program,
+        directory,
+        user,
+        undefined,
+        date,
+      );
+      if (active)
+        setLoaded({ session, presentations: content.presentations ?? null });
     }
-    void load().catch((error: unknown) => { if (active) setError(errorText(error)); });
-    return () => { active = false; };
+    void load().catch((error: unknown) => {
+      if (active) setError(errorText(error));
+    });
+    return () => {
+      active = false;
+    };
   }, [user, baseline]);
-  if (legacy) return <Home user={user} baseline={baseline} onLogout={onLogout} />;
-  if (error) return <Alert role="alert" color="red">{error}</Alert>;
+  if (legacy)
+    return <Home user={user} baseline={baseline} onLogout={onLogout} />;
+  if (error)
+    return (
+      <Alert role="alert" color="red">
+        {error}
+      </Alert>
+    );
   if (!loaded) return <p>Loading Medplum department workspace…</p>;
-  return <Chart session={loaded.session} presentations={loaded.presentations}
-    viewer={clinicianRoleNames[user.persona] ?? "Clinician"} onClose={onLogout} />;
+  return (
+    <Chart
+      session={loaded.session}
+      presentations={loaded.presentations}
+      viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
+      onClose={onLogout}
+    />
+  );
 }
 
 function Home({

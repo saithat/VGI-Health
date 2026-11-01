@@ -19,7 +19,10 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
     workspace := if pending then [.text "Loading the selected patient's chart…"] else
       [.field "workspace.search" "Patient search by name or MRN" "search"
         (if c.query == "" then none else some c.query) none none false false false,
-       .presentation kind ([.info "workspace.list" title info "table" ((Workspace.rows p f s).map (·.fields))] ++
+       .presentation kind ((if info.startsWith "inBasket" then
+         [.presentation .folderList [.info "" "In Basket folders" "inBasketFolders" "table"
+           ((((f.patientDirectory?.map (·.activities)).getD []).filter (fun a => a.info.startsWith "inBasket")).map fun a =>
+             [("Folder", a.title), ("Count", toString a.rows.length)])]] else []) ++ [.info "workspace.list" title info "table" ((Workspace.rows p f s).map (·.fields))] ++
         (Workspace.openControls p f s).map fun control =>
           .rowAction "workspace.list" (control.row?.getD 0)
             [.button control.id control.label "nav" true none none])] }

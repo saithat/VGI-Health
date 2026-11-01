@@ -13,7 +13,11 @@ const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
 // This is a bounded control-configuration audit, not exhaustive state search.
 // Clinical state reachability and every task remain gates in Lean/world-2.
 const maxStatesPerPersona = Number(process.env.AUDIT_MAX_STATES ?? 48);
-if (!Number.isInteger(maxStatesPerPersona) || maxStatesPerPersona < 1 || maxStatesPerPersona > 48)
+if (
+  !Number.isInteger(maxStatesPerPersona) ||
+  maxStatesPerPersona < 1 ||
+  maxStatesPerPersona > 48
+)
   throw new Error("AUDIT_MAX_STATES must be an integer from 1 to 48");
 const gotoKind = z.object({
   button: z.object({
@@ -136,6 +140,44 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       });
       await login.waitFor();
       console.log("login", await audit.click(login, undefined, "app"));
+      await Promise.race([
+        page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .waitFor({ timeout: 60000 }),
+        page
+          .getByLabel("Patient search", { exact: true })
+          .waitFor({ timeout: 60000 }),
+      ]);
+      const semanticSearch = page.getByLabel("Patient search by name or MRN", {
+        exact: true,
+      });
+      if (await semanticSearch.isVisible()) {
+        audit.screen = "patient workspace";
+        await audit.click(
+          page.getByRole("button", { name: "Patient Lookup", exact: true }),
+          undefined,
+          "lean",
+        );
+        await audit.click(
+          semanticSearch,
+          () => semanticSearch.fill("Carter"),
+          "lean",
+        );
+        await audit.click(
+          page.getByRole("button", { name: /^Open chart:/ }).first(),
+          undefined,
+          "lean",
+        );
+        await page
+          .getByRole("banner", { name: "Patient banner", exact: true })
+          .waitFor({ timeout: 30000 });
+        await audit.click(
+          page.getByRole("button", { name: /^Return to / }),
+          undefined,
+          "lean",
+        );
+        continue;
+      }
       await page
         .getByLabel("Patient search", { exact: true })
         .waitFor({ timeout: 30000 });
@@ -299,14 +341,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
     });
-    await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
-      await page.locator(".clinical-app").waitFor();
-      await page
-        .getByRole("button", { name: "Inspector", exact: true })
-        .click();
-      await page.locator(".patient-switcher summary").click();
-    });
+
     // Both real and authored runs: every persona, with sampled version/release rows.
     for (const run of ["run1-P3", "mock"]) {
       audit.program = run;
@@ -695,36 +730,71 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           .getByRole("button", { name: new RegExp(`^${persona} ·`) })
           .click();
       }
-      await page
-        .getByLabel("Patient search", { exact: true })
-        .waitFor({ timeout: 30000 });
-      // Match the persona to a representative Synthea fixture.
-      const patient = defaultPatient(
-        catalog,
-        persona === "RN2" ? "P3" : persona,
-      );
-      const names = patient.name
-        .replace(/^(?:Mr|Mrs|Ms|Dr)\.?\s+/i, "")
-        .split(" ");
-      await page
-        .getByLabel("Patient search", { exact: true })
-        .fill(names[0] ?? "");
-      await page
-        .getByRole("button", { name: "Search patients", exact: true })
-        .click();
-      await page
-        .locator(".patient-search + ul button")
-        .filter({ hasText: names.at(-1) ?? patient.name })
-        .first()
-        .click();
-      await page
-        .getByRole("button", { name: "Start new encounter", exact: true })
-        .click();
-      await page.waitForTimeout(300);
-      await page.getByRole("button", { name: "Open EHR", exact: true }).click();
-      await page.waitForFunction(() => !!window.__buttonAuditSession, {
-        timeout: 30000,
-      });
+      await Promise.race([
+        page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .waitFor({ timeout: 60000 }),
+        page
+          .getByLabel("Patient search", { exact: true })
+          .waitFor({ timeout: 60000 }),
+      ]);
+      let landingCheckpoint: number | undefined;
+      if (
+        await page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .isVisible()
+      ) {
+        landingCheckpoint = await page.evaluate(() =>
+          window.__buttonAuditSession?.checkpoint(),
+        );
+        const patient = defaultPatient(
+          catalog,
+          persona === "RN2" ? "P3" : persona,
+        );
+        await page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .fill(patient.mrn ?? patient.name);
+        await page
+          .getByRole("button", { name: /^Open chart:/ })
+          .first()
+          .click();
+        await page
+          .getByRole("banner", { name: "Patient banner", exact: true })
+          .waitFor({ timeout: 30000 });
+      } else {
+        await page
+          .getByLabel("Patient search", { exact: true })
+          .waitFor({ timeout: 30000 });
+        // Match the persona to a representative Synthea fixture.
+        const patient = defaultPatient(
+          catalog,
+          persona === "RN2" ? "P3" : persona,
+        );
+        const names = patient.name
+          .replace(/^(?:Mr|Mrs|Ms|Dr)\.?\s+/i, "")
+          .split(" ");
+        await page
+          .getByLabel("Patient search", { exact: true })
+          .fill(names[0] ?? "");
+        await page
+          .getByRole("button", { name: "Search patients", exact: true })
+          .click();
+        await page
+          .locator(".patient-search + ul button")
+          .filter({ hasText: names.at(-1) ?? patient.name })
+          .first()
+          .click();
+        await page
+          .getByRole("button", { name: "Start new encounter", exact: true })
+          .click();
+        await page.waitForTimeout(300);
+        await page
+          .getByRole("button", { name: "Open EHR", exact: true })
+          .click();
+        await page.waitForFunction(() => !!window.__buttonAuditSession, {
+          timeout: 30000,
+        });
+      }
       if (canonicalBaseline) {
         const expectedProgram = await (
           await request.get(`/releases/v3/personas/${persona}.json`)
@@ -770,6 +840,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       const leanSelector =
         'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], textarea[data-event="enter"], .field-search input, input[role="combobox"]';
       const queue = [
+        ...(landingCheckpoint === undefined ? [] : [landingCheckpoint]),
         await page.evaluate(
           () => window.__buttonAuditSession?.checkpoint() ?? -1,
         ),

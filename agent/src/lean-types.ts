@@ -147,6 +147,7 @@ export const programSchema: z.ZodType<Program> = z.object({
   owner: str,
   role: roleSchema,
   specVersion: str,
+  patientSelection: z.boolean().exactOptional(),
   start: str,
   screens: z.array(z.object({ id: str.min(1), title: str, workflow: str, components: z.array(componentSchema) })),
   macros: z.array(z.object({ id: str.min(1), label: str, steps: z.array(macroStepSchema) })),

@@ -44,7 +44,8 @@ def target (p : Program) (info : String) : Option ScreenId :=
     | "orSchedule" | "consultList" => "W6" | "inBasketResults" => "W2"
     | "inBasketRxRequests" => "W7" | _ => if p.role == .np then "W5" else "W1"
   (candidates.find? (fun id => (p.screen? id).isSome)).orElse fun _ =>
-    (p.screens.find? (·.workflow == workflow)).map (·.id)
+    ((p.screens.find? (·.workflow == workflow)).orElse fun _ =>
+      p.screens.find? (fun screen => screen.workflow != "shell" && screen.workflow != "chart")).map (·.id)
 
 /-- The role's default department activity. -/
 def primary (p : Program) : String :=
@@ -66,7 +67,10 @@ def activity (p : Program) (f : Facts) (s : State) : PatientActivity :=
 /-- Name and MRN lookup reads directory identities, never a chart's clinical data. -/
 def patientMatches (query : String) (p : PatientChoice) : Bool :=
   let q := query.trimAscii.toString.toLower
-  q != "" && ((p.name.toLower.splitOn q).length > 1 || (p.mrn.toLower.splitOn q).length > 1)
+  let words := ((q.replace "," " ").splitOn " ").filter (· != "")
+  let name := p.name.toLower
+  q != "" && ((!words.isEmpty && words.all (fun word => (name.splitOn word).length > 1)) ||
+    (p.mrn.toLower.splitOn q).length > 1)
 
 /-- The rows on the selected landing activity or the current lookup results. -/
 def rows (p : Program) (f : Facts) (s : State) : List PatientListRow :=
@@ -91,7 +95,7 @@ def openControls (p : Program) (f : Facts) (s : State) : List Control :=
 /-- Application activities and Patient Lookup are semantic navigation actions. -/
 def navigation (p : Program) (f : Facts) (s : State) : List Control :=
   let controls : List Control := (activities p f).map (fun a =>
-    { id := "workspace.activity|" ++ a.info, label := a.title, action := .showList a.info }) ++
+    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inBasket" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
   [{ id := "workspace.lookup", label := "Patient Lookup", action := .showList "lookup" },
    { id := "workspace.return", label := "Return to " ++ (((activities p f).find? (·.info == primary p)).map (·.title)).getD "patient list"
      action := .showList (primary p) }]
@@ -117,7 +121,8 @@ def init (p : Program) : State :=
 def openPatient (p : Program) (s : State) (id target : String) : State :=
   { init p with clock := s.clock, patientContext? := some {
       patient? := some id, target? := some target,
-      activity := (s.patientContext?.map (·.activity)).getD (primary p) } }
+      activity := (s.patientContext?.map (·.activity)).getD (primary p),
+      query := (s.patientContext?.map (·.query)).getD "" } }
 
 /-- A clinical page is usable only with facts loaded from the selected source Patient.id. -/
 def bound (f : Facts) (s : State) : Bool :=

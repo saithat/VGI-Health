@@ -730,6 +730,8 @@ structure PatientChoice where
 structure PatientListRow where
   patient : String
   fields : List (String × String)
+  /-- Exact source work item; transport may retain its existing encounter/task focus. -/
+  source? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A source-bounded landing activity. It contains no clinical captures. -/

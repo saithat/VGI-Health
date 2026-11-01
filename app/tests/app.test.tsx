@@ -45,10 +45,41 @@ describe("offline live UI catalog", () => {
           }),
         ),
       );
+      const directory = JSON.parse(
+        interp.facts(
+          JSON.stringify({
+            bundle: await readJson(patient.bundlePath),
+            directoryOnly: true,
+            context: {
+              today: catalog.referenceDate,
+              now: 540,
+              receipts: [],
+              record: [],
+            },
+          }),
+        ),
+      );
+      facts.facts.patientDirectory = directory.facts.patientDirectory;
       const session = createSession(interp, spec, program, facts, {
         id: "P1",
         role: "physician",
       });
+      expect(session.getSnapshot().ui?.banner).toEqual([]);
+      session.dispatch({ click: { comp: "workspace.lookup" } });
+      session.dispatch({
+        search: {
+          query:
+            directory.facts.patientDirectory.patients[0].mrn || patient.name,
+        },
+      });
+      session.dispatch({
+        click: { comp: `workspace.open|${facts.facts.sourcePatientId}|0` },
+      });
+      session.dispatch({ scroll: { screen: "home" } });
+      expect(session.getSnapshot().state.patientContext?.bound).toBe(
+        facts.facts.sourcePatientId,
+      );
+      session.dispatch({ click: { comp: "w1Rooming.home" } });
       session.dispatch({
         enter: { comp: "home.chartSearch", value: { text: { s: "72" } } },
       });
@@ -123,7 +154,12 @@ describe("offline live UI catalog", () => {
       );
       const snapshot = session.getSnapshot();
       expect(snapshot.state.screen, program.path).toBeTruthy();
-      expect(snapshot.page, program.path).toHaveProperty("node");
+      if (snapshot.state.patientContext) {
+        expect(snapshot.ui?.banner, program.path).toEqual([]);
+        expect(snapshot.ui?.side, program.path).toEqual([]);
+        expect(snapshot.state.captured, program.path).toEqual([]);
+        expect(snapshot.page, program.path).toHaveProperty("text");
+      } else expect(snapshot.page, program.path).toHaveProperty("node");
       expect(snapshot.ui, program.path).toHaveProperty("banner");
       expect(snapshot.ui, program.path).toHaveProperty("workspace");
       expect(snapshot.view.screen).toBe(snapshot.state.screen);

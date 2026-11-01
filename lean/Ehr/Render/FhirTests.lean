@@ -3,6 +3,8 @@ import Ehr.Core.Basics
 import Ehr.Specs.ClinicalTables
 
 namespace Ehr.Render.Tests
+#guard Ehr.Render.Fhir.mrnOf (Lean.Json.mkObj [("identifier", .arr #[Lean.Json.mkObj [
+  ("system", .str "http://hospital.smarthealthit.org"), ("value", .str "SH00001675")]])]) == "SH00001675"
 open Lean Fhir
 
 def context : FactsContext := { today := "2026-10-31" }

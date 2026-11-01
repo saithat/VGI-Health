@@ -28,8 +28,9 @@ const cases=[];
 mkdirSync(resolve(root,'app/shots/realism/content2/patient-selection'),{recursive:true});
 for(const release of ['v1','v2','v3'])for(const persona of ['P1','P2','P3','P4','P5']){
   const spec=read(`releases/${release}/spec.json`),program=read(`releases/${release}/personas/${persona}.json`),user={id:persona,role:program.role};
+  const extraPatients=sources.map(p=>({id:p.id,name:p.name,mrn:p.mrn??''}));
   const context={today:'2026-11-02',now:540,receipts:[],record:[['viewerPersona',persona]]};
-  const directory=call('facts',{bundle:graph,context,directoryOnly:true});
+  const directory=call('facts',{bundle:graph,context,directoryOnly:true,extraPatients});
   const base={spec,program,user};let facts=directory.facts,display=directory.display;
   let state=call('init',{...base,facts});
   const render=()=>call('render-ui',{...base,facts,display,state});
@@ -41,16 +42,16 @@ for(const release of ['v1','v2','v3'])for(const persona of ['P1','P2','P3','P4',
   assert.ok(rows.length>=4,`${persona}: full source list`);
   const open=rows[0].button;const id=open.comp.split('|')[1];assert.match(open.label,/^Open chart: .+ \(MRN .+\)$/);
   step({click:{comp:open.comp}});assert.deepEqual(render().banner,[],'Opening never paints old facts');
-  const projection=call('facts',{bundle:chart(id),worldContext:graph,context});facts=projection.facts;display=projection.display;
-  step({scroll:{screen:state.screen}});assert.equal(state.patientContext.bound,id);
+  const projection=call('facts',{bundle:chart(id),worldContext:graph,context,extraPatients});facts=projection.facts;display=projection.display;
+  state=call("step",{...base,facts,state,event:{scroll:{screen:state.screen}}}).state;assert.equal(state.patientContext.bound,id);
   assert.equal(render().banner.find(([k])=>k==='MRN')[1],projection.display.banner.mrn);
   assert.ok(!state.captured.some(c=>c.element==='patientIdReentry'||c.element==='patientScan'));
   // Capture actual source text, then leave through the real application control.
   const clinical=render();const field=clinical.workspace.flatMap(descend).find(n=>n.field?.kind==='text'&&!n.field.pendingConfirm&&!n.field.humanOnly);
-  if(field)step({enter:{comp:field.field.comp,value:{text:'PATIENT_A_ONLY'}}});
+  if(field)step({enter:{comp:field.field.comp,value:{text:{s:'PATIENT_A_ONLY'}}}});
   step({click:{comp:'workspace.return'}});assert.deepEqual(state.captured,[]);assert.deepEqual(state.receipts,[]);
   const b=directory.facts.patientDirectory.patients.find(p=>p.id!==id&&p.mrn);assert.ok(b);
-  step({click:{comp:'workspace.lookup'}});step({enter:{comp:'workspace.search',value:{text:b.mrn}}});
+  step({click:{comp:'workspace.lookup'}});step({enter:{comp:'workspace.search',value:{text:{s:b.mrn}}}});
   const bOpen=render().workspace.flatMap(descend).find(n=>n.button?.comp.startsWith(`workspace.open|${b.id}|`));assert.ok(bOpen);
   step({click:{comp:bOpen.button.comp}});
   assert.deepEqual(render().banner,[],'B cannot paint A facts');assert.deepEqual(state.captured,[]);

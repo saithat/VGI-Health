@@ -322,7 +322,7 @@ function StockUiScreenView({
       window.removeEventListener("resize", measure);
       root.style.scrollPaddingTop = previousPadding;
     };
-  }, []);
+  }, [screen.banner.length > 0]);
   return (
     <AppShell
       className="clinical-app"
@@ -339,12 +339,24 @@ function StockUiScreenView({
           if (element) element.inert = Boolean(modal);
         }}
       >
-        {screen.banner.length > 0 ? <PatientBanner
-          fields={bannerFields(screen)}
-          viewer={screen.viewer ?? viewer}
-        /> : <AppShell.Header component="header" aria-label="Application toolbar" className="clinical-banner">
-          <div className="clinical-brand"><strong>VGI HEALTH</strong><span>Clinical workspace</span><span>{screen.viewer ?? viewer}</span></div>
-        </AppShell.Header>}
+        {screen.banner.length > 0 ? (
+          <PatientBanner
+            fields={bannerFields(screen)}
+            viewer={screen.viewer ?? viewer}
+          />
+        ) : (
+          <AppShell.Header
+            component="header"
+            aria-label="Application toolbar"
+            className="clinical-banner"
+          >
+            <div className="clinical-brand">
+              <strong>VGI HEALTH</strong>
+              <span>Clinical workspace</span>
+              <span>{screen.viewer ?? viewer}</span>
+            </div>
+          </AppShell.Header>
+        )}
         <WorkflowNav
           key={active}
           groups={screen.nav}
@@ -358,7 +370,6 @@ function StockUiScreenView({
         >
           <div className="clinical-workspace-heading">
             <div>
-
               <Title order={1} title={screen.title}>
                 {sectionCaption(screen.title)}
               </Title>

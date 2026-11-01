@@ -905,6 +905,10 @@ export interface PatientChoice {
 export interface PatientListRow {
   patient: string;
   fields: [string, string][];
+  /**
+   * Exact source work item; transport may retain its existing encounter/task focus.
+   */
+  source?: string;
 }
 
 /**
