@@ -1,3 +1,4 @@
+import { prepareWorldChart, worldSchedule } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import { navigate } from "./navigation";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
@@ -230,13 +231,16 @@ export function App() {
       const release = query.get("release") ?? program.release;
       if (!["v1", "v2", "v3"].includes(release))
         throw new Error("Unknown release");
-      const patientId = query.get("patient");
+      const daySchedule = await worldSchedule(persona, catalog.referenceDate);
+      const primaryWorkflow = { P1: "W1", P2: "W3", P3: "W4", P4: "W5", P5: "W6" }[persona];
+      const defaultTask = daySchedule?.tasks.find((task) => task.workflow === primaryWorkflow);
+      const patientId = query.get("patient") ?? defaultTask?.patientId;
       const patient = patientId
         ? catalog.patients.find((patient) => patient.id === patientId)
         : defaultPatient(catalog, persona);
       if (!patient)
         throw new Error("Patient is not in the committed patient fixtures");
-      const [interp, spec, source, bundle, verdicts] = await Promise.all([
+      const [interp, spec, source, rawBundle, verdicts] = await Promise.all([
         (interpreter ??= loadWasmInterp()),
         readArtifact(programSpecPath({ ...program, release })),
         readArtifact(`/${program.path}`),
@@ -246,22 +250,22 @@ export function App() {
           .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
       const presentations = await verifyRecordedBuild(program.path, source);
+      const { bundle, worldContext } = await prepareWorldChart(rawBundle, patient.bundlePath, catalog.referenceDate, daySchedule?.tasks.find((task) => task.patientId === patient.id));
       const facts = JSON.parse(
         interp.facts(
           JSON.stringify({
             bundle,
+            ...(worldContext ? { worldContext } : {}),
             context: {
               today: catalog.referenceDate,
               now: 540,
               receipts: [],
-              record: [],
+              record: [["viewerPersona", persona]],
               ...(persona === "P2"
                 ? { encounterKind: "emergency" }
                 : persona === "P3"
                   ? { encounterKind: "inpatient" }
-                  : persona === "P5"
-                    ? { encounterKind: "preop" }
-                    : {}),
+                  : {}),
             },
           }),
         ),

@@ -339,6 +339,29 @@ export async function loadPatientBundle(patientId: string): Promise<Bundle> {
     entry: [patient, ...groups.flat()].map((resource) => ({ resource })),
   };
 }
+/** Read the dated, authored List membership separately from a patient chart. */
+export async function loadListContext(user: LiveUser, today: string): Promise<Bundle> {
+  const persona = user.persona === "RN2" ? "P3" : user.persona;
+  const lists = (await searchResources("List", { date: today, _tag: `urn:vgi:world:realism|${persona}` }))
+    .filter((r) => r.resourceType === "List");
+  const references = [...new Set(lists.flatMap((r) => r.entry?.flatMap((e) => e.item.reference ? [e.item.reference] : []) ?? []))];
+  const types: ResourceType[] = ["Appointment", "Encounter", "ServiceRequest", "Task", "Communication"];
+  const members = await Promise.all(references.map(async (reference) => {
+    const [kind, id] = reference.split("/");
+    const type = types.find((type) => type === kind);
+    if (!type || !id) throw new Error("Invalid department List reference");
+    return readResource(type, id);
+  }));
+  const patientRefs = [...new Set(members.flatMap((r) => {
+    if (r.resourceType === "Appointment") return r.participant.flatMap((p) => p.actor?.reference?.startsWith("Patient/") ? [p.actor.reference] : []);
+    if (r.resourceType === "Task") return r.for?.reference ? [r.for.reference] : [];
+    if (r.resourceType === "Encounter" || r.resourceType === "ServiceRequest" || r.resourceType === "Communication") return r.subject?.reference ? [r.subject.reference] : [];
+    return [];
+  }))];
+  const patients = await Promise.all(patientRefs.filter((ref) => /^Patient\/[A-Za-z0-9.-]+$/.test(ref)).map((ref) => readResource("Patient", ref.slice(8))));
+  return { resourceType: "Bundle", type: "collection", entry: [...lists, ...members, ...patients].map((resource) => ({ resource })) };
+}
+
 export const bundleResources = (bundle: Bundle): Resource[] =>
   bundle.entry?.flatMap((e) => (e.resource ? [e.resource] : [])) ?? [];
 export async function executeTransaction(bundle: Bundle): Promise<Bundle> {
