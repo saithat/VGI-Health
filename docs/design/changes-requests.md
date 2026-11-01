@@ -1136,9 +1136,8 @@ the source manifest has been refreshed and make wasm-check passes.
 - **App/infra:** the earlier exact Facts.patientId wristband-token request remains.
 
 Compact summary rows have one `(Record, primary text)` cell (with room for an
-optional secondary). The app's list painter currently prefixes every value with
-its key; please paint these primary cells as plain list text rather than `Record:`.
-This is a generic presentation convention, not a clinical-data inference.
+optional secondary). **Resolved by main `d3e0860`:** the app now paints the primary
+cell as plain list text. No renderer-side clinical inference is needed.
 
 ## Sim final checkpoint after second main merge (2026-10-31)
 

@@ -96,7 +96,7 @@ function checkUi(ui, view, program, display, name) {
   assert.equal(side.find((n) => n.infoId === 'currentMeds')?.rows.length, display.meds.length);
   assert.equal(side.find((n) => n.infoId === 'problemList')?.rows.length, display.problems.filter((r) => r.status !== 'resolved' && r.status !== 'inactive' && !r.abatement).length);
   assert.equal(side.find((n) => n.infoId === 'vitals')?.rows.length, new Set(display.vitals.map((r) => r.code)).size);
-  for (const info of side) assert.equal(info.display, 'list');
+  for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) assert.equal(info.display, 'list');
   for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) {
     assert.ok(info.rows.every((row) => row.length <= 2 && row[0]?.[0] === 'Record'));
   }

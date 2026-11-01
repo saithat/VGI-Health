@@ -58,10 +58,17 @@ def vitalCells (r : VitalRow) : List (String × String) :=
 def problemCells (r : ProblemRow) : List (String × String) :=
   [("Problem", r.name), ("Code", r.code), ("Onset", uiDate r.onset), ("Abatement", uiDate r.abatement), ("Status", r.status)]
 
+/-- Preserve every supplied artifact field/row alongside captured-order rows. -/
+def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
+  match infoPayload cx.facts i with
+  | none => []
+  | some p => ((if p.fields.isEmpty then [] else [p.fields]) ++ p.rows.map (·.fields)).map
+      (fun row => row.map (fun (label, value) => (label, uiDate value)))
+
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
-  if uiOrderInfo i then uiOrderRows cx else match i with
+  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match i with
   | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
   | "allergyList" => cx.disp.allergies.map allergyCells
   | "currentMeds" => cx.disp.meds.map medCells
@@ -93,9 +100,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
   | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
       then "Requested" else "Not requested")]]
-  | _ => match infoPayload cx.facts i with
-    | none => []
-    | some p => ((if p.fields.isEmpty then [] else [p.fields]) ++ p.rows.map (·.fields)).map (fun row => row.map (fun (label, value) => (label, uiDate value)))
+  | _ => uiPayloadRows cx i
 where
   valueTextQty (n : Nat) : String := s!"{n / 10}.{n % 10}"
 
@@ -121,11 +126,18 @@ def uiFieldKind : ValueKind → String
   | .text => "text" | .flag => "flag" | .identity => "identity"
   | .scan _ => "scan" | .cosign => "cosign"
 
+/-- Preserve the clinical title once. A field repeats it as an entry prompt;
+a child info panel beneath the same heading uses a neutral record label. -/
+def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String) : String :=
+  uiLabel (if cx.v.items.any (fun parent =>
+    it.comp.parent? == some parent.comp.id && parent.comp.label == label)
+    then duplicate else label) fallback
+
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
   let (_, _, want) := fieldKind kind
   let unit := match it.value? with | some (.qty _ u) => u | _ => want
-  .field it.comp.id (uiLabel it.comp.label "Clinical entry") (uiFieldKind kind) (it.value?.map (fun v => uiDate (valueText v)))
+  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") (uiFieldKind kind) (it.value?.map valueText)
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)
@@ -195,11 +207,11 @@ def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | _ => (uiRows cx i).map fun row => [("Record", " · ".intercalate (row.map (·.2)))]
 
 def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × String)) :=
-  if uiSideAt cx id then uiSummaryRows cx i else uiRows cx i
+  if uiSideAt cx id && !uiOrderInfo i then uiSummaryRows cx i else uiRows cx i
 
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
-  .info it.comp.id (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) i
-    (if uiSideAt cx it.comp.id then "list" else if uiOrderInfo i then "table" else display)
+  .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
+    (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
 
 /-- Render one shown item and its already-visible children. No visibility test

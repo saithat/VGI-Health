@@ -276,6 +276,20 @@ theorem uiWorkspace_info (cx : Ctx) (it : ItemView) (i : InfoId)
   · simp [uiInWorkspace, hk] at hw
   all_goals subst i; simp [uiItem, hk, uiItemInfo, uiItemRows, hd, uiAtoms]
 
+/-- T11 for each full workspace panel: its exact source id and every full
+clinical row are present. Compact summaries cannot satisfy this contract. -/
+theorem T11_ui_full_info (cx : Ctx) (it : ItemView) (i : InfoId)
+    (hm : it ∈ cx.v.items) (hs : it.shown = true)
+    (hw : uiInWorkspace cx it = true) (hi : showsInfo i it.comp.kind = true) :
+    ∃ label display, UiWorkspacePresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s)
+      (.info it.comp.id label i display (uiRows cx i)) := by
+  obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it i hw hi
+  refine ⟨label, display, ?_⟩
+  have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs, hw, hn⟩
+  simp only [UiWorkspacePresent, renderUi, uiWorkspace, uiAtomsList_cons, uiAtoms,
+    uiAtomsList_append, List.mem_append, List.mem_singleton]
+  exact Or.inr (Or.inl h)
+
 /-- D2: every required review is in the workspace with full rows. A compact
 sidebar, receipt, or unselected tab cannot replace these complete commit reviews. -/
 theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredReviews cx) :

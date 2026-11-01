@@ -167,6 +167,10 @@ def uiShellCtx : Ctx :=
          { id := "shell.side.problems", kind := .table "problemList", parent? := some "shell.sidebar", label := "Active problems" },
          { id := "shell.side.meds", kind := .table "currentMeds", parent? := some "shell.sidebar", label := "Medications" },
          { id := "shell.side.allergies", kind := .panel "allergyList", parent? := some "shell.sidebar", label := "Allergies" },
+         { id := "shell.allergyReview", kind := .group false false, label := "Allergies" },
+         { id := "shell.allergyRecords", kind := .panel "allergyList", parent? := some "shell.allergyReview", label := "Allergies" },
+         { id := "shell.medication", kind := .group false false, label := "Medication" },
+         { id := "shell.drug", kind := .field "drug" (.fixed 0) .none, parent? := some "shell.medication", label := "Medication" },
          { id := "shell.allProblems", kind := .table "problemList", label := "Full problem list" },
          { id := "shell.orders", kind := .panel "orderSummary", label := "Order summary" },
          { id := "shell.sign", kind := .button (.commit "signOrders"), label := "Sign" }] },
@@ -212,10 +216,15 @@ def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCt
       rows[1]!.lookup "Prescriber" == some "Alex Chen" &&
       rows[1]!.lookup "Registration" == some "AB1234567"
   | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .field "shell.drug" "Enter Medication" _ _ _ _ _ _ _ => true | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .info "shell.allergyRecords" "Records" _ _ _ => true | _ => false)
 #guard uiRows uiShellCtx "controlledSigningQuantity" == uiRows uiShellCtx "orderSummary"
 #guard uiDate "2026-05-06T13:28:42-07:00" == "May 6, 2026 13:28"
 #guard uiDate "2024-02-29" == "Feb 29, 2024"
 #guard uiDate "2025-02-29" == "2025-02-29"
+#guard uiDate "2026-05-06 start the new medication" == "2026-05-06 start the new medication"
 #guard uiDate "Not recorded" == "Not recorded"
 #guard uiReasonText uiRoomCtx "entry required: patientIdReentry" == "Re-enter patient ID (initials / sex / age) to sign"
 #guard !(uiReasonText uiRoomCtx "review required: allergyList must be shown").startsWith "review required: allergyList"
@@ -224,6 +233,7 @@ example : ∃ comp label display, UiWorkspacePresent uiShellScreen
     (.info comp label uiReview.info display (uiRows uiShellCtx uiReview.info)) :=
   D2_workspace_required uiShellCtx uiReview (by decide)
 
+#print axioms T11_ui_full_info
 #print axioms D2_workspace_required
 #print axioms uiNav_mem
 

@@ -11,7 +11,11 @@ wall time. No timezone conversion or invented timestamp is performed. -/
 def uiDate (s : String) : String :=
   let cs := s.toList
   let date := uiChars (cs.take 10)
-  if isoDateValid date then
+  let isTime := cs.length ≥ 16 && cs[10]? == some 'T' && cs[13]? == some ':' &&
+    (cs.drop 11 |>.all (fun c => c.isDigit || c == ':' || c == '.' || c == '+' || c == '-' || c == 'Z')) &&
+    ((uiChars (cs.drop 11 |>.take 2)).toNat?.map (fun n => decide (n < 24))).getD false &&
+    ((uiChars (cs.drop 14 |>.take 2)).toNat?.map (fun n => decide (n < 60))).getD false
+  if isoDateValid date && (cs.length == 10 || isTime) then
     let y := uiChars (cs.take 4)
     let m := (uiChars (cs.drop 5 |>.take 2)).toNat!
     let d := (uiChars (cs.drop 8 |>.take 2)).toNat!

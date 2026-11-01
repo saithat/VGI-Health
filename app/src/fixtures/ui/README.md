@@ -16,11 +16,28 @@ lean/.lake/build/bin/ehr render-screens --ui \
 Copy `w1Rooming.json`, `w1Orders.json`, and `w1Sign.json` from that output.
 `confirm` and `ack` button roles map to those interpreter events. The
 `toggle` role uses Event.click (the interpreter toggles clicked group headers);
-other buttons also use click. Tab labels occupy actual tab indexes. Navigation and
-stepper entries use screen IDs for goTo. Clinical summary info nodes have an
-empty comp ID because they do not dispatch component events.
+other buttons also use click. Tab labels occupy actual tab indexes. Navigation entries carry real goto-button component IDs for Event.click.
+Stepper entries retain screen IDs as a progress overview. Read-only fallback summaries have empty comp IDs. Program side components retain
+their actual IDs. Program banners/nav/sidebar are placed in shell banner/nav/side,
+without duplicate sections in the workspace.
 
 The workspace includes read-only required review info if a commit screen's
 program omits an applicable review panel. These safety info nodes and the side
-summary use empty comp IDs, with no component events. The side vitals are the
-latest observation per vital-sign code; workspace vitals retain full history.
+summary use empty comp IDs, with no component events. Side summaries use compact list rows; vitals are the latest per code. Resolved
+problems remain in the full workspace list. Required commit reviews retain full
+workspace rows even when compact side summaries are present. Order-signing info
+uses a table from current-episode captured order lines (the initial sample has
+no new order yet). Dates are human formatted in Lean.
+
+The render regression exporter also regenerates just these sample files while
+retaining the complete release program and actual init/goTo prefills:
+
+```sh
+cd lean
+lake env lean --run Ehr/Render/ExportTests.lean /tmp/render-ui-api
+cd ..
+cp /tmp/render-ui-api/w1Rooming.json /tmp/render-ui-api/w1Orders.json /tmp/render-ui-api/w1Sign.json app/src/fixtures/ui/
+```
+
+The same exporter writes full native/WASM API regression inputs; it does not
+shrink the program, canonical variant corpus, or offline screen-check coverage.

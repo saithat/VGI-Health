@@ -724,3 +724,18 @@ The identity hard stop is explicit clinician-facing text. Group toggle controls
 say Expand/Collapse section, and modals no longer repeat their title in body text.
 The required verbatim legal notice still needs a content/core text field; that
 cross-lane request is recorded rather than inventing legal wording in render.
+
+Follow-up: supplied structured artifact fields/rows are preserved alongside the
+current captured order lines. Child info labels beneath an identical section
+heading use `Records`; identically titled fields use `Enter <label>`, preserving
+the clinical label while avoiding duplicate headings. Editable field values keep
+the interpreter's exact lexical spelling (especially validated dates); human date
+formatting applies to the banner and read-only clinical/captured-summary values.
+
+`T11_ui_full_info` additionally preserves the exact component ID and all full
+rows for each shown workspace info panel; it cannot be satisfied by a compact
+summary. App main `d3e0860` resolves plain primary-list-cell painting. The P1
+rooming/orders/sign samples have been regenerated from the complete release JSON
+using actual init/goTo states; none repeats a direct child label as its section
+heading. The exporter emits reproducible sample inputs alongside the complete
+canonical differential corpus.
