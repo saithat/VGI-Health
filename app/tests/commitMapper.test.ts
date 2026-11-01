@@ -96,8 +96,9 @@ describe("pure Lean commit → FHIR transaction", () => {
     const result = resources({
       captured: [
         ...order,
-        ...order.map((c) => ({ ...c, slot: 1 })),
-        captured("dose", 20, 1),
+        ...order.map((c) =>
+          c.element === "dose" ? captured("dose", 20, 1) : { ...c, slot: 1 },
+        ),
         captured("labTest", "24323-8"),
         captured("labDiagnosis", "I10"),
       ],
@@ -105,6 +106,13 @@ describe("pure Lean commit → FHIR transaction", () => {
     expect(
       result.filter((r) => r.resourceType === "MedicationRequest"),
     ).toHaveLength(2);
+    expect(
+      result.flatMap((r) =>
+        r.resourceType === "MedicationRequest"
+          ? [r.dosageInstruction?.[0]?.doseAndRate?.[0]?.doseQuantity?.value]
+          : [],
+      ),
+    ).toEqual([10, 20]);
     expect(
       result.find((r) => r.resourceType === "ServiceRequest"),
     ).toMatchObject({

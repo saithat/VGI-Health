@@ -467,7 +467,7 @@ describe.skipIf(!available)(
               "button" in item.comp.kind &&
               typeof item.comp.kind.button.action === "object" &&
               "commit" in item.comp.kind.button.action &&
-            item.comp.kind.button.action.commit.commit === "disposition",
+              item.comp.kind.button.action.commit.commit === "disposition",
           );
         if (!commit) throw new Error("No disposition commit control");
         expect(
@@ -757,7 +757,11 @@ describe.skipIf(!available)(
         patient: patient.id ?? "",
         class: "IMP",
       });
-      const inpatient = admissions[0];
+      const inpatient = admissions.find(
+        (r) =>
+          r.resourceType === "Encounter" &&
+          r.partOf?.reference === `Encounter/${ed.id}`,
+      );
       if (inpatient?.resourceType !== "Encounter")
         throw new Error("No inpatient encounter");
       expect(inpatient).toMatchObject({
