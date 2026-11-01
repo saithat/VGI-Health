@@ -88,9 +88,17 @@ unfinished. Seed 13 now removes every CURES report/review/exemption route;
 The old `bad13_preop_not_satisfies` witness is stale after review pinning and
 must not be presented as a proof of the new seed's CURES defect.
 
-Core certification is still blocked for NP pre-op episodes by the preserved
-consent role rule (`np_preop_obstruction`, retained and kernel checked in the
-default build). No safety rule, property domain or role permission was changed.
+Owner decision 2026-10-31 resolves the NP/pre-op domain obstruction: only
+physicians and surgeons may perform `signOrders` in pre-op encounters.
+`np_preop_never_signs` replaces `np_preop_obstruction` with a general guard
+safety theorem. Consent, H&P and medication-hold requirements and their entry
+permissions are unchanged. Completion and depth obligations now exclude only
+role-forbidden encounter contexts; `entry_relevant_when_allowed` proves that an
+active entry remains required in every allowed context. Named persona walkthroughs
+are compiled #guards, avoiding whole-program kernel reduction in the default.
+`Statements.lean` changes only the role predicate in `commitGuard_iff` to
+`commitRoleOk sp facts user c`; the strengthened equivalence is kernel checked.
+General T1 completion remains the previously recorded unfinished construction.
 Render visual-review follow-up: shell/side/nav presence is covered by T10;
 semantic T11 distinguishes the requested full and compact record projections.
 `D2_workspace_required` additionally proves full rows in workspace for every

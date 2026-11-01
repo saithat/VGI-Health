@@ -1929,17 +1929,17 @@ per-commit guarantee. No old obligation or safety rule has been weakened.
 
 ## CHECK-CORE-2026-10-31: certification and day-1 smoke blockers
 
-The owner-selected core profile is active. No base rule, role permission,
-property or simulator implementation was changed. Native certification accepts
-P1/P2/P3/P5 in v1, v1.1 and v2, but not P4. `consentVerified.enteredBy` is
-`[surgeon, physician]`; `preOpExtraEntries` requires that input for `signOrders`
-in pre-op episodes. Completable quantifies over those episodes for NP too.
-`Check/DomainObstruction.lean` proves this impossibility. Content alone cannot
-supply an authorized NP input. Owner/core must resolve the task/episode domain
-or role model without broadening the safety permission to make a check pass.
-The shared `canonical.json` templates also retain RN-only inputs while declaring
-physician role; a single-role deployable baseline needs an explicit template /
-deployment convention that preserves the nursing persona source.
+The owner-selected core profile is active. The owner resolved the NP pre-op
+blocker on 2026-10-31: only physicians and surgeons perform `signOrders` for a
+pre-op encounter. `CommitSpec.encounterRoles?` encodes this hospital policy.
+The three existing entry requirements and permissions remain unchanged.
+`np_preop_never_signs` proves the guard refuses every NP pre-op signature;
+`entry_relevant_when_allowed` justifies excluding forbidden-context entries
+from depth and completion checks. All 15 persona baselines now certify.
+The three shared canonical masters mix roles and are reference programs, not
+single-role deployable baselines; only their persona projections are certified.
+World 1 has 15 pre-op tasks, all P5, and none on day 1. P4 has no pre-op tasks.
+The named P5 pre-op walkthrough signs after the three required human captures.
 
 Simulator smoke commands used the real native binary, `--spec v1` (also v1.1,
 v2), `--program releases/v1/personas/P1.json`,
@@ -1976,3 +1976,53 @@ See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
 Native core-profile `ehr check --spec releases/v1/spec.json --program releases/v1/personas/P4.json --prev releases/v1/personas/P4.json --canonical releases/v1/personas/P4.json` still rejects P4 with `completable`: `commit signOrders: no field the user can reach for required element consentVerified`. Counterexample follows home → w1Rooming → w1Orders → w1Verify → w1Sign → signOrders. Owner now requires NP pre-op orders to have a **human-only attending co-signature**, supplied by a simulated attending, never automated by the overnight agent. Please land the corresponding spec/canonical/simulator fix and regenerated release exports on main; lane/run will not change protected Lean directories or weaken the universal completion property. This blocks a certified all-five-persona smoke and the full run.
 
 Composite prerequisite: main currently has `ComponentDef`/`Program.componentDefs`, but no `Kind.use` or `Program.expand` in Core. Please supply finite structural expansion, source certificate binding and checker/render/sim integration; the agent must not invent an unchecked semantic kind.
+
+## SIM-WORLD2-DOSE-2026-10-31: incompatible medication units need core/content change
+
+World choices and formulary correctly use units for heparin and insulin, and
+mcg for inhaled albuterol. `Specs/V1.lean` declares `dose` as `quantity mg`
+(and labels it Dose (mg)); `doseUnit` is a separate coded input. Insulin/heparin
+units cannot be converted to mg without drug/product-specific data. Fractional
+mg such as albuterol 180 mcg also cannot be represented by tenths of mg.
+`Sim/Goals.checkFit` previously erased these choices and substituted an accepted
+mg value, falsely reporting completion. The simulator now preserves the chosen
+value and reports the actual obstruction.
+
+Requested core/content change: supply a unit-aware dose input/guard that accepts
+the chosen medication's units and precision, consistently across exported specs,
+canonicals, dose alerts and FHIR writes. Preserve dimensional checks and clinical
+values; do not permit arbitrary units or reinterpret units as mg. This lane is
+restricted to Sim/world/config/docs and will not edit those owner-owned modules.
+The world2 validation records each affected task and chosen dose precisely.
+
+Validation on world 2: **38 / 1,284** tasks remain incomplete, all with this
+specific dose obstruction; P1 has 4, P2 has 29, P5 has 5. P3/P4 complete all tasks;
+P4 has no pre-op tasks. `lean/Ehr/Sim/validation-world2.json` contains every
+blocked task ID and its exact drug/dose/unit choices. The per-day table is in
+`docs/STATUS.md`. No service-order release mismatch remains.
+
+
+## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
+
+Agent lane: `agent/src/lean-types.ts` `whenSchema` rejects
+`releases/v1/spec.json` `entries[16].when = {drugClass:{cls:"scheduleII"}}`.
+The current spec also carries `allowed:["0"]`, which must be preserved by the
+agent boundary. A `make -n run-live` validation unexpectedly executed the compound
+recipe because it contains recursive Make, reached real agent loading, and failed
+with `entries.16.when: Invalid input` before any LLM call or deployment. The sole
+incidental manifest was removed.
+
+Requested change: adopt current generated Lean types/validators at the agent
+boundary, preserving all spec fields and Schedule II constraints. New-run defaults
+now select world 2, but this separate schema mismatch must be fixed before an
+actual overnight agent run. Native `ehr simulate` reads the spec successfully.
+
+### Overnight preflight update
+
+The P4 startup obstruction above is resolved by main `72bee1e`/`3da9ace`, with
+an encounter-specific signing policy: physicians/surgeons sign pre-op orders;
+NP pre-op signing is refused. The agent adopts that exported rule unchanged and
+never treats an attending co-signature as automatable. World 2 arrived in
+`181ceb3`. The world-1 blocked/diagnostic attempts are archived separately;
+`smoke-core` will be a fresh all-five, world-2 run. Composite expansion remains
+an open protected-core prerequisite.

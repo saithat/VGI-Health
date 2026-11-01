@@ -212,6 +212,14 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
 
 def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode : Bool)
     (r : EpisodeResult) : EpisodeResult :=
+  -- Core rejects these values on every screen. Preserve the goals and report
+  -- the obstruction before navigation; searching other screens cannot fix it.
+  if ctx.goals.values.any (fun g => match g.value?, ctx.sp.element? g.element with
+      | some v, some el => !valueSatisfies ctx.facts ctx.user el.kind v
+      | _, none => true
+      | none, some _ => false) then
+    { r with complaints := r.complaints ++ [s!"{task.id}: unrepresentable clinical choice; incomplete"] }
+  else
   let fuel := 4 * (ctx.goals.values.length + ctx.goals.commits.length + 2) *
     (ctx.prog.screens.length + 4) + 50
   playLoop ctx params task lastEpisode fuel r true 0
@@ -248,7 +256,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
       r := { r with
         state := { init sp prog f user with clock := r.elapsedMs / 100 },
-        complaints := r.complaints ++ g.problems }
+        complaints := r.complaints ++ g.problems.map (fun problem => s!"{task.id}: {problem}") }
       r := playEpisode ctx params task (idx + 1 == eps.length) r
       complete := complete && ctx.done r.state
       floor := addMetrics floor (floorMetrics task.id sp f user g)

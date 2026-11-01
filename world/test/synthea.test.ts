@@ -1,3 +1,4 @@
+import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -13,7 +14,7 @@ const population = loadPopulation(join(root, "fixtures/synthea/index.json"));
 const run = generateWorld(1, 10, population.patients);
 
 it("keeps the committed seed-1 replay identical to the generator and below 15 MB", () => {
-  const dir = join(root, "runs/world/1");
+  const dir = join(root, "runs/world/2");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
   expect(manifest.seed).toBe(1);
@@ -25,6 +26,19 @@ it("keeps the committed seed-1 replay identical to the generator and below 15 MB
     for (const p of PERSONAS) {
       expect(read(`day-${d.state.day}-${p}.json`)).toEqual(d.schedules[p]);
       expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(d.schedules[p]);
+    }
+  }
+});
+
+it("preserves world 1 state, tasks and random draws except pre-release service choices", () => {
+  for (const d of run.days) {
+    expect(JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"))).toEqual(d.state);
+    for (const p of PERSONAS) {
+      const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1/day-${d.state.day}-${p}.json`), "utf8")));
+      for (const task of original.tasks) {
+        if (task.day < PRIOR_AUTH_RELEASE_DAY) task.choices.orders = task.choices.orders.filter((o) => (o.kind ?? "medication") === "medication");
+      }
+      expect(d.schedules[p]).toEqual(original);
     }
   }
 });
@@ -95,7 +109,7 @@ describe("real Synthea population", () => {
 it("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
   const schedules = run.days.flatMap((d) => PERSONAS.map((p) => d.schedules[p]));
   // One lake process for the entire contract test. Build Lean before running this suite.
-  const result = spawnSync("lake", ["env", "lean", "--run", "../world/test/lean/Contract.lean"], {
+  const result = spawnSync("sh", ["-c", "ulimit -v 8000000; export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536; exec lake env lean -j6 --run ../world/test/lean/Contract.lean"], {
     cwd: join(root, "lean"), input: schedules.map((s) => JSON.stringify(s)).join("\n") + "\n",
     encoding: "utf8", maxBuffer: 20 * 1024 * 1024, timeout: 60_000,
   });

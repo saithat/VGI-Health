@@ -460,6 +460,19 @@ describe("semantic EHR painter", () => {
       ]);
     },
   );
+  it("shows the encounter-role refusal on the disabled signing action", () => {
+    const reason = "Pre-op orders are signed by a physician or surgeon";
+    const onEvent = vi.fn();
+    paint([{ button: { ...button, comp: "signOrders", label: "Sign orders",
+      role: "primary", enabled: false, blockedReason: reason } }], onEvent);
+    const action = screen.getByRole("button", { name: "Sign orders" });
+    expect(action.getAttribute("disabled")).not.toBeNull();
+    expect(action.getAttribute("title")).toBe(reason);
+    expect(screen.getByText(reason)).toBeTruthy();
+    fireEvent.click(action);
+    expect(onEvent).not.toHaveBeenCalled();
+  });
+
   it("does not emit on render, blocks disabled commits, and exposes their reason", () => {
     const emit = vi.fn();
     paint(

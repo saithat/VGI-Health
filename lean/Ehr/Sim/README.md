@@ -11,12 +11,12 @@ From the repository root, after `cd lean && lake build`:
 
 ```sh
 lean/.lake/build/bin/ehr simulate --spec v2 \
-  --program releases/v2/personas/P4.json --persona programs/personas/P4.json \
-  --schedule runs/world/1/day-10-P4.json --world runs/world/1 --seed 123
+  --program releases/v2/personas/P4.json --persona runs/world/2/personas/P4.json \
+  --schedule runs/world/2/day-10-P4.json --world runs/world/2 --seed 123
 
 lean/.lake/build/bin/ehr min-clicks --spec v2 \
   --program releases/v2/personas/P4.json \
-  --schedule runs/world/1/day-10-P4.json --world runs/world/1
+  --schedule runs/world/2/day-10-P4.json --world runs/world/2
 ```
 
 `--spec VERSION` resolves to `releases/VERSION/spec.json`; an explicit JSON
@@ -122,8 +122,8 @@ W5 uses separate vaccine episodes plus the medical/note episode. Captures,
 commits and alert acknowledgments reset per episode; patient review receipts
 carry forward. Typed `w6Step` sets the encounter context, including pre-op.
 Supply, CURES exemptions, holds, pain and refill reasons use typed fields rather
-than encoded note-section strings. Inexact or unsupported scenario values are
-reported under `complaints`, following the handoff's accepted-value fallback.
+than encoded note-section strings. Explicit unsupported scenario values remain goals and make the task incomplete;
+`complaints` records the task and value. No accepted-value substitution is used.
 
 K/P/C/H/M in milliseconds are 200/1100/100/400/1350 (Card, Moran & Newell, 1980).
 Scan 1500, wait 60000 and scroll 1100 are modeling assumptions. Homing is inferred
@@ -215,3 +215,13 @@ key. Thus `guardReason_history` is still true for the current core. Its proof
 uses explicit history-invariance lemmas for the recursive clinical and validation
 ASTs, temporal/expiry status, and display contracts, rather than reducing the
 entire guard at once. No heartbeat increase or theorem weakening is needed.
+
+## World 2 validation
+
+`python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 2 --report
+lean/Ehr/Sim/validation-world2.json` runs all 50 schedules using the active
+release from `world/releases.json`, release persona canonicals, world persona
+parameters and seed 7. Each native process inherits an 8,000,000 KiB virtual
+memory cap. The report includes input hashes, incomplete task choices and
+complaints, pre-op task IDs, deterministic day-1 replay, floor and interruption
+checks. Add `--require-complete` to fail if any task remains incomplete.

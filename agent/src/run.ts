@@ -10,6 +10,7 @@
  * After the last day, each deployed change gets its TEST measurement: day
  * night+2 (never used to select it) replayed on the old and new versions.
  */
+import releaseDaysConfig from "../../world/releases.json";
 import { mkdir, readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -95,7 +96,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
-  const releaseDays = opts.releaseDays ?? { v1_1: 4, v2: 7 };
+  const releaseDays = opts.releaseDays ?? releaseDaysConfig;
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });

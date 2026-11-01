@@ -18,6 +18,7 @@
  *
  * Set EHR_FAKE=1 to use the fake ehr (tests / smoke runs only; certifies nothing).
  */
+import releaseDaysConfig from "../../world/releases.json";
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -69,18 +70,17 @@ async function cmdRunDays(argv: string[]): Promise<void> {
       model: { type: 'string' }, 'v1.1-day': { type: 'string' }, 'v2-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
-  if (!values.world) throw new Error('--world runs/world/<seed> is required');
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
   const summary = await runDays({
     days: intArg(values.days, 'days', 10),
     resume: values.resume,
     llm,
-    worldDir: resolveUserPath(values.world),
+    worldDir: resolveUserPath(values.world ?? 'runs/world/2'),
     ...(values['runs-root'] ? { runsRoot: resolveUserPath(values['runs-root']) } : {}),
     ...(values['run-id'] ? { runId: values['run-id'] } : {}),
     ...(values.personas ? { personas: values.personas.split(',').map((s) => s.trim()) } : {}),
     seedPolicy: seedPolicyArg(values['seed-policy']),
-    releaseDays: { v1_1: intArg(values['v1.1-day'], 'v1.1-day', 4), v2: intArg(values['v2-day'], 'v2-day', 7) },
+    releaseDays: { v1_1: intArg(values['v1.1-day'], 'v1.1-day', releaseDaysConfig.v1_1), v2: intArg(values['v2-day'], 'v2-day', releaseDaysConfig.v2) },
     ...(values.fhir ? { fhirBundles: values.fhir.split(',').map((f) => resolveUserPath(f.trim())) } : {}),
     log: (line) => console.log(line),
   });

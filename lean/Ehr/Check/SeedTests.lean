@@ -44,4 +44,5 @@ def mutationRejected (property : String) (p : Program) : Bool :=
 #guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
 #guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
 #guard mutationRejected "completable" Bad.scheduleIIRefills
+#guard mutationRejected "humanOnlyKept" Bad.npPreopMacro
 end Ehr.Check.Tests

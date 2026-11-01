@@ -35,8 +35,8 @@ screen.
 On every screen the user can reach, every landmark (e.g. the patient
 banner) is shown.
 
-Every element a required commit needs has a field on a screen at most
-`maxDepth` "go to" clicks from the start screen.
+Every relevant entry has a field within the depth bound. Entries scoped
+only to encounters where this role cannot commit are not required.
 
 **Property 1, well-formed.** Catalog components only, unique IDs (in the
 spec and the program), references resolve, landmarks always shown, and every
@@ -113,8 +113,8 @@ From every reachable state, each required commit not yet done can still
 be done by the human, with some list of events. The hard stop never leaves
 the user stuck.
 
-**Property 6, completable.** For every patient record that allows the
-commit at all, each commit the program must support stays reachable from
+**Property 6, completable.** For each patient record and user allowed to
+perform the commit in that encounter, the commit stays reachable from
 every reachable state: the user can always enter what is required, see what
 must be reviewed (or enter its waiver), and acknowledge alerts. Needs the
 checker.

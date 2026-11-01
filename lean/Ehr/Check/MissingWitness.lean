@@ -35,10 +35,11 @@ samples or any unrelated pre-op/review defect in the canonical. -/
 theorem missing_required_not_satisfies (sp : Spec) (can p : Program) (cm : CommitId)
     (hcm : cm ∈ requiredCommits sp can p) (rq : EntryReq)
     (hrq : rq ∈ sp.entries) (same : rq.commit = cm)
+    (relevant : entryRelevantForRole sp p.role rq = true)
     (absent : ∀ sc ∈ allComps p, ∀ slot pf, fieldOf? sc.2.kind ≠ some (rq.element, slot, pf)) :
     ¬ Satisfies sp none can p := by
   intro h
-  obtain ⟨sc, hc, ⟨f, hf, he⟩, _⟩ := h.1.2.2.2.2.1 cm hcm rq hrq same
+  obtain ⟨sc, hc, ⟨f, hf, he⟩, _⟩ := h.1.2.2.2.2.1 cm hcm rq hrq same relevant
   have hf' : fieldOf? sc.2.kind = some f := by simpa using hf
   rcases f with ⟨e, slot, pf⟩
   change e = rq.element at he

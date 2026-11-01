@@ -99,6 +99,11 @@ def requiredCommits (spec : Spec) (canonical prog : Program) : List CommitId :=
     | some cs => cs.roles.contains prog.role
     | none => false
 
+/-- Required commits for this episode exclude commits this user's role may not perform. -/
+def requiredCommitsFor (spec : Spec) (canonical prog : Program) (facts : Facts)
+    (user : User) : List CommitId :=
+  (requiredCommits spec canonical prog).filter (commitRoleOk spec facts user)
+
 /-! ## Shown -/
 
 /-- Some component the page shows in state `s` satisfies `p`. -/

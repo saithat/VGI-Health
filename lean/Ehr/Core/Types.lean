@@ -435,6 +435,13 @@ structure ExpiryReq where
   maxOriginalMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- In this encounter kind, only these roles may perform the commit. -/
+structure EncounterRoleRule where
+  encounter : String
+  roles : List Role
+  reason : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A commit and the roles allowed to perform it. -/
 structure CommitSpec where
   id : CommitId
@@ -443,6 +450,8 @@ structure CommitSpec where
   temporal? : Option (List TemporalReq) := none
   expiry? : Option (List ExpiryReq) := none
   actionLabel? : Option String := none
+  /-- No encounter-specific role restriction when absent. Matching rules all apply. -/
+  encounterRoles? : Option (List EncounterRoleRule) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a requirement applies. -/

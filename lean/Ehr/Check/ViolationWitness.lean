@@ -33,12 +33,12 @@ theorem outside_closed_no_depth (p : Program) (kept : List ScreenId)
 /-- A required field confined to an unreachable screen violates property 1. -/
 theorem required_unreachable_violation (sp : Spec) (prev : Option Program) (can p : Program)
     (cm : CommitId) (required : cm ∈ requiredCommits sp can p)
-    (rq : EntryReq) (member : rq ∈ sp.entries) (same : rq.commit = cm) (z : ScreenId)
+    (rq : EntryReq) (member : rq ∈ sp.entries) (same : rq.commit = cm) (relevant : entryRelevantForRole sp p.role rq = true) (z : ScreenId)
     (fields : (allComps p).all (fun sc => (fieldOf? sc.2.kind).all (fun f =>
       f.1 != rq.element || sc.1.id == z)) = true)
     (unreachable : ¬ WithinClicks p sp.design.maxDepth z) : ¬ Satisfies sp prev can p := by
   intro hs
-  obtain ⟨sc, hc, ⟨f, hf, he⟩, depth⟩ := hs.1.2.2.2.2.1 cm required rq member same
+  obtain ⟨sc, hc, ⟨f, hf, he⟩, depth⟩ := hs.1.2.2.2.2.1 cm required rq member same relevant
   have here := List.all_eq_true.mp fields sc hc
   have field : fieldOf? sc.2.kind = some f := by simpa using hf
   simp only [field, Option.all_some, he, bne_self_eq_false, Bool.false_or, beq_iff_eq] at here

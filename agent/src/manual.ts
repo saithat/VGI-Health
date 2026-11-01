@@ -44,8 +44,8 @@ export function formalRuleContext(spec: Spec, program: Program): string {
   const citations = specDocs().filter((d) => [...ids].some((id) => d.declaration.includes(`"${id}"`))).map((d) => d.text);
   return [`Rule profile: ${ruleProfile()}. ${profileLine()}`, `Role ${program.role}; workflows ${[...new Set(program.screens.map((s) => s.workflow))].join(', ')}.`,
     'Enforced entries, reviews, alerts, labels and policy citations (the complete active spec is also supplied):',
-    JSON.stringify({ entries, reviews, alerts: spec.alerts.filter((a) => commits.has(a.commit)), labels, budgets: spec.design }), ...citations,
-    'NP pre-op attending co-signature is human-only. A simulated attending may supply it in replay; the designer must never automate it.'].join('\n\n');
+    JSON.stringify({ commits: spec.commits.filter((c) => commits.has(c.id)), entries, reviews, alerts: spec.alerts.filter((a) => commits.has(a.commit)), labels, budgets: spec.design }), ...citations,
+    'The active encounter-role policy permits only physicians/surgeons to sign pre-op orders; an NP cannot bypass it. Any attending co-signature is human-only; a simulated attending may supply one in replay only when the formal policy permits, never through designer automation.'].join('\n\n');
 }
 
 export function capabilitiesManual(): string {

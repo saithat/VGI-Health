@@ -17,10 +17,20 @@ const verdicts = {};
 for (const program of (await buildCatalog()).programs) {
   const source = await readFile(resolve(root, program.path));
   const sha256 = createHash("sha256").update(source).digest("hex");
+  if (/^releases\/[^/]+\/canonical\.json$/.test(program.path) ||
+      program.path === "programs/canonical/v1.json") {
+    verdicts[program.path] = { status: "reference", sha256,
+      output: "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program." };
+    continue;
+  }
   if (!available) {
     verdicts[program.path] = { status: "verdict not computed", sha256 };
     continue;
   }
+  const previousRelease = { "v1.1": "v1", v2: "v1.1" }[program.release];
+  const previousPath = previousRelease && program.path.startsWith(`releases/${program.release}/personas/`)
+    ? program.path.replace(`releases/${program.release}/`, `releases/${previousRelease}/`)
+    : undefined;
   const result = spawnSync(
     binary,
     [
@@ -30,7 +40,8 @@ for (const program of (await buildCatalog()).programs) {
       "--program",
       program.path,
       "--canonical",
-      `releases/${program.release}/personas/${program.persona}.json`,
+      `releases/${program.release}/canonical.json`,
+      ...(previousPath ? ["--prev", previousPath] : []),
     ],
     {
       cwd: root,
@@ -47,7 +58,7 @@ for (const program of (await buildCatalog()).programs) {
   verdicts[program.path] = {
     status:
       result.status === 0
-        ? "computed"
+        ? "certified"
         : result.status === 1 &&
             typeof output === "object" &&
             output !== null &&

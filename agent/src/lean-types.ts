@@ -64,7 +64,10 @@ export const specSchema: z.ZodType<L.Spec> = z.looseObject({
   version: str,
   elements: z.array(elementSpecSchema),
   infos: z.array(z.looseObject({ id: str, label: str, version: str })),
-  commits: z.array(z.looseObject({ id: str, label: str, roles: z.array(roleSchema) })),
+  commits: z.array(dropNulls(['encounterRoles'], z.looseObject({
+    id: str, label: str, roles: z.array(roleSchema),
+    encounterRoles: z.array(z.looseObject({ encounter: str, roles: z.array(roleSchema), reason: str })).exactOptional(),
+  }))),
   entries: z.array(dropNulls(['allowed'], z.looseObject({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), allowed: z.array(str).exactOptional() }))),
   reviews: z.array(dropNulls(['waivedBy'], z.looseObject({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.looseObject({

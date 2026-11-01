@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "3d2d066f1a7cc2ca80718107ca5e6b830a09432c",
+  "sourceRevision": "ce226d8817cbe34a4d83fe7460f497c4a416e3ab",
   "sourceDirty": true,
-  "binarySha256": "f4f2843127b43b41d733469cccba2c36ff596bdf8ccd1427d5be953c01642f07",
+  "binarySha256": "3951096664a18f98b7e7d1234d8429efb5514ced12beb534a436e153ffa5a202",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -21,12 +21,12 @@
     "31-hidden-result-components",
     "32-misleading-signing-label"
   ],
-  "baselineAccepted": 0,
-  "baselineCount": 3,
-  "personaAccepted": 12,
+  "referenceCount": 3,
+  "certifiedBaselineCount": 15,
+  "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 16,
-  "badCount": 16,
+  "badRejected": 17,
+  "badCount": 17,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -34,484 +34,187 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 5,
-        "results": [
-          "ok",
-          "ok",
-          "ok",
-          "ok",
-          {
-            "blocked": {
-              "reason": "entry required: patientIdReentry"
-            }
-          }
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "exitCode": 0,
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1.1/personas/P1.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
       "programSha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "specSha256": "d72bf8a2c0549a17d791f26b8bd30278df0802ca01d41442d043a122d8a54928",
       "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "previous": "releases/v1/personas/P1.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1.1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
       "programSha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "specSha256": "d72bf8a2c0549a17d791f26b8bd30278df0802ca01d41442d043a122d8a54928",
       "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "previous": "releases/v1/personas/P2.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1.1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
       "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "specSha256": "d72bf8a2c0549a17d791f26b8bd30278df0802ca01d41442d043a122d8a54928",
       "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "previous": "releases/v1/personas/P3.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1.1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
       "programSha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "specSha256": "d72bf8a2c0549a17d791f26b8bd30278df0802ca01d41442d043a122d8a54928",
       "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "previous": "releases/v1/personas/P4.json",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 5,
-        "results": [
-          "ok",
-          "ok",
-          "ok",
-          "ok",
-          {
-            "blocked": {
-              "reason": "entry required: patientIdReentry"
-            }
-          }
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "exitCode": 0,
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v1.1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
       "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "specSha256": "d72bf8a2c0549a17d791f26b8bd30278df0802ca01d41442d043a122d8a54928",
       "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "previous": "releases/v1/personas/P5.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v2/personas/P1.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "specSha256": "b3f0558265f4eb24e300439559bafcd7b1888348936251428a7c59978fb496d5",
       "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "previous": "releases/v1.1/personas/P1.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v2/personas/P2.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "specSha256": "b3f0558265f4eb24e300439559bafcd7b1888348936251428a7c59978fb496d5",
       "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "previous": "releases/v1.1/personas/P2.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v2/personas/P3.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "specSha256": "b3f0558265f4eb24e300439559bafcd7b1888348936251428a7c59978fb496d5",
       "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "previous": "releases/v1.1/personas/P3.json",
       "exitCode": 0,
-      "verdict": "ok"
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v2/personas/P4.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "specSha256": "b3f0558265f4eb24e300439559bafcd7b1888348936251428a7c59978fb496d5",
       "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "previous": "releases/v1.1/personas/P4.json",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element consentVerified",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 5,
-        "results": [
-          "ok",
-          "ok",
-          "ok",
-          "ok",
-          {
-            "blocked": {
-              "reason": "entry required: patientIdReentry"
-            }
-          }
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "exitCode": 0,
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "releases/v2/personas/P5.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "specSha256": "b3f0558265f4eb24e300439559bafcd7b1888348936251428a7c59978fb496d5",
       "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "previous": "releases/v1.1/personas/P5.json",
       "exitCode": 0,
-      "verdict": "ok"
-    },
-    {
-      "program": "releases/v1/canonical.json",
-      "group": "baseline",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
-      "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
-      "previous": null,
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 3,
-        "results": [
-          "ok",
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "releases/v1.1/canonical.json",
-      "group": "baseline",
-      "spec": "releases/v1.1/spec.json",
-      "programSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
-      "canonicalSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
-      "previous": "releases/v1/canonical.json",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 3,
-        "results": [
-          "ok",
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "releases/v2/canonical.json",
-      "group": "baseline",
-      "spec": "releases/v2/spec.json",
-      "programSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
-      "canonicalSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
-      "previous": "releases/v1.1/canonical.json",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 3,
-        "results": [
-          "ok",
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "verdict": "ok",
+      "status": "certified"
     },
     {
       "program": "programs/bad/01-hidden-allergies.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "2446f3451fd8aef4f900074985b88b4730a2c1df6e9341cdcc99dd1d5e3eb70a",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -555,6 +258,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "reviewsBeforeCommit",
       "expectedPropertyRejected": true,
       "replay": {
@@ -579,7 +283,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "5caac148b8bc30a5877bc43f49c6498afeed32997cd244daa6db167c665bd4e9",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -618,6 +322,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -637,7 +342,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "14514c761f744515c0a43eb963b33710c2e14a2323c39888c408358063af8674",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -664,6 +369,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "writesOnly",
       "expectedPropertyRejected": true,
       "replay": {
@@ -681,7 +387,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "96ba15d84af0c0cff1904c536655a73d4b34f4cc5b12e3b0a49999b19267fc10",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -719,6 +425,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -742,7 +449,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "8b0f36223d3cab42a119e2abb936614c10c7af8ee0ca48af70a5f97fc36671e2",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -775,6 +482,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -793,7 +501,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "baca1c9d18c2d26a1411d32c0eeadd6c724f28e6cf1fe7ce1ff0fde8ab7990fb",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -814,6 +522,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "units",
       "expectedPropertyRejected": true,
       "replay": {
@@ -830,7 +539,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "c40129d627f3b543a73631e6ec4da546857a9d8fed00325f6f084640cc3c6647",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -844,6 +553,7 @@
           "counterexample": []
         }
       },
+      "status": "rejected",
       "expectedProperty": "completable",
       "expectedPropertyRejected": true,
       "replay": {
@@ -858,7 +568,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "743558daabe8b2bdf04f31ebce21f6055b014a19a8be602b20524d563b7d075b",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -884,6 +594,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -905,7 +616,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "6e04f03999ce5a006a3c5d9ba1ce1750ff049215f922822bf411dcd3fdc9874f",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -937,6 +648,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -959,7 +671,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "54a2f366e131b571f2443f041345e18ff7aafb9c8a33002a2922dc352adcd530",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -986,6 +698,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "wellFormed",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1003,7 +716,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "693f3b4fd770860cb2a026a66b3063d3213a77fa8e904a284a2376ea20c87bdc",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1030,6 +743,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "noRepeatInterruptions",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1047,7 +761,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "516dd2d74210e245e25ae1d2c91467ca65593072f6553956858893084ea0b5ed",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1068,6 +782,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "severityTiers",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1084,7 +799,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "bafccc3c9157c36648be9b67ea754aec5c0b8c307073eaba4214b4b7b992b087",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1128,6 +843,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "completable",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1152,7 +868,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "f474c46a248ce9101c2926bbbe454fc4f69fe9ecd9c2308d21d28aa01d4203de",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1184,6 +900,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "humanOnlyKept",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1206,7 +923,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "d63df22c0a07b8fcbc3c50af29d03f5cf669babc190509f5aec0da6a9622999a",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1250,6 +967,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "reviewsBeforeCommit",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1274,7 +992,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "cecbb783596387fea766c9494bd06ab8249529f6042458dc0b0ae3c5f3d3d672",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
       "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "previous": null,
       "exitCode": 1,
@@ -1318,6 +1036,7 @@
           ]
         }
       },
+      "status": "rejected",
       "expectedProperty": "completable",
       "expectedPropertyRejected": true,
       "replay": {
@@ -1336,6 +1055,85 @@
         ],
         "scope": "navigation replay; not a semantic violation proof"
       }
+    },
+    {
+      "program": "programs/bad/33-np-preop-macro.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "656da39447a52ada177c503f05dcd4a58be9a9b09fbc97e6b38a49500f979c00",
+      "specSha256": "831b3284d0bb92f58d1afd83c61cead4c76f3177965b6ad1840bd3bdc82ebdc1",
+      "canonicalSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w6PostOp",
+            "w6Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badNpPreopSign clicks w6Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w6PostOp"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6PostOp.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6Sign.npAutoSign"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 1: human only: commit"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v1/canonical.json",
+      "group": "reference",
+      "status": "reference",
+      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "programSha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
+      "spec": "releases/v1/spec.json"
+    },
+    {
+      "program": "releases/v1.1/canonical.json",
+      "group": "reference",
+      "status": "reference",
+      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "programSha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
+      "spec": "releases/v1.1/spec.json"
+    },
+    {
+      "program": "releases/v2/canonical.json",
+      "group": "reference",
+      "status": "reference",
+      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "programSha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
+      "spec": "releases/v2/spec.json"
     }
   ]
 }
