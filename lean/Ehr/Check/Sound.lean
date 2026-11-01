@@ -78,7 +78,8 @@ def emptyProgram : Program where
                 components := [{ id := "banner", kind := .banner }] }]
   macros := []
 
-example : Satisfies emptySpec none emptyProgram emptyProgram :=
+/-- An empty task family satisfies all properties; the nonempty witness is scalar_identity_satisfies. -/
+theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
     simp [requiredCommitsFor, requiredCommits, commitButtons, emptyProgram] at hc)

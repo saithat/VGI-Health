@@ -27,6 +27,7 @@ import Ehr.Check.Deploy
 import Ehr.Cli.Check
 import Ehr.Proofs.CheckDeploy
 import Ehr.Proofs.HypothesisExamples
+import Ehr.Proofs.RenderExamples
 import Ehr.Specs.V1
 import Ehr.Canonical.Program
 import Ehr.Render

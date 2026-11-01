@@ -5,6 +5,7 @@ import Ehr.Proofs.CheckDeploy
 import Ehr.Render.UiProofs
 import Ehr.Check.TinyRejections
 import Ehr.Proofs.HypothesisExamples
+import Ehr.Proofs.RenderExamples
 
 /-! Opt-in reviewer audit. Follows statement types and definition bodies, never
 proof bodies, for the surface; follows proofs separately for the axiom audit.

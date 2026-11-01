@@ -84,7 +84,7 @@ open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
 /-- On the tiny example with a prior allergy receipt at the current version:
 the allergy tab is closed (not shown) and Sign still commits. -/
-example : let f := factsWithReceipt 3
+theorem tiny_current_receipt_commits : let f := factsWithReceipt 3
     let s := atSignWith f
     "signOrders" ∉ s.commits ∧
     "signOrders" ∈ (step spec program f user .human s (.click "signButton")).1.commits ∧
@@ -93,13 +93,13 @@ example : let f := factsWithReceipt 3
   decide
 
 /-- With a stale receipt (version 2), the same click does not commit. -/
-example : let f := factsWithReceipt 2
+theorem tiny_stale_receipt_blocks : let f := factsWithReceipt 2
     "signOrders" ∉ (step spec program f user .human (atSignWith f) (.click "signButton")).1.commits := by
   decide
 
 /-- `T2_shownOnCommit_shown` applies to the tiny dose check: it is a
 `shownOnCommit` requirement with no waiver. -/
-example : { commit := "signOrders", info := "doseCheck", mode := .shownOnCommit : ReviewReq } ∈
+theorem tiny_dose_review_declared : { commit := "signOrders", info := "doseCheck", mode := .shownOnCommit : ReviewReq } ∈
     spec.reviews := by
   decide
 

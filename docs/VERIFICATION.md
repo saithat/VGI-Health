@@ -109,36 +109,37 @@ The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`
 
 | Main theorem(s) | Evidence; limit |
 |---|---|
-| `T0_commit_needs_guard` | Complete: a new commit really occurs, `lean/Ehr/Proofs/T0.lean:403`; the theorem is applied at `:407`. |
-| `commitGuard_iff` | No proof conditions; concrete true and false guards at `T0.lean:407`, `:413`, `:414`. |
-| `T0_entry_values` | Complete input conditions for a stronger allowed-value result are discharged at `T0.lean:434`; the per-line case is separate at `:426`. |
+| `T0_commit_needs_guard` | Complete: `Ehr.Proofs.tiny_sign_commit_occurs` proves a real new commit; `tiny_sign_guard_holds` applies T0 to it (`Proofs/T0.lean`). |
+| `commitGuard_iff` | No proof conditions; `tiny_sign_guard_holds`, `tiny_hidden_review_blocks`, and `tiny_pounds_blocks` supply true and false guards (`Proofs/T0.lean`). |
+| `T0_entry_values` | Complete conditions for the stronger allowed-value forms: `scheduleII_zero_refills_whole_episode` and `scheduleII_zero_refills_per_line` (`Proofs/T0.lean`). |
 | `T3_cosign_distinct` | Complete: `cosign_distinct_instance` applies T3 to a real high-alert commit with requirement membership, applicability, per-line flag, declaration lookup and cosign kind all discharged. |
 | `T2_receipts_sound` | Complete: `receipt_sound_instance` applies T2 to a real hidden-review commit with a current receipt, including review membership and commit equality. |
 | `T2_shownOnCommit_shown` | Complete: `shown_review_instance` supplies a committing state and the actual shown-only dose review, with all premises discharged. |
 | `T3_macro_step`, `T3_prefill_never_human_only` | No proof conditions; executable Tiny states/programs in `lean/Ehr/Examples/TinyTests.lean`. |
-| `T3_macro_run`, `T6_macro_run_safe` | Complete shared conditions: button resolves to a macro and no popup is open, `lean/Ehr/Proofs/Audit.lean:98`; the run changes the screen and captures at `:103`. |
-| `T6_macro_is_fold`, `runMacro_ok_iff` | No proof conditions; stopping and successful concrete expansions at `lean/Ehr/Proofs/T6.lean:147`, `:154`. |
-| `A2_view_firing` | Complete firing-item existence at `lean/Ehr/Proofs/Alerts.lean:353`. |
+| `T3_macro_run`, `T6_macro_run_safe` | Complete shared conditions: `tiny_macro_run_premises`; observable navigation/capture effects: `tiny_macro_changes_screen_and_captures` (`Proofs/Audit.lean`). |
+| `T6_macro_is_fold`, `runMacro_ok_iff` | No proof conditions; `tiny_macro_stops_at_identity` and `tiny_safe_macro_prefix_succeeds` give concrete stopping and successful expansions (`Proofs/T6.lean`). |
+| `A2_view_firing` | Complete firing-item existence: `tiny_care_gap_firing_and_shown` (`Proofs/Alerts.lean`). |
 | `A2_view_shown` | Complete: `shown_alert_instance` supplies the exact shown care-gap alert item, its view membership and alert kind. |
-| `A2_popup_holds` | Complete new-popup conditions at `Alerts.lean:358`. |
+| `A2_popup_holds` | Complete new-popup conditions: `tiny_allergy_click_opens_popup` (`Proofs/Alerts.lean`). |
 | `A4_step` | Complete: `popup_step_instance` proves the initial `PopupNotPassive` premise and applies A4 to a real step; `popup_step_opens` proves an interruptive popup actually opens. |
-| `A4_run` | No proof conditions; a concrete Tiny spec is used by the passive-rule run example at `Alerts.lean:374`. |
-| `A4_passive_never_popup` | Complete lookup/tier conditions and theorem application at `Alerts.lean:370`, `:374`. |
+| `A4_run` | No proof conditions; `tiny_passive_never_popup` uses the concrete Tiny program for every event list (`Proofs/Alerts.lean`). |
+| `A4_passive_never_popup` | Complete lookup/tier conditions and application: `tiny_passive_rule_lookup` and `tiny_passive_never_popup` (`Proofs/Alerts.lean`). |
 | All twelve `accepted_*` theorems | Complete on a nonempty clinical program: `scalar_identity_satisfies` discharges acceptance by `decide` and proves all thirteen properties; `scalar_identity_required` proves the required commit list is nonempty for every physician and record. |
 | `satisfies_of_checked_completable` | Complete: `scalar_identity_satisfies` supplies acceptance and the all-records/all-reachable-states proof `Scalar.completable`, with a human-only identity entry, shown allergy review, and interruptive allergy alert. |
-| D1 | No proof conditions; concrete banner example at `lean/Ehr/Render/UiTests.lean:28`. |
-| D2 workspace / required-info / commit-review | Complete examples at `UiTests.lean:254`, `:109`, `:32`, respectively. |
+| D1 | No proof conditions; `RenderExamples.patient_banner_present` supplies the concrete name/DOB banner example. |
+| D2 workspace / required-info / commit-review | Complete: `RenderExamples.shell_review_in_workspace`, `missing_review_is_supplemented`, and `sign_allergy_review_present`. |
 | D3 honest-actions / all-buttons | Complete: `sign_button_honest_instance` and `all_buttons_instance` apply both theorems to one concrete primary Sign button; `sign_button_present` supplies presence. |
-| D4 modal / no-modal / inline | Complete examples at `UiTests.lean:44`, `:53`, `:120`, respectively. |
-| D6 clear-fields | Complete application at `UiTests.lean:60`, including a genuinely pending confirmation at `:65`. |
+| D4 modal / no-modal / inline | Complete: `RenderExamples.interruptive_allergy_modal`, `passive_rule_has_no_modal`, and `passive_care_gap_inline`. |
+| D6 clear-fields | Complete: `RenderExamples.weight_field_present`, `weight_confirmation_pending`, and `weight_confirmation_action_present`. |
 | D6 field-labels | Complete: `weight_label_instance` directly applies D6 to a present, pending clinical weight field, using `weight_field_present`. |
 | T4 publish / reject / certificate | Complete: `publish_ok_instance`, `rejected_not_published_instance`, and `published_certificate_instance` apply T4 to concrete planned writes. `current_certificate_planned` proves membership and `currentCert` is discharged. |
 
-The property examples at [`lean/Ehr/Props/Examples.lean:65`](../lean/Ehr/Props/Examples.lean#L65) cover clauses, not a clinical all-thirteen proof. In particular, its signing path at `:130` proves one successful continuation, not completion from every reachable state. For property 13, [`lean/Ehr/Check/Tests.lean:37`](../lean/Ehr/Check/Tests.lean#L37) directly applies `accepted_navigation` to the good Tiny program.
+The named property examples in [`lean/Ehr/Props/Examples.lean`](../lean/Ehr/Props/Examples.lean) describe individual clauses. `good_sign_has_one_continuation` proves one successful signing continuation; `Scalar.completable` supplies the separate all-records/all-reachable-states completion theorem. Named renderer counterparts are in [`lean/Ehr/Proofs/RenderExamples.lean`](../lean/Ehr/Proofs/RenderExamples.lean), under `Ehr.Proofs.RenderExamples`; the owning lane’s `Render/**` files remain untouched. For property 13, [`lean/Ehr/Check/Tests.lean:37`](../lean/Ehr/Check/Tests.lean#L37) directly applies `accepted_navigation` to the good Tiny program.
+
 
 ## 5. Does the spec reject bad behaviour?
 
-**Fresh kernel proofs:** `tiny_bad_catalog`, `tiny_bad_role`, `tiny_bad_automation` prove `¬ Satisfies` for properties 1, 3 and 5 ([`lean/Ehr/Check/TinyRejections.lean:8`](../lean/Ehr/Check/TinyRejections.lean#L8), `:16`, `:21`). The audit imports and audits these. Smaller negative examples also reject hidden/stale reviews, pounds, a macro entering patient ID, and a passive popup (`T0.lean:413`, `T2.lean:96`, `Proofs/Audit.lean:109`, `:116`, `Proofs/Alerts.lean:381`, `Props/Examples.lean:171`).
+**Fresh kernel proofs:** `tiny_bad_catalog`, `tiny_bad_role`, `tiny_bad_automation` prove `¬ Satisfies` for properties 1, 3 and 5 ([`lean/Ehr/Check/TinyRejections.lean:8`](../lean/Ehr/Check/TinyRejections.lean#L8), `:16`, `:21`). The audit imports and audits these. Named negative examples also reject hidden/stale reviews (`tiny_hidden_review_blocks`, `tiny_stale_receipt_blocks`), pounds (`tiny_pounds_blocks`), automated identity capture (`macro_identity_capture_is_unsafe`), and passive popups (`tiny_passive_popup_state_rejected`, `passive_popup_request_rejected`).
 
 **Compiled checks, not `¬ Satisfies` proofs:** the 17 core seeds have mutation-specific failing-rule and replay checks at [`lean/Ehr/Check/SeedTests.lean:31`](../lean/Ehr/Check/SeedTests.lean#L31). `#guard` executes a check; it is not `native_decide` and adds no theorem or axiom. The saved [`certification-report.json`](../lean/Ehr/Check/certification-report.json) records 17/17 rejected and 15/15 accepted persona baselines. It labels its source revision `ce226d8…` **dirty**; this is prior run evidence, not a fresh run of this audit.
 
@@ -198,7 +199,7 @@ Two other scope decisions matter: the temporary core profile removes most catalo
 - [x] **T1 fragment and nonempty witness:** `Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`, `scalar_identity_required`. The fragment covers scalar kinds except medication doses, both review modes, every alert condition and tier. `human_finish_ready` proves finite alert discharge for the real interpreter.
 - [ ] **General T1:** arbitrary accepted navigation/reveal, multiple compatible entry requirements, per-line/archived-line repair, and encounter/waiver routes. The precise `accepted_completable` lemma is recorded in `TODO_PROOFS.md`; no completion assumption or checker rule was weakened.
 - [x] **Complete the hypothesis examples:** all formerly partial/missing section 4 cases have named concrete applications with every premise discharged in `Proofs/HypothesisExamples.lean`; T1 has the nonempty all-records/all-reachable-states witness in `Check/Sound.lean`.
-- [ ] **Name examples:** most are anonymous (`Props/Examples.lean:65`, `Proofs/T0.lean:403`, `Render/UiTests.lean:28`); many demonstrate a clause rather than the entire property.
+- [x] **Name cited examples:** 47 previously anonymous property/interpreter/deploy/soundness examples now have descriptive theorem names and docstrings. Sixteen named renderer counterparts live in `Proofs/RenderExamples.lean` to preserve lane ownership. Each states its individual clause; the one-path signing witness does not claim universal completion.
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
 - [ ] **Align D5 with the clickable tree:** `Props/Navigation.lean:6` and `Check/NavigationSound.lean:6` say actual navigation, but `Render/NavRules.lean:12` checks `uiOverviewNav`; its own docstring records the open integration.
 - [ ] **Add the Lean ARIA projection and design proofs:** current semantic rules end at `renderUi` (`Render/Ui.lean:312`), not the browser accessibility tree; see the last section of `TODO_PROOFS.md`.
@@ -215,9 +216,9 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated at `06d88e5e3e6b84c7b921c830cab119305586075b`. Source SHA-256: `e56f7d0b192cec75178daa3019a6a9dcd7a1669998bd90d631a16c7cecd26218`.
+Generated at `b70a799e142fff54039006d0881bbbc266efa636`. Source SHA-256: `18956657726da785186d1d3e08baf151122a972941c617be6b8c7c35e78eed56`.
 
-63 theorems audited; 65 statement surfaces; 46 distinct lists; 722 distinct definitions/types overall; 0–469 per statement. 75 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
+63 theorems audited; 65 statement surfaces; 46 distinct lists; 722 distinct definitions/types overall; 0–469 per statement. 76 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
 Counts include named project definitions and types. Compiler helpers, instances, constructors and projections are omitted from the display after traversal. Library definitions are traversed but not listed. Proof bodies are followed only for the axiom column. `P` = propext; `C` = Classical.choice; `Q` = Quot.sound; `none` = no axioms. Each S-list below gives its complete list as shared B-groups; each definition is printed once. No names are removed by this grouping.
 
