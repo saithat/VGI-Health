@@ -1,0 +1,13 @@
+{
+  "challenge_module": "Ehr.Check.CompletionStatements",
+  "solution_module": "Ehr.Check.Sound",
+  "theorem_names": [
+    "Ehr.Check.satisfies_of_checked_fixed_lines"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

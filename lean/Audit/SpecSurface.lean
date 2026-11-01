@@ -50,7 +50,10 @@ elab "#spec_surface " id:ident : command => do
   let decl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo id
   let names := ((specSurface env decl).toList.filter (ownDefinition env)).map toString
   let names := names.toArray.qsort (· < ·)
-  logInfo m!"AUDIT_JSON {Json.compress <| Json.mkObj [("kind", toJson ("surface" : String)), ("name", toJson decl.toString), ("items", toJson names)]}"
+  let sourceModule := match env.getModuleIdxFor? decl with
+    | some idx => env.header.moduleNames[idx.toNat]!.toString
+    | none => "Audit.SpecSurface"
+  logInfo m!"AUDIT_JSON {Json.compress <| Json.mkObj [("kind", toJson ("surface" : String)), ("name", toJson decl.toString), ("module", toJson sourceModule), ("items", toJson names)]}"
 
 /-- Emit proof axioms and fail on anything outside the three allowed axioms. -/
 elab "#audit_axioms " id:ident : command => do
@@ -195,3 +198,14 @@ end VerificationAudit
 #audit_axioms Ehr.Proofs.HypothesisExamples.published_certificate_instance
 #spec_surface Ehr.Proofs.HypothesisExamples.rejected_not_published_instance
 #audit_axioms Ehr.Proofs.HypothesisExamples.rejected_not_published_instance
+
+#spec_surface Ehr.Check.reachable_drugSlots
+#audit_axioms Ehr.Check.reachable_drugSlots
+#spec_surface Ehr.Check.FixedLine.completable
+#audit_axioms Ehr.Check.FixedLine.completable
+#spec_surface Ehr.Check.satisfies_of_checked_fixed_lines
+#audit_axioms Ehr.Check.satisfies_of_checked_fixed_lines
+#spec_surface Ehr.Check.fixed_lines_satisfies
+#audit_axioms Ehr.Check.fixed_lines_satisfies
+#spec_surface Ehr.Check.fixed_lines_pending_nonempty
+#audit_axioms Ehr.Check.fixed_lines_pending_nonempty

@@ -7,6 +7,7 @@ import Ehr.Check.HumanEventsSound
 import Ehr.Check.AlertSound
 import Ehr.Check.NavigationSound
 import Ehr.Check.ScalarCompletion
+import Ehr.Check.FixedLineCompletion
 
 namespace Ehr.Check
 open Ehr Ehr.Props
@@ -55,6 +56,34 @@ theorem scalar_identity_required (facts : Facts) (user : User) (role : user.role
   simp [requiredCommitsFor, requiredCommits, commitButtons, Scalar.spec, Scalar.program,
     Scalar.screen, Scalar.field, Scalar.button, Spec.commit?, commitRolePossible, roleOk, role, List.eraseDups_cons]
 
+/-- Acceptance certifies the two-fixed-line composer, including per-line
+human entries, new-line advancement, reviews and finite alert discharge. -/
+theorem satisfies_of_checked_fixed_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) = .ok) :
+    Satisfies (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) :=
+  satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose)
+
+/-- A checked nonempty order composer satisfies all thirteen properties;
+its per-order-line requirement is a human assessment on each drug line. -/
+theorem fixed_lines_satisfies :
+    Satisfies (FixedLine.spec .flag .physician .shownOnCommit .drugAllergy .interruptive)
+      none (FixedLine.program .physician) (FixedLine.program .physician) :=
+  satisfies_of_checked_fixed_lines _ _ _ _ _ (by decide) none (by decide)
+
+/-- Two actual drug lines can be pending at once, with neither assessment
+entered. The completion theorem therefore repairs real per-line obligations. -/
+theorem fixed_lines_pending_nonempty :
+    let sp := FixedLine.spec .flag .physician .shownOnCommit .drugAllergy .interruptive
+    let p := FixedLine.program .physician
+    let s := runAll sp p Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user .human
+      (init sp p Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user)
+      [.enter (FixedLine.drugField 0).id (.code "amoxicillin"),
+       .enter (FixedLine.drugField 1).id (.code "warfarin")]
+    orderLines s = [(0, "amoxicillin"), (1, "warfarin")] ∧
+      entriesOk sp Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user s "recordReview" = false := by
+  decide
+
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where
   version := "proof-empty"
@@ -88,4 +117,6 @@ theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyPro
 #print axioms satisfies_of_checked_completable
 #print axioms satisfies_of_checked_scalar
 #print axioms scalar_identity_satisfies
+#print axioms satisfies_of_checked_fixed_lines
+#print axioms fixed_lines_satisfies
 end Ehr.Check

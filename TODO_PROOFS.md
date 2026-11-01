@@ -168,3 +168,28 @@ and all three T4 theorems. Every premise is discharged on concrete Tiny clinical
 programs/states; the render witnesses use actual present nodes, and the
 certificate witness is an actual planned `currentCert` write. All are in the
 default import tree. The original render-owned files are untouched.
+
+## Fixed order-line completion extension
+
+`reachable_drugSlots` proves a general invariant for every program whose drug
+fields bind to declared fixed slots: all reachable drug captures stay within
+those slots. The proof includes arbitrary macros, prefills, navigation,
+new-order-line actions and elapsed time, without assuming checker acceptance.
+
+`FixedLine.completable` uses that invariant to repair a per-order-line human
+entry on both fixed slots 0 and 1, even after currentSlot advances. It retains
+either review mode and every alert condition/tier. `satisfies_of_checked_fixed_lines`
+assembles all thirteen properties from acceptance without a completion premise;
+`fixed_lines_satisfies` discharges acceptance and `fixed_lines_pending_nonempty`
+exhibits two real drug lines with unsatisfied per-line entries.
+
+This is still a structural family: one screen, two fixed drug slots, one
+unrestricted scalar requirement per line, pinned allergy review and one alert.
+Dynamic current-slot composers and their archived-line invariants, arbitrary
+multiple/allowed-value requirements, navigation/reveal and general review
+collection remain open. The general `accepted_completable` target above is
+unchanged. No attending route or entry attestation is used by the extension.
+
+Completed completion-fragment statements have a separate opt-in Comparator challenge,
+`Ehr/Check/completion-comparator.json`; its placeholder bodies are excluded
+from the default import tree, like the two existing challenge modules.
