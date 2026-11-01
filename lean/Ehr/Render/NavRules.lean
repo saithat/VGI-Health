@@ -36,5 +36,5 @@ def reportReleaseNav : IO Unit := do
     for (label, entries) in uiOverviewNav prog do
       IO.println s!"  {label}: {entries.length} screens, unique labels = {(entries.map (·.2)).eraseDups.length == entries.length}"
 
-#eval reportReleaseNav
+-- Canonical.NavExports runs the file-backed report outside kernel builds.
 end Ehr.Render

@@ -34,12 +34,16 @@ function expectedRowPlacement(
     for (const node of nodes) {
       if ("presentation" in node)
         scan(node.presentation.children, node.presentation.kind);
+      else if ("valueSet" in node) scan(node.valueSet.children, view);
+      else if ("chartReferences" in node)
+        scan(node.chartReferences.children, view);
       else if ("columns" in node) scan(node.columns.children, view);
       else if ("section" in node) scan(node.section.children, view);
       else if ("tabs" in node) scan(node.tabs.body, view);
       else if ("rowAction" in node) actions.push(node.rowAction);
       else if (
         "info" in node &&
+        !["status", "document"].includes(node.info.display) &&
         view !== "growth" &&
         view !== "trend" &&
         view !== "notes"
@@ -72,8 +76,23 @@ export function expectedNodeAria(
   confirmProvided = false,
   presentation?: UiPresentationKind,
   placement?: ExpectedRowPlacement,
+  inheritedConfirms: ReadonlySet<string> = new Set(),
 ): AriaEntry[] {
   switch (true) {
+    case "valueSet" in node:
+      return expectedChildrenAria(
+        node.valueSet.children,
+        presentation,
+        placement,
+        inheritedConfirms,
+      );
+    case "chartReferences" in node:
+      return expectedChildrenAria(
+        node.chartReferences.children,
+        presentation,
+        placement,
+        inheritedConfirms,
+      );
     case "presentation" in node:
       return expectedChildrenAria(
         node.presentation.children,
@@ -83,6 +102,7 @@ export function expectedNodeAria(
             node.presentation.kind,
             node.presentation.children,
           ),
+        inheritedConfirms,
       );
     case "rowAction" in node:
       return placement?.placed.has(node.rowAction)
@@ -91,17 +111,24 @@ export function expectedNodeAria(
             node.rowAction.children,
             presentation,
             placement,
+            inheritedConfirms,
           );
     case "section" in node:
       return nest(
         entry("region", node.section.title),
-        expectedChildrenAria(node.section.children, presentation, placement),
+        expectedChildrenAria(
+          node.section.children,
+          presentation,
+          placement,
+          inheritedConfirms,
+        ),
       );
     case "columns" in node:
       return expectedChildrenAria(
         node.columns.children,
         presentation,
         placement,
+        inheritedConfirms,
       );
     case "tabs" in node:
       return [
@@ -111,7 +138,12 @@ export function expectedNodeAria(
         ),
         ...nest(
           entry("tabpanel", node.tabs.labels[node.tabs.selected] ?? ""),
-          expectedChildrenAria(node.tabs.body, presentation, placement),
+          expectedChildrenAria(
+            node.tabs.body,
+            presentation,
+            placement,
+            inheritedConfirms,
+          ),
         ),
       ];
     case "stepper" in node:
@@ -127,7 +159,9 @@ export function expectedNodeAria(
               : "textbox",
           node.field.label,
         ),
-        ...(node.field.pendingConfirm && !confirmProvided
+        ...(node.field.pendingConfirm &&
+        !confirmProvided &&
+        !inheritedConfirms.has(node.field.comp)
           ? [
               {
                 role: "button",
@@ -138,24 +172,36 @@ export function expectedNodeAria(
           : []),
       ];
     }
-    case "info" in node:
+    case "info" in node: {
+      if (node.info.display === "document")
+        return [entry("region", node.info.label)];
+      if (node.info.display === "status")
+        return [entry("status", node.info.label)];
       if (node.info.rows.length === 0) return [entry("note", node.info.label)];
-      if (presentation) {
+      const kind =
+        presentation ??
+        (node.info.display === "trend"
+          ? "trend"
+          : node.info.display === "list" &&
+              ["encounterNotes", "priorNotes"].includes(node.info.infoId)
+            ? "notes"
+            : undefined);
+      if (kind) {
         const controls = [...(placement?.rows.get(node.info) ?? [])]
           .sort(([left], [right]) => left - right)
           .flatMap(([, children]) =>
-            expectedChildrenAria(children, presentation, placement),
+            expectedChildrenAria(children, kind, placement, inheritedConfirms),
           );
-        if (presentation === "folderList" || presentation === "notes")
+        if (kind === "folderList" || kind === "notes")
           return nest(entry("list", node.info.label), controls);
         const names = new Set<string>();
-        if (presentation === "trend" || presentation === "growth") {
+        if (kind === "trend" || kind === "growth") {
           for (const row of node.info.rows) {
             const value = (key: string) =>
               row.find(([name]) => name === key)?.[1] ?? "";
             const numeric = (s: string) =>
               /^-?\d+(?:\.\d+)?$/.test(s.trim()) && Number.isFinite(Number(s));
-            if (presentation === "growth") {
+            if (kind === "growth") {
               if (!numeric(value("Age (months)"))) continue;
               if (numeric(value("Weight (kg)")))
                 names.add(`${node.info.label}: Weight (kg)`);
@@ -167,20 +213,20 @@ export function expectedNodeAria(
                 );
             } else if (numeric(value("Value")))
               names.add(
-                `${node.info.label}: ${value("Test") || value("Measure") || node.info.label}${value("Unit") ? ` (${value("Unit")})` : ""}`,
+                `${node.info.label}: ${value("Test") || value("Measure") || value("Vital sign") || node.info.label}${value("Unit") ? ` (${value("Unit")})` : ""}`,
               );
           }
         }
         return [
           ...[...names].map((name) => entry("img", name)),
           ...nest(entry("table", node.info.label), controls),
-          ...(presentation === "growth" &&
+          ...(kind === "growth" &&
           node.info.rows.some((row) =>
             row.some(([key, value]) => key === "Percentile" && value !== ""),
           )
             ? [entry("table", `${node.info.label} reference data`)]
             : []),
-          ...(presentation === "timeGrid" &&
+          ...(kind === "timeGrid" &&
           node.info.rows.some((row) =>
             row.some(
               ([key, value]) =>
@@ -201,19 +247,8 @@ export function expectedNodeAria(
         ? []
         : node.info.display === "list"
           ? [entry("list", node.info.label)]
-          : [
-              ...(node.info.display === "trend" &&
-              node.info.rows.some((row) =>
-                row.some(
-                  ([key, value]) =>
-                    /value|result|weight/i.test(key) &&
-                    Number.isFinite(Number.parseFloat(value)),
-                ),
-              )
-                ? [entry("img", `${node.info.label} trend`)]
-                : []),
-              entry("table", node.info.label),
-            ];
+          : [entry("table", node.info.label)];
+    }
     case "alert" in node:
       return [entry("alert", node.alert.label)];
     case "button" in node:
@@ -234,7 +269,12 @@ function expectedChildrenAria(
   nodes: UiNode[],
   presentation?: UiPresentationKind,
   placement?: ExpectedRowPlacement,
+  inheritedConfirms: ReadonlySet<string> = new Set(),
 ): AriaEntry[] {
+  const explicit = new Set(inheritedConfirms);
+  for (const node of nodes)
+    if ("button" in node && node.button.role === "confirm")
+      explicit.add(node.button.comp);
   return nodes.flatMap((node) =>
     expectedNodeAria(
       node,
@@ -247,6 +287,7 @@ function expectedChildrenAria(
         ),
       presentation,
       placement,
+      explicit,
     ),
   );
 }
@@ -261,24 +302,26 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
     );
   return [
     entry("banner", "Patient banner"),
-    ...nest(
-      entry("navigation", "Clinical workflows"),
-      screen.nav
-        .filter(([, items]) => items.length > 0)
-        .flatMap(([group, items]) =>
-          nest(
-            entry("region", group),
-            nest(
-              entry("list", `${group} screens`),
-              items.map(([, label]) => ({
-                role: "button",
-                name: label,
-                disabled: false,
-              })),
+    ...(screen.nav.some(([, items]) => items.length)
+      ? nest(
+          entry("navigation", "Clinical navigation"),
+          screen.nav
+            .filter(([, items]) => items.length > 0)
+            .flatMap(([group, items]) =>
+              nest(
+                entry("region", group),
+                nest(
+                  entry("list", `${group} screens`),
+                  items.map(([, label]) => ({
+                    role: "button",
+                    name: label,
+                    disabled: false,
+                  })),
+                ),
+              ),
             ),
-          ),
-        ),
-    ),
+        )
+      : []),
     ...nest(entry("main"), [
       ...(screen.side.length
         ? nest(
@@ -312,6 +355,7 @@ const roles = new Set([
   "button",
   "table",
   "alert",
+  "status",
   "list",
   "img",
   "tab",

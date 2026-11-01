@@ -47,7 +47,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     ["P2", "w3TrackBoard", "w3Triage"],
     ["P3", "w4Worklist", "w4Mar"],
     ["P4", "w5Rooming", "w5Growth"],
-    ["P5", "w6PreOp", "w6PreOp"],
+    ["P5", "w6Schedule", "w6PreOp"],
   ] as const) {
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
@@ -58,7 +58,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       .click();
     if (process.env.REALISM_SHOTS !== "before") {
       const navigator = page.getByRole("navigation", {
-        name: "Clinical workflows",
+        name: "Clinical navigation",
       });
       await expect(
         navigator.locator("button[data-comp-id]").first(),
@@ -68,7 +68,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
-    if (screen !== entry) await destination.click();
+    await destination.click();
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );

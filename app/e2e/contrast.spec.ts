@@ -5,7 +5,7 @@ const roleScreens = [
   ["P2", "w3TrackBoard", "w3Triage"],
   ["P3", "w4Worklist", "w4Mar"],
   ["P4", "w5Rooming", "w5Growth"],
-  ["P5", "w6PreOp", "w6PreOp"],
+  ["P5", "w6Schedule", "w6PreOp"],
 ] as const;
 
 for (const route of [
@@ -35,10 +35,9 @@ for (const route of [
       await page
         .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
         .click();
-      if (entry !== destination)
-        await page
-          .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
-          .click();
+      await page
+        .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
+        .click();
     }
     const failures = await page.evaluate(() => {
       const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number);

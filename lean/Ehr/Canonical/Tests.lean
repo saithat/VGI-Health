@@ -181,7 +181,7 @@ def assessment : State := more (finish insulin "w4Admin" "administerMed" (f := a
 def w5Path : List Event :=
   [.click "home.work.w5Rooming"] ++ enter "w5Rooming"
   [("weight", .qty 200 .kg), ("chiefComplaint", .text "Ear pain"), ("decision0", .code "continue")] ++
-  [.click "w5Rooming.next", .click "w5Growth.next", .click "w5Orders.prefAmoxicillin"] ++
+  [.click "w5Rooming.next", .click "w5Growth.next", .click "w5Note.next", .click "w5Orders.prefAmoxicillin"] ++
   confirmLine "w5Orders" ++ [.confirm "w5Orders.doseMgPerKg"] ++ enter "w5Orders"
   [("dose", .qty 9000 .mg), ("dosingWeight", .qty 200 .kg), ("pharmacy", .code "Community pharmacy"),
    ("indication", .text "otitis media"), ("orderDiagnosis", .code "H66.90"),
@@ -203,10 +203,10 @@ def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (
 #guard (finish vaccineState "w5Immunizations" "recordImmunization" (f := child) (u := np)).commits.contains "recordImmunization"
 /-- W5 close retains rooming and medication reconciliation. -/
 def w5Close : State := more (finish vaccineState "w5Immunizations" "recordImmunization" (f := child) (u := np))
-  ([.click "w5Immunizations.next"] ++ enter "w5Close"
+  ([.click "w5Immunizations.next", .click "w5Close.editNote"] ++ enter "w5Note"
     [("hpi", .text "Ear pain two days."), ("ros", .text "No fever."), ("exam", .text "Bulging TM."),
-     ("assessmentPlan", .text "Amoxicillin; safety net reviewed."), ("visitDiagnosis", .code "H66.90"),
-     ("claimDiagnosis", .code "H66.90"), ("levelOfService", .code "99213"), ("followUp", .code "2 weeks"),
+     ("assessmentPlan", .text "Amoxicillin; safety net reviewed."), ("visitDiagnosis", .code "H66.90")] ++
+    [.click "w5Note.nav.w5Close"] ++ enter "w5Close" [("claimDiagnosis", .code "H66.90"), ("levelOfService", .code "99213"), ("followUp", .code "2 weeks"),
      ("patientInstructions", .text "Complete course; return if worse.")]) (f := child) (u := np)
 #guard (finish w5Close "w5Close" "signNote" (f := child) (u := np)).commits.contains "signNote"
 

@@ -34,7 +34,7 @@ Existing info IDs keep their meanings. New queue info IDs supported by the prese
 
 ## Actions and status
 
-These presentations are read-only data. Every action must exist as a normal `UiNode.button`, field, tab or navigator event in the Lean tree. Put an ordinary goto button adjacent to the selected work item to open the encounter; an `Open` text column, pointer cursor or decorative filter must not masquerade as a control. Worklist row actions can be added later with an additive semantic contract; do not encode component IDs into clinical rows. The presentation lane will not make read-only grid cells editable.
+Clinical cells are read-only data. Every action must exist as a normal `UiNode.button`, field, tab or navigator event in the Lean tree. An ordinary goto button may be adjacent to the selected work item or placed in its row through the additive row-action contract below; an `Open` text column, pointer cursor or decorative filter must not masquerade as a control. Do not encode component IDs into clinical rows. The presentation lane will not make read-only grid cells editable.
 
 Status tints map only supplied text: due/pending (blue), overdue/critical (red), given/complete (green), held (amber), refused (violet), future/unknown/stopped (neutral). Always retain the words. Lab flags H/L/HH/LL/A come from Lean's FHIR reading or explicit payload; React never compares a result to a reference range. The painter may calculate coordinates from supplied numeric values solely for drawing, never dosing, percentiles, trends across unlike units, or clinical thresholds.
 
@@ -47,6 +47,21 @@ Presentation lane owns `UiPresentationKind`, the wrapper, projection helpers, JS
 Research and visual review: [presentation research](ehr-ui-research.md#presentation-lane-structured-clinical-widgets). Add to this contract; do not rename kinds or change existing column meanings.
 
 ### Additions after first implementation
+
+SURG supplies optional `UiScreen.fieldChoices` for an existing visible coded
+field. Each entry pairs its component ID with `options` (code/label pairs),
+`showCode` and `allowOther`. These are department favorites, never defaults or
+validators. The painter may filter the supplied code/label text. Selecting an
+option emits the field's ordinary raw-code entry event; filtering alone emits
+no clinical event. `showCode` retains a clinical code in the input and presents
+its supplied description beside it. Other choices show their supplied readable
+label while retaining the original code value. Manual entry remains available
+when `allowOther` is true. This metadata adds no clinical action or UI node kind.
+
+SURG's OR requests also supply `Indication`, read from the same ServiceRequest's
+reason codes. It remains source request evidence, independent of an order's
+diagnosis association or a postoperative diagnosis. Compact case/consult summaries
+retain the original field labels instead of joining unlabeled values.
 
 MAR time columns use dated hours, with exact recorded administration times retained in the cells. Lean fills empty axis cells between the earliest and latest recorded hour for each date; these are not clinical events. The painter groups the existing Medication/Dose/Route/Frequency/Order status columns into one left-hand detail cell without discarding any field. No existing row key changes meaning.
 
@@ -64,6 +79,38 @@ The painter places these controls in the matching row for tables, schedules, boa
 
 Row indexes beyond JavaScript's exact integer transport range do not select a row wrapper; Lean emits the original ordinary control. This keeps an oversized source tag from making the entire JSON screen unusable. MAR headers may group the supplied dated-hour columns under their recorded date, while undated columns retain their complete labels. Narrow row labels still include the full supplied date and time.
 
+SURG's existing optional `UiScreen.viewer` can include the signed-in clinician's
+source name beside the role. Lean requires a unique `Display.clinicians` identity
+match to its permission-bearing user; absent/ambiguous profiles retain the role
+alone. The painter displays that supplied string and never selects a clinician,
+infers permission or pre-enters patient identity from it.
+
+SURG's typed FHIR lab reader supplies short captions for four verified standard
+LOINC labels. Exact system/code and standard-label matching preserves custom
+qualified labels. Recorded codes, values, units, dates, ranges, flags and trends
+are unchanged. The existing results presentation paints those supplied captions;
+explicit info payloads retain their own labels.
+### Ambulatory metadata
+
+`UiNode.valueSet options allowCustom children` supplies typed `{code, label}`
+choices around an ordinary field. It does not change that field's Value,
+validation, permissions, human-only flag, provenance or confirmation. The
+browser displays labels and dispatches the selected code. If custom codes are
+allowed, typing shows an explicit `Use code` option; typing alone is not an
+entry. Existing closed formulary and dose-unit controls retain their semantics.
+
+`UiNode.chartReferences references children` supplies published reference samples
+around an ordinary growth info/presentation. Each reference carries measure,
+unit, percentile, source, population and points in tenths of a month/hundredths
+of the stated unit. Patient rows remain complete and separate. WHO 2006 covers
+0–24 months; CDC 2000 covers 24–240 months. Lean selects an explicit US Core
+birth-sex code, known measurement units and applicable ages. Unknown or
+conflicting population data supplies no curve. Curves do not cross population,
+source or unit boundaries; the browser calculates geometry only.
+
+Both wrappers are transparent to semantic presence and preserve every ordinary
+child control/info node. Row-placement, button-audit and ARIA traversals recurse
+through them. No D-rule, clinical requirement or theorem statement is changed.
 ### Per-observation laboratory data
 
 `Display.labResults : List LabResultRow` adds each recorded result's code, human name, raw value, unit, time, reference text, flag and status. `labs`/`labResults`/`resultTrend` use these complete rows when available; older Display JSON defaults this list to empty and retains the legacy aggregate fallback. Existing clinical Facts extraction and its legacy lab aggregates are unchanged. Components retain their own values/units and the report's time/status. Clinical test codes disambiguate otherwise identical names only when needed; resource IDs and component IDs never become clinical rows.
@@ -105,3 +152,33 @@ ISO display timestamps retain the supplied clock, fractional seconds and offset 
 The row-action extension above is implemented; the original adjacent-button pattern remains supported. Empty-state wording may use the shared painter's contextual message for that info ID instead of the generic `No records on file`. Neither refinement introduces a browser-owned action or changes the payload schema.
 
 Known clinical info IDs also select default presentations without an explicit tag: queue IDs select their corresponding kind; `labs`/`labResults` select results, `resultTrend` selects trend, `growthChart` selects growth, and `encounterNotes`/`priorNotes` select notes. Recognized explicit tags take precedence. An unrecognized tag keeps the info ID's default when one exists, otherwise the ordinary info layout. The complete selector is `presentationKind?` in `Render/Presentations.lean`; automatic side summaries remain compact.
+### Current visit documentation
+
+A source info component tagged `layout.document` selects the semantic info display `document` outside the side rail. Its rows retain `Section`, exact `Text`, and source-computed `Entry status` cells; any additional supplied cells remain visible. The painter uses one read-only document region with a keyboard-scrollable body. It never edits, confirms or signs the note. Document/status info does not claim tabular row-action slots; controls targeting those layouts retain their ordinary inline fallback. W1/W5 use this for the current captured visit documentation, separately from historical Chart Review notes. Missing documentation and pending confirmation stay explicit in Lean.
+
+### Public prefill source captions
+
+`UiScreen.fieldSources` is an optional list of `[component ID, public caption]` pairs supplied by Lean. It accompanies sourced, shown fields without replacing their exact `UiNode.field.provenance`, pending-confirmation flag, human-only flag, value, unit or control ID. The stock painter uses the supplied caption as visible source text and the field's accessible description. It does not interpret `record:` or `linked:` keys. Linked captions read the source element's public spec label; record captions identify the declared source and the chart snapshot date. An unknown record key stays a generic chart-record source rather than acquiring an invented clinical meaning.
+
+Older semantic JSON without this optional metadata retains its original raw provenance caption. The legacy native HTML renderer and its exact provenance contract are unchanged. This metadata adds no control, receipt, capture or confirmation.
+
+### Integrated ambulatory and perioperative metadata
+
+The shared painter uses one code-picker path for `valueSet` wrappers and the
+compatible `UiScreen.fieldChoices` department favorites. A field-specific
+favorite list takes precedence when present; the ordinary wrapper remains the
+fallback. Both keep raw entry codes, manual selection, filtering without entry,
+explicit confirmation and the existing field event. Surgical display-code hints
+remain available. Public per-field `fieldSources` captions take precedence over
+older provenance-key `sourceLabels`; exact field provenance is retained.
+
+FHIR supporting views share one `scheduleTasks` ID. An explicit pre-op context
+uses the surgical case rows; an ambulatory context uses the appointment view.
+When no encounter setting is available, a real dated surgical request can supply
+the case queue. Other supporting payloads and their version bindings coexist.
+Per-observation laboratory rows use the same conservative source-label aliases
+as aggregate summaries, retaining their complete values, units and metadata.
+
+### Unified drawing compatibility
+
+Ordinary legacy info tables, historical-note lists and trends use the same structured table, note and chart painters as explicit `present.*` nodes. Source-declared current documents retain their document-region semantics within the structured information module. Compact side summaries remain compact. One supplied-status tone map decorates all these views; the source text and clinical events remain unchanged.

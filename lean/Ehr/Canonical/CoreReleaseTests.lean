@@ -154,7 +154,7 @@ def collapsedMar : Program := canonicalV3.updateScreen "w4Admin" fun s =>
   (adminFacts "insulin lispro") nurse).commits == ["administerMed"]
 #guard Specs.ruleProfile == .full || (finish (run w5Path (forPersona specV1 canonicalV1 "P4" .np) child np)
   "w5Sign" "signOrders" (forPersona specV1 canonicalV1 "P4" .np) child np).commits == ["signOrders"]
-#guard Specs.ruleProfile == .full || (finish (run preOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
+#guard Specs.ruleProfile == .full || (finish (run p5PreOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
   "w6Sign" "signOrders" (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon).commits == ["signOrders"]
 
 /-- A denied refill records a human decision and reason on the existing screen. -/

@@ -26,6 +26,7 @@
     "infoId": "currentMeds",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Physician",
  "title": "Medication Review",
  "side":
  [{"info":
@@ -65,8 +66,10 @@
     "infoId": "vitals",
     "display": "list",
     "comp": ""}}],
+ "screen": "example",
  "nav": [],
  "modal": null,
+ "fieldSources": [],
  "banner":
  [["Patient", "Chen, David"],
   ["DOB", "Mar 22, 1974"],
@@ -75,10 +78,10 @@
   ["Language", ""],
   ["PCP", "Maya Brooks, MD"],
   ["Coverage", ""],
-  ["Encounter", "IMP"],
-  ["Attending", "Daniel Park, MD"],
-  ["Location", "5 West • 512B"],
-  ["Allergies", "Amoxicillin — Hives (active)"],
+  ["Last encounter", "IMP"],
+  ["Last provider", "Daniel Park, MD"],
+  ["Last location", "5 West • 512B"],
+  ["Allergies", "Amoxicillin"],
   ["Code status", "Full code"],
   ["Weight", "82.4 kg · Nov 1, 2026 06:00"],
   ["Isolation", "Not recorded"]]}

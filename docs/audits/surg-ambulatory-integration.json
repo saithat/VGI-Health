@@ -1,0 +1,194 @@
+{
+  "validatedAt": "2026-11-01T14:06:51.442341+00:00",
+  "branch": "lane/surg",
+  "surgParent": "3a24bb0b80cb4d19cd03e382f311a860eea32f6e",
+  "integratedMain": "e4d10c5b95954a4986f59a4dc2aa7eda9208ef8b",
+  "sourceDirtyAtValidation": true,
+  "conflictsResolved": 54,
+  "leanSourceHash": "90c27dfebcb599c7e8c49165ddd26b96e4dd2acea009694d49a4c9015c19584d",
+  "binarySha256": "102a8f3b99539d91362b2593b2dbc314fd03db1f984daef4c6ecb1438c67c548",
+  "appBuild": {
+    "schemaVersion": 1,
+    "appSha256": "1fece9ac3fa502b7518152fc3ebb4dde3a72aba5ae2dca37024a07d5e7849efa"
+  },
+  "buildInfo": {
+    "revision": "3a24bb0b80cb4d19cd03e382f311a860eea32f6e",
+    "mainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
+    "leanHash": "90c27dfebcb599c7e8c49165ddd26b96e4dd2acea009694d49a4c9015c19584d",
+    "builtAt": "2026-11-01T13:47:15.155Z"
+  },
+  "specAndPropertyEditsRelativeToMain": false,
+  "uiProofStatementRetention": {
+    "HEAD": {
+      "statements": 48,
+      "retainedWithoutChange": true
+    },
+    "origin/main": {
+      "statements": 59,
+      "retainedWithoutChange": true
+    }
+  },
+  "generatedArtifacts": {
+    "contentExport": true,
+    "gents": {
+      "types": 160,
+      "samples": 42
+    },
+    "wasmAndFreshness": true,
+    "certification": true,
+    "complexityAndNativeMinClicks": true
+  },
+  "proofs": {
+    "defaultBuildJobs": 359,
+    "lakeCheck": true,
+    "permittedAxioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "rootComparator": 18,
+    "checkerComparator": 21,
+    "rendererComparator": 50,
+    "D1_D6": true
+  },
+  "certification": {
+    "accepted": 15,
+    "projections": 15,
+    "badRejected": 18,
+    "badPrograms": 18
+  },
+  "world2": {
+    "schedules": 50,
+    "tasks": 1284,
+    "completed": 1284,
+    "incomplete": 0,
+    "floorViolations": [],
+    "interruptionViolations": [],
+    "deterministic": true
+  },
+  "archivedRun1P3": {
+    "tasks": 424,
+    "events": 14658,
+    "baselineTasks": 3,
+    "baselineEvents": 137,
+    "mismatches": 0,
+    "recordingsRewritten": false
+  },
+  "nativeWasm": {
+    "surgicalReleaseScreens": 72,
+    "surgicalActualNavigationSteps": 135,
+    "ambulatoryScreens": 34,
+    "structuredPresentations": 16,
+    "actualVisitNoteEntries": 9,
+    "documentedVisitScreens": 2
+  },
+  "app": {
+    "build": true,
+    "lint": true,
+    "tests": 255,
+    "testFiles": 25
+  },
+  "agent": {
+    "tests": 84,
+    "testFiles": 18,
+    "typecheck": true,
+    "lint": true
+  },
+  "browser": {
+    "ariaInputStates": 102,
+    "ariaUniqueTrees": 82,
+    "ariaPassed": 213,
+    "intendedViewportSkips": 3,
+    "cacheReuse": false,
+    "viewports": [
+      "1440x1000",
+      "390x844"
+    ],
+    "realismPassed": 59,
+    "buttonAudit": {
+      "report": "docs/audits/surg-integrated-browser-controls.json",
+      "counts": {
+        "works": 2792,
+        "disabled-with-reason": 113,
+        "dead": 0,
+        "error": 0
+      },
+      "roles": 6,
+      "maxConfigurationsPerRole": 48,
+      "separateLiveAgentApiAttempt": false,
+      "regressionPassed": true,
+      "configurationCoverage": [
+        {
+          "role": "P1",
+          "sampledConfigurations": 25,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P2",
+          "sampledConfigurations": 14,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P3",
+          "sampledConfigurations": 48,
+          "remainingCheckpointsOutsideBudget": 8
+        },
+        {
+          "role": "P4",
+          "sampledConfigurations": 24,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "P5",
+          "sampledConfigurations": 40,
+          "remainingCheckpointsOutsideBudget": 0
+        },
+        {
+          "role": "RN2",
+          "sampledConfigurations": 48,
+          "remainingCheckpointsOutsideBudget": 8
+        }
+      ]
+    }
+  },
+  "complexity": "programs/benchmarks/canonical-complexity.json",
+  "screenshots": [
+    {
+      "file": "app/shots/realism/surg/integration/p1-home.png",
+      "sha256": "3bc09d1a70cff0c2044094e844a082d17825dbb5f8e3b85d142dbcf1f16d99d9",
+      "width": 1440,
+      "height": 900,
+      "nativeUiSha256": "a53215ed3b5727f4bc59713d8bb8100faf0c76369453ded80532c5f475491dc5"
+    },
+    {
+      "file": "app/shots/realism/surg/integration/p4-growth.png",
+      "sha256": "cff7be617484cedd84a678fd32c258d088a7a1f6e2a03e5bad5cc568fea8b7c3",
+      "width": 1440,
+      "height": 900,
+      "nativeUiSha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480"
+    },
+    {
+      "file": "app/shots/realism/surg/integration/p5-op-note.png",
+      "sha256": "d2ebf2cd479e999346d87e40ef0d0529a02ebd87b3f503cc52f79fc9e194a1c4",
+      "width": 1440,
+      "height": 900,
+      "nativeUiSha256": "cac26a9d3dec6b703fbe14c74c05b665fbd0564be7034e0b519fb6e459e6ede3"
+    },
+    {
+      "file": "app/shots/realism/surg/integration/p5-or-schedule.png",
+      "sha256": "0c082396db3850be8fe9ce5a59680408735bb8de0e4b71c987fc2dfc6ce1f9f0",
+      "width": 1440,
+      "height": 900,
+      "nativeUiSha256": "fac543eec9922109e11a98fb197c49b247beb596d80da1fdc90dffc2a7c75b64"
+    }
+  ],
+  "integrationDecisions": [
+    "One structured presentation vocabulary and transparent valueSet/chartReferences/rowAction wrappers",
+    "One picker path, field-specific favorites before shared value-set fallback",
+    "One bound scheduleTasks payload, surgical for pre-op and ambulatory for clinic",
+    "Per-observation lab values/components retain conservative source captions",
+    "Main responsive sticky shell plus Lean navigator identity and screen scroll reset",
+    "Both ordinary Encounter options and direct Close chart remain available; technical data stays inspect-only",
+    "Both research sections and prior screenshot evidence retained"
+  ]
+}

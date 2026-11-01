@@ -4,7 +4,7 @@ import Ehr.Canonical.Builders
 # W5: pediatric visit (P4, pediatric NP)
 
 Rooming (today's weight in kg, growth chart, allergies, medication
-reconciliation) → growth review → weight-based (mg/kg) orders with a dose
+reconciliation) → growth review → visit note → weight-based (mg/kg) orders with a dose
 check → sign orders → immunizations → visit close with anticipatory guidance
 (sign note).
 
@@ -21,63 +21,91 @@ namespace Ehr.Canonical.W5
 
 open Ehr.Canonical
 
-/-- The W5 navigator (the sign screen is reached from the composer). -/
+/-- The pediatric encounter section list. -/
 def nav : List (ScreenId × String) :=
-  [("w5Rooming", "Rooming"), ("w5Growth", "Growth"), ("w5Orders", "Orders"),
-   ("w5Immunizations", "Immunizations"), ("w5Close", "Visit close")]
+  [("w5Rooming", "Rooming"), ("w5Growth", "Growth Charts"), ("w5Note", "Visit Note"),
+   ("w5Orders", "Orders"),
+   ("w5Immunizations", "Immunizations"), ("w5Close", "Sign Visit")]
 
 /-- The chart-review tabs on W5 screens. -/
 def chart : List Block :=
-  [(.trend, "growthChart", "Growth chart"), (.table, "immunizationHistory", "Immunizations"),
-   (.table, "labResults", "Results"), (.panel, "priorNotes", "Notes"),
-   (.panel, "familyHistory", "Family history"), (.table, "careGapList", "Care gaps")]
+  [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
+   (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
+   (.table, "problemList", "Problems"), (.table, "allergyList", "Allergies"),
+   (.table, "imaging", "Imaging"), (.table, "immunizationHistory", "Immunizations")]
 
 /-- The shell for a W5 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav clinicSidebar chart
+def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart
 
 /-- Pediatric rooming: today's weight and growth measures, complaint, growth
 chart, allergies, and medication reconciliation. -/
 def rooming : Screen :=
   let s := "w5Rooming"
-  { id := s, title := "Pediatric rooming", workflow := "W5"
+  { id := s, title := "Rooming", workflow := "W5"
     components := frame s ++ [
-      group s "measures" "Measurements",
+      clinicalSection s "reason" "Reason for visit",
+      field s "chiefComplaint" "chiefComplaint" "Chief complaint" (parent := some "reason")
+        (prefill := .fromRecord "appointmentReason"),
+      clinicalSection s "measures" "Vitals and growth measurements",
       field s "weight" "weight" "Weight today (kg)" (parent := some "measures"),
       field s "height" "height" "Height (cm)" (parent := some "measures"),
       field s "headCircumference" "headCircumference" "Head circumference (cm)"
         (parent := some "measures"),
-      field s "temperature" "temperature" "Temperature" (parent := some "measures"),
-      field s "heartRate" "heartRate" "Heart rate" (parent := some "measures"),
-      field s "respRate" "respRate" "Respiratory rate" (parent := some "measures"),
-      field s "chiefComplaint" "chiefComplaint" "Reason for visit",
-      trend s "growth" "growthChart" "Growth chart",
-      group s "allergyGroup" "Allergies",
-      panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup"),
-      group s "medRec" "Medication reconciliation",
+      field s "temperature" "temperature" "Temperature (°C)" (parent := some "measures"),
+      field s "heartRate" "heartRate" "Pulse (beats/min)" (parent := some "measures"),
+      field s "respRate" "respRate" "Respirations (/min)" (parent := some "measures"),
+      clinicalSection s "allergyGroup" "Allergies",
+      table s "allergies" "allergyList" "Allergy review" (parent := some "allergyGroup"),
+      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup") (feedback := true),
+      clinicalSection s "medRec" "Medication review",
       table s "meds" "currentMeds" "Medications" (parent := some "medRec"),
-      field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
-        (parent := some "medRec") (slot := .fixed 0),
-      field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
-        (parent := some "medRec") (slot := .fixed 1),
-      goto s "next" "w5Growth" "Next: growth review"
+      (let c := field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
+        (parent := some "medRec") (slot := .fixed 0)
+       { c with tag := c.tag ++ ".context.currentMedication" }),
+      (let c := field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
+        (parent := some "medRec") (slot := .fixed 1)
+       { c with tag := c.tag ++ ".context.currentMedication" }),
+      reviewBtn s "currentMeds" "Mark medications reviewed" (parent := some "medRec") (feedback := true),
+      goto s "next" "w5Growth" "Review growth"
     ] }
 
 /-- Growth review: the growth chart, percentiles, last visit. -/
 def growth : Screen :=
   let s := "w5Growth"
-  { id := s, title := "Growth review", workflow := "W5"
+  { id := s, title := "Growth Charts", workflow := "W5"
     components := frame s ++ [
-      trend s "growth" "growthChart" "Growth chart (weight, height, head)",
-      table s "percentiles" "growthChart" "Percentiles",
+      { trend s "growth" "growthChart" "Growth measurements over time" with tag := "present.growth" },
       panel s "lastVisit" "lastVisit" "Last visit",
-      goto s "next" "w5Orders" "Next: orders"
+      goto s "next" "w5Note" "Visit Note"
+    ] }
+
+/-- Pediatric documentation precedes prescribing. History remains sourced from
+the chart; templates fill drafts and never attest that an exam was performed. -/
+def note : Screen :=
+  let s := "w5Note"
+  { id := s, title := "Visit Note", workflow := "W5"
+    components := frame s ++ [
+      macroBtn s "wellChild" "w5WellChildTemplate" "Well-child note template",
+      clinicalSection s "hpiSection" "History of present illness",
+      field s "hpi" "hpi" "History from patient / caregiver" (parent := some "hpiSection"),
+      clinicalSection s "rosSection" "Review of systems",
+      field s "ros" "ros" "ROS" (parent := some "rosSection"),
+      clinicalSection s "examSection" "Physical exam",
+      field s "exam" "exam" "Exam findings" (parent := some "examSection"),
+      clinicalSection s "assessmentSection" "Assessment & Plan",
+      field s "visitDiagnosis" "visitDiagnosis" "Encounter diagnosis (ICD-10-CM)" (parent := some "assessmentSection"),
+      field s "assessmentPlan" "assessmentPlan" "Problem-based assessment and plan" (parent := some "assessmentSection"),
+      field s "anticipatoryGuidance" "anticipatoryGuidance" "Anticipatory guidance" (parent := some "assessmentSection")] ++
+      tabStrip s "historyTabs" "Patient history"
+        [(.table, "problemList", "Medical history"), (.table, "surgicalHistory", "Surgical history"),
+         (.panel, "familyHistory", "Family history"), (.panel, "socialHistory", "Social history")] ++ [
+      goto s "next" "w5Orders" "Place orders"
     ] }
 
 /-- The pediatric composer: mg/kg dosing with a dose-check preview. -/
 def orders : Screen :=
   let s := "w5Orders"
-  { id := s, title := "Orders (weight-based)", workflow := "W5"
+  { id := s, title := "Orders", workflow := "W5"
     components := frame s ++ orderComposer s {
       prefs := [("prefAmoxicillin", "w5PrefAmoxicillin", "Amoxicillin 45 mg/kg/dose BID × 10 days"),
                 ("prefIbuprofen", "w5PrefIbuprofen", "Ibuprofen 10 mg/kg q6h PRN"),
@@ -85,15 +113,16 @@ def orders : Screen :=
                 ("prefAzithromycin", "w5PrefAzithromycin", "Azithromycin 10 mg/kg daily × 3 days"),
                 ("prefAlbuterol", "w5PrefAlbuterol", "Albuterol 0.1 mg/kg q4h PRN")]
       weightBased := true
+      pharmacyPrefill := .fromRecord "preferredPharmacy"
       signScreen := "w5Sign" } }
 
 /-- Sign orders (pediatrics). -/
 def sign : Screen :=
   let s := "w5Sign"
-  { id := s, title := "Sign orders", workflow := "W5"
+  { id := s, title := "Sign Orders", workflow := "W5"
     components := frame s ++ [
       table s "orders" "orderSummary" "Orders to sign",
-      panel s "doseCheck" "doseCheck" "Dose check (mg/kg)",
+      table s "doseCheck" "doseCheck" "Weight-based dose check (kg / mg per dose)",
       panel s "allergies" "allergyList" "Allergies",
       table s "meds" "currentMeds" "Current medications",
       panel s "cures" "curesReport" "CURES report",
@@ -103,7 +132,7 @@ def sign : Screen :=
       alertC s "alert.weightLb" "weightInLb" "Weight entered in pounds" (popup := false),
       field s "patientIdReentry" "patientIdReentry" "Re-enter patient ID (initials/sex/age)",
       commitBtn s "signOrders" "Sign orders",
-      goto s "next" "w5Immunizations" "Next: immunizations",
+      goto s "next" "w5Immunizations" "Immunizations",
       goto s "edit" "w5Orders" "Edit orders"
     ] }
 
@@ -113,41 +142,40 @@ def immunizations : Screen :=
   let s := "w5Immunizations"
   { id := s, title := "Immunizations", workflow := "W5"
     components := frame s ++ [
-      table s "history" "immunizationHistory" "Immunization history and forecast",
+      { table s "history" "immunizationHistory" "Immunization history and forecast" with tag := "present.table" },
       alertC s "due" "immunizationsDueInline" "Immunizations due" (popup := false),
       panel s "allergies" "allergyList" "Allergies",
       macroBtn s "fluVaccine" "w5FluVaccine" "Influenza vaccine (from inventory)",
-      group s "record" "Vaccine given",
+      clinicalSection s "record" "Administration details",
       field s "vaccine" "vaccine" "Vaccine" (parent := some "record"),
       field s "vaccineLot" "vaccineLot" "Lot number" (parent := some "record"),
       field s "vaccineManufacturer" "vaccineManufacturer" "Manufacturer" (parent := some "record"),
       field s "vaccineProvider" "vaccineProvider" "Administering provider" (parent := some "record"),
       field s "vaccineSite" "vaccineSite" "Site" (parent := some "record"),
       field s "vaccineRoute" "vaccineRoute" "Route" (parent := some "record"),
-      field s "visGiven" "visGiven" "VIS given before vaccination" (parent := some "record"),
-      field s "visEditionDate" "visEditionDate" "VIS edition date" (parent := some "record"),
+      clinicalSection s "education" "Vaccine Information Statement",
+      field s "visGiven" "visGiven" "VIS given to patient / guardian before vaccination" (parent := some "education"),
+      field s "visEditionDate" "visEditionDate" "VIS edition date" (parent := some "education"),
       commitBtn s "recordImmunization" "Record immunization",
-      goto s "next" "w5Close" "Next: visit close"
+      goto s "next" "w5Close" "Sign Visit"
     ] }
 
 /-- Visit close: the note, diagnosis (twice), level of service, follow-up,
 instructions, and anticipatory guidance; Sign note. -/
 def close : Screen :=
   let s := "w5Close"
-  { id := s, title := "Visit close", workflow := "W5"
+  { id := s, title := "Sign Visit", workflow := "W5"
     components := frame s ++ [
-      macroBtn s "wellChild" "w5WellChildTemplate" "Well-child template (age 6)",
-      field s "hpi" "hpi" "History",
-      field s "ros" "ros" "Review of systems",
-      field s "exam" "exam" "Physical exam",
-      field s "assessmentPlan" "assessmentPlan" "Assessment and plan",
-      field s "visitDiagnosis" "visitDiagnosis" "Visit diagnosis (ICD-10)",
-      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
-      field s "levelOfService" "levelOfService" "Level of service",
-      field s "followUp" "followUp" "Follow-up",
-      field s "patientInstructions" "patientInstructions" "Instructions for family",
-      field s "anticipatoryGuidance" "anticipatoryGuidance" "Anticipatory guidance",
-      commitBtn s "signNote" "Sign note"
+      { panel s "noteReview" "noteSummary" "Visit note review" with tag := "layout.document" },
+      clinicalSection s "billing" "Level of Service",
+      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10-CM)" (parent := some "billing"),
+      field s "levelOfService" "levelOfService" "E/M service level" (parent := some "billing"),
+      clinicalSection s "followup" "Follow-up",
+      field s "followUp" "followUp" "Return in" (parent := some "followup"),
+      clinicalSection s "avs" "Patient Instructions / AVS",
+      field s "patientInstructions" "patientInstructions" "Instructions for patient / family" (parent := some "avs"),
+      goto s "editNote" "w5Note" "Edit visit note",
+      commitBtn s "signNote" "Sign Visit"
     ] }
 
 /-- A pediatric preference: fills the drug, mg/kg dose, unit, route,
@@ -179,13 +207,13 @@ def macros : List Macro := [
      (cid "w5Immunizations" "vaccineLot", "FLU24-0931"),
      (cid "w5Immunizations" "vaccineRoute", "IM")],
   textMacro "w5WellChildTemplate" "Well-child template (age 6)"
-    [(cid "w5Close" "hpi", "Here for a well-child visit. No concerns from parent. Eating well, sleeping well, doing well in school."),
-     (cid "w5Close" "ros", "Negative in all systems per parent."),
-     (cid "w5Close" "exam", "Well appearing, growing along curves. HEENT normal. Heart regular, no murmur. Lungs clear. Abdomen soft. Skin clear."),
-     (cid "w5Close" "anticipatoryGuidance", "Booster seat, helmet use, water safety, screen time, dental care, healthy diet and activity.")]
+    [(cid "w5Note" "hpi", "Here for a well-child visit. No concerns from parent. Eating well, sleeping well, doing well in school."),
+     (cid "w5Note" "ros", "Negative in all systems per parent."),
+     (cid "w5Note" "exam", "Well appearing, growing along curves. HEENT normal. Heart regular, no murmur. Lungs clear. Abdomen soft. Skin clear."),
+     (cid "w5Note" "anticipatoryGuidance", "Booster seat, helmet use, water safety, screen time, dental care, healthy diet and activity.")]
 ]
 
 /-- The W5 screens. -/
-def screens : List Screen := [rooming, growth, orders, sign, immunizations, close]
+def screens : List Screen := [rooming, growth, note, orders, sign, immunizations, close]
 
 end Ehr.Canonical.W5

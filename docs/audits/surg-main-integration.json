@@ -1,0 +1,49 @@
+{
+  "validatedAt": "2026-11-01T08:52:11.812146+00:00",
+  "surgeonMilestone": "b060509",
+  "mergedMain": "251d9a0",
+  "leanSourceHash": "fa6b9dfecb389814ff3a89555982904f26953fd6156e70439279a41a50ad18a7",
+  "appBuild": {
+    "schemaVersion": 1,
+    "appSha256": "2c3f20e5cc75ae41b341ec559a33f5141cea213db546b3953dd9e6f09908af22"
+  },
+  "leanSourcesChangedByMerge": false,
+  "app": {
+    "build": true,
+    "lint": true,
+    "tests": 186,
+    "files": 19
+  },
+  "agent": {
+    "tests": 82,
+    "files": 18,
+    "typecheck": true,
+    "lint": true
+  },
+  "browser": {
+    "clinicalWalk": true,
+    "semanticStates": 45,
+    "projects": [
+      "desktop",
+      "narrow"
+    ],
+    "passed": 99,
+    "fixtureDependentSkipped": 3,
+    "cacheReuse": false,
+    "failures": 0
+  },
+  "archivedRun1P3": {
+    "tasks": 424,
+    "events": 14658,
+    "baselineTasks": 3,
+    "baselineEvents": 137,
+    "mismatches": 0
+  },
+  "mergeResolution": "Retained structured-widget and versioned custom-presentation suites in separate files, both renderer hooks, and Lean-provided source labels/weight-entry hints.",
+  "programs": {
+    "v1": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+    "v2": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+    "v3": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec"
+  },
+  "previousFullValidation": "docs/audits/surg-realism-validation.json"
+}

@@ -141,6 +141,18 @@
   background: var(--clinical-sidebar);
   border-right: 1px solid var(--clinical-border);
 }
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar {
+  position: sticky;
+  top: var(--clinical-header-height);
+  height: calc(100dvh - var(--clinical-header-height));
+  min-height: 0;
+  overflow-y: auto;
+}
 .nav-eyebrow {
   padding: 4px 8px;
   font-weight: 600;
@@ -167,6 +179,26 @@
   padding: 0;
   margin: 0;
 }
+.clinical-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.clinical-nav-link:hover {
+  background: #dceaf6;
+}
+.clinical-nav-link:focus-visible {
+  outline: 2px solid #24618c;
+  outline-offset: 1px;
+}
 .workflow-links li {
   display: flex;
   align-items: center;
@@ -177,6 +209,15 @@
   color: var(--clinical-muted);
   font-size: 12px;
   line-height: 16px;
+}
+.clinical-nav-group-title {
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--clinical-primary);
+  border-bottom: 1px solid var(--clinical-border);
+}
+.workflow-links li {
+  padding: 0;
 }
 .workflow-links button {
   display: flex;
@@ -205,12 +246,6 @@
 .workflow-links button:focus-visible {
   outline: 2px solid var(--clinical-primary);
   outline-offset: 2px;
-}
-.workflow-links li[aria-current="page"] {
-  border-color: var(--clinical-primary);
-  background: var(--clinical-selected);
-  color: var(--clinical-primary);
-  font-weight: 600;
 }
 .nav-dot {
   width: 4px;
@@ -301,6 +336,14 @@
   border-radius: 4px;
   box-shadow: none;
 }
+.clinical-section[data-section-id^="w6"] > .clinical-section-title {
+  background: #e8f3f0;
+  color: #205c54;
+  border-left: 3px solid #247d6f;
+}
+.clinical-section[data-section-id^="w6"] > .clinical-section-title h2 {
+  color: #205c54;
+}
 .clinical-section-title {
   padding: 4px 8px;
   min-height: 28px;
@@ -320,7 +363,7 @@
   gap: 8px;
   display: flex;
   flex-flow: row wrap;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 .clinical-section-body > * {
   min-width: 0;
@@ -328,6 +371,12 @@
 }
 .clinical-section-body > .clinical-field {
   flex: 1 1 208px;
+}
+.clinical-section-body > .field-narrative {
+  flex-basis: 100%;
+}
+.clinical-workspace-body > .field-narrative {
+  grid-column: 1 / -1;
 }
 .clinical-section-body > .clinical-action {
   flex: 0 1 auto;
@@ -444,6 +493,11 @@
 }
 .provenance-chip .mantine-Badge-label {
   white-space: normal;
+}
+.clinical-entry-hint {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--clinical-muted);
 }
 .clinical-info {
   min-width: 0;
@@ -802,6 +856,40 @@
   white-space: pre-wrap;
 }
 
+/* Perioperative review panes retain every record in a local scroll area. */
+.clinical-info[data-info-id="labResults"][data-comp-id^="w6"] .presentation-table-wrap {
+  max-height: 320px;
+  overflow: auto;
+}
+.clinical-info[data-info-id="vitals"][data-comp-id^="w6"] {
+  max-height: 240px;
+  overflow: auto;
+}
+
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] .record-secondary {
+  display: block;
+  margin-top: 3px;
+}
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] li > span + span::before {
+  content: none;
+}
+
+.clinical-info[data-info-id="scheduleTasks"] [data-column="Actions"],
+.clinical-info[data-info-id="consultRequest"] [data-column="Actions"] {
+  min-width: 160px;
+  width: 160px;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-row-actions .mantine-Button-label,
+.clinical-info[data-info-id="consultRequest"] .presentation-row-actions .mantine-Button-label {
+  white-space: nowrap;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Procedure"] {
+  width: 22%;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Indication"] {
+  width: 15%;
+}
+
 /* A program without semantic navigator entries has one storyboard column. */
 .clinical-shell.without-nav {
   grid-template-columns: minmax(0, 1fr);
@@ -909,3 +997,53 @@
   min-width: 28px;
   padding: 2px 5px;
 }
+
+/* Receipt feedback is a semantic status supplied by Lean beside its action. */
+.clinical-review-status {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--clinical-green-ink);
+  border-radius: 4px;
+  color: var(--clinical-green-ink);
+  background: var(--clinical-green-tint);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.clinical-section-body > .clinical-review-status {
+  flex: 0 1 auto;
+  align-self: center;
+}
+
+/* A read-only document keeps the complete entered text in a keyboard-scrollable pane. */
+.clinical-info.info-document {
+  border: 1px solid var(--clinical-border);
+  border-radius: 3px;
+  padding: 0;
+  background: white;
+}
+.info-document > .clinical-info-label {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--clinical-section);
+  border-bottom: 1px solid var(--clinical-border);
+  font-size: 14px;
+}
+.clinical-document-body {
+  max-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.clinical-document-body:focus-visible {
+  outline: 2px solid var(--clinical-primary);
+  outline-offset: -2px;
+}
+.clinical-document-section { padding: 10px 12px; }
+.clinical-document-section + .clinical-document-section { border-top: 1px solid var(--clinical-border); }
+.clinical-document-section h4 { margin: 0 0 6px; font-size: 14px; font-weight: 650; }
+.clinical-document-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.clinical-document-detail { margin-top: 6px; font-size: 12px; color: var(--clinical-muted); }

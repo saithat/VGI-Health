@@ -137,23 +137,44 @@
 .table-orSchedule th[data-column="Status"] {
   width: 10%;
 }
-.table-messages th:nth-child(1) {
+.table-messages[data-columns="6"] th:nth-child(1) {
   width: 19%;
 }
-.table-messages th:nth-child(2) {
+.table-messages[data-columns="6"] th:nth-child(2) {
   width: 17%;
 }
-.table-messages th:nth-child(3) {
+.table-messages[data-columns="6"] th:nth-child(3) {
   width: 29%;
 }
-.table-messages th:nth-child(4) {
+.table-messages[data-columns="6"] th:nth-child(4) {
   width: 12%;
 }
-.table-messages th:nth-child(5) {
+.table-messages[data-columns="6"] th:nth-child(5) {
   width: 9%;
 }
-.table-messages th:nth-child(6) {
+.table-messages[data-columns="6"] th:nth-child(6) {
   width: 14%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(1) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(2) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(3) {
+  width: 24%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(4) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(5) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(6) {
+  width: 11%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(7) {
+  width: 15%;
 }
 .table-results [data-column="Test"] {
   width: 28%;
@@ -243,7 +264,7 @@
   border-bottom: 0;
 }
 .presentation-folder-name {
-  flex: 1 1 130px;
+  flex: 1 1 88px;
   font-weight: 600;
 }
 .presentation-folder-count {
@@ -346,12 +367,13 @@
 .presentation-chart svg {
   display: block;
   width: 100%;
+  max-width: 700px;
   height: auto;
   overflow: visible;
 }
 .presentation-chart svg text {
   fill: var(--p-muted);
-  font-size: 20px;
+  font-size: 16px;
   font-family: inherit;
 }
 .chart-grid {
@@ -586,12 +608,50 @@
 }
 
 /* The columns exist in UiScreen; only their proportions belong to the painter. */
-.clinical-columns:has(> .presentation-folderList) {
+.clinical-columns:has(.presentation-folderList) {
   grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
   align-items: start;
 }
 @media (max-width: 1100px) {
-  .clinical-columns:has(> .presentation-folderList) {
+  .clinical-columns:has(.presentation-folderList) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* A composed folder/messages view needs one clinical frame, not nested cards. */
+.clinical-section:has(
+  > .clinical-section-body > .clinical-columns .presentation-folderList
+) {
+  border: 0;
+  background: transparent;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-body {
+  padding: 0;
+}
+.clinical-columns:has(.presentation-folderList) > .clinical-section {
+  border: 0;
+  background: transparent;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-body {
+  padding: 0;
 }

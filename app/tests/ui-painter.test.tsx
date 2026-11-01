@@ -42,6 +42,59 @@ beforeAll(() => {
   window.scrollTo = vi.fn();
 });
 afterEach(cleanup);
+
+it("dispatches the exact Lean component ID from a clinical navigator link", () => {
+  const onEvent = vi.fn();
+  const value: UiScreen = {
+    banner: [
+      ["Patient", "Alex Morgan"],
+      ["MRN", "123456"],
+    ],
+    title: "Rooming",
+    nav: [["Visit navigator", [["rooming.nav.note", "Visit Note"]]]],
+    workspace: [],
+    side: [],
+    modal: null,
+  };
+  render(
+    <MantineProvider>
+      <UiScreenView screen={value} onEvent={onEvent} />
+    </MantineProvider>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Visit Note" }));
+  expect(onEvent).toHaveBeenCalledWith({ click: { comp: "rooming.nav.note" } });
+});
+
+it("uses semantic screen identity for scroll lifecycle and omits empty navigation", () => {
+  const emit = vi.fn();
+  const base: UiScreen = {
+    screen: "first-screen",
+    banner: [],
+    title: "Results",
+    nav: [],
+    workspace: [],
+    side: [],
+    modal: null,
+  };
+  const paint = (model: UiScreen) => (
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>
+  );
+  const { rerender, container } = render(paint(base));
+  expect(screen.queryByRole("navigation")).toBeNull();
+  expect(expectedAria(base).some((item) => item.role === "navigation")).toBe(
+    false,
+  );
+  const scroll = vi.mocked(window.scrollTo);
+  scroll.mockClear();
+  rerender(paint({ ...base, workspace: [{ text: { s: "Updated result" } }] }));
+  expect(scroll).not.toHaveBeenCalled();
+  rerender(paint({ ...base, screen: "second-screen" }));
+  expect(scroll).toHaveBeenCalledWith(0, 0);
+  expect(container.textContent).not.toContain("second-screen");
+});
+
 const field: NodeOf<"field"> = {
   comp: "entry",
   label: "Clinical value",
@@ -53,6 +106,81 @@ const field: NodeOf<"field"> = {
   humanOnly: false,
   required: false,
 };
+
+it("shows Lean's public prefill source while retaining the raw field and confirm action", () => {
+  const emit = vi.fn();
+  const source = "Source: Linked entry — Custom entry (finding)";
+  const model: UiScreen = {
+    banner: [["Patient", "Alex Morgan"]],
+    nav: [],
+    title: "Rooming",
+    side: [],
+    modal: null,
+    fieldSources: [[field.comp, source]],
+    workspace: [
+      {
+        field: {
+          ...field,
+          value: "72.0",
+          provenance: "linked:customEntry",
+          pendingConfirm: true,
+        },
+      },
+      {
+        button: {
+          comp: field.comp,
+          label: "Confirm prefilled value",
+          role: "confirm",
+          enabled: true,
+          blockedReason: null,
+          hotkey: null,
+        },
+      },
+    ],
+  };
+  const original = JSON.stringify(model);
+  expect(uiScreenSchema.parse(model).fieldSources).toEqual(model.fieldSources);
+  render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>,
+  );
+  expect(screen.getByText(source)).not.toBeNull();
+  expect(
+    screen.getByRole("textbox", { name: field.label, description: source }),
+  ).not.toBeNull();
+  expect(screen.queryByText("linked:customEntry")).toBeNull();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Confirm prefilled value",
+    }),
+  );
+  expect(emit.mock.calls).toEqual([[{ confirm: { comp: field.comp } }]]);
+  expect(JSON.stringify(model)).toBe(original);
+});
+
+it("paints a semantic narrative editor and dispatches its complete multiline text", () => {
+  const onEvent = vi.fn();
+  render(
+    <MantineProvider>
+      <UiNodeView
+        node={{ field: { ...field, kind: "textarea", label: "HPI" } }}
+        onEvent={onEvent}
+      />
+    </MantineProvider>,
+  );
+  const editor = screen.getByRole("textbox", { name: "HPI" });
+  expect(editor.tagName).toBe("TEXTAREA");
+  fireEvent.change(editor, {
+    target: { value: "First paragraph.\nSecond paragraph." },
+  });
+  expect(onEvent).toHaveBeenCalledWith({
+    enter: {
+      comp: field.comp,
+      value: { text: { s: "First paragraph.\nSecond paragraph." } },
+    },
+  });
+});
 const button: NodeOf<"button"> = {
   comp: "action",
   label: "Continue",
@@ -70,6 +198,273 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("searches Lean procedure descriptions and emits the selected raw code", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "procedure",
+            label: "Procedure (CPT)",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "procedure",
+          {
+            options: [
+              ["44970", "Laparoscopic appendectomy"],
+              ["47562", "Laparoscopic cholecystectomy"],
+            ],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "Procedure (CPT)" });
+    fireEvent.input(input, { target: { value: "cholecystectomy" } });
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("option", {
+        name: "Laparoscopic cholecystectomy (47562)",
+      }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "procedure", value: { code: { c: "47562" } } },
+    });
+  });
+  it("retains manual code entry beyond the department quick picks", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "diagnosis",
+            label: "Diagnosis",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "diagnosis",
+          {
+            options: [["K35.80", "Acute appendicitis, unspecified"]],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    fireEvent.input(screen.getByRole("combobox", { name: "Diagnosis" }), {
+      target: { value: "R10.84" },
+    });
+    fireEvent.click(screen.getByRole("option", { name: "Use code: R10.84" }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "diagnosis", value: { code: { c: "R10.84" } } },
+    });
+  });
+  it("displays local labels without turning a supplied macro value into human entry", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "prn",
+            label: "As needed",
+            kind: "code",
+            value: "true",
+            provenance: "macro",
+            pendingConfirm: true,
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "prn",
+          {
+            options: [
+              ["true", "Yes"],
+              ["false", "No"],
+            ],
+            showCode: false,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "As needed" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected code input");
+    expect(input.value).toBe("Yes");
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(input);
+    fireEvent.click(screen.getByRole("option", { name: /^No$/ }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "prn", value: { code: { c: "false" } } },
+    });
+  });
+  it("shows the clinical role supplied by Lean in the banner", () => {
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      viewer: "General surgeon",
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={vi.fn()} />
+      </MantineProvider>,
+    );
+    expect(screen.getByRole("banner").textContent).toContain("General surgeon");
+  });
+  it("keeps a recorded pounds hint separate from the blank kg entry and submits kg", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            entryHints: [
+              ["weight", "Recorded value: 160 lb. Enter the weight in kg."],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  comp: "weight",
+                  label: "Weight",
+                  kind: "qty",
+                  unit: "kg",
+                  value: null,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(onEvent).not.toHaveBeenCalled();
+    expect(
+      screen.getByText("Recorded value: 160 lb. Enter the weight in kg."),
+    ).toBeTruthy();
+    const input = screen.getByRole("textbox", { name: "Weight" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected a weight input");
+    expect(input.value).toBe("");
+    fireEvent.change(input, { target: { value: "80" } });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "weight", value: { qty: { tenths: 800, unit: "kg" } } },
+    });
+  });
+  it("paints Lean's source label while retaining the original field and confirm action", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            sourceLabels: [
+              ["record:internalSource", "From chart — Recorded weight"],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  provenance: "record:internalSource",
+                  pendingConfirm: true,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(screen.getByText("From chart — Recorded weight")).toBeTruthy();
+    expect(screen.queryByText("record:internalSource")).toBeNull();
+    expect(screen.queryByText("Active encounter")).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirm Clinical value" }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({ confirm: { comp: field.comp } });
+  });
+  it("dispatches the component IDs declared by Lean navigation", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse(rooming);
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            nav: [["Surgical navigator", [["case.open", "Open case"]]]],
+            activeNav: "case.open",
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Open case$/ }));
+    expect(onEvent).toHaveBeenCalledWith({ click: { comp: "case.open" } });
+    expect(
+      screen
+        .getByRole("button", { name: /^Open case$/ })
+        .getAttribute("aria-current"),
+    ).toBe("page");
+    expect(
+      screen.getByRole("list", { name: "Surgical navigator screens" }),
+    ).toBeTruthy();
+  });
+  it("preserves multiline narrative as an ordinary human text entry", () => {
+    const onEvent = vi.fn();
+    paint(
+      [{ field: { ...field, kind: "textarea", humanOnly: true } }],
+      onEvent,
+    );
+    const input = screen.getByRole("textbox", { name: "Clinical value" });
+    expect(input.tagName).toBe("TEXTAREA");
+    fireEvent.change(input, {
+      target: { value: "Findings:\nInflamed appendix." },
+    });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: {
+        comp: "entry",
+        value: { text: { s: "Findings:\nInflamed appendix." } },
+      },
+    });
+    expect(screen.getByText("Clinician entry required")).toBeTruthy();
+  });
   it("keeps imported chart provenance accessible while presenting medication and note cards", () => {
     paint([
       {
@@ -275,7 +670,7 @@ describe("semantic EHR painter", () => {
       { field: { ...field, kind: "code", value: "I10" } },
     ]);
     expect(screen.getByRole("list", { name: "list" })).toBeTruthy();
-    expect(screen.getByRole("img", { name: "trend trend" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "trend: trend" })).toBeTruthy();
     expect(screen.getByRole("table", { name: "trend" })).toBeTruthy();
     expect(
       screen.getByRole("combobox", { name: "Clinical value" }),
@@ -513,27 +908,53 @@ describe("semantic EHR painter", () => {
   it("keeps raw medication choices in events while showing cleaned clinical captions", () => {
     const emit = vi.fn();
     const raw = "Amoxicillin 250 MG Oral Capsule";
-    const model: UiNode = { field: { ...field, comp: "drug", label: "Enter Medication", kind: `code:${raw}`, value: null } };
+    const model: UiNode = {
+      field: {
+        ...field,
+        comp: "drug",
+        label: "Enter Medication",
+        kind: `code:${raw}`,
+        value: null,
+      },
+    };
     const original = JSON.stringify(model);
     paint([model], emit);
-    const medication = screen.getByRole("combobox", { name: "Enter Medication" });
+    const medication = screen.getByRole("combobox", {
+      name: "Enter Medication",
+    });
     expect(medication.getAttribute("placeholder")).toBe("Search medications");
     expect(screen.getByText("Medication")).toBeTruthy();
     fireEvent.click(medication);
-    fireEvent.click(screen.getByRole("option", { name: "Amoxicillin 250 mg oral capsule" }));
-    expect(emit.mock.calls).toEqual([[{ enter: { comp: "drug", value: { code: { c: raw } } } }]]);
+    fireEvent.click(
+      screen.getByRole("option", { name: "Amoxicillin 250 mg oral capsule" }),
+    );
+    expect(emit.mock.calls).toEqual([
+      [{ enter: { comp: "drug", value: { code: { c: raw } } } }],
+    ]);
     expect(JSON.stringify(model)).toBe(original);
   });
   it("groups adjacent navigation controls without changing their order, identity or events", () => {
     const emit = vi.fn();
-    const controls = ["Back", "Patient workspace", "Review and sign"].map((label, index) =>
-      ({ button: { ...button, comp: `nav-${index}`, role: "nav", label } }));
+    const controls = ["Back", "Patient workspace", "Review and sign"].map(
+      (label, index) => ({
+        button: { ...button, comp: `nav-${index}`, role: "nav", label },
+      }),
+    );
     const { container } = paint(controls, emit);
-    expect(container.querySelectorAll(".clinical-navigation-bar")).toHaveLength(1);
-    expect(Array.from(container.querySelectorAll("[data-comp-id]")).map((node) => node.getAttribute("data-comp-id")))
-      .toEqual(["nav-0", "nav-1", "nav-2"]);
-    controls.forEach(({ button }) => fireEvent.click(screen.getByRole("button", { name: button.label })));
-    expect(emit.mock.calls.map(([event]) => event)).toEqual(controls.map(({ button }) => ({ click: { comp: button.comp } })));
+    expect(container.querySelectorAll(".clinical-navigation-bar")).toHaveLength(
+      1,
+    );
+    expect(
+      Array.from(container.querySelectorAll("[data-comp-id]")).map((node) =>
+        node.getAttribute("data-comp-id"),
+      ),
+    ).toEqual(["nav-0", "nav-1", "nav-2"]);
+    controls.forEach(({ button }) =>
+      fireEvent.click(screen.getByRole("button", { name: button.label })),
+    );
+    expect(emit.mock.calls.map(([event]) => event)).toEqual(
+      controls.map(({ button }) => ({ click: { comp: button.comp } })),
+    );
   });
   it("uses an explicit sibling confirm node as the pending field's single affordance", () => {
     const emit = vi.fn();
@@ -655,7 +1076,7 @@ describe("semantic EHR painter", () => {
     );
     for (const kind of ["identity", "scan", "cosign"])
       expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
-    expect(screen.getAllByText("Human entry only")).toHaveLength(3);
+    expect(screen.getAllByText("Clinician entry required")).toHaveLength(3);
   });
   it("keeps modal acknowledgement blocking and uses its alert id", () => {
     const emit = vi.fn();
@@ -757,4 +1178,416 @@ describe("semantic EHR painter", () => {
       "Unknown semantic UI node",
     );
   });
+});
+
+it("shows Lean's code labels and sends only the selected source code", () => {
+  const emit = vi.fn();
+  paint(
+    [
+      {
+        valueSet: {
+          options: [
+            { code: "PO", label: "Oral (PO)" },
+            { code: "IV", label: "Intravenous (IV)" },
+          ],
+          allowCustom: true,
+          children: [
+            { field: { ...field, kind: "code", label: "Route", value: "PO" } },
+          ],
+        },
+      },
+    ],
+    emit,
+  );
+  expect(emit).not.toHaveBeenCalled();
+  const input = screen.getByRole("combobox", { name: "Route" });
+  if (!(input instanceof HTMLInputElement))
+    throw new Error("Expected a code input");
+  expect(input.value).toBe("Oral (PO)");
+  fireEvent.click(input);
+  fireEvent.click(screen.getByRole("option", { name: "Intravenous (IV)" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: "entry", value: { code: { c: "IV" } } },
+  });
+});
+
+it("requires explicit selection of an unlisted code and preserves a sibling confirmation", () => {
+  const emit = vi.fn();
+  const model: UiNode[] = [
+    {
+      valueSet: {
+        options: [{ code: "I10", label: "I10 — Essential hypertension" }],
+        allowCustom: true,
+        children: [
+          {
+            field: {
+              ...field,
+              kind: "code",
+              label: "Diagnosis",
+              value: "I10",
+              pendingConfirm: true,
+              humanOnly: true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      button: {
+        comp: "entry",
+        label: "Confirm prefilled value",
+        role: "confirm",
+        enabled: true,
+        blockedReason: null,
+        hotkey: null,
+      },
+    },
+  ];
+  paint(model, emit);
+  expect(screen.getAllByRole("button")).toHaveLength(1);
+  const input = screen.getByRole("combobox", { name: "Diagnosis" });
+  fireEvent.click(input);
+  fireEvent.input(input, { target: { value: "Z99.89" } });
+  expect(emit).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("option", { name: "Use code: Z99.89" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: "entry", value: { code: { c: "Z99.89" } } },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Confirm prefilled value" }),
+  );
+  expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: "entry" } });
+});
+
+it("keeps reference populations separate and retains every patient measurement", () => {
+  const references = ["WHO infant reference", "CDC child reference"].flatMap(
+    (source, n) =>
+      ["5th", "50th", "95th"].map((percentile, p) => {
+        const points: [number, number][] = [
+          [n * 240, 300 + p * 100],
+          [n * 240 + 120, 500 + p * 100],
+        ];
+        return {
+          measure: "Weight",
+          unit: "kg",
+          percentile,
+          source,
+          population: "Boys",
+          points,
+        };
+      }),
+  );
+  const { container } = paint([
+    {
+      chartReferences: {
+        references,
+        children: [
+          {
+            presentation: {
+              kind: "growth",
+              children: [
+                {
+                  info: {
+                    comp: "growth",
+                    label: "Growth measurements",
+                    infoId: "growthChart",
+                    display: "trend",
+                    rows: [
+                      [
+                        ["Date", "Jan 1, 2026"],
+                        ["Age (months)", "0"],
+                        ["Weight (kg)", "3.6"],
+                      ],
+                      [
+                        ["Date", "Jan 1, 2027"],
+                        ["Age (months)", "12"],
+                        ["Weight (kg)", "6.0"],
+                      ],
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  expect(container.querySelectorAll(".chart-reference")).toHaveLength(6);
+  expect(container.querySelectorAll(".chart-reference-band")).toHaveLength(2);
+  expect(container.querySelectorAll(".chart-patient-point")).toHaveLength(2);
+  expect(
+    screen.getByRole("table", { name: "Growth measurements" }).textContent,
+  ).toContain("3.6");
+  expect(
+    screen.getByRole("table", { name: "Growth measurements" }).textContent,
+  ).toContain("6.0");
+  expect(
+    container.querySelector(".presentation-chart-source")?.textContent,
+  ).toContain("WHO infant reference · Boys");
+  expect(
+    container.querySelector(".presentation-chart-source")?.textContent,
+  ).toContain("CDC child reference · Boys");
+});
+
+it("paints Lean review feedback as read-only status and retains supplied detail", () => {
+  const event = vi.fn();
+  const { container } = paint(
+    [
+      {
+        info: {
+          comp: "",
+          label: "Review recorded: Allergies",
+          infoId: "reviewReceiptStatus",
+          display: "status",
+          rows: [[["Reviewed", "Current record"]]],
+        },
+      },
+    ],
+    event,
+  );
+  expect(
+    screen.getByRole("status", { name: "Review recorded: Allergies" })
+      .textContent,
+  ).toContain("Current record");
+  expect(container.querySelector("button,input")).toBeNull();
+  expect(event).not.toHaveBeenCalled();
+  expect(
+    expectedAria({
+      ...uiScreenSchema.parse(rooming),
+      workspace: [
+        {
+          info: {
+            comp: "",
+            label: "Review recorded: Allergies",
+            infoId: "reviewReceiptStatus",
+            display: "status",
+            rows: [],
+          },
+        },
+      ],
+      side: [],
+      nav: [],
+    }),
+  ).toContainEqual({
+    role: "status",
+    name: "Review recorded: Allergies",
+    ancestors: ['main ""'],
+  });
+});
+
+it("retains clinical note bodies verbatim in ordinary and structured notes", () => {
+  const body =
+    "Narrative retains the phrase (disorder), (organism) and (substance).\nDirections quoted: 1, 1x per 1 d.\nLine three.";
+  const { container } = paint([
+    {
+      info: {
+        comp: "plain-note",
+        label: "Draft review",
+        infoId: "noteSummary",
+        display: "list",
+        rows: [
+          [
+            ["Title", "Visit note"],
+            ["Text", body],
+          ],
+        ],
+      },
+    },
+    {
+      presentation: {
+        kind: "notes",
+        children: [
+          {
+            info: {
+              comp: "typed-note",
+              label: "Chart notes",
+              infoId: "encounterNotes",
+              display: "list",
+              rows: [
+                [
+                  ["Title", "Clinical note"],
+                  ["Text", body],
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  for (const id of ["noteSummary", "encounterNotes"])
+    expect(
+      container.querySelector(`[data-info-id="${id}"]`)?.textContent,
+    ).toContain(body);
+});
+
+it("draws supplied documentation verbatim in a read-only keyboard-scrollable region", () => {
+  const event = vi.fn();
+  const body =
+    "Current visit narrative (disorder).\nQuoted direction: 1, 1x per 1 d.\nKeep the line breaks.";
+  const { container } = paint(
+    [
+      {
+        info: {
+          comp: "visit-note",
+          label: "Visit note review",
+          infoId: "noteSummary",
+          display: "document",
+          rows: [
+            [
+              ["Section", "History of present illness"],
+              ["Text", body],
+              ["Entry status", "Needs confirmation"],
+            ],
+          ],
+        },
+      },
+    ],
+    event,
+  );
+  const document = screen.getByRole("region", { name: "Visit note review" });
+  expect(document.textContent).toContain(body);
+  expect(document.textContent).toContain("Needs confirmation");
+  expect(document.tabIndex).toBe(0);
+  expect(container.querySelector("button,input,textarea")).toBeNull();
+  expect(event).not.toHaveBeenCalled();
+});
+it("retains source row actions inline when their target is a read-only document", () => {
+  const event = vi.fn();
+  paint(
+    [
+      {
+        presentation: {
+          kind: "table",
+          children: [
+            {
+              info: {
+                comp: "document-target",
+                label: "Visit documentation",
+                infoId: "noteSummary",
+                display: "document",
+                rows: [
+                  [
+                    ["Section", "History"],
+                    ["Text", "Entered documentation"],
+                  ],
+                ],
+              },
+            },
+            {
+              rowAction: {
+                target: "document-target",
+                row: 0,
+                children: [
+                  {
+                    button: {
+                      comp: "continue-review",
+                      label: "Continue chart review",
+                      role: "nav",
+                      enabled: true,
+                      blockedReason: null,
+                      hotkey: null,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+    event,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue chart review" }),
+  );
+  expect(event).toHaveBeenCalledWith({ click: { comp: "continue-review" } });
+  expect(
+    screen.getByRole("region", { name: "Visit documentation" }).textContent,
+  ).toContain("Entered documentation");
+});
+
+it("combines surgical favorites with shared value-set, source and confirmation metadata", () => {
+  const emit = vi.fn();
+  const model: UiScreen = {
+    banner: [["Patient", "Alex Morgan"]],
+    viewer: "Dr. Morgan Rivera · General surgeon",
+    title: "Assessment & Plan",
+    nav: [],
+    side: [],
+    modal: null,
+    sourceLabels: [["record:diagnosis", "Older source caption"]],
+    fieldSources: [[field.comp, "Source: Chart diagnosis"]],
+    fieldChoices: [
+      [
+        field.comp,
+        {
+          options: [
+            ["K80.20", "Gallbladder stones"],
+            ["K40.90", "Inguinal hernia"],
+          ],
+          showCode: true,
+          allowOther: true,
+        },
+      ],
+    ],
+    workspace: [
+      {
+        valueSet: {
+          options: [{ code: "I10", label: "Primary hypertension" }],
+          allowCustom: true,
+          children: [
+            {
+              field: {
+                ...field,
+                label: "Diagnosis",
+                kind: "code",
+                value: "K80.20",
+                provenance: "record:diagnosis",
+                pendingConfirm: true,
+                humanOnly: true,
+              },
+            },
+          ],
+        },
+      },
+      {
+        button: {
+          comp: field.comp,
+          label: "Confirm chart diagnosis",
+          role: "confirm",
+          enabled: true,
+          blockedReason: null,
+          hotkey: null,
+        },
+      },
+    ],
+  };
+  expect(uiScreenSchema.parse(model)).toEqual(model);
+  render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>,
+  );
+  expect(screen.getByText("Source: Chart diagnosis")).not.toBeNull();
+  expect(screen.queryByText("Older source caption")).toBeNull();
+  expect(screen.getAllByRole("button")).toHaveLength(1);
+  const input = screen.getByRole("combobox", { name: "Diagnosis" });
+  fireEvent.click(input);
+  expect(
+    screen.queryByRole("option", { name: "Primary hypertension" }),
+  ).toBeNull();
+  fireEvent.input(input, { target: { value: "hernia" } });
+  expect(emit).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("option", { name: "Inguinal hernia (K40.90)" }),
+  );
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: field.comp, value: { code: { c: "K40.90" } } },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Confirm chart diagnosis" }),
+  );
+  expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: field.comp } });
 });

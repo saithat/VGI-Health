@@ -59,13 +59,12 @@ export function factsContext(
     now: date.getUTCHours() * 60 + date.getUTCMinutes(),
     receipts,
     record,
+    ...(context?.encounter.id ? { encounterId: context.encounter.id } : {}),
     ...(user.persona === "P2"
       ? { encounterKind: "emergency" }
       : user.persona === "P3" || user.persona === "RN2"
         ? { encounterKind: "inpatient" }
-        : user.persona === "P5"
-          ? { encounterKind: "preop" }
-          : {}),
+        : {}),
   };
 }
 export function projectLive(
@@ -81,7 +80,18 @@ export function projectLive(
   const projection: FactsOutput = JSON.parse(
     interp.facts(
       JSON.stringify({
-        bundle,
+        // Pass the authenticated FHIR profile intact; Lean binds its name to User.id.
+        bundle: {
+          ...bundle,
+          entry: [
+            ...(bundle.entry ?? []).filter(
+              (entry) =>
+                entry.resource?.resourceType !== "Practitioner" ||
+                entry.resource.id !== user.practitioner.id,
+            ),
+            { resource: user.practitioner },
+          ],
+        },
         context: factsContext(user, now, receipts, context),
       }),
     ),
@@ -99,17 +109,36 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
+  const displayContext = fhirDisplayContext(
+    bundle,
+    context.patient.id ?? "",
+    projection.facts.patientId,
+    context.encounter.id,
+  );
   return {
     ...projection,
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...fhirDisplayContext(
-        bundle,
-        context.patient.id ?? "",
-        projection.facts.patientId,
-        context.encounter.id,
-      ),
+      ...displayContext,
+      // Keep Lean's read-only FHIR projections. An explicit adapter payload
+      // replaces the same view rather than creating an ambiguous duplicate.
+      infoPayloads: [
+        ...(projection.facts.infoPayloads ?? []).filter(
+          (p) =>
+            !displayContext.infoPayloads.some((other) => other.info === p.info),
+        ),
+        ...displayContext.infoPayloads,
+      ],
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (b) =>
+            !displayContext.artifactBindings.some(
+              (other) => other.key === b.key,
+            ),
+        ),
+        ...displayContext.artifactBindings,
+      ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
       epochMinute: Math.floor(Date.parse(now) / 60000),
@@ -131,6 +160,16 @@ export async function createLiveSession(
   const elements = z
     .object({ elements: z.array(elementSchema) })
     .parse(spec).elements;
+  const labels = z
+    .object({
+      commits: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+      infos: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+    })
+    .parse(spec);
   const screens = z
     .object({
       screens: z.array(
@@ -178,7 +217,9 @@ export async function createLiveSession(
     getContext: () => context,
     async dispatch(
       event: Event,
-    ): Promise<{ links: string[]; message: string } | undefined> {
+    ): Promise<
+      { links: string[]; message: string; refreshRequired?: true } | undefined
+    > {
       if (pending) throw new Error("A transaction is already saving");
       if (refreshNeeded)
         throw new Error(
@@ -241,7 +282,11 @@ export async function createLiveSession(
         if (result.refreshError) {
           refreshNeeded = true;
           session.accept(staged);
-          return { links: result.links, message: result.refreshError };
+          return {
+            links: result.links,
+            message: result.refreshError,
+            refreshRequired: true,
+          };
         }
         chart = result.bundle;
         const updated = bundleResources(chart).find(
@@ -259,10 +304,19 @@ export async function createLiveSession(
           session.accept(staged);
           return {
             links: result.links,
+            refreshRequired: true,
             message: `Saved. Facts refresh failed: ${error instanceof Error ? error.message : String(error)}. Reopen the chart.`,
           };
         }
-        return { links: result.links, message: `${commitId} saved to Medplum` };
+        const label = receipt
+          ? (labels.infos.find((info) => info.id === receipt.info)?.label ??
+            "Chart")
+          : (labels.commits.find((commit) => commit.id === commitId)?.label ??
+            "Changes");
+        return {
+          links: result.links,
+          message: receipt ? `${label} review recorded` : `Saved: ${label}`,
+        };
       } finally {
         pending = false;
       }

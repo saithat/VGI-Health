@@ -16,6 +16,28 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
+      valueSet: z.strictObject({
+        options: z.array(z.strictObject({ code: label, label })),
+        allowCustom: z.boolean(),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      chartReferences: z.strictObject({
+        references: z.array(
+          z.strictObject({
+            measure: label,
+            unit: label,
+            percentile: label,
+            source: label,
+            population: label,
+            points: z.array(z.tuple([nat, nat])),
+          }),
+        ),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
       rowAction: z.strictObject({
         target: label,
         row: nat,
@@ -93,11 +115,51 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   ]),
 );
 /** Offline boundary only; the clinician path forwards Lean output unchanged. */
-export const uiScreenSchema: z.ZodType<UiScreen> = z.strictObject({
-  banner: z.array(pair),
-  nav: z.array(z.tuple([label, z.array(pair)])),
-  title: label,
-  workspace: z.array(uiNodeSchema),
-  side: z.array(uiNodeSchema),
-  modal: uiNodeSchema.nullable(),
-});
+export const uiScreenSchema: z.ZodType<UiScreen> = z
+  .strictObject({
+    banner: z.array(pair),
+    viewer: label.optional(),
+    nav: z.array(z.tuple([label, z.array(pair)])),
+    activeNav: label.optional(),
+    sourceLabels: z.array(pair).optional(),
+    entryHints: z.array(pair).optional(),
+    fieldChoices: z
+      .array(
+        z.tuple([
+          label,
+          z.strictObject({
+            options: z.array(pair),
+            showCode: z.boolean(),
+            allowOther: z.boolean(),
+          }),
+        ]),
+      )
+      .optional(),
+    screen: label.optional(),
+    fieldSources: z.array(pair).optional(),
+    title: label,
+    workspace: z.array(uiNodeSchema),
+    side: z.array(uiNodeSchema),
+    modal: uiNodeSchema.nullable(),
+  })
+  .transform(
+    ({
+      screen: screenId,
+      fieldSources,
+      viewer,
+      activeNav,
+      sourceLabels,
+      entryHints,
+      fieldChoices,
+      ...screen
+    }) => ({
+      ...screen,
+      ...(screenId === undefined ? {} : { screen: screenId }),
+      ...(fieldSources === undefined ? {} : { fieldSources }),
+      ...(viewer === undefined ? {} : { viewer }),
+      ...(activeNav === undefined ? {} : { activeNav }),
+      ...(sourceLabels === undefined ? {} : { sourceLabels }),
+      ...(entryHints === undefined ? {} : { entryHints }),
+      ...(fieldChoices === undefined ? {} : { fieldChoices }),
+    }),
+  );

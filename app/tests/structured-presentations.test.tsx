@@ -137,15 +137,13 @@ describe("structured clinical data boundary", () => {
         },
       },
     ]);
-    expect(screen.getByText("1 tab PO daily")).toBeTruthy();
+    expect(screen.getByText("1 daily")).toBeTruthy();
+    expect(screen.queryByText("1 tab PO daily")).toBeNull();
     expect(
       screen.getByText("Follow the supplied taper through the feeding tube"),
     ).toBeTruthy();
     expect(
-      screen
-        .getByText("1 tab PO daily")
-        .closest("[title]")
-        ?.getAttribute("title"),
+      screen.getByText("1 daily").closest("[title]")?.getAttribute("title"),
     ).toBe("1, 1x per 1 d");
   });
   it("keeps an empty worklist named and its unmatched action usable", () => {
@@ -724,4 +722,46 @@ describe("structured clinical data boundary", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+// Legacy semantic trend rows use the same drawing as tagged presentations.
+it("keeps different vital signs with the same unit in separate legacy trend plots", () => {
+  paint([
+    {
+      info: {
+        comp: "vitals",
+        infoId: "vitals",
+        label: "Recorded vitals",
+        display: "trend",
+        rows: [
+          [
+            ["Vital sign", "Heart rate"],
+            ["Value", "80"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+          [
+            ["Vital sign", "Respiratory rate"],
+            ["Value", "18"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+        ],
+      },
+    },
+  ]);
+  expect(
+    screen.getByRole("img", { name: "Recorded vitals: Heart rate (/min)" }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("img", {
+      name: "Recorded vitals: Respiratory rate (/min)",
+    }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Heart rate");
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Respiratory rate");
 });

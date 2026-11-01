@@ -1,5 +1,8 @@
 import Ehr.Core.Navigation
 import Ehr.Render.Presentations
+import Ehr.Render.SurgeryChoices
+import Ehr.Render.CodeChoices
+import Ehr.Render.GrowthStandards
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
 The interpreter resolves visibility exactly once. Nesting consumes no item:
@@ -11,11 +14,60 @@ namespace Ehr.Render
 /-- Empty program labels receive a readable label without changing their identity. -/
 def uiLabel (s fallback : String) : String := if s = "" then fallback else s
 
+/-- Source identifiers remain proof metadata; clinicians see the source's name. -/
+def uiSourceText (cx : Ctx) (source : String) : String :=
+  if source.startsWith "record:" then
+    let key := (source.drop 7).toString
+    let name := ((cx.sp.elements.find? (·.recordFact? == some key)).map (·.label)).getD ""
+    "From chart" ++ (if name == "" then "" else " — " ++ name)
+  else if source.startsWith "linked:" then
+    let key := (source.drop 7).toString
+    let name := ((cx.sp.element? key).map (·.label)).getD ""
+    "Linked value" ++ (if name == "" then "" else " — " ++ name)
+  else if source == "macro" then "From template / preference list"
+  else if source == "default" then "Default value"
+  else "Prefilled value"
+
+/-- Every visible source gets a display label without changing its capture. -/
+def uiSourceLabels (cx : Ctx) : List (String × String) :=
+  ((cx.v.items.filter (·.shown)).filterMap fun it =>
+    it.provenance?.map fun source => (source, uiSourceText cx source)).eraseDups
+
+/-- A recorded non-kg value stays visible while the kg input awaits human entry.
+This is display guidance, never a conversion or a confirmation. -/
+def uiEntryHint (cx : Ctx) (it : ItemView) : Option String :=
+  match it.comp.kind, it.value? with
+    | .field e _ _, some (.qty n unit) =>
+      if (cx.sp.element? e).any (·.kind == .quantity .kg) && unit != .kg then
+        some ("Recorded value: " ++ valueText (.qty n unit) ++ " " ++ unitName unit ++
+          ". Enter the weight in kg.")
+      else none
+    | _, _ => none
+
+/-- Hints belong to their existing field and add no interpreter action. -/
+def uiEntryHints (cx : Ctx) : List (CompId × String) :=
+  (cx.v.items.filter (·.shown)).filterMap fun it =>
+    (uiEntryHint cx it).map (fun hint => (it.comp.id, hint))
+
+/-- A surgeon's department favorites attach only to their actual visible field.
+They never select a value, change a flag, or replace the spec's validators. -/
+def uiFieldChoices (cx : Ctx) : List (CompId × UiCodeChoices) :=
+  if cx.user.role != .surgeon then [] else
+  (cx.v.items.filter (·.shown)).filterMap fun it => match it.comp.kind with
+    | .field element _ _ =>
+      (cx.sp.element? element).bind fun spec =>
+        let choices := surgicalChoices spec.kind
+        if !spec.enteredBy.contains cx.user.role || choices.isEmpty then none else
+          some (it.comp.id, {
+            options := choices
+            showCode := spec.kind == .coded "icd10" || spec.kind == .coded "cpt" })
+    | _ => none
+
 def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
    ("Age / sex", s!"{d.banner.ageYears} / {d.banner.sex}"),
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
-   ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
+   ("Last encounter", d.banner.encounterClass), ("Last provider", d.banner.attending), ("Last location", d.banner.location)]
 
 /-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
 def uiBannerWeight (facts : Facts) (d : Display) : String :=
@@ -23,17 +75,55 @@ def uiBannerWeight (facts : Facts) (d : Display) : String :=
     facts.weightToday?.map fun (value, unit) => (value, unit, d.asOf)
   match weight with
   | none => "Not recorded"
-  | some (value, unit, date) => s!"{value / 10}.{value % 10} {unit.name}" ++
+  | some (value, unit, date) =>
+      let weight := if unit == .lb then
+        let kg := (value * 45359237 + 50000000) / 100000000
+        s!"{kg / 10}.{kg % 10} kg (from {value / 10}.{value % 10} lb)"
+        else s!"{value / 10}.{value % 10} {unit.name}"
+      weight ++
       (if date == "" then "" else " · " ++ uiDate date)
 
-/-- Clinical banner content comes from Lean, so the painter need not infer it.
-An unavailable code status is explicit, never silently treated as full code. -/
+/-- Case display data uses the ordinary selected-patient, version-bound reader. -/
+def uiCaseValue (facts : Facts) (label : String) : String :=
+  let value := (infoPayload facts "scheduleTasks").bind fun payload =>
+    ((payload.rows.head?).bind (fun row => row.fields.lookup label)).orElse fun _ =>
+      payload.fields.lookup label
+  uiLabel (value.getD "") "Not recorded"
+
+/-- A preoperative episode is not the patient's previous ambulatory encounter.
+Planned OR and surgeon describe the supplied request, not a current admission. -/
+def uiEncounterBanner (facts : Facts) (d : Display) : List (String × String) :=
+  if facts.encounterKind? == some "preop" then
+    ((uiBanner d).filter fun pair => !["Encounter", "Attending", "Location"].contains pair.1) ++
+      [("Encounter context", "Preoperative chart review"),
+       ("Planned OR", uiCaseValue facts "Room"), ("Surgeon", uiCaseValue facts "Surgeon")]
+  else uiBanner d
+
+/-- Human-readable clinical roles never expose a user ID. -/
+def uiViewer : Role → String
+  | .physician => "Physician"
+  | .np => "Nurse practitioner"
+  | .rn => "Registered nurse"
+  | .surgeon => "General surgeon"
+
+/-- The visible name requires the same unique identity as the permission-bearing
+user. Missing or ambiguous source names leave the clinical role alone. -/
+def uiClinicianViewer (user : User) (d : Display) : String :=
+  let role := uiViewer user.role
+  if user.id == "" then role else
+  match (d.clinicians?.getD []).filter (fun row => row.id == user.id) with
+  | [row] =>
+    let name := row.name.trimAscii.toString
+    if name == "" then role else name ++ " · " ++ role
+  | _ => role
+
+/-- Header allergies summarize substances and status; reactions remain complete
+in the allergy list and mandatory reviews. Unknown code status stays explicit. -/
 def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
-  uiBanner d ++
+  uiEncounterBanner facts d ++
     [("Allergies", if d.allergies.isEmpty then "No allergy records on file"
       else "; ".intercalate (d.allergies.map (fun r => r.substance ++
-        (if r.reaction == "" then "" else " — " ++ r.reaction) ++
-        (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
+        (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")")))),
      ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded"),
      ("Weight", uiBannerWeight facts d),
      ("Isolation", uiLabel ((facts.record.lookup "isolation").getD "") "Not recorded")]
@@ -76,12 +166,39 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match infoPayload cx.facts i with
   | none => []
   | some p => ((if p.fields.isEmpty then [] else [p.fields]) ++ p.rows.map (·.fields)).map
-      (fun row => row.map (fun (label, value) => (label, uiDate value)))
+      (fun row => row.map (fun (label, value) => (uiClinicalHeading label, uiDate value)))
+
+/-- The current visit document uses the existing clinical note fields. -/
+def uiVisitNoteElements : List ElementId :=
+  ["chiefComplaint", "hpi", "ros", "exam", "assessmentPlan", "visitDiagnosis",
+   "anticipatoryGuidance", "followUp", "patientInstructions"]
+
+/-- The displayed text is the exact entered value, with its current confirmation state. -/
+def uiVisitNoteRow (cx : Ctx) (element : ElementId) (entry : Captured) : List (String × String) :=
+  [("Section", uiLabel (((cx.sp.element? element).map (·.label)).getD "") "Documentation"),
+   ("Text", valueText entry.value),
+   ("Entry status", if !entry.confirmed then "Needs confirmation"
+     else if valueText entry.value == "" then "Empty entry" else "Entered")]
+
+/-- Only current editor captures contribute to this visit's note preview. -/
+def uiVisitNoteRows (cx : Ctx) : List (List (String × String)) :=
+  uiVisitNoteElements.flatMap fun element =>
+    (cx.s.captured.filter (fun entry => entry.element == element)).map (uiVisitNoteRow cx element)
+
+/-- An unstarted note is explicit. Supplied supporting records remain alongside it. -/
+def uiNoteSummaryRows (cx : Ctx) : List (List (String × String)) :=
+  let rows := uiVisitNoteRows cx
+  (if rows.isEmpty then [[("Section", "Visit note"), ("Text", "No visit documentation entered yet.")]]
+    else rows) ++ uiPayloadRows cx "noteSummary"
 
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
-  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match structuredRows? cx i with
+  if i == "noteSummary" then uiNoteSummaryRows cx
+  else if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i
+  else if i == "refillComparison" then uiRefillComparisonRows cx (uiPayloadRows cx i)
+  else if i == "resultTrend" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i
+  else match structuredRows? cx i with
   | some rows => rows
   | none => match i with
     | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
@@ -104,9 +221,9 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
         r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
           ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
     | "anticoagulants" | "anticoagulantList" =>
-        (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
-    | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
-        [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
+        (cx.disp.meds.filter uiAntithrombotic).map medCells
+    | "immunizations" | "immunizationHistory" => (cx.disp.immunizations.map fun r =>
+        [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]) ++ uiPayloadRows cx i
     | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
         [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
          ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
@@ -118,11 +235,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
           then toString r.ageMonths else "Not recorded"),
          ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
          ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]) ++ uiPayloadRows cx i
-    | "doseCheck" =>
-        [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
-          |>.getD "No confirmed kg weight available")] ::
-        (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
-          ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
+    | "doseCheck" => uiDoseRows cx
     | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
     | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
         then "Requested" else "Not requested")]]
@@ -152,6 +265,12 @@ def uiFieldKind : ValueKind → String
   | .text => "text" | .flag => "flag" | .identity => "identity"
   | .scan _ => "scan" | .cosign => "cosign"
 
+/-- Narrative captures use multiline editors. This is only the control's
+presentation; the same text Value, entry event and confirmations are retained. -/
+def uiNarrativeElement (e : ElementId) : Bool :=
+  ["hpi", "ros", "exam", "assessmentPlan", "anticipatoryGuidance",
+   "patientInstructions", "patientMessage", "refillNote", "refillDenyReason"].contains e
+
 /-- Preserve the clinical title once. A field repeats it as an entry prompt;
 a child info panel beneath the same heading uses a neutral record label. -/
 def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String) : String :=
@@ -159,19 +278,32 @@ def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String)
     it.comp.parent? == some parent.comp.id && parent.comp.label == label)
     then duplicate else label) fallback
 
+/-- An opted-in reconciliation slot retains its source caption and adds the
+corresponding current-medication name. Missing source rows add no context. -/
+def uiMedicationFieldLabel (cx : Ctx) (it : ItemView) (element : ElementId) : String :=
+  let suffix := if element == "medRecDecision" &&
+      (it.comp.tag.splitOn ".").contains "currentMedication" then
+    match cx.disp.meds[it.slot]? with
+    | some med => if med.name == "" then "" else " — " ++ med.name
+    | none => ""
+    else ""
+  it.comp.label ++ suffix
+
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
   let (_, _, baseUnit) := fieldKind kind
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
   let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else if kind == .text && (it.comp.tag.endsWith ".multiline" || uiNarrativeElement e) then "textarea"
     else uiFieldKind kind
-  let unit := if kind == .medicationDose then want else
+  let metricWeight := kind == .quantity .kg
+  let unit := if kind == .medicationDose || metricWeight then want else
     match it.value? with | some (.qty _ u) => u | _ => want
-  let value := if kind == .medicationDose &&
+  let value := if (kind == .medicationDose || metricWeight) &&
     it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
     then none else it.value?.map valueText
-  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
+  .field it.comp.id (uiTitledLabel cx it (uiMedicationFieldLabel cx it e) ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)
@@ -218,6 +350,12 @@ def uiNav (cx : Ctx) : List (String × List (String × String)) :=
     (title, (items.filter (fun it => uiNavTitle cx it == title)).map fun it =>
       (it.comp.id, uiLabel it.comp.label "Action"))
 
+/-- Selection comes from the actual goto target, without interpreting labels. -/
+def uiActiveNav (cx : Ctx) : Option CompId :=
+  (cx.v.items.find? fun it => it.shown && uiNavButton cx it && match it.comp.kind with
+    | .button (.goto target) => target == cx.s.screen
+    | _ => false).map (·.comp.id)
+
 /-- One compact line per source record; workspace info retains the full rows. -/
 def uiAllergySummary (r : AllergyRow) : List (String × String) :=
   [("Record", r.substance ++ (if r.reaction == "" then "" else " — " ++ r.reaction) ++
@@ -237,6 +375,7 @@ def uiLatestVitals (d : Display) : List VitalRow :=
 
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
+  | "scheduleTasks" | "consultRequest" => uiRows cx i
   | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
   | "allergyList" => cx.disp.allergies.map uiAllergySummary
   | "currentMeds" => cx.disp.meds.map uiMedSummary
@@ -249,11 +388,20 @@ def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
 def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × String)) :=
   if uiSideAt cx id && !uiOrderInfo i then uiSummaryRows cx i else uiRows cx i
 
+/-- Reference data decorates only the growth plot; its ordinary info is complete. -/
+def uiWrapGrowthReferences (cx : Ctx) (kind : Option UiPresentationKind) (i : InfoId)
+    (node : UiNode) : UiNode :=
+  if kind == some .growth && i == "growthChart" then
+    .chartReferences (uiGrowthReferences cx.disp) [node]
+  else node
+
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
-  uiWrapInfo (if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i) <|
-  .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
-    (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
+  let kind := if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i
+  let node := uiWrapInfo kind <| .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
+    (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list"
+      else if uiTagIs it.comp.tag "layout.document" then "document" else display)
     (uiItemRows cx it.comp.id i)
+  uiWrapGrowthReferences cx kind i node
 
 /-- Search reads typed chart rows or the supplied code catalog. It never replaces
 required reviews, captures clinical evidence, or selects an order. -/
@@ -264,8 +412,11 @@ def uiSearchLabs (cx : Ctx) : List (List (String × String)) :=
 def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
   if scope == "formulary" then
     formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
+  else if scope == "inbasket" then
+    uiRows cx "inBasketResults" ++ uiRows cx "inBasketRxRequests"
   else if scope == "loinc" then
-    uiSearchLabs cx ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
+    commonLabChoices.map (fun term => [("Test", term.label), ("LOINC", term.code)]) ++
+    (cx.facts.codeTables?.getD []).flatMap (fun table =>
       if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
   else if scope == "chart" then
     (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
@@ -315,19 +466,30 @@ def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × Strin
     if (rows.drop 25).isEmpty then [] else
       [[("Record", "More results available"), ("Details", "Showing the first 25 matches. Refine your search to narrow the results.")]]
 
+/-- Opted-in review actions show a read-only receipt status only while the
+core accepts a receipt at the current data version, time and reviewer role. -/
+def uiReviewStatus (cx : Ctx) (it : ItemView) : List UiNode :=
+  match it.comp.kind with
+  | .button (.markReviewed info) =>
+      if (it.comp.tag.splitOn ".").contains "feedback" && hasValidReceipt cx.sp cx.facts cx.s info then
+        [.info "" ("Review recorded: " ++ uiLabel (((cx.sp.info? info).map (·.label)).getD "") "Chart section")
+          "reviewReceiptStatus" "status" []]
+      else []
+  | _ => []
+
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   match it.comp.kind with
   | .banner => [.info "" "Patient banner" "patientBanner" "summary" [uiClinicalBanner cx.facts cx.disp]]
-  | .field e _ _ => uiField cx it e ::
+  | .field e _ _ => uiWrapFieldChoices cx e (uiField cx it e) ::
       if it.pendingConfirm then
         [.button it.comp.id "Confirm prefilled value" "confirm" (uiEnabled cx it.comp.id)
           (uiBlocked cx it.comp.id) none] else []
   | .panel i | .priorAuth i => [uiItemInfo cx it i "list"]
   | .table i => [uiItemInfo cx it i "table"]
   | .trend i => [uiItemInfo cx it i "trend"]
-  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))]
+  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))] ++ uiReviewStatus cx it
   | .«macro» _ => [uiButton cx it "macro"]
   | .search scope =>
       let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""
@@ -388,7 +550,7 @@ def uiSide (cx : Ctx) : List UiNode :=
     (if uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
-    (if uiOverview cx then [] else
+    (if uiOverview cx || cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)
@@ -417,16 +579,79 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
   ((uiRequiredReviews cx).filter fun r => !uiFullInfoShown cx r.info).map fun r =>
     uiInfo cx "" (infoLabel cx r.info) r.info "list"
 
-def uiWorkspace (cx : Ctx) : List UiNode :=
+/-- Clinical activity frames use their real navigator/row actions. The optional
+read-only progress overview remains available to other source programs. -/
+def uiProgress (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
-  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  if !(uiNav cx).isEmpty || cx.v.items.any (fun it => it.shown && uiTagIs it.comp.tag "layout.clinicalActivity") then []
+  else [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)]
+
+/-- Root return controls opt into footer placement through source metadata. -/
+def uiFooterNode (cx : Ctx) (node : UiNode) : Bool :=
+  match node with
+  | .button id .. => cx.v.items.any fun it =>
+      it.comp.id == id && it.comp.parent?.isNone && (it.comp.tag.splitOn ".").contains "footer"
+  | _ => false
+
+/-- Layout changes semantic drawing order, never the program's action order. -/
+def uiPlaceFooter (cx : Ctx) (nodes : List UiNode) : List UiNode :=
+  nodes.filter (fun node => !uiFooterNode cx node) ++ nodes.filter (uiFooterNode cx)
+
+def uiWorkspace (cx : Ctx) : List UiNode :=
+  uiProgress cx ++ uiPlaceFooter cx (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+
+/-- Public source descriptions are separate from exact machine provenance. -/
+def uiProvenanceSourceLabel (source : String) : String :=
+  if source.startsWith "record:" then
+    match (source.toSlice.drop 7).toString with
+    | "weightToday" => "Chart weight recorded today"
+    | "appointmentReason" => "Appointment reason"
+    | "preferredPharmacy" => "Preferred pharmacy on file"
+    | "requestPharmacy" => "Pharmacy from refill request"
+    | "requestDose" => "Dose from refill request"
+    | "requestQuantity" => "Quantity from refill request"
+    | "requestRefills" => "Refills from refill request"
+    | _ => "Chart record"
+  else if source.startsWith "linked:" then "Linked clinical entry"
+  else if source == "default" then "Configured default"
+  else if source == "macro" then "Automated entry"
+  else "Prefilled value"
+
+/-- The date identifies the chart snapshot, not an invented observation time. -/
+def uiProvenanceText (cx : Ctx) (source : String) : String :=
+  "Source: " ++ uiProvenanceSourceLabel source ++ " · chart as of " ++ cx.disp.asOf
+
+/-- A linked source uses its public spec label; other sources use chart captions.
+The exact machine provenance remains unchanged in the ordinary field node. -/
+def uiFieldSourceText (cx : Ctx) (source : String) : String :=
+  if source.startsWith "linked:" then
+    match cx.sp.element? (source.toSlice.drop 7).toString with
+    | some element => "Source: Linked entry — " ++ uiLabel element.label "Clinical entry"
+    | none => uiProvenanceText cx source
+  else uiProvenanceText cx source
+
+/-- Only shown fields contribute public captions. This metadata adds no action,
+capture or confirmation, and does not replace the original field provenance. -/
+def uiFieldSources (cx : Ctx) : List (CompId × String) :=
+  cx.v.items.filterMap fun it =>
+    if !it.shown then none else match it.comp.kind with
+    | .field .. => it.provenance?.map fun source => (it.comp.id, uiFieldSourceText cx source)
+    | _ => none
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
-  { banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
+  let sources := uiSourceLabels cx
+  let hints := uiEntryHints cx
+  let choices := uiFieldChoices cx
+  { screen? := some s.screen, fieldSources? := some (uiFieldSources cx),
+    banner := uiClinicalBanner facts disp, viewer? := some (uiClinicianViewer user disp),
+    nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
+    sourceLabels? := if sources.isEmpty then none else some sources,
+    entryHints? := if hints.isEmpty then none else some hints,
+    fieldChoices? := if choices.isEmpty then none else some choices,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

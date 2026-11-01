@@ -43,6 +43,10 @@ async function render(page: Page, screen: UiScreen) {
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("valueSet" in tree)
+    return [tree, ...tree.valueSet.children.flatMap(nodes)];
+  if ("chartReferences" in tree)
+    return [tree, ...tree.chartReferences.children.flatMap(nodes)];
   if ("rowAction" in tree)
     return [tree, ...tree.rowAction.children.flatMap(nodes)];
   if ("presentation" in tree)
@@ -178,6 +182,7 @@ for (const file of fixtures)
     const bannerText = normalize(
       (await page.getByRole("banner").textContent()) ?? "",
     );
+    if (screen.viewer) expect(bannerText).toContain(normalize(screen.viewer));
     for (const [label, value] of screen.banner)
       if (value)
         expect(bannerText).toContain(
@@ -187,9 +192,10 @@ for (const file of fixtures)
               : formatDisplayValue(value),
           ),
         );
-    const infos = [...screen.side, ...screen.workspace]
-      .flatMap(nodes)
-      .flatMap((node) => ("info" in node ? [node.info] : []));
+    const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
+    const infos = allNodes.flatMap((node) =>
+      "info" in node ? [node.info] : [],
+    );
     const panels = (await page.locator("[data-info-id]").allTextContents()).map(
       normalize,
     );
@@ -201,13 +207,16 @@ for (const file of fixtures)
             info.infoId === "currentMeds" && key === "Instructions"
               ? row.find(([name]) => name === "Medication")?.[1]
               : undefined;
-          const expected =
-            key === "Text" || key === "Title"
-              ? value
-              : medication
-                ? formatMedicationDirections(medication, value)
-                : formatDisplayValue(value);
-          if (value) expect(panels[index]).toContain(normalize(expected));
+          if (value)
+            expect(panels[index]).toContain(
+              normalize(
+                key === "Text" || key === "Title"
+                  ? value
+                  : medication
+                    ? formatMedicationDirections(medication, value)
+                    : formatDisplayValue(value),
+              ),
+            );
         }
     }
     expect(browserErrors).toEqual([]);
