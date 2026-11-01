@@ -294,7 +294,7 @@ flowchart LR
 Colors as above: green is Lean that the proofs are about, blue is checked by the
 browser screen gate, grey is trusted.
 
-A save in live mode:
+A save in live mode (the app at `/`, signed in against Medplum; replay mode never writes):
 
 ```mermaid
 sequenceDiagram
@@ -323,6 +323,9 @@ sequenceDiagram
     S-->>P: error, staged state discarded
   end
 ```
+
+The `alt`/`else` box lists the three possible outcomes of one click: a screen-only change, exactly one
+saved write, or a refused or failed write (nothing is saved and the screen keeps its prior state).
 
 ### Lean in the browser
 
