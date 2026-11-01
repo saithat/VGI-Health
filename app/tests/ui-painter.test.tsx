@@ -364,6 +364,11 @@ describe("semantic EHR painter", () => {
     ]);
     expect(statusTone("unknown")).toBeUndefined();
     expect(statusTone("active")).toBeUndefined();
+    expect(statusTone("Signed 09:32")).toBe("green");
+    expect(statusTone("Reviewed 09:14")).toBe("green");
+    expect(statusTone("Needs confirmation")).toBe("yellow");
+    expect(statusTone("Unsigned")).toBe("yellow");
+    expect(statusTone("In progress")).toBe("blue");
     expect(["interruptive", "passive", "removable"].map(severityTone)).toEqual([
       "red",
       "blue",
