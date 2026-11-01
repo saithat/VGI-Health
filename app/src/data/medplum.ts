@@ -35,8 +35,15 @@ export const environment = environmentSchema.parse(import.meta.env ?? {});
 const storage = new ClientStorage(
   typeof window === "undefined" ? new MemoryStorage() : window.localStorage,
 );
+/** In the browser, use the app server's same-origin Medplum proxy, so live mode
+ * works from any device that can reach the app. Tests and Node scripts use the
+ * configured base URL directly. */
+const medplumBaseUrl =
+  typeof window !== "undefined" && window.location.protocol.startsWith("http")
+    ? `${window.location.origin}/medplum/`
+    : environment.VITE_MEDPLUM_BASE_URL;
 const medplum = new MedplumClient({
-  baseUrl: environment.VITE_MEDPLUM_BASE_URL,
+  baseUrl: medplumBaseUrl,
   clientId: environment.VITE_MEDPLUM_CLIENT_ID,
   storage,
 });
@@ -221,7 +228,7 @@ export async function quickSignIn(persona: string): Promise<LiveUser> {
   });
   if (!response.ok)
     throw new Error(
-      "Dev quick-login is available only on the local make run server. Enter the seeded password to sign in.",
+      "Persona login needs the app server started with `make run` and the local .env from `make install`.",
     );
   const { password } = z
     .object({ password: z.string() })
@@ -231,7 +238,7 @@ export async function quickSignIn(persona: string): Promise<LiveUser> {
 export async function backendAvailable(): Promise<boolean> {
   try {
     return (
-      await fetch(new URL("healthcheck", environment.VITE_MEDPLUM_BASE_URL), {
+      await fetch(new URL("healthcheck", medplumBaseUrl), {
         signal: AbortSignal.timeout(2500),
       })
     ).ok;
