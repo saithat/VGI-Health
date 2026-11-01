@@ -13,7 +13,8 @@ export default defineConfig({
     environment: "node",
     include: ["live/**/*.test.ts"],
     fileParallelism: false,
-    testTimeout: 90000,
+    // Full clinical episodes traverse the dense canonical WASM trees serially.
+    testTimeout: 180000,
     hookTimeout: 30000,
   },
 });

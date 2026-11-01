@@ -494,7 +494,8 @@ export async function availableBeds(): Promise<Location[]> {
     (r): r is Location =>
       r.resourceType === "Location" &&
       r.operationalStatus?.code !== "O" &&
-      r.operationalStatus?.code !== "H",
+      r.operationalStatus?.code !== "H" &&
+      r.operationalStatus?.code !== "C",
   );
 }
 export async function resolveCosigner(value: string): Promise<Practitioner> {

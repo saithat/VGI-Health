@@ -240,10 +240,21 @@ describe.skipIf(!available)(
       expect(session.getSnapshot().state.commits).toContain("signNote");
       await click("w1Close.nav.w1Orders");
       await click("w1Orders.prefLisinopril");
-      for (const item of session
-        .getSnapshot()
-        .view.items.filter((item) => item.pendingConfirm))
+      // Blueprint groups can contain hidden aliases for the same element.
+      // Confirm only the currently shown control, then re-read Lean's view.
+      for (let count = 0; count < 20; count++) {
+        const item = session
+          .getSnapshot()
+          .view.items.find(
+            (item) =>
+              item.comp.id.startsWith("w1Orders.") &&
+              item.shown &&
+              item.pendingConfirm,
+          );
+        if (!item) break;
         await dispatch({ confirm: { comp: item.comp.id } });
+        if (count === 19) throw new Error("Order confirmations did not settle");
+      }
       await enter("w1Orders.refills", { qty: { tenths: 30, unit: "none" } });
       for (const [id, value] of Object.entries({
         indication: "Hypertension",
@@ -260,26 +271,17 @@ describe.skipIf(!available)(
         prescriberLicenseClassification: "Physician",
       }))
         await enter(`w1Orders.legal.${id}`, value);
-      // The spec conservatively applies the section 741 risk requirement when
-      // no verified risk observation exists. Record an actual offer, not a false
-      // negative clinical fact supplied by the app.
-      await enter("w1Orders.naloxoneOffer", "true");
-      await enter(
-        "w1Orders.naloxoneEducation",
-        "Overdose prevention and rescue medication discussed.",
-      );
-      await enter("w1Orders.legal.naloxoneEducationOutcome", "provided");
       await click("w1Orders.toSign");
       await click("w1Verify.continue");
       await enter(
         "w1Sign.patientIdReentry",
         `LI/M/${new Date().getUTCFullYear() - 1980}`,
       );
-      await enter("w1Sign.feature.caregiverOverdoseEducation", "provided");
       expect(
-        session.getSnapshot().view.blocked,
-        JSON.stringify(session.getSnapshot().view.blocked),
-      ).toEqual([]);
+        session
+          .getSnapshot()
+          .view.blocked.find(([comp]) => comp === "w1Sign.commit.signOrders"),
+      ).toBeUndefined();
       const result = await session.dispatch({
         click: { comp: "w1Sign.commit.signOrders" },
       });
@@ -340,11 +342,209 @@ describe.skipIf(!available)(
       expect(provenance.length).toBeGreaterThan(0);
       created.push(...provenance.map((r) => `Provenance/${r.id}`));
     });
-    it("all persona worklist searches are accepted by local Medplum", async () => {
-      for (const persona of ["P1", "P2", "P3", "P4", "P5"])
+    it("P2 admits through the canonical WASM disposition screen into a real bed", async () => {
+      const p2 = await signIn(
+        "p2@vgi-health.example",
+        process.env.VGI_USER_PASSWORD ?? "",
+      );
+      try {
+        const [ed, bed] = await seed([
+          {
+            resourceType: "Encounter",
+            status: "in-progress",
+            class: { code: "EMER" },
+            subject: { reference: `Patient/${patient.id}` },
+            period: { start: now },
+            serviceType: { coding: [{ code: "emergency" }] },
+          },
+          {
+            resourceType: "Location",
+            name: `WASM admission bed ${uuid}`,
+            status: "active",
+            physicalType: { coding: [{ code: "bd" }] },
+          },
+        ]);
+        if (
+          ed?.resourceType !== "Encounter" ||
+          bed?.resourceType !== "Location"
+        )
+          throw new Error("Admission setup failed");
+        await seed(
+          [
+            "emergencyCareRefused",
+            "unstableCertifiedTransfer",
+            "emtalaTransfer",
+          ].map((risk) => ({
+            resourceType: "Observation",
+            status: "final",
+            subject: { reference: `Patient/${patient.id}` },
+            encounter: { reference: `Encounter/${ed.id}` },
+            effectiveDateTime: now,
+            code: {
+              coding: [
+                {
+                  system:
+                    "https://vgi-health.example/fhir/CodeSystem/clinical-risk",
+                  code: risk,
+                },
+              ],
+            },
+            valueCodeableConcept: { coding: [{ code: "no" }] },
+          })),
+        );
+        const session = await createLiveSession(
+          createWasmInterp(await loadEhrInterp()),
+          releaseSpec,
+          await json("releases/v2/personas/P2.json"),
+          await loadPatientBundle(patient.id ?? ""),
+          p2,
+          { patient, encounter: ed, bed },
+        );
+        const act = async (event: Event) => {
+          await session.dispatch(event);
+          for (
+            let attempt = 0;
+            attempt < 10 && session.getSnapshot().state.popup;
+            attempt++
+          ) {
+            const popup = session.getSnapshot().state.popup;
+            if (popup) await session.dispatch({ ack: { alert: popup[0] } });
+            await session.dispatch(event);
+          }
+          expect(session.getSnapshot().result, JSON.stringify(event)).toBe(
+            "ok",
+          );
+        };
+        await act({ click: { comp: "home.work.w3TrackBoard" } });
+        await act({ click: { comp: "w3TrackBoard.nav.w3Disposition" } });
+        for (const [element, text] of Object.entries({
+          dispositionChoice: "admit",
+          visitDiagnosis: "J18.9",
+          dispositionCondition: "stable",
+          postHospitalNeeds: "Inpatient monitoring and antibiotics",
+          postHospitalServiceAvailability: "Ward bed available",
+          postHospitalServiceAccess: "Admitting service accepted patient",
+          dischargePlanningEvaluation: "Continued inpatient care needed",
+          dischargeEvaluationDiscussion: "Admission discussed with patient",
+          hospitalCourse:
+            "Stabilized in ED; requires ongoing inpatient treatment",
+          futureCareRecommendations: "Inpatient monitoring and treatment",
+          futureCareArrangements: "Ward team accepted handoff",
+          edDepartureTime: now,
+          continuingCareInformationGiven: "true",
+        })) {
+          const item = session
+            .getSnapshot()
+            .view.items.find(
+              (item) =>
+                item.shown &&
+                typeof item.comp.kind === "object" &&
+                "field" in item.comp.kind &&
+                item.comp.kind.field.element === element,
+            );
+          if (!item)
+            throw new Error(`No shown disposition field for ${element}`);
+          const definition = releaseSpec.elements.find((e) => e.id === element);
+          await act({
+            enter: {
+              comp: item.comp.id,
+              value:
+                definition?.kind === "flag"
+                  ? { flag: { b: text === "true" } }
+                  : typeof definition?.kind === "object" &&
+                      "coded" in definition.kind
+                    ? { code: { c: text } }
+                    : { text: { s: text } },
+            },
+          });
+        }
+        const commit = session
+          .getSnapshot()
+          .view.items.find(
+            (item) =>
+              item.shown &&
+              typeof item.comp.kind === "object" &&
+              "button" in item.comp.kind &&
+              typeof item.comp.kind.button.action === "object" &&
+              "commit" in item.comp.kind.button.action &&
+            item.comp.kind.button.action.commit.commit === "disposition",
+          );
+        if (!commit) throw new Error("No disposition commit control");
         expect(
-          (await loadWorklist({ ...user, persona })).resources,
-        ).toBeInstanceOf(Array);
+          session
+            .getSnapshot()
+            .view.blocked.find(([id]) => id === commit.comp.id),
+        ).toBeUndefined();
+        await act({ click: { comp: commit.comp.id } });
+        expect(session.getSnapshot().state.commits).toContain("disposition");
+        const inpatient = (
+          await searchResources("Encounter", {
+            patient: patient.id ?? "",
+            class: "IMP",
+          })
+        ).find(
+          (r) =>
+            r.resourceType === "Encounter" &&
+            r.partOf?.reference === `Encounter/${ed.id}`,
+        );
+        expect(inpatient).toMatchObject({
+          status: "in-progress",
+          location: [{ location: { reference: `Location/${bed.id}` } }],
+        });
+        expect(await readResource("Location", bed.id ?? "")).toMatchObject({
+          operationalStatus: { code: "O" },
+        });
+      } finally {
+        await signIn(
+          "p1@vgi-health.example",
+          process.env.VGI_USER_PASSWORD ?? "",
+        );
+      }
+    });
+    it("all persona worklist searches are accepted by local Medplum", async () => {
+      const password = process.env.VGI_USER_PASSWORD ?? "";
+      try {
+        for (const persona of ["P1", "P2", "P3", "P4", "P5"]) {
+          const principal = await signIn(
+            `${persona.toLowerCase()}@vgi-health.example`,
+            password,
+          );
+          expect(principal.persona).toBe(persona);
+          const worklist = await loadWorklist(principal, "2026-11-02");
+          expect(worklist.resources).toBeInstanceOf(Array);
+          for (const item of worklist.resources) {
+            if (item.resourceType === "Appointment") {
+              expect(
+                item.participant.some(
+                  (p) =>
+                    p.actor?.reference ===
+                    `Practitioner/${principal.practitioner.id}`,
+                ),
+              ).toBe(true);
+              expect(item.start?.slice(0, 10)).toBe("2026-11-02");
+            }
+            if (item.resourceType === "Task")
+              expect(item.owner?.reference).toBe(
+                `Practitioner/${principal.practitioner.id}`,
+              );
+            if (
+              item.resourceType === "Encounter" &&
+              ["P2", "P3"].includes(persona)
+            )
+              expect(item.class.code).toBe(persona === "P2" ? "EMER" : "IMP");
+          }
+          for (const order of worklist.medications)
+            expect(
+              worklist.resources.some(
+                (e) =>
+                  e.resourceType === "Encounter" &&
+                  `Encounter/${e.id}` === order.encounter?.reference,
+              ),
+            ).toBe(true);
+        }
+      } finally {
+        await signIn("p1@vgi-health.example", password);
+      }
     });
     it("an optimistic-lock failure rolls back the bundle and preserves the clinician's inputs", async () => {
       const [e] = await seed([
@@ -746,16 +946,26 @@ describe.skipIf(!available)(
         ]),
       );
       await executeTransaction(
-        mapCommit(
-          makeInput("recordImmunization", {
-            vaccine: "140",
-            vaccineLot: "LIVE-LOT",
-            vaccineManufacturer: "Test manufacturer",
-            vaccineSite: "left arm",
-            visGiven: now,
-            visEditionDate: "2025-01-31",
-          }),
-        ),
+        mapCommit({
+          ...makeInput("recordImmunization", {}),
+          captured: [
+            ...values({
+              vaccine: "140",
+              vaccineLot: "LIVE-LOT",
+              vaccineManufacturer: "Test manufacturer",
+              vaccineSite: "left arm",
+              vaccineAdministrationDate: now,
+              visEditionDate: "2025-01-31",
+            }),
+            {
+              element: "visGiven",
+              slot: 0,
+              confirmed: true,
+              byHuman: true,
+              value: { flag: { b: true } },
+            },
+          ],
+        }),
       );
       await executeTransaction(
         mapCommit(

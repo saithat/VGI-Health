@@ -80,6 +80,7 @@ interface Selection {
   tasks: Task[];
   medications: MedicationRequest[];
   beds: Location[];
+  workItem?: Resource;
 }
 
 function Login({ onLogin }: { onLogin: (user: LiveUser) => void }) {
@@ -296,10 +297,27 @@ function SelectEncounter({
     ["in-progress", "arrived", "triaged"].includes(e.status),
   );
   const [encounterId, setEncounter] = useState(
-    active?.id ?? encounters[0]?.id ?? "",
+    (selection.workItem?.resourceType === "Encounter"
+      ? selection.workItem.id
+      : selection.workItem?.resourceType === "Task"
+        ? selection.workItem.encounter?.reference?.replace(/^Encounter\//, "")
+        : selection.workItem?.resourceType === "MedicationRequest"
+          ? selection.workItem.encounter?.reference?.replace(/^Encounter\//, "")
+          : undefined) ??
+      active?.id ??
+      encounters[0]?.id ??
+      "",
   );
-  const [taskId, setTask] = useState("");
-  const [medicationId, setMedication] = useState("");
+  const [taskId, setTask] = useState(
+    selection.workItem?.resourceType === "Task"
+      ? (selection.workItem.id ?? "")
+      : "",
+  );
+  const [medicationId, setMedication] = useState(
+    selection.workItem?.resourceType === "MedicationRequest"
+      ? (selection.workItem.id ?? "")
+      : "",
+  );
   const [bedId, setBed] = useState("");
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState("");
@@ -484,7 +502,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
       active = false;
     };
   }, [user, revision, workDate]);
-  async function select(patientId: string) {
+  async function select(patientId: string, workItem?: Resource) {
     setPending(true);
     setError("");
     try {
@@ -518,6 +536,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
       setSelection({
         bundle,
         patient,
+        ...(workItem ? { workItem } : {}),
         beds: [
           ...beds,
           ...locations.filter((l) => !beds.some((b) => b.id === l.id)),
@@ -621,6 +640,29 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
                 const encounter =
                   r.resourceType === "Encounter" ? r : undefined;
                 const location = encounter?.location?.[0]?.location;
+                const scheduled =
+                  r.resourceType === "Appointment"
+                    ? r.start
+                    : r.resourceType === "ServiceRequest"
+                      ? (r.occurrenceDateTime ?? r.occurrencePeriod?.start)
+                      : r.resourceType === "Procedure"
+                        ? (r.performedDateTime ??
+                          r.performedPeriod?.start ??
+                          worklist.resources.flatMap((order) =>
+                            order.resourceType === "ServiceRequest" &&
+                            r.basedOn?.some(
+                              (ref) =>
+                                ref.reference === `ServiceRequest/${order.id}`,
+                            )
+                              ? [
+                                  order.occurrenceDateTime ??
+                                    order.occurrencePeriod?.start,
+                                ]
+                              : [],
+                          )[0])
+                        : r.resourceType === "Task"
+                          ? r.authoredOn
+                          : undefined;
                 const elapsed = encounter?.period?.start
                   ? Math.max(
                       0,
@@ -659,11 +701,10 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
                         ""}
                     </td>
                     <td>
-                      {r.resourceType === "Appointment"
-                        ? r.start?.slice(11, 16)
-                        : elapsed !== undefined
-                          ? `${elapsed} min`
-                          : ""}{" "}
+                      {elapsed !== undefined
+                        ? `${elapsed} min`
+                        : (scheduled?.replace("T", " ").slice(0, 16) ??
+                          "")}{" "}
                       ·{" "}
                       {"status" in r && typeof r.status === "string"
                         ? r.status
@@ -677,7 +718,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
                         }
                         onClick={() => {
                           if (ref?.reference)
-                            void select(ref.reference.slice(8));
+                            void select(ref.reference.slice(8), r);
                         }}
                       >
                         Open patient
@@ -728,7 +769,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
                     disabled={pending}
                     onClick={() => {
                       if (m.subject.reference?.startsWith("Patient/"))
-                        void select(m.subject.reference.slice(8));
+                        void select(m.subject.reference.slice(8), m);
                     }}
                   >
                     Open MAR patient
@@ -776,7 +817,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
       </ul>
       {selection && (
         <SelectEncounter
-          key={`${selection.patient.id}/${selection.encounters.length}`}
+          key={`${selection.patient.id}/${selection.encounters.length}/${selection.workItem?.id ?? ""}`}
           selection={selection}
           user={user}
           pending={pending}

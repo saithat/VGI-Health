@@ -168,7 +168,12 @@ describe("pure Lean commit → FHIR transaction", () => {
     const result = resources({
       commitId: "disposition",
       captured: [captured("dispositionChoice", "admit")],
-      bed: { resourceType: "Location", id: "bed", name: "Bed 1" },
+      bed: {
+        resourceType: "Location",
+        id: "bed",
+        name: "Bed 1",
+        physicalType: { coding: [{ code: "bd" }] },
+      },
     });
     expect(result[0]).toMatchObject({
       resourceType: "Encounter",
@@ -182,6 +187,13 @@ describe("pure Lean commit → FHIR transaction", () => {
         captured: [captured("dispositionChoice", "admit")],
       }),
     ).toThrow("bed");
+    expect(() =>
+      resources({
+        commitId: "disposition",
+        captured: [captured("dispositionChoice", "admit")],
+        bed: { resourceType: "Location", id: "clinic", name: "Clinic" },
+      }),
+    ).toThrow("bed Location");
   });
   it("records completed or not-done MAR administration with a distinct second performer", () => {
     const medication = {
@@ -231,6 +243,19 @@ describe("pure Lean commit → FHIR transaction", () => {
         captured: [captured("adminStatus", "held")],
       }),
     ).toThrow("reason");
+    expect(() =>
+      resources({
+        commitId: "administerMed",
+        medication: {
+          ...medication,
+          encounter: { reference: "Encounter/another" },
+        },
+        captured: [
+          captured("adminStatus", "given"),
+          captured("administeredDose", "5 units"),
+        ],
+      }),
+    ).toThrow("different encounter");
   });
   it("records CVX vaccine, lot, manufacturer, site, performer and VIS dates", () => {
     const result = resources({
@@ -331,7 +356,7 @@ describe("pure Lean commit → FHIR transaction", () => {
       resources({
         commitId: "signOpNote",
         captured: [
-          captured("opProcedure", "Appendectomy"),
+          captured("opProcedure", "44970"),
           captured("opFindings", "Inflamed appendix"),
         ],
       }).map((r) => r.resourceType),

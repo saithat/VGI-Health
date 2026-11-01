@@ -7,6 +7,7 @@ function component(page: Page, id: string) {
   return page.locator(`[data-comp-id="${id}"][data-event]`);
 }
 async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
+  test.setTimeout(120000);
   await page.goto(
     `/ehr?${new URLSearchParams({ mode: "replay", release: "v1", program, persona: "P1", patient: adult })}`,
   );
@@ -15,8 +16,12 @@ async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   for (const screen of ["w1Rooming", "w1MedRec", "w1Hpi", "w1Exam"])
     await component(page, `${screen}.next`).click();
   await component(page, "w1Orders.prefLisinopril").click();
-  while (await page.locator('[data-event="confirm"]').count())
-    await page.locator('[data-event="confirm"]').first().click();
+  const confirms = page.locator(
+    '[data-comp-id^="w1Orders."][data-event="confirm"]',
+  );
+  for (let attempt = 0; attempt < 20 && (await confirms.count()); attempt++)
+    await confirms.first().click();
+  await expect(confirms).toHaveCount(0);
   await component(page, "w1Orders.indication").fill("Hypertension");
   await component(page, "w1Orders.pharmacy").fill("Community pharmacy");
   await component(page, "w1Orders.substitution").fill("true");

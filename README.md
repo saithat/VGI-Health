@@ -136,14 +136,16 @@ pnpm --filter app test:replay
 `test:live` skips only when Medplum's health endpoint is down; missing credentials
 or failed assertions on a running backend fail. It creates isolated synthetic
 patients and removes its resources afterwards. P1 traverses real WASM for a full
-W1 visit and verifies links by querying Medplum. Additional tests validate actual
-P2/P3/P5 transactions, results/messages, refills, immunization, operative notes,
-consents and atomic rollback/input retention. The additional workflows' full WASM
-click paths still need integration coverage. Browser checks cover real persona
+W1 visit and verifies links by querying Medplum. P2 also traverses the real WASM
+disposition screen to admit into a versioned bed Location. Additional tests validate
+P3/P5 transactions, results/messages, refills, immunization, operative notes,
+consents and atomic rollback/input retention. P3/P4/P5 and the in-basket workflows'
+full WASM click paths still need integration coverage. Browser checks cover real persona
 login, restoration, search and chart opening on desktop and narrow screens.
 
 CPT: only a small set of code identifiers and our own short labels ships in the
-mapper; no full CPT catalog or AMA descriptors are included. CPT is an AMA
+mapper (six clinic levels plus the three seeded surgical procedures); no full CPT
+catalog or AMA descriptors are included. CPT is an AMA
 trademark. Review [AMA licensing requirements](https://www.ama-assn.org/practice-management/cpt/cpt-licensing-faqs)
 before distributing CPT content or using this in production.
 

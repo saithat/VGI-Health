@@ -59,7 +59,9 @@ skipping only when the server is down. P1 runs a full visit through real WASM,
 then queries the stored note, vitals, diagnoses, prescription/refills and CPT
 links. Other tests cover admission/bed occupancy, administration, discharge,
 results/messages, refills, immunization, op notes, consents and atomic rollback.
-Only P1 and rollback currently have full WASM click-path coverage.
+P1, P2 admission, and rollback have full WASM click-path coverage. Worklist tests
+authenticate as each real persona and check appointment ownership/date, Task
+ownership, ED/ward classes, and MAR encounter links.
 
 `pnpm --filter app test:replay` runs fixture browser episodes with external
 network requests denied. Historical fixtures without structured phase/evidence

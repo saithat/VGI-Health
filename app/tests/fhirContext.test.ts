@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Bundle } from "@medplum/fhirtypes";
+import type { Bundle, BundleEntry } from "@medplum/fhirtypes";
 import { fhirDisplayContext, reviewSources } from "../src/data/fhirContext";
 
 const bundle: Bundle = {
@@ -65,27 +65,26 @@ describe("version-bound FHIR display context", () => {
       encounter: string,
       date: string,
       code: string,
-    ) =>
-      ({
-        resource: {
-          resourceType: "Observation",
-          id,
-          status: "final",
-          meta: { versionId: id },
-          encounter: { reference: `Encounter/${encounter}` },
-          effectiveDateTime: date,
-          code: {
-            coding: [
-              {
-                system:
-                  "https://vgi-health.example/fhir/CodeSystem/clinical-risk",
-                code: "section741IncreasedOverdoseRisk",
-              },
-            ],
-          },
-          valueCodeableConcept: { coding: [{ code }] },
+    ): BundleEntry => ({
+      resource: {
+        resourceType: "Observation",
+        id,
+        status: "final",
+        meta: { versionId: id },
+        encounter: { reference: `Encounter/${encounter}` },
+        effectiveDateTime: date,
+        code: {
+          coding: [
+            {
+              system:
+                "https://vgi-health.example/fhir/CodeSystem/clinical-risk",
+              code: "section741IncreasedOverdoseRisk",
+            },
+          ],
         },
-      }) as const;
+        valueCodeableConcept: { coding: [{ code }] },
+      },
+    });
     const chart: Bundle = {
       ...bundle,
       entry: [

@@ -38,6 +38,9 @@ export const cptLabels: Readonly<Record<string, string>> = {
   "99203": "New office visit",
   "99204": "New office visit, higher complexity",
   "99205": "New office visit, extended complexity",
+  "44970": "Laparoscopic appendix removal",
+  "47562": "Laparoscopic gallbladder removal",
+  "49650": "Laparoscopic groin hernia repair",
 };
 
 // Explicit storage paths supported by this mapper; fail on spec drift.
@@ -615,7 +618,11 @@ export function mapCommit(input: CommitInput): Bundle {
     case "diagnoses":
       diagnosis("visitDiagnosis");
       break;
-    case "signOpNote":
+    case "signOpNote": {
+      const procedureCode = required(text("opProcedure"), "procedure");
+      const procedureLabel = cptLabels[procedureCode];
+      if (!procedureLabel)
+        throw new Error(`CPT ${procedureCode} is not in the shipped code set`);
       note(
         "11504-8",
         "Operative note",
@@ -627,7 +634,16 @@ export function mapCommit(input: CommitInput): Bundle {
         status: "completed",
         subject,
         encounter: context,
-        code: cc(required(text("opProcedure"), "procedure"), systems.cpt),
+        code: {
+          coding: [
+            {
+              system: systems.cpt,
+              code: procedureCode,
+              display: procedureLabel,
+            },
+          ],
+          text: procedureLabel,
+        },
         performedDateTime: now,
         performer: [{ actor }],
         reasonCode: [cc(text("opPreopDiagnosis"), systems.icd10)],
@@ -637,6 +653,7 @@ export function mapCommit(input: CommitInput): Bundle {
           .map((c) => ({ text: `${c.element}: ${valueText(c.value)}` })),
       });
       break;
+    }
     case "recordAdmission":
     case "disposition": {
       const choice =
@@ -646,8 +663,10 @@ export function mapCommit(input: CommitInput): Bundle {
       if (choice === "admit") {
         if (!input.bed?.id)
           throw new Error("Select an available bed Location before admission");
-        if (input.bed.operationalStatus?.code === "O")
-          throw new Error("Admission bed is occupied");
+        if (["O", "H", "C"].includes(input.bed.operationalStatus?.code ?? ""))
+          throw new Error("Admission bed is unavailable");
+        if (!input.bed.physicalType?.coding?.some((c) => c.code === "bd"))
+          throw new Error("Admission requires a bed Location");
         const admission: Encounter = {
           resourceType: "Encounter",
           status: "in-progress",
@@ -722,7 +741,7 @@ export function mapCommit(input: CommitInput): Bundle {
         };
         encounterChanged = true;
         medicationOrders(true);
-      } else {
+      } else if (choice === "consult") {
         add({
           resourceType: "ServiceRequest",
           status: "active",
@@ -734,7 +753,7 @@ export function mapCommit(input: CommitInput): Bundle {
           authoredOn: now,
           performerType: cc(text("admitService")),
         });
-      }
+      } else throw new Error(`Unsupported disposition: ${choice}`);
       break;
     }
     case "discharge":
@@ -785,6 +804,11 @@ export function mapCommit(input: CommitInput): Bundle {
       const order = input.medication;
       if (!order?.id || order.subject.reference !== subject.reference)
         throw new Error("Select the medication order for this patient");
+      if (
+        order.encounter?.reference &&
+        order.encounter.reference !== context.reference
+      )
+        throw new Error("Medication order belongs to a different encounter");
       const status = required(text("adminStatus"), "administration status");
       const completed = ["given", "completed"].includes(status);
       if (!completed && !["held", "refused", "not-done"].includes(status))
@@ -903,6 +927,11 @@ export function mapCommit(input: CommitInput): Bundle {
       serviceOrders();
       break;
     case "approveRefill": {
+      if (["deny", "denied"].includes(text("refillDecision"))) {
+        finishTask();
+        message();
+        break;
+      }
       const original = input.renewal;
       if (!original?.id || original.subject.reference !== subject.reference)
         throw new Error("Select the original prescription for this patient");

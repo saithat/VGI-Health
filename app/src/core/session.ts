@@ -26,14 +26,16 @@ export function createSession(
     JSON.stringify(user),
   ] as const;
   let stateJson = interp.init(...args);
-  function readSnapshot(result: StepOutput["result"] | null = null) {
-    const snapshotArgs = args;
-    const snapshotState = stateJson;
-    const state: State = JSON.parse(stateJson);
+  function readSnapshot(
+    result: StepOutput["result"] | null = null,
+    snapshotArgs = args,
+    snapshotState = stateJson,
+  ) {
+    const state: State = JSON.parse(snapshotState);
     let page: Html | undefined;
     let view: ScreenView | undefined;
     const ui: UiScreen | undefined = interp.renderUi
-      ? JSON.parse(interp.renderUi(...args, stateJson))
+      ? JSON.parse(interp.renderUi(...snapshotArgs, snapshotState))
       : undefined;
     // The semantic painter uses `ui`. Generate legacy HTML and the inspector's
     // detailed view only when a consumer asks for them. Capture this snapshot's
@@ -60,10 +62,15 @@ export function createSession(
     return JSON.parse(interp.step(...args, stateJson, JSON.stringify(event)));
   }
   function accept(response: StepOutput, facts?: unknown) {
-    if (facts !== undefined)
-      args = [args[0], args[1], JSON.stringify(facts), args[3]];
-    stateJson = JSON.stringify(response.state);
-    snapshot = readSnapshot(response.result);
+    const nextArgs =
+      facts === undefined
+        ? args
+        : ([args[0], args[1], JSON.stringify(facts), args[3]] as const);
+    const nextState = JSON.stringify(response.state);
+    const nextSnapshot = readSnapshot(response.result, nextArgs, nextState);
+    args = nextArgs;
+    stateJson = nextState;
+    snapshot = nextSnapshot;
     listeners.forEach((listener) => listener());
   }
   return {

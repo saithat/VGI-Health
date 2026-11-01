@@ -1299,3 +1299,48 @@ screenshots are not permission to insert permissive fixture evidence into the ap
 PNGs. The eight feature replay manifests have an additional installed-WASM runner
 at `Canonical/replay_features_wasm.mjs`; passing it is runtime behavior evidence,
 not an up-to-date WASM source manifest or deployment certificate.
+
+## Live integration continuation after restart (lane/app, 2026-10-31)
+
+The saved WIP was reviewed and merged with main. P1's complete W1 and P2's
+admission now traverse the canonical v2 program in the real WASM interpreter and
+persist/query actual Medplum transactions. All persona worklist searches use real
+persona logins. Seeded world day 1 is 2026-11-02; the home date selector exposes it
+without changing the clinical clock. The OR list displays the ServiceRequest's
+saved schedule, including date-only bookings. Work item selection carries its
+Task, Encounter or MAR order into chart context.
+
+The trusted transaction adapter now handles the spec's boolean `visGiven` as a
+recorded date-precision attestation, rather than the invalid FHIR dateTime
+"true". **Content request:** add an explicit VIS presentation date/time field if
+an exact historical delivery time is needed; a checkbox alone cannot supply one.
+Explicit `vaccineAdministrationDate` remains the vaccine occurrence date. Risk
+Observations are restricted to the selected encounter, newest per risk. A prior
+encounter's negative risk is never substituted for missing current evidence.
+CPT storage is limited to the six clinic levels plus 44970, 47562 and 49650, using
+project-authored short labels and the license note in README.
+
+**Remaining core/content integration requests (no guard is bypassed):**
+
+- Export the selected-encounter and workflow-phase contracts described above;
+  the current adapter still supplies caller context outside `FactsContext`.
+- Provide the prospective-commit event-evidence contract for MAR, immunization,
+  and operative-note temporal obligations. Saved scheduled times and human-entered
+  actual times need an explicit, owner-reviewed route to `eventEvidence`; the
+  adapter must not manufacture a completed administration merely to enable its
+  own commit. The transaction mappings validate on Medplum, but those full WASM
+  paths are not yet certified by the live integration suite.
+- Export receipt source selectors and complete bindings for the other structured
+  payloads. Unsupported review sources and regulatory commit mappings fail with
+  retained inputs. Transfers/observation dispositions also fail explicitly until
+  their persistence contracts exist; they are never recorded as consultations.
+- Preserve the rooming-save and dedicated discharge-prescription requests above.
+  The tested P1 path signs the note (and vitals) before signing its prescription.
+  The discharge mapper writes only explicitly composed medication lines.
+
+Performance evidence for render ownership: on the merged canonical Orders tree,
+unused legacy HTML rendering took about 2.5 seconds per event, and semantic
+rendering about 1.4 seconds in a Node WASM measurement. The app now computes
+legacy HTML and the inspection view lazily, with immutable snapshot inputs.
+Please continue profiling semantic rendering/structured-payload checks in Lean;
+UI logic remains there. No files under lean/ were edited for these changes.
