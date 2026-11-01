@@ -31,3 +31,8 @@ name = "EhrHeavy"
 [[lean_exe]]
 name = "profile-goals"
 root = "Ehr.Tools.ProfileGoals"
+
+# Reviewer audit only; deliberately absent from defaultTargets.
+[[lean_lib]]
+name = "VerificationAudit"
+roots = ["Audit.SpecSurface"]
