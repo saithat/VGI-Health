@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "44427573d4a6d94b8c57518d7c5e6e562ffb5c05",
+  "sourceRevisionAtValidation": "6da7318096c7298be548cc018ca221fab051c9c6",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "bfc6ac982ad4f421a6ca4f19a02e5699c20696989c355c3185d036b54ba54a47",
-  "nativeBinarySha256": "1a892ecdd6c980dc510a829752e0fb48dff1a626c53d8a346ff9e142872fdcde",
+  "leanSourceHash": "a9e7c8edc6aada39984e3b8033f3480b5b5fe582489c528da50d4d197ea48f47",
+  "nativeBinarySha256": "a9a7fc4adedce61f3ba4a36f979a58181215c68bcbc0ab84c10bfe91c759a81d",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "028b893550b84b8b2b79c04bbbdc7481cb59d6395d32b5eaf94e2edefa982445"
+    "reportSha256": "45aa43fc0d6d3b087556685eff20e8cdfff0c5beae19b01f7e907d6f20ade418"
   },
   "world2": {
     "world": "runs/world/2",
@@ -497,14 +497,17 @@
     "beforeScreens": 29,
     "signatureViews": 2,
     "fidelity": {
-      "passed": 79,
+      "passed": 83,
       "intentionalViewportSkips": 3
     },
     "diagnosisPickerViews": 2,
     "scrolledContextViews": 3,
     "postReviewViews": 5,
     "receiptDetailCaptures": 6,
-    "totalCaptures": 77
+    "totalCaptures": 83,
+    "documentationViews": 2,
+    "documentationDetailCaptures": 2,
+    "beforeDocumentationViews": 2
   },
   "archived": {
     "run": "run1-P3",
@@ -521,7 +524,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 238,
+    "appTests": 240,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -531,12 +534,12 @@
   "structuredPresentations": {
     "upstream": "da01a57",
     "nativeWasmFixtures": 16,
-    "renderTheoremsCompared": 56,
-    "frozenStatementSha256": "093dc289e11b847f5f80a9c71478bc6a7cdefc09161d8799c2f6298f95557b28",
+    "renderTheoremsCompared": 58,
+    "frozenStatementSha256": "20cf8b226f2dc759b9c2a5c8505e14498d1352bf7432444a69cb3259fee7c9ab",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 154,
+    "originalHeadersUnchanged": 157,
     "mainIntegration": "062a4ef",
-    "headerScope": "Render modules and the existing PatchWitness module, compared with d79f3de."
+    "headerScope": "Render modules and PatchWitness, compared with 11251ba."
   },
   "ambulatoryMetadata": {
     "nativeWasmScreens": 34,
@@ -596,5 +599,14 @@
   "displayPreservation": {
     "noRouteOrDoseUnitInferredFromProductName": true,
     "verbatimNoteBodies": true
+  },
+  "visitDocumentation": {
+    "actualHumanEntries": 9,
+    "nativeWasmReviewScreens": 2,
+    "pendingConfirmationProbes": 2,
+    "oldEmptyReviewReproduced": true,
+    "exactTextAndAllCapturedSlotsPreservedByTheorem": true,
+    "readOnlyKeyboardScrollableRegion": true,
+    "noSignatureOrAuthorInferred": true
   }
 }

@@ -76,11 +76,20 @@ for (const persona of ["P1", "P4"]) {
         if (scrollable) {
           await page.keyboard.press("End");
           await expect
-            .poll(() => document.evaluate((element) => element.scrollTop))
-            .toBeGreaterThan(0);
+            .poll(() =>
+              document.evaluate((element) =>
+                Math.abs(
+                  element.scrollHeight -
+                    element.clientHeight -
+                    element.scrollTop,
+                ),
+              ),
+            )
+            .toBeLessThanOrEqual(1);
           await document.evaluate((element) => {
             element.scrollTop = 0;
           });
+          await expect(document).toHaveJSProperty("scrollTop", 0);
         }
         await page.screenshot({
           path: join(
