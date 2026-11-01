@@ -785,3 +785,10 @@ from being represented faithfully without inventing interpreter semantics:
 No Lean source has been edited by the app lane. The offline fidelity command
 checks the supplied semantic content exactly and does not claim D1–D6 proof or
 clinical correctness of the source fixtures.
+## Render → app: catalog test count after main integration
+
+After merging `cd60f62`, app build and lint pass, but `pnpm --filter app test`
+has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
+`programs/bad/` now contains 24. Please update that source test to the current
+24-seed catalog (or derive the reviewed catalog expectation). Render did not
+edit app-owned tests or reduce catalog scope. The other 89 app tests pass.
