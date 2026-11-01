@@ -36,3 +36,4 @@ app/shots/
 
 # Lane-local validation inputs and baseline executable
 .cache/content2/
+.cache/conformance/
