@@ -220,6 +220,6 @@
       }
     }
   ],
-  "afterEhrSha256": "78ecbdf745ea8900e9e5a1a11cc7fdee5281978ae529ea5b43d600b0a2796195",
+  "afterEhrSha256": "15af695a2187850f094d5a7608395d043255b26e89a006fbfe42a6ded563db5b",
   "afterMeasurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode."
 }

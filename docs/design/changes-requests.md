@@ -1,3 +1,7 @@
+## Acute MAR SIG and PRN projection (2026-11-01)
+
+The acute MAR supplies full dosage directions as Instructions and preserves a coded PRN indication. Both valid FHIR asNeeded choices classify the modeled dosage instruction; only exact patient/encounter/order-linked administrations populate PRN history. The painter accepts Instructions and PRN indication as additive left-hand MAR metadata keys, preserving legacy Frequency support. Neither key is a time column or administration-detail record. No spec, clinical rule or original theorem statement changes.
+
 ## Acute nursing draft and navigation review (2026-11-01)
 
 Integrated main `062a4ef` display polish. W4’s fixed normal assessment and “Stable overnight” macros now insert explicit unconfirmed outlines; their public IDs remain stable. Generic layout wrappers keep each supplied field/confirmation pair together without adding a control, and preserve focus after editing. Measured banner height reserves space for retained navigator links. The decorative navigator footer was removed after a screenshot exposed overlap; deep-scroll tests check actual link hit targets. Imaging findings now retain component values and absent reasons. All specs, clinical rules and existing theorem statements are unchanged. The current acute verification receipt records complete green gates and isolated API-input hashes.

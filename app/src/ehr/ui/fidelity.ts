@@ -188,6 +188,8 @@ export function expectedNodeAria(
                   "Dose",
                   "Route",
                   "Frequency",
+                  "Instructions",
+                  "PRN indication",
                   "Order status",
                 ].includes(key) && value.split(" · ").length > 3,
             ),

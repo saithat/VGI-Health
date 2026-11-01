@@ -39,7 +39,8 @@ const order = (id, encounter, medication, rxnorm, dose, unit, route, instruction
   encounter: ref('Encounter', encounter), authoredOn: '2026-11-01T16:30:00-08:00',
   medicationCodeableConcept: cc(rxnorm, medication, 'http://www.nlm.nih.gov/research/umls/rxnorm'),
   requester: ref('Practitioner', 'review-attending', 'Morgan Patel, MD'),
-  dosageInstruction: [{ text: instruction, asNeededBoolean: prn, route: cc(route, route),
+  dosageInstruction: [{ text: instruction,
+    ...(typeof prn === 'boolean' ? { asNeededBoolean: prn } : { asNeededCodeableConcept: prn }), route: cc(route, route),
     timing: { event: events }, doseAndRate: [{ doseQuantity: { value: dose, unit: unit === '[iU]' ? 'units' : unit, system: 'http://unitsofmeasure.org', code: unit } }] }],
 });
 const encounter = (id, encClass, location, reason, start) => stamped({
@@ -77,7 +78,7 @@ const rn = [encounter(rnId, 'IMP', '5 West · 512 A', 'Pneumonia; receiving anti
   order('acute-rn-insulin', rnId, 'insulin lispro', '86009', 4, '[iU]', 'SC', '4 units subcutaneously before meals', ['2026-11-02T08:00:00-08:00', '2026-11-02T12:00:00-08:00', '2026-11-02T17:00:00-08:00']),
   order('acute-rn-enoxaparin', rnId, 'enoxaparin', '67108', 40, 'mg', 'SC', '40 mg subcutaneously daily', ['2026-11-02T09:00:00-08:00']),
   order('acute-rn-ceftriaxone', rnId, 'ceftriaxone', '2193', 1000, 'mg', 'IV', '1 g IV daily', ['2026-11-02T09:00:00-08:00']),
-  order('acute-rn-prn', rnId, 'acetaminophen', '161', 650, 'mg', 'PO', '650 mg by mouth every 6 hours as needed for pain', [], true),
+  order('acute-rn-prn', rnId, 'acetaminophen', '161', 650, 'mg', 'PO', '650 mg by mouth every 6 hours as needed for pain', [], cc('pain', 'Pain')),
   stamped({ resourceType: 'MedicationAdministration', id: 'acute-rn-previous-insulin', status: 'completed', subject: patientRef,
     context: ref('Encounter', rnId), request: ref('MedicationRequest', 'acute-rn-insulin'),
     medicationCodeableConcept: cc('86009', 'insulin lispro'), effectiveDateTime: '2026-11-01T17:08:00-08:00',

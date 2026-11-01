@@ -7,6 +7,8 @@ const detailKeys = new Set([
   "Dose",
   "Route",
   "Frequency",
+  "Instructions",
+  "PRN indication",
   "Category",
   "Order status",
 ]);

@@ -1558,6 +1558,16 @@ def acuteMarAxis (cells : List (String × String)) : List String :=
         day ++ " " ++ (if lo + n < 10 then "0" else "") ++ toString (lo + n) ++ ":00" ++ zone
   (hours ++ labels.filter (fun label => !timed.contains label)).eraseDups.mergeSort (· ≤ ·)
 
+/-- FHIR permits either a Boolean or a coded PRN condition. A supplied Boolean
+keeps its explicit meaning when a malformed source contains both choices. -/
+def acutePrnInstruction (instruction : Json) : Bool :=
+  match field instruction "asNeededBoolean" with
+  | .bool value => value
+  | .null => match field instruction "asNeededCodeableConcept" with
+    | .obj _ => true
+    | _ => false
+  | _ => false
+
 /-- The selected day's MAR uses hourly columns with exact times inside cells.
 Unmatched actual records stay separate when their context explicitly identifies
 the selected encounter. No same-drug matching or frequency expansion occurs. -/
@@ -1578,8 +1588,11 @@ def acuteMarRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (
       let dose := field (first instruction "doseAndRate") "doseQuantity"
       let cells := acuteMarCells ctx sources order
       [("Medication", medName order), ("Dose", qtyText dose ++ " " ++ qtyUnitText dose),
-       ("Route", ccText (field instruction "route")), ("Frequency", sigText order),
-       ("Category", if field instruction "asNeededBoolean" == .bool true then "PRN"
+       ("Route", ccText (field instruction "route")), ("Instructions", sigText order)] ++
+       (let reason := ccText (field instruction "asNeededCodeableConcept")
+        if acutePrnInstruction instruction && field instruction "asNeededBoolean" == .null && reason != ""
+          then [("PRN indication", reason)] else []) ++
+       [("Category", if acutePrnInstruction instruction then "PRN"
          else if (arr (field instruction "timing") "event").isEmpty then "Not recorded" else "Scheduled"),
        ("Order status", str order "status")] ++ times.flatMap fun time =>
          let records := cells.filter (·.1 == time)
@@ -1589,7 +1602,7 @@ def acuteMarRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (
       let values := acuteAdministrationRow administration
       some ([("Medication", (values.lookup "Medication").getD ""),
         ("Dose", (values.lookup "Recorded dose").getD "" ++ " " ++ (values.lookup "Unit").getD ""),
-        ("Route", (values.lookup "Route").getD ""), ("Frequency", ""),
+        ("Route", (values.lookup "Route").getD ""), ("Instructions", ""),
         ("Category", "Recorded administration"), ("Order status", "Order unavailable in this encounter")] ++
         times.map fun time => (time, if cell.1 == time then cell.2 else ""))
 
@@ -1664,7 +1677,7 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
   let prnOrders := (ofType "MedicationRequest" sources).filter fun r =>
     str r "status" != "entered-in-error" &&
     (acuteEncounter ctx rs patient).any (acuteInEncounter r) &&
-    field (first r "dosageInstruction") "asNeededBoolean" == .bool true
+    acutePrnInstruction (first r "dosageInstruction")
   let administrations := (ofType "MedicationAdministration" sources).filter fun r =>
     str r "status" != "entered-in-error" && prnOrders.any (acuteRefersTo (field r "request"))
   let handoffs := (ofType "DocumentReference" sources).filter fun r =>
@@ -1694,7 +1707,7 @@ def acuteProjectionVersion (ctx : FactsContext) (rs : List Json) : Nat :=
   let selection := fun key => key ++ ":" ++ match ctx.record.lookup key with
     | none => "absent" | some value => "selected:" ++ value
   versionDigest (((rs.map (fun resource => versionKey resource ++ "|" ++ str resource "_vgiBundleFullUrl")) ++
-    ["acute-projection:v5", "day:" ++ ctx.today,
+    ["acute-projection:v6", "day:" ++ ctx.today,
     selection "selectedEncounterId", selection "selectedMedicationRequestId"]).mergeSort (· ≤ ·))
 
 /-- Banner encounter/location/attending follow the selected chart, not whichever

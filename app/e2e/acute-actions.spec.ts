@@ -219,6 +219,22 @@ for (const [
       await expect(grid.locator(".tone-green")).toContainText(["Given"]);
       await expect(grid.locator(".tone-amber")).toContainText(["Held"]);
       await expect(grid.locator(".tone-red")).toContainText(["Overdue"]);
+      await expect(grid.getByText("Instructions", { exact: true })).toHaveCount(
+        4,
+      );
+      await expect(
+        grid.getByText("PRN indication", { exact: true }),
+      ).toHaveCount(1);
+      await expect(grid.getByText("Pain", { exact: true })).toHaveCount(1);
+      await expect(
+        grid.getByRole("columnheader", { name: "Instructions", exact: true }),
+      ).toHaveCount(0);
+      const history = page.getByRole("table", {
+        name: "PRN history",
+        exact: true,
+      });
+      await expect(history).toContainText("650");
+      await expect(history).toContainText("Given");
     }
     const button = page.locator(
       `button[data-comp-id="${component}"][data-event="click"]`,

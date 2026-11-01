@@ -126,7 +126,7 @@
                     "SC"
                   ],
                   [
-                    "Frequency",
+                    "Instructions",
                     "4 units subcutaneously before meals"
                   ],
                   [
@@ -196,7 +196,7 @@
                     "SC"
                   ],
                   [
-                    "Frequency",
+                    "Instructions",
                     "40 mg subcutaneously daily"
                   ],
                   [
@@ -270,7 +270,7 @@
                     "IV"
                   ],
                   [
-                    "Frequency",
+                    "Instructions",
                     "1 g IV daily"
                   ],
                   [
@@ -344,8 +344,12 @@
                     "PO"
                   ],
                   [
-                    "Frequency",
+                    "Instructions",
                     "650 mg by mouth every 6 hours as needed for pain"
+                  ],
+                  [
+                    "PRN indication",
+                    "Pain"
                   ],
                   [
                     "Category",

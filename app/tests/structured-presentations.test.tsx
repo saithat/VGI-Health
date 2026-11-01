@@ -202,6 +202,8 @@ describe("structured clinical data boundary", () => {
   it("retains complete administration documentation below compact MAR cells", () => {
     const record =
       "Given · 08:12 · 500 mg · Oral · Left side · Jordan Reed, RN";
+    const instructions =
+      "Take as directed · use provided route · note administration time · assess response";
     paint([
       {
         presentation: {
@@ -216,6 +218,8 @@ describe("structured clinical data boundary", () => {
                 rows: [
                   [
                     ["Medication", "Example medication"],
+                    ["Instructions", instructions],
+                    ["PRN indication", "Pain"],
                     ["08:00", record],
                   ],
                 ],
@@ -232,6 +236,24 @@ describe("structured clinical data boundary", () => {
       screen.getByRole("list", { name: "MAR administration details" })
         .textContent,
     ).toContain(record);
+    expect(screen.getByRole("table", { name: "MAR" }).textContent).toContain(
+      instructions,
+    );
+    expect(screen.getByRole("table", { name: "MAR" }).textContent).toContain(
+      "Pain",
+    );
+    expect(
+      screen.queryByRole("columnheader", { name: "Instructions" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("columnheader", {
+        name: "PRN indication",
+      }),
+    ).toBeNull();
+    expect(
+      screen.getByRole("list", { name: "MAR administration details" })
+        .textContent,
+    ).not.toContain(instructions);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
   it("keeps separate MAR day groups and preserves an undated column", () => {

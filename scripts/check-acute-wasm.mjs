@@ -33,6 +33,17 @@ try {
       bundle: read(join(fixtures, `${persona}.json`)),
       context: read(join(fixtures, `${persona}-context.json`)),
     });
+    if (persona === 'P3') {
+      const prn = source.facts.infoPayloads.find(payload => payload.info === 'prnHistory');
+      assert.equal(prn?.rows.length, 1, 'coded PRN condition retains the actual administration');
+      assert.equal(new Map(prn.rows[0].fields).get('Recorded dose'), '650');
+      const mar = source.facts.infoPayloads.find(payload => payload.info === 'marSchedule');
+      const order = mar.rows.map(row => new Map(row.fields)).find(row => row.get('Medication') === 'acetaminophen');
+      assert.equal(order?.get('Category'), 'PRN');
+      assert.equal(order?.get('PRN indication'), 'Pain');
+      assert.equal(order?.get('Instructions'), '650 mg by mouth every 6 hours as needed for pain');
+      assert.equal(order?.has('Frequency'), false);
+    }
     const base = { spec: read(join(root, 'releases/v1/spec.json')), program,
       user: read(join(fixtures, `${persona}-user.json`)), ...source };
     const initial = equal('init', base);

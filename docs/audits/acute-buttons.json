@@ -1,8 +1,8 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "dac1094c4a785429b144fd190e391375fb9a5227",
+  "sourceRevision": "7c8b4a90074b1ea0a82e22eff76cba68e71ce12b",
   "sourceTreeDirty": true,
-  "binarySha256": "78ecbdf745ea8900e9e5a1a11cc7fdee5281978ae529ea5b43d600b0a2796195",
+  "binarySha256": "15af695a2187850f094d5a7608395d043255b26e89a006fbfe42a6ded563db5b",
   "programs": [
     {
       "release": "v1",
@@ -64,7 +64,7 @@
       "files": [
         {
           "file": "P3.json",
-          "sha256": "9718b6a9fd81d7e90f6e158fef7b9fbb9d367321cd985ac78476513136c1ca40"
+          "sha256": "2645e92aba0db3200f579688ccec6d559bf561eb9312d7ed5fa06471c16333c8"
         },
         {
           "file": "P3-context.json",

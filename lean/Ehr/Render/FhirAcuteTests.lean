@@ -371,6 +371,25 @@ def previousAdmissionAdministration : Json := Json.mkObj
 
 #guard (((acuteSupportingRows context (resources ++ [administration,
   medication "prior-rx" "Encounter/previous" 90, previousAdmissionAdministration]) patient).lookup "prnHistory").getD []).length == 1
+
+/-- A coded PRN condition is the other valid FHIR choice, with its stated reason. -/
+def codedPrnInstruction : Json := Json.mkObj
+  [("asNeededCodeableConcept", concept "Pain"),
+   ("doseAndRate", field (first (medication "rx-2" "Encounter/ed-1" 4) "dosageInstruction") "doseAndRate")]
+def codedPrnOrder : Json := (medication "rx-2" "Encounter/ed-1" 4).setObjVal!
+  "dosageInstruction" (.arr #[codedPrnInstruction])
+def codedPrnSources := [patient, encounter, codedPrnOrder, administration]
+#guard acutePrnInstruction codedPrnInstruction
+#guard acutePrnInstruction (codedPrnInstruction.setObjVal! "asNeededBoolean" (.bool true))
+#guard !(acutePrnInstruction (codedPrnInstruction.setObjVal! "asNeededBoolean" (.bool false)))
+#guard !(acutePrnInstruction Json.null)
+#guard (acuteMarRows context codedPrnSources patient).head!.lookup "Category" == some "PRN"
+#guard (acuteMarRows context codedPrnSources patient).head!.lookup "PRN indication" == some "Pain"
+#guard (acuteMarRows context codedPrnSources patient).head!.lookup "Instructions" == some "4 units"
+#guard (acuteMarRows context codedPrnSources patient).head!.lookup "Frequency" == none
+#guard (((acuteSupportingRows context codedPrnSources patient).lookup "prnHistory").getD []).length == 1
+#guard (((acuteSupportingRows context [patient, encounter,
+  codedPrnOrder.setObjVal! "encounter" (reference "Encounter/previous"), administration] patient).lookup "prnHistory").getD []).isEmpty
 #guard (((acuteSupportingRows { context with record := [("selectedEncounterId", "missing")] }
   (chartSources ++ [historicalGlucose]) patient).lookup "resultTrend").getD []).length == 1
 
