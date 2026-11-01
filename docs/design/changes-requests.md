@@ -894,3 +894,45 @@ run no Lake commands, and the report asserts disjoint full coverage and identica
 WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
+
+## Sim revalidation after five-feature Core merge (2026-10-31)
+
+Merged main `fe475fa` into sim (`f3a4d4d`); sim commits `fbe18d0` and `9ee5345`
+restore the whole-project Lean build (179 jobs) and adopt clinical conditions,
+Core value validation, temporal/expiry diagnostics and structured-display
+navigation. Forty-eight new executable simulator checks include valid and
+invalid external evidence, conditional captures, stale clinical provenance,
+interruption expiry and actual fixed-clock minimum search. The history lemma
+remains true: `State.history` contains only Back screen IDs, while event evidence
+is in fixed `Facts` and the search retains clock/captures. All helper proofs and
+T9 contracts retain their statements and axiom audits; no heartbeat increase.
+
+The three owning-lane requests under "Sim follow-up on merged catalog" are
+**still open on this main**:
+
+- **Content/world:** v1 still declares neither orderKind nor orderCode; v1.1
+  and v2 declare both. Retain every requested service task and provide its
+  composer in the applicable release. Do not drop or replace those tasks.
+- **CLI:** `minSchedule` still calls `episodes facts task.workflow task.choices`.
+  Apply the already requested one-line `taskEpisodes facts task` integration.
+  Fresh native reproduction: unchanged day-one renewal `d01-P1-W7-022` returns
+  `joint click search exceeded bound or found no completion`, while persona
+  replay uses the task-bound prescription. No false minimum is reported.
+- **App:** build/lint pass; tests remain 89 passed and one failed at
+  `tests/app.test.tsx:25` (expected 16 bad programs, received 24). Update the
+  inventory expectation while retaining the real-WASM rendering assertions.
+
+Production event/predicate/validation/expiry/payload rule and FHIR-source
+adoption remain with their existing owners under the Core adoption requests
+above. Sim accepts and preserves the typed trusted Facts inputs and exercises
+the five feature groups through the real interpreter; it does not manufacture
+external evidence or change a production hospital rule to complete a task.
+
+Final sim revalidation: all 50 ten-day/persona schedules retained all 1284 tasks;
+1271 complete, with exactly the same 13 baseline service tasks incomplete.
+No completed-task floor or interruption-retention violations. All five day-one
+outputs are byte-identical, and parallel-worker reports match their serial
+counterparts. Both the repository Comparator (18 statements) and the explicit
+single/joint T9 contracts pass. Full `lake check` accepts only the three permitted
+axioms. `lean/Ehr/Sim/validation.json` records the current source/main hashes,
+every schedule and incomplete ID, and refreshed native minimum examples.

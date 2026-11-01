@@ -1,6 +1,6 @@
 {
-  "sourceCommit": "e7714df5771d4ccda464b621e008c10e7e072403",
-  "mainCommit": "f3dd0c2a68bf067a6c5286687ba3e1e7342a4bef",
+  "sourceCommit": "f82f846e8f543d8670db4b70154a66eb3f41ff78",
+  "mainCommit": "fe475fa0650c638c71dc9c4d79454483af82aa65",
   "seed": 123,
   "world": "runs/world/1",
   "schedules": 50,
@@ -8,6 +8,9 @@
   "completed": 1271,
   "determinism": true,
   "determinismScope": "byte-identical day-one replay for all five personas",
+  "nativeWorkers": 5,
+  "serialPrefixSchedulesMatched": 5,
+  "featureChecks": 48,
   "floorViolations": [],
   "interruptionViolations": [],
   "results": [

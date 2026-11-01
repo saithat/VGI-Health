@@ -4,89 +4,94 @@ Worktree `/home/saithat/Projects/VGI-sim`, branch `lane/sim`.
 
 ## Integrated snapshot
 
-Merged `origin/main` at `f3dd0c2` as `3b7f786`, including the expanded legal
-catalog and current interpreter/API. Simulator implementation is committed and
-pushed in `c5eb99b` and `e7714df`. Every new commit has the requested co-author
-trailer. No owner files were changed to bypass a rule.
+Merged current `origin/main` at `fe475fa` in `f3a4d4d` and pushed it.
+`fbe18d0` fixes history proofs for the five new Core feature groups;
+`9ee5345` adopts those contracts in Goals/Policy; `f82f846` adds independent
+native validation workers (`--jobs`, serial by default). All commits have the required
+Codex co-author trailer. Only sim-owned files, this handoff and the permitted
+change-request document were edited.
 
-The earlier implementation and finished T9 proofs remain; their contracts,
-search spaces, persona model, CLI examples and trusted base are documented in
-`lean/Ehr/Sim/README.md`. Exactness is within the reported full, goalDirected or
-navigationDirected space, per joint task, never a global/day-wide optimum claim.
+`guardReason_history` is **true as stated**. `State.history` is only the Back
+screen list. External event times, artifact versions, calendars, clinical
+sources, durable clocks and payloads are fixed Facts inputs; captures and clock
+are preserved by the quotient. The new recursive clinical/validation ASTs made
+whole-guard reduction expensive and prevented several old rfl proofs from
+closing. Explicit helper lemmas now prove invariance for those ASTs, temporal
+and expiry statuses, value goals, payload contracts, alerts and the guard.
+No theorem was weakened and no heartbeat limit was raised. Every named
+simulator theorem is axiom-audited, including the new helpers.
 
-## Changes in this continuation
+## Simulator adoption
 
-- Updated the obsolete refill regression: v1 now requires the requested `drug`
-  and human `refillScheduleEligibility = notScheduleII` on approval. The popup
-  floor uses that actual goal capture, including interactionRefill.
-- Added `Sim/TaskContext.lean`: unchanged renewals resolve the current task's
-  focused contained MedicationRequest from todayResources. Both patient
-  references must match. Missing/ambiguous context cannot complete approval.
-  No unrelated home medication or administration context is substituted.
-- Denials use denyRefill and retain the typed denial reason. Modifications and
-  Schedule II renewals use ordinary signOrders, preserving full prescription,
-  controlled-drug, zero-refill and human-entry gates. Modification reasons are
-  captured in refillNote. A known Schedule II drug never receives a false
-  notScheduleII attestation.
-- Earlier medication slots also capture the cross-artifact per-line fields
-  required by Core.currentLineComplete before advancing, including the series
-  earliest-fill field. An ordinary final line gets no unnecessary series goal.
-- An undeclared goal element stops navigation early with an incomplete result.
-  The known service case previously exceeded 30 seconds exploring the expanded
-  catalog; it now reports the missing declarations in about four seconds.
-  Successful-task action/navigation enumeration is unchanged.
+- Patient predicates use Core's three-valued clinical evaluation. Unknown/stale
+  sources conservatively apply requirements. A scenario-supplied captured-code
+  discriminator used by entries, reviews, time windows, expiry, displays or
+  alerts becomes a real UI capture goal, even if it is otherwise optional.
+- Unspecified constrained goals can choose allowed/default/declared-record,
+  trusted terminology, bounded quantity and relational candidates; every
+  candidate is checked by Core. Explicit conflicting choices remain goals and
+  are reported. This remains a finite candidate policy, not a universal solver.
+- Entry planning defers relational values until their sources are captured and
+  can confirm valid prefills. Goal completion rechecks Core's current validator.
+- Temporal and durable-clock failures report named missing/invalid/overdue
+  obligations. KLM time and interruptions advance the actual interpreter clock
+  before each action. Sim never creates external evidence or renews an order.
+- Structured-display panels are navigation goals independently of ReviewReqs;
+  neither receipts nor a visible placeholder bypasses Core's payload contract.
+- `FeatureTests.lean` adds 48 executable checks covering completing/rejected
+  cases across all five groups, current/stale/missing sources, real predicate
+  inputs, valid prefills, relational ordering, conditional time obligations,
+  interruption expiry and certified temporal minimum search.
+
+T9's original single/joint contracts and real-interpreter replay remain intact.
+Exactness is within the reported full, goalDirected or navigationDirected
+space, per joint task. Search time stays fixed; there is no global/day-wide
+optimality or missing-external-event scheduling claim. See `lean/Ehr/Sim/README.md`.
 
 ## Verification
 
-- `cd lean && lake build`: passes, 177 jobs.
-- Full `lake check`: passes; only propext, Quot.sound, Classical.choice.
+- Full `cd lean && lake build`: passes, 179 jobs.
+- `lake check`: passes; only propext, Quot.sound, Classical.choice.
 - `lake comparator`: passes all 18 trusted core statements.
 - `python3 lean/Ehr/Sim/verify_proofs.py`: passes the explicit single/joint T9
-  Comparator contracts. Only the temporary reference challenge has proof holes;
-  finished simulator proofs have no sorry/admit/new axioms/native_decide.
-- All named simulator theorems retain their #print axioms audits. Existing
-  kernel-decided satisfiable/wrong-answer and joint-receipt examples pass.
-- World build/lint/tests pass, 92 tests. Agent typecheck/lint/tests pass, 31 tests.
-- App build and lint pass. Tests: 89 pass, one upstream inventory assertion
-  fails because it expects 16 bad programs while content now supplies 24.
-- Real day-one renewal, modification and denial fixture tasks complete, using
-  approveRefill, signOrders and denyRefill respectively. The modification keeps
-  its chosen metformin dose and reason. New Lean regressions cover captured-drug
-  interaction acknowledgments, exact reasons, missing/ambiguous request context,
-  Schedule II routing and line-advance requirements.
-- Native minimum smoke: day-one P1 W1-001 is 44 clicks / 223 keystrokes;
-  P3 W4-001 is 38 / 104 over two receipt-carry episodes. Both are certified exact
-  in the explicitly reported navigationDirected space, not global optima.
-- Fresh native ten-day sweep: 50 schedules, all 1284 tasks retained, 1271
-  complete, exactly the same 13 service tasks incomplete. Zero floor violations
-  across all eight metrics for completed tasks; zero interruption-retention
-  violations. All five day-one persona replays are byte-identical at seed 123.
-  Compact results and minimum examples are in `lean/Ehr/Sim/validation.json`.
-  Reproduce with `python3 lean/Ehr/Sim/cli_smoke.py --days 10 --report /tmp/sim.json`.
-  `--require-complete` intentionally still fails on the 13 baseline scenarios.
+  contracts. Proof holes occur only in Comparator reference challenges.
+- Fresh native ten-day sweep with `--jobs 5`: 50 schedules, all 1284 tasks
+  retained, 1271 complete. Exactly the same 13 baseline service tasks remain
+  incomplete. Zero violations across all eight floor metrics for completed
+  tasks; zero interruption-retention violations. All five day-one replays are
+  byte-identical at seed 123 and match the serial reports, including complaints.
+  Compact results and refreshed minimum examples: `lean/Ehr/Sim/validation.json`.
+  Reproduce: `python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 5 --report /tmp/sim.json`.
+  Workers never invoke Lake or write the shared report. `--require-complete`
+  remains an intentional failure until the 13 baseline service scenarios work.
+- World build/lint/tests pass (92 tests); agent typecheck/lint/tests pass (31).
+- App build/lint pass. Tests remain 89 passed / one failed: upstream inventory
+  expects 16 bad programs while content supplies 24. Real-WASM rendering passes.
+- Fresh native minimum examples: day-one P1 W1-001 is 44 clicks / 223 keys;
+  P3 W4-001 is 38 / 104 over two receipt-carry episodes. Both report certified
+  navigationDirected exactness for each objective.
+- Fresh unchanged-renewal CLI minimum `d01-P1-W7-022` still fails safely with
+  no completion, reproducing the owner integration request below.
 
 ## Exactly what remains
 
-1. **The original 13 early service scenarios remain incomplete.** Baseline
-   `releases/v1/spec.json` still lacks orderKind/orderCode, and its composers
-   cannot capture the requested imaging/procedure orders. v1.1/v2 support them.
-   Content must add the two optional service declarations/composers to baseline
-   v1 and regenerate releases, or world/content must align scenario timing
-   without dropping requested work. All task IDs are retained in validation.json.
+1. **The original 13 baseline service scenarios remain incomplete:** v1 still lacks orderKind/orderCode
+   declarations and composers. Content/world must provide the applicable UI or
+   align release timing while retaining all requested service work. Optional
+   declarations/composers exist in v1.1/v2; sim retains the unmet goals.
 2. **CLI owner integration:** in `lean/Ehr/Cli/Sim.lean:minSchedule`, replace
    `let eps := episodes facts task.workflow task.choices` with
    `let eps := taskEpisodes facts task`. It is already imported through Policy.
-   Persona simulation uses the new context; minimum search still needs this
-   one-line adoption for unchanged renewals whose choices.orders is empty.
-   Missing context cannot produce a false successful minimum.
+   Persona simulation uses focused request context; minimum search still needs
+   this adoption for unchanged renewals whose choices.orders is empty.
 3. **App owner inventory test:** update `app/tests/app.test.tsx:25` for the
    24 bad programs now supplied by content; retain the rendering assertions.
 
-These are concrete requests in `docs/design/changes-requests.md` under
-"Sim follow-up on merged catalog (2026-10-31)". The user explicitly restricted
-edits to sim ownership plus requests; a narrow exception was requested but has
-not been granted. No content, CLI or app owner files were edited locally.
+These owning-lane changes are requested in `docs/design/changes-requests.md`,
+including the section "Sim revalidation after five-feature Core merge".
+Production rule/FHIR-source adoption for the new language remains under Core's
+existing owning-lane requests; sim's typed Facts path and all five feature
+fixtures are integrated. No production spec or safety rule was changed here.
 
-No unfinished simulator proofs remain. Do not describe this snapshot as an
-all-green project or claim all 1284 tasks complete while the three items above
-remain.
+No unfinished simulator proofs remain. Do not call the project all-green while
+the owning-lane items above remain.
