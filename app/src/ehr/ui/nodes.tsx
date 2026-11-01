@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   Alert,
   Badge,
@@ -20,6 +20,9 @@ import {
 } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { entryEvent } from "./events";
+import { ClinicalIcon } from "./Icons";
+import { DisplayValue, severityTone, statusTone } from "./display";
+import { clinicalTokens } from "./theme";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -84,8 +87,8 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
 export function ColumnsNode({ node, onEvent }: Props<"columns">) {
   return (
     <SimpleGrid
-      cols={{ base: 1, md: Math.min(3, Math.max(1, node.children.length)) }}
-      spacing="sm"
+      cols={{ base: 1, lg: Math.min(2, Math.max(1, node.children.length)) }}
+      spacing="md"
       className="clinical-columns"
     >
       <UiChildren nodes={node.children} onEvent={onEvent} />
@@ -124,18 +127,12 @@ export function StepperNode({ node }: Props<"stepper">) {
         <li
           key={id}
           aria-current={index === node.current ? "step" : undefined}
-          className={
-            index < node.current
-              ? "complete"
-              : index === node.current
-                ? "current"
-                : ""
-          }
+          className={index === node.current ? "current" : ""}
         >
           <span className="step-number" aria-hidden="true">
-            {index < node.current ? "✓" : String(index + 1).padStart(2, "0")}
+            {index + 1}
           </span>
-          <span>{label}</span>
+          <span className="step-label">{label}</span>
         </li>
       ))}
     </ol>
@@ -204,28 +201,7 @@ export function FieldNode({
             size="sm"
             variant="light"
             color="gray"
-            leftSection={
-              <svg
-                aria-hidden="true"
-                width="11"
-                height="12"
-                viewBox="0 0 12 14"
-                fill="none"
-              >
-                <rect
-                  x="1.5"
-                  y="6"
-                  width="9"
-                  height="6.5"
-                  rx="1.5"
-                  stroke="currentColor"
-                />
-                <path
-                  d="M3.5 6V4a2.5 2.5 0 0 1 5 0v2M6 8.5v2"
-                  stroke="currentColor"
-                />
-              </svg>
-            }
+            leftSection={<ClinicalIcon name="lock" />}
           >
             Human entry only
           </Badge>
@@ -262,7 +238,7 @@ export function FieldNode({
           aria-expanded={dropdownOpen}
           onDropdownOpen={() => setDropdownOpen(true)}
           onDropdownClose={() => setDropdownOpen(false)}
-          rightSection={<span aria-hidden="true">⌄</span>}
+          rightSection={<ClinicalIcon name="chevron" />}
           searchable
           data={codes}
           value={node.value}
@@ -293,7 +269,11 @@ export function FieldNode({
                     : "Enter value"
           }
           leftSection={
-            special === "scan" ? <span aria-hidden="true">▥</span> : undefined
+            special === "scan" ? (
+              <ClinicalIcon name="barcode" />
+            ) : kind === "search" ? (
+              <ClinicalIcon name="search" />
+            ) : undefined
           }
         />
       )}
@@ -306,7 +286,7 @@ export function FieldNode({
               size="sm"
               className="provenance-chip"
             >
-              {node.provenance}
+              <DisplayValue value={node.provenance} />
             </Badge>
           )}
           {node.pendingConfirm && !confirmProvided && (
@@ -327,6 +307,16 @@ export function FieldNode({
     </Box>
   );
 }
+function RecordValue({ label, value }: { label: string; value: string }) {
+  const tone = /status|scheduled|administration|^\d{1,2}:\d{2}/i.test(label)
+    ? statusTone(value)
+    : undefined;
+  return (
+    <span className={tone ? `clinical-status status-${tone}` : undefined}>
+      <DisplayValue value={value} />
+    </span>
+  );
+}
 function InfoTable({ node }: { node: NodeOf<"info"> }) {
   const headers = Array.from(
     new Set(
@@ -340,12 +330,15 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
       <Table
         striped
         highlightOnHover
-        stickyHeader
         withColumnBorders={false}
         aria-label={node.label}
+        data-medication-grid={
+          headers.some((header) => /^(medication|drug)$/i.test(header)) ||
+          undefined
+        }
         fz="xs"
         verticalSpacing={6}
-        horizontalSpacing="sm"
+        horizontalSpacing={6}
       >
         <Table.Thead>
           <Table.Tr>
@@ -365,8 +358,17 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
           {node.rows.map((row, index) => (
             <Table.Tr key={index}>
               {headers.map((header) => (
-                <Table.Td key={header}>
-                  {row.find(([key]) => key === header)?.[1] ?? "—"}
+                <Table.Td
+                  key={header}
+                  data-numeric={
+                    /^(value|result|dose|quantity|weight)$/i.test(header) ||
+                    undefined
+                  }
+                >
+                  <RecordValue
+                    label={header}
+                    value={row.find(([key]) => key === header)?.[1] ?? "—"}
+                  />
                 </Table.Td>
               ))}
             </Table.Tr>
@@ -410,10 +412,17 @@ export function InfoNode({ node }: Props<"info">) {
           {node.rows.length === 0 && <li>No records on file</li>}
           {node.rows.map((row, index) => (
             <li key={index}>
-              {row.map(([key, value]) => (
-                <span key={key}>
-                  <span className="record-label">{key}: </span>
-                  {value}
+              {row.map(([key, value], fieldIndex) => (
+                <span
+                  key={key}
+                  className={
+                    fieldIndex === 0 ? "record-primary" : "record-secondary"
+                  }
+                >
+                  {fieldIndex > 0 && (
+                    <span className="record-label">{key}: </span>
+                  )}
+                  <RecordValue label={key} value={value} />
                 </span>
               ))}
             </li>
@@ -425,7 +434,9 @@ export function InfoNode({ node }: Props<"info">) {
             row.map(([key, value]) => (
               <div key={`${index}-${key}`}>
                 <dt>{key}</dt>
-                <dd>{value}</dd>
+                <dd>
+                  <RecordValue label={key} value={value} />
+                </dd>
               </div>
             )),
           )}
@@ -441,13 +452,13 @@ export function InfoNode({ node }: Props<"info">) {
             >
               <path
                 d="M10 62H290 M10 38H290 M10 14H290"
-                stroke="#e3eaee"
+                stroke={clinicalTokens.divider}
                 strokeWidth="1"
               />
               <polyline
                 points={points}
                 fill="none"
-                stroke="#187c80"
+                stroke={clinicalTokens.blue.ink}
                 strokeWidth="2.5"
                 strokeLinejoin="round"
               />
@@ -457,7 +468,7 @@ export function InfoNode({ node }: Props<"info">) {
                   cx={10 + (index * 280) / Math.max(1, values.length - 1)}
                   cy={62 - ((value - low) * 48) / range}
                   r="3"
-                  fill="#187c80"
+                  fill={clinicalTokens.blue.ink}
                 />
               ))}
             </svg>
@@ -469,11 +480,7 @@ export function InfoNode({ node }: Props<"info">) {
   );
 }
 export function AlertNode({ node }: Props<"alert">) {
-  const color = /critical|error|high|danger|interruptive/i.test(node.severity)
-    ? "red"
-    : /warn|moderate/i.test(node.severity)
-      ? "yellow"
-      : "blue";
+  const color = severityTone(node.severity);
   return (
     <Alert
       role="alert"
@@ -482,9 +489,15 @@ export function AlertNode({ node }: Props<"alert">) {
       variant="light"
       data-comp-id={node.comp}
       className="clinical-alert"
-      icon={<span aria-hidden="true">!</span>}
+      icon={
+        <ClinicalIcon
+          name={
+            color === "green" ? "check" : color === "blue" ? "info" : "warning"
+          }
+        />
+      }
     >
-      <Text size="sm" fw={550}>
+      <Text size="sm" fw={600} c="inherit">
         {node.label}
       </Text>
     </Alert>
@@ -492,6 +505,7 @@ export function AlertNode({ node }: Props<"alert">) {
 }
 export function ButtonNode({ node, onEvent }: Props<"button">) {
   const primary = node.role === "primary";
+  const reasonId = useId();
   return (
     <div className={`clinical-action${primary ? " primary-action" : ""}`}>
       <Tooltip
@@ -515,6 +529,9 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
             }
             disabled={!node.enabled}
             aria-label={node.label}
+            aria-describedby={
+              !node.enabled && node.blockedReason ? reasonId : undefined
+            }
             title={node.enabled ? undefined : (node.blockedReason ?? undefined)}
             data-comp-id={node.comp}
             data-event={
@@ -546,7 +563,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
         </span>
       </Tooltip>
       {!node.enabled && node.blockedReason && (
-        <Text size="xs" c="dimmed" className="clinical-blocked">
+        <Text id={reasonId} size="xs" className="clinical-blocked">
           {node.blockedReason}
         </Text>
       )}
@@ -556,7 +573,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
 export function TextNode({ node }: Props<"text">) {
   return (
     <Text size="sm" className="clinical-copy">
-      {node.s}
+      <DisplayValue value={node.s} />
     </Text>
   );
 }

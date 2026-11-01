@@ -4,7 +4,11 @@ Every night an AI agent redesigns each clinician's EHR screens to save them clic
 
 - Project spec: [`BRIEF.md`](BRIEF.md)
 - Core data formats and interpreter semantics: [`docs/design/core-model.md`](docs/design/core-model.md)
-- Lean practices: [`CLAUDE.md`](CLAUDE.md) · Proof status: [`TODO_PROOFS.md`](TODO_PROOFS.md)
+- Design changes: [`docs/design/changes.md`](docs/design/changes.md)
+- Rules catalog: [`docs/rules/catalog.md`](docs/rules/catalog.md)
+- Regulatory research: [`docs/regulations.md`](docs/regulations.md)
+- Project status and open items: [`docs/STATUS.md`](docs/STATUS.md)
+- Proof status: [`TODO_PROOFS.md`](TODO_PROOFS.md)
 
 ## Quick start
 Requires Node 22+ and pnpm 11 (`corepack enable`). The offline UI needs no

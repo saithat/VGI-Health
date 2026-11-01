@@ -117,6 +117,11 @@ example : UiPresent
     { id := "careGap", label := "Care gap due", cond := .careGap, tier := .passive, commit := "signOrders", screens := ["W1"] }
     (by decide) (by decide) rfl (by decide) rfl
 
+#guard uiFieldKind .identity == "identity"
+#guard uiFieldKind (.scan "wristband") == "scan"
+#guard uiFieldKind .cosign == "cosign"
+#guard (uiFieldKind (.coded "formulary")).startsWith "code:"
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Code status" == some "Not recorded"
 #guard uiHundredths 405 == "4.05"
 #guard uiHundredths 450 == "4.50"
 #guard (Lean.Json.parse (encodeJson uiScreenTest)).isOk

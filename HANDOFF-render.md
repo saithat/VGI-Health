@@ -1,130 +1,131 @@
 # Render lane handoff
 
 Worktree `/home/saithat/Projects/VGI-render`, branch `lane/render`.
-All render-owned implementation and proof tasks in the previous handoff are
-complete. Cross-lane integration requests still outstanding are listed below;
-none are silently treated as implemented.
+Merged `origin/main` at `cd60f62` before implementing section 10. Integrated the
+app owner's `f810f92` afterward, without editing app implementation or tests.
 
 ## Completed and pushed
 
-- `92fdc77`: preserve complete fixture entry.fullUrl (`urn:uuid:...`) as missing
-  resource ids; use the Synthea identifier search token as stable Facts.patientId
-  on both fixture and Medplum records. Add three handmade bundles, FHIR guards,
-  inactive/error allergy and active/stopped/on-hold medication coverage,
-  kg/lb/yesterday weights, BP components, ranges/interpretation and Display JSON
-  round trips. Document the exact wristband payload and identity distinction.
-- `8fd1388`: Init-only complete page renderer; all component kinds, field
-  provenance/confirm/human-only/unit warnings, full allergy/medication rows,
-  all requested info IDs and known canonical aliases, trends/growth SVGs,
-  guard-driven buttons, groups/tabs, flow modal. Export ehr_render/ehr_facts and
-  native ehr render / ehr facts / ehr render-screens. CLI writes PageNode JSON,
-  HTML previews and fixed stylesheet, initial goTo/prefills, groups, complete
-  tab combinations, and firing interruptive alert samples.
-- `4329b13`: merge current lean-core record-source and episode-context support.
-- `d804a79`: merge current content tests/spec corrections and preserve both
-  lanes' change requests. Main and the content/core branches were fetched and
-  merged; content still has no programs/canonical/v1.json.
-- `b49ecbd`: T5, T10 and T11 proofs, nonvacuous Tiny/FHIR examples, #print axioms,
-  proof-contract/audit tooling, native/WASM differential tests. Fix a real
-  Lean 4.35 wasm32 runtime string/list mismatch using a structurally folded
-  string reconstruction, proved equal to String.ofList. Rebuild/install WASM.
+- `0cfefc2`: Init-only UiNode/UiScreen exactly as section 10, JSON instances,
+  generated TypeScript types, renderUi/ehr_render_ui, native render-ui,
+  render-screens --ui, decidable NavSane, and real adult P1 JSON samples.
+- `1c8c35d`: D1/D2/D3/D4/D6 and semantic T10/T11, FHIR-to-UiScreen completeness,
+  satisfiable examples, axiom audits, Comparator registration, complete missing
+  required reviews, and latest-vitals sidebar.
+- `74a8457`: rebuilt/installed WASM and semantic differential/fidelity checks.
+- `8d20481`: merged the app owner's semantic painter, ARIA gate, and catalog fix.
+- `a40d97d`: preserves specialized field kinds/formulary options and emits
+  allergy/code-status banner fields; rebuilds assets and refreshes P1 samples.
 
-Proofs are in lean/Ehr/Render to respect ownership. No committed Render Lean
-source has sorry, admit, new axioms or native_decide. TODO_PROOFS.md is updated.
-The renderer draws the interpreter's shown items in its declared flat order;
-view resolves ancestor/group/tab visibility once. Each item has a literal
-label wrapper. Shell, info rows and modal acknowledgments have no comp id.
-See docs/design/render.md for wire format, info IDs, trusted surface, digest
-collision assumption, and the fixed stylesheet/DOM boundary.
+No Core/Specs/Canonical/Props/Check code was edited. The explicitly allowed
+minimal GenTS change adds Render.Json/Fhir source modules and fail-fast checks
+for UiNode/UiScreen/FactsInput; regenerated output has 141 types and 40 samples. Main.lean
+only gains the additional renderer CLI match arm. Changes to data formats are
+exactly the owner-requested UiNode/UiScreen additions. All additional render
+conventions are recorded in docs/design/changes.md and render.md.
+
+The interpreter owns visibility, flags, and enabled actions. Every shown item
+survives nesting, including duplicates, malformed orphans/order/cycles. Missing
+applicable review info on a shown commit screen is appended read-only with all
+rows; interpreter state and guards never change. The side column has actual
+allergies, current meds, problems, and latest vitals. Workspace info has all rows.
+No serialized payload/debug/transport objects are displayed by the semantic API.
+
+Contract details:
+- One banner field, first in AppShell, contains name/DOB/MRN and clinical fields.
+  Missing identifiers stay empty; the renderer cannot invent source identifiers.
+  JSON key order is not layout. Code status comes from Facts.record's codeStatus
+  value, otherwise explicit Not recorded; full code is never assumed.
+- Read-only side/safety info uses empty comp IDs and dispatches no events.
+  Hidden-id T10 applies to nonempty component IDs. The component forest itself
+  has an exact shown-item/node equivalence for every input.
+- Group-toggle role uses Event.click (Core toggles clicked group headers).
+  Confirm/ack roles use Event.confirm/Event.ack. There is no Event.toggle.
+- Field kind strings preserve identity/scan/cosign; code:<choice>|<choice>...
+  carries the existing Lean formulary. No new UiNode fields were introduced.
+- Tab labels retain actual indexes; only selected tab bodies are emitted.
 
 ## Verification
 
-- `cd lean && lake build`: pass, 113 jobs including all proofs and guards.
-- `cd lean && lake check`: pass; only propext, Quot.sound, Classical.choice.
-- `python3 lean/Ehr/Render/check-proofs.py`: Comparator accepts all 15 main
-  theorems. It generates a temporary proof-hole challenge in ignored .tools,
-  with Contracts imported independently of the solution proofs. No holes are
-  written into finished proof sources.
-- Native/WASM differential test: all **174** Synthea bundles and **694**
-  canonical page variants match, including stable patient/row ids and error
-  envelopes. A canonical RN wristband scan also accepts exactly Facts.patientId
-  and rejects an unrelated Medplum server id.
-- Full canonical browser screen-check: **1,390 passed**, all 694 page variants
-  at desktop and 390px, including the checker's concealment regression tests.
-  Input came from JSON exports of the content lane's exact compiled spec/program
-  under /tmp/vgi-render-api; the CLI file-path form was tested.
-- **114 further browser checks passed**, covering Tiny's 13 variants plus all 43 expanded canonical
-  screens for Alva Schmitt (active warfarin), including the final medication
-  option/value and anticoagulant alias changes.
-- App build passes; 78 app, 31 agent, 52 world unit tests pass. Agent/world
-  typecheck and lint pass. App source/test lint passes with
-  `pnpm --filter app lint --ignore-pattern 'public/ehr/**'`.
-- Extended GenTS tested in a temporary copy of the core-owned generator:
-  99 types / 19 samples, including Display/PageNode/FactsInput; generated TS
-  type-checks. Rebuild `lake build gents` after core changes before this check,
-  to avoid loading a stale Samples olean.
+- `cd lean && lake build`: pass, 153 jobs, all examples/guards included.
+- `cd lean && lake check`: pass, only propext, Quot.sound, Classical.choice.
+- `python3 lean/Ehr/Render/check-proofs.py`: pass, **33** main theorems, including
+  **18** semantic theorems. Challenge holes exist only in ignored temporary
+  Comparator inputs. Finished render sources have no sorry/admit/new axioms or
+  native_decide.
+- Standard `wasm/build-ehr.sh && wasm/install-into-app.sh`: pass with the existing
+  .tools SDK links. No build-script or runtime edit needed. Final WASM is
+  **1,993,306 bytes**, with ehr_render_ui and all previous exports.
+- `node scripts/wasm-assets.mjs --write && make wasm-check`: pass.
+- A complete sequential native/WASM run passed **174** Synthea bundles and
+  **2,046** canonical HTML + semantic variants, including exact component
+  multiplicity, flags, confirmations, navigation, summaries, error envelopes,
+  and actual canonical RN wristband acceptance/rejection.
+- Final follow-up differential run: **pass**. All four shards completed; their
+  reports cover all **2,046** case indexes exactly once with no overlap and one
+  current WASM hash. Each also passed all **174** facts projections and the
+  actual RN scan/error regressions. Coverage audit: /tmp/render-final-coverage.log.
+- `render-screens --ui` emits **2,046** actual P1 release variants. The committed
+  rooming/orders/sign samples for adult Aaron Ankunding match final WASM exactly.
+  Supplied code status and a real Synthea allergy banner also pass.
+- App build/lint and **124** unit tests pass on the final WASM. The earlier
+  16-vs-24 catalog failure is resolved by the app owner's source fix.
+- **8** desktop/narrow ARIA/visibility/legibility/hit-testing checks pass on the
+  final three P1 samples, including regression checks that detect bad painting.
+- Generated **141** types plus all **40** generated JSON samples pass strict tsc.
+  The final GenTS-only rebuild preserves the exact tested WASM bytes; its source
+  manifest is refreshed and make wasm-check passes.
+- Agent typecheck/lint and **31** tests pass. World build/lint and **92** tests pass.
 
-Repeatable commands:
+Final logs: `/tmp/render-final-{build,lake-check,comparator,wasm-build}.log`,
+`/tmp/render-final-shard-{0,1,2,3}.log`, `/tmp/render-ui-aria-final.log`,
+`/tmp/render-app-{build,lint,tests}-complete.log`. API inputs are in
+`/tmp/render-ui-api`; current P1 variants are in `/tmp/render-ui-p1-complete`.
+
+Repeatable commands (never overlap Lake processes):
 
 ```sh
 cd lean
 lake build
-lake env lean --run Ehr/Render/ExportTests.lean /tmp/vgi-render-api
+lake env lean --run Ehr/Render/ExportTests.lean /tmp/render-ui-api
 cd ..
-node lean/Ehr/Render/test-wasm.mjs /tmp/vgi-render-api
+node lean/Ehr/Render/test-wasm.mjs /tmp/render-ui-api
 python3 lean/Ehr/Render/check-proofs.py
-lean/.lake/build/bin/ehr render-screens --spec v1 --program canonical \
-  --fhir fixtures/synthea/Aaron_Ankunding_4966bd28.json --out /tmp/fresh-pages
-PLAYWRIGHT_BROWSERS_PATH=/tmp/vgi-render-browser pnpm --filter app screen-check /tmp/fresh-pages/*.json
+make wasm-check
+PLAYWRIGHT_BROWSERS_PATH=/tmp/vgi-render-browser pnpm --filter app screen-check --ui app/src/fixtures/ui/w1*.json
 ```
 
-Today comes from fixtures/synthea/index.json or --today / --context. File
-spec/program inputs work too. Use a fresh output directory. HTML previews
-copy ehr.css when invoked from the repo root or lean directory.
-
-WASM assets are built and installed in the gitignored app/public/ehr. The
-available pinned SDK is linked read-only into local ignored .tools. Original
-wasm/build-ehr.sh was run but has no tool-root override and clears EM_CACHE
-while sourcing the SDK, then fails writing its read-only shared cache. The
-successful equivalent build uses the same Python driver after sourcing the
-SDK and setting EM_CACHE to the local copied writable cache:
-
-```sh
-source .tools/emsdk/emsdk_env.sh
-export EM_CACHE="$PWD/.tools/emscripten-cache"
-python3 wasm/build_ehr.py
-wasm/install-into-app.sh
-```
-
-Logs/artifacts: /tmp/vgi-render-lean-build.log, /tmp/vgi-render-lake-check.log,
-/tmp/vgi-render-comparator.log, /tmp/vgi-render-equivalence.log,
-/tmp/vgi-render-final-screen-check.log, /tmp/vgi-render-targeted-screen-check.log,
-/tmp/vgi-render-{app,agent,world}-tests.log; previews/page trees are in
-/tmp/vgi-render-final-canonical, /tmp/vgi-render-anticoag, and
-/tmp/vgi-render-final-tiny. Temporary type exports: /tmp/vgi-render-types.
+For faster differential runs, invoke the same Node script with
+EHR_RENDER_SHARD_COUNT=4 and EHR_RENDER_SHARD_INDEX=0,1,2,3 in four processes,
+with a distinct EHR_RENDER_SHARD_REPORT=/tmp/<name>.json. Each shard checks all
+174 facts projections, its exact partition of screen cases, and the RN scan/error
+regressions. Aggregate stateIndices and assert they cover every index exactly
+once and all reports have the same wasmSha256. No shard runs Lake.
 
 ## Exactly what is left
 
-No render-owned implementation or unfinished proof remains. The following
-other-lane requests are in docs/design/changes-requests.md:
+No render-owned implementation or unfinished proof remains. Cross-lane requests
+remain explicitly tracked in docs/design/changes-requests.md:
 
-1. **App lint integration (required):** plain pnpm --filter app lint currently
-   scans installed, gitignored Emscripten public/ehr/ehr-interp.mjs and fails
-   with 88 generated-code lint errors. App must ignore public/ehr/** while
-   retaining all source/test boundary rules. Render did not edit app config.
-2. **lean-core TS integration:** add Render.Types/Json/Fhir to the official
-   GenTS sourceModules and regenerate published types. The extended generator
-   was validated locally; the core-owned generator was not modified.
-3. **Content artifact export:** publish programs/canonical/v1.json and spec
-   JSON. They are still absent after merging content. The compiled canonical
-   values and temporary exact JSON exports have been fully exercised.
-4. **App/infra barcode integration:** when creating/decoding wristband barcodes,
-   encode/pass the exact Synthea token `https://github.com/synthetichealth/synthea|<id>`
-   from Facts.patientId, never Medplum's unrelated REST resource id. Rendered
-   scan metadata and actual canonical RN interpreter acceptance are verified.
-5. **Wasm toolchain/runtime integration:** support an external tools root and
-   writable cache; fix/validate upstream wasm32 string_to_list_core's nil
-   construction. Render's equivalent fold already avoids that runtime defect.
-6. **Optional future exactness:** replace Nat digest data versions with exact
-   String versions if the core owner chooses. Current collision assumption is
-   explicit; this is not an unfinished T5 proof.
+1. **Checker/content:** wire NavSane into certification and address P1's genuine
+   D5 failure: W1 has 14 entries, W3 17, W6 18, versus a limit of 12 per group.
+   All labels are unique. The actual release JSON #eval reports false. No screen
+   is truncated and no rule is weakened.
+2. **Lean-core/app:** supply an interpreter navigation Event/envelope for nav
+   and stepper destination screen IDs. App currently shows an overview and uses
+   actual workspace goto-component buttons for navigation. Renderer must not
+   invent component IDs or interpreter transitions.
+3. **Content:** replace legal source-authoring instructions in component labels
+   with intended clinician-facing text. Render preserves what the interpreter
+   says and must not fabricate regulatory text or modify content-owned specs.
+4. **App/infra:** the previous wristband request remains: encode/pass the exact
+   Facts.patientId Synthea search token, not a Medplum REST resource ID. Actual
+   native/WASM interpreter acceptance and rejection are verified.
+
+Previous handoff items now resolved: generated-code app lint exclusion, official
+Render GenTS export, committed spec/program artifacts, standard WASM build,
+catalog test count, generated UI types in the painter, read-only empty info IDs,
+and explicit confirm/ack handling. The existing structural string fold still
+avoids the documented upstream wasm32 issue and is proved equal to String.ofList.
+Exact-string data versions remain an optional future core decision, not an
+unfinished render proof.

@@ -27,7 +27,9 @@
       ["Coverage", ""],
       ["Encounter", "AMB"],
       ["Attending", "Dr. Laurena Anderson"],
-      ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]],
+      ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
+      ["Allergies", "No allergy records on file"],
+      ["Code status", "Not recorded"]]],
     "label": "Patient banner",
     "infoId": "patientBanner",
     "display": "summary",
@@ -1495,4 +1497,6 @@
   ["Coverage", ""],
   ["Encounter", "AMB"],
   ["Attending", "Dr. Laurena Anderson"],
-  ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]}
+  ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
+  ["Allergies", "No allergy records on file"],
+  ["Code status", "Not recorded"]]}

@@ -16,6 +16,16 @@ def uiBanner (d : Display) : List (String × String) :=
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
    ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
 
+/-- Clinical banner content comes from Lean, so the painter need not infer it.
+An unavailable code status is explicit, never silently treated as full code. -/
+def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
+  uiBanner d ++
+    [("Allergies", if d.allergies.isEmpty then "No allergy records on file"
+      else "; ".intercalate (d.allergies.map (fun r => r.substance ++
+        (if r.reaction == "" then "" else " — " ++ r.reaction) ++
+        (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
+     ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded")]
+
 def workflowLabel : String → String
   | "W1" => "Outpatient visit" | "W2" => "Results" | "W3" => "Emergency"
   | "W4" => "Inpatient MAR" | "W5" => "Pediatric visit" | "W6" => "Surgical day"
@@ -52,7 +62,7 @@ def problemCells (r : ProblemRow) : List (String × String) :=
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
-  | "patientBanner" => [uiBanner cx.disp]
+  | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
   | "allergyList" => cx.disp.allergies.map allergyCells
   | "currentMeds" => cx.disp.meds.map medCells
   | "vitals" => cx.disp.vitals.map vitalCells
@@ -102,11 +112,20 @@ def uiButton (cx : Ctx) (it : ItemView) (role : String) : UiNode :=
 def actionRole : Action → String
   | .commit _ => "primary" | .goto _ | .back => "nav" | _ => "secondary"
 
+/-- Preserve the control semantics and the existing formulary choices inside
+section 10's open kind string. The painter does not reconstruct value sets. -/
+def uiFieldKind : ValueKind → String
+  | .quantity _ => "qty"
+  | .coded "formulary" => "code:" ++ "|".intercalate (formulary.map (·.name))
+  | .coded _ => "code"
+  | .text => "text" | .flag => "flag" | .identity => "identity"
+  | .scan _ => "scan" | .cosign => "cosign"
+
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
-  let (vk, _, want) := fieldKind kind
+  let (_, _, want) := fieldKind kind
   let unit := match it.value? with | some (.qty _ u) => u | _ => want
-  .field it.comp.id (uiLabel it.comp.label "Clinical entry") vk.name (it.value?.map valueText)
+  .field it.comp.id (uiLabel it.comp.label "Clinical entry") (uiFieldKind kind) (it.value?.map valueText)
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)
@@ -208,7 +227,7 @@ layout landmark; component banners become info nodes, never a second landmark. -
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
-  { banner := uiBanner disp, nav := uiNav prog, title := cx.v.title,
+  { banner := uiClinicalBanner facts disp, nav := uiNav prog, title := cx.v.title,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

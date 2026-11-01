@@ -7,6 +7,8 @@ open Ehr.Specs.V1
 
 /-- Find a short navigate through actual goto buttons, with visited-node pruning. -/
 def navigate (p : Program) (origin target : ScreenId) : List Event :=
+  let target := Blueprint.host target
+  let origin := Blueprint.host origin
   let paths : List (ScreenId × List Event) := [(origin, [])]
   let paths := (List.range (specV1.design.maxDepth + 1)).foldl (fun paths _ =>
     let next := paths.flatMap fun (id, es) => (p.screen? id).toList.flatMap fun s =>
@@ -19,11 +21,12 @@ def navigate (p : Program) (origin target : ScreenId) : List Event :=
   ((paths.find? (·.1 == target)).map (·.2)).getD []
 
 /-- Explicit samples enter real fields. Missing samples stay absent. -/
-def fillArtifact (p : Program) (screen : ScreenId) (drug : String := "lisinopril") (refillChoice : String := "approve") (sp : Spec := specV1) : List Event :=
-  (p.screen? screen).toList.flatMap fun sc => sc.components.flatMap fun c =>
+def fillArtifact (p : Program) (screen : ScreenId) (drug : String := "lisinopril") (refillChoice : String := "approve") (sp : Spec := specV1) (f : Facts := hospital) : List Event :=
+  (p.screen? (Blueprint.host screen)).toList.flatMap fun sc =>
+    (sc.components.filter fun c => c.id.startsWith (screen ++ ".")).flatMap fun c =>
     match c.kind with
     | .field e _ _ =>
-      let sample := if e == "drug" then some drug else if e == "refillDecision" then some refillChoice else
+      let sample := if e == "patientIdReentry" then some (f.identity.initials ++ "/" ++ f.identity.sex ++ "/" ++ toString f.identity.ageYears) else if e == "weight" then f.weightToday?.map (fun (w, _) => toString (w / 10) ++ "." ++ toString (w % 10)) else if e == "drug" then some drug else if e == "refillDecision" then some refillChoice else
         (LegalExamples.values.find? (·.1 == e)).map (·.2)
       match sample, sp.element? e with
       | some text, some el => (parseValue el.kind text).toList.map (.enter c.id)
@@ -35,8 +38,9 @@ def artifactWalk (screen commit : String) (p : Program := canonicalV1)
     (drug : String := "lisinopril") (sp : Spec := specV1) : State :=
   let role := ((sp.commit? commit).map (fun (cs : CommitSpec) => cs.roles.headD Role.physician)).getD .physician
   let u : User := { id := "doctor1", role }
-  let es := navigate p "home" screen ++ fillArtifact p screen drug (if commit == "denyRefill" then "deny" else "approve") sp
-  finish (run es p hospital u sp) screen commit p hospital u sp
+  let f := FeatureExamples.forCommit hospital commit
+  let es := navigate p "home" screen ++ fillArtifact p screen drug (if commit == "denyRefill" then "deny" else "approve") sp f
+  finish (run es p f u sp) screen commit p f u sp
 
 /-- Every new artifact action; original commits have detailed W1–W7 walks. -/
 def newArtifacts : List (ScreenId × CommitId) :=

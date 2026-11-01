@@ -44,9 +44,12 @@ def selfCosign : Program := seed 5 <|
 def staleWeight : Program := seed 6 <| (base 6).updateScreen "w5Rooming" fun s =>
   s.updateComp "w5Rooming.weight" fun c =>
     { c with kind := .field "weight" (.fixed 0) (.fromRecord "weightYesterday") }
-/-- 7: Remove the only route to the refill decision. -/
-def unreachableRefill : Program := seed 7 <| (base 7).updateScreen "w7Review" fun s =>
-  s.dropComp "w7Review.decide"
+/-- 7: Remove every route to the refill decision, including relocated artifact
+links. The unsafe mutation still strands the clinician before the decision. -/
+def unreachableRefill : Program := seed 7 <|
+  { base 7 with screens := (base 7).screens.map fun s =>
+      { s with components := s.components.filter fun c =>
+          c.kind != .button (.goto "w7Decision") } }
 /-- 8: Forge consent with a macro and remove the sign-screen anticoagulants. -/
 def forgedConsent : Program := seed 8 <|
   ((base 8).addMacro {
@@ -144,6 +147,50 @@ def defaultRefillEligibility : Program := seed 24 <| (base 24).updateScreen "w7D
   s.updateComp "w7Decision.legal.refillScheduleEligibility" fun c =>
     { c with kind := .field "refillScheduleEligibility" (.fixed 0) (.default "notScheduleII") }
 
+/-- 25: Continue restraint with a misleading reset label and no release link.
+The durable original anchor still expires; a new UI episode cannot reset it. -/
+def restartRestraintClock : Program := seed 25 <| (base 25).updateScreen "feature.continueViolentRestraint" fun s =>
+  { s with components := s.components.filterMap fun c =>
+      if (match c.kind with | .button (.goto _) | .button .back | .«macro» _ => true | _ => false) then none
+      else some (if c.kind == .button (.commit "continueViolentRestraint") then
+        { c with label := "Restart four-hour clock and continue" } else c) }
+
+/-- 26: A current-looking H&P attestation cannot replace stale event evidence. -/
+def stalePreoperativeHp : Program := seed 26 <|
+  (forPersona Specs.V1.specV1 canonicalV1 "seed26" .surgeon).updateScreen "w6PreOp" fun s =>
+    s.updateComp "w6PreOp.hpUpdate" fun c => { c with label := "H&P current (copied forward)" }
+
+/-- 27: Offer filling an expired Schedule III-V prescription without a new-Rx route. -/
+def expiredControlledFill : Program := seed 27 <| (base 27).updateScreen "feature.dispenseScheduleIIItoV" fun s =>
+  { s with components := s.components.filter fun c =>
+      match c.kind with | .button (.goto _) | .button .back | .«macro» _ => false | _ => true }
+
+/-- 28: The age-specific minor-consent authority is mislabeled as available at any age. -/
+def underageMinorConsent : Program := seed 28 <| (base 28).updateScreen "feature.authorizeMinorMentalHealthCare" fun s =>
+  { s with components := s.components.filterMap fun c =>
+      match c.kind with
+      | .button (.goto _) | .button .back | .«macro» _ => none
+      | _ => some (if c.id == "feature.authorizeMinorMentalHealthCare.feature.minorConsentDecision" then
+          { c with label := "Minor self consent (any age)" } else c) }
+
+/-- 29: A malformed Gregorian birth date is proposed as a default. -/
+def invalidBirthDate : Program := seed 29 <| (base 29).updateScreen "feature.updateDemographics" fun s =>
+  s.updateComp "feature.updateDemographics.feature.birthDate" fun c =>
+    { c with kind := .field "birthDate" (.fixed 0) (.default "2026-02-30") }
+
+/-- 30: Replace the mandated weekly oral-methotrexate default with daily. -/
+def dailyMethotrexateDefault : Program := seed 30 <| (base 30).updateScreen "feature.signOralMethotrexate" fun s =>
+  s.updateComp "feature.signOralMethotrexate.feature.oralMethotrexateFrequency" fun c =>
+    { c with kind := .field "oralMethotrexateFrequency" (.fixed 0) (.default "daily") }
+
+/-- 31: Keep the old result summary while hiding complete component rows. -/
+def hiddenResultComponents : Program := seed 31 <| (base 31).updateScreen "w2Result" fun s =>
+  s.updateComp "w2Result.feature.groupedResultComponents" fun c => { c with size := .tiny }
+
+/-- 32: Obscure the semantic prescription signing label. -/
+def misleadingSigningLabel : Program := seed 32 <| (base 32).updateScreen "w1Sign" fun s =>
+  s.updateComp "w1Sign.commit.signOrders" fun c => { c with label := "Continue" }
+
 /-- Stable filenames for the original sixteen seeds and eight legal regressions. -/
 
 def programs : List (String × Program) :=
@@ -158,8 +205,12 @@ def programs : List (String × Program) :=
    ("17-no-restraint-care-plan", noRestraintCarePlan), ("18-no-op-technique", noOpTechnique),
    ("19-no-vaccine-provider-address", noVaccineProviderAddress), ("20-no-administration-time", noAdministrationTime),
    ("21-no-controlled-strength", noControlledStrength), ("22-hidden-signing-notice", hiddenSigningNotice),
-   ("23-no-telehealth-consent", noTelehealthConsent), ("24-default-refill-eligibility", defaultRefillEligibility)]
-#guard programs.length == 24
+   ("23-no-telehealth-consent", noTelehealthConsent), ("24-default-refill-eligibility", defaultRefillEligibility),
+   ("25-restart-restraint-clock", restartRestraintClock), ("26-stale-preoperative-hp", stalePreoperativeHp),
+   ("27-expired-controlled-fill", expiredControlledFill), ("28-underage-minor-consent", underageMinorConsent),
+   ("29-invalid-birth-date", invalidBirthDate), ("30-daily-methotrexate-default", dailyMethotrexateDefault),
+   ("31-hidden-result-components", hiddenResultComponents), ("32-misleading-signing-label", misleadingSigningLabel)]
+#guard programs.length == 32
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
 #guard !(reachable unreachableRefill "home").contains "w7Decision"

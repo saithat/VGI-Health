@@ -27,6 +27,12 @@ for (const [name, file] of [
     await expect(
       page.getByRole(screen.modal ? "dialog" : "main"),
     ).toBeVisible();
+    // Preserve the initial viewport as well as the task view for layout review.
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    await page.screenshot({
+      path: `shots/${name}-load.png`,
+      animations: "disabled",
+    });
     // Focus the clinical task rather than the shared longitudinal chart panels.
     const focus =
       name === "p1-rooming"

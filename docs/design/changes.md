@@ -627,8 +627,9 @@ are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.
   `confirm`, and `ack` identify the existing interpreter events without adding
   fields to the owner-approved node types. `nav` and `macro` retain their specified
   roles. Tab labels occupy actual indexes, including sparse tab indexes.
-- The official GenTS generator already exports Render.Types after main's merge;
-  no core generator change was necessary. Generated output is regenerated.
+- Minimal allowed GenTS addition: import Render.Fhir, include Render.Json and
+  Render.Fhir in sourceModules, and require UiNode/UiScreen/FactsInput exports.
+  Regenerated output includes 141 types and 40 typed JSON samples.
 - Shown items are retained exactly once, with no semantic deduplication. Groups
   and selected tab bodies nest children in component order; malformed orphan or
   out-of-order components remain visible at workspace level. A component banner
@@ -649,3 +650,37 @@ component. D1 guarantees identifier fields, not invented values: empty input
 identifiers remain empty. UiScreen has one banner field and UiNode has no banner
 constructor; the AppShell must place this landmark first. JSON object key order
 is not a layout instruction.
+## Content pass 2: five newly available rule families
+
+V1 now composes the reviewed feature mappings under `Ehr/Specs/Rules/` with
+all first-pass declarations. V1.1/V2 inherit the resulting spec. Event windows
+and durable clocks are appended to CommitSpec; validators are conjoined with
+existing constraints; clinical entries, structured payloads and exact signing
+labels add hard stops. The content-owned Extends relation additionally requires
+identical display obligations, strengthening the release audit.
+
+The canonical adds related artifact screens and conditional human documentation,
+with required payload/review content pinned before commit controls. Separate
+refusal, restraint release, oxygen stop, detention release and expired-Rx decision
+routes preserve documentation after eligibility failure/expiry. Eight permanent
+mutations extend the original seed corpus. Test-only record evidence is explicit
+and never comes from typing an attestation. Clinical, evidence and payload adapter
+integration, source-row coverage and remaining AST limitations are CR-16 work;
+per-rule status/reasons are in catalog.json. No runtime/core/property statement
+was edited by content.
+
+### App integration follow-up
+
+Merged app-owned semantic painter and fidelity gate (`f810f92`) into render;
+app build/lint and all 124 unit tests now pass, including the 24-seed catalog.
+The real P1 rooming/orders/sign samples pass 8 desktop/narrow ARIA checks.
+Group-header buttons dispatch the existing `Event.click` (there is no
+`Event.toggle`); confirm and ack roles select their actual events.
+
+The semantic field kind now preserves `identity`, `scan`, and `cosign`, and
+`code:<choice>|<choice>...` carries the existing Lean formulary choices. This
+uses section 10's existing String field; no UiNode type change was made. Other
+coded sets retain the previous free-code entry behavior. The clinical banner
+also emits allergy records with reactions/status, and explicit code status
+from `Facts.record["codeStatus"]` when supplied, otherwise `Not recorded`.
+React does not need to infer these clinical fields.

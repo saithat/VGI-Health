@@ -27,7 +27,9 @@
       ["Coverage", ""],
       ["Encounter", "AMB"],
       ["Attending", "Dr. Laurena Anderson"],
-      ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]],
+      ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
+      ["Allergies", "No allergy records on file"],
+      ["Code status", "Not recorded"]]],
     "label": "Patient banner",
     "infoId": "patientBanner",
     "display": "summary",
@@ -986,7 +988,8 @@
        "provenance": null,
        "pendingConfirm": false,
        "label": "Medication",
-       "kind": "code",
+       "kind":
+       "code:amoxicillin|cefazolin|ceftriaxone|azithromycin|vancomycin|lisinopril|metformin|atorvastatin|warfarin|apixaban|enoxaparin|heparin|insulin glargine|insulin lispro|morphine|hydromorphone|oxycodone|hydrocodone-acetaminophen|tramadol|lorazepam|alprazolam|ondansetron|acetaminophen|ibuprofen|albuterol",
        "humanOnly": false,
        "comp": "w1Orders.drug"}},
      {"field":
@@ -1741,4 +1744,6 @@
   ["Coverage", ""],
   ["Encounter", "AMB"],
   ["Attending", "Dr. Laurena Anderson"],
-  ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]}
+  ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
+  ["Allergies", "No allergy records on file"],
+  ["Code status", "Not recorded"]]}

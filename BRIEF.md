@@ -167,6 +167,12 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 
 **Realism references:** OpenEMR (structure and density); ONC §170.315(g)(3) usability test tasks (task scripts); general production-EHR conventions. Do not copy any vendor's proprietary screens. If possible, have a clinician sanity-check the canonical UI and specs.
 
+### A working EHR on the live backend (owner decision, Oct 31)
+A clinician can be handed the canonical EHR and do real workflows against the local Medplum backend: notes, orders (meds, labs, imaging), diagnoses (ICD-10-CM), CPT / level of service, admit and discharge (inpatient encounters, beds, discharge prescriptions), MAR administration with barcode scans and cosigns, immunizations, results acknowledgment and patient messages, refills, consents, and review receipts. Live mode is the default: sign in as a persona; worklists come from Medplum (seeded from the world generator). On each commit, the app's data module writes the FHIR records in one transaction (a trusted, integration-tested mapping). Lean still decides every screen, guard, and alert. Offline replay remains for the dashboard and no-Docker demos. Only the CPT codes the workflows need ship, with our own labels (CPT is AMA-licensed); ICD-10-CM is public domain.
+
+### The canonical is the certified baseline (owner decision, Oct 31)
+Every persona projection of the canonical, in every release (v1, v1.1, v2), must pass the FULL checker before anything else: properties 1–12, alerts A1–A4, and design rules D1–D6 (including D5 sane navigation). The canonical is what every clinician starts from on Day 1 and what a failed migration falls back to. Personalization only builds up from it. It keeps realistic friction for the agent to optimize, but it never violates a rule.
+
 ### Chart shell (always present)
 - **Patient banner:** name, DOB, MRN, age/sex, photo placeholder, allergies badge, code status, isolation, preferred language, PCP, coverage, care-gap count, critical flags. On inpatient screens it also shows room/bed, attending, and weight with its date.
 - **Sidebar:** active problems, current meds, recent vitals, last visit, upcoming appointments, open orders, alerts.
@@ -424,7 +430,7 @@ Daily variability: volume (busy and quiet days), acuity, no-shows and add-ons, n
 
 ### 8.3 Fair comparison
 - **Clinical decisions are independent of the UI version.** Each scenario fixes what is ordered, given, or acknowledged, and the disposition. The interface changes only how long those choices take, so the world evolves identically under every UI version.
-- **Floor:** the clicks, keystrokes, and scrolls (and KLM time) of only the human-only steps plus the genuine clinical choices. Report every version as % above the floor, for each metric.
+- **Baseline vs theoretical minimum:** the *baseline* is the canonical UI (certified; Day 1 for everyone). The *theoretical minimum* (called "floor" in code and data) is the clicks, keystrokes, scrolls, and KLM time of only the human-only steps plus the genuine clinical choices. Report every version against both: the saving vs the baseline, and the % above the theoretical minimum.
 
 ### 8.4 Evaluation integrity (no leakage)
 - The agent learns from the traces of days ≤ d (**train**).
@@ -636,7 +642,7 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 
 - [ ] `make install && make run` works on a clean clone with Docker. After install, the demo opens in replay mode with no API key and no internet.
 - [ ] The EHR reads patient data from Medplum and writes commits back (orders, administrations, receipts as Provenance).
-- [ ] The EHR meets the density targets on demo paths and passes the checker.
+- [ ] Every persona projection of the canonical (v1, v1.1, v2) passes the full checker, including D1–D6. It is the certified baseline and the migration fallback.
 - [ ] Seeded bad programs fail, with counterexamples replayed on rendered screens, and the app's hard stop blocks each unsafe commit.
 - [ ] Every deployed version has a certificate, and re-checking it returns ok. The app refuses to load a program whose certificate doesn't match.
 - [ ] The app's screen logic is the Lean interpreter compiled to WASM (or option B, if the owner approved it). Native and WASM builds agree on thousands of random programs and click sequences.
