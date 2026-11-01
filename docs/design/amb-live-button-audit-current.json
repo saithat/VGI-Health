@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-01T12:53:13.878Z",
+  "generatedAt": "2026-11-01T13:18:18.225Z",
   "auditMode": "canonical-baseline",
-  "revision": "035a88c0808b5a521b7690db7a7502929ab6ba1d",
+  "revision": "b409cda6977b7799b7480adec77fc2a153b68b59",
   "mainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
-  "builtAt": "2026-11-01T12:42:18.211Z",
+  "builtAt": "2026-11-01T12:55:06.550Z",
   "leanHash": "5d7223699f028b058d55347bfa151dd9a37a29a4cc60f13e4c4570cef1390976",
   "counts": {
     "works": 1652,
@@ -36,7 +36,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
     },
     {
       "route": "/?audit=buttons",
@@ -516,7 +516,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
     },
     {
       "route": "/?audit=buttons",
@@ -1884,7 +1884,7 @@
       "kind": "a",
       "owner": "app",
       "status": "works",
-      "effect": "URL \u2192 /dashboard"
+      "effect": "URL \u2192 /dashboard?run=run1-P3&view=Evolution&persona=P3"
     },
     {
       "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
@@ -9096,7 +9096,7 @@
       "kind": "click / {\"button\":{\"action\":{\"markReviewed\":{\"info\":\"allergyList\"}}}}",
       "owner": "lean",
       "status": "works",
-      "effect": "POST /medplum/fhir/R4"
+      "effect": "Lean state changed; result \"ok\""
     },
     {
       "route": "/?audit=buttons",
@@ -11196,7 +11196,7 @@
       "kind": "click / {\"button\":{\"action\":{\"markReviewed\":{\"info\":\"allergyList\"}}}}",
       "owner": "lean",
       "status": "works",
-      "effect": "POST /medplum/fhir/R4"
+      "effect": "Lean state changed; result \"ok\""
     },
     {
       "route": "/?audit=buttons",
@@ -21159,7 +21159,7 @@
       "effect": "POST /medplum/fhir/R4"
     }
   ],
-  "scope": "App-shell controls and five current canonical v3 role projections; full active program/release equality. The separate live-agent request test was not run.",
+  "scope": "Clean completed app-shell census plus five current canonical v3 role projections; full active program/release equality. A prior quota-interrupted attempt is excluded. The separate live-agent request test was not run.",
   "sampleBudgetPerPersona": 48,
   "configurations": [
     {

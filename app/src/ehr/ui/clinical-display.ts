@@ -2,7 +2,7 @@
 export function cleanClinicalText(raw: string): string {
   return raw
     .replace(
-      /\s*\((?:finding|disorder|situation|procedure|qualifier value|observable entity)\)/gi,
+      /\s*\((?:finding|disorder|situation|procedure|qualifier value|observable entity|organism|substance)\)(?=\s*(?:$|[;:,·|—]|\())/gi,
       "",
     )
     .replace(

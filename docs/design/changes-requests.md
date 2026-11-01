@@ -2185,3 +2185,7 @@ The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release
 ### AMB M13: optional public field-source metadata
 
 `UiScreen.fieldSources` supplies public captions keyed to existing sourced fields. See the additive presentation contract. Exact raw provenance and all field flags remain in `UiNode.field`; D6 and the legacy HTML provenance contract are unchanged. Stock inputs use the supplied caption visibly and as their accessible description. The browser screenshot suite checks each rendered sourced field's description, including quantity inputs. Old JSON remains accepted. No FHIR projection, clinical control or D-rule is added.
+
+### AMB M14: terminology display and verbatim public captions
+
+The existing display fallback recognizes the observed SNOMED FSN tags `(organism)` and `(substance)` at term boundaries. Other qualifiers and recognized words inside running prose remain. Full clinical source strings/codes, row accessibility labels and native tooltips are retained. Public `fieldSources` captions bypass term cleanup, as do authored note/document bodies. This changes no Lean tree, guard, actor permission, capture, review, source projection or navigation action. The matched terminology baseline is preserved in `before-terms-*` images.

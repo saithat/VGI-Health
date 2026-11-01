@@ -395,7 +395,7 @@ export function FieldNode({
               className="provenance-chip"
               id={`field-source-${node.comp}`}
             >
-              <DisplayValue value={sourceCaption ?? node.provenance} />
+              {sourceCaption ?? node.provenance}
             </Badge>
           )}
           {node.pendingConfirm &&

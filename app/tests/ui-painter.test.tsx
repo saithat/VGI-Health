@@ -109,7 +109,7 @@ const field: NodeOf<"field"> = {
 
 it("shows Lean's public prefill source while retaining the raw field and confirm action", () => {
   const emit = vi.fn();
-  const source = "Source: Chart weight recorded today · chart as of 2026-11-01";
+  const source = "Source: Linked entry — Custom entry (finding)";
   const model: UiScreen = {
     banner: [["Patient", "Alex Morgan"]],
     nav: [],
@@ -122,7 +122,7 @@ it("shows Lean's public prefill source while retaining the raw field and confirm
         field: {
           ...field,
           value: "72.0",
-          provenance: "record:weightToday",
+          provenance: "linked:customEntry",
           pendingConfirm: true,
         },
       },
@@ -149,7 +149,7 @@ it("shows Lean's public prefill source while retaining the raw field and confirm
   expect(
     screen.getByRole("textbox", { name: field.label, description: source }),
   ).not.toBeNull();
-  expect(screen.queryByText("record:weightToday")).toBeNull();
+  expect(screen.queryByText("linked:customEntry")).toBeNull();
   fireEvent.click(
     screen.getByRole("button", {
       name: "Confirm prefilled value",
@@ -1117,7 +1117,7 @@ it("paints Lean review feedback as read-only status and retains supplied detail"
 
 it("retains clinical note bodies verbatim in ordinary and structured notes", () => {
   const body =
-    "Narrative retains the phrase (disorder).\nDirections quoted: 1, 1x per 1 d.\nLine three.";
+    "Narrative retains the phrase (disorder), (organism) and (substance).\nDirections quoted: 1, 1x per 1 d.\nLine three.";
   const { container } = paint([
     {
       info: {

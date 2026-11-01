@@ -1,7 +1,7 @@
 {
   "scope": "Fixed benchmark cases; exact only within the reported directed search spaces. KLM is effort on the minimum-click path, not a separate time minimum. Keystrokes are minimized separately.",
   "baselineRevision": "add0d2e",
-  "implementationRevision": "035a88c + public prefill captions",
+  "implementationRevision": "b409cda (M14 changes display only)",
   "command": "LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=8192 pnpm complexity --release-root releases",
   "before": {
     "suite": "union-workflows-v1",
