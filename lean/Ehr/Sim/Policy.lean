@@ -57,6 +57,17 @@ def receiptComplaints (ctx : Context) (s : State) (cm : CommitId) : List String 
           else "receipt does not satisfy this review"
       s!"{rq.info}: {reason}"
 
+/-- Temporal and durable-clock failures retain their named Core statuses.
+No UI entry or simulated acknowledgment manufactures external event evidence. -/
+def obligationComplaints (ctx : Context) (s : State) (cm : CommitId) : List String :=
+  (obligationViews ctx.sp ctx.facts s).filterMap fun o =>
+    if o.commit == cm && o.status != .met then
+      some s!"{cm}: obligation {o.requirement} is {reprStr o.status}"
+    else none
+
+def commitComplaints (ctx : Context) (s : State) (cm : CommitId) : List String :=
+  receiptComplaints ctx s cm ++ obligationComplaints ctx s cm
+
 def eventComp : Event → Option CompId
   | .click c | .confirm c | .enter c _ | .selectTab c _ => some c
   | _ => none
@@ -103,7 +114,7 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
   let (after, result) := step ctx.sp ctx.prog ctx.facts ctx.user .human before e
   let complaints := match e, result with
     | .click c, .blocked _ => match shownComp? ctx.sp ctx.prog ctx.facts before c with
-      | some { kind := .button (.commit cm), .. } => receiptComplaints ctx before cm
+      | some { kind := .button (.commit cm), .. } => commitComplaints ctx before cm
       | _ => []
     | _, _ => []
   { r with
@@ -173,7 +184,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
     | none =>
       let details := ctx.goals.commits.flatMap fun cm =>
         if out.state.commits.contains cm then [] else
-          receiptComplaints ctx out.state cm ++ [guardReason ctx.sp ctx.prog ctx.facts ctx.user out.state cm]
+          commitComplaints ctx out.state cm ++ [guardReason ctx.sp ctx.prog ctx.facts ctx.user out.state cm]
       return { out with complaints := out.complaints ++ details ++ [s!"{task.id}: no reachable unmet goal; incomplete"] }
     | some e =>
       if params.searchWhenBuried && pathLen ≥ 3 then

@@ -102,3 +102,5 @@ import Ehr.Sim.FactsTests
 #print axioms Ehr.Sim.displaysOk_history
 #print axioms Ehr.Sim.extraGuard_history
 #print axioms Ehr.Sim.obligationViews_history
+
+#print axioms Ehr.Sim.valueGoalMet_history

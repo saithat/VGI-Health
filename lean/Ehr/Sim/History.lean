@@ -40,6 +40,12 @@ Only the Back-navigation list is erased; captures and clock are preserved. -/
     elementValueValid facts (withHistory s h) el slot v = elementValueValid facts s el slot v := by
   simp only [elementValueValid, validationHolds_history]
 
+@[simp] theorem valueGoalMet_history (sp facts user s h) :
+    valueGoalMet sp facts user (withHistory s h) = valueGoalMet sp facts user s := by
+  funext g
+  simp only [valueGoalMet, elementValueValid_history]
+  rfl
+
 @[simp] theorem validationsOk_history (sp facts s h) :
     validationsOk sp facts (withHistory s h) = validationsOk sp facts s := by
   simp only [validationsOk, elementValueValid_history]

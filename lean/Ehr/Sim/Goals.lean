@@ -259,6 +259,65 @@ def checkFit (sp : Spec) (facts : Facts) (user : User) (g : ValueGoal) : ValueGo
   | _, none => (g, [s!"element {g.element} is not in the spec"])
   | none, _ => (g, [])
 
+/-- Capture dependencies of a clinical predicate. A scenario-supplied choice
+must actually be entered before it can make another requirement inapplicable. -/
+def predicateCaptures : ClinicalPredicate → List (ElementId × Nat)
+  | .capturedCode e slot _ => [(e, slot)]
+  | .and l r | .or l r => predicateCaptures l ++ predicateCaptures r
+  | .not p => predicateCaptures p
+  | _ => []
+
+def whenCaptures : When → List (ElementId × Nat)
+  | .clinical p => predicateCaptures p
+  | _ => []
+
+/-- Keep scenario-chosen predicate inputs as real goals, even when the spec
+uses them only as conditions. Unknown record facts stay unknown. -/
+def clinicalChoiceGoals (sp : Spec) (facts : Facts) (user : User)
+    (choices : TaskChoices) (med? : Option OrderChoice) (commits : List CommitId) : List ValueGoal :=
+  dedupGoals <| commits.flatMap fun cm =>
+    let entries := (sp.entries.filter (·.commit == cm)).flatMap (fun r => whenCaptures r.when)
+    let reviews := (sp.reviews.filter (·.commit == cm)).flatMap (fun r => whenCaptures r.when)
+    let temporal := ((sp.commit? cm).bind (·.temporal?) |>.getD []).flatMap
+      (fun r => r.when?.toList.flatMap predicateCaptures)
+    let expiry := ((sp.commit? cm).bind (·.expiry?) |>.getD []).flatMap
+      (fun r => r.when?.toList.flatMap predicateCaptures)
+    let displays := (sp.displays?.getD []).flatMap fun r =>
+      if displayScopeActive facts (some cm) r.scope then r.when?.toList.flatMap predicateCaptures else []
+    let alerts := (sp.alerts.filter (·.commit == cm)).flatMap fun a =>
+      match a.cond with | .clinical p => predicateCaptures p | _ => []
+    (entries ++ reviews ++ temporal ++ expiry ++ displays ++ alerts).filterMap fun (e, slot) => do
+      let el ← sp.element? e
+      let value ← (choices.orders[slot]?.bind (orderValue e)).or (taskValue facts user choices med? el)
+      -- capturedCode can only use a code; do not turn an arbitrary placeholder
+      -- into clinical evidence for a condition.
+      let .code _ := value | none
+      pure { element := e, slot? := some slot, value? := some value, commit := cm }
+
+/-- Construct candidates only for unspecified values. Every candidate is checked
+by Core's validator below; this is not a second implementation of validation. -/
+def validationCandidates (facts : Facts) (hyp : State) (slot : Nat) : Validation → List Value
+  | .codeMember system version => (facts.codeTables?.getD []).flatMap fun table =>
+      if table.system == system && table.version == version then table.codes.map .code else []
+  | .quantityRange unit lo hi => [.qty lo unit, .qty hi unit]
+  | .formulationUnit e pairs => pairs.filterMap fun (code, unit) =>
+      if validationCapture hyp slot e == some (.code code) then some (.qty 10 unit) else none
+  | .doseByWeight weight factor cap unit =>
+      match validationCapture hyp 0 weight with
+      | some (.qty w .kg) => [.qty (min cap (w * factor / 10)) unit]
+      | _ => []
+  | .supplyDaysCeil quantity dose frequency =>
+      match validationCapture hyp slot quantity, validationCapture hyp slot dose,
+          validationCapture hyp slot frequency with
+      | some (.qty q u), some (.qty d u'), some (.code f) =>
+          match freqPerDay f with
+          | some n => if u == u' && 0 < d && 0 < n then
+              [.qty (((q + d * n - 1) / (d * n)) * 10) .none] else []
+          | none => []
+      | _, _, _ => []
+  | .and l r => validationCandidates facts hyp slot l ++ validationCandidates facts hyp slot r
+  | _ => []
+
 /-- Resolve every applicable allowed-value constraint for an otherwise
 unspecified entry. Explicit clinical choices are preserved and a conflict is
 reported, rather than silently changed to make a guard pass. -/
@@ -268,21 +327,27 @@ def constrainGoal (sp : Spec) (facts : Facts) (user : User) (hyp : State)
   | none => (g, [])
   | some el =>
     let requirements := sp.entries.filter fun rq =>
-      rq.commit == g.commit && rq.element == g.element && rq.allowed?.isSome &&
+      rq.commit == g.commit && rq.element == g.element &&
         (if rq.perOrderLine then (orderLines hyp).any fun (slot, drug) =>
           (g.slot?.isNone || g.slot? == some slot) && lineMatches facts hyp rq.when slot drug
          else whenHolds facts hyp rq.when)
-    let fits := fun v => requirements.all (fun rq => entryValueAllowed el rq.allowed? v)
-    if requirements.isEmpty then (g, []) else
+    let fits := fun v => valueSatisfies facts user el.kind v &&
+      elementValueValid facts hyp el (g.slot?.getD 0) v &&
+      requirements.all (fun rq => entryValueAllowed el rq.allowed? v)
+    if requirements.all (·.allowed?.isNone) && el.validation?.isNone then (g, []) else
     match g.value? with
     | some v => if fits v then (g, []) else
-        (g, [s!"chosen value for {g.element} conflicts with an allowed-value requirement"])
+        (g, [s!"chosen value for {g.element} conflicts with a value or validation requirement"])
     | none =>
-      let candidates := requirements.flatMap fun rq =>
-        (rq.allowed?.getD []).filterMap (parseValue el.kind)
+      let candidates := (requirements.flatMap fun rq =>
+        (rq.allowed?.getD []).filterMap (parseValue el.kind)) ++
+        (el.defaultValue?.bind (parseValue el.kind)).toList ++
+        (el.recordFact?.bind (recordValue facts el.kind)).toList ++
+        [placeholder facts user el.kind] ++
+        (el.validation?.toList.flatMap (validationCandidates facts hyp (g.slot?.getD 0)))
       match candidates.find? (fun v => valueSatisfies facts user el.kind v && fits v) with
       | some v => ({ g with value? := some v }, [])
-      | none => (g, [s!"no value for {g.element} satisfies all applicable allowed-value requirements"])
+      | none => (g, [s!"no candidate for {g.element} satisfies all applicable value and validation requirements"])
 
 /-- **The goals of one episode.** `orders` are the order lines (empty for an
 administration); `med?` is the medication given (W4). `facts` must already be
@@ -293,7 +358,8 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
   let orderGoals := (List.range orders.length).zip orders |>.flatMap fun (i, o) =>
     orderElements.filterMap fun e => (orderValue e o).map fun v =>
       { element := e, slot? := some i, value? := some v, commit := "" : ValueGoal }
-  let hyp0 := hypothetical orders orderGoals
+  let clinical := clinicalChoiceGoals sp facts user choices med? commits
+  let hyp0 := hypothetical orders (dedupGoals (orderGoals ++ clinical))
   let raw := commits.flatMap fun c =>
     (sp.entries.filter (·.commit == c)).flatMap fun rq =>
       match sp.element? rq.element with
@@ -332,15 +398,20 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
     if o.kind?.getD .medication == .medication then [] else
     ["orderKind", "orderCode"].map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
-  let checked := (dedupGoals (raw ++ advance ++ explicitChoices ++ services)).map fun g =>
-    let (g, problems) := checkFit sp facts user g
-    let (g, constraints) := constrainGoal sp facts user hyp0 g
+  let base := dedupGoals (raw ++ advance ++ explicitChoices ++ services)
+  let clinical := clinical.filter fun g => !base.any (fun b => b.element == g.element &&
+    (b.slot?.isNone || b.slot? == g.slot?))
+  let fitted := (base ++ clinical).map (checkFit sp facts user)
+  let hypValues := hypothetical orders (dedupGoals (orderGoals ++ fitted.map (·.1)))
+  let checked := fitted.map fun (g, problems) =>
+    let (g, constraints) := constrainGoal sp facts user hypValues g
     (g, problems ++ constraints)
   let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
   -- Final alerts use the values actually required by this task, not uncaptured
   -- order choices. Refill approval now explicitly requires the requested drug.
-  let hyp := hypothetical [] values
+  let hyp := hypothetical [] (values.map fun g =>
+    { g with value? := some (goalValue sp facts user g) })
   let acks := sp.alerts.flatMap fun al =>
     if al.tier == .interruptive && commits.contains al.commit then
       (alertKeys facts hyp al.cond).map (al.id, ·)
@@ -402,7 +473,8 @@ def capturedMeets (facts : Facts) (user : User) (el : ElementSpec) (g : ValueGoa
 /-- The value goal is met in this state. -/
 def valueGoalMet (sp : Spec) (facts : Facts) (user : User) (s : State) (g : ValueGoal) : Bool :=
   match sp.element? g.element with
-  | some el => s.captured.any (capturedMeets facts user el g)
+  | some el => s.captured.any fun x => capturedMeets facts user el g x &&
+      elementValueValid facts s el x.slot x.value
   | none => false
 
 /-- All value goals of commit `c` are met. -/

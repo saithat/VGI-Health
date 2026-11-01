@@ -258,7 +258,9 @@ theorem T9_certifiedSearch (ctx space obj start bound c)
     searchMoves ctx space (withHistory s h) = searchMoves ctx space s := by
   simp only [searchMoves, forget_withHistory]
 
-@[simp] theorem done_history (ctx : Context) (s h) : ctx.done (withHistory s h) = ctx.done s := rfl
+@[simp] theorem done_history (ctx : Context) (s h) : ctx.done (withHistory s h) = ctx.done s := by
+  simp only [Context.done, goalsMet, valueGoalMet_history]
+  rfl
 
 @[simp] theorem weight_history (ctx obj s e h) :
     eventWeight ctx obj (withHistory s h) e = eventWeight ctx obj s e := by

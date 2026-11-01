@@ -141,6 +141,39 @@ exemption code is surgery-7-day; supplies above seven days use report review.
 Allowed-value requirements (including zero Schedule II refills) constrain
 unspecified goals; conflicting explicit clinical choices remain complaints.
 
+## Current Core contracts
+
+Goals and policy use Core's `clinicalApplies`, `temporalStatus`, `expiryStatus`,
+`elementValueValid` and display guard. Bound age/service/payer/risk facts retain
+Core's unknown policy: unknown applies; a missing fact is never inferred from
+an unrelated identity or encounter label. Scenario-chosen captured-code inputs
+used by conditions become real field goals, including inputs used only by a
+temporal, expiry, display or alert contract. Only their actual UI captures can
+make the commit guard's condition false.
+
+For unspecified constrained fields, candidate values come from allowed lists,
+specified defaults, declared record sources, and constructive code/range or
+relational candidates. Core checks every candidate. Explicit scenario choices
+that conflict remain goals and produce complaints. This is a finite candidate
+policy, not a complete constraint solver. Pending valid prefills can still be
+confirmed. Relational entries wait for their required source captures; completed
+value goals also recheck Core validation against the current state.
+
+External event evidence, calendars, artifact versions, durable order clocks and
+payloads stay in the trusted Facts input across episode construction. The
+simulator does not generate evidence from an attestation or renew an expired
+order. KLM time and interruptions advance the real interpreter clock before an
+event, so expiry can block a previously ready commit. Incomplete tasks report
+Core's named missing/invalid/overdue obligations. Fixed-clock minimum search
+keeps its documented time model and never claims to schedule missing external
+events. Structured display panels participate in navigation even when no review
+requirement names them; receipts do not bypass their independent contracts.
+
+`FeatureTests.lean` covers completing and rejected runs for all five groups,
+including conditional event obligations, current versus stale clinical/event
+sources, explicit invalid choices, relational dependencies, collapsed payloads,
+expiry across interruptions and certified temporal minimum search.
+
 ## Verification
 
 ```sh
