@@ -1,6 +1,13 @@
 ## Acute numeric-scale choices (2026-11-01)
 
+## Acute administration encounter consistency (2026-11-01)
+
+The selected-dose, MAR and PRN readers now reject an administration with explicitly different or unresolved context despite an exact selected-order reference. Missing optional context still uses the exact order. `acute-projection:v7` invalidates stale read-only payloads. No controls, specs, clinical state, theorem statements or task policies change.
+
+
 Lean now emits the existing code-option payload for the spec-defined ESI 1–5 and pain 0–10 scales. This fixes empty numeric menus without a default, capture, receipt, commit or clinical-rule change. Other unenumerated code systems keep free entry. Native/WASM and browser tests check exact options, no automatic selection and ordinary human code entry. No React choice-set inference or new control kind is introduced.
+
+Presentation follow-up: an empty `present.table` PRN panel retains a generic Record header. Prefer the existing quiet empty-info treatment while retaining its semantic note and every supplied control. The adverse-context screenshots show this minor fallback limitation.
 
 ## Acute MAR SIG and PRN projection (2026-11-01)
 

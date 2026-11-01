@@ -43,6 +43,21 @@ try {
       assert.equal(order?.get('PRN indication'), 'Pain');
       assert.equal(order?.get('Instructions'), '650 mg by mouth every 6 hours as needed for pain');
       assert.equal(order?.has('Frequency'), false);
+      const conflictingBundle = structuredClone(read(join(fixtures, `${persona}.json`)));
+      for (const entry of conflictingBundle.entry) {
+        if (entry.resource.resourceType === 'MedicationAdministration') {
+          entry.resource.context = { reference: 'Encounter/another-admission' };
+        }
+      }
+      const conflict = equal('facts', { bundle: conflictingBundle,
+        context: read(join(fixtures, `${persona}-context.json`)) });
+      const payload = info => (conflict.facts.infoPayloads.find(item => item.info === info) ?? { rows: [] });
+      assert.equal(payload('prnHistory').rows.length, 0, 'another encounter cannot enter PRN history');
+      assert.equal(payload('marDoseDetails').rows.length, 1, 'selected dose retains only its ordered details');
+      assert.equal(payload('marSchedule').rows.length, 4, 'all selected-encounter orders remain visible');
+      assert.ok(payload('marSchedule').rows.every(row => row.fields.every(([key, value]) =>
+        ['Medication', 'Dose', 'Route', 'Instructions', 'Category', 'Order status', 'PRN indication'].includes(key) ||
+        !value.startsWith('Given') && !value.startsWith('Held'))), 'other-encounter actual doses stay out of this MAR');
     }
     const base = { spec: read(join(root, 'releases/v1/spec.json')), program,
       user: read(join(fixtures, `${persona}-user.json`)), ...source };
@@ -111,7 +126,7 @@ try {
     assert.equal(states.size, program.screens.length, `${persona}: every acute screen reachable`);
   }
   assert.equal(views, 20);
-  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, 14 reachable screens (including 2 Home views), 2 Imaging tabs, 2 unconfirmed nursing outlines and 2 manually selected numeric scales agree; navigation adds no human attestation or commits.\n');
+  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, conflicting administration context, 14 reachable screens (including 2 Home views), 2 Imaging tabs, 2 unconfirmed nursing outlines and 2 manually selected numeric scales agree; navigation adds no human attestation or commits.\n');
 } finally {
   rmSync(fixtures, { recursive: true, force: true });
 }

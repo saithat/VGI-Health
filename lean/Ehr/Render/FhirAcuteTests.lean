@@ -60,6 +60,21 @@ def administration : Json := Json.mkObj [("resourceType", .str "MedicationAdmini
 #guard (acuteDoseRows context (resources ++ [administration]) patient).getLast!.lookup "Status" == some "Given"
 #guard !(acuteDoseRows context resources patient).any (fun row => row.lookup "Status" == some "Given")
 
+/-- A request link cannot move an explicitly different encounter's dose into
+the selected encounter's dose detail, MAR or PRN history. Missing optional
+context remains supported through the exact selected order. -/
+def conflictingAdministration := administration.setObjVal! "context" (reference "Encounter/previous")
+def conflictingAdministrationSources := resources ++ [conflictingAdministration]
+#guard (acuteDoseRows context conflictingAdministrationSources patient).length == 1
+#guard (acuteMarRows context conflictingAdministrationSources patient).all (fun row =>
+  !row.any (fun (_, value) => value.startsWith "Given"))
+#guard (((acuteSupportingRows context conflictingAdministrationSources patient).lookup "prnHistory").getD []).isEmpty
+#guard (((acuteSupportingRows context (resources ++ [administration]) patient).lookup "prnHistory").getD []).length == 1
+#guard (acuteDoseRows context (resources ++ [administration.setObjVal! "context"
+  (reference "Encounter/ed-1")]) patient).length == 2
+#guard (acuteDoseRows context (resources ++ [administration.setObjVal! "context"
+  (Json.mkObj [])]) patient).length == 1
+
 /-- No flag is inferred from a numeric result or another patient's observation. -/
 def glucose (subject : String) : Json := Json.mkObj [("resourceType", .str "Observation"),
   ("id", .str "glucose-1"), ("subject", reference subject), ("status", .str "final"),

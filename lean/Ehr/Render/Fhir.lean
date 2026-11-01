@@ -1171,6 +1171,13 @@ def acuteInEncounter (resource encounter : Json) : Bool :=
   acuteRefersTo (field resource "context") encounter ||
   (arr (field resource "context") "encounter").any (acuteRefersTo · encounter)
 
+/-- An exact order link can supply missing administration context, but cannot
+override an explicitly different or unresolved administration context. -/
+def acuteAdministrationMatchesOrder (encounter order administration : Json) : Bool :=
+  acuteRefersTo (field administration "request") order &&
+    (field administration "context" == .null ||
+      acuteRefersTo (field administration "context") encounter)
+
 /-- Patient-scoped sources; another patient's records never enter these panels. -/
 def acutePatientResources (rs : List Json) (patient : Json) : List Json :=
   rs.filter fun r => acuteRefersTo (field r "subject") patient ||
@@ -1313,7 +1320,9 @@ def acuteDoseRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List 
         match j with | .str t => some (dayOf t ++ " " ++ sub t 11 5) | _ => none)),
       ("Order status", str order "status")]] ++
     ((ofType "MedicationAdministration" (acutePatientResources rs patient)).filter fun r =>
-      str r "status" != "entered-in-error" && acuteRefersTo (field r "request") order).map acuteAdministrationRow
+      str r "status" != "entered-in-error" &&
+      (acuteEncounter ctx rs patient).any (fun encounter =>
+        acuteAdministrationMatchesOrder encounter order r)).map acuteAdministrationRow
 
 /-- A participant is assigned only from its explicit role coding. -/
 def acuteParticipant (encounter : Json) (role : String) : String :=
@@ -1532,13 +1541,16 @@ actual records. A Task status never becomes a Given administration. -/
 def acuteMarCells (ctx : FactsContext) (sources : List Json) (order : Json) : List (String × String) :=
   let instruction := first order "dosageInstruction"
   let tasks := acuteMarTaskEvents ctx sources order
+  let encounter := sources.find? fun resource => resourceType resource == "Encounter" &&
+    acuteRefersTo (field order "encounter") resource
   ((arr (field instruction "timing") "event").filterMap fun event => match event with
       | .str time => if acuteMarDay ctx time && !tasks.any (·.1 == time) then
           some (acuteHourColumn time, "Scheduled · " ++ (if time.length ≥ 16 then sub time 11 5 else time))
         else none
       | _ => none) ++ tasks.map (fun (time, status) => (acuteHourColumn time, status)) ++
     ((ofType "MedicationAdministration" sources).filter fun administration =>
-      acuteRefersTo (field administration "request") order).filterMap (acuteAdminCell ctx)
+      encounter.any (fun current =>
+        acuteAdministrationMatchesOrder current order administration)).filterMap (acuteAdminCell ctx)
 
 /-- Empty hourly axis cells are layout, never scheduled doses. Separate supplied
 offsets remain separate axes; this code performs no time-zone conversion. -/
@@ -1679,7 +1691,9 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
     (acuteEncounter ctx rs patient).any (acuteInEncounter r) &&
     acutePrnInstruction (first r "dosageInstruction")
   let administrations := (ofType "MedicationAdministration" sources).filter fun r =>
-    str r "status" != "entered-in-error" && prnOrders.any (acuteRefersTo (field r "request"))
+    str r "status" != "entered-in-error" &&
+    (acuteEncounter ctx rs patient).any (fun encounter =>
+      prnOrders.any (fun order => acuteAdministrationMatchesOrder encounter order r))
   let handoffs := (ofType "DocumentReference" sources).filter fun r =>
     acuteHandoffDocument r && (acuteEncounter ctx rs patient).any (acuteInEncounter r)
   [("triageSummary", acuteTriageRows ctx rs patient),
@@ -1707,7 +1721,7 @@ def acuteProjectionVersion (ctx : FactsContext) (rs : List Json) : Nat :=
   let selection := fun key => key ++ ":" ++ match ctx.record.lookup key with
     | none => "absent" | some value => "selected:" ++ value
   versionDigest (((rs.map (fun resource => versionKey resource ++ "|" ++ str resource "_vgiBundleFullUrl")) ++
-    ["acute-projection:v6", "day:" ++ ctx.today,
+    ["acute-projection:v7", "day:" ++ ctx.today,
     selection "selectedEncounterId", selection "selectedMedicationRequestId"]).mergeSort (· ≤ ·))
 
 /-- Banner encounter/location/attending follow the selected chart, not whichever

@@ -1,15 +1,15 @@
 {
-  "capturedAt": "2026-11-01T12:54:21.247490+00:00",
-  "baseRevision": "0883043",
-  "headBeforeCommit": "0883043237f45d09ef20a195f3225389068584fe",
+  "capturedAt": "2026-11-01T13:16:42.775945+00:00",
+  "baseRevision": "363db50",
+  "headBeforeCommit": "363db503a7bbf6df3e92389bc24fc5b0bdb225a4",
   "sourceTreeDirty": true,
-  "leanHash": "5087cc16c5c55635c8e72197c87f5f1c108bc42846416917c3bc190d6a0a5c0c",
-  "binarySha256": "5ab284a483830fbc427a3563ee306f2b74becdfdd46a9106f3b506115c3586bb",
-  "scope": "Patient-scoped acute charts: 18 supplied-source views, five live role baselines and 36 acute screen/release control samples. Not exhaustive clinical-state exploration or a complete department census.",
+  "leanHash": "0e135be1b4249236263eb79b22ef9a9a954dc3e940cd0aa10045d960c1cdbfa6",
+  "binarySha256": "d03488d2b2bf2c55a1e741fa867b480258e398fc2ad3716097483b126eaa7de9",
+  "scope": "Patient-scoped acute charts: 36 native acute screen/release control samples; three adverse-context views freshly checked in browser. Eighteen unchanged normal semantic trees and the unchanged painter retain their certified 363db50 images/browser evidence. Not exhaustive clinical-state exploration or a complete department census.",
   "gates": {
     "build": {
       "status": "pass",
-      "evidenceSha256": "6d84edc1f84b7fa5cf01d02e8c98b81b13e2e5d6cd6f427b4309e78644c02157",
+      "evidenceSha256": "2fd45218f24f8117dbb4ad26971ac81e9ad69d6dc7c7a98365af80fd7b2e887b",
       "marker": "Build completed successfully (355 jobs)."
     },
     "certify": {
@@ -54,7 +54,7 @@
     },
     "acute-wasm": {
       "status": "pass",
-      "evidenceSha256": "54853d613e684c6536a26cb11c6bcb93a06329607270f4cdb9b7327dadfd94fb",
+      "evidenceSha256": "dcb8b004292c3a232cdba0752146b6adc17cef50730074eb6502ba47aa5fda94",
       "marker": "14 reachable screens"
     },
     "trajectories": {
@@ -64,42 +64,32 @@
     },
     "app-build": {
       "status": "pass",
-      "evidenceSha256": "34c3f1f137be734b492993a57d257f45b55be16e489a5146532f5e8379e23b58",
+      "evidenceSha256": "435962898763973431792e5c2c3bcc33654dffcce8e6ba587a89f7905a90d900",
       "marker": "built in"
     },
     "live": {
       "status": "pass",
-      "evidenceSha256": "2d764588a609eb724a986fbb5b7c7753b0f06a345336c23f9d650e2360a5821c",
+      "evidenceSha256": "039afcfde02e19faf37feb17f4ff7a9828ca92e230c922e715d8cdef1545660f",
       "marker": "6 passed"
     },
     "unit": {
       "status": "pass",
-      "evidenceSha256": "b5682406dd7c3f98ce25348a5bab8f1d8f35be663f3dcd94ed2d6958d8f9ff0e",
+      "evidenceSha256": "00175c6bbb57d93ef74b4ee77850b16ea80fd1799f8ef8e51e3e312195128c41",
       "marker": "226 passed"
     },
     "agent": {
       "status": "pass",
-      "evidenceSha256": "c83d2d729072c95aaea0ea6a7ea3163444df87189933f4e6804cb38edf22c14e",
+      "evidenceSha256": "34260d523365ae4be9fb8d3fd695f6107e41267bb15158db62686378145ea80c",
       "marker": "84 passed"
     },
-    "browser": {
+    "adverse-aria": {
       "status": "pass",
-      "evidenceSha256": "12665da6509668ca37c0c3555b1d6ffd8cd880afd0d9cfe7d2fef697bd21dff0",
-      "marker": "31 passed"
-    },
-    "five-roles": {
-      "status": "pass",
-      "evidenceSha256": "af171863c73402a839e73df049fd4a238dc1cad3c756ceec948410fb16111f8d",
-      "marker": "1 passed"
-    },
-    "aria": {
-      "status": "pass",
-      "evidenceSha256": "2489b06d8dec9959ca2819947043956d1f8872252d1f05f4daa328763f51d0a3",
-      "marker": "45 passed"
+      "evidenceSha256": "0b120e3aa0d07007ee9b733b26ed344dd27fb58eba66af91a60cd163113ce18d",
+      "marker": "15 passed"
     },
     "wasm-check": {
       "status": "pass",
-      "evidenceSha256": "58d29e2ef646adb7d6610471a747b4e5440901d9843ccd813124388fd5f58634",
+      "evidenceSha256": "0958338d7dd6da82b3dae7283b9e51216cd6625366b9687b47a18932e66e368a",
       "marker": "WASM assets current"
     }
   },
@@ -118,29 +108,29 @@
   "api": {
     "bundles": 324,
     "renderVariants": 690,
-    "wasmSha256": "980f128898f71f0ddb97d0876277106e2a487d3bb4dad6e521ce9da368b63637",
+    "wasmSha256": "db79aa1a3a05e789ddb0740849958aaa01f2cda1a92d2989a6537c56eb994166",
     "inputIdentities": {
-      "directory": "/tmp/vgi-acute-choices-api",
+      "directory": "/tmp/vgi-acute-context-api",
       "compiledCanonicalIdentical": true,
       "variantCount": 690,
       "files": {
         "clinical-ui-cases.json": "f6dfa40251f100fc8b416e9198c6b8e9cf412aab3e16ecfa86053adb9ead01a4",
         "context.json": "c2fe4044324fcdeb202144e7943d5056c09f68908b6fa03cec42f0dbdeb361a7",
-        "p1-input-w1Orders.json": "b9b2933c65869c6c5f3fe3cc54a55e6423610e691dcafec9a820c462a5c11dee",
-        "p1-input-w1Rooming.json": "fc6f8ada9f518f8021fc044da9a3788e1ce22b4737af8ceb0a9328afb06e1905",
-        "p1-input-w1Sign.json": "c01e7f772acf66096001d32f27c73aa539ee0a5a05e6b5efa8d2f04d234debf6",
         "program.json": "e85c1731840eb2a539309dd025fdb00014687860fb25628d022b49e47d1c31eb",
         "spec.json": "0c7eee283c080c73616411fed41cfd683f292fb1517afffb141502684dfe6ba1",
         "states.json": "d911b376f4f17b1dc37aad8c24e6fd363d01d9b4e56d15bd157ea081a8ebd661",
         "user.json": "bd163bf11c11420d49e32cbfde61db1a7c6e40a315f5fafebff68f780c4c7a16",
         "w1Orders.json": "13a4047321a9c830715b3fbfcf4dd67ec6931747badd5635b295d1d935f2de45",
         "w1Rooming.json": "ee624565a9533fab9edf41667ca29742c31edb55788f09d93b703613a0ee12f0",
-        "w1Sign.json": "3dad7d35403854f4c90a0df8eb0ca44bde3a871fa37d988231d4bdfb968d9077"
+        "w1Sign.json": "3dad7d35403854f4c90a0df8eb0ca44bde3a871fa37d988231d4bdfb968d9077",
+        "p1-input-w1Orders.json": "b9b2933c65869c6c5f3fe3cc54a55e6423610e691dcafec9a820c462a5c11dee",
+        "p1-input-w1Rooming.json": "fc6f8ada9f518f8021fc044da9a3788e1ce22b4737af8ceb0a9328afb06e1905",
+        "p1-input-w1Sign.json": "c01e7f772acf66096001d32f27c73aa539ee0a5a05e6b5efa8d2f04d234debf6"
       }
     }
   },
   "preservation": {
-    "baseRevision": "0883043",
+    "baseRevision": "363db50",
     "specs": [
       {
         "release": "v1",
@@ -158,26 +148,31 @@
         "identical": true
       }
     ],
-    "theoremHeaders": [
+    "proofFiles": [
       {
         "file": "lean/Ehr/Render/UiProofs.lean",
-        "unchanged": 39
+        "sourceUnchanged": true,
+        "sha256": "dadc0df62e5632a1ad7a4f4315b70ef760df280603373961c304352a94098bfc"
       },
       {
         "file": "lean/Ehr/Render/PanelProofs.lean",
-        "unchanged": 8
+        "sourceUnchanged": true,
+        "sha256": "30ac1509f04bf2284c8cea5ef42c9fac8e47a2bcd75d0c4ab87fa98dc4913bdc"
       },
       {
         "file": "lean/Ehr/Render/FhirProofs.lean",
-        "unchanged": 15
+        "sourceUnchanged": true,
+        "sha256": "9426285d1e3b347b6e67e9e742a8e679d956d9c56be5fd2ef59b512727014912"
       },
       {
         "file": "lean/Ehr/Proofs/RenderExamples.lean",
-        "unchanged": 16
+        "sourceUnchanged": true,
+        "sha256": "b4333d52870bbf1ef4d70faec9b25cf440f52a77518f0e413e62ef3d64187f56"
       },
       {
         "file": "lean/Ehr/Proofs/HypothesisExamples.lean",
-        "unchanged": 15
+        "sourceUnchanged": true,
+        "sha256": "cdba739b6e0a7ea1294d9fa827c1ad1231da9f83e88037a0bc379fb612a28200"
       }
     ]
   },
@@ -186,16 +181,102 @@
     "all21PayloadsUnchanged": true,
     "acuteW3": "57 clicks / 198.45 KLM seconds",
     "acuteW4": "25 clicks / 129.95 KLM seconds",
-    "reportSha256": "f89babe1c4d412c38d40e0d382e7dfa168851c7c793615afa9238cea7d9d385d"
+    "reportSha256": "1485d6ee7eb07ecb9279c28aa6aa227a839d4a9389d1adf67c869d9da5d309e0"
   },
   "visualCounts": {
-    "acuteViews": 18,
-    "acutePhotographs": 36,
-    "focusedBrowserPassed": 31,
-    "focusedBrowserSkipped": 7,
-    "fiveRoleComparisons": 5,
-    "ariaPassed": 45,
-    "ariaSkipped": 3
+    "unchangedAcuteViews": 18,
+    "reusedAcutePhotographs": 36,
+    "adverseBeforeAfterPhotographs": 6,
+    "adverseAriaPassed": 15,
+    "adverseAriaSkipped": 3
+  },
+  "reusedBrowserEvidence": {
+    "revision": "363db50",
+    "verificationPath": "docs/audits/acute-verification-choices.json",
+    "verificationSha256": "96e2a7dd7b80cbd8ed7bd766712c5bfc5a1e2361730520ce2bfd4e2c327430e7",
+    "identities": {
+      "sourceRevision": "363db50",
+      "painterSourceUnchanged": true,
+      "semanticTrees": [
+        {
+          "screen": "w3Disposition",
+          "identical": true
+        },
+        {
+          "screen": "w3OrderSets",
+          "identical": true
+        },
+        {
+          "screen": "w3Orders",
+          "identical": true
+        },
+        {
+          "screen": "w3Provider-chart-imaging",
+          "identical": true
+        },
+        {
+          "screen": "w3Provider-chart-results",
+          "identical": true
+        },
+        {
+          "screen": "w3Provider",
+          "identical": true
+        },
+        {
+          "screen": "w3Sign",
+          "identical": true
+        },
+        {
+          "screen": "w3TrackBoard",
+          "identical": true
+        },
+        {
+          "screen": "w3Triage",
+          "identical": true
+        },
+        {
+          "screen": "w4Admin",
+          "identical": true
+        },
+        {
+          "screen": "w4Flowsheet-outline",
+          "identical": true
+        },
+        {
+          "screen": "w4Flowsheet",
+          "identical": true
+        },
+        {
+          "screen": "w4Handoff-outline",
+          "identical": true
+        },
+        {
+          "screen": "w4Handoff",
+          "identical": true
+        },
+        {
+          "screen": "w4Mar-chart-imaging",
+          "identical": true
+        },
+        {
+          "screen": "w4Mar-chart-results",
+          "identical": true
+        },
+        {
+          "screen": "w4Mar",
+          "identical": true
+        },
+        {
+          "screen": "w4Worklist",
+          "identical": true
+        }
+      ]
+    }
+  },
+  "kernelRetry": {
+    "cause": "Outer tool sandbox quota stalled export writer",
+    "sameCommand": "lake check",
+    "leanProofSandboxRetained": true
   },
   "numericChoices": {
     "esi": {
@@ -219,6 +300,7 @@
     }
   },
   "navigationReview": {
+    "reusedFromRevision": "363db50",
     "identity": {
       "x": 54,
       "y": 66,
@@ -269,7 +351,10 @@
     "after/w4Worklist.png": "9f6080d8720906202d74ce0138d1f5d306677ea6c49a04a8c63dd30dfb6b7911",
     "details/w3Provider-imaging-panel.png": "a747bc8e561bdae160623d48351c2787f2650fa6abdf5cbecb3972dab457d179",
     "details/w3Triage-esi-menu-after.png": "39fe136d4a88b81b294d340ceee154e6a8f7193c7006401d895b49de5a29e85b",
+    "details/w4Admin-context-after.png": "d575ab4b2f8cd525a60773df78614d3bfd7355e5d9cbb31a7b7d0b8769cde1bc",
+    "details/w4Flowsheet-context-after.png": "6865d2ec785853160e9c6adc304a5159e875334e6ea82a6e5881a0abff19052c",
     "details/w4Flowsheet-pain-menu-after.png": "d501f63091c1346dfbdcfa02f6b9b1cdbec8cf8dd97b9a43ada8c861d7c6495a",
+    "details/w4Mar-context-after.png": "8c0d6f8b95a0cb792a836e86b6322c87571ba8e255bc923198be3610185e4361",
     "details/w4Mar-sig-prn-after.png": "48706ba30ff15ad60b2a770141344b08ebb0028bfa2cc5aab57839f97b2baead",
     "roles-choices/browse-narrow.png": "980de9e4d0067d55b26341147ea85015daaca21f6eea21fe5c61a028391f5434",
     "roles-choices/browse.png": "82dc503b5193fbe348c54d41246c6c3ea655f61d5382f67c7cfe3bf4ce3f83ef",
@@ -281,20 +366,62 @@
     "roles-choices/w3Triage.png": "fd0daa57dd6190b2efe3f4d5dc211045a36cfe1204823ba0bf2efe96a2d6ddc8",
     "roles-choices/w4Mar.png": "6a8042766b484f8aa9a20cfd55fec35de8f9a1a5a217f9c63b9975de3ce71d88",
     "roles-choices/w5Growth.png": "5f09f4f40d198e6bbd2de98023de8f369838c4fa657ba6cbffc551ef7075b4a0",
-    "roles-choices/w6PreOp.png": "011637f29e9dd2a0ed8bc103cceb9cd20a280d545f9b2c4749c90c6f67a2eb56"
+    "roles-choices/w6PreOp.png": "011637f29e9dd2a0ed8bc103cceb9cd20a280d545f9b2c4749c90c6f67a2eb56",
+    "reviewed-rejected/dense-row-actions-w3TrackBoard.png": "1a032e7857e990ac0af9e6ab65e77943d0d68d0311178891ec983bfbeeae9606",
+    "reviewed-rejected/dense-row-actions-w4Mar.png": "d450f5d61b80f55f4437a35fddb416326ecda7635e39e71ed91c95f3708b05b0",
+    "reviewed-rejected/w3Provider-imaging-source-before.png": "e86b6b2746d711a90c7e656e1908251e1b520d5e55b491892a3d93b2fd95a558",
+    "reviewed-rejected/w3Triage-esi-menu-before.png": "4475597c17899fea9d36bf9f1d069b61f1cf17c9e92bb4b0c72368333e56ffa2",
+    "reviewed-rejected/w4Admin-context-before.png": "bae27b59744a84179b151b736fd63d1961ddf13e731ff101290f19f6640f7a2a",
+    "reviewed-rejected/w4Flowsheet-context-before.png": "a15f20dfa2402b08ccffe5cd6304d87709481c00995fdfc662539df8ca4b29ea",
+    "reviewed-rejected/w4Flowsheet-fixed-assessment-before.png": "c26175e0fc39ca3d89fa73386e90580fc77fcc00391d60f8867c014548936862",
+    "reviewed-rejected/w4Flowsheet-pain-menu-before.png": "07b9d92fcd949ffcad5fc3a3749b4cb74575e93bca112548c8300934e1682463",
+    "reviewed-rejected/w4Handoff-fixed-status-before.png": "fe93d8f15547cebc8b42b9351d71e3b4d804706d07e5e583633bb081e6946d73",
+    "reviewed-rejected/w4Handoff-outline-nav-footer-overlap.png": "fdd37f01a23f8e0a16d41a20f55051dfca2b368526b36337a2b68215958d756f",
+    "reviewed-rejected/w4Mar-context-before.png": "506aacc513c859e41e9bbaeec2fe45186dec917b0cd38e70fa9fabded4cd8b02",
+    "reviewed-rejected/w4Mar-sig-prn-before.png": "053671dfd00063d7ecdd7114e486a5d4a7a9f28725835e569354833b095e24ae"
+  },
+  "administrationContext": {
+    "baseRevision": "363db50",
+    "bundleSha256": "16e6c6d1dbc182688d318a0fc0c454075b2b079e9b58883efaa13b4d9fc62ca6",
+    "sourceMutation": "Only MedicationAdministration.context references change to another admission.",
+    "beforeRuntimeSha256": "980f128898f71f0ddb97d0876277106e2a487d3bb4dad6e521ce9da368b63637",
+    "screens": {
+      "w4Mar": {
+        "before": "8f93ca39b555d25c3a78d8f53157970146417bc959c91c11875cc6631f88abcf",
+        "after": "88b684037c201664041f3797a2c48ada657a3fcdb83ebb2c2f53cc18da39d6fe"
+      },
+      "w4Admin": {
+        "before": "f6a9d24366061fe4964c1f3eeede6fce1e1cea82c41d5318442c7296477989cd",
+        "after": "d378032f7d26b4f1819282aa7d825b15f3c7f1388493ae3aebbb592c016f7556"
+      },
+      "w4Flowsheet": {
+        "before": "56603ac3a058613b18f1674c3e06630bfea492a8b5b63c15f525b7aa95e2c383",
+        "after": "dd135f720e3823300d6c49ec26d2791785c06358e47eae9e4bc3c6a432fc0677"
+      }
+    },
+    "before": {
+      "prnRows": 1,
+      "selectedDoseRows": 2,
+      "marActualCells": 3
+    },
+    "after": {
+      "prnRows": 0,
+      "selectedDoseRows": 1,
+      "marActualCells": 0
+    }
   },
   "sourceFiles": {
-    "lean/Ehr/Render/Fhir.lean": "187a21281a0284d0ca4927f4f205eb3c3dd0c480785fff905410b3e4e5077fe6",
+    "lean/Ehr/Render/Fhir.lean": "4f3fa0ee634c03ba0efb708ee391dfa798eb450c9f151cba1d56229525711e6f",
     "lean/Ehr/Render/Ui.lean": "0503827c21f683563c94cd6347d30bde79c38bb09b52eae1505887cd0a038d51",
     "lean/Ehr/Canonical/W3Ed.lean": "7d1e6ee6e788ae558a76a04313438885c28fce9a570df74d377e38c79fe4c305",
     "lean/Ehr/Canonical/W4Mar.lean": "f6bb9c054f774c8567e0b2dd30007fa06d40794c2154c646454f976981f21c9f",
-    "lean/Ehr/Render/FhirAcuteTests.lean": "ff1c09537f8129a1690c6138990dda11f201dfd78570ca6f8e2acce11990d14b",
+    "lean/Ehr/Render/FhirAcuteTests.lean": "531ad7aa9068f18c36b6fd48ca8d230b0f0b8d201d0d19e87736c22e8ffcb90a",
     "lean/Ehr/Render/ObservationTests.lean": "d42d76e379b649de2129e1c9ba8f5782f249d8896bbe27572a990368b1cf5b50",
     "lean/Ehr/Render/TestData/clinical.json": "53cf73a83b6843dcb206c472d82b8b218c5cbe10ca7b040be3365fe5e8995f49",
     "app/src/ehr/ui/clinical.css": "0616df471a48f25df7ebc8405a6f2918938c43bec8332bd0783e4b86bb618070",
     "app/e2e/acute-banner.spec.ts": "9470f34b02d377df48ceefb52dbd1f7d30f510ff00ce0fa1f6d0c4077b5c5fe7",
     "app/e2e/acute-actions.spec.ts": "c4dfaecfc7a7b351353f309e24d10f7a47e7eb82ce590dd5c41219ce6ec760c6",
-    "scripts/check-acute-wasm.mjs": "a92d78c2c97fd5178751c558e3a5e9d89583b2d635a56b75866d10cba51cd520",
+    "scripts/check-acute-wasm.mjs": "bf4297aea64de4b9f4b7720791d0580e15ff8875cb6cc93604c07d7fc8d0f629",
     "scripts/acute-review-fixtures.mjs": "2fecc78b13ab7f5215cf4d53a3aafa99b185a8d58826e043e3b88c6a016f98f4",
     "scripts/trajectories/index.mjs": "67f6d0ab7992a1e31a393aa554740af76ae19795a62c36d1c56ce20d5c0baf27",
     "app/src/ehr/ui/nodes.tsx": "a2ee8c7c497a2e6a29e0eccdc4f2513a8a9c7f7ccf3f013e12463700840d6987",
