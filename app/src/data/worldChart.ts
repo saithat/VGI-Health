@@ -35,3 +35,8 @@ export async function prepareWorldChart(raw: unknown, source: string, today: str
   const worldContext = day ? await readArtifact(`/runs/world/2/context/day-${String(day).padStart(2, "0")}.json`) : undefined;
   return { bundle: { ...bundle, entry }, worldContext };
 }
+
+/** Timeline days follow the committed simulation calendar, including weekends. */
+export function chartDateForTimelineDay(day: number, fallback: string): string {
+  return dates[day === 0 ? 0 : day - 1] ?? fallback;
+}

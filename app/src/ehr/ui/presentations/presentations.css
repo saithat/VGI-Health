@@ -690,3 +690,16 @@
   .table-trackBoard [data-column="Arrival"] .presentation-cell-value,
   .table-trackBoard [data-column="LOS"] .presentation-cell-value { white-space: nowrap; }
 }
+
+/* Shared density and status palette; no clinical state is inferred here. */
+.presentation-heading { padding: 4px 6px; line-height: 18px; }
+.presentation-table { line-height: 16px; }
+.presentation-table :is(th, td) { padding: 3px 5px; }
+.presentation-status { padding: 1px 4px; min-height: 18px; line-height: 16px; }
+.presentation-table .status-red, .presentation-abnormal-high, .result-high, .result-critical { font-weight: 750; }
+.presentation-notes article { padding: 6px 8px; }
+.mar-order-details { display: flex; flex-wrap: wrap; gap: 1px 8px; }
+.mar-order-details .mar-medication-name { flex-basis: 100%; margin-bottom: 1px; }
+.mar-order-details .mar-medication-detail { margin-top: 0; }
+.presentation-mar .presentation-status { padding: 2px; }
+.presentation-table tr:focus-within { background: var(--clinical-selected); box-shadow: inset 3px 0 var(--clinical-primary); }

@@ -1,4 +1,4 @@
-import { prepareWorldChart, worldSchedule } from "./data/worldChart";
+import { prepareWorldChart, worldSchedule, chartDateForTimelineDay } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import { navigate } from "./navigation";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
@@ -8,7 +8,6 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createSession } from "./core/session";
 import type { Interp } from "./core/interp";
-import { PatientPicker } from "./browser/PatientPicker";
 import {
   currentProgram,
   defaultPatient,
@@ -44,7 +43,7 @@ const roles: Record<string, string> = {
 };
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 function LiveWorkspace({ workspace }: { workspace: Workspace }) {
-  const { session, catalog, program, patient, persona, verdict } = workspace;
+  const { session, catalog, program, persona, verdict } = workspace;
   const { ui, state, result } = useSyncExternalStore(
     session.subscribe,
     session.getSnapshot,
@@ -110,7 +109,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
           >
             {view && (
               <div className="inspector-content">
-                <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
+                <a href={`/browse?persona=${persona}`}>
                   ← UI browser
                 </a>
                 <label>
@@ -123,7 +122,6 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                       navigate(
                         ehrUrl(
                           currentProgram(catalog, id, program.run),
-                          defaultPatient(catalog, id).id,
                           id,
                         ),
                       );
@@ -134,19 +132,6 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                     ))}
                   </select>
                 </label>
-                <details className="patient-switcher">
-                  <summary>
-                    {patient.name} · {patient.age} · {patient.encounterClass} ·
-                    Change patient
-                  </summary>
-                  <PatientPicker
-                    catalog={catalog}
-                    value={patient.id}
-                    onChange={(selected) =>
-                      navigate(ehrUrl(program, selected.id, persona))
-                    }
-                  />
-                </details>
                 <p>
                   {program.release} · {program.path}
                 </p>
@@ -231,7 +216,10 @@ export function App() {
       const release = query.get("release") ?? program.release;
       if (!["v1", "v2", "v3"].includes(release))
         throw new Error("Unknown release");
-      const daySchedule = await worldSchedule(persona, catalog.referenceDate);
+      const dayParam = query.get("day");
+      if (dayParam !== null && !/^(?:[0-9]|10)$/.test(dayParam)) throw new Error("Unknown chart day");
+      const today = dayParam === null ? catalog.referenceDate : chartDateForTimelineDay(Number(dayParam), catalog.referenceDate);
+      const daySchedule = await worldSchedule(persona, today);
       const primaryWorkflow = { P1: "W1", P2: "W3", P3: "W4", P4: "W5", P5: "W6" }[persona];
       const defaultTask = daySchedule?.tasks.find((task) => task.workflow === primaryWorkflow);
       const patientId = query.get("patient") ?? defaultTask?.patientId;
@@ -250,14 +238,14 @@ export function App() {
           .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
       const presentations = await verifyRecordedBuild(program.path, source);
-      const { bundle, worldContext } = await prepareWorldChart(rawBundle, patient.bundlePath, catalog.referenceDate, daySchedule?.tasks.find((task) => task.patientId === patient.id));
+      const { bundle, worldContext } = await prepareWorldChart(rawBundle, patient.bundlePath, today, daySchedule?.tasks.find((task) => task.patientId === patient.id));
       const facts = JSON.parse(
         interp.facts(
           JSON.stringify({
             bundle,
             ...(worldContext ? { worldContext } : {}),
             context: {
-              today: catalog.referenceDate,
+              today,
               now: 540,
               receipts: [],
               record: [["viewerPersona", persona]],
@@ -286,7 +274,7 @@ export function App() {
             status: "verdict not computed",
           },
         });
-        const canonicalUrl = new URL(ehrUrl({ ...program, release }, patient.id, persona), window.location.href);
+        const canonicalUrl = new URL(ehrUrl({ ...program, release }, persona, dayParam === null ? undefined : Number(dayParam)), window.location.href);
         if (query.get("inspect") === "1") canonicalUrl.searchParams.set("inspect", "1");
         if (query.get("audit") === "buttons") canonicalUrl.searchParams.set("audit", "buttons");
         window.history.replaceState(

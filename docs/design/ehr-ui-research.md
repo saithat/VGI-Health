@@ -1417,3 +1417,97 @@ deployed-context sample records 2,806 working interactions, 114 explained
 disabled states, zero dead controls and zero errors; its real unsafe agent
 proposal was rejected and the counterexample replayed successfully. Both scopes
 and their exact build identities are preserved separately.
+
+### Shared shell: meaningful color and density (1 Nov owner review)
+
+Viewed the owner-supplied Epic Hyperspace inpatient image locally; no image or
+vendor assets copied. Its useful patterns are a compact toolbar, rounded activity
+tabs, a narrow storyboard, strong allergy/precaution headings and dense cards.
+Fresh references: [CST ED LaunchPoint](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm)
+uses narrow throughput colors, red critical-alert cells, and explicitly recommends
+reducing toolbar rows. [MAR statuses](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Statuses_on_the_MAR.htm)
+uses red overdue tasks; [MAR Summary](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Medications/MAR_Summary/MAR_Summary_Overview.htm)
+uses yellow current-time columns. Vendor installations differ: VGI's green given,
+amber held and yellow due-soon statuses follow the owner's requested convention.
+
+The ten requested clinical screens plus an interruptive alert (11 before/after
+pairs) in `app/shots/realism/color-density/` use identical, immutable native
+source trees (the ten punch fixtures plus `p1-alert.json`). All
+are 1440×900. These deliberately isolate painter effects; source content issues
+in archived inputs (single-patient lists, social-history problems, surgical
+case/template mismatch) are not concealed or clinically corrected by CSS.
+
+| Screen | Before / after review |
+| --- | --- |
+| P1 Schedule | Smaller rail and rows reveal more source records; chart labels remain readable. The frozen fixture still has a single appointment and a patient banner; list-mode semantics are a content-lane follow-up. |
+| P1 Orders | Colored medication/plan sections and horizontal source navigation free width. Four-column field groups prevent seven squeezed labels across one row. Required fields and preferences remain visible. |
+| P2 Track Board | Compact bed/status columns, orange numbered ESI 2, green returned results. No fabricated urgency or additional beds. |
+| P2 Triage | Orange triage and red allergy headings separate safety review from measurements. The amber pending weight and confirmation remain conspicuous and actionable. |
+| P3 MAR | Red overdue, green given, amber held remain labeled. Medication details wrap compactly within one cell; every dose/route/category/status remains visible. |
+| P3 Flowsheet | Dense time columns and 23–25 px ordinary rows show the observation grid and documentation together. Multiline assessment grows naturally. |
+| P4 Rooming | Red allergy review and recorded-allergy banner distinguish safety review from green growth/vitals. Compact field groups retain kg weight provenance and the separate human confirmation. The before image was rendered from the actual `d2abcf0` painter in an isolated preview with the same frozen P4 tree. |
+| P4 Growth | Filled red recorded-allergy banner, green growth heading, compact measurement rows. Curves retain readable right-edge labels; no percentile is inferred. |
+| P5 OR Schedule | Orange schedule and amber case accents; narrower summary and compact rows. The frozen fixture's content limitations are documented rather than hidden. |
+| P5 Op Note | Amber procedure/findings sections, purple note destinations, compact four-column clinical fields. Narrative fields retain readable height. |
+| P1 Interruptive Alert | Strong red modal title with white text; acknowledgment remains modal, visible and keyboard operable. The archived broad navigator wraps and scrolls normally. |
+
+Self-review caught a tall archived toolbar obscuring content during scrolling;
+the desktop navigation now scrolls with the document rather than pinning over
+records. No source control was hidden to solve it. Clinical font minimum remains
+12 px. Source/ARIA equality, text contrast and visibility are checked independently.
+
+### Read-only revision history and in-EHR selection (1 Nov)
+
+[Ink & Switch, Malleable Software](https://www.inkandswitch.com/essay/malleable-software/)
+discusses accessible version history, branch comparisons, and generated logic
+that remains visible. VGI uses those inspection patterns: the selected revision
+card compares the actual recorded programs, lists section/activity positions,
+record-prefill changes and quick actions in clinician words, and exposes the final
+certified patch separately from rejected proposals. No patch is applied in the
+browser. A kept night explicitly says the previous revision was retained.
+
+The screenshot `app/shots/realism/punch/timeline-diff.png` shows the same branching
+centerpiece with a wider, readable comparison card. Before/after positions are
+shown together in compact blocks; a keyboard-scrollable list retains all changes.
+Rejected candidates show the failed property, a plain explanation and the exact
+checker message/proposed patch behind a disclosure.
+
+“Re-check against current release” uses the existing local attempt endpoint's
+check-only branch. It invokes native `ehr check`, with the immutable revision as
+its own stability reference and the current role baseline as canonical. The
+current release constant is shared with live baseline login. Native `spec-export`
+must match the checked-in current spec before the checker can report a verdict.
+No migration, deployment, application, reversal or run-data write occurs; temporary
+native inputs are removed. The button says “Check only: nothing is changed”.
+Native tests verify passing/current and rejecting/historical cases, source hashes
+unchanged, path/persona restrictions and no access to authored mock revisions.
+
+The browser's external patient picker and inspector switcher are removed. EHR
+links carry persona, program and chart day only. Timeline days follow the
+committed simulation calendar (including the weekend), independent of patient
+selection. Patient opening and list-versus-chart semantics remain owned by the
+Lean content/transport lane; the precise historical-program integration request
+is in `changes-requests.md`.
+
+The final P4 Rooming review exposed redundant vertical toolbar space. Its two
+chrome captions now remain visible alongside the source groups in one wrapping
+row; the clinical heading/search row is shorter. This recovers vertical chart
+space without removing content. The final comparison set contains the ten
+requested clinical screens and one additional interruptive-alert pair.
+
+Final shell verification (before the patient-selection transport merges): 282 app
+and 93 agent tests passed; 61 desktop/narrow browser checks passed, covering native
+ARIA fidelity, visibility, contrast, history diffs and real check-only verdicts.
+The final sampled canonical audit recorded 1,366 working controls, 36 explained
+disabled controls and zero dead controls/errors. The separate shell audit recorded
+352 working controls, 71 explained disabled controls and zero dead/errors. Archived
+run1-P3 verification retained 0 mismatches across 424 tasks / 14,658 events and
+three baselines / 137 events. Native/WASM source freshness passed. Exact source,
+audit and screenshot provenance is in `docs/audits/visual-history/verification.json`.
+
+Part 3 remains an explicit integration dependency at this deadline: the final
+patient-selection source/assets snapshot is not on `origin/main` yet. The browser
+picker, inspector switcher and patient parameters in user-facing links are removed;
+the prepared replay/live integration must still be merged and checked once the
+content lane publishes it. No private/generated work from that lane was copied
+into this branch to bypass its publication gates.

@@ -6,6 +6,12 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { loadEnv, type Plugin } from "vite";
 import { z } from "zod";
 import { root } from "./catalog.mjs";
+import { recheckRevision } from "./recheck-revision";
+const checkInput = z.object({
+  action: z.literal("check-revision"),
+  persona: z.enum(["P1", "P2", "P3", "P4", "P5"]),
+  program: z.string().max(240),
+});
 
 const input = z.object({
   persona: z.enum(["P1", "P2", "P3", "P4", "P5"]),
@@ -28,6 +34,7 @@ export function tryBreakPlugin(): Plugin {
   let backend: "claude" | "codex" | null = null;
   let environment = process.env;
   let busy = false;
+  let checkAvailable = false;
   let unavailableReason =
     "Set ANTHROPIC_API_KEY in .env or run codex login on the app server, then restart preview.";
   const middleware = async (
@@ -45,6 +52,7 @@ export function tryBreakPlugin(): Plugin {
     };
     if (req.method === "GET")
       return send(200, {
+        checkAvailable,
         available: !!backend,
         backend,
         reason: backend ? null : unavailableReason,
@@ -59,10 +67,6 @@ export function tryBreakPlugin(): Plugin {
       req.headers["content-type"] !== "application/json"
     )
       return send(403, { error: "Use a same-origin JSON POST." });
-    if (!backend)
-      return send(503, {
-        error: unavailableReason,
-      });
     if (busy)
       return send(200, {
         error: "An attempt is already running. Try again when it finishes.",
@@ -74,7 +78,25 @@ export function tryBreakPlugin(): Plugin {
         if (body.length > 8192)
           return send(413, { error: "Request too large." });
       }
-      const data = input.parse(JSON.parse(body));
+      const parsed: unknown = JSON.parse(body);
+      const check = checkInput.safeParse(parsed);
+      if (check.success) {
+        if (!checkAvailable)
+          return send(503, {
+            error: "The native checker is unavailable on this server.",
+          });
+        busy = true;
+        return send(
+          200,
+          await recheckRevision(
+            check.data.program,
+            check.data.persona,
+            environment.EHR_BIN,
+          ),
+        );
+      }
+      if (!backend) return send(503, { error: unavailableReason });
+      const data = input.parse(parsed);
       const manifest = JSON.parse(
         await readFile(
           resolve(root, "runs", data.run, "manifest.json"),
@@ -183,8 +205,8 @@ export function tryBreakPlugin(): Plugin {
               ),
           );
         });
-      if (backend) {
-        const checker = await new Promise<boolean>((done) =>
+      {
+        checkAvailable = await new Promise<boolean>((done) =>
           execFile(
             environment.EHR_BIN ?? resolve(root, "lean/.lake/build/bin/ehr"),
             ["--help"],
@@ -193,7 +215,7 @@ export function tryBreakPlugin(): Plugin {
               done(/check --spec/.test(stdout + stderr)),
           ),
         );
-        if (!checker) {
+        if (!checkAvailable && backend) {
           backend = null;
           unavailableReason =
             "Agent authentication is configured. Set EHR_BIN to an existing native ehr checker matching the committed releases, then restart preview. Recorded attempts remain available.";
