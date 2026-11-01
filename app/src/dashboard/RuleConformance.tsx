@@ -24,7 +24,9 @@ export function RuleConformanceBadge({
       <summary>
         <span className={`dash-badge ${target.failed ? "fail" : "pass"}`}>
           Rule conformance:{" "}
-          {target.failed ? `${target.failed} failure${target.failed === 1 ? "" : "s"}` : "all pass"}
+          {target.failed
+            ? `${target.failed} failure${target.failed === 1 ? "" : "s"}`
+            : "all pass"}
         </span>
       </summary>
       <p>
@@ -38,7 +40,9 @@ export function RuleConformanceBadge({
               <strong>{r.scenario}</strong>: {r.observed}
               {r.scope === "runtime-probe"
                 ? " (adversarial runtime probe)"
-                : ""}
+                : r.scope === "adapter-probe"
+                  ? " (FHIR adapter probe)"
+                  : ""}
             </li>
           ))}
         </ul>

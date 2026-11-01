@@ -43,7 +43,7 @@ artifact. Comma-separated substrings and `--out <file>` are supported.
 ## What is tested
 
 `clinical.mjs` contains hand-written obligations, synthetic patient facts and
-legitimate values. `scenarios.mjs` contains 194 scenarios. They do not derive
+legitimate values. `scenarios.mjs` registers 195 scenarios. They do not derive
 expected requirements, alert triggers or allowed roles from checker decisions.
 The coverage test compares this independently maintained list with the exported
 core entries, reviews and alerts, so a newly introduced rule requires a test.
@@ -63,7 +63,7 @@ Optional fields and removable alerts are not invented signing obligations.
 | Pre-op consent/H&P/medication holds and NP signing restriction | `preop.*`, `positive.preop` |
 | V3 antibiotic indications on each order and MAR display | `v3.*` |
 | V2 optional imaging/procedure prior-auth request, no drug-line pollution, no overwrite | `v2.*` |
-| Refill denial and reason | `entry.denyRefill.*`, `positive.denyRefill` |
+| Refill denial and reason across both action routes | `entry.denyRefill.*`, `positive.denyRefill`, `refill.denial-via-approval-action` |
 | Every interruptive/passive/removable alert, acknowledgement, repeated/changed keys and false alarms | `alert.*`, `alerts.*`, `weight.lb` |
 | Human-only/never-prefill inputs, commits and review receipts | `human-only.*`, `automation.*` |
 | Incomplete line cannot strand the workflow | `orders.incomplete-line-cannot-advance` |
@@ -121,3 +121,10 @@ the already-written result; no agent prompt/manual gains access to the suite.
 The pound-weight case observes an invalid stored unit and a signing hard stop;
 that hard stop preempts a commit-time interruption. It does not claim that an
 unsafe pound-weight state can reach a successful acknowledgement/sign sequence.
+
+The saved run combines the original 194-scenario batch with the additional
+refill-route regression evaluated against all 23 identical inputs. `merge.mjs`
+checks binary/program/spec hashes and disjoint scenario IDs, retains every
+existing outcome, and records both batches. It refuses overlapping scenarios;
+it cannot select a later passing result over an earlier failure. A fresh
+`pnpm conformance --run <id>` now runs all 195 together.

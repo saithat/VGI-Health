@@ -28,6 +28,7 @@ const evidence = {
       scenario: "patient-switch.chart-scoping",
       status: "fail",
       observed: "Patient A allergy appeared in B",
+      scope: "adapter-probe",
     },
   ],
 };
@@ -41,6 +42,7 @@ it("shows a per-revision failure badge and the observed outcome", () => {
   );
   expect(screen.getByText("Rule conformance: 1 failure")).toBeTruthy();
   expect(screen.getByText(/Patient A allergy appeared in B/)).toBeTruthy();
+  expect(screen.getByText(/FHIR adapter probe/)).toBeTruthy();
   expect(screen.getByRole("link").getAttribute("href")).toBe(
     "/runs/run1-P3/conformance.json",
   );

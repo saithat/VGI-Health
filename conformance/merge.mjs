@@ -21,7 +21,7 @@ export function mergeEvaluations(base, extra) {
     return { ...t, passed: rows.filter(r => r.status === 'pass').length, failed: rows.filter(r => r.status === 'fail').length,
       notApplicable: rows.filter(r => r.status === 'not-applicable').length };
   });
-  const batch = r => ({ generatedAt: r.generatedAt, scenarios: r.scenarios.map(s => s.id), nativeCalls: r.native.calls });
+  const batch = r => ({ generatedAt: r.generatedAt, scenarios: r.scenarios.map(s => s.id), nativeCalls: r.native.calls, jobs: r.native.jobs ?? 1 });
   return { ...base, generatedAt: new Date().toISOString(), scenarios, targets, results,
     native: { ...base.native, calls: base.native.calls + extra.native.calls },
     evidenceBatches: [...(base.evidenceBatches ?? [batch(base)]), ...(extra.evidenceBatches ?? [batch(extra)])],

@@ -97,7 +97,7 @@ export const readRunJson: ReadJson = async (path) => {
     throw new Error("Invalid recorded-run path");
   let pending = runRequests.get(path);
   if (!pending) {
-    const revalidate = /\/(?:index|default|summary)\.json$/.test(path);
+    const revalidate = /\/(?:index|default|summary|conformance)\.json$/.test(path);
     pending = (async () => {
       const response = await fetch(path);
       if (!response.ok)
