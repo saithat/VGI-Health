@@ -833,8 +833,13 @@ function BreakPanel({
         <section>
           <h3>{result.label}</h3>
           <p>
-            <Badge tone="fail">
-              Rejected · {result.check.property ?? result.check.status}
+            <Badge tone={result.check.status === "pass" ? "pass" : "fail"}>
+              {result.check.status === "pass"
+                ? "Accepted"
+                : result.check.status === "invalid-patch"
+                  ? "Invalid patch"
+                  : "Rejected"}{" "}
+              · {result.check.property ?? result.check.status}
             </Badge>
           </p>
           <div className="failure-message">

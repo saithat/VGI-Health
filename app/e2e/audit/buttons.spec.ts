@@ -1061,7 +1061,9 @@ test("app live agent: capability, request and real verdict in the EHR viewer", a
     });
     if (!capability.available) {
       await expect(submit).toHaveCount(0);
-      await expect(page.getByText(/Set ANTHROPIC_API_KEY|Set EHR_BIN/)).toBeVisible();
+      await expect(
+        page.getByText(/Set ANTHROPIC_API_KEY|Set EHR_BIN/),
+      ).toBeVisible();
     } else {
       await expect(submit).toBeVisible();
       await audit.click(submit, undefined, "app");

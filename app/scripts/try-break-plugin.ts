@@ -61,8 +61,7 @@ export function tryBreakPlugin(): Plugin {
       return send(403, { error: "Use a same-origin JSON POST." });
     if (!backend)
       return send(503, {
-        error:
-          "No authenticated agent backend. Set ANTHROPIC_API_KEY or run codex login, then restart preview.",
+        error: unavailableReason,
       });
     if (busy)
       return send(200, {
