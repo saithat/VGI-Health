@@ -42,7 +42,7 @@ const LABS = {
 const LAB_LABELS = Object.fromEntries(readJson(resolve(REPO_ROOT, 'infra/valuesets/loinc.json')).codes.map((r) => [r.code, r.label]));
 
 export function options(args) {
-  const out = { day: 1, world: resolve(REPO_ROOT, 'runs/world/1'), resetDay: false, verifyOnly: false, dryRun: false };
+  const out = { day: 1, world: resolve(REPO_ROOT, 'runs/world/2'), resetDay: false, verifyOnly: false, dryRun: false };
   for (let i = 0; i < args.length; i++) {
     switch (args[i]) {
       case '--day': out.day = Number(args[++i]); break;

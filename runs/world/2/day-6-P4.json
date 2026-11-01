@@ -1,0 +1,1315 @@
+{
+  "day": 6,
+  "persona": "P4",
+  "load": "busy",
+  "tasks": [
+    {
+      "id": "d06-P4-W5-001",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "678f8081-d8f1-3793-e2b5-cdd3544a6fc6",
+      "startMin": 0,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-001-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/678f8081-d8f1-3793-e2b5-cdd3544a6fc6"
+          },
+          "effectiveDateTime": "2026-11-09T08:00:00-08:00",
+          "valueQuantity": {
+            "value": 62.1,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-002",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "59704066-d244-1852-f285-13fb7407aa96",
+      "startMin": 20,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 2700,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-002-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/59704066-d244-1852-f285-13fb7407aa96"
+          },
+          "effectiveDateTime": "2026-11-09T08:20:00-08:00",
+          "valueQuantity": {
+            "value": 18.4,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-003",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "f69134df-fe78-eb72-2f55-4f87b62db7aa",
+      "startMin": 40,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "20",
+          "10",
+          "49",
+          "133",
+          "116"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-003-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/f69134df-fe78-eb72-2f55-4f87b62db7aa"
+          },
+          "effectiveDateTime": "2026-11-09T08:40:00-08:00",
+          "valueQuantity": {
+            "value": 5.3,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 3
+    },
+    {
+      "id": "d06-P4-W5-004",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "41ccbbe0-32fe-9d38-ef9d-9a8fbf725039",
+      "startMin": 60,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "150"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-004-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/41ccbbe0-32fe-9d38-ef9d-9a8fbf725039"
+          },
+          "effectiveDateTime": "2026-11-09T09:00:00-08:00",
+          "valueQuantity": {
+            "value": 51.8,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 2
+    },
+    {
+      "id": "d06-P4-W5-005",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "c42f0898-7eda-49d4-88ac-4efab54a8b98",
+      "startMin": 80,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ondansetron",
+            "doseTenths": 30,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "once",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan",
+          "hydrationAssessment"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-005-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/c42f0898-7eda-49d4-88ac-4efab54a8b98"
+          },
+          "effectiveDateTime": "2026-11-09T09:20:00-08:00",
+          "valueQuantity": {
+            "value": 21.5,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-006",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "24815c60-7d5c-7b96-f0de-922e5268d5f4",
+      "startMin": 100,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-006-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/24815c60-7d5c-7b96-f0de-922e5268d5f4"
+          },
+          "effectiveDateTime": "2026-11-09T09:40:00-08:00",
+          "valueQuantity": {
+            "value": 23.2,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-007",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "9e9c9baa-9f77-20e4-6959-2ab0d0a70ffb",
+      "startMin": 120,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "indication": "strep-pharyngitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-007-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/9e9c9baa-9f77-20e4-6959-2ab0d0a70ffb"
+          },
+          "effectiveDateTime": "2026-11-09T10:00:00-08:00",
+          "valueQuantity": {
+            "value": 71.9,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d06-P4-W5-008",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "30a729b3-9fad-ef17-2591-728e165ba1b8",
+      "startMin": 140,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan",
+          "weightComparison"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-008-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/30a729b3-9fad-ef17-2591-728e165ba1b8"
+          },
+          "effectiveDateTime": "2026-11-09T10:20:00-08:00",
+          "valueQuantity": {
+            "value": 70.7,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-009",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "dab56c22-150e-f3b1-da62-5e0aba622a0b",
+      "startMin": 160,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "once",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan",
+          "hydrationAssessment"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-009-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/dab56c22-150e-f3b1-da62-5e0aba622a0b"
+          },
+          "effectiveDateTime": "2026-11-09T10:40:00-08:00",
+          "valueQuantity": {
+            "value": 39.2,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-010",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "04ca6b76-b67d-314f-f0ce-68335c8b8c08",
+      "startMin": 180,
+      "choices": {
+        "orders": [
+          {
+            "drug": "amoxicillin",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "indication": "strep-pharyngitis"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-010-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/04ca6b76-b67d-314f-f0ce-68335c8b8c08"
+          },
+          "effectiveDateTime": "2026-11-09T11:00:00-08:00",
+          "valueQuantity": {
+            "value": 35.3,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-011",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "68d3e7c1-50b0-e247-3ccc-e8e7cdbba611",
+      "startMin": 200,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "150"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-011-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/68d3e7c1-50b0-e247-3ccc-e8e7cdbba611"
+          },
+          "effectiveDateTime": "2026-11-09T11:20:00-08:00",
+          "valueQuantity": {
+            "value": 29.7,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-012",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "bce63de5-89e7-d6f5-eb05-387de52d2bc2",
+      "startMin": 220,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 4600,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "150"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-012-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/bce63de5-89e7-d6f5-eb05-387de52d2bc2"
+          },
+          "effectiveDateTime": "2026-11-09T11:40:00-08:00",
+          "valueQuantity": {
+            "value": 31.1,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-013",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "ac250a26-dad3-835a-19e4-66cf117d0849",
+      "startMin": 300,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "150"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-013-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/ac250a26-dad3-835a-19e4-66cf117d0849"
+          },
+          "effectiveDateTime": "2026-11-09T13:00:00-08:00",
+          "valueQuantity": {
+            "value": 15.6,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-014",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "02c88137-a460-3766-6728-5c49a5478b17",
+      "startMin": 320,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-014-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/02c88137-a460-3766-6728-5c49a5478b17"
+          },
+          "effectiveDateTime": "2026-11-09T13:20:00-08:00",
+          "valueQuantity": {
+            "value": 28.3,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-015",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "9e3c3d02-f37d-9e4f-4f3f-3f98a9072bc6",
+      "startMin": 340,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "114",
+          "150"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-015-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/9e3c3d02-f37d-9e4f-4f3f-3f98a9072bc6"
+          },
+          "effectiveDateTime": "2026-11-09T13:40:00-08:00",
+          "valueQuantity": {
+            "value": 44.2,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-016",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "589e4eef-f44b-f5c2-28cc-066d28c80a23",
+      "startMin": 360,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-016-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/589e4eef-f44b-f5c2-28cc-066d28c80a23"
+          },
+          "effectiveDateTime": "2026-11-09T14:00:00-08:00",
+          "valueQuantity": {
+            "value": 49.9,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-017",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "efd624f2-01c8-7c2b-9f81-07baf7f80c8d",
+      "startMin": 380,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [
+          "20",
+          "10",
+          "03",
+          "21"
+        ],
+        "noteSections": [
+          "growthChart",
+          "development",
+          "anticipatoryGuidance",
+          "exam",
+          "assessmentPlan",
+          "visGiven"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-017-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/efd624f2-01c8-7c2b-9f81-07baf7f80c8d"
+          },
+          "effectiveDateTime": "2026-11-09T14:20:00-08:00",
+          "valueQuantity": {
+            "value": 22.4,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d06-P4-W5-018",
+      "day": 6,
+      "persona": "P4",
+      "workflow": "W5",
+      "patientId": "0e684105-f597-8fa8-1b32-41519c5a5d8a",
+      "startMin": 400,
+      "choices": {
+        "orders": [
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "once",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan",
+          "hydrationAssessment"
+        ]
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d06-P4-W5-018-weight",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "vital-signs",
+                  "display": "Vital Signs"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "29463-7",
+                "display": "Body weight"
+              }
+            ],
+            "text": "Body weight"
+          },
+          "subject": {
+            "reference": "Patient/0e684105-f597-8fa8-1b32-41519c5a5d8a"
+          },
+          "effectiveDateTime": "2026-11-09T14:40:00-08:00",
+          "valueQuantity": {
+            "value": 38.2,
+            "unit": "kg",
+            "system": "http://unitsofmeasure.org",
+            "code": "kg"
+          }
+        }
+      ],
+      "interruptions": 0
+    }
+  ]
+}

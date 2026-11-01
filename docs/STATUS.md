@@ -74,6 +74,26 @@ The remaining simulator problems are recorded in
 [changes-requests.md](design/changes-requests.md); `Sim/**` was not edited.
 Details and hashes: `lean/Ehr/Check/{certification-report,sim-smoke-report}.json`.
 
+## Simulator: world revision 2 (2026-10-31)
+
+`runs/world/2` uses seed **1**, ten days and the same 174 Synthea fixtures as
+world 1. Service orders are omitted before the v1.1 release on day 4. A regression
+compares every task and world state with world 1: only those early service choices
+change; random draws, task IDs, timings, counts and all states remain identical.
+`world/releases.json` supplies release-day defaults to generator and agent.
+New generator outputs, agent `run-days` without `--world`, and `make seed` select
+world 2. Explicit world arguments still work. `make live` continues generating its
+separate `runs/world/live` input. Recorded `run1-P3` and its trajectories continue
+to refer to world 1; no world-1 artifact was edited.
+
+Dose fidelity exposed a spec obstruction: `dose` only accepts tenths of mg;
+heparin/insulin choices use units, and albuterol 180 mcg needs more precision.
+The simulator now preserves incompatible choices instead of substituting an
+arbitrary accepted dose. Core/content changes are requested under
+`SIM-WORLD2-DOSE-2026-10-31` in [changes-requests.md](design/changes-requests.md).
+The full active-release validation table will be recorded here and in
+`lean/Ehr/Sim/validation-world2.json`.
+
 ## Current state
 
 ### Agent loop

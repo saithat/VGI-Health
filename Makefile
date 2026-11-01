@@ -63,7 +63,7 @@ setup:
 load:
 	node infra/scripts/load.mjs
 
-# Materialize a living-world day as real Medplum worklists (defaults to world 1, day 1).
+# Materialize a living-world day as real Medplum worklists (defaults to world 2, day 1).
 seed:
 	node infra/scripts/seed-world.mjs $(SEED_ARGS)
 

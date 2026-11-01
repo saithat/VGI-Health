@@ -1,0 +1,611 @@
+{
+  "day": 1,
+  "persona": "P5",
+  "load": "busy",
+  "tasks": [
+    {
+      "id": "d01-P5-W6-002",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "59d46478-c3c7-adaa-916e-c8f62ec56846",
+      "startMin": 15,
+      "choices": {
+        "orders": [
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "progressNote",
+          "overnightEvents",
+          "labReview"
+        ],
+        "w6Step": "rounding"
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W6-003",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "59d46478-c3c7-adaa-916e-c8f62ec56846",
+      "startMin": 23,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "ibuprofen",
+            "doseTenths": 6000,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true,
+            "supplyDays": 5,
+            "curesExemptReason": "postoperative-supply-7-days-or-less"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "medRec",
+          "dischargeInstructions",
+          "followUp"
+        ],
+        "w6Step": "discharge"
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-004",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "8161e57f-15b0-45c2-1a8d-50151c41d1e4",
+      "startMin": 90,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "postOpCheck",
+          "woundCheck",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d01-P5-W1-005",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "83847207-cbdb-4076-e681-6b4d04690e67",
+      "startMin": 115,
+      "choices": {
+        "orders": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "postOpCheck",
+          "woundCheck",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-006",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "947e53ca-d445-e86f-564c-bf59235d7010",
+      "startMin": 140,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-007",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "399fe184-4ccf-214b-3711-342a21e574da",
+      "startMin": 165,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-008",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "be8fbcad-42e9-f95c-d628-fafcfaa71aed",
+      "startMin": 190,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan",
+          "surgicalPlanning",
+          "consentDiscussion"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d01-P5-W1-009",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf",
+      "startMin": 215,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W1-010",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "df321cbd-c86d-a784-e7b5-a54f04024125",
+      "startMin": 240,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d01-P5-W1-011",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "c4246107-0600-75be-00cc-3a7b9a45c56e",
+      "startMin": 265,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-012",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "84816a36-f741-8868-ee84-253750849690",
+      "startMin": 290,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W1-013",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "6a17f89c-1abb-945b-1d2c-39204cc9f73b",
+      "startMin": 315,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W6-001",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+      "startMin": 345,
+      "choices": {
+        "orders": [
+          {
+            "drug": "morphine",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q4h",
+            "prn": true
+          },
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "q8h",
+            "prn": false
+          },
+          {
+            "drug": "albuterol",
+            "doseTenths": 25,
+            "unit": "mg",
+            "route": "INH",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "consultNote",
+          "imagingReview",
+          "labReview",
+          "surgicalDecision"
+        ],
+        "disposition": "admit",
+        "w6Step": "consult"
+      },
+      "todayResources": [
+        {
+          "resourceType": "DiagnosticReport",
+          "id": "d01-P5-W6-001-imaging",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                  "code": "RAD",
+                  "display": "Radiology"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "text": "CT abdomen and pelvis with IV contrast"
+          },
+          "subject": {
+            "reference": "Patient/75d343d1-463d-3e74-2da8-80ba02140719"
+          },
+          "effectiveDateTime": "2026-11-02T11:22:00-08:00",
+          "issued": "2026-11-02T12:02:00-08:00",
+          "conclusion": "Acute appendicitis without perforation",
+          "conclusionCode": [
+            {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "85189001",
+                  "display": "Acute appendicitis without perforation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d01-P5-W6-001-wbc",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "6690-2",
+                "display": "Leukocytes [#/volume] in Blood by Automated count"
+              }
+            ],
+            "text": "Leukocytes [#/volume] in Blood by Automated count"
+          },
+          "subject": {
+            "reference": "Patient/75d343d1-463d-3e74-2da8-80ba02140719"
+          },
+          "effectiveDateTime": "2026-11-02T10:57:00-08:00",
+          "issued": "2026-11-02T11:57:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 17.3,
+            "unit": "10*3/uL",
+            "system": "http://unitsofmeasure.org",
+            "code": "10*3/uL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 4.5,
+                "unit": "10*3/uL",
+                "system": "http://unitsofmeasure.org",
+                "code": "10*3/uL"
+              },
+              "high": {
+                "value": 11,
+                "unit": "10*3/uL",
+                "system": "http://unitsofmeasure.org",
+                "code": "10*3/uL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W1-014",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "02c3dc13-88f2-8967-bb21-8c1e3e193a1e",
+      "startMin": 390,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W1-015",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "50d2c695-5faa-dfae-da75-4b182154a1ea",
+      "startMin": 415,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-016",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "18bdcfba-d779-89db-be66-dcc772320a11",
+      "startMin": 440,
+      "choices": {
+        "orders": [
+          {
+            "drug": "warfarin",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "planned-surgery"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan",
+          "surgicalPlanning",
+          "consentDiscussion"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d01-P5-W1-017",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "48757e0d-fc63-1cbe-bde5-176712642965",
+      "startMin": 465,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d01-P5-W1-018",
+      "day": 1,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+      "startMin": 490,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    }
+  ]
+}

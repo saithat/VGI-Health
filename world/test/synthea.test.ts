@@ -1,3 +1,4 @@
+import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -13,7 +14,7 @@ const population = loadPopulation(join(root, "fixtures/synthea/index.json"));
 const run = generateWorld(1, 10, population.patients);
 
 it("keeps the committed seed-1 replay identical to the generator and below 15 MB", () => {
-  const dir = join(root, "runs/world/1");
+  const dir = join(root, "runs/world/2");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
   expect(manifest.seed).toBe(1);
@@ -25,6 +26,19 @@ it("keeps the committed seed-1 replay identical to the generator and below 15 MB
     for (const p of PERSONAS) {
       expect(read(`day-${d.state.day}-${p}.json`)).toEqual(d.schedules[p]);
       expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(d.schedules[p]);
+    }
+  }
+});
+
+it("preserves world 1 state, tasks and random draws except pre-release service choices", () => {
+  for (const d of run.days) {
+    expect(JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"))).toEqual(d.state);
+    for (const p of PERSONAS) {
+      const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1/day-${d.state.day}-${p}.json`), "utf8")));
+      for (const task of original.tasks) {
+        if (task.day < PRIOR_AUTH_RELEASE_DAY) task.choices.orders = task.choices.orders.filter((o) => (o.kind ?? "medication") === "medication");
+      }
+      expect(d.schedules[p]).toEqual(original);
     }
   }
 });
