@@ -1,0 +1,7 @@
+{
+  "cases": 10,
+  "nativeWasmFactComparisons": 10,
+  "nativeWasmUiComparisons": 10,
+  "weightConfirmation": "Recorded kg weight requires human confirmation; identity stays human-only",
+  "mismatches": 0
+}

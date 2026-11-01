@@ -12,7 +12,7 @@ const exec = promisify(execFile);
 // Bound Lean workers and their reserved stacks under the shared-machine cap.
 const run = (bin, args, options = {}) => bin === 'lake'
   ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], {
-    timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_STACK_SIZE_KB: '65536' }, ...options,
+    timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: process.env.LEAN_NUM_THREADS ?? '4', LEAN_STACK_SIZE_KB: '65536' }, ...options,
   })
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
@@ -25,7 +25,7 @@ const exists = async p => { try { await access(p); return true; } catch { return
 const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, stable(value[k])])) : value;
 const shape = program => JSON.stringify(stable({ screens: program.screens, start: program.start, macros: program.macros, specVersion: program.specVersion }));
 
-export async function compute({ runDir, canonical = true, releaseDirectory } = {}) {
+export async function compute({ runDir, canonical = true, releaseDirectory, canonicalOutput } = {}) {
   if (process.env.EHR_FAKE === '1') throw new Error('Complexity requires the real EHR; EHR_FAKE is forbidden');
   const lean = path.resolve(process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'));
   const binary = process.env.EHR_BIN ?? path.join(lean, '.lake/build/bin/ehr');
@@ -130,7 +130,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
         const workflows = suite.cases.map(b => ({ workflow: b.workflow, metrics: sum(tasks.filter(t => t.workflow === b.workflow).map(t => t.metrics)), floor: sum(tasks.filter(t => t.workflow === b.workflow).map(t => t.floor)) }));
         iterations.push({ version, label: release, specVersion: release, tasks, workflows, total: sum(workflows.map(w => w.metrics)), floor: sum(workflows.map(w => w.floor)) });
       }
-      await write(path.join(root, 'programs/benchmarks/canonical-complexity.json'), { schemaVersion: 1, ...provenance, iterations });
+      await write(canonicalOutput ? path.resolve(canonicalOutput) : path.join(root, 'programs/benchmarks/canonical-complexity.json'), { schemaVersion: 1, ...provenance, iterations });
     }
     if (runDir) {
       runDir = path.resolve(runDir);
@@ -190,12 +190,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   let id;
   let canonical = true;
   let releaseDirectory;
+  let canonicalOutput;
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--run') { id = args[++i]; if (!id) throw new Error('--run requires a run id or directory'); }
     else if (args[i] === '--release-root') { releaseDirectory = args[++i]; if (!releaseDirectory) throw new Error('--release-root requires a directory'); }
+    else if (args[i] === '--out') { canonicalOutput = args[++i]; if (!canonicalOutput) throw new Error('--out requires a JSON file'); }
     else if (args[i] === '--no-canonical') canonical = false;
     else throw new Error(`Unknown argument ${args[i]}`);
   }
   const runDir = id ? (id.includes('/') ? path.resolve(id) : path.join(root, 'runs', id)) : undefined;
-  await compute({ runDir, canonical, releaseDirectory });
+  await compute({ runDir, canonical, releaseDirectory, canonicalOutput });
 }

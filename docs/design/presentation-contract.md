@@ -357,3 +357,20 @@ recreated deterministically without changing the task world state.
 Actual surgical requests retain source case start/end times. On P5 clinic days,
 background room cases belong to other surgeons; P5 retains any actual urgent
 case. Each room's performer reference supplies the operating surgeon.
+
+### Lean world consumer
+
+`FactsInput.worldContext` optionally supplies the shared dated Bundle separately
+from the single-patient `bundle`. Existing callers omit it. `viewerPersona` in
+context record metadata selects that day's persona-tagged Lists. Queue payloads
+retain the existing unique patient/artifact/version binding; replacement queues
+replace their bindings as well. `orSchedule`, `consultList`, `unitCensus` and
+`inBasketMessages` are optional read-only info declarations, with no new clinical
+requirements. A selected case/consult summary remains patient-scoped and uses its
+original info ID, separately from the department queue.
+
+The consumer adds only matching-patient resources to chart projection. A current
+versioned server resource wins over the cached department graph. Imported chart
+overlays are applied by source identity before the call. Ordinary source buttons
+remain the only row actions; a chart outside the List snapshot keeps its opener
+adjacent to the list instead of attaching it to another patient's row.

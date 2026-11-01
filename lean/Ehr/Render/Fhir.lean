@@ -747,14 +747,30 @@ def procedureHistoryRow (r : Json) : HistoryRow :=
     status := knownText (str r "status"), source := "Procedure"
     versionId := str (field r "meta") "versionId" }
 
+/-- Reviewed SNOMED social, education, housing and care-planning findings.
+These remain in Social History / SDOH, with their source code and dates. -/
+def socialFindingCodes : List String :=
+  ["105531004", "473461003", "314529007", "160904001", "73595000", "160903007",
+   "422650009", "224299000", "73438004", "224295006", "266948004", "423315002",
+   "706893006", "446654005", "266934004", "713458007"]
+
+/-- Only the reviewed SNOMED codes move; similarly named clinical diagnoses stay. -/
+def isSocialCondition (r : Json) : Bool :=
+  resourceType r == "Condition" && (codings (field r "code")).any fun c =>
+    str c "system" == "http://snomed.info/sct" && socialFindingCodes.contains (str c "code")
+
 def isHistoryResource (r : Json) : Bool :=
-  ["MedicationStatement", "FamilyMemberHistory", "Procedure"].contains (resourceType r) ||
+  isSocialCondition r || ["MedicationStatement", "FamilyMemberHistory", "Procedure"].contains (resourceType r) ||
     (resourceType r == "Observation" && (categoryCodes r).contains "social-history")
 
 def historyRows (rs : List Json) : List HistoryRow :=
   rs.flatMap fun r =>
     if str r "status" == "entered-in-error" then [] else
     match resourceType r with
+    | "Condition" => if isSocialCondition r && verificationStatus r != "entered-in-error" then
+        [{ id := str r "id", kind := "Social history", item := ccText (field r "code"),
+           detail := "SNOMED CT " ++ firstCode (field r "code") ++ "; recorded: " ++ (problemRow r).onset,
+           status := clinicalStatus r, source := "Condition (SDOH)", versionId := str (field r "meta") "versionId" }] else []
     | "MedicationStatement" => [medicationStatementHistoryRow r]
     | "FamilyMemberHistory" => familyHistoryRows r
     | "Procedure" => [procedureHistoryRow r]
@@ -1257,7 +1273,7 @@ def messageRows (rs : List Json) (p : Json) : List AmbulatoryMessageRow :=
     { received := str r "authoredOn", patient := displayName p
       subject := let description := str r "description"
         if description == "" then ccText (field r "code") else description
-      sender := str (field r "requester") "display", priority := str r "priority"
+      sender := humanRef rs (field r "requester"), priority := str r "priority"
       status := str r "status", folder := taskFolder r }
 
 /-- Enclosing Task context tolerates an absent legacy fragment subject, but an
@@ -1355,7 +1371,7 @@ def refillLastFill (rs : List Json) (task requested : Json) : String :=
         str c "code" == code && str c "system" == system
     str r "status" == "completed" && str r "whenHandedOver" != "" && (linked || sameCode) &&
       refillPatientCompatible (str (field r "subject") "reference") (str (field task "for") "reference")
-  ((latestBy (str · "whenHandedOver") ((ofType "MedicationDispense" rs).filter eligibleFill)).map
+  ((latestBy (str · "whenHandedOver") ((ofType "MedicationDispense" (rs ++ arr task "contained")).filter eligibleFill)).map
     (str · "whenHandedOver")).getD "Not recorded"
 
 /-- Complete raw result rows, with the original reference ranges and flags. -/
@@ -1444,6 +1460,8 @@ def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload
      ("Received", str task "authoredOn"), ("Prescription date", str rx "authoredOn"),
      ("Pharmacy", let name := prescriptionPharmacy rs rx
        if name == "" then "Not recorded" else name),
+     ("Quantity", quantityLabel (field (field rx "dispenseRequest") "quantity")),
+     ("Days supply", quantityLabel (field (field rx "dispenseRequest") "expectedSupplyDuration")),
      ("Last fill", refillLastFill rs task rx),
      ("Last encounter", (priorVisit.map (fun r => str (field r "period") "start")).getD "Not recorded"),
      ("Request", str task "description"), ("Status", str task "status")]
@@ -1612,7 +1630,10 @@ They satisfy no physical-event attestation and introduce no new clinical guard. 
 def surgicalPayloads (today : String) (rs : List Json) (p : Json) : List InfoPayload :=
   let views := [("scheduleTasks", (surgicalCaseRows today rs p).map SurgicalCaseRow.cells),
     ("consultRequest", surgicalConsultRows rs p), ("consentDocument", surgicalConsentRows rs p),
-    ("intraopRecord", surgicalRecordRows today rs p)]
+    ("intraopRecord", surgicalRecordRows today rs p),
+    ("anticoagulantList", (ofType "CarePlan" rs |>.filter (fun r => periopSubject p r && str r "status" == "active" && str r "title" == "Perioperative antiplatelet plan")).flatMap fun r =>
+      [("Plan", str r "description")] :: (arr r "activity").map (fun activity =>
+        [("Medication review", ccText (field (field activity "detail") "code")), ("Plan", str (field activity "detail") "description")]))]
   views.map fun (info, rows) =>
     { info, patient := patientIdOf p, artifactKey := "render.periop." ++ info
       artifact := "FHIR/perioperative/" ++ info, version := listVersion rs
@@ -1657,6 +1678,7 @@ def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option St
       | "AMB" => some "ambulatory"
       | "EMER" => some "emergency"
       | "IMP" | "ACUTE" | "NONAC" => some "inpatient"
+      | "SS" => if (ccText (first enc "type")).startsWith "Preoperative" then some "preop" else none
       | _ => none
 
 /-- The facts the spec needs. -/
@@ -1693,7 +1715,14 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     infoPayloads? := some supporting
     artifactBindings? := some (supporting.map fun payload =>
       { key := payload.artifactKey, artifact := payload.artifact, version := payload.version })
-    record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++ ctx.record }
+    record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++
+      (let enc := (latestEncounter (encounterRecords ctx rs p)).getD .null
+       let orders := (ofType "ServiceRequest" rs).filter fun r => str r "status" == "active" &&
+         periopSubject p r && (referenced? rs (field r "encounter")).any (fun e => str e "id" == str enc "id")
+       [("codeStatus", "; ".intercalate ((orders.filter fun r => hasCode (field r "code") "full-code" || hasCode (field r "code") "dnr").map (fun r => ccText (field r "code")))),
+        ("isolation", "; ".intercalate ((orders.filter fun r => ["no-isolation", "contact-precautions", "droplet-precautions"].contains (firstCode (field r "code"))).map (fun r => ccText (field r "code")))),
+        ("encounterName", ccText (first enc "type")), ("department", ccText (field enc "serviceType")),
+        ("postoperativeDay", ((arr enc "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/postoperative-day")).map (fun e => qtyText (Json.mkObj [("value", field e "valueInteger")])) |>.getD "")]).filter (fun pair => pair.2 != "") ++ ctx.record }
 
 /-- The display rows. -/
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
@@ -1705,7 +1734,7 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)
     labs := labRows rs
     problems := newestFirst (·.onset)
-      ((ofType "Condition" rs |>.filter (verificationStatus · != "entered-in-error")).map problemRow)
+      ((ofType "Condition" rs |>.filter (fun r => verificationStatus r != "entered-in-error" && !isSocialCondition r)).map problemRow)
     immunizations := newestFirst (·.date) ((ofType "Immunization" rs).map immRow)
     encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
     procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
@@ -1731,14 +1760,116 @@ def parseBundle (ctx : FactsContext) (b : Json) : Except String (Facts × Displa
 
 /-! ## API record (needs `Lean.Json`) -/
 
+/-- Select a dated persona List, then resolve exactly its membership. -/
+def worldList (ctx : FactsContext) (rs : List Json) (code : String) : Option (List Json) :=
+  let persona := (ctx.record.lookup "viewerPersona").getD ""
+  ((ofType "List" rs).find? fun r => str r "status" == "current" &&
+    dayOf (str r "date") == ctx.today && hasCode (field r "code") code &&
+    (arr (field r "meta") "tag").any (fun t => str t "system" == "urn:vgi:world:realism" && str t "code" == persona)).map fun list =>
+      (arr list "entry").filterMap fun entry => referenced? rs (field entry "item")
+
+/-- Public extension text is source evidence, never a derived clinical status. -/
+def worldExtension (r : Json) (key : String) : String :=
+  ((arr r "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/" ++ key)).map (str · "valueString") |>.getD ""
+
+/-- Keep the selected chart's row first for its existing ordinary opener.
+Other rows remain read-only context; membership and source order are retained. -/
+def selectedFirst (p : Json) (rows : List Json) : List Json :=
+  let selected := fun r => periopSubject p r || Ambulatory.referenceMatches (str (field r "for") "reference") p ||
+    (arr r "participant").any (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p)
+  rows.filter selected ++ rows.filter (fun r => !selected r)
+
+/-- Explicit List membership supplies department queues independently of chart facts. -/
+def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload :=
+  let clinic := worldList ctx rs "clinic-schedule"
+  let ed := worldList ctx rs "ed-census"
+  let mine := worldList ctx rs "my-patients"
+  let unit := worldList ctx rs "unit-census"
+  let cases := worldList ctx rs "or-schedule"
+  let consults := worldList ctx rs "consults"
+  let basket := worldList ctx rs "inbasket"
+  let scheduleCells := fun r =>
+    let row := scheduleRow ctx.today rs r
+    [("Time", row.time), ("Patient", row.patient), ("Age/sex", row.ageSex),
+     ("Visit type", row.visitType), ("Status", row.status),
+     ("Chief complaint", let reason := ccText (first r "reasonCode"); if reason == "" then str r "description" else reason),
+     ("Provider", row.provider), ("Location", row.location)]
+  let boardCells := fun r =>
+    let row := boardRow ctx.today rs r
+    [("Room", row.room), ("Patient", row.patient), ("Age/sex", row.ageSex),
+     ("Chief complaint", row.complaint), ("Acuity", row.acuity), ("Arrival", row.arrival),
+     ("RN", encounterParticipant rs r "PPRF"), ("Provider", row.provider),
+     ("Labs", worldExtension r "pending-labs"), ("Imaging", worldExtension r "pending-imaging"),
+     ("Disposition", worldExtension r "disposition"), ("Assignment", worldExtension r "nursing-assignment"), ("Status", row.status)]
+  let caseCells := fun r =>
+    [("Room", humanRef rs (first r "locationReference")), ("Start", str (field r "occurrencePeriod") "start"),
+     ("Procedure", ccText (field r "code")), ("Patient", humanRef rs (field r "subject")),
+     ("Surgeon", humanRef rs (first r "performer")), ("Status", "; ".intercalate ((arr r "note").map (str · "text")))]
+  let messageCells := fun r =>
+    [("Received", if resourceType r == "Communication" then str r "sent" else str r "authoredOn"),
+     ("Patient", humanRef rs (field r (if resourceType r == "Communication" then "subject" else "for"))),
+     ("Subject", if resourceType r == "Communication" then "; ".intercalate ((arr r "payload").map (str · "contentString")) else str r "description"),
+     ("From", humanRef rs (field r (if resourceType r == "Communication" then "sender" else "requester"))),
+     ("Priority", str r "priority"), ("Status", str r "status"),
+     ("Folder", if resourceType r == "Communication" then "Patient Messages" else Ambulatory.taskFolder r)]
+  let messages := selectedFirst p (basket.getD [])
+  let results := messages.filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")
+  let refills := messages.filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests")
+  let views : List (InfoId × Option (List (List (String × String)))) :=
+    [("scheduleTasks", clinic.map (fun rows => (selectedFirst p rows).map scheduleCells)),
+     ("orSchedule", cases.map (fun rows => (selectedFirst p rows).map caseCells)),
+     ("edTrackBoard", ed.map (fun rows => (selectedFirst p rows).map boardCells)),
+     ("shiftWorklist", mine.map (fun rows => (selectedFirst p rows).map boardCells)),
+     ("unitCensus", unit.map (fun rows => (selectedFirst p rows).map boardCells)),
+     ("consultList", consults.map (fun rows => (selectedFirst p rows).map fun r =>
+       [("Received", str r "authoredOn"), ("Patient", humanRef rs (field r "subject")),
+        ("Reason", ccText (first r "reasonCode")), ("Priority", str r "priority"),
+        ("Requester", humanRef rs (field r "requester")), ("Location", humanRef rs (first r "locationReference")), ("Status", str r "status")])),
+     ("inBasketFolders", basket.map fun _ => ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
+       [("Folder", folder), ("Count", toString ((messages.map messageCells).filter (fun cells => cells.lookup "Folder" == some folder)).length)]),
+     ("inbasketItems", basket.map fun _ => messages.map messageCells),
+     ("inBasketMessages", basket.map fun _ => (messages.filter (fun r => resourceType r == "Communication")).map messageCells),
+     ("inBasketResults", basket.map fun _ => results.map messageCells),
+     ("inBasketRxRequests", basket.map fun _ => refills.map messageCells)]
+  views.filterMap fun (info, rows) => rows.bind fun rows => Ambulatory.payload p rs info rows true
+
 /-- Input of `facts`: a FHIR bundle and the context. -/
 structure FactsInput where
   bundle : Json
   context : FactsContext
+  /-- Shared dated list graph; chart parsing remains patient scoped. -/
+  worldContext? : Option Json := none
   deriving Lean.ToJson, Lean.FromJson
 
 /-- `facts` on a parsed input. -/
 def runFacts (i : FactsInput) : Except String FactsOutput :=
-  (parseBundle i.context i.bundle).map fun (f, d) => { facts := f, display := d }
+  match i.worldContext? with
+  | none => (parseBundle i.context i.bundle).map fun (f, d) => { facts := f, display := d }
+  | some graph => do
+    let p ← match (bundleResources i.bundle).find? (resourceType · == "Patient") with
+      | some p => pure p
+      | none => throw "bundle has no Patient"
+    let all := bundleResources graph
+    let selected := all.filter fun r =>
+      let refs := [field r "subject", field r "patient", field r "for", field r "beneficiary"]
+      refs.any (fun ref => Ambulatory.referenceMatches (str ref "reference") p) && resourceType r != "List"
+    let support := all.filter fun r => ["Practitioner", "Organization", "Location"].contains (resourceType r)
+    let original := bundleResources i.bundle
+    let sameIdentity := fun a b => resourceType a == resourceType b && str a "id" == str b "id"
+    let versioned := original.filter (fun r => str (field r "meta") "versionId" != "")
+    let additions := (selected ++ support).filter (fun r => !versioned.any (sameIdentity r))
+    let rs := (original.filter fun r => !additions.any (sameIdentity r)) ++ additions
+    let positiveAllergy := rs.any fun r => isAllergy r && allergyActive r && !hasCode (field r "code") "716186003"
+    let rs := if positiveAllergy then rs.filter (fun r => !isAllergy r || !hasCode (field r "code") "716186003") else rs
+    let chart := Json.mkObj [("resourceType", .str "Bundle"), ("entry", .arr (rs.map (fun r => Json.mkObj [("resource", r)])).toArray)]
+    let enc := latestEncounter (selected.filter (resourceType · == "Encounter"))
+    let ctx := if i.context.encounterId?.isSome then i.context else { i.context with encounterId? := enc.map (str · "id") }
+    let (f, d) ← parseBundle ctx chart
+    let queues := worldQueuePayloads ctx all p
+    let oldPayloads := (f.infoPayloads?.getD []).filter fun q => !queues.any (fun x => x.info == q.info)
+    let enriched := { f with
+      infoPayloads? := some (queues ++ oldPayloads)
+      artifactBindings? := some (surgicalBindings queues ++ (f.artifactBindings?.getD []).filter (fun b => !queues.any (fun q => q.artifactKey == b.key))) }
+    pure { facts := enriched, display := d }
 
 end Ehr.Render.Fhir

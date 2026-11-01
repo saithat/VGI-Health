@@ -29,6 +29,7 @@ export interface LiveContext {
   medication?: MedicationRequest;
   renewal?: MedicationRequest;
   bed?: Location;
+  worldContext?: Bundle;
 }
 const elementSchema = z.object({
   id: z.string(),
@@ -58,7 +59,7 @@ export function factsContext(
     today: now.slice(0, 10),
     now: date.getUTCHours() * 60 + date.getUTCMinutes(),
     receipts,
-    record,
+    record: [["viewerPersona", user.persona === "RN2" ? "P3" : user.persona], ...record],
     ...(context?.encounter.id ? { encounterId: context.encounter.id } : {}),
     ...(user.persona === "P2"
       ? { encounterKind: "emergency" }
@@ -93,6 +94,7 @@ export function projectLive(
           ],
         },
         context: factsContext(user, now, receipts, context),
+        ...(context.worldContext ? { worldContext: context.worldContext } : {}),
       }),
     ),
   );

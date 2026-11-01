@@ -38,6 +38,7 @@ def inbasket : Screen :=
       { clinicalSection s "messages" "Results messages" (parent := some "inBasketColumns") with tag := "present.messages" },
       { searchC s "basketSearch" "inbasket" "Search In Basket" with parent? := some (cid s "messages") },
       { table s "items" "inBasketResults" "Results" (parent := some "messages") with tag := "present.messages" },
+      { table s "patientMessages" "inBasketMessages" "Patient Messages" (parent := some "messages") with tag := "present.messages" },
       clinicalSection s "selected" "Selected result message" (parent := some "messages"),
       panel s "preview" "messagePreview" "Message details" (parent := some "selected"),
       { goto s "openResult" "w2Result" "Review result" (parent := some "messages") with
