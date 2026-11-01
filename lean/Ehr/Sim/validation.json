@@ -1,11 +1,13 @@
 {
-  "sourceCommit": "5383fc4",
+  "sourceCommit": "e7714df5771d4ccda464b621e008c10e7e072403",
+  "mainCommit": "f3dd0c2a68bf067a6c5286687ba3e1e7342a4bef",
   "seed": 123,
   "world": "runs/world/1",
   "schedules": 50,
   "tasks": 1284,
   "completed": 1271,
   "determinism": true,
+  "determinismScope": "byte-identical day-one replay for all five personas",
   "floorViolations": [],
   "interruptionViolations": [],
   "results": [
@@ -414,6 +416,28 @@
       "complaints": [
         "d03-P5-W1-019: no reachable unmet goal; incomplete"
       ]
+    }
+  ],
+  "minimumExamples": [
+    {
+      "task": "d01-P1-W1-001",
+      "workflow": "W1",
+      "clicks": 44,
+      "keystrokes": 223,
+      "space": "navigationDirected",
+      "keystrokeSpace": "navigationDirected",
+      "exact": true,
+      "episodes": 1
+    },
+    {
+      "task": "d01-P3-W4-001",
+      "workflow": "W4",
+      "clicks": 38,
+      "keystrokes": 104,
+      "space": "navigationDirected",
+      "keystrokeSpace": "navigationDirected",
+      "exact": true,
+      "episodes": 2
     }
   ]
 }
