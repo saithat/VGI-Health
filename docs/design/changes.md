@@ -549,3 +549,22 @@ GS1 expiry parsing shares that exact full-date grammar. Validation was not
 weakened: leap years, invalid dates, exact widths and public rejection preserving
 the original state are regression-tested. All 252 native/WASM feature API
 comparisons pass with this implementation.
+
+## Content pass 2: five newly available rule families
+
+V1 now composes the reviewed feature mappings under `Ehr/Specs/Rules/` with
+all first-pass declarations. V1.1/V2 inherit the resulting spec. Event windows
+and durable clocks are appended to CommitSpec; validators are conjoined with
+existing constraints; clinical entries, structured payloads and exact signing
+labels add hard stops. The content-owned Extends relation additionally requires
+identical display obligations, strengthening the release audit.
+
+The canonical adds related artifact screens and conditional human documentation,
+with required payload/review content pinned before commit controls. Separate
+refusal, restraint release, oxygen stop, detention release and expired-Rx decision
+routes preserve documentation after eligibility failure/expiry. Eight permanent
+mutations extend the original seed corpus. Test-only record evidence is explicit
+and never comes from typing an attestation. Clinical, evidence and payload adapter
+integration, source-row coverage and remaining AST limitations are CR-16 work;
+per-rule status/reasons are in catalog.json. No runtime/core/property statement
+was edited by content.

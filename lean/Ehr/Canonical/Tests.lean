@@ -8,7 +8,7 @@ namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1
 
 /-- Adult clinic patient, with named record values used by the canonical UI. -/
-def adult : Facts where
+def adult : Facts := FeatureExamples.withEvidence {
   patientId := "synthea-rk"
   identity := { initials := "RK", sex := "M", ageYears := 58 }
   allergyVersion := 3
@@ -21,7 +21,7 @@ def adult : Facts where
   now := 600
   record := [("appointmentReason", "Blood pressure follow-up"),
     ("preferredPharmacy", "Community pharmacy"), ("requestPharmacy", "Community pharmacy"),
-    ("patientIdentity", "RK/M/58"), ("weightYesterday", "19.5")]
+    ("patientIdentity", "RK/M/58"), ("weightYesterday", "19.5")] }
 /-- Prescriber for W1, W2, W3 and W7. -/
 def physician : User := { id := "doctor1", role := .physician }
 /-- Pediatric NP. -/
@@ -39,7 +39,7 @@ def hospital : Facts := { adult with
   weightToday? := some (700, .kg)
   currentMedClasses := [], careGaps := [] }
 /-- Pre-op context scopes consent, H&P and anticoagulant requirements. -/
-def preOpFacts : Facts := { hospital with encounterKind? := some "preop" }
+def preOpFacts : Facts := FeatureExamples.withEvidence { hospital with encounterKind? := some "preop" }
 /-- Run actual human events from init. -/
 def run (es : List Event) (p : Program := canonicalV1) (f : Facts := adult)
     (u : User := physician) (sp : Spec := specV1) : State :=

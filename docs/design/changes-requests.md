@@ -745,3 +745,57 @@ run no Lake commands, and the report asserts disjoint full coverage and identica
 WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
+
+## CR-16 — content feature pass: adapters, output coverage, catalog gaps and app seed count
+
+Owner-requested second-pass rule data is in `Ehr.Specs.Rules.Features`, composed
+additively into v1 and inherited by v1.1/v2. `feature_data.py` is the reviewed
+mapping; each generated item retains the exact catalog id and source label.
+`catalog.json` records every qualifying row, including precise remaining AST
+limitations rather than claiming unsupported rules are implemented.
+
+- **App:** `app/tests/app.test.tsx:25` hardcodes 16 bad programs. The fetched main
+  already exports 24 and fails this test; this pass adds eight permanent seeds
+  (32 total). Assert the complete exported corpus dynamically, preserving the
+  requirement that every actual bad program appears. Do not delete seeds or
+  limit the catalog to make the assertion pass. App build/lint pass.
+- **Core:** catalog rows still needing features name the precise limitations:
+  UDI production-identifier projection, forbidden abbreviation token/context
+  validation, synonym normalization/category routing, scanned dose/product
+  arithmetic, wet/dry/dosing-weight selection, sub-tenth rounding, concentration
+  and aggregate daily-dose arithmetic, dynamic emergency supply comparison,
+  order default selection/automatic stop, civil-year/event authorization expiry,
+  and release/access enforcement. L-group record-level-completeness,
+  qualified-authorization and release-access-policy remain unencoded with
+  per-row reasons. Do not replace those mechanisms with a checkbox.
+- **Core/check:** structured payload row completeness currently ensures each
+  supplied row has fields, not that all source order/result rows were supplied.
+  Add a typed source-row/slot coverage contract before claiming complete signed
+  prescription or multicomponent-result fidelity. Patient identifiers/categories
+  and row values are trusted adapter facts, not verified identity semantics.
+- **App/world/render:** supply patient/episode/current artifact-version event
+  evidence, clinical observations, business-day calendars with local timezone
+  coverage, original durable order clocks/month cutoffs, trusted terminology
+  tables, workflow phase and real InfoPayload rows. UI fields cannot fabricate
+  any of this evidence. Render payload groups, selected rows and pinned state;
+  keep mandatory reviews and structured payloads legible before commit controls.
+  Missing data intentionally blocks. Current test-only FeatureExamples is not
+  a clinical fixture source or a permissive fallback for missing records.
+- **App/world:** persist each new dedicated artifact action's declared fields
+  and distinct completion/filing events. Release/stop/decline actions are separate
+  from continuing an expired order; do not reset original anchors on a new UI
+  episode, navigation, transfer or attempted renewal. New role lists authorize
+  documentation only and do not establish practitioner licensing/credentialing.
+- **Check/sim/agent/WASM:** adopt the actual expanded release/spec exports,
+  clinical/temporal/expiry/validation/display constraints and all 32 bad seeds.
+  Certify actual programs, replay failures and exercise completing human paths.
+  The content regressions exercise the interpreter; they are not checker
+  soundness proofs, deployment certificates, evidence of physical care, or
+  proof of external record completeness.
+
+Some sources use qualitative deadlines such as "promptly" or "immediately".
+The mapping explicitly labels the stricter same-recorded-minute hospital policy;
+other local lookbacks and checklist/administration windows are likewise labeled.
+The ordinary access/summary deadlines are retained even where law permits an
+extension. Exception/refusal/release documentation remains a separate action;
+no old entry, review, alert, property or safety rule was removed.

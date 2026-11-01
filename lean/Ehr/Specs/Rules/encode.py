@@ -152,3 +152,8 @@ for r in rules:
         r['encodingSkippedReason'] = r['fit'] + ': ' + r['fitReason']
 CATALOG.write_text(json.dumps(rules, indent=2, ensure_ascii=False) + '\n')
 print(f'Generated {len(selected)} rule encodings in five source modules and canonical placements.')
+
+# The owner-requested second pass uses the now-available closed feature ASTs.
+import subprocess
+import sys
+subprocess.run([sys.executable, str(Path(__file__).with_name("feature_encode.py"))], check=True)
