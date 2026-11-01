@@ -60,9 +60,10 @@ export class Driver {
     return this.view.items.some(i => i.comp.id === c.id && i.shown);
   }
   find(predicate, description, { workflow, optional = false } = {}) {
+    const activeBinding = c => !c.kind?.field || c.kind.field.slot === 'current' || c.kind.field.slot.fixed?.n === this.state.currentSlot ? 0 : 1;
     const candidates = this.program.screens.flatMap(s => s.components.filter(predicate).map(c => ({ s, c, route: this.route(s.id) })))
       .filter(x => x.route !== null)
-      .sort((a, b) => Number(b.s.workflow === workflow) - Number(a.s.workflow === workflow) || a.route.length - b.route.length);
+      .sort((a, b) => Number(b.s.workflow === workflow) - Number(a.s.workflow === workflow) || activeBinding(a.c) - activeBinding(b.c) || a.route.length - b.route.length);
     for (const { s, c } of candidates) {
       const path = this.route(s.id);
       let reached = true;

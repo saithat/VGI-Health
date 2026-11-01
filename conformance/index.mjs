@@ -31,7 +31,11 @@ export function runTargets(id) {
   const result = [];
   for (const persona of manifest.personas) {
     const folder = path.join(dir, 'programs', persona);
-    const versions = readdirSync(folder).filter(name => /^v\d+\.json$/.test(name)).sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
+    const pointer = read(path.join(folder, 'deployed.json'));
+    if (!Number.isInteger(pointer.version) || pointer.version < 0) throw new Error(`Invalid deployed pointer for ${persona}`);
+    const versions = readdirSync(folder).filter(name => /^v\d+\.json$/.test(name) && Number(name.slice(1, -5)) <= pointer.version)
+      .sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
+    if (!versions.includes(`v${pointer.version}.json`)) throw new Error(`Missing deployed executable for ${persona}`);
     for (const version of versions) {
       const programPath = path.join(folder, version), program = read(programPath);
       const certPath = path.join(dir, 'certs', persona, version);
@@ -101,6 +105,7 @@ export async function runSuite({ targets, binary, runId = null, selected }) {
           testedProgramSha256: digest(d.program), steps: d.trace.length });
       } catch (e) {
         result.failed++;
+        console.error(`${target.id}: FAIL ${s.id}: ${e.message}`);
         const d = native.lastDriver;
         report.results.push({ target: target.id, scenario: s.id, status: 'fail', observed: e.message,
           scope: s.scope ?? 'exact-program', ...(d ? { facts: d.facts, user: d.input.user, trace: d.trace, finalState: d.state,
@@ -161,7 +166,7 @@ export async function main(args = process.argv.slice(2)) {
   let targets;
   if (values.program) {
     const programPath = path.resolve(values.program), specPath = path.resolve(values.spec), program = read(programPath), spec = read(specPath);
-    const persona = /(?:^|[\/.-])(P[1-5])(?:[\/.-]|$)/.exec(programPath)?.[1];
+    const persona = /(?:^|[\/.-])(P[1-5])(?:[\/.-]|$)/.exec(programPath)?.[1] ?? (/^P[1-5]$/.test(program.owner) ? program.owner : undefined);
     targets = [{ id: `program/${program.id}/v${program.version}`, kind: 'program', persona, release: spec.version,
       semanticRelease: spec.version, revision: program.version, programPath, specPath, program, spec, certification: 'not evaluated by this behavioral runner' }];
   } else targets = [...canonicals(), ...(values.run ? runTargets(values.run) : [])];

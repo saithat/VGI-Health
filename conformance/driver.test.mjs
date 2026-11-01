@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { Native } from './native.mjs';
 import { Driver } from './driver.mjs';
-import { context, prepare } from './clinical.mjs';
+import { context, prepare, code } from './clinical.mjs';
 import { fixtures, scenarioCatalog } from './scenarios.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
@@ -57,4 +57,11 @@ test('hand-written expectation catches a removed entry guard without consulting 
   const target = { program: p, spec: sp, persona: 'P3', semanticRelease: 'v3' };
   const scenario = scenarioCatalog.find(s => s.id === 'entry.administerMed.wristbandScan');
   assert.throws(() => scenario.run(fixtures(new Native(binary), target)), /Expected refusal naming wristbandScan/);
+});
+
+test('semantic entry targets the active order line rather than a nearby fixed order-set row', { skip: !existsSync(binary) }, () => {
+  const p = read('releases/v3/personas/P2.json'), sp = read('releases/v3/spec.json');
+  const d = new Driver(new Native(binary), sp, p, context('signOrders').facts);
+  d.enter('drug', code('metformin'));
+  assert.equal(d.capture('drug').slot, d.state.currentSlot);
 });
