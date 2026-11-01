@@ -14,10 +14,10 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
     }),
   ).toBeVisible();
   await expect(
-    chart.getByText("Release v2 · v2", { exact: true }),
+    chart.getByText("Release v2 · rev 2", { exact: true }),
   ).toBeVisible();
   await expect(
-    chart.getByText("Release v3 · v5", { exact: true }),
+    chart.getByText("Release v3 · rev 5", { exact: true }),
   ).toBeVisible();
   await chart
     .getByText("Chart data and measurement definitions", { exact: true })
@@ -27,13 +27,13 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
   await expect(
     table
       .getByRole("row")
-      .filter({ hasText: "v0 · baseline" })
+      .filter({ hasText: "rev 0 · baseline" })
       .getByRole("cell")
       .nth(2),
   ).toHaveText("25");
   const final = table
     .getByRole("row")
-    .filter({ has: page.getByRole("rowheader", { name: "v7", exact: true }) });
+    .filter({ has: page.getByRole("rowheader", { name: "rev 7", exact: true }) });
   await expect(final.getByRole("cell").nth(2)).toHaveText("23");
   for (const [label, value] of [
     ["Keystrokes", "39"],

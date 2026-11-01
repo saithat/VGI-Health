@@ -30,30 +30,34 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 12px;
-  min-height: 28px;
+  padding: 8px 12px;
+  min-height: 40px;
   font-size: 12px;
   line-height: 16px;
-  color: var(--clinical-muted);
-  border-bottom: 1px solid var(--clinical-border);
+  color: white;
+  background: var(--clinical-appbar);
+  border-bottom: 1px solid var(--clinical-appbar-hover);
 }
 .clinical-brand strong {
-  color: var(--clinical-ink);
+  color: white;
   font-weight: 600;
 }
 .clinical-brand strong span {
   font-weight: 400;
 }
 .brand-mark {
-  color: var(--clinical-primary);
+  color: white;
   display: flex;
 }
 .clinical-brand-divider {
   height: 12px;
-  border-left: 1px solid var(--clinical-control);
+  border-left: 1px solid #b7caed;
 }
 .clinical-encounter {
   margin-left: auto;
+  padding: 3px 8px;
+  border: 1px solid #b7caed;
+  border-radius: 3px;
 }
 .clinical-banner-content {
   display: flex;
@@ -105,6 +109,16 @@
   font-size: 12px;
   line-height: 16px;
 }
+.banner-pill {
+  padding: 4px 8px;
+  border: 1px solid var(--clinical-control);
+  border-radius: 4px;
+  background: var(--clinical-surface);
+}
+.banner-precaution {
+  background: var(--clinical-yellow-tint);
+  color: var(--clinical-yellow-ink);
+}
 .allergy-badge {
   text-transform: none;
   letter-spacing: 0;
@@ -124,7 +138,7 @@
   height: auto;
   min-height: 100%;
   padding: 12px 8px;
-  background: var(--clinical-canvas);
+  background: var(--clinical-sidebar);
   border-right: 1px solid var(--clinical-border);
 }
 .nav-eyebrow {
@@ -139,6 +153,8 @@
   padding: 4px 8px;
   color: var(--clinical-ink);
   border-radius: 3px;
+  background: var(--clinical-activity);
+  border-left: 3px solid var(--clinical-primary);
 }
 .workflow-groups .mantine-Accordion-label {
   padding: 4px 0;
@@ -182,6 +198,12 @@
 .workflow-links button:hover {
   color: var(--clinical-primary);
   background: var(--clinical-selected);
+}
+.workflow-links button[aria-current="page"] {
+  background: var(--clinical-selected);
+  color: var(--clinical-primary);
+  font-weight: 700;
+  box-shadow: inset 3px 0 var(--clinical-primary);
 }
 .workflow-links button:focus-visible {
   outline: 2px solid var(--clinical-primary);
@@ -248,7 +270,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 12px;
-  background: var(--clinical-surface);
+  background: var(--clinical-sidebar);
   border: 1px solid var(--clinical-border);
   border-radius: 4px;
 }
@@ -286,7 +308,8 @@
   padding: 4px 12px;
   min-height: 30px;
   border-bottom: 1px solid var(--clinical-border);
-  background: var(--clinical-banner);
+  background: var(--clinical-section);
+  border-left: 4px solid var(--clinical-primary);
 }
 .clinical-section-title h2 {
   margin: 0;
@@ -324,7 +347,7 @@
   padding: 4px;
   margin: 0;
   list-style: none;
-  background: var(--clinical-surface);
+  background: var(--clinical-activity);
   border: 1px solid var(--clinical-border);
   border-radius: 4px;
 }
@@ -463,7 +486,7 @@
   border-color: var(--clinical-border);
 }
 .clinical-table-scroll tbody tr:nth-child(even) {
-  background: var(--clinical-hover);
+  background: var(--clinical-section);
 }
 .clinical-table-scroll tbody tr:hover {
   background: var(--clinical-hover);
@@ -616,6 +639,8 @@
 }
 .clinical-tabs .mantine-Tabs-list {
   flex-wrap: wrap;
+  background: var(--clinical-activity);
+  border-bottom: 1px solid var(--clinical-control);
 }
 .clinical-tabs .mantine-Tabs-tab {
   min-height: 32px;
@@ -744,4 +769,97 @@
 .clinical-info[data-info-id="encounterNotes"] td,
 .clinical-info[data-info-id="priorNotes"] td {
   white-space: pre-wrap;
+}
+
+/* A program without semantic navigator entries has one storyboard column. */
+.clinical-shell.without-nav {
+  grid-template-columns: minmax(0, 1fr);
+}
+.clinical-app .empty-navigator {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: auto;
+  padding: 4px 12px;
+  border-right: 0;
+  border-bottom: 1px solid var(--clinical-border);
+}
+.empty-navigator .nav-eyebrow {
+  margin: 0;
+  padding: 2px 0;
+}
+.empty-navigator .nav-footer {
+  border: 0;
+  margin: 0 0 0 auto;
+  padding: 2px 0;
+}
+
+.clinical-note-list,
+.clinical-home-meds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.clinical-note-list > li + li,
+.clinical-home-meds > li + li {
+  margin-top: 8px;
+}
+.clinical-note-card {
+  padding: 10px 12px;
+  border: 1px solid var(--clinical-border);
+  border-left: 3px solid var(--clinical-primary);
+  border-radius: 4px;
+  background: var(--clinical-surface);
+}
+.clinical-note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--clinical-muted);
+  font-size: 12px;
+  line-height: 18px;
+  margin-bottom: 4px;
+}
+.clinical-note-meta > span + span {
+  border-left: 1px solid var(--clinical-border);
+  padding-left: 10px;
+}
+.clinical-note-title {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.clinical-note-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 20px;
+  font-family: inherit;
+}
+.clinical-note-status {
+  display: inline-block;
+  margin-top: 6px;
+  background: var(--clinical-gray-tint);
+  color: var(--clinical-gray-ink);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.clinical-home-meds > li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  border-bottom: 1px solid var(--clinical-border);
+  padding: 5px 0 9px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.home-med-name {
+  font-weight: 600;
+}
+.home-med-sig {
+  font-weight: 400;
+}
+.home-med-status {
+  color: var(--clinical-muted);
 }

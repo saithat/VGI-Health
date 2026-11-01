@@ -4,13 +4,25 @@ import { createTheme, defaultVariantColorsResolver } from "@mantine/core";
 export const clinicalTokens = {
   canvas: "#F3F5F7",
   surface: "#FFFFFF",
-  banner: "#E8EEF2",
+  banner: "#E5F0FA",
   hover: "#F6F8FA",
-  selected: "#E6EFF7",
+  selected: "#DAE9FA",
   ink: "#243341",
   secondary: "#526171",
   divider: "#CBD5DF",
   control: "#718096",
+  appBar: "#243E73",
+  appBarHover: "#1C305A",
+  activity: "#DCE6F6",
+  sidebar: "#EBF0FA",
+  section: "#EDF3FB",
+  persona: {
+    P1: "#245A81",
+    P2: "#984029",
+    P3: "#256348",
+    P4: "#704184",
+    P5: "#7D5519",
+  },
   blue: { ink: "#245A81", tint: "#E8F1F8", hover: "#1C4868" },
   red: { ink: "#9C2833", tint: "#FCECEE", hover: "#82212B" },
   yellow: { ink: "#825300", tint: "#FFF3D6", hover: "#694300" },
@@ -106,6 +118,17 @@ export const clinicalCssVariables = {
   "--clinical-border": clinicalTokens.divider,
   "--clinical-control": clinicalTokens.control,
   "--clinical-primary": clinicalTokens.blue.ink,
+  "--clinical-appbar": clinicalTokens.appBar,
+  "--clinical-appbar-hover": clinicalTokens.appBarHover,
+  "--clinical-activity": clinicalTokens.activity,
+  "--clinical-sidebar": clinicalTokens.sidebar,
+  "--clinical-section": clinicalTokens.section,
+  ...Object.fromEntries(
+    Object.entries(clinicalTokens.persona).map(([id, color]) => [
+      `--clinical-persona-${id.toLowerCase()}`,
+      color,
+    ]),
+  ),
   ...Object.fromEntries(
     (["blue", "red", "yellow", "green", "violet", "gray"] as const).flatMap(
       (tone) => [

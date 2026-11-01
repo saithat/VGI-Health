@@ -1,5 +1,8 @@
 import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
-import { complexityReleaseLabels, historicalRunIds } from "../../../scripts/historical-releases.mjs";
+import {
+  complexityReleaseLabels,
+  historicalRunIds,
+} from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
@@ -149,7 +152,9 @@ export async function loadRun(
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
         const raw = complexitySchema.parse(await get(file));
-        const complexity = historicalRunIds.has(id) ? complexityReleaseLabels(raw) : raw;
+        const complexity = historicalRunIds.has(id)
+          ? complexityReleaseLabels(raw)
+          : raw;
         if (complexity.runId !== id)
           throw new Error("Complexity belongs to another run");
         run.complexity = complexity;
@@ -175,6 +180,7 @@ export async function loadRunSummary(
       days: z.array(dayResultSchema),
       complexity: complexitySchema.nullable(),
       files: z.array(z.string()),
+      certificates: z.record(z.string(), certificateSchema).default({}),
     })
     .parse(await read(`/runs/${id}/summary.json`));
   if (
@@ -188,9 +194,16 @@ export async function loadRunSummary(
     (a, b) => a.night - b.night || a.persona.localeCompare(b.persona),
   );
   data.days.sort((a, b) => a.day - b.day);
-  return { ...data, complexity: data.complexity && historicalRunIds.has(id)
-    ? complexityReleaseLabels(data.complexity) : data.complexity,
-    programs: new Map(), certs: new Map(), replay: null };
+  return {
+    ...data,
+    complexity:
+      data.complexity && historicalRunIds.has(id)
+        ? complexityReleaseLabels(data.complexity)
+        : data.complexity,
+    programs: new Map(),
+    certs: new Map(Object.entries(data.certificates)),
+    replay: null,
+  };
 }
 /** Hydrate only this persona when opening a decision or replay. */
 export async function loadRunDetails(

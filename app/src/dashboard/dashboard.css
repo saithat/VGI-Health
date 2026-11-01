@@ -1,6 +1,6 @@
 .dashboard,
 .dash-review {
-  color: #243341;
+  color: var(--clinical-ink);
   font:
     13px/18px system-ui,
     -apple-system,
@@ -10,7 +10,7 @@
   font-variant-numeric: tabular-nums;
 }
 .dashboard {
-  background: #f3f5f7;
+  background: var(--clinical-canvas);
   min-height: 100vh;
 }
 :where(.dashboard, .dash-review) * {
@@ -29,14 +29,14 @@
   margin: 8px 0;
 }
 :where(.dashboard, .dash-review) a {
-  color: #245a81;
+  color: var(--clinical-primary);
 }
 :where(.dashboard, .dash-review) button:not(.ehr-shell button),
 :where(.dashboard, .dash-review) select:not(.ehr-shell select) {
   font: inherit;
-  color: #243341;
-  background: #ffffff;
-  border: 1px solid #718096;
+  color: var(--clinical-ink);
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-control);
   border-radius: 3px;
   min-height: 32px;
   padding: 4px 8px;
@@ -46,15 +46,15 @@
   cursor: pointer;
 }
 :where(.dashboard, .dash-review) button:not(.ehr-shell button):hover {
-  background: #f6f8fa;
+  background: var(--clinical-hover);
 }
 :where(.dashboard, .dash-review) button:not(.ehr-shell button):disabled {
-  color: #526171;
-  background: #edf0f3;
+  color: var(--clinical-muted);
+  background: var(--clinical-gray-tint);
   cursor: default;
 }
 :where(.dashboard, .dash-review) :focus-visible {
-  outline: 2px solid #245a81;
+  outline: 2px solid var(--clinical-primary);
   outline-offset: 2px;
 }
 :where(.dashboard, .dash-review) label:not(.ehr-shell label) {
@@ -67,7 +67,7 @@
 :where(.dashboard, .dash-review) input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #245a81;
+  accent-color: var(--clinical-primary);
 }
 .dash-header {
   display: flex;
@@ -75,13 +75,13 @@
   flex-wrap: wrap;
   gap: 12px;
   padding: 8px 12px;
-  background: #e8eef2;
-  border-bottom: 1px solid #cbd5df;
+  background: var(--clinical-banner);
+  border-bottom: 1px solid var(--clinical-border);
 }
 .dash-header h1 {
   margin: 0;
   padding-left: 12px;
-  border-left: 1px solid #718096;
+  border-left: 1px solid var(--clinical-control);
 }
 .dash-header label {
   margin-left: auto;
@@ -95,19 +95,19 @@
   gap: 4px;
   flex-wrap: wrap;
   padding: 4px 12px;
-  border-bottom: 1px solid #cbd5df;
-  background: #ffffff;
+  border-bottom: 1px solid var(--clinical-border);
+  background: var(--clinical-surface);
 }
 .dashboard .dash-tabs button {
   border: 0;
   border-radius: 0;
   border-bottom: 3px solid transparent;
-  background: #ffffff;
+  background: var(--clinical-surface);
   font-size: 12px;
 }
 .dashboard .dash-tabs button[aria-current="page"] {
-  border-bottom-color: #245a81;
-  background: #e6eff7;
+  border-bottom-color: var(--clinical-primary);
+  background: var(--clinical-selected);
   font-weight: 600;
 }
 .dash-content {
@@ -129,7 +129,7 @@
 }
 .section-heading > span {
   font-size: 12px;
-  color: #526171;
+  color: var(--clinical-muted);
 }
 .persona-selector {
   display: flex;
@@ -145,56 +145,56 @@
   font-size: 12px;
 }
 .dashboard .persona-selector button[aria-pressed="true"]:enabled {
-  background: #e6eff7;
-  border-color: #245a81;
+  background: var(--clinical-selected);
+  border-color: var(--clinical-primary);
   font-weight: 600;
 }
 .persona-selector > span {
-  color: #526171;
+  color: var(--clinical-muted);
   margin-left: 4px;
   font-size: 12px;
 }
 .run-banner {
-  color: #526171;
+  color: var(--clinical-muted);
   font-size: 12px;
 }
 .dash-badge {
   display: inline-block;
   padding: 2px 5px;
   border-radius: 3px;
-  background: #edf0f3;
-  color: #526171;
+  background: var(--clinical-gray-tint);
+  color: var(--clinical-muted);
   font-size: 12px;
   line-height: 16px;
   font-weight: 400;
 }
 .dash-badge.pass {
-  background: #eaf5ee;
-  color: #256348;
+  background: var(--clinical-green-tint);
+  color: var(--clinical-green-ink);
 }
 .dash-badge.fail,
 .failure-message {
-  background: #fcecee;
-  color: #9c2833;
+  background: var(--clinical-red-tint);
+  color: var(--clinical-red-ink);
 }
 .dash-badge.seeded {
-  background: #fff3d6;
-  color: #825300;
+  background: var(--clinical-yellow-tint);
+  color: var(--clinical-yellow-ink);
 }
 .failure-message {
   padding: 8px;
-  border-left: 3px solid #9c2833;
+  border-left: 3px solid var(--clinical-red-ink);
 }
 .version-history {
   margin-top: 16px;
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--clinical-border);
   border-radius: 3px;
-  background: #ffffff;
+  background: var(--clinical-surface);
 }
 .version-history .section-heading {
   padding: 8px 12px;
   margin: 0;
-  background: #e8eef2;
+  background: var(--clinical-banner);
 }
 .version-row,
 .version-column-head {
@@ -203,12 +203,12 @@
   align-items: center;
   gap: 12px;
   padding: 6px 12px;
-  border-bottom: 1px solid #cbd5df;
+  border-bottom: 1px solid var(--clinical-border);
   font-size: 12px;
 }
 .version-column-head {
-  background: #f6f8fa;
-  color: #526171;
+  background: var(--clinical-hover);
+  color: var(--clinical-muted);
 }
 .version-open {
   display: flex;
@@ -223,14 +223,14 @@
   font-size: 12px;
 }
 .version-open strong {
-  color: #245a81;
+  color: var(--clinical-primary);
 }
 .version-open span {
   overflow-wrap: anywhere;
 }
 .unchanged-row {
-  background: #f6f8fa;
-  color: #526171;
+  background: var(--clinical-hover);
+  color: var(--clinical-muted);
 }
 .dashboard .rejected-row {
   display: flex;
@@ -240,12 +240,12 @@
   width: calc(100% - 24px);
   margin-left: 24px;
   border: 0;
-  border-bottom: 1px solid #cbd5df;
+  border-bottom: 1px solid var(--clinical-border);
   border-radius: 0;
   text-align: left;
   padding: 6px 12px;
-  color: #9c2833;
-  background: #fcecee;
+  color: var(--clinical-red-ink);
+  background: var(--clinical-red-tint);
   font-size: 12px;
 }
 .rejected-row > span:nth-child(2) {
@@ -256,7 +256,7 @@
   padding: 0 12px;
 }
 .dash-note {
-  color: #526171;
+  color: var(--clinical-muted);
   font-size: 12px;
 }
 .mobile-label {
@@ -278,24 +278,24 @@
   width: 100%;
   font-size: 12px;
   line-height: 16px;
-  background: #ffffff;
+  background: var(--clinical-surface);
 }
 :where(.dashboard, .dash-review) caption {
   text-align: left;
   font-weight: 600;
   padding: 8px 0;
-  color: #243341;
+  color: var(--clinical-ink);
 }
 :where(.dashboard, .dash-review) th:not(.ehr-shell th),
 :where(.dashboard, .dash-review) td:not(.ehr-shell td) {
   padding: 6px;
-  border-bottom: 1px solid #cbd5df;
+  border-bottom: 1px solid var(--clinical-border);
   text-align: left;
   vertical-align: top;
   overflow-wrap: anywhere;
 }
 :where(.dashboard, .dash-review) thead:not(.ehr-shell thead) {
-  background: #e8eef2;
+  background: var(--clinical-banner);
 }
 :where(.dashboard, .dash-review) th:not(.ehr-shell th) {
   font-weight: 600;
@@ -322,7 +322,7 @@
   width: 13%;
 }
 :where(.dashboard, .dash-review) .text-button {
-  color: #245a81;
+  color: var(--clinical-primary);
   text-align: left;
 }
 :where(.dashboard, .dash-review) details {
@@ -338,7 +338,7 @@
   overflow-wrap: anywhere;
   font-size: 12px;
   line-height: 18px;
-  background: #f6f8fa;
+  background: var(--clinical-hover);
   padding: 8px;
 }
 :where(.dashboard, .dash-review) dl {
@@ -363,24 +363,24 @@
   font-weight: 600;
 }
 .why-flow > section {
-  border-top: 1px solid #cbd5df;
+  border-top: 1px solid var(--clinical-border);
   padding: 12px 0;
 }
 .step-label {
   display: block;
-  color: #526171;
+  color: var(--clinical-muted);
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 8px;
 }
 .candidate {
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--clinical-border);
   padding: 8px;
   margin: 8px 0;
   border-radius: 3px;
 }
 .candidate.fail {
-  border-left: 3px solid #9c2833;
+  border-left: 3px solid var(--clinical-red-ink);
 }
 .paired-screens {
   display: grid;
@@ -392,14 +392,14 @@
 }
 .paired-screens > section > h3 {
   padding: 8px;
-  background: #e8eef2;
+  background: var(--clinical-banner);
 }
 .replay-screen {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 [data-replay-highlight="true"] {
-  outline: 2px solid #9c2833;
+  outline: 2px solid var(--clinical-red-ink);
   outline-offset: 2px;
 }
 .counter-layout {
@@ -418,8 +418,8 @@
   width: 100%;
 }
 .dash-review .event-path button[aria-current="step"] {
-  background: #e6eff7;
-  border-color: #245a81;
+  background: var(--clinical-selected);
+  border-color: var(--clinical-primary);
 }
 .break-form {
   display: flex;
@@ -427,8 +427,8 @@
   align-items: end;
   gap: 8px;
   padding: 12px;
-  border: 1px solid #cbd5df;
-  background: #ffffff;
+  border: 1px solid var(--clinical-border);
+  background: var(--clinical-surface);
 }
 .break-form label {
   flex: 1;
@@ -493,23 +493,66 @@
 .dashboard .version-row {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid #cbd5df;
+  border-bottom: 1px solid var(--clinical-border);
   border-radius: 0;
   padding: 6px 12px;
   text-align: left;
   font-size: 12px;
 }
 .dashboard .version-row.unchanged-row {
-  background: #f6f8fa;
+  background: var(--clinical-hover);
 }
 .migration-row {
   cursor: pointer;
 }
 .migration-row:hover {
-  background: #f6f8fa;
+  background: var(--clinical-hover);
 }
 @media (max-width: 720px) {
   .dashboard .version-row {
     padding: 8px;
   }
+}
+
+/* Application framing shared with the clinical workspace and UI browser. */
+.dash-header {
+  background: var(--clinical-appbar);
+  color: white;
+  min-height: 48px;
+  border-bottom-color: var(--clinical-appbar-hover);
+  padding: 8px 20px;
+}
+.dash-header a,
+.dash-header h1 {
+  color: white;
+}
+.dash-header h1 {
+  border-left-color: #b7caed;
+}
+.dash-header label {
+  color: white;
+}
+.dash-tabs {
+  background: var(--clinical-activity);
+  padding: 0 20px;
+}
+.dashboard .dash-tabs button {
+  background: transparent;
+  padding: 8px 14px;
+}
+.dashboard .dash-tabs button[aria-current="page"] {
+  background: var(--clinical-surface);
+  color: var(--clinical-primary);
+}
+.dashboard .section-heading {
+  border-left: 4px solid var(--clinical-primary);
+  padding: 8px 10px;
+  background: var(--clinical-section);
+  border-radius: 3px;
+}
+.dashboard table thead {
+  background: var(--clinical-activity);
+}
+.dashboard table tbody tr:nth-child(even) {
+  background: var(--clinical-hover);
 }

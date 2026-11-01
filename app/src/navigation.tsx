@@ -49,6 +49,12 @@ export function Router() {
         return;
       const url = new URL(link.href);
       if (
+        url.hash &&
+        url.pathname === location.pathname &&
+        url.search === location.search
+      )
+        return;
+      if (
         url.origin !== location.origin ||
         !["/", "/browse", "/ehr", "/dashboard"].includes(
           url.pathname.replace(/\/$/, "") || "/",

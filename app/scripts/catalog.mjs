@@ -1,4 +1,7 @@
-import { releaseLabel, historicalReleaseId } from "../../scripts/historical-releases.mjs";
+import {
+  releaseLabel,
+  historicalReleaseId,
+} from "../../scripts/historical-releases.mjs";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -40,9 +43,27 @@ const problems = [
   "Macro claims human naloxone offer",
   "Controlled prescription details hidden",
   "Schedule II refills defaulted to three",
+  "Restraint care plan omitted",
+  "Operative technique omitted from documentation",
+  "Vaccination provider address omitted",
+  "Medication administration time omitted",
+  "Controlled prescription strength omitted",
+  "Signing notice hidden",
+  "Telehealth consent omitted",
+  "Refill eligibility supplied as an unchecked default",
+  "Restraint clock restarted",
+  "Outdated preoperative history and physical",
+  "Expired controlled prescription fill",
+  "Minor consent used below the permitted age",
+  "Invalid date of birth accepted",
+  "Daily methotrexate supplied as a default",
+  "Result components hidden",
+  "Misleading signing action label",
+  "Macro attempts nurse practitioner preoperative signing",
 ];
 export async function buildCatalog() {
   const programs = [];
+  const [coreBad] = await readJson("lean/Ehr/Check/bad-program-profiles.json");
   for (const path of [
     ...(await jsonFiles("releases")),
     ...(await jsonFiles("programs")),
@@ -54,10 +75,11 @@ export async function buildCatalog() {
       continue;
     const recordedRelease = program.specVersion ?? "v1";
     const bad = /^programs\/bad\/(\d+)/.exec(path);
-    const recorded = /^runs\/([^/]+)\/(?:programs\/)?(P[1-5])\/v(\d+)\.json$/.exec(
-      path,
-    );
-    const release = path.startsWith("programs/benchmarks/releases/") ? historicalReleaseId(recordedRelease) : releaseLabel(recordedRelease, recorded?.[1] ?? "");
+    const recorded =
+      /^runs\/([^/]+)\/(?:programs\/)?(P[1-5])\/v(\d+)\.json$/.exec(path);
+    const release = path.startsWith("programs/benchmarks/releases/")
+      ? historicalReleaseId(recordedRelease)
+      : releaseLabel(recordedRelease, recorded?.[1] ?? "");
     const persona =
       recorded?.[2] ??
       /\/(P[1-5])\.json$/.exec(path)?.[1] ??
@@ -109,6 +131,14 @@ export async function buildCatalog() {
       deployed,
       mock,
       version: program.version,
+      ...(bad
+        ? {
+            expectedProperty:
+              coreBad.find(
+                ([name]) => path === `programs/bad/${name}.json`,
+              )?.[1] ?? "Full-profile rules",
+          }
+        : {}),
     });
   }
   const index = await readJson("fixtures/synthea/index.json");
@@ -117,10 +147,16 @@ export async function buildCatalog() {
     throw new Error("Fixture reference dates disagree");
   const patients = await Promise.all(
     [
-      ...index.patients.map((patient) => ({ ...patient,
-        source: "synthea", bundlePath: `fixtures/synthea/${patient.file}` })),
-      ...hospital.patients.map((patient) => ({ ...patient,
-        source: "synthetic-hospital", bundlePath: `fixtures/synthetic-hospital/${patient.file}` })),
+      ...index.patients.map((patient) => ({
+        ...patient,
+        source: "synthea",
+        bundlePath: `fixtures/synthea/${patient.file}`,
+      })),
+      ...hospital.patients.map((patient) => ({
+        ...patient,
+        source: "synthetic-hospital",
+        bundlePath: `fixtures/synthetic-hospital/${patient.file}`,
+      })),
     ].map(async (patient) => {
       const bundle = await readJson(patient.bundlePath);
       const encounters = bundle.entry
@@ -129,8 +165,89 @@ export async function buildCatalog() {
         .sort((a, b) =>
           (b.period?.start ?? "").localeCompare(a.period?.start ?? ""),
         );
-      return { ...patient, encounterClass: encounters[0]?.class?.code ?? "" };
+      const resources = bundle.entry
+        .map((entry) => entry.resource)
+        .filter(Boolean);
+      const person = resources.find(
+        (resource) => resource.resourceType === "Patient",
+      );
+      const codingText = (concept) =>
+        concept?.text ??
+        concept?.coding?.find((code) => code.display)?.display ??
+        "Not recorded";
+      const weights = resources
+        .filter(
+          (resource) =>
+            resource.resourceType === "Observation" &&
+            resource.code?.coding?.some(
+              (coding) => coding.code === "29463-7",
+            ) &&
+            resource.valueQuantity,
+        )
+        .sort((a, b) =>
+          (b.effectiveDateTime ?? "").localeCompare(a.effectiveDateTime ?? ""),
+        );
+      const weight = weights[0];
+      return {
+        ...patient,
+        encounterClass: encounters[0]?.class?.code ?? "",
+        mrn: person?.identifier?.find((identifier) =>
+          identifier.type?.coding?.some((code) => code.code === "MR"),
+        )?.value,
+        allergies: resources
+          .filter((resource) => resource.resourceType === "AllergyIntolerance")
+          .map((resource) => codingText(resource.code)),
+        problems: resources
+          .filter((resource) => resource.resourceType === "Condition")
+          .map((resource) => codingText(resource.code)),
+        weight: weight
+          ? {
+              value: `${weight.valueQuantity.value} ${weight.valueQuantity.unit ?? weight.valueQuantity.code ?? ""}`,
+              date: weight.effectiveDateTime ?? "",
+            }
+          : null,
+      };
     }),
   );
-  return { programs, patients, referenceDate: index.referenceDate };
+  const runs = await Promise.all(
+    [
+      ...new Set(
+        programs.flatMap((program) => (program.run ? [program.run] : [])),
+      ),
+    ].map(async (id) => {
+      const manifest = await readJson(`runs/${id}/manifest.json`);
+      return {
+        id,
+        mock: manifest.ehr?.mode !== "real",
+        days: manifest.days ?? 10,
+        createdAt: manifest.createdAt ?? "",
+      };
+    }),
+  );
+  runs.sort(
+    (a, b) =>
+      Number(a.mock) - Number(b.mock) ||
+      b.createdAt.localeCompare(a.createdAt) ||
+      a.id.localeCompare(b.id),
+  );
+  // Some archived runs retain legacy top-level copies of the same revision.
+  // Prefer the deployment directory so one revision has one replay URL.
+  const uniquePrograms = programs.filter(
+    (program) =>
+      !program.run ||
+      program.path.includes("/programs/") ||
+      !programs.some(
+        (other) =>
+          other.run === program.run &&
+          other.persona === program.persona &&
+          other.version === program.version &&
+          other.path.includes("/programs/"),
+      ),
+  );
+  return {
+    programs: uniquePrograms,
+    patients,
+    runs,
+    referenceDate: index.referenceDate,
+  };
 }

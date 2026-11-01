@@ -384,6 +384,73 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
     </div>
   );
 }
+/** Metadata moves to the row's accessible name and a native tooltip. Values
+ * are supplied by Lean; this only changes typography and repeated labels. */
+function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
+  const notes =
+    node.infoId === "encounterNotes" || node.infoId === "priorNotes";
+  return (
+    <ul
+      aria-label={node.label}
+      className={notes ? "clinical-note-list" : "clinical-home-meds"}
+    >
+      {node.rows.length === 0 && <li>No records on file</li>}
+      {node.rows.map((row, index) => {
+        const value = (key: string) =>
+          row.find(([label]) => label === key)?.[1] ?? "";
+        const original = row
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(" · ");
+        const known = (text: string) =>
+          text && !/^unknown$|^not recorded$/i.test(text);
+        return (
+          <li key={index} aria-label={original} title={original}>
+            {notes ? (
+              <article className="clinical-note-card">
+                <div className="clinical-note-meta">
+                  {[value("Date"), value("Type"), value("Author")]
+                    .filter(known)
+                    .map((text, index) => (
+                      <span key={index}>
+                        <DisplayValue value={text} />
+                      </span>
+                    ))}
+                </div>
+                <strong className="clinical-note-title">
+                  {value("Title").replace(
+                    /\. Source date \d{4}-\d{2}-\d{2}; structured dates shifted \d+ days\. Note text retained verbatim\.?$/i,
+                    "",
+                  ) || "Clinical note"}
+                </strong>
+                <div className="clinical-note-body">
+                  {value("Text") || "No note text supplied"}
+                </div>
+                {known(value("Status")) && (
+                  <span className="clinical-note-status">
+                    {value("Status")}
+                  </span>
+                )}
+              </article>
+            ) : (
+              <>
+                <span className="home-med-name">{value("Item")}</span>
+                <span className="home-med-sig">
+                  {value("Detail")
+                    .replace(/^Reported home medication;\s*/i, "")
+                    .replace(/;\s*date:\s*Unknown/gi, "")}
+                </span>
+                <span className="clinical-status status-blue">reported</span>
+                {known(value("Status")) && (
+                  <span className="home-med-status">{value("Status")}</span>
+                )}
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 export function InfoNode({ node }: Props<"info">) {
   const values = node.rows
     .flatMap((row) =>
@@ -413,6 +480,16 @@ export function InfoNode({ node }: Props<"info">) {
         <Text size="xs" c="dimmed">
           No records on file
         </Text>
+      ) : node.display === "list" &&
+        (["encounterNotes", "priorNotes"].includes(node.infoId) ||
+          (node.infoId === "importedHistory" &&
+            node.rows.every((row) =>
+              row.some(
+                ([key, value]) =>
+                  key === "Kind" && value === "Home medications (reported)",
+              ),
+            ))) ? (
+        <ChartRecordList node={node} />
       ) : node.display === "list" ? (
         <ul aria-label={node.label} className="clinical-info-list">
           {node.rows.length === 0 && <li>No records on file</li>}
@@ -534,6 +611,11 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
                     : "subtle"
             }
             disabled={!node.enabled}
+            color={
+              /^(sign|accept|approve|record administration)/i.test(node.label)
+                ? "green"
+                : "blue"
+            }
             aria-label={node.label}
             aria-describedby={
               !node.enabled && node.blockedReason ? reasonId : undefined

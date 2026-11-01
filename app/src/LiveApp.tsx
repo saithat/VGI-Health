@@ -1,3 +1,4 @@
+import { clinicianRoleNames } from "./ehr/ui/personas";
 import { programSpecPath } from "./browser/data";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
@@ -100,7 +101,7 @@ async function liveProgram(persona: string, baseline: boolean) {
   if (baseline)
     return {
       spec: await readArtifact("/releases/v3/spec.json"),
-      program: await readArtifact("/releases/v3/canonical.json"),
+      program: await readArtifact(`/releases/v3/personas/${persona}.json`),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
@@ -125,6 +126,7 @@ function Login({
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [baselinePersona, setBaselinePersona] = useState("P1");
   async function login(persona: string, baseline: boolean) {
     setPending(true);
     setError("");
@@ -167,12 +169,30 @@ function Login({
               {personaLabels[persona]}
             </Button>
           ))}
+          <label className="baseline-persona-picker">
+            Baseline clinician
+            <select
+              aria-label="Baseline clinician"
+              value={baselinePersona}
+              onChange={(event) =>
+                setBaselinePersona(event.currentTarget.value)
+              }
+            >
+              {Object.entries(personaLabels)
+                .filter(([id]) => id !== "RN2")
+                .map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+            </select>
+          </label>
           <Button
             mt="md"
             variant="outline"
             disabled={pending}
             title={pending ? "Loading Medplum data" : undefined}
-            onClick={() => void login("P1", true)}
+            onClick={() => void login(baselinePersona, true)}
           >
             Original canonical EHR (baseline)
           </Button>
@@ -187,9 +207,11 @@ function Login({
 function Chart({
   session,
   onClose,
+  viewer,
 }: {
   session: Session;
   onClose: () => void;
+  viewer: string;
 }) {
   const { ui } = useSyncExternalStore(session.subscribe, session.getSnapshot);
   const [pending, setPending] = useState(false);
@@ -218,6 +240,7 @@ function Chart({
         {ui ? (
           <UiScreenView
             screen={ui}
+            viewer={viewer}
             onEvent={(event) => {
               if (pending) return;
               setError("");
@@ -651,6 +674,7 @@ function Home({
     return (
       <Chart
         session={session}
+        viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
         onClose={() => {
           setSession(undefined);
           setSelection(undefined);

@@ -288,7 +288,7 @@ function TaskPlayback({
   return (
     <div className="trajectory-playback">
       <h3>
-        {entry.id} · {entry.workflow} · v{entry.programVersion} /{" "}
+        {entry.id} · {entry.workflow} · rev {entry.programVersion} /{" "}
         {entry.release}
       </h3>
       <p>
@@ -365,7 +365,7 @@ function TaskPlayback({
                 setPlaying(false);
               }}
             />
-            Compare baseline v0
+            Compare baseline rev 0
           </label>
         )}
       </div>
@@ -376,9 +376,9 @@ function TaskPlayback({
       </p>
       {compare && (
         <p>
-          Baseline uses its original v0 release and the same day/patient
-          schedule and simulation seed. Each panel advances one recorded event
-          per step.
+          Baseline uses its original release for revision 0 and the same
+          day/patient schedule and simulation seed. Each panel advances one
+          recorded event per step.
         </p>
       )}
       {error && <p role="alert">{error}</p>}
@@ -397,7 +397,7 @@ function TaskPlayback({
             loaded={baseline}
             factory={factory}
             count={Math.min(count, baseline.task.trace.length)}
-            label="Baseline v0"
+            label="Baseline rev 0"
           />
         )}
       </div>
@@ -405,12 +405,14 @@ function TaskPlayback({
   );
 }
 export function Trajectories({
+  initialDay = 1,
   runId,
   persona,
   factory,
 }: {
   runId: string;
   persona: string;
+  initialDay?: number;
   factory?: InterpFactory | undefined;
 }) {
   const [ownFactory, setOwnFactory] = useState<InterpFactory>();
@@ -430,7 +432,11 @@ export function Trajectories({
   }, [factory]);
   const [index, setIndex] = useState<TrajectoryIndex | null>(null);
   const [error, setError] = useState("");
-  const [day, setDay] = useState(1);
+  const [day, setDay] = useState(
+    Number.isInteger(initialDay) && initialDay >= 1 && initialDay <= 10
+      ? initialDay
+      : 1,
+  );
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState("");
   useEffect(() => {

@@ -51,7 +51,7 @@ function Certificate({ record }: { record: DecisionRecord }) {
       <summary>
         <Badge tone="pass">
           {record.ehr.mode === "fake" ? "MOCK certificate" : "Certificate"} ·{" "}
-          {cert.specVersion}
+          {releaseLabel(cert.specVersion, record.runId)}
         </Badge>
       </summary>
       <dl>
@@ -222,9 +222,9 @@ function Counterexample({
         </ol>
         <div>
           <p className="dash-note">
-            Rejected candidate on v{rejection.record.versionBefore}. Outlined:{" "}
-            {comp || rejection.targets.join(", ")}. An absent component is
-            reported by the property above.
+            Rejected candidate on rev {rejection.record.versionBefore}.
+            Outlined: {comp || rejection.targets.join(", ")}. An absent
+            component is reported by the property above.
           </p>
           <ReplayScreen
             run={run}
@@ -355,7 +355,8 @@ function Why({
         <h3>{record.hypothesis}</h3>
         <p className="dash-note">
           Backend: {record.backend.name} / {record.backend.model} ·{" "}
-          {record.mode} · spec {releaseLabel(record.specVersion, run.manifest.runId)}
+          {record.mode} · spec{" "}
+          {releaseLabel(record.specVersion, run.manifest.runId)}
         </p>
       </section>
       <section>
@@ -406,7 +407,8 @@ function Why({
       <section>
         <span className="step-label">04 · Choice</span>
         <h3>
-          {record.outcome} · v{record.versionBefore} → v{record.versionAfter}
+          {record.outcome} · rev {record.versionBefore} → rev{" "}
+          {record.versionAfter}
         </h3>
         <p>{record.chosen?.rationale ?? "No candidate was chosen."}</p>
         {record.chosen?.rejectedAlternatives.map((a) => (
@@ -539,7 +541,7 @@ function BeforeAfter({
       </div>
       <div className="paired-screens">
         <section aria-label="Before EHR">
-          <h3>Before · v{before}</h3>
+          <h3>Before · rev {before}</h3>
           <ReplayScreen
             run={run}
             persona={persona}
@@ -554,7 +556,7 @@ function BeforeAfter({
         </section>
         <section aria-label="After EHR">
           <h3>
-            {rejection ? "Rejected proposal" : "After"} · v{after}
+            {rejection ? "Rejected proposal" : "After"} · rev {after}
           </h3>
           <ReplayScreen
             run={run}
@@ -600,7 +602,10 @@ function Releases({
           {personas.flatMap((p) =>
             ["v2", "v3"].map((release) => {
               const r = run.records.find(
-                (r) => r.persona === p.id && r.release && releaseLabel(r.release.id, run.manifest.runId) === release,
+                (r) =>
+                  r.persona === p.id &&
+                  r.release &&
+                  releaseLabel(r.release.id, run.manifest.runId) === release,
               );
               return (
                 <tr
@@ -893,11 +898,11 @@ function VersionList({
   return (
     <section className="version-history" aria-label="Version history">
       <div className="section-heading">
-        <h3>Versions and decisions</h3>
+        <h3>Revisions and decisions</h3>
         <span>Saving: positive = less effort · exact fixed workflow union</span>
       </div>
       <div className="version-column-head" aria-hidden="true">
-        <span>Version / night / change</span>
+        <span>Revision / night / change</span>
         <span>vs previous</span>
         <span>vs baseline</span>
         <span>Certificate</span>
@@ -907,7 +912,7 @@ function VersionList({
         onClick={() => open({ record: null })}
       >
         <span className="version-open">
-          <strong>v0 · Baseline</strong>
+          <strong>rev 0 · Baseline</strong>
           <span>Canonical program</span>
         </span>
         <span>—</span>
@@ -945,9 +950,13 @@ function VersionList({
             >
               <span className="version-open">
                 <strong>
-                  {deployed ? `v${r.versionAfter}` : `Kept v${r.versionAfter}`}{" "}
+                  {deployed
+                    ? `rev ${r.versionAfter}`
+                    : `Kept rev ${r.versionAfter}`}{" "}
                   · Night {r.night}
-                  {r.release ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}` : ""}
+                  {r.release
+                    ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}`
+                    : ""}
                 </strong>
                 <span>
                   {chosen ||
@@ -1006,6 +1015,8 @@ export function Dashboard({
   interpFactory?: InterpFactory;
 }) {
   const query = new URLSearchParams(window.location.search);
+  const [requestedVersion] = useState(query.get("version"));
+  const [requestedDay] = useState(Number(query.get("day") ?? "1"));
   const [view, setView] = useState(
     views.includes(query.get("view") ?? "")
       ? (query.get("view") ?? "Evolution")
@@ -1061,6 +1072,17 @@ export function Dashboard({
       .then((data) => {
         if (active) {
           setRun(data);
+          if (requestedVersion !== null && /^\d+$/.test(requestedVersion)) {
+            const record = data.records.find(
+              (record) =>
+                record.persona === persona &&
+                record.versionAfter === Number(requestedVersion),
+            );
+            if (record || requestedVersion === "0") {
+              setSelection({ record: record ?? null });
+              setScreenMode("pair");
+            }
+          }
           setPersona((current) =>
             data.manifest.personas.includes(current)
               ? current
@@ -1240,6 +1262,7 @@ export function Dashboard({
               (run.files?.includes("trajectories/index.json") ? (
                 <Suspense fallback={<p role="status">Loading trajectories…</p>}>
                   <Trajectories
+                    initialDay={requestedDay}
                     key={runId}
                     runId={runId}
                     persona={persona}
@@ -1288,7 +1311,7 @@ export function Dashboard({
           selection?.rejection
             ? `Rejected proposal · Night ${record?.night}`
             : record
-              ? `v${record.versionAfter} · Night ${record.night} · ${record.persona}`
+              ? `rev ${record.versionAfter} · Night ${record.night} · ${record.persona}`
               : `v0 · ${selectedPersona} · Baseline`
         }
         classNames={{

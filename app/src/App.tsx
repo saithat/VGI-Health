@@ -1,3 +1,4 @@
+import { clinicianRoleNames } from "./ehr/ui/personas";
 import { navigate } from "./navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert, Button, Drawer } from "@mantine/core";
@@ -70,7 +71,11 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
         }}
       >
         {ui ? (
-          <UiScreenView screen={ui} onEvent={dispatch} />
+          <UiScreenView
+            screen={ui}
+            onEvent={dispatch}
+            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} baseline`}`}
+          />
         ) : (
           <Alert color="red" role="alert">
             The semantic renderer is unavailable. Rebuild the EHR WASM assets.

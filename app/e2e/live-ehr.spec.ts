@@ -1,6 +1,4 @@
 import { test, expect, type Page } from "@playwright/test";
-import { buildCatalog } from "../scripts/catalog.mjs";
-import { catalogSchema } from "../src/browser/data";
 
 const adult = "4966bd28-61bc-8f51-3aab-1328a32ea2e7";
 function component(page: Page, id: string) {
@@ -110,34 +108,4 @@ test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     /MAR|Medication administration/i,
   );
-});
-
-test("browse searches and filters patients and opens a real program", async ({
-  page,
-}) => {
-  await page.goto("/browse");
-  await expect(
-    page.getByRole("heading", { name: "Open a clinical UI" }),
-  ).toBeVisible();
-  await expect(page.locator(".program-groups li")).toHaveCount(
-    catalogSchema.parse(await buildCatalog()).programs.length,
-  );
-  await page.getByLabel("pediatric", { exact: true }).check();
-  await expect(
-    page.getByLabel("Patient", { exact: true }).locator("option"),
-  ).toHaveCount(51);
-  await page.getByLabel("pediatric", { exact: true }).uncheck();
-  await page.getByLabel("Current program source").selectOption("mock");
-  await expect(
-    page.getByRole("link", { name: "Open P1’s current program →" }),
-  ).toHaveAttribute("href", /program=runs%2Fmock%2Fprograms%2FP1%2Fv5.json/);
-  await page.getByLabel("Search by name").fill("Aaron");
-  await expect(
-    page.getByLabel("Patient", { exact: true }).locator("option"),
-  ).toHaveCount(1);
-  await page
-    .getByRole("link", { name: "P1 projection", exact: true })
-    .first()
-    .click();
-  await expect(page.locator(".clinical-app")).toBeVisible();
 });

@@ -145,6 +145,7 @@ export function runsPlugin(): Plugin {
             JSON.parse(await readFile(resolve(root, id, file), "utf8"));
           const records = [],
             days = [];
+          const certificates: Record<string, unknown> = {};
           let complexity = null;
           for (const file of entry.files) {
             if (/^(decisions|break)\/.+\.json$/.test(file))
@@ -152,6 +153,8 @@ export function runsPlugin(): Plugin {
             else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
               days.push({ ...(await get(file)), trace: [] });
             else if (file === "complexity.json") complexity = await get(file);
+            else if (/^certs\/P[1-5]\/v\d+\.json$/.test(file))
+              certificates[file] = await get(file);
           }
           await sendArtifact(
             req,
@@ -164,6 +167,7 @@ export function runsPlugin(): Plugin {
                 days,
                 complexity,
                 files: entry.files,
+                certificates,
               }),
             ),
           );

@@ -12,6 +12,7 @@ const programEntrySchema = z.object({
   deployed: z.boolean(),
   mock: z.boolean(),
   version: z.number(),
+  expectedProperty: z.string().optional(),
 });
 const patientSchema = z.object({
   id: z.string(),
@@ -19,9 +20,18 @@ const patientSchema = z.object({
   age: z.number(),
   sex: z.string(),
   file: z.string(),
-  bundlePath: z.string().regex(/^fixtures\/(?:synthea|synthetic-hospital)\/[\w.-]+\.json$/),
+  bundlePath: z
+    .string()
+    .regex(/^fixtures\/(?:synthea|synthetic-hospital)\/[\w.-]+\.json$/),
   source: z.enum(["synthea", "synthetic-hospital"]),
   encounterClass: z.string(),
+  mrn: z.string().optional(),
+  allergies: z.array(z.string()).default([]),
+  problems: z.array(z.string()).default([]),
+  weight: z
+    .object({ value: z.string(), date: z.string() })
+    .nullable()
+    .default(null),
   flags: z.object({
     pediatric: z.boolean(),
     allergic: z.boolean(),
@@ -33,6 +43,16 @@ export const catalogSchema = z.object({
   programs: z.array(programEntrySchema),
   patients: z.array(patientSchema),
   referenceDate: z.string(),
+  runs: z
+    .array(
+      z.object({
+        id: z.string(),
+        mock: z.boolean(),
+        days: z.number(),
+        createdAt: z.string(),
+      }),
+    )
+    .default([]),
 });
 export type Catalog = z.infer<typeof catalogSchema>;
 export type ProgramEntry = Catalog["programs"][number];

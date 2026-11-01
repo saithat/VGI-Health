@@ -70,6 +70,66 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("keeps imported chart provenance accessible while presenting medication and note cards", () => {
+    paint([
+      {
+        info: {
+          comp: "",
+          infoId: "importedHistory",
+          label: "Home medications (reported)",
+          display: "list",
+          rows: [
+            [
+              ["Kind", "Home medications (reported)"],
+              ["Item", "Propylthiouracil"],
+              [
+                "Detail",
+                "Reported home medication; 100 mg PO TID; date: Unknown",
+              ],
+              ["Status", "active"],
+              ["Source", "MedicationStatement (reported history); Unknown"],
+            ],
+          ],
+        },
+      },
+      {
+        info: {
+          comp: "notes",
+          infoId: "priorNotes",
+          label: "Prior notes",
+          display: "list",
+          rows: [
+            [
+              ["Date", "2026-10-31"],
+              ["Type", "Progress note"],
+              ["Author", "Dr. Smith"],
+              ["Title", "Clinic follow-up"],
+              ["Text", "Symptoms improved.\nContinue the documented plan."],
+              ["Status", "final"],
+              ["Source date", "2026-10-01"],
+              ["Shift days", "30"],
+            ],
+          ],
+        },
+      },
+    ]);
+    const medications = screen.getByRole("list", {
+      name: "Home medications (reported)",
+    });
+    expect(medications.textContent).toContain(
+      "Propylthiouracil100 mg PO TIDreportedactive",
+    );
+    expect(medications.textContent).not.toContain("Unknown");
+    expect(
+      medications.querySelector("li")?.getAttribute("aria-label"),
+    ).toContain("MedicationStatement (reported history); Unknown");
+    const notes = screen.getByRole("list", { name: "Prior notes" });
+    expect(notes.textContent).toContain("Symptoms improved.");
+    expect(notes.querySelector("li")?.getAttribute("aria-label")).toContain(
+      "Source date: 2026-10-01",
+    );
+    expect(screen.queryByRole("button")).toBeNull();
+  });
   it("dispatches exported nav component IDs and omits empty groups", () => {
     const emit = vi.fn();
     const model: UiScreen = {
@@ -88,9 +148,7 @@ describe("semantic EHR painter", () => {
         <UiScreenView screen={model} onEvent={emit} />
       </MantineProvider>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: "Open rooming" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Open rooming" }));
     expect(emit.mock.calls).toEqual([
       [{ click: { comp: "actual.goto.component" } }],
     ]);
@@ -492,8 +550,21 @@ describe("semantic EHR painter", () => {
   it("shows the encounter-role refusal on the disabled signing action", () => {
     const reason = "Pre-op orders are signed by a physician or surgeon";
     const onEvent = vi.fn();
-    paint([{ button: { ...button, comp: "signOrders", label: "Sign orders",
-      role: "primary", enabled: false, blockedReason: reason } }], onEvent);
+    paint(
+      [
+        {
+          button: {
+            ...button,
+            comp: "signOrders",
+            label: "Sign orders",
+            role: "primary",
+            enabled: false,
+            blockedReason: reason,
+          },
+        },
+      ],
+      onEvent,
+    );
     const action = screen.getByRole("button", { name: "Sign orders" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe(reason);
