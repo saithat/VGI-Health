@@ -59,6 +59,8 @@ We ship:
 
 **Principle: everything is settled before the clinician opens the EHR.** Nothing is checked at runtime, and nothing may break or block unexpectedly during a shift. Every risk is either proven for **all** inputs (every patient record, every click sequence) or tested offline before a version is deployed. The commit guard is an ordinary hard stop (for example, "Sign" stays disabled until patient-ID re-entry is done), and the checker proves offline that a certified UI never leaves the clinician stuck behind it.
 
+**Semantic UI tree + minimal design rules (owner decision, Oct 31; refines "Lean renders the page"):** Lean emits a semantic UI tree in a small design vocabulary (banner, nav groups, stepper, sections, columns, fields, info tables, alerts, buttons, modal). React with Mantine draws it, one component per node kind. Lean proves just enough design rules to rule out bad UI, without limiting creativity: D1 one patient banner with two identifiers; D2 required review info visible in the workspace; D3 honest, labeled actions (primary only for commits, enabled iff the guard holds); D4 interruptive alerts modal, passive alerts inline only; D6 labeled fields with human-only and provenance markers. D5 (sane navigation: no duplicate labels, ≤12 entries per group, no orphan screens) is a checker rule. Before deploy, an ARIA-snapshot check confirms the React drawing matches the proven tree (docs/design/core-model.md section 10).
+
 **Lean renders the page.** Given the program, the state, the click, and the patient's FHIR records, the Lean module returns the next state and the **complete page tree**: elements, text, the rows of every info panel (allergies, meds, dose check, trend points), and style classes from one fixed stylesheet. A generic painter of about 50–80 lines puts that tree in the browser and turns clicks and keystrokes back into events. It makes no decisions. The theorems cover the page tree, for every record: what must be visible is in the tree, legible, and not hidden, and every panel lists every relevant record. The app reads and writes Medplum itself, the way any EHR does: signing an order creates a MedicationRequest, and marking allergies reviewed creates a Provenance record. Each UI program declares which fields write to which FHIR elements. Overnight, the checker proves those declarations stay inside the spec ("writes only").
 
 **What the proofs cover:** the interpreter clinicians click through, the checker, and deploy are **one Lean codebase**. So the theorems are about the code that actually runs, both online in the browser and offline in the pipeline. Nothing is re-implemented in another language.
@@ -443,6 +445,12 @@ Each night, for each persona:
 8. **Record:** write the decision record and the new version with its certificate.
 
 **Allowed moves:** compose task views; copy frequent actions to a toolbar; reorder or merge sections; bring buried information onto the screen where it's needed; pre-fill with provenance (FHIR SDC style); satisfy prompts with valid receipts; create macros or order-set bundles with guards; add defaults the human confirms; add keyboard or scan shortcuts; collapse panels that are not required.
+
+**New components (owner decision, Oct 31):** the agent may create
+- composite components (`componentDefs`) built from existing kinds, whose meaning is their expansion, so every proof carries over;
+- presentation-only React components that draw an existing node kind or composite in a new way: sandboxed by lint/type rules, verified per version by the ARIA fidelity, visibility, and legibility checks, and deployed atomically with the program.
+
+The agent gets a capabilities manual every night (what it can and can't change, every property and design rule in plain words, the persona's spec rules with citations, budgets, deployment rules, real accepted and rejected examples). It must never touch core or backend behavior: the Lean interpreter, checker, spec, properties, data layer, or FHIR writes.
 
 **Forbidden moves:** edit specs; automate or pre-fill human-only steps; hide required information; write outside the spec; exceed the budgets.
 

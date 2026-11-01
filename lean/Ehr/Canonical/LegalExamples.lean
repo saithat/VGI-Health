@@ -1,5 +1,6 @@
 import Ehr.Canonical.Program
 import Ehr.Core.Interp
+import Ehr.Canonical.FeatureExamples
 
 /-! Concrete synthetic documentation for human-event regressions. Values are
 explicit clinical examples, never defaults in a released program. Dates are
@@ -109,7 +110,7 @@ def values : List (ElementId × String) :=
    ("prn", "false"), ("substitution", "true"), ("consentVerified", "true"),
    ("hpUpdate", "Reviewed today; no interval change."), ("medsToHold", "Hold anticoagulants per plan."),
    ("progressNote", "Postoperative day one, afebrile; mobilize and advance diet."),
-   ("naloxoneOffer", "offered-declined"), ("naloxoneEducation", "true")]
+   ("naloxoneOffer", "offered-declined"), ("naloxoneEducation", "true")] ++ Features.samples
 
 /-- Explicit samples enter through actual fields and the actual element parser. -/
 def input (screen name element : String) : List Event :=
@@ -128,7 +129,9 @@ def prescription (s : ScreenId) (pre : String := "") : List Event :=
 
 /-- New captures for the existing disposition, nursing, vaccine and op-note paths. -/
 def artifact (s : ScreenId) : List Event :=
-  let es := (Rules.fields.filter (·.1 == s)).map (·.2.2.1) |>.eraseDups
+  let es := ((Rules.fields.filter (·.1 == s)).map (·.2.2.1) ++
+    ((canonicalV1.screen? s).toList.flatMap (·.components)).filterMap (fun c =>
+      match c.kind with | .field e .. => if c.id.startsWith (s ++ ".feature.") then some e else none | _ => none)) |>.eraseDups
   es.flatMap fun e =>
     let component := (canonicalV1.screen? s).toList.flatMap (·.components) |>.find? fun c =>
       match c.kind with | .field id .. => id == e | _ => false

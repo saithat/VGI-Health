@@ -34,6 +34,14 @@ to the labeled authored `runs/mock` examples. Only this mock dashboard replay
 uses a fixture interpreter. Override selection with `VGI_RUN=mock make run`.
 Use `make run APP_PORT=5187` if 5173 is occupied.
 
+For remote access from your MacBook, both `pnpm --filter app dev` and `make run`
+automatically use Tailscale Serve when the local Tailscale daemon is connected.
+Startup prints HTTPS links available on your tailnet, using the same HTTPS port
+as the local app (normally 5173). An existing matching proxy is reused; other
+Serve routes are left alone. Newly created routes stop with the app. Use
+`TAILSCALE_SERVE=0 pnpm --filter app dev` (or `TAILSCALE_SERVE=0 make run`) to opt out.
+Tailscale failures leave the local app available.
+
 WASM is committed; `make wasm-check` verifies freshness. Developers rebuilding
 it use `wasm/setup.sh && make wasm`. Full Medplum installation remains optional:
 install Docker Compose and [elan](https://github.com/leanprover/elan), then run

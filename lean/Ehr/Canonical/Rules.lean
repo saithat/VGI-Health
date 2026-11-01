@@ -29,6 +29,9 @@ def artifactFields (s : Screen) : List Component :=
   -- A single capture may serve several citations or actions on this screen.
   let unique := wanted.foldl (fun seen x =>
     if seen.any (fun y => y.1 == x.1) then seen else seen ++ [x]) []
+  let dependencies : List ElementId := ["dispenseQuantity", "dispenseDose", "dispenseFrequency", "liquidFormulation", "weight"]
+  let unique := unique.filter (fun x => dependencies.contains x.1) ++
+    unique.filter (fun x => !dependencies.contains x.1)
   (unique.map (·.2.2)).eraseDups.flatMap fun groupKey =>
     let groupId := "legal." ++ groupKey
     [group s.id groupId ((specV1.commit? groupKey).map (·.label) |>.getD groupKey)

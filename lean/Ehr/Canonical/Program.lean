@@ -1,5 +1,6 @@
 import Ehr.Specs.V1
 import Ehr.Canonical.Rules
+import Ehr.Canonical.Features
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
 import Ehr.Canonical.W3Ed
@@ -76,8 +77,8 @@ def canonicalV1 : Program where
   role := .physician
   specVersion := "v1"
   start := "home"
-  screens := (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
-    W5.screens ++ W6.screens ++ W7.screens)).map (withRequiredLinks ∘ withWorkflowAlerts)
+  screens := (Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
+    W5.screens ++ W6.screens ++ W7.screens))).map (withRequiredLinks ∘ withWorkflowAlerts)
   macros := W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros
 

@@ -658,6 +658,14 @@ structure Component where
   copyOf? : Option CompId := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- A source-only template. String fields may use `{{param}}` placeholders.
+Bodies cannot contain `use`; expansion is finite and structural. -/
+structure ComponentDef where
+  name : String
+  params : List String
+  body : List Component
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A screen. List order of `components` is render order. -/
 structure Screen where
   id : ScreenId
@@ -692,6 +700,7 @@ structure Program where
   start : ScreenId
   screens : List Screen
   macros : List Macro
+  componentDefs : List ComponentDef := []
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Facts (the patient record, abstracted) -/

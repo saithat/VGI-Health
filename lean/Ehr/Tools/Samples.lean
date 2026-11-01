@@ -45,6 +45,9 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "compositeDefinition" "ComponentDef" Ehr.CoreTests.CompositeFormat.definition,
+  mk "programWithDefinition" "Program"
+    { Tiny.program with componentDefs := [Ehr.CoreTests.CompositeFormat.definition] },
   mk "signingPayloadContract" "PayloadContract" Ehr.CoreTests.StructuredDisplay.contract,
   mk "signingPayload" "InfoPayload" Ehr.CoreTests.StructuredDisplay.payload,
   mk "signingDisplayRequirement" "DisplayReq" Ehr.CoreTests.StructuredDisplay.requirement,
