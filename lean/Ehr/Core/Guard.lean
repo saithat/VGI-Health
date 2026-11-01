@@ -212,7 +212,7 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
            | none => "")
       | none =>
         match (obligationViews sp facts s).find? (fun o => o.commit == c && o.status != .met) with
-        | some o => s!"event obligation: {o.requirement} ({reprStr o.status})"
+        | some o => s!"obligation: {o.requirement} ({reprStr o.status})"
         | none => if extraGuard sp prog facts s c then "guard" else "additional commit contract"
 
 end Ehr

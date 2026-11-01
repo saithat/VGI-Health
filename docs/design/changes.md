@@ -452,3 +452,24 @@ to declare the exact specified default; incorrect generated values are ignored.
 Views expose field validation errors and the same commit hard stop/reason. GenTS
 exports all constraints and real examples. Existing theorem statements remain
 unchanged; all original human/confirmation/unit/allowed-value checks are retained.
+
+## Rules catalog: order-expiry-clock (11 rules, M)
+
+`OrderClock` preserves durable order/detention IDs and original issue/start/
+first-fill `ClockStamp`s across episodes and transfers. `CommitSpec.expiry` lists
+`ExpiryReq` policies bound to current order artifact IDs/versions, independently
+conditional on clinical predicates. A new UI slot/episode cannot reset an anchor;
+core never writes these trusted record inputs. Actions fail at the exact expiry
+instant. Views expose missing/invalid/overdue clocks and the commit hard stop.
+
+Policies support elapsed minutes or actual calendar-month anniversaries, clamping
+the day at month end. `MonthCutoff` evidence supplies the timezone service's UTC
+resolution (including DST ambiguity); core verifies Gregorian date arithmetic,
+zone, wall time, offset bounds and exact UTC conversion. It never approximates
+months as 30 days. Renewal/reassessment use named current-version instance events,
+nonempty actors, nonfuture timestamps and explicit validity windows. Renewal is
+opt-in and never overrides the separate maximum original lifetime. Stop/release/
+lawful-exception routes are separate commits; backend auto-stop or release is
+still a scheduler duty. GenTS and Tiny guards cover cutoff boundaries, transfers,
+renewals, max lifetime, reassessment and January-31 → February-28 behavior.
+No property or theorem statement changed in this group.

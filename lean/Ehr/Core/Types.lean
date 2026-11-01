@@ -272,12 +272,82 @@ structure ObligationView where
   status : ObligationStatus
   deriving DecidableEq, Repr, Inhabited
 
+/-- Durable order/detention identity, independent of UI slots and episodes. -/
+abbrev OrderInstanceId := String
+inductive ClockAnchor
+  | issued | started | firstFill
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A hospital-local civil timestamp and its UTC instant. The timezone adapter
+supplies the offset; core verifies date validity and exact UTC conversion. -/
+structure ClockStamp where
+  time : Int
+  year : Nat
+  month : Nat
+  day : Nat
+  minuteOfDay : Nat
+  utcOffsetMinutes : Int
+  zone : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Resolved calendar anniversary; timezone service resolves DST ambiguity.
+Core checks the anniversary date, wall time, zone, and UTC conversion. -/
+structure MonthCutoff where
+  anchor : ClockAnchor
+  months : Nat
+  stamp : ClockStamp
+  deriving DecidableEq, Repr, Inhabited
+
+structure ClockRenewal where
+  event : EventId
+  time : Int
+  actor : UserId
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Original anchors are record inputs. Navigation, transfer and renewal never
+write them. Renewal evidence belongs to this durable instance/current version. -/
+structure OrderClock where
+  id : OrderInstanceId
+  patient : String
+  issued : ClockStamp
+  started? : Option ClockStamp := none
+  firstFill? : Option ClockStamp := none
+  monthCutoffs : List MonthCutoff := []
+  renewals : List ClockRenewal := []
+  deriving DecidableEq, Repr, Inhabited
+
+inductive ExpiryDuration
+  | minutes (duration : Nat)
+  | calendarMonths (months : Nat)
+  deriving DecidableEq, Repr, Inhabited
+
+structure RenewalPolicy where
+  event : EventId
+  validForMinutes : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Actions are blocked at expiry, including the exact cutoff instant.
+Renewal is allowed only when explicitly authorized; maximum original lifetime
+and reassessment remain independent requirements and cannot be reset. -/
+structure ExpiryReq where
+  id : String
+  orderKey : String
+  anchor : ClockAnchor
+  duration : ExpiryDuration
+  when? : Option ClinicalPredicate := none
+  renewal? : Option RenewalPolicy := none
+  reassessment? : Option RenewalPolicy := none
+  maxOriginalMinutes? : Option Nat := none
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A commit and the roles allowed to perform it. -/
 structure CommitSpec where
   id : CommitId
   label : String
   roles : List Role
   temporal? : Option (List TemporalReq) := none
+  expiry? : Option (List ExpiryReq) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a requirement applies. -/
@@ -602,6 +672,7 @@ structure Facts where
   calendars? : Option (List BusinessCalendar) := none
   clinical? : Option ClinicalFacts := none
   codeTables? : Option (List CodeTable) := none
+  orderClocks? : Option (List OrderClock) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/

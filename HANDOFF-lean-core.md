@@ -174,3 +174,10 @@ and generated-sample strict tsc pass. Value-validation retains lexical input and
 checks typed relational outputs, defaults and versioned terminology at entry,
 prefill and commit. No statements changed in these two groups. Remaining core
 implementation: order-expiry-clock and structured-display, then WASM rebuild.
+
+Value-validation 93b537d and order-expiry-clock: build, kernel check, Comparator,
+axiom audits and generated-sample strict tsc pass. Order clocks use durable IDs,
+exact expiry boundaries, independent renewal/reassessment/max-lifetime checks,
+and verified calendar-month date arithmetic with trusted timezone resolution.
+Remaining core implementation: structured-display, followed by final integration
+verification and WASM assets. Owning-lane adoption requests remain explicit.

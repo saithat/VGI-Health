@@ -346,6 +346,88 @@ export interface ObligationView {
 }
 
 /**
+ * Durable order/detention identity, independent of UI slots and episodes.
+ */
+export type OrderInstanceId = string;
+
+export type ClockAnchor =
+  | "issued"
+  | "started"
+  | "firstFill";
+/** All values of `ClockAnchor`. */
+export const ClockAnchorValues = ["issued", "started", "firstFill"] as const;
+
+/**
+ * A hospital-local civil timestamp and its UTC instant. The timezone adapter
+ * supplies the offset; core verifies date validity and exact UTC conversion.
+ */
+export interface ClockStamp {
+  time: number;
+  year: number;
+  month: number;
+  day: number;
+  minuteOfDay: number;
+  utcOffsetMinutes: number;
+  zone: string;
+}
+
+/**
+ * Resolved calendar anniversary; timezone service resolves DST ambiguity.
+ * Core checks the anniversary date, wall time, zone, and UTC conversion.
+ */
+export interface MonthCutoff {
+  anchor: ClockAnchor;
+  months: number;
+  stamp: ClockStamp;
+}
+
+export interface ClockRenewal {
+  event: EventId;
+  time: number;
+  actor: UserId;
+  version: number;
+}
+
+/**
+ * Original anchors are record inputs. Navigation, transfer and renewal never
+ * write them. Renewal evidence belongs to this durable instance/current version.
+ */
+export interface OrderClock {
+  id: OrderInstanceId;
+  patient: string;
+  issued: ClockStamp;
+  started?: ClockStamp;
+  firstFill?: ClockStamp;
+  monthCutoffs: MonthCutoff[];
+  renewals: ClockRenewal[];
+}
+
+export type ExpiryDuration =
+  | { minutes: { duration: number } }
+  | { calendarMonths: { months: number } };
+
+export interface RenewalPolicy {
+  event: EventId;
+  validForMinutes: number;
+}
+
+/**
+ * Actions are blocked at expiry, including the exact cutoff instant.
+ * Renewal is allowed only when explicitly authorized; maximum original lifetime
+ * and reassessment remain independent requirements and cannot be reset.
+ */
+export interface ExpiryReq {
+  id: string;
+  orderKey: string;
+  anchor: ClockAnchor;
+  duration: ExpiryDuration;
+  when?: ClinicalPredicate;
+  renewal?: RenewalPolicy;
+  reassessment?: RenewalPolicy;
+  maxOriginalMinutes?: number;
+}
+
+/**
  * A commit and the roles allowed to perform it.
  */
 export interface CommitSpec {
@@ -353,6 +435,7 @@ export interface CommitSpec {
   label: string;
   roles: Role[];
   temporal?: TemporalReq[];
+  expiry?: ExpiryReq[];
 }
 
 /**
@@ -765,6 +848,7 @@ export interface Facts {
   calendars?: BusinessCalendar[];
   clinical?: ClinicalFacts;
   codeTables?: CodeTable[];
+  orderClocks?: OrderClock[];
 }
 
 /**

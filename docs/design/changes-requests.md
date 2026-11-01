@@ -580,3 +580,19 @@ defaults and unsatisfiable or cyclic relational dependencies, prove source field
 reachable before outputs, and include stale-dependency branches in completability.
 Render/app: preserve validation/default fields and display ItemView.validationError;
 FHIR/world populate trusted versioned code tables. Examples: CoreTests.ValueValidation.
+
+### Order-expiry-clock adoption (11-rule group)
+
+Content: add CommitSpec.expiry policies, using durable orderKey bindings and the
+law's actual issued/started/firstFill anchor, duration and renewal/reassessment
+rules. Use separate stop/release/exception commits so expiry cannot prevent the
+required safe action. Age-specific policies compose ClinicalPredicate. Do not
+reset original anchors on transfer or reinterpret a UI slot as order identity.
+Render/world/backend supply Facts.orderClocks and artifactBindings from durable
+records. ClockStamp validates UTC/civil conversion; calendarMonths needs a unique
+MonthCutoff for the exact anchor/month count, with the timezone service resolving
+DST offsets. Missing/ambiguous calendar evidence blocks. Check: cover missing,
+expired, renewal/refusal and stop routes; ensure every affected order action is
+guarded, including refills and renewed/transfer contexts. Agent/app preserve the
+new types and expose overdue obligations. Backend must separately perform actual
+auto-stop/release; the core guard proves no scheduler execution. Tiny: OrderExpiry.

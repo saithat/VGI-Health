@@ -483,17 +483,83 @@ def defaultsOk (sp : Spec) (prog : Program) : Bool :=
     !fields.isEmpty && fields.all (fun c =>
       match c.kind with | .field _ _ pf => pf == .default expected | _ => false)
 
+def monthDays (year month : Nat) : Nat :=
+  if month == 2 then (if leapYear year then 29 else 28)
+  else if [4, 6, 9, 11].contains month then 30 else 31
+
+/-- Gregorian UTC conversion, with 1970-01-01 as epoch day zero. -/
+def stampMinute (t : ClockStamp) : Option Int :=
+  if !validDate t.year t.month t.day || 1440 ≤ t.minuteOfDay || t.zone.isEmpty ||
+      t.utcOffsetMinutes < -840 || 840 < t.utcOffsetMinutes then none else
+    let y := t.year - 1
+    let days := 365 * y + y / 4 - y / 100 + y / 400 +
+      ((List.range (t.month - 1)).foldl (fun acc m => acc + monthDays t.year (m + 1)) 0) + t.day - 1
+    some ((Int.ofNat days - 719162) * 1440 + Int.ofNat t.minuteOfDay - t.utcOffsetMinutes)
+
+def stampValid (t : ClockStamp) : Bool := stampMinute t == some t.time
+
+def OrderClock.anchorStamp (o : OrderClock) : ClockAnchor → Option ClockStamp
+  | .issued => some o.issued | .started => o.started? | .firstFill => o.firstFill?
+
+/-- Calendar months clamp the anniversary's day to the last day of that month.
+The chosen cutoff has one exact UTC instant, preventing DST clock reversal. -/
+def expiryCutoff (o : OrderClock) (a : ClockAnchor) (stamp : ClockStamp) : ExpiryDuration → Option Int
+  | .minutes duration => some (stamp.time + Int.ofNat duration)
+  | .calendarMonths months => do
+    let [cutoff] := o.monthCutoffs.filter (fun c => c.anchor == a && c.months == months) | none
+    let total := stamp.year * 12 + (stamp.month - 1) + months
+    let y := total / 12
+    let m := total % 12 + 1
+    let t := cutoff.stamp
+    if stampValid t && t.zone == stamp.zone && t.year == y && t.month == m &&
+        t.day == min stamp.day (monthDays y m) && t.minuteOfDay == stamp.minuteOfDay
+    then some t.time else none
+
+def renewalValid (o : OrderClock) (version : Nat) (now : Int) (p : RenewalPolicy) : Bool :=
+  o.renewals.any fun r => r.event == p.event && !r.actor.isEmpty && r.version == version &&
+    o.issued.time ≤ r.time && r.time ≤ now && now < r.time + Int.ofNat p.validForMinutes
+
+/-- Evaluate a durable clock without consulting the episode/slot. Stop/release
+routes should be separate commits; this guards actions on the expired instance. -/
+def expiryStatus (facts : Facts) (s : State) (rq : ExpiryReq) : ObligationStatus :=
+  if rq.when?.any (fun p => !clinicalApplies facts s p) then .met else
+  match epochNow facts s with
+  | none => .missing
+  | some now =>
+    match (facts.artifactBindings?.getD []).filter (·.key == rq.orderKey) with
+    | [binding] =>
+      match (facts.orderClocks?.getD []).filter (·.id == binding.artifact) with
+      | [o] =>
+        match o.anchorStamp rq.anchor with
+        | none => .missing
+        | some anchor =>
+          if o.patient != facts.patientId || !stampValid o.issued || !stampValid anchor ||
+              now < anchor.time || anchor.time < o.issued.time then .invalid else
+          match expiryCutoff o rq.anchor anchor rq.duration with
+          | none => .missing
+          | some cutoff =>
+            if !rq.maxOriginalMinutes?.all (fun n => now < o.issued.time + Int.ofNat n) then .overdue
+            else if !rq.reassessment?.all (renewalValid o binding.version now) then .missing
+            else if now < cutoff || rq.renewal?.any (renewalValid o binding.version now) then .met
+            else .overdue
+      | _ => .missing
+    | _ => .missing
+
 /-- Additional commit contracts. Kept separate from entries/review receipts. -/
 def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
   match sp.commit? c with
   | none => false
   | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
-      validationsOk sp facts s && defaultsOk sp prog
+      validationsOk sp facts s && defaultsOk sp prog &&
+      (cs.expiry?.getD []).all (fun rq => expiryStatus facts s rq == .met)
 
 /-- All event obligations, including ones on screens without a commit button. -/
 def obligationViews (sp : Spec) (facts : Facts) (s : State) : List ObligationView :=
-  sp.commits.flatMap fun cs => (cs.temporal?.getD []).map fun rq =>
-    { commit := cs.id, requirement := rq.id, status := temporalStatus facts s rq }
+  sp.commits.flatMap fun cs =>
+    ((cs.temporal?.getD []).map fun rq =>
+      { commit := cs.id, requirement := rq.id, status := temporalStatus facts s rq }) ++
+    ((cs.expiry?.getD []).map fun rq =>
+      { commit := cs.id, requirement := rq.id, status := expiryStatus facts s rq })
 
 /-! ## Order lines -/
 

@@ -421,4 +421,48 @@ def invalidCapture : State := { initial with captured :=
   (.default "other")
 end ValueValidation
 
+namespace OrderExpiry
+
+def epoch : ClockStamp :=
+  { time := 0, year := 1970, month := 1, day := 1, minuteOfDay := 0, utcOffsetMinutes := 0, zone := "UTC" }
+def order : OrderClock := { id := "order-1", patient := facts.patientId, issued := epoch }
+def requirement : ExpiryReq :=
+  { id := "order-expiry", orderKey := "order", anchor := .issued, duration := .minutes 60 }
+def context : Facts :=
+  { facts with epochMinute? := some 59, artifactBindings? := some [{ key := "order", artifact := "order-1", version := 1 }], orderClocks? := some [order] }
+def tinySpec : Spec :=
+  { EventWindow.tinySpec with commits :=
+    [{ id := "signOrders", label := "Sign", roles := [.physician], expiry? := some [requirement] }] }
+#guard stampValid epoch
+#guard stampValid { epoch with time := -60, utcOffsetMinutes := 60 }
+#guard !stampValid { epoch with time := 1 }
+#guard expiryStatus context atOrder requirement == .met
+#guard expiryStatus { context with epochMinute? := some 60 } atOrder requirement == .overdue
+#guard expiryStatus { context with episodeId? := some "transfer-to-ward" } atOrder requirement == .met
+#guard expiryStatus context { atOrder with currentSlot := 9 } requirement == .met
+#guard expiryStatus context { atOrder with clock := 600 } requirement == .overdue
+#guard !commitGuard tinySpec program { context with epochMinute? := some 60 } user atOrder "signOrders"
+#guard (view tinySpec program { context with epochMinute? := some 60 } user atOrder).obligations? ==
+  some [{ commit := "signOrders", requirement := "order-expiry", status := .overdue }]
+def renewed : Facts :=
+  { context with epochMinute? := some 60, orderClocks? := some [{ order with renewals := [{ event := "renew", time := 55, actor := "u2", version := 1 }] }] }
+#guard expiryStatus renewed atOrder { requirement with renewal? := some { event := "renew", validForMinutes := 10 } } == .met
+#guard expiryStatus { renewed with epochMinute? := some 65 } atOrder
+  { requirement with renewal? := some { event := "renew", validForMinutes := 10 } } == .overdue
+#guard expiryStatus renewed atOrder { requirement with renewal? := some { event := "renew", validForMinutes := 10 }, maxOriginalMinutes? := some 60 } == .overdue
+#guard expiryStatus context atOrder { requirement with reassessment? := some { event := "assess", validForMinutes := 10 } } == .missing
+-- January 31 + one month clamps to February 28, without a fixed 30-day approximation.
+def jan31 : ClockStamp := { epoch with time := 43200, day := 31 }
+def feb28 : ClockStamp := { epoch with time := 83520, month := 2, day := 28 }
+def monthOrder : OrderClock :=
+  { order with issued := jan31, monthCutoffs := [{ anchor := .issued, months := 1, stamp := feb28 }] }
+#guard stampValid jan31 && stampValid feb28
+#guard expiryCutoff monthOrder .issued jan31 (.calendarMonths 1) == some 83520
+#guard expiryStatus { context with epochMinute? := some 83519, orderClocks? := some [monthOrder] }
+  atOrder { requirement with duration := .calendarMonths 1 } == .met
+#guard expiryStatus { context with epochMinute? := some 83520, orderClocks? := some [monthOrder] }
+  atOrder { requirement with duration := .calendarMonths 1 } == .overdue
+#guard roundTrips requirement && roundTrips monthOrder
+end OrderExpiry
+
 end Ehr.CoreTests
