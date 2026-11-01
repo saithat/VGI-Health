@@ -229,6 +229,33 @@ def mixedChart : Json := json r#"{"resourceType":"Bundle","entry":[{"resource":{
 #guard (output mixedChart).display.allergies.map (·.id) == ["own"]
 #guard (chartResourcesOfBundle mixedChart).all (fun r => str r "id" != "foreign")
 
+/-- Imported Patient IDs and fullUrls may differ; each chart keeps its own notes. -/
+def importedAliasBundle : Json := json r##"{"resourceType":"Bundle","entry":[
+  {"fullUrl":"urn:uuid:imported-patient","resource":{"resourceType":"Patient","id":"sh-imported-patient","identifier":[{"system":"urn:vgi:synthetic-hospital","value":"1675"}]}},
+  {"fullUrl":"urn:uuid:other-patient","resource":{"resourceType":"Patient","id":"sh-other-patient","identifier":[{"system":"urn:vgi:synthetic-hospital","value":"9999"}]}},
+  {"resource":{"resourceType":"DocumentReference","id":"own-note","status":"current","subject":{"reference":"urn:uuid:imported-patient"}}},
+  {"resource":{"resourceType":"DocumentReference","id":"identifier-note","status":"current","subject":{"identifier":{"system":"urn:vgi:synthetic-hospital","value":"1675"}}}},
+  {"resource":{"resourceType":"DocumentReference","id":"absolute-note","status":"current","subject":{"reference":"https://hospital.example/fhir/Patient/sh-imported-patient/_history/2"}}},
+  {"resource":{"resourceType":"DocumentReference","id":"contained-note","status":"current","subject":{"reference":"#sh-imported-patient"}}},
+  {"resource":{"resourceType":"DocumentReference","id":"foreign-note","status":"current","subject":{"reference":"urn:uuid:other-patient"}}},
+  {"resource":{"resourceType":"DocumentReference","id":"foreign-identifier-note","status":"current","subject":{"identifier":{"system":"urn:vgi:synthetic-hospital","value":"9999"}}}},
+  {"resource":{"resourceType":"DocumentReference","id":"foreign-absolute-note","status":"current","subject":{"reference":"https://hospital.example/fhir/Patient/sh-other-patient"}}},
+  {"resource":{"resourceType":"DocumentReference","id":"conflicting-note","status":"current","subject":{"reference":"Patient/sh-other-patient","identifier":{"system":"urn:vgi:synthetic-hospital","value":"1675"}}}}
+]}"##
+
+/-- An imported note's declared fullUrl resolves to the open Patient. -/
+def importedAliasNotes := (output importedAliasBundle).display.notes.map (·.id)
+#guard importedAliasNotes == ["own-note", "identifier-note", "absolute-note", "contained-note"]
+def importedAliasPatient := (bundleResources importedAliasBundle).headD .null
+#guard Ambulatory.referenceMatches "Patient/sh-imported-patient" importedAliasPatient
+#guard Ambulatory.referenceMatches "urn:vgi:synthetic-hospital|1675" importedAliasPatient
+#guard !Ambulatory.referenceMatches "urn:vgi:synthetic-hospital|9999" importedAliasPatient
+#guard !Ambulatory.referenceMatches "https://hospital.example/fhir/Observation/sh-imported-patient" importedAliasPatient
+#guard !patientReferenceMatches .null importedAliasPatient
+-- Enriching a chart from the shared graph preserves aliases and patient isolation.
+#guard ((runFacts { bundle := importedAliasBundle, context := context, worldContext? := some importedAliasBundle }).toOption.map (fun o => o.display.notes.map (·.id))) ==
+  some importedAliasNotes
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests

@@ -2,15 +2,15 @@
   "schemaVersion": 1,
   "suite": "held-out-core-rule-conformance",
   "runId": "run1-P3",
-  "generatedAt": "2026-11-01T17:58:29.927Z",
+  "generatedAt": "2026-11-01T18:11:48.306Z",
   "independentOfChecker": true,
   "deploymentGate": false,
   "boundary": "Native interpreter + FHIR projection + semantic in-UI patient selection. Does not exercise browser painter, persistence, or host networking.",
   "native": {
-    "binary": "/home/saithat/Projects/VGI-conformance/.cache/conformance/ehr",
-    "sha256": "2cce77e126d2914a2052d3a1c7b50b0124fbd5eb9e2ef97a4aa15da53ce161ab",
+    "binary": "/home/saithat/Projects/VGI-check/lean/.lake/build/bin/ehr",
+    "sha256": "4e2d607a1de22de6c81422f3af4bcd919232d02c17aa0132caa84984bb886d10",
     "calls": 26589,
-    "jobs": 8
+    "jobs": 16
   },
   "scenarios": [
     {

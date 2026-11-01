@@ -12,23 +12,23 @@
 
 — = not applicable (role, workflow, release, or optional feature); exact reasons in JSON.
 
-| Revision | Passed | Failed | Not applicable |
-|---|---:|---:|---:|
-| canonical/v1/P1 | 9 | 0 | 0 |
-| canonical/v1/P2 | 8 | 0 | 1 |
-| canonical/v1/P3 | 1 | 0 | 8 |
-| canonical/v1/P4 | 5 | 0 | 4 |
-| canonical/v1/P5 | 8 | 0 | 1 |
-| canonical/v2/P1 | 9 | 0 | 0 |
-| canonical/v2/P2 | 8 | 0 | 1 |
-| canonical/v2/P3 | 1 | 0 | 8 |
-| canonical/v2/P4 | 5 | 0 | 4 |
-| canonical/v2/P5 | 8 | 0 | 1 |
-| canonical/v3/P1 | 9 | 0 | 0 |
-| canonical/v3/P2 | 8 | 0 | 1 |
-| canonical/v3/P3 | 1 | 0 | 8 |
-| canonical/v3/P4 | 5 | 0 | 4 |
-| canonical/v3/P5 | 8 | 0 | 1 |
+| Revision | Start state | Passed | Failed | Not applicable |
+|---|---|---:|---:|---:|
+| canonical/v1/P1 | in-ui-selection | 9 | 0 | 0 |
+| canonical/v1/P2 | in-ui-selection | 8 | 0 | 1 |
+| canonical/v1/P3 | in-ui-selection | 1 | 0 | 8 |
+| canonical/v1/P4 | in-ui-selection | 5 | 0 | 4 |
+| canonical/v1/P5 | in-ui-selection | 8 | 0 | 1 |
+| canonical/v2/P1 | in-ui-selection | 9 | 0 | 0 |
+| canonical/v2/P2 | in-ui-selection | 8 | 0 | 1 |
+| canonical/v2/P3 | in-ui-selection | 1 | 0 | 8 |
+| canonical/v2/P4 | in-ui-selection | 5 | 0 | 4 |
+| canonical/v2/P5 | in-ui-selection | 8 | 0 | 1 |
+| canonical/v3/P1 | in-ui-selection | 9 | 0 | 0 |
+| canonical/v3/P2 | in-ui-selection | 8 | 0 | 1 |
+| canonical/v3/P3 | in-ui-selection | 1 | 0 | 8 |
+| canonical/v3/P4 | in-ui-selection | 5 | 0 | 4 |
+| canonical/v3/P5 | in-ui-selection | 8 | 0 | 1 |
 
 | Scenario | Revision | Observed outcome |
 |---|---|---|
