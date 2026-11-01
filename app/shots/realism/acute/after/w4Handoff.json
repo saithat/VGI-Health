@@ -902,6 +902,7 @@
       }
     }
   ],
+  "viewer": "Registered nurse",
   "title": "Handoff / SBAR",
   "side": [
     {
@@ -1119,7 +1120,7 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ],
@@ -1130,6 +1131,7 @@
       }
     }
   ],
+  "screen": "w4Handoff",
   "nav": [
     [
       "Nursing Navigator",
@@ -1150,6 +1152,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

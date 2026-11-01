@@ -57,6 +57,7 @@
       "Not recorded"
     ]
   ],
+  "fieldSources": [],
   "modal": null,
   "nav": [
     [
@@ -77,8 +78,10 @@
       ]
     ]
   ],
+  "screen": "w4Mar",
   "side": [],
   "title": "MAR",
+  "viewer": "Registered nurse",
   "workspace": [
     {
       "field": {

@@ -57,6 +57,12 @@
       "Not recorded"
     ]
   ],
+  "fieldSources": [
+    [
+      "w4Flowsheet.nursingAssessment",
+      "Source: Automated entry · chart as of 2026-11-02"
+    ]
+  ],
   "modal": null,
   "nav": [
     [
@@ -77,8 +83,16 @@
       ]
     ]
   ],
+  "screen": "w4Flowsheet",
   "side": [],
+  "sourceLabels": [
+    [
+      "macro",
+      "From template / preference list"
+    ]
+  ],
   "title": "Flowsheets",
+  "viewer": "Registered nurse",
   "workspace": [
     {
       "field": {
@@ -625,16 +639,69 @@
       "section": {
         "children": [
           {
-            "field": {
-              "comp": "w4Flowsheet.painReassessment",
-              "humanOnly": true,
-              "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
-              "label": "Response after intervention (0–10)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w4Flowsheet.painReassessment",
+                    "humanOnly": true,
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
+                    "label": "Response after intervention (0–10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                },
+                {
+                  "code": "7",
+                  "label": "7"
+                },
+                {
+                  "code": "8",
+                  "label": "8"
+                },
+                {
+                  "code": "9",
+                  "label": "9"
+                },
+                {
+                  "code": "10",
+                  "label": "10"
+                }
+              ]
             }
           }
         ],

@@ -1149,8 +1149,10 @@
       }
     }
   ],
+  "viewer": "Registered nurse",
   "title": "MAR",
   "side": [],
+  "screen": "w4Mar",
   "nav": [
     [
       "Nursing Navigator",
@@ -1171,6 +1173,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

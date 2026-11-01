@@ -547,16 +547,69 @@
         "id": "w4Flowsheet.pain",
         "children": [
           {
-            "field": {
-              "value": null,
-              "unit": null,
-              "required": true,
-              "provenance": null,
-              "pendingConfirm": false,
-              "label": "Response after intervention (0–10)",
-              "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
-              "humanOnly": true,
-              "comp": "w4Flowsheet.painReassessment"
+            "valueSet": {
+              "options": [
+                {
+                  "label": "0",
+                  "code": "0"
+                },
+                {
+                  "label": "1",
+                  "code": "1"
+                },
+                {
+                  "label": "2",
+                  "code": "2"
+                },
+                {
+                  "label": "3",
+                  "code": "3"
+                },
+                {
+                  "label": "4",
+                  "code": "4"
+                },
+                {
+                  "label": "5",
+                  "code": "5"
+                },
+                {
+                  "label": "6",
+                  "code": "6"
+                },
+                {
+                  "label": "7",
+                  "code": "7"
+                },
+                {
+                  "label": "8",
+                  "code": "8"
+                },
+                {
+                  "label": "9",
+                  "code": "9"
+                },
+                {
+                  "label": "10",
+                  "code": "10"
+                }
+              ],
+              "children": [
+                {
+                  "field": {
+                    "value": null,
+                    "unit": null,
+                    "required": true,
+                    "provenance": null,
+                    "pendingConfirm": false,
+                    "label": "Response after intervention (0–10)",
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
+                    "humanOnly": true,
+                    "comp": "w4Flowsheet.painReassessment"
+                  }
+                }
+              ],
+              "allowCustom": true
             }
           }
         ]
@@ -1291,8 +1344,10 @@
       }
     }
   ],
+  "viewer": "Registered nurse",
   "title": "Flowsheets",
   "side": [],
+  "screen": "w4Flowsheet",
   "nav": [
     [
       "Nursing Navigator",
@@ -1313,6 +1368,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

@@ -121,42 +121,129 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Route",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.route"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Oral (PO)",
+                        "code": "PO"
+                      },
+                      {
+                        "label": "Intravenous (IV)",
+                        "code": "IV"
+                      },
+                      {
+                        "label": "Intramuscular (IM)",
+                        "code": "IM"
+                      },
+                      {
+                        "label": "Subcutaneous (SC)",
+                        "code": "SC"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Route",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.route"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Frequency",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.freq"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Daily",
+                        "code": "daily"
+                      },
+                      {
+                        "label": "Twice daily (BID)",
+                        "code": "bid"
+                      },
+                      {
+                        "label": "Three times daily (TID)",
+                        "code": "tid"
+                      },
+                      {
+                        "label": "Four times daily (QID)",
+                        "code": "qid"
+                      },
+                      {
+                        "label": "Every 4 hours",
+                        "code": "q4h"
+                      },
+                      {
+                        "label": "Every 6 hours",
+                        "code": "q6h"
+                      },
+                      {
+                        "label": "Every 8 hours",
+                        "code": "q8h"
+                      },
+                      {
+                        "label": "Every 12 hours",
+                        "code": "q12h"
+                      },
+                      {
+                        "label": "Once",
+                        "code": "once"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Frequency",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.freq"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "As needed (PRN)",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.prn"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Yes",
+                        "code": "true"
+                      },
+                      {
+                        "label": "No",
+                        "code": "false"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "As needed (PRN)",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.prn"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -178,16 +265,61 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Duration",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.duration"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "One dose",
+                        "code": "1 dose"
+                      },
+                      {
+                        "label": "3 days",
+                        "code": "3 days"
+                      },
+                      {
+                        "label": "5 days",
+                        "code": "5 days"
+                      },
+                      {
+                        "label": "7 days",
+                        "code": "7 days"
+                      },
+                      {
+                        "label": "10 days",
+                        "code": "10 days"
+                      },
+                      {
+                        "label": "14 days",
+                        "code": "14 days"
+                      },
+                      {
+                        "label": "30 days",
+                        "code": "30 days"
+                      },
+                      {
+                        "label": "90 days",
+                        "code": "90 days"
+                      },
+                      {
+                        "label": "Ongoing",
+                        "code": "ongoing"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Duration",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.duration"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
@@ -217,16 +349,33 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Generic substitution allowed",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.substitution"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Yes",
+                        "code": "true"
+                      },
+                      {
+                        "label": "No",
+                        "code": "false"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Generic substitution allowed",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.substitution"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -274,16 +423,97 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Associated diagnosis (ICD-10)",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row10.orderDiagnosis"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "I10 — Essential (primary) hypertension",
+                        "code": "I10"
+                      },
+                      {
+                        "label": "E11.9 — Type 2 diabetes mellitus without complications",
+                        "code": "E11.9"
+                      },
+                      {
+                        "label": "E78.5 — Hyperlipidemia, unspecified",
+                        "code": "E78.5"
+                      },
+                      {
+                        "label": "J06.9 — Acute upper respiratory infection, unspecified",
+                        "code": "J06.9"
+                      },
+                      {
+                        "label": "H66.90 — Otitis media, unspecified, unspecified ear",
+                        "code": "H66.90"
+                      },
+                      {
+                        "label": "J02.9 — Acute pharyngitis, unspecified",
+                        "code": "J02.9"
+                      },
+                      {
+                        "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings",
+                        "code": "Z00.00"
+                      },
+                      {
+                        "label": "Z00.129 — Encounter for routine child health examination without abnormal findings",
+                        "code": "Z00.129"
+                      },
+                      {
+                        "label": "R05.9 — Cough, unspecified",
+                        "code": "R05.9"
+                      },
+                      {
+                        "label": "R50.9 — Fever, unspecified",
+                        "code": "R50.9"
+                      },
+                      {
+                        "label": "R10.9 — Unspecified abdominal pain",
+                        "code": "R10.9"
+                      },
+                      {
+                        "label": "M54.50 — Low back pain, unspecified",
+                        "code": "M54.50"
+                      },
+                      {
+                        "label": "F41.9 — Anxiety disorder, unspecified",
+                        "code": "F41.9"
+                      },
+                      {
+                        "label": "F32.A — Depression, unspecified",
+                        "code": "F32.A"
+                      },
+                      {
+                        "label": "N39.0 — Urinary tract infection, site not specified",
+                        "code": "N39.0"
+                      },
+                      {
+                        "label": "R51.9 — Headache, unspecified",
+                        "code": "R51.9"
+                      },
+                      {
+                        "label": "J45.909 — Unspecified asthma, uncomplicated",
+                        "code": "J45.909"
+                      },
+                      {
+                        "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis",
+                        "code": "K21.9"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Associated diagnosis (ICD-10)",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row10.orderDiagnosis"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -362,42 +592,129 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Route",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.route"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Oral (PO)",
+                        "code": "PO"
+                      },
+                      {
+                        "label": "Intravenous (IV)",
+                        "code": "IV"
+                      },
+                      {
+                        "label": "Intramuscular (IM)",
+                        "code": "IM"
+                      },
+                      {
+                        "label": "Subcutaneous (SC)",
+                        "code": "SC"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Route",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.route"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Frequency",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.freq"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Daily",
+                        "code": "daily"
+                      },
+                      {
+                        "label": "Twice daily (BID)",
+                        "code": "bid"
+                      },
+                      {
+                        "label": "Three times daily (TID)",
+                        "code": "tid"
+                      },
+                      {
+                        "label": "Four times daily (QID)",
+                        "code": "qid"
+                      },
+                      {
+                        "label": "Every 4 hours",
+                        "code": "q4h"
+                      },
+                      {
+                        "label": "Every 6 hours",
+                        "code": "q6h"
+                      },
+                      {
+                        "label": "Every 8 hours",
+                        "code": "q8h"
+                      },
+                      {
+                        "label": "Every 12 hours",
+                        "code": "q12h"
+                      },
+                      {
+                        "label": "Once",
+                        "code": "once"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Frequency",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.freq"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "As needed (PRN)",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.prn"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Yes",
+                        "code": "true"
+                      },
+                      {
+                        "label": "No",
+                        "code": "false"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "As needed (PRN)",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.prn"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -419,16 +736,61 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Duration",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.duration"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "One dose",
+                        "code": "1 dose"
+                      },
+                      {
+                        "label": "3 days",
+                        "code": "3 days"
+                      },
+                      {
+                        "label": "5 days",
+                        "code": "5 days"
+                      },
+                      {
+                        "label": "7 days",
+                        "code": "7 days"
+                      },
+                      {
+                        "label": "10 days",
+                        "code": "10 days"
+                      },
+                      {
+                        "label": "14 days",
+                        "code": "14 days"
+                      },
+                      {
+                        "label": "30 days",
+                        "code": "30 days"
+                      },
+                      {
+                        "label": "90 days",
+                        "code": "90 days"
+                      },
+                      {
+                        "label": "Ongoing",
+                        "code": "ongoing"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Duration",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.duration"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 },
                 {
@@ -458,16 +820,33 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Generic substitution allowed",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.substitution"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "Yes",
+                        "code": "true"
+                      },
+                      {
+                        "label": "No",
+                        "code": "false"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Generic substitution allowed",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.substitution"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -515,16 +894,97 @@
                   }
                 },
                 {
-                  "field": {
-                    "value": null,
-                    "unit": null,
-                    "required": true,
-                    "provenance": null,
-                    "pendingConfirm": false,
-                    "label": "Associated diagnosis (ICD-10)",
-                    "kind": "code",
-                    "humanOnly": false,
-                    "comp": "w3OrderSets.row11.orderDiagnosis"
+                  "valueSet": {
+                    "options": [
+                      {
+                        "label": "I10 — Essential (primary) hypertension",
+                        "code": "I10"
+                      },
+                      {
+                        "label": "E11.9 — Type 2 diabetes mellitus without complications",
+                        "code": "E11.9"
+                      },
+                      {
+                        "label": "E78.5 — Hyperlipidemia, unspecified",
+                        "code": "E78.5"
+                      },
+                      {
+                        "label": "J06.9 — Acute upper respiratory infection, unspecified",
+                        "code": "J06.9"
+                      },
+                      {
+                        "label": "H66.90 — Otitis media, unspecified, unspecified ear",
+                        "code": "H66.90"
+                      },
+                      {
+                        "label": "J02.9 — Acute pharyngitis, unspecified",
+                        "code": "J02.9"
+                      },
+                      {
+                        "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings",
+                        "code": "Z00.00"
+                      },
+                      {
+                        "label": "Z00.129 — Encounter for routine child health examination without abnormal findings",
+                        "code": "Z00.129"
+                      },
+                      {
+                        "label": "R05.9 — Cough, unspecified",
+                        "code": "R05.9"
+                      },
+                      {
+                        "label": "R50.9 — Fever, unspecified",
+                        "code": "R50.9"
+                      },
+                      {
+                        "label": "R10.9 — Unspecified abdominal pain",
+                        "code": "R10.9"
+                      },
+                      {
+                        "label": "M54.50 — Low back pain, unspecified",
+                        "code": "M54.50"
+                      },
+                      {
+                        "label": "F41.9 — Anxiety disorder, unspecified",
+                        "code": "F41.9"
+                      },
+                      {
+                        "label": "F32.A — Depression, unspecified",
+                        "code": "F32.A"
+                      },
+                      {
+                        "label": "N39.0 — Urinary tract infection, site not specified",
+                        "code": "N39.0"
+                      },
+                      {
+                        "label": "R51.9 — Headache, unspecified",
+                        "code": "R51.9"
+                      },
+                      {
+                        "label": "J45.909 — Unspecified asthma, uncomplicated",
+                        "code": "J45.909"
+                      },
+                      {
+                        "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis",
+                        "code": "K21.9"
+                      }
+                    ],
+                    "children": [
+                      {
+                        "field": {
+                          "value": null,
+                          "unit": null,
+                          "required": true,
+                          "provenance": null,
+                          "pendingConfirm": false,
+                          "label": "Associated diagnosis (ICD-10)",
+                          "kind": "code",
+                          "humanOnly": false,
+                          "comp": "w3OrderSets.row11.orderDiagnosis"
+                        }
+                      }
+                    ],
+                    "allowCustom": true
                   }
                 }
               ]
@@ -1240,6 +1700,7 @@
       }
     }
   ],
+  "viewer": "Physician",
   "title": "ED order sets",
   "side": [
     {
@@ -1433,7 +1894,7 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ],
@@ -1444,6 +1905,7 @@
       }
     }
   ],
+  "screen": "w3OrderSets",
   "nav": [
     [
       "ED Navigator",
@@ -1472,6 +1934,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

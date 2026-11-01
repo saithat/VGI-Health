@@ -57,6 +57,24 @@
       "Not recorded"
     ]
   ],
+  "fieldSources": [
+    [
+      "w4Handoff.handoffSituation",
+      "Source: Automated entry · chart as of 2026-11-02"
+    ],
+    [
+      "w4Handoff.handoffBackground",
+      "Source: Automated entry · chart as of 2026-11-02"
+    ],
+    [
+      "w4Handoff.handoffAssessment",
+      "Source: Automated entry · chart as of 2026-11-02"
+    ],
+    [
+      "w4Handoff.handoffRecommendation",
+      "Source: Automated entry · chart as of 2026-11-02"
+    ]
+  ],
   "modal": null,
   "nav": [
     [
@@ -77,6 +95,7 @@
       ]
     ]
   ],
+  "screen": "w4Handoff",
   "side": [
     {
       "info": {
@@ -297,14 +316,21 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ]
       }
     }
   ],
+  "sourceLabels": [
+    [
+      "macro",
+      "From template / preference list"
+    ]
+  ],
   "title": "Handoff / SBAR",
+  "viewer": "Registered nurse",
   "workspace": [
     {
       "field": {

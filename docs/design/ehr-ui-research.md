@@ -697,6 +697,29 @@ Hard-stop handoff (13:30 UTC / 06:30 PDT): code `8aa9a20` is pushed with all sco
 
 Final short checks completed during the stop handoff: fast regression **1 pass**, loopback/synthetic-Host performance **1 pass**, with zero WASM requests on dashboard round trips. All lane preview ports are closed. The interrupted RN2/global clinical rerun remains explicitly incomplete.
 
+### Integration with the shared presentation lane
+
+Main `f59ed3a` brings the thirteen closed Lean presentation kinds, ambulatory value-set/reference wrappers, surgical field favorites and shared clinical drawings. Acute keeps its stable component/info IDs and source bindings, selecting the shared trackBoard, table, worklist, timeGrid, flowsheet, results and notes kinds through ordinary tags. There is one structured painter per concept; generic historical tables/notes/trends use that same module. `presentation` is a compatibility alias for the shared `presented` builder, and acute narrative fields use the shared multiline builder. Legacy narrative tags still render their ordinary text fields. No clinical guard, required field, human-only constraint or theorem statement is relaxed.
+
+The merge retains P2 Track Board/P3 census starts, numeric ESI/pain choices, editable unconfirmed SBAR/assessment outlines and exact encounter/order-bound supporting panels. Acute payloads take precedence only for the same info ID; surgical and ambulatory supporting views retain their own IDs and bindings. The new explicit encounter selector is authoritative, with the older record selector retained for saved inputs. The responsive shared header supplies the single measured pinning implementation; adjacent supplied field/confirmation controls keep their stable layout. Public source captions take precedence, with the human-readable legacy provenance fallback retained. Audit traversal includes both new transparent wrappers.
+
+
+Integrated visual review at 1440×900 uses the same supplied acute charts as the earlier captures. The public Epic ASAP, Riverside nursing and CST MAR references above remain the comparison patterns; no vendor assets were added.
+
+| Screen | Before → integrated review |
+| --- | --- |
+| P2 Track Board | Acute-specific table drawing → shared trackBoard drawing. Room, ESI, elapsed time, team and lab/imaging states remain visible together; the selected encounter still opens through its real Lean action. |
+| P2 Triage | Independent field spacing → shared form geometry with adjacent provenance/confirmation. The full numeric ESI and pain choice sets remain human-entered; the kg weight remains visibly unconfirmed. |
+| P2 Disposition | Acute review panels → shared table drawing, retaining full vital-sign review above the admission/discharge controls. The taller review and required sign path remain deliberate baseline steps. |
+| P3 Census | Separate acute worklist drawing → shared table/worklist drawing with the existing patient-row action. Tasks retain their source statuses; overdue task status remains distinct from administration history. |
+| P3 MAR | Separate acute hourly drawing → shared timeGrid drawing. Instructions, PRN indication, scheduled tasks and actual given/held administrations remain separate and legible across dated hour columns. |
+| P3 Flowsheets | Separate acute grid → shared flowsheet drawing. Measures, units, source times and missing cells remain intact, with new documentation beneath prior observations. |
+| P3 Handoff | Acute narrative field drawing → shared multiline drawing. The previous signed report remains separate from four blank/editable SBAR fields and the explicit outline action. |
+
+The single-chart reader still shows the supplied patient rather than fabricating a department-wide census. Date/time offsets and long source instructions remain explicit; wide grids scroll where necessary. The pinned banner and navigation do not overlap the patient identity or controls in the desktop hit-testing checks. Eighteen semantic views and thirty-six top/task photographs are in `app/shots/realism/acute/after/`.
+
+The regenerated acute effort measurements are unchanged across v1/v2/v3: W3 **57 clicks / 226 keystrokes / 198.45 estimated KLM seconds**; W4 **25 / 39 / 129.95**. These are the existing certified search spaces and minimum-click path estimates, not a claim of globally minimal clinical effort. See [acute-complexity.json](acute-complexity.json).
+
 ## Canonical realism: P1 PCP and P4 pediatric NP (ambulatory)
 
 Research and implementation pass: 2026-11-01, AMB lane. This is one vendor
@@ -1146,12 +1169,6 @@ M14 final verification (source `b409cda` plus the display-only pass): app build/
 
 Lean source, native binary, WASM assets, specs and clinical programs are byte-identical to the green M13 model. Its default build/kernel/Comparator and **59** frozen renderer statements, **15/15** certifications, **18/18** rejected bad programs, **1,284/1,284** World-2 tasks, **277** native controls, **34** native/WASM views, **16** structured fixtures, **324** unchanged primitive fact projections, zero-mismatch archived replay and unchanged **21** effort groups therefore remain the verified model baseline. `make wasm-check` confirms freshness. M14 changes presentation only and adds no design rule.
 
-
-### Integration with the shared presentation lane
-
-Main `f59ed3a` brings the thirteen closed Lean presentation kinds, ambulatory value-set/reference wrappers, surgical field favorites and shared clinical drawings. Acute keeps its stable component/info IDs and source bindings, selecting the shared trackBoard, table, worklist, timeGrid, flowsheet, results and notes kinds through ordinary tags. There is one structured painter per concept; generic historical tables/notes/trends use that same module. `presentation` is a compatibility alias for the shared `presented` builder, and acute narrative fields use the shared multiline builder. Legacy narrative tags still render their ordinary text fields. No clinical guard, required field, human-only constraint or theorem statement is relaxed.
-
-The merge retains P2 Track Board/P3 census starts, numeric ESI/pain choices, editable unconfirmed SBAR/assessment outlines and exact encounter/order-bound supporting panels. Acute payloads take precedence only for the same info ID; surgical and ambulatory supporting views retain their own IDs and bindings. The new explicit encounter selector is authoritative, with the older record selector retained for saved inputs. The responsive shared header supplies the single measured pinning implementation; adjacent supplied field/confirmation controls keep their stable layout. Public source captions take precedence, with the human-readable legacy provenance fallback retained. Audit traversal includes both new transparent wrappers.
 
 ## Presentation lane: structured clinical widgets
 

@@ -99,8 +99,12 @@
         "rows": [
           [
             [
-              "Weight for dose check",
-              "93.4 kg"
+              "Weight (kg)",
+              "93.4"
+            ],
+            [
+              "Measured",
+              "Nov 2, 2026 07:30"
             ]
           ]
         ],
@@ -918,6 +922,7 @@
       }
     }
   ],
+  "viewer": "Physician",
   "title": "Sign orders",
   "side": [
     {
@@ -1111,7 +1116,7 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ],
@@ -1122,6 +1127,7 @@
       }
     }
   ],
+  "screen": "w3Sign",
   "nav": [
     [
       "ED Navigator",
@@ -1154,6 +1160,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

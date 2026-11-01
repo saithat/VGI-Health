@@ -956,8 +956,10 @@
       }
     }
   ],
+  "viewer": "Physician",
   "title": "ED Track Board",
   "side": [],
+  "screen": "w3TrackBoard",
   "nav": [
     [
       "ED Navigator",
@@ -986,6 +988,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

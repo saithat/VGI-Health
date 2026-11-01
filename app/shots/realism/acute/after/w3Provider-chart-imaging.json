@@ -57,6 +57,7 @@
       "Not recorded"
     ]
   ],
+  "fieldSources": [],
   "modal": null,
   "nav": [
     [
@@ -85,6 +86,7 @@
       ]
     ]
   ],
+  "screen": "w3Provider",
   "side": [
     {
       "info": {
@@ -281,7 +283,7 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ]
@@ -289,6 +291,7 @@
     }
   ],
   "title": "ED Provider Note",
+  "viewer": "Physician",
   "workspace": [
     {
       "field": {
@@ -787,16 +790,37 @@
             }
           },
           {
-            "field": {
-              "comp": "w3Provider.medRecDecision",
-              "humanOnly": false,
-              "kind": "code",
-              "label": "Medication reconciliation decision",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Provider.medRecDecision",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Medication reconciliation decision",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "continue",
+                  "label": "Continue"
+                },
+                {
+                  "code": "stop",
+                  "label": "Stop"
+                },
+                {
+                  "code": "modify",
+                  "label": "Modify"
+                }
+              ]
             }
           }
         ],
@@ -808,29 +832,151 @@
       "section": {
         "children": [
           {
-            "field": {
-              "comp": "w3Provider.claimDiagnosis",
-              "humanOnly": false,
-              "kind": "code",
-              "label": "Encounter diagnosis (linked ICD-10)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Provider.claimDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Encounter diagnosis (linked ICD-10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
             }
           },
           {
-            "field": {
-              "comp": "w3Provider.levelOfService",
-              "humanOnly": false,
-              "kind": "code",
-              "label": "Level of service",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Provider.levelOfService",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Level of service",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "99202",
+                  "label": "99202 — New patient office visit"
+                },
+                {
+                  "code": "99203",
+                  "label": "99203 — New patient office visit"
+                },
+                {
+                  "code": "99204",
+                  "label": "99204 — New patient office visit"
+                },
+                {
+                  "code": "99205",
+                  "label": "99205 — New patient office visit"
+                },
+                {
+                  "code": "99212",
+                  "label": "99212 — Established patient office visit"
+                },
+                {
+                  "code": "99213",
+                  "label": "99213 — Established patient office visit"
+                },
+                {
+                  "code": "99214",
+                  "label": "99214 — Established patient office visit"
+                },
+                {
+                  "code": "99215",
+                  "label": "99215 — Established patient office visit"
+                }
+              ]
             }
           }
         ],

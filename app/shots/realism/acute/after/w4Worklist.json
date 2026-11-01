@@ -945,8 +945,10 @@
       }
     }
   ],
+  "viewer": "Registered nurse",
   "title": "Unit Census & MAR",
   "side": [],
+  "screen": "w4Worklist",
   "nav": [
     [
       "Nursing Navigator",
@@ -967,6 +969,7 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [],
   "banner": [
     [
       "Patient",

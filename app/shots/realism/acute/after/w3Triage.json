@@ -167,16 +167,69 @@
             }
           },
           {
-            "field": {
-              "value": null,
-              "unit": null,
-              "required": false,
-              "provenance": null,
-              "pendingConfirm": false,
-              "label": "Pain (0–10)",
-              "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
-              "humanOnly": true,
-              "comp": "w3Triage.painScore"
+            "valueSet": {
+              "options": [
+                {
+                  "label": "0",
+                  "code": "0"
+                },
+                {
+                  "label": "1",
+                  "code": "1"
+                },
+                {
+                  "label": "2",
+                  "code": "2"
+                },
+                {
+                  "label": "3",
+                  "code": "3"
+                },
+                {
+                  "label": "4",
+                  "code": "4"
+                },
+                {
+                  "label": "5",
+                  "code": "5"
+                },
+                {
+                  "label": "6",
+                  "code": "6"
+                },
+                {
+                  "label": "7",
+                  "code": "7"
+                },
+                {
+                  "label": "8",
+                  "code": "8"
+                },
+                {
+                  "label": "9",
+                  "code": "9"
+                },
+                {
+                  "label": "10",
+                  "code": "10"
+                }
+              ],
+              "children": [
+                {
+                  "field": {
+                    "value": null,
+                    "unit": null,
+                    "required": false,
+                    "provenance": null,
+                    "pendingConfirm": false,
+                    "label": "Pain (0–10)",
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
+                    "humanOnly": true,
+                    "comp": "w3Triage.painScore"
+                  }
+                }
+              ],
+              "allowCustom": true
             }
           }
         ]
@@ -918,7 +971,14 @@
       }
     }
   ],
+  "viewer": "Physician",
   "title": "Triage summary",
+  "sourceLabels": [
+    [
+      "record:weightToday",
+      "From chart — Weight (kg)"
+    ]
+  ],
   "side": [
     {
       "info": {
@@ -1111,7 +1171,7 @@
           [
             [
               "Record",
-              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure panel with all children optional 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ],
@@ -1122,6 +1182,7 @@
       }
     }
   ],
+  "screen": "w3Triage",
   "nav": [
     [
       "ED Navigator",
@@ -1150,6 +1211,12 @@
     ]
   ],
   "modal": null,
+  "fieldSources": [
+    [
+      "w3Triage.weight",
+      "Source: Chart weight recorded today · chart as of 2026-11-02"
+    ]
+  ],
   "banner": [
     [
       "Patient",

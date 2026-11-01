@@ -32,9 +32,16 @@ for (const route of [
       const selected = roleScreens.find(([role]) => role === persona);
       if (!selected) throw new Error(`No contrast screen for ${persona}`);
       const [, entry, destination] = selected;
-      await page
-        .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
-        .click();
+      const opener = page.locator(
+        `[data-comp-id="home.work.${entry}"][data-event]`,
+      );
+      if (await opener.count()) await opener.click();
+      else
+        await expect(
+          page.locator(
+            `button[data-comp-id="${entry}.nav.${destination}"][data-event]`,
+          ),
+        ).toBeVisible();
       await page
         .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
         .click();
