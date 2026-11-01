@@ -26,7 +26,7 @@ for (const persona of ["P1", "P2", "P3", "P4", "P5"])
     const folder = `shots/final/epic-${phase}`;
     mkdirSync(folder, { recursive: true });
     if (phase === "after") {
-      const ui = await page.evaluate(() => window.__buttonAuditSession!.snapshot().ui);
+      const ui = await page.evaluate(() => window.__buttonAuditSession?.snapshot().ui);
       writeFileSync(`${folder}/${persona}-summary.ui.json`, JSON.stringify(ui));
     }
     await page.screenshot({
