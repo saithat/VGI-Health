@@ -50,7 +50,7 @@ describe('validators vs Lean-written samples', () => {
   });
 });
 
-it.each(['v1', 'v1.1', 'v2'])('preserves the entire active %s spec, including dose and signing policies', release => {
+it.each(['v1', 'v2', 'v3'])('preserves the entire active %s spec, including dose and signing policies', release => {
   const spec = JSON.parse(readFileSync(new URL(`../../releases/${release}/spec.json`, import.meta.url), 'utf8'));
   same(specSchema.parse(spec), spec);
   expect(spec.entries.some((r: { allowed?: string[] }) => r.allowed?.includes('0'))).toBe(true);

@@ -760,7 +760,7 @@ export type Action =
   | { markReviewed: { info: InfoId } }
   /** Starts a new order line. */
   | "newOrderLine"
-  /** Requests prior authorization for the current order line (release v1.1). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
+  /** Requests prior authorization for the current order line (release v2). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
   | "requestPriorAuth";
 
 /**
@@ -804,7 +804,7 @@ export type Kind =
   /** A button that runs a macro. */
   | { macro: { id: MacroId } }
   | { search: { scope: string } }
-  /** Prior-authorization status of the current order line (release v1.1; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
+  /** Prior-authorization status of the current order line (release v2; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
   | { priorAuth: { info: InfoId } };
 
 /**

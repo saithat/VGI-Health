@@ -1,5 +1,5 @@
 import Ehr.Canonical.Sanity
-import Ehr.Specs.V2
+import Ehr.Specs.V3
 namespace Ehr.Canonical
 
 /-- Optional prior-auth status/request controls in shared medication composers.
@@ -27,10 +27,10 @@ def withServicePriorAuth (p : Program) (id : ScreenId) : Program := p.updateScre
        (parent := some "servicePriorAuth")]
 
 /-- Canonical optional-feature release. No previous required field is moved. -/
-def canonicalV1_1 : Program :=
+def canonicalV2 : Program :=
   { ["w1Labs", "w6PreOp"].foldl withServicePriorAuth
       (["w1Orders", "w3Orders", "w5Orders", "w6Orders"].foldl withPriorAuth canonicalV1) with
-    version := 2, specVersion := "v1.1" }
+    version := 2, specVersion := "v2" }
 
 /-- One coded stewardship field, bound to the same slot as the drug. -/
 def indicationField (s : ScreenId) (pre : String) (slot : Slot) : Component :=
@@ -75,10 +75,10 @@ def withAntibioticDefaults (p : Program) : Program :=
             | none => [st]
           | _ => [st] } }
 
-/-- v2: antibiotic pickers in composers and all set rows, a sign-screen summary
+/-- v3: antibiotic pickers in composers and all set rows, a sign-screen summary
 column, and an always-open MAR indication row. These are additive changes. -/
-def canonicalV2 : Program :=
-  let fields := withAntibioticDefaults (withAntibioticFields canonicalV1_1)
+def canonicalV3 : Program :=
+  let fields := withAntibioticDefaults (withAntibioticFields canonicalV2)
   let signing := fields.screens.filter fun s => s.components.any fun c => match c.kind with
     | .button (.commit k) => k == "signOrders" || Specs.V1.issuanceCommits.contains k
     | _ => false
@@ -88,13 +88,13 @@ def canonicalV2 : Program :=
       [table s.id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
   { summaries.updateScreen "w4Admin" (fun s => s.insertAfter "w4Admin.dose"
       [panel s.id "antibioticIndication" "abxIndication" "Antibiotic indication"]) with
-    version := 3, specVersion := "v2" }
+    version := 3, specVersion := "v3" }
 
-#guard canonicalV1.inCatalog Specs.V1_1.specV1_1
-#guard canonicalV1_1.inCatalog Specs.V1_1.specV1_1
-#guard !canonicalV1_1.inCatalog Specs.V1.specV1
-#guard referencesValid Specs.V1_1.specV1_1 canonicalV1_1
+#guard canonicalV1.inCatalog Specs.V2.specV2
+#guard canonicalV2.inCatalog Specs.V2.specV2
+#guard !canonicalV2.inCatalog Specs.V1.specV1
 #guard referencesValid Specs.V2.specV2 canonicalV2
-#guard macroTargetsValid canonicalV2
-#guard Specs.V1.allDistinct (components canonicalV2 |>.map (·.id))
+#guard referencesValid Specs.V3.specV3 canonicalV3
+#guard macroTargetsValid canonicalV3
+#guard Specs.V1.allDistinct (components canonicalV3 |>.map (·.id))
 end Ehr.Canonical

@@ -1500,7 +1500,7 @@ export const sampleDay: DaySchedule = {"tasks":
  "load": "normal",
  "day": 1};
 
-export const tinySpecV1_1: Spec = {"version": "tiny-1.1",
+export const tinySpecV2: Spec = {"version": "tiny-2",
  "reviews":
  [{"when": "always",
    "mode":
@@ -1626,9 +1626,9 @@ export const tinySpecV1_1: Spec = {"version": "tiny-1.1",
    "cond": "careGap",
    "commit": "signOrders"}]};
 
-export const tinyProgramV1_1: Program = {"version": 2,
+export const tinyProgramV2: Program = {"version": 2,
  "start": "rooming",
- "specVersion": "tiny-1.1",
+ "specVersion": "tiny-2",
  "screens":
  [{"workflow": "W1",
    "title": "Rooming",

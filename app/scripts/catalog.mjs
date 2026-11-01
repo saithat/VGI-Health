@@ -1,3 +1,4 @@
+import { releaseLabel, historicalReleaseId } from "../../scripts/historical-releases.mjs";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
@@ -51,11 +52,12 @@ export async function buildCatalog() {
     const program = await readJson(path);
     if (!Array.isArray(program.screens) || typeof program.start !== "string")
       continue;
-    const release = program.specVersion ?? "v1";
+    const recordedRelease = program.specVersion ?? "v1";
     const bad = /^programs\/bad\/(\d+)/.exec(path);
-    const recorded = /^runs\/(.+)\/programs\/(P[1-5])\/v(\d+)\.json$/.exec(
+    const recorded = /^runs\/([^/]+)\/(?:programs\/)?(P[1-5])\/v(\d+)\.json$/.exec(
       path,
     );
+    const release = path.startsWith("programs/benchmarks/releases/") ? historicalReleaseId(recordedRelease) : releaseLabel(recordedRelease, recorded?.[1] ?? "");
     const persona =
       recorded?.[2] ??
       /\/(P[1-5])\.json$/.exec(path)?.[1] ??

@@ -1,3 +1,4 @@
+import { archivedReleaseEventId } from "../../scripts/historical-releases.mjs";
 /**
  * The living world: an initial state (day 0) and a deterministic daily
  * transition. Day d is a pure function of (seed, d, state of day d-1): the
@@ -227,7 +228,10 @@ export interface DayOutput {
 /** Advance the world one day. `prev` is not modified. */
 export function advanceDay(prev: WorldState, pop: PopIndex): DayOutput {
   const day = prev.day + 1;
-  const prevStateHash = hashHex(stableStringify(prev));
+  // Release display names must not perturb the clinical scenario seed.
+  const seedState = { ...prev, context: { ...prev.context,
+    scriptedEvents: prev.context.scriptedEvents.map(archivedReleaseEventId) } };
+  const prevStateHash = hashHex(stableStringify(seedState));
   const daySeed = hashHex(`${prev.seed}|${day}|${prevStateHash}`);
   const ctx = computeContext(prev.seed, day, daySeed);
   const state: WorldState = { ...structuredClone(prev), day, date: dateOf(day), daySeed, prevStateHash, context: ctx, today: emptyToday() };

@@ -87,14 +87,14 @@ function baseSpec(): Spec {
 export function fakeSpec(version: string): Spec {
   const spec = baseSpec();
   if (version === 'v1') return spec;
-  // v1.1: optional prior-auth feature, new component kind, no new requirements.
-  spec.version = 'v1.1';
+  // v2: optional prior-auth feature, new component kind, no new requirements.
+  spec.version = 'v2';
   spec.infos.push({ id: 'priorAuth', label: 'Prior-authorization status', version: '' });
   spec.design.catalog.push('priorAuthStatus');
-  if (version === 'v1.1') return spec;
-  if (version !== 'v2') throw new Error(`fake spec: unknown version ${version}`);
-  // v2: antibiotic indication required and shown to nurses.
-  spec.version = 'v2';
+  if (version === 'v2') return spec;
+  if (version !== 'v3') throw new Error(`fake spec: unknown version ${version}`);
+  // v3: antibiotic indication required and shown to nurses.
+  spec.version = 'v3';
   spec.elements.push({ id: 'abxIndication', label: 'Antibiotic indication', kind: { coded: { valueSet: 'abx-indications' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.reasonCode' });
   spec.infos.push({ id: 'abxIndication', label: 'Antibiotic indication', version: '' });
   spec.entries.push({ commit: 'signOrders', element: 'abxIndication', when: { orderClass: { cls: 'antibiotic' } }, perOrderLine: true });
@@ -261,11 +261,11 @@ function addTo(program: Program, screenId: string, comps: Component[], before?: 
 export function fakeCanonical(version: string): Program {
   const p = canonicalV1();
   if (version === 'v1') return p;
-  p.specVersion = 'v1.1';
+  p.specVersion = 'v2';
   p.version = 1;
   addTo(p, 'w1-orders', [c('w1-priorauth', { priorAuthStatus: { scope: 'imaging,specialtyMed' } }, { label: 'Prior authorization', tag: 'priorAuthPanel' })], 'w1-go-sign');
-  if (version === 'v1.1') return p;
-  p.specVersion = 'v2';
+  if (version === 'v2') return p;
+  p.specVersion = 'v3';
   p.version = 2;
   const ind = (id: string) => field(id, 'abxIndication', { kind: { field: { element: 'abxIndication', slot: 'current', prefill: 'none' } } });
   addTo(p, 'w1-orders', [ind('w1-indication')], 'w1-dup');
@@ -277,14 +277,14 @@ export function fakeCanonical(version: string): Program {
 }
 
 export const FAKE_RELEASE_NOTES: Record<string, string> = {
-  'v1.1': [
-    '# Release v1.1: Prior-authorization status (FAKE fixture)',
+  'v2': [
+    '# Release v2: Prior-authorization status (FAKE fixture)',
     'R1.1-1: New component kind `priorAuthStatus` shows payer prior-auth status for imaging and specialty meds.',
     'R1.1-2: A "request prior auth" action writes only a ServiceRequest/Task.',
     'R1.1-3: Optional in the spec; no new entry or review requirements.',
   ].join('\n'),
-  v2: [
-    '# Release v2: Antibiotic indication required (FAKE fixture)',
+  v3: [
+    '# Release v3: Antibiotic indication required (FAKE fixture)',
     'R2-1: Order composer: a required Indication picker for antibiotic orders (hard stop "Indication required").',
     'R2-2: Sign-orders screen: an Indication column in the order summary.',
     'R2-3: MAR administration panel: an Indication row next to the dose for antibiotics (shown on commit; no receipt).',

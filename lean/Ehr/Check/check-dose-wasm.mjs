@@ -21,7 +21,7 @@ function fields(value) {
   return [...(value.field ? [value.field] : []), ...Object.values(value).flatMap(fields)];
 }
 const results = [];
-for (const release of ['v1', 'v1.1', 'v2']) {
+for (const release of ['v1', 'v2', 'v3']) {
   const input = { spec: read(`releases/${release}/spec.json`),
     program: read(`releases/${release}/personas/P1.json`), facts,
     user: { id: 'P1', role: 'physician' } };

@@ -1,69 +1,74 @@
-import Ehr.Specs.V1_1
+import Ehr.Specs.V1
+import Ehr.Specs.Extends
 namespace Ehr.Specs.V2
-open V1 V1_1
+open V1
 
-/-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
-Confirmed coded indication for each antibiotic order. Stewardship programs
-are required by 42 CFR 482.42(b) and CA H&S 1288.85. A per-order indication
-is this hospital's hypothetical policy, modeled on CDC Core Elements (2019),
-not a statutory per-order mandate. Surgeons prescribe prophylaxis too.
-See docs/regulations.md §5.1. -/
-def abxIndication : ElementSpec where
-  id := "abxIndication"
-  label := "Antibiotic indication"
-  kind := .coded "abx-indications"
+/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
+Optional human prior-auth request; no entry or review requirement uses it.
+CMS-0057-F (89 FR 8758) covers payer APIs for medical items/services from 2027,
+not drugs. Medication prior auth anticipates proposed CMS-0062-P. The UI and
+request representation are our design; see docs/regulations.md §5.2. -/
+def priorAuthRequest : ElementSpec where
+  id := "priorAuthRequest"
+  label := "Request prior authorization"
+  kind := .flag
+  enteredBy := prescribers
+  prefill := .never
+  friction := .compliance
+  fhirTarget := "ServiceRequest.extension.priorAuthRequest"
+
+/-- Product design property.
+Optional status display. The actual payer API is outside this demo.
+45 CFR 170.315(g)(31)–(33) are matching EHR certification criteria, not a law
+requiring this panel to be shown (docs/regulations.md §5.2). -/
+def priorAuthStatus : InfoSpec :=
+  { id := "priorAuthStatus", label := "Prior authorization status", version := "" }
+
+/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
+Optional imaging/procedure classification. This creates a service slot,
+not a medication line; the core keeps its codes out of drug alerts. -/
+def orderKind : ElementSpec where
+  id := "orderKind"
+  label := "Service order kind (imaging / procedure)"
+  kind := .coded "order-kind"
   enteredBy := prescribers
   prefill := .defaultConfirm
   friction := .compliance
-  fhirTarget := "MedicationRequest.reasonCode"
+  fhirTarget := "ServiceRequest.category"
 
-/-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
-Coded stewardship indications offered by the canonical picker. The core
-currently validates nonempty codes; terminology membership is not proven. -/
-def abxIndicationCodes : List String :=
-  ["respiratory-infection", "urinary-infection", "skin-infection", "sepsis", "surgical-prophylaxis", "other-infection"]
-
-/-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
-The active antibiotic's indication beside the MAR dose. Showing it before
-administration, with no receipt, is our own additional policy (no source found
-requiring it); docs/regulations.md §3.2 R7 and §5.1. -/
-def abxIndicationInfo : InfoSpec :=
-  { id := "abxIndication", label := "Antibiotic indication", version := "" }
-
-/-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
-R2-1/R2-4: every antibiotic line needs its own confirmed indication on
-ordinary signing, including pre-op encounters. -/
-def antibioticEntries : List EntryReq :=
-  [requiresPerLine signOrders abxIndication (.orderClass "antibiotic")] ++
-  issuanceCommits.map (fun c =>
-    { commit := c, element := "abxIndication", when := .orderClass "antibiotic", perOrderLine := true })
-
-/-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
-R2-3: nurses see the antibiotic indication while administering. A prior
-receipt cannot replace its display. This is hospital policy, not law. -/
-def antibioticReviews : List ReviewReq :=
-  [mustShow administerMed abxIndicationInfo (.medClass "antibiotic")]
+/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
+Optional service code for imaging/procedures covered by the final payer
+prior-auth rule. No prescription requirement is attached to this element. -/
+def orderCode : ElementSpec where
+  id := "orderCode"
+  label := "Imaging / procedure code"
+  kind := .coded "service-code"
+  enteredBy := prescribers
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "ServiceRequest.code"
 
 /-- Product design property.
-Release v2 preserves all v1.1 rules and adds stewardship obligations. -/
+v2 adds only optional content and its catalog tag; old requirements stay exact. -/
 def specV2 : Spec :=
-  { specV1_1 with
+  { specV1 with
     version := "v2"
-    elements := specV1_1.elements ++ [abxIndication]
-    infos := specV1_1.infos ++ [abxIndicationInfo]
-    entries := specV1_1.entries ++ antibioticEntries
-    reviews := specV1_1.reviews ++ antibioticReviews }
+    elements := specV1.elements ++ [priorAuthRequest, orderKind, orderCode]
+    infos := specV1.infos ++ [priorAuthStatus]
+    design := { specV1.design with catalog := specV1.design.catalog ++ ["priorAuth"] } }
 
--- The finite prefix check traverses the hospital element declarations and needs more
--- elaborator recursion depth; the proof still uses kernel-checked decide.
+-- This finite prefix check traverses the full hospital declaration list.
 -- The complete catalog adds inherited artifact contracts to this finite check.
 set_option maxRecDepth 16384 in
 set_option maxHeartbeats 2000000 in
 /-- Product design property.
-Every v1.1 rule remains unchanged in v2. New obligations still need checking. -/
-theorem specV2_extends_specV1_1 : specV2.Extends specV1_1 := by decide
-#print axioms specV2_extends_specV1_1
-example : specV2.Extends specV1_1 := specV2_extends_specV1_1
+Every v1 rule is preserved by the optional-feature release. -/
+theorem specV2_extends_specV1 : specV2.Extends specV1 := by decide
+#print axioms specV2_extends_specV1
+
+-- Concrete, satisfiable extension, with no added signing or review obligations.
+example : specV2.Extends specV1 := specV2_extends_specV1
+#guard specV2.entries == specV1.entries && specV2.reviews == specV1.reviews
 #guard allDistinct (specV2.elements.map (·.id))
 #guard allDistinct (specV2.infos.map (·.id))
 end Ehr.Specs.V2

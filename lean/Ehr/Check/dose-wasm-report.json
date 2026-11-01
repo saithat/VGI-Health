@@ -10,7 +10,7 @@
       "changedUnitRequiresReentry": true
     },
     {
-      "release": "v1.1",
+      "release": "v2",
       "nativeMatchesWasm": true,
       "wrongUnitRefused": true,
       "heparinUnit": "units",
@@ -19,7 +19,7 @@
       "changedUnitRequiresReentry": true
     },
     {
-      "release": "v2",
+      "release": "v3",
       "nativeMatchesWasm": true,
       "wrongUnitRefused": true,
       "heparinUnit": "units",

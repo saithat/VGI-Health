@@ -98,7 +98,7 @@ FHIR records; the app does not invent appointments. Search patients, select the
 encounter and optional Task/MAR order/available admission bed, then **Open canonical
 EHR**. **Start new encounter** creates a real encounter for the selected patient.
 LIVE uses a recorded deployed persona version when available, otherwise
-the canonical v2 persona projection. The Lean WASM interpreter owns every
+the canonical v3 persona projection. The Lean WASM interpreter owns every
 clinical screen, guard and alert.
 
 The worklist date defaults to the local calendar date. For the seeded simulation,

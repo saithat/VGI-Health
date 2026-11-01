@@ -8,7 +8,7 @@ def params : PersonaParams :=
     reviewsAllergiesEarly := true, scansSidebar := true, backtrackRate := 0,
     searchWhenBuried := false, overrideRate := 0 }
 def task : Task :=
-  { id := "np-preop", day := 1, persona := "P4", workflow := .W6,
+  { id := "np-preop", day := 1, persona := "P4", workflow := .W5,
     patientId := preopChild.patientId, startMin := 0, interruptions := 0,
     choices := { w6Step? := some .preop, orders := [{ drug := "acetaminophen", doseTenths := 1000, unit := .mg, route := "oral", freq := "once" }] } }
 def day := simulate Specs.V1.specV1 p4 params

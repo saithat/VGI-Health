@@ -81,7 +81,7 @@ for r in selected:
                    and 'waivedBy' not in x for x in sp['reviews']), (r['id'], review)
 for r in rules:
     assert r.get('encodedIn') or r.get('encodingSkippedReason'), r['id']
-for version in ('v1.1', 'v2'):
+for version in ('v2', 'v3'):
     release = json.loads((ROOT / f'releases/{version}/spec.json').read_text())
     assert release['displays'] == sp['displays'], version
     for key in ('elements', 'infos', 'entries', 'reviews', 'alerts', 'commits'):

@@ -202,7 +202,7 @@ export function fakeCheck(i: CheckInput): Verdict {
     }
   }
 
-  // capturesAllOnce: v2 abx indication captured on every sign-orders workflow; no element asked twice on a workflow.
+  // capturesAllOnce: v3 abx indication captured on every sign-orders workflow; no element asked twice on a workflow.
   for (const e of spec.entries) {
     if (e.element !== 'abxIndication') continue;
     for (const s of p.screens) {
@@ -266,7 +266,7 @@ function commitClicks(s: Screen): Event[] {
 function reviewApplies(when: Spec['reviews'][number]['when'], s: Screen, spec: Spec, commit: string): boolean {
   if (when === 'always') return true;
   if (when === 'abnormalResult') return commit === 'ackResult';
-  if (isRecord(when) && 'medClass' in when) return spec.version === 'v2' && s.workflow === 'W4';
+  if (isRecord(when) && 'medClass' in when) return spec.version === 'v3' && s.workflow === 'W4';
   return false;
 }
 

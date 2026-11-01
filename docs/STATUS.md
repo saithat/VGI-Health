@@ -34,11 +34,73 @@ A later world may select from this cohort's index/flags/persona fits after its
 loader supports these FHIR types and text-only codes; do not modify world 2 or
 infer active orders/admissions from historical narrative.
 
+## Role pre-set views (owner decision 2026-10-31)
+
+The vendor master keeps all screens. `Core/Navigation.lean` defines each persona's
+pre-set workflows and public activity/navigator names; `forPersona` removes other
+screens, broken links and unusable macros, then applies role permissions.
+P1 has Schedule, Results and Rx Requests (16 screens); P2 ED Track Board (8);
+P3 Unit Census & MAR (6); P4 Schedule, Results and Rx Requests (13); P5 OR Schedule,
+Consults and Results (22). P4 keeps results and refill work because the NP role
+has those commits and both are routine pediatric follow-up activities. Its actual
+world-2 tasks remain W5. P5 Consults opens the surgical-clinic encounter (W1);
+the OR navigator also reaches the inpatient consult section (W6).
+
+Internal W1–W7 IDs remain unchanged. D5 groups the overview by public activity,
+with unique navigator sections, the same twelve-item limits, and no orphans.
+The actual sidebar stays the open encounter's navigator. A default Lean test
+rejects workflow display names in all fifteen projections' visible labels.
+
+Completion and passive-alert preservation compare against the owner's fixed
+pre-set view of the vendor reference, never a scope inferred from candidate
+screens. Removing an expected activity still fails certification. All safety
+rules remain active. Physician pre-op attestations remain available, conditionally,
+on the retained signing screen; an NP still needs the human attending route.
+The three shared masters remain references; all fifteen role views certify.
+
+Default build after merging the chart-note lane: 44.36 seconds. The fifteen
+world-2 simulations on days 1, 4 and 7 complete all 407 tasks; the smoke script
+also verifies each task belongs to its persona's pre-set view. Evidence:
+`lean/Ehr/Check/preset-sim-report.json`. No simulation policy uses the activity labels.
+
+## Integer release names (owner decision 2026-10-31)
+
+The active releases are **v1**, **v2** (prior authorization, day 4), and **v3**
+(antibiotic indication, day 7). Lean modules, exports, clients and release-day
+configuration use these names. All fifteen role views certify; the three shared
+masters remain vendor references. All eighteen core bad programs are rejected.
+
+`scripts/historical-releases.mjs` maps legacy IDs only at archive readers:
+`v1.1` becomes `v2`, and legacy `v2` becomes `v3`. Current `v2` is never remapped.
+The run1 recordings, world 1, frozen benchmark releases and full-profile clinical
+fixture retain their original contents. Recorded program/spec paths and UI
+iteration numbers stay intact. Replay verification checks all 424 tasks, 14,658
+events and three baselines with zero mismatches. The complexity report changes
+release labels and provenance while preserving its measurements.
+
+World 2 was regenerated with the new release-event names. Its seed calculation
+normalizes those metadata names to their original spelling, preserving every
+clinical task byte. All 1,284 tasks across fifty schedules complete; the day
+1/4/7 subset completes 407/407. Every task's internal workflow belongs to its
+persona's pre-set view.
+
+Fresh agent runs and release fallbacks load the certified persona view, using
+the shared master as the checker reference. The persona ID preserves that view
+when its owner is an authenticated user UUID; candidate patches cannot change
+ID, owner or role. The real check/deploy/render adapter passes spec file paths.
+
+Verification: default build, `lake check`, Comparator and all 48 audited theorems
+pass. App tests: 161; agent tests: 41; world tests: 93. App build/lint and agent/
+world typecheck/lint pass. Eight desktop/narrow browser checks and both
+trajectory-index tests pass. WASM was rebuilt and `make wasm-check` is clean.
+The final warm default build takes 0.12 seconds (the pre-set-view rebuild took
+44.36 seconds).
+
 ## Rule profile: core (temporary, owner decision 2026-10-31)
 
 Core keeps the hand-written workflows: CURES (including the seven-day procedure
 exemption), naloxone, EPCS details, Schedule II zero refills, VIS, the labeled
-hospital policies, v1.1 prior auth, v2 antibiotic indication, and all base alerts
+hospital policies, v2 prior auth, v3 antibiotic indication, and all base alerts
 (A1–A4). It also keeps **`denyRefill`**, the one catalog commit needed by W7
 refill-denial tasks, with its two Federal entry requirements and the existing
 base decision/reason inputs. `coreCatalogCommits` and `CorePlacements.placements`
@@ -51,10 +113,10 @@ expiry and pinned displays, are encoded and compiled but switched off.
 |---|---:|---:|---:|---:|---:|
 | v1 core | 124 | 11 | 82 | 21 | 15 |
 | v1 full | 284 | 95 | 870 | 486 | 77 |
-| v1.1 core | 127 | 11 | 82 | 21 | 15 |
-| v1.1 full | 287 | 95 | 870 | 486 | 77 |
-| v2 core | 128 | 11 | 93 | 22 | 15 |
-| v2 full | 288 | 95 | 881 | 487 | 77 |
+| v2 core | 127 | 11 | 82 | 21 | 15 |
+| v2 full | 287 | 95 | 870 | 486 | 77 |
+| v3 core | 128 | 11 | 93 | 22 | 15 |
+| v3 full | 288 | 95 | 881 | 487 | 77 |
 
 Restore by setting `ruleProfile := .full` in `lean/Ehr/Specs/Profile.lean`, then
 running `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake build EhrHeavy)`.
@@ -129,8 +191,8 @@ Earlier day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
 | v1 | 39 / 3 | 22 / 0 | 38 / 0 | 22 / 0 | 14 / 4 |
-| v1.1 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 | v2 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
+| v3 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 
 World 1 contains **15 pre-op tasks, all P5**, and none on day 1; P4 has none.
 The world-1 release mismatch and dose issues are recorded with their resolutions
@@ -140,7 +202,7 @@ Details and hashes: `lean/Ehr/Check/{certification-report,sim-smoke-report}.json
 ## Simulator: world revision 2 (2026-10-31)
 
 `runs/world/2` uses seed **1**, ten days and the same 174 Synthea fixtures as
-world 1. Service orders are omitted before the v1.1 release on day 4. A regression
+world 1. Service orders are omitted before the v2 release on day 4. A regression
 compares every task and world state with world 1: only those early service choices
 change; random draws, task IDs, timings, counts and all states remain identical.
 `world/releases.json` supplies release-day defaults to generator and agent.
@@ -182,13 +244,13 @@ Active-release validation (simulator seed **7**; completed / incomplete):
 | 1 | v1 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
 | 2 | v1 | 40/0 | 18/0 | 51/0 | 20/0 | 14/0 |
 | 3 | v1 | 35/0 | 18/0 | 44/0 | 19/0 | 19/0 |
-| 4 | v1.1 | 40/0 | 13/0 | 41/0 | 17/0 | 11/0 |
-| 5 | v1.1 | 23/0 | 20/0 | 37/0 | 19/0 | 17/0 |
-| 6 | v1.1 | 41/0 | 21/0 | 32/0 | 18/0 | 11/0 |
-| 7 | v2 | 40/0 | 18/0 | 54/0 | 17/0 | 14/0 |
-| 8 | v2 | 39/0 | 15/0 | 38/0 | 15/0 | 12/0 |
-| 9 | v2 | 39/0 | 12/0 | 44/0 | 12/0 | 11/0 |
-| 10 | v2 | 39/0 | 14/0 | 45/0 | 16/0 | 9/0 |
+| 4 | v2 | 40/0 | 13/0 | 41/0 | 17/0 | 11/0 |
+| 5 | v2 | 23/0 | 20/0 | 37/0 | 19/0 | 17/0 |
+| 6 | v2 | 41/0 | 21/0 | 32/0 | 18/0 | 11/0 |
+| 7 | v3 | 40/0 | 18/0 | 54/0 | 17/0 | 14/0 |
+| 8 | v3 | 39/0 | 15/0 | 38/0 | 15/0 | 12/0 |
+| 9 | v3 | 39/0 | 12/0 | 44/0 | 12/0 | 11/0 |
+| 10 | v3 | 39/0 | 14/0 | 45/0 | 16/0 | 9/0 |
 
 **1,284 / 1,284 complete; zero incomplete**, across all **50 schedules**.
 No task was dropped or rewritten. Day-1 determinism, effort floors and interruption
@@ -243,7 +305,7 @@ agent-loadable ten-day replay: all 174 Synthea patients, 1,284 tasks, 118 files,
 5,476,411 bytes. All 25 formulary entries match Lean. Supply/CURES exemptions,
 holds/refusals, pain, W6 steps and refill reasons use typed core fields;
 remaining clinical metadata uses structured FHIR observations. P1/P5 have
-imaging and procedure orders after v1.1. The albuterol 5 mg absolute cap and
+imaging and procedure orders after v2. The albuterol 5 mg absolute cap and
 Schedule II correspondence are resolved by `0454841`, superseding the earlier
 external follow-up. Last lane checks: Lean build (125 jobs), world build/lint
 and 92 tests, plus agent typecheck/lint and 31 tests, passed.
@@ -276,7 +338,7 @@ desktop/mobile dashboard smoke and a production static/offline smoke.
    `min-clicks`, `deploy` and `render-screens` commands. Confirm spec argument
    formats with their owning lanes; the assumed adapter uses module versions.
 4. **Generated types/validators.** Replace the remaining `MinClicksResult`,
-   v1.1 `FutureKind`/prior-auth and any needed Html mirrors when matching Lean
+   v2 `FutureKind`/prior-auth and any needed Html mirrors when matching Lean
    exports are available; replace handwritten zod validators if Lean emits
    them. Check the generated kind shape rather than assuming the fake's
    `{priorAuthStatus: {scope: …}}` is authoritative.
@@ -289,7 +351,7 @@ desktop/mobile dashboard smoke and a production static/offline smoke.
    under `runs/<run-id>/`, against the real checker, simulator, world and
    canonicals. Pre-record try-to-break-it for the exact demo request text:
    replay keys use persona + request hash. The fake world lacks imaging and
-   specialty orders, so it cannot demonstrate the P1 v1.1 surfacing story.
+   specialty orders, so it cannot demonstrate the P1 v2 surfacing story.
 7. **Verify seeded bad moves.** Confirm the `triageWeightLb` prefill is rejected
    as `UnitsRight`; preferably derive all three seeded patches by diffing the
    published bad programs against canonical. A passing seeded proposal must
@@ -346,9 +408,9 @@ and determinism checks below when upstream types or formulary values change.
 | Schemas | `src/schema.ts`, `src/lean-types.ts` | Candidate: an RFC 6902 patch plus id, summary, moveType, rationale, targets, predicted savings, `seeded`/`seededKind`. Patch paths may use `[id=…]` / `[tag=…]` selectors (and `[id=…]+` to insert after an element); they are resolved to plain indexes before each op runs. DecisionRecord covers every field in BRIEF §10 (details below). Lean formats use the **generated** `lean/generated/ehr-types.ts`, with hand-written zod validators typed `z.ZodType<Generated>` and round-trip tested against `ehr-samples.ts`. |
 | `ehr` adapter | `src/ehr.ts`, `src/fake/*` | Wraps `check`, `simulate`, `min-clicks`, `deploy`, `run-batch`, and `spec-export`, passing JSON through temp files and stdout. `EHR_FAKE=1` switches to a clearly labeled fake (structural heuristics plus a crude cost model) for tests. |
 | Nightly loop | `src/night.ts` | All 9 steps of BRIEF §9 (listed below). |
-| Modes | `src/modes.ts` | `surface-feature` (v1.1), `migrate` (v2), `try-to-break-it`. |
+| Modes | `src/modes.ts` | `surface-feature` (v2), `migrate` (v3), `try-to-break-it`. |
 | Tempting bad proposals | `src/seeded.ts` | Allergy list moved into an unopened tab, patient-ID re-entry pre-filled, weight pre-filled from a pound source. Built generically from program structure. One is injected per night only while that kind has not yet been rejected in the run (`--seed-policy until-each-rejected`, the default; also `every-night` and `none`). Injected candidates are labeled `seeded: true`. They are never eligible for deployment. If one ever passes the checker, the record is flagged `OWNER REVIEW`. |
-| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v1.1 day (Day 4), migrate before the v2 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, a test measurement is added from day night+2. |
+| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v2 day (Day 4), migrate before the v3 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, a test measurement is added from day night+2. |
 | Re-run one night | `src/adhoc.ts` | Rebuilds a night's state from a run directory and re-runs it into `<run>/adhoc/…`. For live demos. |
 | Tests | `test/*.test.ts` (31 tests, vitest, `EHR_FAKE=1`) | One fake night per persona gives a valid record (via the replay backend). Rejected candidates are logged with counterexamples. No validation or test data appears in any captured prompt. Also covered: release modes, try-to-break-it, the adapter contract (stub binary), validators against Lean samples, and JSON Patch. |
 
@@ -363,8 +425,8 @@ and determinism checks below when upstream types or formulary values change.
 9. **Record and deploy** with `ehr deploy`.
 
 #### Release modes (`src/modes.ts`)
-- **`surface-feature` (v1.1).** Re-checks the program against v1.1. The LLM decides, from this persona's own traces, whether and where to surface the panel. Candidates are checked, validated, and deployed. If the panel is not surfaced, the unchanged program is recertified under v1.1.
-- **`migrate` (v2).** Re-checks against v2. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is canonical v2 plus each earlier customization that still applies and passes; the user is flagged.
+- **`surface-feature` (v2).** Re-checks the program against v2. The LLM decides, from this persona's own traces, whether and where to surface the panel. Candidates are checked, validated, and deployed. If the panel is not surfaced, the unchanged program is recertified under v2.
+- **`migrate` (v3).** Re-checks against v3. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is canonical v3 plus each earlier customization that still applies and passes; the user is flagged.
 - **`try-to-break-it`.** The LLM implements a free-text request as one candidate. The loop runs check and returns the verdict and counterexample. Nothing is deployed.
 
 #### Decision record fields
@@ -376,7 +438,7 @@ night; persona; owner; mode; spec version; versions before and after; backend, m
 # full run (writes runs/<run-id>/{manifest.json,programs,certs,decisions,days,llm,summary.json})
 pnpm --filter agent run-days --days 10 --backend claude|codex|replay --world runs/world/<seed> \
      [--replay-from runs/<run-id>] [--personas P1,P3] [--seed-policy until-each-rejected|every-night|none] \
-     [--run-id ID] [--runs-root DIR] [--model M] [--v1.1-day 4] [--v2-day 7]
+     [--run-id ID] [--runs-root DIR] [--model M] [--v2-day 4] [--v2-day 7]
 
 # re-run one night of an existing run (mode from the calendar, or --mode nightly|surface-feature|migrate)
 pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend claude
@@ -407,7 +469,7 @@ The real CLI (`lean/Main.lean`) has `init`, `step`, `view`, `run-batch <file.jso
 | `ehr min-clicks --spec <ver> --program P.json --schedule DaySchedule.json --world <worldDir>` | stdout `{ "tasks": [{ "task", "workflow"?, "clicks", "keystrokes" }] }` (not generated yet; mirrored in `lean-types.ts`) |
 | `ehr deploy --spec <ver> --program P.json --prev PREV.json --canonical C.json --out <runDir>` | stdout `Certificate` (exit 0), or `Verdict` (exit 1) when refused (T4) |
 
-`--spec` takes a spec module version name: `v1`, `v1.1`, or `v2`. The spec is compiled into the checker and is never passed in as JSON.
+`--spec` takes a spec module version name: `v1`, `v2`, or `v3`. The spec is compiled into the checker and is never passed in as JSON.
 
 #### World and release inputs
 - **Property names** in verdicts follow `lean/Ehr/Props/Properties.lean` (`ReviewsBeforeCommit`, `HumanOnlyKept`, `UnitsRight`, `WithinBudgets`, …). `seeded.ts:rejectionKind` matches them case-insensitively to count the three required rejections.
@@ -421,8 +483,8 @@ The real CLI (`lean/Main.lean`) has `init`, `step`, `view`, `run-batch <file.jso
   - `releases/<ver>/spec.json` (or `ehr spec-export <ver>`)
   - `releases/<ver>/canonical.json` (v1 may instead be `programs/canonical/v0.json`)
   - `releases/<ver>/RELEASE_NOTES.md`
-  - `lean/Ehr/Specs/{V1,V1_1,V2}.lean`, whose text is given to the LLM as the spec diff
-- **v1.1 component kind.** The fake fixture uses `{"priorAuthStatus": {"scope": "…"}}`. Until the generated `Kind` union includes the real kind, unknown one-constructor kinds are accepted as `FutureKind`.
+  - `lean/Ehr/Specs/{V1,V2,V3}.lean`, whose text is given to the LLM as the spec diff
+- **v2 component kind.** The fake fixture uses `{"priorAuthStatus": {"scope": "…"}}`. Until the generated `Kind` union includes the real kind, unknown one-constructor kinds are accepted as `FutureKind`.
 
 Sample bundles for the screen check come from run-days `--fhir a.json,b.json`
 or `EHR_SAMPLE_FHIR`. With no samples, real screen checking fails closed,
@@ -459,7 +521,7 @@ outcome `screen-check-failed`.
 ### Prior live verification (fake EHR, real models)
 
 - **Claude, nightly** (P1, night 1). Five schema-valid candidates, all patches applied. One seeded rejection was logged. The choice rationale weighed the train estimates against the stability budget and how predictable each change was. The change was deployed. Predicted 13 s/day saved; measured 4.8 s, so the prediction is recorded as not held.
-- **Claude, release nights** (P1 and P3). v1.1 was not surfaced for either, with persona-specific reasons. v2 migrations certified on the first attempt, mapped to R2-1…R2-4.
+- **Claude, release nights** (P1 and P3). v2 was not surfaced for either, with persona-specific reasons. v3 migrations certified on the first attempt, mapped to R2-1…R2-4.
 - **Codex,** `try-to-break-it` ("hide the allergy box"): implemented, rejected with `ReviewsBeforeCommit` plus a click path.
 - **Replay** of the Claude run with `ANTHROPIC_API_KEY` unset: identical decisions, `promptMatched: true`.
 
@@ -495,7 +557,7 @@ including flu shots; OR days 2–4 cases. P3 shift census averages 9.1 (7–11,
 with one urgent surgical surge above the routine cap of 10). Excess pediatric
 rechecks roll forward explicitly; flu-shot visits reserve capacity.
 
-After the day-4 v1.1 release, the replay has 8 P1 imaging + 8 P1 procedure
+After the day-4 v2 release, the replay has 8 P1 imaging + 8 P1 procedure
 orders, and 7 P5 imaging + 5 P5 procedure orders. Service codes are internal
 demo catalog slugs (not claimed to be CPT codes). P1 covers MRI/therapy and
 screening referrals; P5 covers surgical imaging and booked procedures.
@@ -712,7 +774,7 @@ After each real `run-days` run, run this one-line postprocessing step from the
 repository root (replace the id): `pnpm trajectories --run run1-P3`.
 The indexer stays separate from `run-days` because it needs a matching native
 Lean build in addition to the simulator binary. Build only with
-`cd lean; ulimit -v 8000000; LEAN_NUM_THREADS=4 lake build ehr`.
+`cd lean; ulimit -v 8000000; LEAN_NUM_THREADS=6 lake build ehr`.
 `EHR_LEAN_DIR` and `EHR_BIN` can select an existing matching build.
 
 `runs/<id>/trajectories/index.json` contains every task, metrics and recorded
@@ -743,9 +805,9 @@ to preserve prior receipts/resources, then selected task slices are exported
 and verified. Regenerating without `--baseline` removes comparisons from the index.
 
 To recheck committed contexts using only Node and WASM, run
-`pnpm trajectories --run run1-P3 --verify-only`. This also checks baselines and
-updates `verification.json`; its mode explicitly identifies the prior native
-verification as saved evidence rather than a newly executed native check.
+`pnpm trajectories --run run1-P3 --verify-only`. This also checks baselines without writing the archive. Its output identifies
+the prior native verification as saved evidence rather than a newly executed
+native check.
 The native rebuild attempted on resume failed with a thread-creation error
 under the required virtual-memory limit; the fresh all-task check uses WASM.
 

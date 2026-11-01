@@ -58,9 +58,9 @@ export async function verifySavedTrajectories(runId) {
     baselineTasks: index.tasks.filter(t => t.baseline).length, baselineEvents, baselineWasmEventsVerified: baselineVerified,
     mismatches, provenance: { ...previous.provenance, wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')) },
   };
-  await write(path.join(output, 'verification.json'), verification);
+  // --verify-only must not rewrite immutable historical recordings.
   console.log(`${runId}: ${index.tasks.length} tasks / ${verified} events + ${verification.baselineTasks} baselines / ${baselineVerified} events; ${mismatches.length} mismatches`);
-  if (mismatches.length) throw new Error(`Determinism failed; see ${relative(path.join(output, 'verification.json'))}`);
+  if (mismatches.length) throw new Error(`Determinism failed: ${JSON.stringify(mismatches[0])}`);
   return verification;
 }
 export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
@@ -109,9 +109,9 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
         const { spec, file: specPath } = await specFor(program.specVersion);
         const nativePath = path.join(work, 'contexts.json');
         const extract = async (scheduleFile, programFile, specFile, recordingFile) => {
-          await exec('lean', ['-j4', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
+          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
             cwd: root, timeout: 180000, maxBuffer: 4e6,
-            env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
+            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
           });
           return read(nativePath);
         };
@@ -196,7 +196,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     };
     await write(path.join(output, 'verification.json'), verification);
     console.log(`${runId}: ${tasks.length} tasks, ${eventCount} events, ${mismatches.length} mismatches`);
-    if (mismatches.length) throw new Error(`Determinism failed; see ${relative(path.join(output, 'verification.json'))}`);
+    if (mismatches.length) throw new Error(`Determinism failed: ${JSON.stringify(mismatches[0])}`);
     return { index, verification };
   } finally { await rm(work, { recursive: true, force: true }); }
 }

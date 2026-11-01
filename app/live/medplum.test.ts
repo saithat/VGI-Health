@@ -20,7 +20,7 @@ import {
 } from "../src/data/medplum";
 import type { Event, Value } from "../../lean/generated/ehr-types";
 import { mapCommit, type CommitInput } from "../src/data/commitMapper";
-import releaseSpec from "../../releases/v2/spec.json";
+import releaseSpec from "../../releases/v3/spec.json";
 
 const available = await backendAvailable();
 const json = async (path: string): Promise<unknown> =>
@@ -153,8 +153,8 @@ describe.skipIf(!available)(
     });
     it("P1 full W1: rooming, note, ICD-10, medication with refills, CPT, refetched facts and links", async () => {
       const interp = createWasmInterp(await loadEhrInterp());
-      const spec = await json("releases/v2/spec.json");
-      const program = await json("releases/v2/personas/P1.json");
+      const spec = await json("releases/v3/spec.json");
+      const program = await json("releases/v3/personas/P1.json");
       const session = await createLiveSession(
         interp,
         spec,
@@ -395,7 +395,7 @@ describe.skipIf(!available)(
         const session = await createLiveSession(
           createWasmInterp(await loadEhrInterp()),
           releaseSpec,
-          await json("releases/v2/personas/P2.json"),
+          await json("releases/v3/personas/P2.json"),
           await loadPatientBundle(patient.id ?? ""),
           p2,
           { patient, encounter: ed, bed },
@@ -561,8 +561,8 @@ describe.skipIf(!available)(
       const interp = createWasmInterp(await loadEhrInterp());
       const session = await createLiveSession(
         interp,
-        await json("releases/v2/spec.json"),
-        await json("releases/v2/personas/P1.json"),
+        await json("releases/v3/spec.json"),
+        await json("releases/v3/personas/P1.json"),
         await loadPatientBundle(patient.id ?? ""),
         user,
         { patient, encounter: e },
@@ -692,7 +692,7 @@ describe.skipIf(!available)(
     it("P2 admission, P3 administration, P5 discharge mapper transactions resolve real FHIR links", async () => {
       const spec = JSON.parse(
         await readFile(
-          new URL("../../releases/v2/spec.json", import.meta.url),
+          new URL("../../releases/v3/spec.json", import.meta.url),
           "utf8",
         ),
       );

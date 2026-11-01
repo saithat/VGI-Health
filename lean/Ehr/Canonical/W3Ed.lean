@@ -75,10 +75,15 @@ def provider : Screen :=
     components := frame s ++ [
       panel s "triage" "triageSummary" "Triage summary",
       field s "hpi" "hpi" "History of present illness",
+      field s "ros" "ros" "Review of systems",
+      field s "medRecDecision" "medRecDecision" "Medication reconciliation decision",
+      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
+      field s "levelOfService" "levelOfService" "Level of service",
       field s "exam" "exam" "Physical exam",
       field s "assessmentPlan" "assessmentPlan" "Medical decision making",
       table s "labs" "labResults" "Results",
       table s "imagingTable" "imaging" "Imaging",
+      commitBtn s "signNote" "Sign ED note",
       goto s "toSets" "w3OrderSets" "Order sets",
       goto s "toOrders" "w3Orders" "Single orders"
     ] }

@@ -27,7 +27,7 @@ for (const program of (await buildCatalog()).programs) {
     verdicts[program.path] = { status: "verdict not computed", sha256 };
     continue;
   }
-  const previousRelease = { "v1.1": "v1", v2: "v1.1" }[program.release];
+  const previousRelease = { "v2": "v1", v3: "v2" }[program.release];
   const previousPath = previousRelease && program.path.startsWith(`releases/${program.release}/personas/`)
     ? program.path.replace(`releases/${program.release}/`, `releases/${previousRelease}/`)
     : undefined;
