@@ -25,6 +25,9 @@ import {
 } from "../src/ehr/ui/types";
 import type {} from "../src/ehr/offline";
 
+// Each test renders one independent screen file in its own page.
+test.describe.configure({ mode: "parallel" });
+
 const supplied = z
   .array(z.string())
   .parse(JSON.parse(process.env.EHR_UI_FILES ?? "[]"));

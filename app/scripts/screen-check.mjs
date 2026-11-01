@@ -57,7 +57,7 @@ const result = spawnSync(
     resolve(appDir, "node_modules/@playwright/test/cli.js"),
     "test",
     ui ? "ui-check.spec.ts" : "screen-check.spec.ts",
-    "--reporter", "list,json", "--output", output, "--max-failures=1", "--workers", "1",
+    "--reporter", "list,json", "--output", output, "--max-failures=1", "--workers", String(Math.max(1, Number.parseInt(process.env.EHR_SCREEN_WORKERS ?? "1", 10) || 1)),
     "--config",
     resolve(appDir, "playwright.config.ts"),
   ],

@@ -8,7 +8,7 @@ resume=false
 for argument in "$@"; do [[ "$argument" != "--resume" ]] || resume=true; done
 if [[ ! "$run_id" =~ ^[A-Za-z0-9_-]+$ ]]; then echo 'Invalid run id' >&2; exit 2; fi
 if [[ ! -f runs/world/2/world.json ]]; then echo 'World 2 must land before the full run.' >&2; exit 1; fi
-export EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 CODEX_REASONING_EFFORT=high
+export EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS="${EHR_SCREEN_WORKERS:-6}" CODEX_REASONING_EFFORT=high
 # Run this wrapper in the orchestrator systemd memory scope. No RLIMIT_AS:
 # Lean thread reservation can exceed that virtual-address limit on this host.
 if $resume; then
