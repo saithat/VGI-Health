@@ -27,3 +27,7 @@ root = "Ehr.Tools.ExportContent"
 # Opt-in whole-program kernel proofs and regulation-catalog regressions.
 [[lean_lib]]
 name = "EhrHeavy"
+
+[[lean_exe]]
+name = "profile-goals"
+root = "Ehr.Tools.ProfileGoals"

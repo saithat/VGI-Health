@@ -10,17 +10,21 @@ Consolidated 2026-10-31. Content, Lean core and render are still active lanes:
 Core keeps the hand-written workflows: CURES (including the seven-day procedure
 exemption), naloxone, EPCS details, Schedule II zero refills, VIS, the labeled
 hospital policies, v1.1 prior auth, v2 antibiotic indication, and all base alerts
-(A1–A4). The CMS, Title 22, CA statutes, federal and entrenched catalog additions,
+(A1–A4). It also keeps **`denyRefill`**, the one catalog commit needed by W7
+refill-denial tasks, with its two Federal entry requirements and the existing
+base decision/reason inputs. `coreCatalogCommits` and `CorePlacements.placements`
+list this exception explicitly. No catalog review or alert binds to that commit.
+The other CMS, Title 22, CA statutes, federal and entrenched catalog additions,
 including feature strengthening, temporal evidence, value validation, order
 expiry and pinned displays, are encoded and compiled but switched off.
 
 | Release/profile | Elements | Commits | Entries | Reviews | Alerts |
 |---|---:|---:|---:|---:|---:|
-| v1 core | 123 | 10 | 80 | 21 | 15 |
+| v1 core | 123 | 11 | 82 | 21 | 15 |
 | v1 full | 283 | 95 | 870 | 486 | 77 |
-| v1.1 core | 126 | 10 | 80 | 21 | 15 |
+| v1.1 core | 126 | 11 | 82 | 21 | 15 |
 | v1.1 full | 286 | 95 | 870 | 486 | 77 |
-| v2 core | 127 | 10 | 91 | 22 | 15 |
+| v2 core | 127 | 11 | 93 | 22 | 15 |
 | v2 full | 287 | 95 | 881 | 487 | 77 |
 
 Restore by setting `ruleProfile := .full` in `lean/Ehr/Specs/Profile.lean`, then
@@ -31,13 +35,19 @@ listed in [TODO_PROOFS.md](../TODO_PROOFS.md). General checker/interpreter/deplo
 renderer proofs and three Tiny kernel rejection proofs remain in the default.
 Full-profile persona/blueprint checks passed; the heavy proof suite is unfinished.
 
-Default core rebuild after switching the profile: **33.55 s**, peak process RSS
-**1.62 GiB** (an earlier incremental program rebuild took **22.64 s**).
+Default rebuild after the amended Specs/Canonical change: **32.95 s**, peak
+process RSS **1.62 GiB**. The W7 denial proof covers every `TaskChoices` value
+whose refill choice is `deny`, with only `propext` in its axiom audit.
+`cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake exe profile-goals)`
+compares the actual `taskCommits` results across core/full for all **1,284**
+world-1 tasks: **zero differences**, including **20 denials among 115 W7 tasks**.
+This comparison concerns goal commits; catalog entry/review obligations are separate.
+The generated evidence is `lean/Ehr/Check/profile-goals-report.json`.
 `lake comparator` passes with `COMPARATOR_BWRAP=../scripts/lean-bwrap.py`; the
 wrapper retains its sandbox and supplies the six workers and 64 MiB stacks that
 Comparator otherwise clears. `lake check` also passes with that wrapper.
 Generated TS types were regenerated without a diff. `make wasm` rebuilt the
-assets in 101.90 s; `make wasm-check` passes (the runtime asset bytes are unchanged,
+assets in 3.57 s using the warm cache; `make wasm-check` passes (the runtime asset bytes are unchanged,
 and the regenerated manifest records the new Lean sources).
 
 Certification is **12/15 personas and 0/3 shared templates**, including D5 checks.
@@ -56,9 +66,9 @@ Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
-| v1 | 36 / 6 | 22 / 0 | 38 / 0 | 22 / 0 | 14 / 4 |
-| v1.1 | 39 / 3 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
-| v2 | 39 / 3 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
+| v1 | 39 / 3 | 22 / 0 | 38 / 0 | 22 / 0 | 14 / 4 |
+| v1.1 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
+| v2 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 
 The remaining simulator problems are recorded in
 [changes-requests.md](design/changes-requests.md); `Sim/**` was not edited.

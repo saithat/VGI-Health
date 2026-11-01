@@ -157,4 +157,22 @@ def collapsedMar : Program := canonicalV2.updateScreen "w4Admin" fun s =>
 #guard Specs.ruleProfile == .full || (finish (run preOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
   "w6Sign" "signOrders" (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon).commits == ["signOrders"]
 
+/-- A denied refill records a human decision and reason on the existing screen. -/
+def deniedRefill : State := run
+  [.click "home.work.w7Queue", .click "w7Queue.open", .click "w7Review.decide",
+   .enter "w7Decision.refillDecision" (.code "deny"),
+   .enter "w7Decision.refillDenyReason" (.code "early-refill")]
+
+#guard Specs.ruleProfile == .full ||
+  (finish deniedRefill "w7Decision" "denyRefill").commits == ["denyRefill"]
+#guard Specs.ruleProfile == .full || reason (one
+  (run [.click "home.work.w7Queue", .click "w7Queue.open", .click "w7Review.decide",
+    .enter "w7Decision.refillDecision" (.code "deny")])
+  (.click "w7Decision.commit.denyRefill")).2 == "entry required: refillDenyReason"
+#guard Specs.ruleProfile == .full || reason (one
+  (more deniedRefill [.enter "w7Decision.refillDecision" (.code "approve")])
+  (.click "w7Decision.commit.denyRefill")).2 == "value not allowed: refillDecision (allowed: deny)"
+#guard ((((canonicalV1.screen? "w7Decision").toList.flatMap (·.components)).filter
+  (fun c => match c.kind with | .field "refillDecision" _ _ => true | _ => false)).length) == 1
+
 end Ehr.Canonical.CoreTests
