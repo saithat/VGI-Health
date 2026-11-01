@@ -14,6 +14,7 @@ def Spec.Extends (new old : Spec) : Prop :=
   new.entries.take old.entries.length = old.entries ∧
   new.reviews.take old.reviews.length = old.reviews ∧
   new.alerts = old.alerts ∧
+  new.displays? = old.displays? ∧
   new.design.maxDepth = old.design.maxDepth ∧
   new.design.minTextSize = old.design.minTextSize ∧
   new.design.stabilityBudget = old.design.stabilityBudget ∧

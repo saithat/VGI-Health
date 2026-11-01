@@ -4,6 +4,7 @@ import Ehr.Specs.Rules.Title22
 import Ehr.Specs.Rules.CaStatutes
 import Ehr.Specs.Rules.Federal
 import Ehr.Specs.Rules.Entrenched
+import Ehr.Specs.Rules.Features
 
 /-!
 # Hospital spec, version "v1"
@@ -2285,7 +2286,8 @@ inherit the ordinary signing contract, including pre-op safety and alerts.
 The artifact is one order episode, not proof of every required physical event. -/
 def issuanceCommits : List CommitId :=
   ["signScheduleIISeries", "signEmergencyRxFollowup", "authorizeDirectDispensing",
-   "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication"]
+   "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication",
+   "authorizeOudDirectDispensing", "signOralLiquidPrescription", "signFormattedPrescription", "signOralMethotrexate"]
 
 /-- Hospital policy (not law). These specialist note/order actions retain a
 human patient identity check and the ordinary allergy/medication review. -/
@@ -2345,13 +2347,18 @@ def inheritedRuleReviews : List ReviewReq :=
 The hospital spec, version "v1". -/
 def specV1 : Spec where
   version := "v1"
-  elements := elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements
-  infos := infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos
-  commits := commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits
-  entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries
-  reviews := reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews
-  alerts := alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts
+  elements := (elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements ++ Rules.Features.elements).map Rules.Features.strengthenElement
+  infos := infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos
+  commits := (commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits ++ Rules.Features.commits).map Rules.Features.strengthenCommit
+  entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries ++ Rules.Features.entries ++
+    Rules.Features.newCommitIds.map (fun c => { commit := c, element := "patientIdReentry" })
+  reviews := reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews ++
+    Rules.Features.newCommitIds.flatMap (fun c =>
+      [{ commit := c, info := "allergyList", mode := .shownOnCommit },
+       { commit := c, info := "currentMeds", mode := .shownOnCommit }])
+  alerts := alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts ++ Rules.Features.alerts
   design := design
+  displays? := some Rules.Features.displays
 
 /-! ## Self-checks
 

@@ -73,4 +73,14 @@ def linkedPrefillsValid (sp : Spec) (p : Program) : Bool := (components p).all f
   canonicalV1.screens.all fun s => !a.screens.contains s.workflow ||
     s.components.any fun c => c.kind == .alert a.id false && c.parent? == none
 #guard linkedPrefillsValid Specs.V1.specV1 canonicalV1
+/-- Every applicable commit-screen review has a readable, always-visible
+root component before its action; no collapse, tab or receipt can hide it. -/
+def commitReviewsPinned (sp : Spec) (p : Program) : Bool :=
+  p.screens.all fun s => s.components.zipIdx.all fun (button, position) =>
+    match button.kind with
+    | .button (.commit k) => (sp.reviews.filter (·.commit == k)).all fun r =>
+        (s.components.take position).any fun c => showsInfo r.info c.kind &&
+          c.parent?.isNone && c.visibility == .always && c.size != .tiny
+    | _ => true
+#guard commitReviewsPinned Specs.V1.specV1 canonicalV1
 end Ehr.Canonical

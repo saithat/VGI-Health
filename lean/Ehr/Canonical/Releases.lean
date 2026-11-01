@@ -78,8 +78,7 @@ def canonicalV2 : Program :=
     | .button (.commit k) => k == "signOrders" || Specs.V1.issuanceCommits.contains k
     | _ => false
   let summaries := signing.foldl (fun p sc => p.updateScreen sc.id fun s =>
-    let anchor := if s.components.any (·.id == cid s.id "orders") then cid s.id "orders"
-      else cid s.id "legal.orderSummary"
+    let anchor := ((s.components.find? fun c => showsInfo "orderSummary" c.kind).map (·.id)).getD (cid s.id "banner")
     s.insertAfter anchor
       [table s.id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
   { summaries.updateScreen "w4Admin" (fun s => s.insertAfter "w4Admin.dose"

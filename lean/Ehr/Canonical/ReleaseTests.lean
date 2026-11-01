@@ -1,5 +1,6 @@
 import Ehr.Canonical.Personas
 import Ehr.Canonical.BadTests
+import Ehr.Canonical.FeatureTests
 import Ehr.Core.Json
 namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1 Ehr.Specs.V1_1 Ehr.Specs.V2
@@ -172,4 +173,8 @@ def collapsedMar : Program := canonicalV2.updateScreen "w4Admin" fun s =>
   !(s.components.any (fun c => c.kind == .button (.commit k))) ||
     s.components.any (fun c => c.kind == .table "abxIndication" && c.parent? == none)
 
+-- Every feature action remains completable with the inherited payload/clock contracts.
+#guard featureArtifactsComplete canonicalV1_1 specV1_1
+#guard featureArtifactsComplete canonicalV2 specV2
+#guard specV1_1.displays? == specV1.displays? && specV2.displays? == specV1.displays?
 end Ehr.Canonical.Tests
