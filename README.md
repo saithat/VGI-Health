@@ -457,6 +457,25 @@ and Vite plugins in `app/scripts/` serve the artifacts:
   - the held-out conformance suite;
   - trajectory recording.
 
+<!-- results:start -->
+## Results so far (`core-10day-live`)
+
+The five-persona run (`runs/core-10day-live/`) has completed **4 of 10 days** and 3 nights. It is still running, and the snapshot is re-published after each night. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4.
+
+| Persona | Revision now | Clicks, days 2–4: agent vs control | Scrolls | Mouse travel |
+|---|---|---|---|---|
+| P1 Primary care physician | v3 | 2211 vs 2446 (−10%) | 2638 vs 2822 (−7%) | −3% |
+| P2 ED physician | v3 | 3003 vs 3245 (−7%) | 5616 vs 5985 (−6%) | −14% |
+| P3 Inpatient RN | v2 | 1825 vs 1858 (−2%) | 1979 vs 2144 (−8%) | −2% |
+| P4 Pediatric NP | v3 | 1836 vs 1834 (±0%) | 1913 vs 2182 (−12%) | ±0% |
+| P5 General surgeon | v2 | 1733 vs 1795 (−3%) | 2991 vs 3071 (−3%) | −1% |
+
+- 13 of 15 persona-nights deployed a new revision; 2 kept the current one. The checker rejected 0 of 13 merged candidates this run. The planted-bad-UI suite separately shows that it rejects bad UIs.
+- 542 of 542 simulated tasks completed, on every revision.
+- Native vs. browser WASM: 30695 recorded events over 542 trajectories replayed through both, with 0 mismatches.
+- These are simulated clinicians with deterministic policies, not user studies (see gap G2).
+<!-- results:end -->
+
 ## Run it
 
 Install Node 22.18+, pnpm 11.8.0, [elan](https://github.com/leanprover/elan),
@@ -479,11 +498,13 @@ player (fullscreen, moving cursor, click and scroll animation), and
 **Compare** plays two runs of the same workflow side by side (for example the
 baseline vs. the latest revision), with click, scroll and mouse-travel deltas
 and the agent's changes linked to the moments they matter. Compare links are
-bookmarkable, e.g. `/dashboard?view=compare&run=run1-P3&persona=P3&workflow=W4`.
+bookmarkable, e.g.
+`/dashboard?view=compare&run=core-10day-live&persona=P1&workflow=W1&left=d01-P1-W1-001&right=d03-P1-W1-001&comparison=cross-day`
+(primary care clinic visit, baseline day 1 vs. revision 2 on day 3).
 
 For the offline catalog alone,
-use `pnpm install && make run`. The dashboard includes the recorded `run1-P3`
-trajectory; its archived replay preserves the recorded clinical events.
+use `pnpm install && make run`. The dashboard opens the newest complete run (`core-10day-live`); the earlier
+single-persona `run1-P3` (inpatient RN, 10 days) is also included.
 Use `make run APP_PORT=5187` if the default port is occupied.
 
 A run writes into `runs/<id>/` as it goes. `pnpm publish-partial --run <id>
