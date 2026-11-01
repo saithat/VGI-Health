@@ -43,6 +43,7 @@ function expectedRowPlacement(
       else if ("rowAction" in node) actions.push(node.rowAction);
       else if (
         "info" in node &&
+        !["status", "document"].includes(node.info.display) &&
         view !== "growth" &&
         view !== "trend" &&
         view !== "notes"
@@ -172,6 +173,8 @@ export function expectedNodeAria(
       ];
     }
     case "info" in node:
+      if (node.info.display === "document")
+        return [entry("region", node.info.label)];
       if (node.info.display === "status")
         return [entry("status", node.info.label)];
       if (presentation) {

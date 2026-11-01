@@ -968,3 +968,32 @@
   flex: 0 1 auto;
   align-self: center;
 }
+
+/* A read-only document keeps the complete entered text in a keyboard-scrollable pane. */
+.clinical-info.info-document {
+  border: 1px solid var(--clinical-border);
+  border-radius: 3px;
+  padding: 0;
+  background: white;
+}
+.info-document > .clinical-info-label {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--clinical-section);
+  border-bottom: 1px solid var(--clinical-border);
+  font-size: 14px;
+}
+.clinical-document-body {
+  max-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.clinical-document-body:focus-visible {
+  outline: 2px solid var(--clinical-primary);
+  outline-offset: -2px;
+}
+.clinical-document-section { padding: 10px 12px; }
+.clinical-document-section + .clinical-document-section { border-top: 1px solid var(--clinical-border); }
+.clinical-document-section h4 { margin: 0 0 6px; font-size: 14px; font-weight: 650; }
+.clinical-document-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.clinical-document-detail { margin-top: 6px; font-size: 12px; color: var(--clinical-muted); }

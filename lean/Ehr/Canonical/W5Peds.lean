@@ -166,7 +166,7 @@ def close : Screen :=
   let s := "w5Close"
   { id := s, title := "Sign Visit", workflow := "W5"
     components := frame s ++ [
-      panel s "noteReview" "noteSummary" "Visit note review",
+      { panel s "noteReview" "noteSummary" "Visit note review" with tag := "layout.document" },
       clinicalSection s "billing" "Level of Service",
       field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10-CM)" (parent := some "billing"),
       field s "levelOfService" "levelOfService" "E/M service level" (parent := some "billing"),

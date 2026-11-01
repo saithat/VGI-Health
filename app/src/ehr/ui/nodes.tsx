@@ -571,8 +571,46 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
     </ul>
   );
 }
+function DocumentInfo({ node }: Props<"info">) {
+  return (
+    <div
+      className="clinical-info info-document"
+      data-comp-id={node.comp || undefined}
+      data-info-id={node.infoId}
+    >
+      <h3 className="clinical-info-label">{node.label}</h3>
+      <div
+        role="region"
+        aria-label={node.label}
+        tabIndex={0}
+        className="clinical-document-body"
+      >
+        {node.rows.map((row, index) => (
+          <div className="clinical-document-section" key={index}>
+            {row.map(([key, value], cell) =>
+              key === "Section" ? (
+                <h4 key={cell}>{value}</h4>
+              ) : key === "Text" ? (
+                <div key={cell} className="clinical-document-text">
+                  {value}
+                </div>
+              ) : (
+                <div key={cell} className="clinical-document-detail">
+                  <span>{key}: </span>
+                  <RecordValue label={key} value={value} />
+                </div>
+              ),
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 export function InfoNode({ node, onEvent }: Props<"info">) {
   const presentation = useContext(PresentationContext);
+  if (node.display === "document")
+    return <DocumentInfo node={node} onEvent={onEvent} />;
   if (node.display === "status") {
     return (
       <div

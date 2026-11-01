@@ -41,6 +41,7 @@ export function rowLayout(
       else if ("rowAction" in node) controls.push(node.rowAction);
       else if (
         "info" in node &&
+        !["status", "document"].includes(node.info.display) &&
         !["growth", "trend", "notes"].includes(current)
       )
         infos.push(node.info);

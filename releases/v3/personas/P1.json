@@ -2801,7 +2801,7 @@
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w1Close.encounterNavigator"},
     {"visibility": "always",
-     "tag": "w1Close.noteReview",
+     "tag": "layout.document",
      "tab": 0,
      "size": "normal",
      "label": "Note review",

@@ -84,10 +84,34 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | some p => ((if p.fields.isEmpty then [] else [p.fields]) ++ p.rows.map (·.fields)).map
       (fun row => row.map (fun (label, value) => (uiClinicalHeading label, uiDate value)))
 
+/-- The current visit document uses the existing clinical note fields. -/
+def uiVisitNoteElements : List ElementId :=
+  ["chiefComplaint", "hpi", "ros", "exam", "assessmentPlan", "visitDiagnosis",
+   "anticipatoryGuidance", "followUp", "patientInstructions"]
+
+/-- The displayed text is the exact entered value, with its current confirmation state. -/
+def uiVisitNoteRow (cx : Ctx) (element : ElementId) (entry : Captured) : List (String × String) :=
+  [("Section", uiLabel (((cx.sp.element? element).map (·.label)).getD "") "Documentation"),
+   ("Text", valueText entry.value),
+   ("Entry status", if !entry.confirmed then "Needs confirmation"
+     else if valueText entry.value == "" then "Empty entry" else "Entered")]
+
+/-- Only current editor captures contribute to this visit's note preview. -/
+def uiVisitNoteRows (cx : Ctx) : List (List (String × String)) :=
+  uiVisitNoteElements.flatMap fun element =>
+    (cx.s.captured.filter (fun entry => entry.element == element)).map (uiVisitNoteRow cx element)
+
+/-- An unstarted note is explicit. Supplied supporting records remain alongside it. -/
+def uiNoteSummaryRows (cx : Ctx) : List (List (String × String)) :=
+  let rows := uiVisitNoteRows cx
+  (if rows.isEmpty then [[("Section", "Visit note"), ("Text", "No visit documentation entered yet.")]]
+    else rows) ++ uiPayloadRows cx "noteSummary"
+
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
-  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i
+  if i == "noteSummary" then uiNoteSummaryRows cx
+  else if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i
   else if i == "refillComparison" then uiRefillComparisonRows cx (uiPayloadRows cx i)
   else if i == "resultTrend" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i
   else match structuredRows? cx i with
@@ -282,7 +306,8 @@ def uiWrapGrowthReferences (cx : Ctx) (kind : Option UiPresentationKind) (i : In
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
   let kind := if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i
   let node := uiWrapInfo kind <| .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
-    (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
+    (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list"
+      else if uiTagIs it.comp.tag "layout.document" then "document" else display)
     (uiItemRows cx it.comp.id i)
   uiWrapGrowthReferences cx kind i node
 

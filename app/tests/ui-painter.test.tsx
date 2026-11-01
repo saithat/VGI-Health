@@ -1108,3 +1108,89 @@ it("retains clinical note bodies verbatim in ordinary and structured notes", () 
       container.querySelector(`[data-info-id="${id}"]`)?.textContent,
     ).toContain(body);
 });
+
+it("draws supplied documentation verbatim in a read-only keyboard-scrollable region", () => {
+  const event = vi.fn();
+  const body =
+    "Current visit narrative (disorder).\nQuoted direction: 1, 1x per 1 d.\nKeep the line breaks.";
+  const { container } = paint(
+    [
+      {
+        info: {
+          comp: "visit-note",
+          label: "Visit note review",
+          infoId: "noteSummary",
+          display: "document",
+          rows: [
+            [
+              ["Section", "History of present illness"],
+              ["Text", body],
+              ["Entry status", "Needs confirmation"],
+            ],
+          ],
+        },
+      },
+    ],
+    event,
+  );
+  const document = screen.getByRole("region", { name: "Visit note review" });
+  expect(document.textContent).toContain(body);
+  expect(document.textContent).toContain("Needs confirmation");
+  expect(document.tabIndex).toBe(0);
+  expect(container.querySelector("button,input,textarea")).toBeNull();
+  expect(event).not.toHaveBeenCalled();
+});
+it("retains source row actions inline when their target is a read-only document", () => {
+  const event = vi.fn();
+  paint(
+    [
+      {
+        presentation: {
+          kind: "table",
+          children: [
+            {
+              info: {
+                comp: "document-target",
+                label: "Visit documentation",
+                infoId: "noteSummary",
+                display: "document",
+                rows: [
+                  [
+                    ["Section", "History"],
+                    ["Text", "Entered documentation"],
+                  ],
+                ],
+              },
+            },
+            {
+              rowAction: {
+                target: "document-target",
+                row: 0,
+                children: [
+                  {
+                    button: {
+                      comp: "continue-review",
+                      label: "Continue chart review",
+                      role: "nav",
+                      enabled: true,
+                      blockedReason: null,
+                      hotkey: null,
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+    event,
+  );
+  fireEvent.click(
+    screen.getByRole("button", { name: "Continue chart review" }),
+  );
+  expect(event).toHaveBeenCalledWith({ click: { comp: "continue-review" } });
+  expect(
+    screen.getByRole("region", { name: "Visit documentation" }).textContent,
+  ).toContain("Entered documentation");
+});

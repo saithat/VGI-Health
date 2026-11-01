@@ -63,6 +63,34 @@ for (const persona of ["P1", "P4"]) {
         ),
         animations: "disabled",
       });
+      if (name.includes("Documented") && phase === "after") {
+        const document = page.locator(
+          '[data-info-id="noteSummary"] .clinical-document-body',
+        );
+        await document.scrollIntoViewIfNeeded();
+        await expect(document).toBeInViewport();
+        await document.focus();
+        const scrollable = await document.evaluate(
+          (element) => element.scrollHeight > element.clientHeight,
+        );
+        if (scrollable) {
+          await page.keyboard.press("End");
+          await expect
+            .poll(() => document.evaluate((element) => element.scrollTop))
+            .toBeGreaterThan(0);
+          await document.evaluate((element) => {
+            element.scrollTop = 0;
+          });
+        }
+        await page.screenshot({
+          path: join(
+            output,
+            `${phase}-${persona}-${name.replace(".json", "-document.png")}`,
+          ),
+          animations: "disabled",
+        });
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
       if (name.includes("Reviewed")) {
         const statuses = page.getByRole("status");
         expect(await statuses.count()).toBeGreaterThan(0);

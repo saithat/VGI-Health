@@ -18,6 +18,28 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Current documentation is separate from old chart notes and preserves entry status. -/
+def enteredVisitNoteCtx : Ctx :=
+  { uiRoomCtx with
+    s := { uiRoomCtx.s with captured :=
+      [{ element := "hpi", slot := 0, value := .text "Entered narrative (disorder).\nSecond line.",
+         byHuman := true, confirmed := true },
+       { element := "exam", slot := 0, value := .text "Unconfirmed copied exam",
+         byHuman := false, confirmed := false },
+       { element := "hpi", slot := 2, value := .text "Additional entered history",
+         byHuman := true, confirmed := true }] }
+    viewCache := ⟨_, rfl⟩ }
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "Entered narrative (disorder).\nSecond line." && row.lookup "Entry status" == some "Entered"
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "Unconfirmed copied exam" && row.lookup "Entry status" == some "Needs confirmation"
+def emptyVisitNoteCtx : Ctx :=
+  { uiRoomCtx with s := { uiRoomCtx.s with captured := [] }, viewCache := ⟨_, rfl⟩ }
+#guard (uiNoteSummaryRows emptyVisitNoteCtx).any fun row =>
+  row.lookup "Text" == some "No visit documentation entered yet."
+#guard (uiNoteSummaryRows enteredVisitNoteCtx).any fun row => row.lookup "Text" == some "Additional entered history"
+#guard enteredVisitNoteCtx.s.captured.length == 3
+
 /-- Medication context uses only the declared source slot and retains its caption. -/
 def medicationContextCtx : Ctx :=
   { uiRoomCtx with disp := { uiRoomCtx.disp with

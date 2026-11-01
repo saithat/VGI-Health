@@ -4,6 +4,27 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- Every captured note section remains present with its exact entered text. -/
+theorem uiVisitNoteRows_captured (cx : Ctx) (entry : Captured)
+    (he : entry.element ∈ uiVisitNoteElements) (hc : entry ∈ cx.s.captured) :
+    ∃ row ∈ uiVisitNoteRows cx, ("Text", valueText entry.value) ∈ row := by
+  refine ⟨uiVisitNoteRow cx entry.element entry, ?_, ?_⟩
+  · exact List.mem_flatMap.mpr ⟨entry.element, he,
+      List.mem_map.mpr ⟨entry, List.mem_filter.mpr ⟨hc, by simp⟩, rfl⟩⟩
+  · simp [uiVisitNoteRow]
+
+/-- The empty-note message never replaces actual entered documentation. -/
+theorem uiNoteSummaryRows_captured (cx : Ctx) (entry : Captured)
+    (he : entry.element ∈ uiVisitNoteElements) (hc : entry ∈ cx.s.captured) :
+    ∃ row ∈ uiNoteSummaryRows cx, ("Text", valueText entry.value) ∈ row := by
+  obtain ⟨row, hr, ht⟩ := uiVisitNoteRows_captured cx entry he hc
+  refine ⟨row, ?_, ht⟩
+  have nonempty : (uiVisitNoteRows cx).isEmpty = false := by
+    cases h : uiVisitNoteRows cx with
+    | nil => simp [h] at hr
+    | cons _ _ => simp
+  simpa [uiNoteSummaryRows, nonempty] using List.mem_append_left (uiPayloadRows cx "noteSummary") hr
+
 /-- Source field captions remain intact when a medication context is appended. -/
 theorem uiMedicationFieldLabel_preservesCaption (cx : Ctx) (it : ItemView) (element : ElementId) :
     ∃ suffix, uiMedicationFieldLabel cx it element = it.comp.label ++ suffix := by

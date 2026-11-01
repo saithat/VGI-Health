@@ -549,6 +549,19 @@ M09 visual review: the first pass repeated the full long medication caption insi
 
 M09 verification (source `4442757` with the final prompt/alignment polish): default build **357** jobs, kernel, root Comparator and **56** frozen renderer statements pass. All **154** prior theorem headers in Render/PatchWitness remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, native button audit **277** (**266** enabled / **11** explained disabled), native/WASM **34** screens plus **6** actual medication-context entries, **8** review clicks / **38** invalid receipt probes, and **16** shared structured fixtures. App build/lint and **238** tests, **84** agent tests with typecheck/lint, **7** seed tests, **79** browser fidelity checks (three intended viewport skips), **35** current-state and **29** before-state screenshot/event checks pass. All **324** primitive fact projections match, and archived replay has **0** mismatches. All **21** workflow effort groups match the prior green milestone exactly, including the twelve AMB before/after records. Footer placement is performed in the semantic UI while program component order stays stable; the measured directed search paths and KLM estimates are unchanged. These estimates exclude reading and scrolling.
 
+### Current visit note review (M10)
+
+A native reproduction entered a physician HPI through the public event seam, then projected the closing screen. The human-confirmed entry existed in State, but `noteSummary.rows` was empty. The closing panel was therefore an empty chart placeholder rather than a view of the current note.
+
+[Vanderbilt's outpatient Epic exercise](https://www.vumc.org/vclic/intro-epic-and-build-capabilities) describes documenting the visit throughout the encounter and checking completeness before signing, with structured diagnoses/orders kept distinct from the coherent note. [Johns Hopkins' March 15, 2019 tip](https://medicine-matters.blogs.hopkinsmedicine.org/2019/03/epic-tip-of-the-week-5/) confirms note-preview panes as an ordinary configurable part of the notes activity. The public text was reviewed; the VUMC network-only videos were not accessed.
+
+The source `noteSummary` now projects the actual current note captures, preserving each value, paragraph break and confirmation state across all captured slots. A document layout comes from an explicit canonical `layout.document` tag. It shows one read-only paper with clinical section headings in a keyboard-scrollable pane. It does not infer an author, signature, completed review or clinical fact. Historical notes and supplied supporting records remain separate. No required entry, clinical guard, human-only rule or commit is changed.
+
+| Screen | Before | After |
+| --- | --- | --- |
+| W1 Sign Visit | Note review remained empty after HPI entry. | Current entered history, ROS, examination, plan and other note sections are shown verbatim, with pending confirmation explicit. |
+| W5 Sign Visit | The closing note panel did not reflect the pediatric Visit Note editor. | The current pediatric note, including documented anticipatory guidance, appears in the same read-only document layout. |
+
 ## Presentation lane: structured clinical widgets
 
 Research and implementation: 2026-11-01, `lane/present`. The stable integration API is [presentation-contract.md](presentation-contract.md). These are original drawings of public interaction and information patterns. Vendor screenshots were inspected in temporary files outside the repository; no vendor image, icon, logo, or copied screen composition is shipped.
