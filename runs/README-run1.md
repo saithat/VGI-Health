@@ -24,7 +24,7 @@ Re-run `node scripts/sanity-run1.mjs` and `node scripts/sanity-run1-commands.mjs
 - `ehr min-clicks`: P3's first day-1 task returns 25 clicks; its per-episode search spaces, paths and exactness scope are retained in `P3-min-clicks.stdout`.
 - `ehr render-screens`: 694 P3 page trees, with the actual RN user and the first scheduled patient's real Synthea bundle.
 - Screen check: all 1,388 desktop/narrow checks passed in 183.8 seconds. Native deploy exited 0 and wrote a real certificate under `/tmp/vgi-run1-deploy/P3/`. Exact commands, exit codes and timings are in `run1-preflight/commands.json`; per-command stdout is preserved.
-- Agent: 32/32 tests, typecheck and lint passed, including round trips of all real release specs.
+- Agent: 33/33 tests, typecheck and lint passed, including round trips of all real release specs and checkpoint/resume across releases.
 - P3 vendor projections also certify against v1.1 and v2.
 - Full `cd lean && lake build`: passed all 215 targets, including the expensive concrete negative proofs.
 
@@ -56,3 +56,9 @@ Run artifacts will be in `runs/run1-P3/`. `scripts/export-replay.mjs run1-P3` ex
 Record with `node scripts/record-demo.mjs --run run1-P3 --persona P3 --base http://localhost:5193`. Playwright records 1440×900 at human pace; ffmpeg converts to H.264 MP4 using OpenH264 (this host's ffmpeg lacks libx264).
 
 Completed: `docs/recordings/05-bad-program.mp4` — 74.7 s, 1.60 MB; real WASM signing screen, allergy list absent, Sign blocked on `allergyList`. Other recordings pending the run.
+
+## Integration recovery during the run
+
+Night 1's four natural candidates all added `popup=true` to certified interruptive alert components; the real checker rejected them under `noFalseAlarms`. The seeded hidden-allergy candidate was rejected under `reviewsBeforeCommit`. These original proposals and verdicts remain in the run.
+
+The old agent prompt misleadingly said interruptive alerts should keep popping up. It now explains the actual semantics: condition-triggered interruption occurs automatically at commit; `popup=true` requests an unsolicited screen popup. No checker rule was changed. The process was stopped after Day 2, during an unfinished Night 2 call, and resumed with `--resume`; completed days, Night 1's decision and its LLM call were reused. A test verifies that resume neither re-simulates recorded days nor repeats completed LLM calls. Resume timestamps are in the manifest; all later calls record the corrected prompt.

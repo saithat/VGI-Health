@@ -44,7 +44,7 @@ Lean types; JSON uses constructor-keyed objects ({"field": {"element": "...", "s
 - Pre-fill only as the policy allows: recordConfirm (from the record with provenance, human confirms), defaultConfirm (a default the human confirms), autoLinked (entered once, then linked).
 - Units: weight is kg only; never source a value from a pound field.
 - Enter once: no element may be asked twice on one path unless the later one is a pre-filled link or copy.
-- Alerts: interruptive alerts keep popping up before their commit; passive alerts never pop up; removable-tier alerts may be made passive or removed.
+- Alerts: the interpreter opens condition-triggered interruptive alerts at the commit automatically, even when the component has popup=false. popup=true requests an immediate screen popup and is rejected for interruptive alerts by noFalseAlarms. Preserve certified interruptive alert components and their popup=false settings; passive alerts never pop up. Removable-tier alerts may be made passive or removed. Do not bundle unrelated safety or macro edits into workflow optimizations.
 - Every commit stays reachable from the start screen, and every screen keeps the patient banner.
 - Stability budget: at most N components may be moved (to a different screen, parent, or tab) per version. Copies (a new component with copyOf = the original's id) do not count, so prefer copying frequently used actions or info over moving them.
 - Do not edit the program's id, version, owner, role, or specVersion; the loop sets them.

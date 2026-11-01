@@ -10,8 +10,10 @@
  * After the last day, each deployed change gets its TEST measurement: day
  * night+2 (never used to select it) replayed on the old and new versions.
  */
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
+import { z } from 'zod';
 import { LlmAgent } from './agent.js';
 import { RecordingLlm } from './backends/recording.js';
 import type { JsonLlm } from './backends/types.js';
@@ -23,11 +25,11 @@ import type { TrainDay } from './observe.js';
 import { personalize } from './program.js';
 import type { HistoryItem, PersonaView } from './prompts.js';
 import { loadRelease, releaseForPersona, type Release } from './releases.js';
-import type { DecisionRecord, Program } from './schema.js';
-import type { SeedPolicy, SeedState } from './seeded.js';
+import { dayResultSchema, programSchema, type DecisionRecord, type Program } from './schema.js';
+import { rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { RunStore } from './store.js';
 import { loadWorld } from './world.js';
-import { REPO_ROOT, writeJson } from './util.js';
+import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
   days: number;
@@ -35,6 +37,8 @@ export interface RunOptions {
   worldDir: string;
   runsRoot?: string;
   runId?: string;
+  /** Reuse completed days/decisions and certified programs; retry only the unfinished night. */
+  resume?: boolean;
   personas?: string[];
   seedPolicy?: SeedPolicy;
   /** Day on which each release takes effect at login. */
@@ -99,8 +103,25 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
   };
-  await writeJson(path.join(dir, 'manifest.json'), {
-    runId, createdAt: new Date().toISOString(), days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
+  const manifestFile = path.join(dir, 'manifest.json');
+  const resumeManifestSchema = z.object({
+    createdAt: z.string(), world: z.string(), backend: z.string(), personas: z.array(z.string()),
+    ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
+    releaseDays: z.object({ v1_1: z.number(), v2: z.number() }), seedPolicy: z.string(),
+  });
+  let previous: z.infer<typeof resumeManifestSchema> | null = null;
+  if (opts.resume) {
+    if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
+    previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.ehr.mode !== ehr.mode ||
+        JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
+        JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
+      throw new Error('resume world/backend/ehr/personas/release days/seed policy must match the recorded run');
+    }
+  }
+  await writeJson(manifestFile, {
+    runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
+    resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
     worldIsFake: world.manifest.fake ?? false, backend: opts.llm.name, model: opts.llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
     seedPolicy: deps.seedPolicy, releaseDays,
     warning: ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
@@ -128,11 +149,23 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (!params) continue;
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
-    const initialRelease = await releaseForPersona(inForce, id);
-    const v0 = personalize(initialRelease.canonical, params, view.userId);
-    const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: initialRelease.canonical, nextVersion: 0 });
-    if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
-    programs.set(id, new Map([[0, v0]]));
+    if (opts.resume) {
+      const versions = new Map<number, Program>();
+      for (const file of await readdir(path.join(dir, 'programs', id))) {
+        if (!/^v\d+\.json$/.test(file)) continue;
+        const program = await readJson(path.join(dir, 'programs', id, file), programSchema);
+        versions.set(program.version, program);
+      }
+      const deployed = await store.login(id);
+      if (deployed.certificate.verdict !== 'ok' || !versions.has(0)) throw new Error(`resume ${id}: missing certified version`);
+      programs.set(id, versions);
+    } else {
+      const initialRelease = await releaseForPersona(inForce, id);
+      const v0 = personalize(initialRelease.canonical, params, view.userId);
+      const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: initialRelease.canonical, nextVersion: 0 });
+      if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
+      programs.set(id, new Map([[0, v0]]));
+    }
     train.set(id, []);
     history.set(id, []);
     timelines.set(id, { persona: id, days: [], nights: [] });
@@ -145,12 +178,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!schedule) throw new Error(`world has no schedule for day ${day} / ${id}`);
       const { program } = await store.login(id);
       programs.get(id)?.set(program.version, program);
-      const result = await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
-      await store.writeDay(result);
+      const recorded = opts.resume && existsSync(store.dayPath(day, id));
+      const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+      if (!recorded) await store.writeDay(result);
       train.get(id)?.push({ result, schedule });
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
-      timelines.get(id)?.days.push({ day, programVersion: program.version, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s, klmSec: m.t / 10 });
-      log(`day ${day} ${id}: v${program.version} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${(m.t / 10).toFixed(0)}s`);
+      timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s, klmSec: m.t / 10 });
+      log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${(m.t / 10).toFixed(0)}s`);
     }
     if (day === opts.days) break;
 
@@ -165,7 +199,15 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       };
       let res: NightResult;
       const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;
-      if (next?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next });
+      if (opts.resume && existsSync(store.decisionPath(day, id))) {
+        const record = await store.readDecision(day, id);
+        for (const candidate of record.candidates) {
+          const kind = rejectionKind(candidate.check);
+          if (kind) seedState.rejected.add(kind);
+          if (candidate.candidate.seeded) seedState.injected++;
+        }
+        res = { record, deployed: record.deployed ? programs.get(id)?.get(record.versionAfter) ?? null : null };
+      } else if (next?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next });
       else if (next) res = await runMigration(deps, { ...nightInput, next });
       else res = await runNight(deps, nightInput);
       const r = res.record;

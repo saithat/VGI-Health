@@ -1,6 +1,9 @@
 {
   "runId": "run1-P3",
   "createdAt": "2026-11-01T00:27:19.820Z",
+  "resumes": [
+    "2026-11-01T00:36:35.581Z"
+  ],
   "days": 10,
   "personas": [
     "P3"

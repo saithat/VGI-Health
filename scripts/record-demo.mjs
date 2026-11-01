@@ -17,7 +17,7 @@ const manifest = standaloneBad ? { days: 0 } : await read(`runs/${run}/manifest.
 const summary = standaloneBad ? null : await read(`runs/${run}/summary.json`);
 const final = summary?.timelines.find(t => t.persona === persona).days.at(-1).programVersion;
 const browser = await chromium.launch({ headless: true });
-const inventory = [];
+const inventory = (await read(`${out}/recordings-${run}.json`).catch(() => ({ recordings: [] }))).recordings;
 const pause = page => page.waitForTimeout(1400);
 const comp = (page, id) => page.locator(`[data-comp-id="${id}"][data-event]`);
 async function click(page, locator) { await locator.scrollIntoViewIfNeeded(); await pause(page); await locator.click(); await pause(page); }
@@ -42,6 +42,8 @@ async function record(name, action) {
     const probe = spawnSync('ffprobe', ['-v', 'quiet', '-show_entries', 'format=duration,size', '-of', 'json', target], { encoding: 'utf8' });
     const info = JSON.parse(probe.stdout).format;
     if (Number(info.size) >= 20 * 1024 * 1024) throw new Error(`${name} exceeds 20 MiB`);
+    const old = inventory.findIndex(item => item.file === `${name}.mp4`);
+    if (old >= 0) inventory.splice(old, 1);
     inventory.push({ file: `${name}.mp4`, duration: Number(info.duration), bytes: Number(info.size) });
     await rm(scratch, { recursive: true, force: true });
     console.log(name, info);

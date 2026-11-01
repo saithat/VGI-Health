@@ -65,7 +65,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     args: argv,
     options: {
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
-      'run-id': { type: 'string' }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
+      'run-id': { type: 'string' }, resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
       model: { type: 'string' }, 'v1.1-day': { type: 'string' }, 'v2-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
@@ -73,6 +73,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
   const summary = await runDays({
     days: intArg(values.days, 'days', 10),
+    resume: values.resume,
     llm,
     worldDir: resolveUserPath(values.world),
     ...(values['runs-root'] ? { runsRoot: resolveUserPath(values['runs-root']) } : {}),
