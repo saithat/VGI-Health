@@ -1159,7 +1159,54 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 4,
+      "load": "quiet",
+      "before": {
+        "tasks": 41,
+        "completed": 41,
+        "clicks": 646,
+        "keystrokes": 978,
+        "scrolls": 1036,
+        "popups": 23,
+        "overrides": 3,
+        "searches": 0,
+        "backtracks": 52,
+        "klmDeciSec": 67050
+      },
+      "after": {
+        "tasks": 41,
+        "completed": 41,
+        "clicks": 629,
+        "keystrokes": 978,
+        "scrolls": 944,
+        "popups": 23,
+        "overrides": 2,
+        "searches": 0,
+        "backtracks": 40,
+        "klmDeciSec": 65655
+      },
+      "saving": {
+        "clicks": 17,
+        "keystrokes": 0,
+        "scrolls": 92,
+        "klmDeciSec": 1395
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 85.6,
+          "keystrokes": 132.9,
+          "scrolls": 0,
+          "klmDeciSec": 227.7
+        },
+        "after": {
+          "clicks": 80.7,
+          "keystrokes": 132.9,
+          "scrolls": 0,
+          "klmDeciSec": 220.9
+        }
+      }
+    },
     "minClicks": [
       {
         "workflow": "W4",

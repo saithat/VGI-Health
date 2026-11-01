@@ -543,7 +543,54 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 8,
+      "load": "normal",
+      "before": {
+        "tasks": 38,
+        "completed": 33,
+        "clicks": 568,
+        "keystrokes": 857,
+        "scrolls": 554,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 47293
+      },
+      "after": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 575,
+        "keystrokes": 857,
+        "scrolls": 563,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 48204
+      },
+      "saving": {
+        "clicks": -7,
+        "keystrokes": 0,
+        "scrolls": -9,
+        "klmDeciSec": -911
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 75.3,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 224.7
+        },
+        "after": {
+          "clicks": 77.5,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 231
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": null,
     "predictionNote": ""

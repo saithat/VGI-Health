@@ -908,7 +908,54 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 6,
+      "load": "busy",
+      "before": {
+        "tasks": 32,
+        "completed": 32,
+        "clicks": 552,
+        "keystrokes": 850,
+        "scrolls": 814,
+        "popups": 25,
+        "overrides": 2,
+        "searches": 0,
+        "backtracks": 37,
+        "klmDeciSec": 62504
+      },
+      "after": {
+        "tasks": 32,
+        "completed": 32,
+        "clicks": 552,
+        "keystrokes": 850,
+        "scrolls": 786,
+        "popups": 25,
+        "overrides": 2,
+        "searches": 0,
+        "backtracks": 37,
+        "klmDeciSec": 62196
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 28,
+        "klmDeciSec": 308
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 90.3,
+          "keystrokes": 132.2,
+          "scrolls": 0,
+          "klmDeciSec": 213.3
+        },
+        "after": {
+          "clicks": 90.3,
+          "keystrokes": 132.2,
+          "scrolls": 0,
+          "klmDeciSec": 211.7
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": true,
     "predictionNote": "predicted 40s/day saved; validation replay measured 33s (held = measured >= 50% of predicted)"

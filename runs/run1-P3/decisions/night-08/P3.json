@@ -1000,7 +1000,54 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 10,
+      "load": "normal",
+      "before": {
+        "tasks": 45,
+        "completed": 45,
+        "clicks": 732,
+        "keystrokes": 1071,
+        "scrolls": 531,
+        "popups": 23,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 62,
+        "klmDeciSec": 57917
+      },
+      "after": {
+        "tasks": 45,
+        "completed": 45,
+        "clicks": 725,
+        "keystrokes": 1071,
+        "scrolls": 528,
+        "popups": 20,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 63,
+        "klmDeciSec": 57713
+      },
+      "saving": {
+        "clicks": 7,
+        "keystrokes": 0,
+        "scrolls": 3,
+        "klmDeciSec": 204
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 86.3,
+          "keystrokes": 124.1,
+          "scrolls": 0,
+          "klmDeciSec": 173
+        },
+        "after": {
+          "clicks": 84.5,
+          "keystrokes": 124.1,
+          "scrolls": 0,
+          "klmDeciSec": 172.1
+        }
+      }
+    },
     "minClicks": [
       {
         "workflow": "W4",

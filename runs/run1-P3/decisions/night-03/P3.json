@@ -306,7 +306,54 @@
   },
   "measured": {
     "validation": null,
-    "test": null,
+    "test": {
+      "day": 5,
+      "load": "normal",
+      "before": {
+        "tasks": 37,
+        "completed": 37,
+        "clicks": 577,
+        "keystrokes": 912,
+        "scrolls": 867,
+        "popups": 24,
+        "overrides": 2,
+        "searches": 0,
+        "backtracks": 33,
+        "klmDeciSec": 64233
+      },
+      "after": {
+        "tasks": 37,
+        "completed": 37,
+        "clicks": 577,
+        "keystrokes": 912,
+        "scrolls": 867,
+        "popups": 24,
+        "overrides": 2,
+        "searches": 0,
+        "backtracks": 33,
+        "klmDeciSec": 64233
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 0,
+        "klmDeciSec": 0
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 83.2,
+          "keystrokes": 133.8,
+          "scrolls": 0,
+          "klmDeciSec": 213.3
+        },
+        "after": {
+          "clicks": 83.2,
+          "keystrokes": 133.8,
+          "scrolls": 0,
+          "klmDeciSec": 213.3
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": null,
     "predictionNote": ""

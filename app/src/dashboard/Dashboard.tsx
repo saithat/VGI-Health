@@ -809,9 +809,17 @@ function Releases({
               ))}
             <details className="migration-patch">
               <summary>Migration patch and checks</summary>
-              <pre>{JSON.stringify(r.certification.attempts.map((attempt) => ({
-                source: attempt.source, patch: attempt.patch, verdict: attempt.check.status,
-              })), null, 2)}</pre>
+              <pre>
+                {JSON.stringify(
+                  r.certification.attempts.map((attempt) => ({
+                    source: attempt.source,
+                    patch: attempt.patch,
+                    verdict: attempt.check.status,
+                  })),
+                  null,
+                  2,
+                )}
+              </pre>
             </details>
             <div className="paired-screens">
               <div>
@@ -933,7 +941,7 @@ export function Dashboard({
     [error, setError] = useState("");
   const interpFactory =
     run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory;
-  const [persona, setPersona] = useState("P1"),
+  const [persona, setPersona] = useState(query.get("persona") ?? "P1"),
     [night, setNight] = useState(1),
     [rejectionId, setRejectionId] = useState("");
   useEffect(() => {
@@ -966,7 +974,14 @@ export function Dashboard({
     setError("");
     loadRun(runId, entry.files)
       .then((data) => {
-        if (active) setRun(data);
+        if (active) {
+          setRun(data);
+          setPersona((current) =>
+            data.manifest.personas.includes(current)
+              ? current
+              : (data.manifest.personas[0] ?? current),
+          );
+        }
       })
       .catch((e: unknown) => {
         if (active)
@@ -978,9 +993,9 @@ export function Dashboard({
   }, [index, runId]);
   useEffect(() => {
     if (!runId) return;
-    const q = new URLSearchParams({ run: runId, view });
+    const q = new URLSearchParams({ run: runId, view, persona });
     window.history.replaceState(null, "", `/dashboard?${q}`);
-  }, [runId, view]);
+  }, [runId, view, persona]);
   const rejections = useMemo(() => (run ? getRejections(run) : []), [run]);
   const selectedRejection =
     rejections.find((r) => r.id === rejectionId) ??
