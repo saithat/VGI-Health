@@ -1,10 +1,8 @@
-import Ehr.Examples.Tiny
-import Ehr.Specs.V1_1
-import Ehr.Specs.V2
+import Ehr
 import Ehr.Api
 import Ehr.Cli.Check
-import Ehr.Render.Cli
 import Ehr.Cli.Sim
+import Ehr.Render.Cli
 
 /-!
 # `ehr` command-line tool (native)
@@ -79,7 +77,10 @@ def runBatch (path : System.FilePath) : IO UInt32 := do
 /-- Entry point. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
+  | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | "render-screens" :: rest => Render.Cli.run rest
+  | ["render-ui"] => stdinCommand Render.RenderInput Render.UiScreen Render.runRenderUi
   | ["render"] => stdinCommand Render.RenderInput Render.PageNode Render.runRender
   | ["facts"] =>
     match decodeJson Render.Fhir.FactsInput (← readStdin) with
@@ -87,16 +88,14 @@ def main (args : List String) : IO UInt32 := do
     | .ok i => match Render.Fhir.runFacts i with
       | .error e => IO.eprintln e; IO.println (errorJson e); return 1
       | .ok out => IO.println (encodeJson out); return 0
-  | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
-  | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
-  | ["cures-exemptions-export"] =>
-    IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
   | "check" :: rest => Ehr.Cli.checkMain rest
   | "deploy" :: rest => Ehr.Cli.deployMain rest
+  | ["cures-exemptions-export"] =>
+    IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
   | ["spec-export", name] =>
     match specRegistry.lookup name with
     | some sp => IO.println (Lean.toJson sp).pretty; return 0

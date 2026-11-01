@@ -1,5 +1,7 @@
+import Ehr.Canonical.BlueprintTests
 import Ehr.Canonical.Personas
 import Ehr.Canonical.BadTests
+import Ehr.Canonical.FeatureTests
 import Ehr.Core.Json
 namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1 Ehr.Specs.V1_1 Ehr.Specs.V2
@@ -156,4 +158,24 @@ def collapsedMar : Program := canonicalV2.updateScreen "w4Admin" fun s =>
 #guard (finish (run preOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
   "w6Sign" "signOrders" (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon).commits == ["signOrders"]
 
+-- Every added artifact action still completes after optional and stewardship
+-- releases, using human values on the actual inherited canonical screens.
+#guard [(specV1_1, canonicalV1_1), (specV2, canonicalV2)].all fun (sp, p) =>
+  newArtifacts.all fun (screen, commit) =>
+    (artifactWalk screen commit p (sp := sp)).commits.contains commit
+
+-- The new prescribing variants inherit v2's antibiotic gate too. The old
+-- optional release cannot satisfy it; the actual v2 composer can.
+#guard !(artifactWalk "w1ScheduleIISeries" "signScheduleIISeries" canonicalV1_1
+  "cefazolin" specV2).commits.contains "signScheduleIISeries"
+#guard (artifactWalk "w1ScheduleIISeries" "signScheduleIISeries" canonicalV2
+  "cefazolin" specV2).commits == ["signScheduleIISeries"]
+#guard Specs.V1.issuanceCommits.all fun k => canonicalV2.screens.all fun s =>
+  !(s.components.any (fun c => c.kind == .button (.commit k))) ||
+    s.components.any (fun c => c.kind == .table "abxIndication" && c.parent? == none)
+
+-- Every feature action remains completable with the inherited payload/clock contracts.
+#guard featureArtifactsComplete canonicalV1_1 specV1_1
+#guard featureArtifactsComplete canonicalV2 specV2
+#guard specV1_1.displays? == specV1.displays? && specV2.displays? == specV1.displays?
 end Ehr.Canonical.Tests

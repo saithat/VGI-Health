@@ -99,6 +99,34 @@ inductive ValueKind
   | cosign
   deriving DecidableEq, Repr, Inhabited
 
+/-- Closed, reviewable input/output constraints; no executable predicates. -/
+inductive Validation
+  | nonempty
+  | codeMember (system version : String)
+  | isoDate
+  | token (minLength maxLength : Nat) (alphabet : String)
+  /-- Text/code retains lexical input; leading/trailing zeros are forbidden
+  when their flags are false. Ordinary quantities retain their numeric meaning. -/
+  | decimal (maxFraction : Nat) (leadingZeros trailingZeros : Bool)
+  | quantityRange (unit : UnitKind) (minTenths maxTenths : Nat)
+  | formulationUnit (formulation : ElementId) (pairs : List (String × UnitKind))
+  | weightBand (minKgTenths maxKgTenths : Nat)
+  | gtin14
+  /-- GS1 UDI with mandatory (01), optional (17), (10), (21), in that order. -/
+  | udiGs1
+  | supplyDaysCeil (quantity dose frequency : ElementId)
+  | doseByWeight (weight : ElementId) (factorTenths capTenths : Nat) (unit : UnitKind)
+  | and (left right : Validation)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted, versioned terminology/product table. Membership is enforced,
+not inferred from a ValueKind.coded value-set name. -/
+structure CodeTable where
+  system : String
+  version : String
+  codes : List String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A data element the spec knows about. -/
 structure ElementSpec where
   id : ElementId
@@ -116,6 +144,136 @@ structure ElementSpec where
   recordFact? : Option String := none
   /-- Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`. -/
   fhirTarget : String
+  validation? : Option Validation := none
+  defaultValue? : Option String := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Closed patient/episode dimensions. Values retain their source coding. -/
+inductive ClinicalField
+  | service | payer | setting | homelessness | pregnancy | capacity | consent
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A current-version coded clinical fact with explicit record provenance. -/
+structure ClinicalObservation where
+  code : String
+  artifactKey : String
+  artifact : String
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+structure ClinicalAge where
+  years : Nat
+  source : ClinicalObservation
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Named facts, not overloaded encounter-kind strings. Absence means unknown. -/
+structure ClinicalFacts where
+  age? : Option ClinicalAge := none
+  service? : Option ClinicalObservation := none
+  payer? : Option ClinicalObservation := none
+  setting? : Option ClinicalObservation := none
+  homelessness? : Option ClinicalObservation := none
+  pregnancy? : Option ClinicalObservation := none
+  capacity? : Option ClinicalObservation := none
+  consent? : Option ClinicalObservation := none
+  risks : List (String × ClinicalObservation) := []
+  testResults : List (String × ClinicalObservation) := []
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Closed applicability language. Evaluation is three-valued; unknown
+conservatively applies a requirement and fires an explicit unknown alert key. -/
+inductive ClinicalPredicate
+  | ageBetween (minYears maxYears : Nat)
+  | factEquals (field : ClinicalField) (code : String)
+  | riskEquals (risk code : String)
+  | testEquals (test code : String)
+  | capturedCode (element : ElementId) (slot : Nat) (code : String)
+  | and (left right : ClinicalPredicate)
+  | or (left right : ClinicalPredicate)
+  | not (predicate : ClinicalPredicate)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Identifier categories with semantic meaning, independent of HTML layout. -/
+inductive IdentifierCategory
+  | patient | encounter | order | drug | product | prescriber | pharmacy
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadFieldReq where
+  field : String
+  /-- False availability explicitly skips this field; absent/unknown requires it. -/
+  ifAvailable : Bool := false
+  kind? : Option ValueKind := none
+  validation? : Option Validation := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Required fields and identifier categories, on every row when requested. -/
+structure PayloadContract where
+  fields : List PayloadFieldReq := []
+  identifiers : List IdentifierCategory := []
+  rowFields : List String := []
+  rowConstraints? : Option (List PayloadFieldReq) := none
+  groupBy? : Option String := none
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadIdentifier where
+  category : IdentifierCategory
+  system : String
+  value : String
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadRow where
+  id : String
+  slot : Nat
+  fields : List (String × String)
+  availability? : Option (List (String × Bool)) := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted current-version data, not a declaration that a placeholder exists. -/
+structure InfoPayload where
+  info : InfoId
+  patient : String
+  artifactKey : String
+  artifact : String
+  version : Nat
+  fields : List (String × String) := []
+  identifiers : List PayloadIdentifier := []
+  availability : List (String × Bool) := []
+  rows : List PayloadRow := []
+  deriving DecidableEq, Repr, Inhabited
+
+structure WorkflowPhase where
+  workflow : String
+  phase : String
+  deriving DecidableEq, Repr, Inhabited
+
+inductive DisplayScope
+  | commit (id : CommitId)
+  | phase (workflow name : String)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- An independent display contract; no review receipt or waiver bypasses it. -/
+structure DisplayReq where
+  info : InfoId
+  scope : DisplayScope
+  when? : Option ClinicalPredicate := none
+  pinned : Bool := false
+  /-- Confirmed flags on each row's slot drive selection emphasis. -/
+  selectionElement? : Option ElementId := none
+  deriving DecidableEq, Repr, Inhabited
+
+structure SelectedPayloadRow where
+  row : PayloadRow
+  selected : Bool
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadGroup where
+  key : String
+  rows : List SelectedPayloadRow
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadView where
+  source : InfoPayload
+  groups : List PayloadGroup
   deriving DecidableEq, Repr, Inhabited
 
 /-- A piece of information the UI can display. -/
@@ -125,6 +283,156 @@ structure InfoSpec where
   /-- Name of the fact that versions this info (e.g. `"allergyVersion"`),
   or `""` if it is not versioned. -/
   version : String
+  payload? : Option PayloadContract := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A named clinical or documentation event (completion and filing are distinct). -/
+abbrev EventId := String
+
+/-- Select current-version evidence through a caller-supplied artifact binding. -/
+structure EventRef where
+  event : EventId
+  artifactKey : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Elapsed minutes or hospital-calendar business dates crossed. -/
+inductive TimeMetric
+  | minutes
+  | businessDays (calendar : String)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Ordering is independent of the number of business dates crossed. -/
+inductive TemporalDirection
+  | before | after | either
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Subject time minus anchor time must lie in these inclusive bounds.
+The deadline is an explicit offset from the anchor, in the same metric.
+Missing evidence always blocks; passing a deadline also exposes overdue status. -/
+structure TemporalReq where
+  id : String
+  when? : Option ClinicalPredicate := none
+  subject : EventRef
+  anchor : EventRef
+  metric : TimeMetric := .minutes
+  /-- Required for business-day windows, whose zero distance alone has no ordering. -/
+  direction? : Option TemporalDirection := none
+  minOffset : Int
+  maxOffset : Int
+  deadline : Int
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Current artifact identity/version, supplied by the record adapter. -/
+structure ArtifactBinding where
+  key : String
+  artifact : String
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted evidence, never manufactured by a UI click or typed attestation.
+Timestamps are UTC epoch minutes, including times before the epoch. -/
+structure EventEvidence where
+  event : EventId
+  patient : String
+  episode : String
+  actor : UserId
+  artifact : String
+  version : Nat
+  time : Int
+  /-- Only anchors may describe planned future events. -/
+  planned : Bool := false
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Hospital-local business dates as epoch-day numbers, with explicit coverage.
+The adapter owns timezone/holiday conversion; duplicate dates do not add days. -/
+structure BusinessCalendar where
+  id : String
+  firstDay : Int
+  lastDay : Int
+  workingDays : List Int
+  /-- UTC-minute transition -> local offset in minutes. None denotes UTC;
+  other zones require coverage before both endpoints, including DST changes. -/
+  utcOffsets? : Option (List (Int × Int)) := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Status of an event obligation, also returned by the screen view. -/
+inductive ObligationStatus
+  | met | missing | invalid | overdue
+  deriving DecidableEq, Repr, Inhabited
+
+structure ObligationView where
+  commit : CommitId
+  requirement : String
+  status : ObligationStatus
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Durable order/detention identity, independent of UI slots and episodes. -/
+abbrev OrderInstanceId := String
+inductive ClockAnchor
+  | issued | started | firstFill
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A hospital-local civil timestamp and its UTC instant. The timezone adapter
+supplies the offset; core verifies date validity and exact UTC conversion. -/
+structure ClockStamp where
+  time : Int
+  year : Nat
+  month : Nat
+  day : Nat
+  minuteOfDay : Nat
+  utcOffsetMinutes : Int
+  zone : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Resolved calendar anniversary; timezone service resolves DST ambiguity.
+Core checks the anniversary date, wall time, zone, and UTC conversion. -/
+structure MonthCutoff where
+  anchor : ClockAnchor
+  months : Nat
+  stamp : ClockStamp
+  deriving DecidableEq, Repr, Inhabited
+
+structure ClockRenewal where
+  event : EventId
+  time : Int
+  actor : UserId
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Original anchors are record inputs. Navigation, transfer and renewal never
+write them. Renewal evidence belongs to this durable instance/current version. -/
+structure OrderClock where
+  id : OrderInstanceId
+  patient : String
+  issued : ClockStamp
+  started? : Option ClockStamp := none
+  firstFill? : Option ClockStamp := none
+  monthCutoffs : List MonthCutoff := []
+  renewals : List ClockRenewal := []
+  deriving DecidableEq, Repr, Inhabited
+
+inductive ExpiryDuration
+  | minutes (duration : Nat)
+  | calendarMonths (months : Nat)
+  deriving DecidableEq, Repr, Inhabited
+
+structure RenewalPolicy where
+  event : EventId
+  validForMinutes : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Actions are blocked at expiry, including the exact cutoff instant.
+Renewal is allowed only when explicitly authorized; maximum original lifetime
+and reassessment remain independent requirements and cannot be reset. -/
+structure ExpiryReq where
+  id : String
+  orderKey : String
+  anchor : ClockAnchor
+  duration : ExpiryDuration
+  when? : Option ClinicalPredicate := none
+  renewal? : Option RenewalPolicy := none
+  reassessment? : Option RenewalPolicy := none
+  maxOriginalMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A commit and the roles allowed to perform it. -/
@@ -132,6 +440,9 @@ structure CommitSpec where
   id : CommitId
   label : String
   roles : List Role
+  temporal? : Option (List TemporalReq) := none
+  expiry? : Option (List ExpiryReq) := none
+  actionLabel? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a requirement applies. -/
@@ -157,6 +468,7 @@ inductive When
   an opioid, and the patient takes a benzodiazepine or the line's daily MME is
   90 or more (an unknown dose, frequency, or MME factor counts as a risk). -/
   | naloxoneRisk
+  | clinical (predicate : ClinicalPredicate)
   deriving DecidableEq, Repr, Inhabited
 
 /-- An element that must be captured before a commit. -/
@@ -201,6 +513,7 @@ inductive AlertCond
   | weightInLb
   | careGap
   | highAlertMed
+  | clinical (predicate : ClinicalPredicate)
   deriving DecidableEq, Repr, Inhabited
 
 /-- Alert tier.
@@ -249,6 +562,7 @@ structure Spec where
   reviews : List ReviewReq
   alerts : List AlertSpec
   design : DesignRules
+  displays? : Option (List DisplayReq) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## UI programs
@@ -344,6 +658,14 @@ structure Component where
   copyOf? : Option CompId := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- A source-only template. String fields may use `{{param}}` placeholders.
+Bodies cannot contain `use`; expansion is finite and structural. -/
+structure ComponentDef where
+  name : String
+  params : List String
+  body : List Component
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A screen. List order of `components` is render order. -/
 structure Screen where
   id : ScreenId
@@ -378,6 +700,7 @@ structure Program where
   start : ScreenId
   screens : List Screen
   macros : List Macro
+  componentDefs : List ComponentDef := []
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Facts (the patient record, abstracted) -/
@@ -446,6 +769,17 @@ structure Facts where
   record : List (String × String) := []
   /-- Kind of this episode, e.g. "preop". Absent means no encounter-kind match. -/
   encounterKind? : Option String := none
+  episodeId? : Option String := none
+  /-- Absolute time; the existing receipt clock retains its original meaning. -/
+  epochMinute? : Option Int := none
+  artifactBindings? : Option (List ArtifactBinding) := none
+  eventEvidence? : Option (List EventEvidence) := none
+  calendars? : Option (List BusinessCalendar) := none
+  clinical? : Option ClinicalFacts := none
+  codeTables? : Option (List CodeTable) := none
+  orderClocks? : Option (List OrderClock) := none
+  infoPayloads? : Option (List InfoPayload) := none
+  phase? : Option WorkflowPhase := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -534,6 +868,9 @@ inductive StepResult
 
 /-- One component as the app should paint it. -/
 structure ItemView where
+  payload? : Option PayloadView := none
+  pinned? : Option Bool := none
+  validationError? : Option String := none
   comp : Component
   /-- Counts as shown: on screen, ancestors open, visibility holds, not tiny,
   and (for alerts) the alert condition holds. -/
@@ -562,6 +899,7 @@ structure ItemView where
 
 /-- The current screen as the app should paint it. -/
 structure ScreenView where
+  obligations? : Option (List ObligationView) := none
   screen : ScreenId
   title : String
   /-- Every component on the screen, in render order. -/

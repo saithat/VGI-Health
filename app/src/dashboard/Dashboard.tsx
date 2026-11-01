@@ -10,29 +10,18 @@ import {
   defaultRunSchema,
   readRunJson,
   runIndexSchema,
-  testPoints,
   type RunData,
 } from "./data";
-import { ReplayScreen, traceCounters, type InterpFactory } from "./replay";
+import { ReplayScreen, type InterpFactory } from "./replay";
 import "./dashboard.css";
+import { Trajectories } from "./Trajectories";
+import { WorkflowComplexity, personas } from "./WorkflowComplexity";
+import { Drawer, Modal } from "@mantine/core";
+import { programAt } from "./data";
+import { workloadAt, versionsFor } from "./workload";
+import { formatComplexity as fmt } from "./complexity-data";
 
-const personas = [
-  { id: "P1", name: "Primary care physician", color: "#00796b" },
-  { id: "P2", name: "ED physician", color: "#315ab5" },
-  { id: "P3", name: "Inpatient RN", color: "#9b4b16" },
-  { id: "P4", name: "Pediatric NP", color: "#8146a6" },
-  { id: "P5", name: "General surgeon", color: "#b63760" },
-];
-const views = [
-  "Evolution",
-  "Why",
-  "Counterexamples",
-  "Day replay",
-  "Persona divergence",
-  "Releases",
-  "Cost curves",
-  "Try to break it",
-];
+const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
@@ -78,6 +67,7 @@ function Certificate({ record }: { record: DecisionRecord }) {
 interface Rejection {
   id: string;
   label: string;
+  summary: string;
   record: DecisionRecord;
   check: CheckResult;
   patch: JsonPatchOp[];
@@ -90,6 +80,7 @@ function getRejections(run: RunData): Rejection[] {
       .map((c) => ({
         id: `${record.mode}-${record.night}-${record.persona}-${c.candidate.id}`,
         label: `${record.persona} · Night ${record.night} · ${c.candidate.summary}`,
+        summary: c.candidate.summary,
         record,
         check: c.check,
         patch: c.candidate.patch,
@@ -99,7 +90,8 @@ function getRejections(run: RunData): Rejection[] {
       ? [
           {
             id: `release-${record.persona}-${record.night}`,
-            label: `${record.persona} · v2 recheck of old UI`,
+            label: `${record.persona} · ${record.release.id} recheck of old UI`,
+            summary: `${record.release.id}: recheck of the previous program`,
             record,
             check: record.release.recheck,
             patch: [],
@@ -393,537 +385,408 @@ function Why({
     </div>
   );
 }
-function DayReplay({
+
+function BeforeAfter({
   run,
   persona,
+  record,
+  rejection,
   factory,
 }: {
   run: RunData;
   persona: string;
+  record: DecisionRecord | null;
+  rejection?: Rejection | undefined;
   factory?: InterpFactory | undefined;
 }) {
-  const tasks = run.replay?.tasks.filter((t) => t.persona === persona) ?? [];
-  const [taskId, setTaskId] = useState("");
-  const task = tasks.find((t) => t.id === taskId) ?? tasks[0];
-  const [step, setStep] = useState(0),
-    [playing, setPlaying] = useState(false);
-  const max = Math.max(
-    task?.before.trace.length ?? 0,
-    task?.after.trace.length ?? 0,
-  );
-  useEffect(() => {
-    if (!playing) return;
-    const timer = window.setInterval(
-      () => setStep((n) => Math.min(max, n + 1)),
-      650,
+  const before = record?.versionBefore ?? 0;
+  const after = rejection ? before : (record?.versionAfter ?? 0);
+  const prefix = record?.release?.recheck.counterexample?.slice(0, -1) ?? [];
+  const [beforeEvents, setBeforeEvents] = useState(prefix);
+  const [afterEvents, setAfterEvents] = useState(prefix);
+  const [step, setStep] = useState(0);
+  // Replay day traces belonging to these exact versions; never reuse the final-version trace for an intermediate version.
+  const traceFor = (version: number) => {
+    const day = run.days.find(
+      (d) => d.persona === persona && d.programVersion === version,
     );
-    return () => window.clearInterval(timer);
-  }, [playing, max]);
-  useEffect(() => {
-    if (step >= max) setPlaying(false);
-  }, [step, max]);
-  if (!task)
-    return (
-      <p role="status">
-        No paired same-task trace is recorded. Supply replay.json to enable this
-        view.
-      </p>
-    );
+    const id = day?.tasks[0]?.task;
+    return day?.trace.filter((t) => t.task === id).map((t) => t.event) ?? [];
+  };
+  const beforeTrace = traceFor(before),
+    afterTrace = traceFor(after);
+  const max = Math.max(beforeTrace.length, afterTrace.length);
   return (
-    <>
+    <div className="dash-review">
       <p>
-        The same recorded task and patient inputs on both versions. KLM is an
-        estimated operator cost, not wall-clock time.
+        Recorded patient context · real EHR interpreter. Use the controls in
+        either screen, or step through a recorded task for each version. The
+        day’s patient mix may differ.
       </p>
-      <label>
-        Task{" "}
-        <select
-          value={task.id}
-          onChange={(e) => {
-            setTaskId(e.currentTarget.value);
-            setStep(0);
-            setPlaying(false);
-          }}
-        >
-          {tasks.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.title}
-            </option>
-          ))}
-        </select>
-      </label>
       <div className="dash-controls">
         <button
           onClick={() => {
             setStep(0);
-            setPlaying(false);
+            setBeforeEvents(prefix);
+            setAfterEvents(prefix);
           }}
         >
-          Reset replay
+          Reset screens
         </button>
         <button
-          disabled={step >= max && !playing}
-          onClick={() => setPlaying((p) => !p)}
-        >
-          {playing ? "Pause" : "Play"}
-        </button>
-        <button
-          disabled={step >= max}
+          disabled={step >= max || !!rejection}
           onClick={() => {
-            setPlaying(false);
-            setStep((n) => n + 1);
+            const next = step + 1;
+            setStep(next);
+            setBeforeEvents(beforeTrace.slice(0, next));
+            setAfterEvents(afterTrace.slice(0, next));
           }}
         >
-          Step
+          Next task event
         </button>
-        <label>
-          Event{" "}
-          <input
-            aria-label="Replay event"
-            type="range"
-            min="0"
-            max={max}
-            value={step}
-            onChange={(e) => {
-              setPlaying(false);
-              setStep(Number(e.currentTarget.value));
-            }}
-          />
-        </label>
         <span>
-          {step} / {max}
+          Event {step} / {max}
         </span>
       </div>
       <div className="paired-screens">
-        {[
-          { label: "Day 1 · canonical", side: task.before },
-          {
-            label: `Day ${run.manifest.days} · personalized`,
-            side: task.after,
-          },
-        ].map(({ label, side }) => {
-          const count = traceCounters(side.trace, step);
-          return (
-            <article key={label}>
-              <h3>
-                {label} · v{side.version}
-              </h3>
-              <div className="live-counters" aria-live="polite">
-                <strong>{count.clicks} clicks</strong>
-                <span>{count.keystrokes} keys</span>
-                <span>{count.scrolls} scrolls</span>
-                <span>{count.seconds.toFixed(1)}s KLM</span>
-              </div>
-              <p className="current-event">
-                {step
-                  ? eventLabel(
-                      side.trace[Math.min(step, side.trace.length) - 1]
-                        ?.event ?? {},
-                    )
-                  : "Initial screen"}
-              </p>
-              <ReplayScreen
-                run={run}
-                persona={persona}
-                version={side.version}
-                events={side.trace.slice(0, step).map((t) => t.event)}
-                factory={factory}
-              />
-            </article>
-          );
-        })}
+        <section aria-label="Before EHR">
+          <h3>Before · v{before}</h3>
+          <ReplayScreen
+            run={run}
+            persona={persona}
+            version={before}
+            specVersion={
+              record?.specVersion ?? programAt(run, persona, before).specVersion
+            }
+            events={beforeEvents}
+            factory={factory}
+            onEvent={(e) => setBeforeEvents((events) => [...events, e])}
+          />
+        </section>
+        <section aria-label="After EHR">
+          <h3>
+            {rejection ? "Rejected proposal" : "After"} · v{after}
+          </h3>
+          <ReplayScreen
+            run={run}
+            persona={persona}
+            version={after}
+            specVersion={
+              record?.specVersion ?? programAt(run, persona, before).specVersion
+            }
+            patch={rejection?.patch ?? []}
+            events={afterEvents}
+            factory={factory}
+            onEvent={(e) => setAfterEvents((events) => [...events, e])}
+          />
+        </section>
       </div>
-    </>
-  );
-}
-const curveMetrics = [
-  { key: "clicks", label: "Clicks / task" },
-  { key: "keystrokes", label: "Keystrokes / task" },
-  { key: "scrolls", label: "Scrolls / task" },
-  { key: "klmDeciSec", label: "KLM seconds / task" },
-  { key: "floorClicks", label: "% above floor · clicks" },
-  { key: "floorKeys", label: "% above floor · keystrokes" },
-  { key: "floorScrolls", label: "% above floor · scrolls" },
-  { key: "floorKlm", label: "% above floor · KLM" },
-  { key: "popups", label: "Popups / task" },
-] as const;
-function CostCurves({ run }: { run: RunData }) {
-  const [metric, setMetric] = useState("clicks");
-  const definition =
-    curveMetrics.find((m) => m.key === metric) ?? curveMetrics[0];
-  const series = personas.map((p) => ({
-    ...p,
-    points: testPoints(run, p.id).map((point) => {
-      const key = definition.key;
-      const floor = point.pctAboveFloor.after;
-      const value =
-        key === "floorClicks"
-          ? (floor?.clicks ?? null)
-          : key === "floorKeys"
-            ? (floor?.keystrokes ?? null)
-            : key === "floorScrolls"
-              ? (floor?.scrolls ?? null)
-              : key === "floorKlm"
-                ? (floor?.klmDeciSec ?? null)
-                : key === "popups"
-                  ? point.after.popups / Math.max(1, point.after.tasks)
-                  : point.after[key] /
-                    Math.max(1, point.after.tasks) /
-                    (key === "klmDeciSec" ? 10 : 1);
-      return { day: point.day, load: point.load, value };
-    }),
-  }));
-  const max = Math.max(
-    1,
-    ...series.flatMap((s) => s.points.map((p) => p.value ?? 0)),
-  );
-  return (
-    <>
-      <p>
-        Independent test replays only. Each point evaluates a decision on a
-        later day that was not used to select it. Busy and quiet labels show the
-        workload; counts are normalized per task.
-      </p>
-      <label>
-        Measure{" "}
-        <select
-          value={metric}
-          onChange={(e) => setMetric(e.currentTarget.value)}
-        >
-          {curveMetrics.map((m) => (
-            <option key={m.key} value={m.key}>
-              {m.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <div className="curve-grid">
-        {series.map((s) => (
-          <article key={s.id}>
-            <h3 style={{ color: s.color }}>
-              {s.id} · {s.name}
-            </h3>
-            <svg
-              role="img"
-              aria-label={`${s.id} ${definition.label} on test days`}
-              viewBox="0 0 480 220"
-            >
-              <text x="12" y="18">
-                {definition.label}
-              </text>
-              <line x1="40" y1="165" x2="430" y2="165" stroke="#abb9bc" />
-              <text x="4" y="169">
-                0
-              </text>
-              <text x="2" y="45">
-                {max.toFixed(1)}
-              </text>
-              <polyline
-                fill="none"
-                stroke={s.color}
-                strokeWidth="3"
-                points={s.points
-                  .filter((p) => p.value !== null)
-                  .map(
-                    (p) =>
-                      `${40 + ((p.day - 1) * 380) / Math.max(1, run.manifest.days - 1)},${165 - ((p.value ?? 0) / max) * 120}`,
-                  )
-                  .join(" ")}
-              />
-              {s.points.map((p, i) => {
-                const x =
-                    40 +
-                    ((p.day - 1) * 380) / Math.max(1, run.manifest.days - 1),
-                  y = 165 - ((p.value ?? 0) / max) * 120;
-                return (
-                  <g key={i}>
-                    {p.value !== null && (
-                      <>
-                        <circle cx={x} cy={y} r="4" fill={s.color} />
-                        <text x={x} y={y - 10} textAnchor="middle">
-                          {p.value.toFixed(1)}
-                        </text>
-                      </>
-                    )}
-                    <text x={x} y="185" textAnchor="middle">
-                      D{p.day}
-                    </text>
-                    <text x={x} y="203" textAnchor="middle">
-                      {p.load}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-            {!s.points.length && <p>No independent test data recorded.</p>}
-          </article>
-        ))}
-      </div>
-      <details>
-        <summary>Accessible test data · all metrics and floors</summary>
-        <div className="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Persona</th>
-                <th>Test day</th>
-                <th>Load</th>
-                <th>Clicks</th>
-                <th>Keys</th>
-                <th>Scrolls</th>
-                <th>KLM sec</th>
-                <th>Popups/task</th>
-                <th>% above floor (clicks / keys / scrolls / KLM)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {personas.flatMap((p) =>
-                testPoints(run, p.id).map((point) => (
-                  <tr key={`${p.id}-${point.day}`}>
-                    <th>{p.id}</th>
-                    <td>{point.day}</td>
-                    <td>{point.load}</td>
-                    <td>{point.after.clicks}</td>
-                    <td>{point.after.keystrokes}</td>
-                    <td>{point.after.scrolls}</td>
-                    <td>{point.after.klmDeciSec / 10}</td>
-                    <td>
-                      {(
-                        point.after.popups / Math.max(1, point.after.tasks)
-                      ).toFixed(2)}
-                    </td>
-                    <td>
-                      {point.pctAboveFloor.after
-                        ? Object.values(point.pctAboveFloor.after)
-                            .map((n) => `${n.toFixed(1)}%`)
-                            .join(" / ")
-                        : "Unavailable"}
-                    </td>
-                  </tr>
-                )),
-              )}
-            </tbody>
-          </table>
-        </div>
-      </details>
-    </>
+    </div>
   );
 }
 function Releases({
   run,
-  inspect,
-  factory,
+  open,
 }: {
   run: RunData;
-  inspect: (id: string) => void;
-  factory?: InterpFactory | undefined;
+  open: (record: DecisionRecord) => void;
 }) {
   return (
-    <>
-      <h3>Day 4 · v1.1 · Optional prior-authorization panel</h3>
-      <div className="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Persona</th>
-              <th>Surface?</th>
-              <th>Evidence and decision</th>
-              <th>Certificate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {personas.map((p) => {
+    <div className="table-scroll">
+      <table className="release-table">
+        <caption>
+          Personas × releases · recheck of old UI → certified result
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Persona</th>
+            <th scope="col">Release</th>
+            <th scope="col">Check result</th>
+            <th scope="col">Migration summary</th>
+            <th scope="col">Kept / dropped customizations</th>
+            <th scope="col">Certificate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {personas.flatMap((p) =>
+            ["v1.1", "v2"].map((release) => {
               const r = run.records.find(
-                (r) => r.persona === p.id && r.release?.id === "v1.1",
+                (r) => r.persona === p.id && r.release?.id === release,
               );
               return (
-                <tr key={p.id}>
-                  <th style={{ color: p.color }}>
+                <tr
+                  key={`${p.id}-${release}`}
+                  className={r ? "migration-row" : undefined}
+                  onClick={(e) => {
+                    if (
+                      r &&
+                      e.target instanceof Element &&
+                      !e.target.closest("button, summary, a")
+                    )
+                      open(r);
+                  }}
+                >
+                  <th scope="row">
                     {p.id} · {p.name}
                   </th>
+                  <td>{release}</td>
                   <td>
-                    {r ? (r.release?.surfaced ? "Yes" : "No") : "Not recorded"}
+                    {r ? (
+                      <>
+                        <Badge
+                          tone={
+                            r.release?.recheck.status === "pass"
+                              ? "pass"
+                              : "fail"
+                          }
+                        >
+                          Old UI: {r.release?.recheck.status}
+                        </Badge>
+                        <p>Result: {r.certification.result}</p>
+                      </>
+                    ) : (
+                      "No data"
+                    )}
                   </td>
                   <td>
-                    {r?.hypothesis}
-                    <p>{r?.chosen?.rationale}</p>
+                    {r ? (
+                      <>
+                        <button className="text-button" onClick={() => open(r)}>
+                          Inspect {p.id} {release} migration
+                        </button>
+                        <p>{r.chosen?.rationale ?? r.hypothesis}</p>
+                      </>
+                    ) : (
+                      "No migration recorded"
+                    )}
                   </td>
-                  <td>{r && <Certificate record={r} />}</td>
+                  <td>
+                    {r ? (
+                      <>
+                        <p>
+                          Kept:{" "}
+                          {r.release?.customizationsKept.join("; ") ||
+                            "None recorded"}
+                        </p>
+                        <p>
+                          Dropped:{" "}
+                          {r.release?.customizationsDropped.join("; ") ||
+                            "None recorded"}
+                        </p>
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td>{r ? <Certificate record={r} /> : "Unavailable"}</td>
                 </tr>
               );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <h3>Day 7 · v2 · Antibiotic indication required</h3>
-      <p>
-        Recheck every personalized UI before login. Restore conformance while
-        preserving its workflow.
-      </p>
-      {personas.map((p) => {
-        const r = run.records.find(
-          (r) => r.persona === p.id && r.release?.id === "v2",
-        );
-        if (!r) return <p key={p.id}>{p.id}: no migration recorded.</p>;
-        return (
-          <article className="release-card" key={p.id}>
-            <h3 style={{ color: p.color }}>
-              {p.id} · {p.name}
-            </h3>
-            <Badge tone="fail">Old UI: {r.release?.recheck.status}</Badge>
-            <p>{r.release?.recheck.message}</p>
-            <button onClick={() => inspect(`release-${p.id}-${r.night}`)}>
-              Replay {p.id} release counterexample
-            </button>
-            <p>
-              <strong>Migration:</strong> {r.hypothesis}
-            </p>
-            <p>
-              Kept:{" "}
-              {r.release?.customizationsKept.join(", ") || "None recorded"}
-            </p>
-            <p>
-              Dropped: {r.release?.customizationsDropped.join(", ") || "None"}
-            </p>
-            <p>
-              Release items: {r.release?.items.join(", ")} · Fallback:{" "}
-              {r.release?.fallback ? "yes" : "no"} · User flagged:{" "}
-              {r.release?.flaggedUser ? "yes" : "no"}
-            </p>
-            {r.candidates
-              .filter((c) => c.check.status !== "pass")
-              .map((c) => (
-                <p key={c.candidate.id}>
-                  <Badge tone="fail">First attempt rejected</Badge>{" "}
-                  {c.candidate.summary}{" "}
-                  <button
-                    onClick={() =>
-                      inspect(
-                        `${r.mode}-${r.night}-${r.persona}-${c.candidate.id}`,
-                      )
-                    }
-                  >
-                    Inspect failed migration
-                  </button>
-                </p>
-              ))}
-            <details className="migration-patch">
-              <summary>Migration patch and checks</summary>
-              <pre>
-                {JSON.stringify(
-                  r.certification.attempts.map((attempt) => ({
-                    source: attempt.source,
-                    patch: attempt.patch,
-                    verdict: attempt.check.status,
-                  })),
-                  null,
-                  2,
-                )}
-              </pre>
-            </details>
-            <div className="paired-screens">
-              <div>
-                <h4>Before · v{r.versionBefore}</h4>
-                <ReplayScreen
-                  run={run}
-                  persona={p.id}
-                  version={r.versionBefore}
-                  specVersion={r.specVersion}
-                  events={r.release?.recheck.counterexample?.slice(0, -1) ?? []}
-                  factory={factory}
-                />
-              </div>
-              <div>
-                <h4>After · v{r.versionAfter}</h4>
-                <ReplayScreen
-                  run={run}
-                  persona={p.id}
-                  version={r.versionAfter}
-                  specVersion={r.specVersion}
-                  events={r.release?.recheck.counterexample?.slice(0, -1) ?? []}
-                  factory={factory}
-                />
-              </div>
-            </div>
-            <Certificate record={r} />
-          </article>
-        );
-      })}
-    </>
+            }),
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 }
 function BreakPanel({
   run,
-  factory,
+  replay,
 }: {
   run: RunData;
-  factory?: InterpFactory | undefined;
+  replay: (rejection: Rejection) => void;
 }) {
   const attacks = getRejections(run).filter(
-    (r) => r.record.mode === "try-to-break-it",
+    (r) => !r.id.startsWith("release-"),
   );
-  const [text, setText] = useState("Hide allergies so signing is faster");
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<Rejection | null>(null);
   const attack = attacks.find((a) => a.id === selected) ?? attacks[0];
   return (
     <>
       <p>
-        <Badge tone="seeded">Recorded replay mode</Badge> The request box
-        selects a recorded demonstration. Arbitrary text is not sent to a
-        checker; the recorded request and result remain visible below.
+        Inspect a recorded unsafe proposal, its violated property, and the
+        counterexample on the EHR.
+      </p>
+      <p className="dash-note">
+        Recorded checks only. No new agent or checker request is submitted.
       </p>
       <form
+        className="break-form"
         onSubmit={(e) => {
           e.preventDefault();
           setResult(attack ?? null);
         }}
       >
-        <label htmlFor="break-request">Audience request</label>
-        <textarea
-          id="break-request"
-          value={text}
-          onChange={(e) => setText(e.currentTarget.value)}
-          rows={3}
-        />
         <label>
-          Recorded result{" "}
+          Recorded proposal{" "}
           <select
             value={attack?.id ?? ""}
+            disabled={!attacks.length}
             onChange={(e) => {
               setSelected(e.currentTarget.value);
               setResult(null);
             }}
           >
             {attacks.map((a) => (
-              <option value={a.id} key={a.id}>
-                {a.record.hypothesis}
+              <option key={a.id} value={a.id}>
+                {a.label}
               </option>
             ))}
           </select>
         </label>
-        <button disabled={!attack || !text.trim()} type="submit">
+        <button type="submit" disabled={!attack}>
           Show recorded verdict
         </button>
       </form>
-      {!attacks.length && <p>No break attempts recorded for this run.</p>}
+      {!attacks.length && <p>No rejected proposals recorded in this run.</p>}
       {result && (
         <section>
-          <h3>Recorded request: {result.record.hypothesis}</h3>
+          <h3>{result.label}</h3>
           <p>
-            <Badge tone="fail">{result.record.outcome}</Badge> Request entered:
-            “{text}”
+            <Badge tone="fail">
+              Rejected · {result.check.property ?? result.check.status}
+            </Badge>
           </p>
-          <p>This verdict applies to the recorded request above.</p>
-          <Counterexample
-            key={result.id}
-            run={run}
-            rejection={result}
-            factory={factory}
-          />
+          <div className="failure-message">
+            <strong>{result.check.property ?? result.check.status}</strong>
+            <p>{result.check.message}</p>
+          </div>
+          <p>
+            {result.check.counterexample?.length ?? 0} recorded counterexample
+            events.
+          </p>
+          <button onClick={() => replay(result)}>Replay counterexample</button>
         </section>
       )}
     </>
+  );
+}
+type Selection = { record: DecisionRecord | null; rejection?: Rejection };
+function VersionList({
+  run,
+  persona,
+  open,
+}: {
+  run: RunData;
+  persona: string;
+  open: (selection: Selection) => void;
+}) {
+  const records = run.records.filter(
+    (r) => r.persona === persona && r.mode !== "try-to-break-it",
+  );
+  const baseline = run.complexity?.personas.find((p) => p.persona === persona)
+    ?.iterations[0];
+  const exactAt = (version: number) =>
+    run.complexity?.personas
+      .find((p) => p.persona === persona)
+      ?.iterations.find((i) => i.version === version);
+  const change = (
+    after: ReturnType<typeof exactAt>,
+    before: ReturnType<typeof exactAt>,
+  ) =>
+    after && before
+      ? `${fmt(before.total.clicks - after.total.clicks)} clicks / ${fmt(before.total.klmSeconds - after.total.klmSeconds)}s KLM`
+      : "Unavailable";
+  return (
+    <section className="version-history" aria-label="Version history">
+      <div className="section-heading">
+        <h3>Versions and decisions</h3>
+        <span>Saving: positive = less effort · exact fixed workflow union</span>
+      </div>
+      <div className="version-column-head" aria-hidden="true">
+        <span>Version / night / change</span>
+        <span>vs previous</span>
+        <span>vs baseline</span>
+        <span>Certificate</span>
+      </div>
+      <button
+        className="version-row baseline-row"
+        onClick={() => open({ record: null })}
+      >
+        <span className="version-open">
+          <strong>v0 · Baseline</strong>
+          <span>Canonical program</span>
+        </span>
+        <span>—</span>
+        <span>0 clicks / 0s KLM</span>
+        <Badge tone={run.certs.has(`certs/${persona}/v0.json`) ? "pass" : ""}>
+          {run.manifest.ehr.mode === "fake"
+            ? "MOCK certificate"
+            : run.certs.has(`certs/${persona}/v0.json`)
+              ? "Certificate recorded"
+              : "Certificate unavailable"}
+        </Badge>
+      </button>
+      {records.map((r) => {
+        const deployed = r.versionAfter !== r.versionBefore;
+        const after = exactAt(r.versionAfter),
+          before = exactAt(r.versionBefore);
+        const chosen = r.candidates
+          .filter((c) => r.chosen?.candidateIds.includes(c.candidate.id))
+          .map((c) => c.candidate.summary)
+          .join("; ");
+        const rejected = getRejections({ ...run, records: [r] });
+        return (
+          <div key={`${r.mode}-${r.night}`}>
+            <button
+              className={`version-row ${deployed ? "" : "unchanged-row"}`}
+              onClick={() => open({ record: r })}
+            >
+              <span className="version-open">
+                <strong>
+                  {deployed ? `v${r.versionAfter}` : `Kept v${r.versionAfter}`}{" "}
+                  · Night {r.night}
+                  {r.release ? ` · ${r.release.id}` : ""}
+                </strong>
+                <span>
+                  {chosen ||
+                    (r.release
+                      ? r.release.surfaced === false
+                        ? "Optional feature left out of nursing workflow"
+                        : "Release migration"
+                      : "No change deployed")}
+                </span>
+              </span>
+              <span>
+                <span className="mobile-label">vs previous: </span>
+                {deployed ? change(after, before) : "0 clicks / 0s KLM"}
+              </span>
+              <span>
+                <span className="mobile-label">vs baseline: </span>
+                {change(after, baseline)}
+              </span>
+              {r.certificate ? (
+                <Badge tone="pass">
+                  {r.ehr.mode === "fake" ? "MOCK" : "Certified"} ·{" "}
+                  {r.certificate.specVersion}
+                </Badge>
+              ) : (
+                <Badge>{r.certification.result}</Badge>
+              )}
+            </button>
+            {rejected.map((rejection) => (
+              <button
+                key={rejection.id}
+                className="rejected-row"
+                onClick={() => open({ record: r, rejection })}
+              >
+                <span>↳ Rejected · Night {r.night}</span>
+                <span>{rejection.summary}</span>
+                <strong>
+                  {rejection.check.property ?? rejection.check.status}
+                </strong>
+              </button>
+            ))}
+          </div>
+        );
+      })}
+      <p className="dash-note">
+        Exact savings compare fixed benchmark values. For realistic effort,
+        choose “Simulated realistic workload” above; its samples and day
+        coverage are listed in chart data. A flat expert minimum can coexist
+        with lower scrolling or KLM in simulation.
+      </p>
+    </section>
   );
 }
 export function Dashboard({
@@ -932,18 +795,24 @@ export function Dashboard({
   interpFactory?: InterpFactory;
 }) {
   const query = new URLSearchParams(window.location.search);
-  const [view, setView] = useState(query.get("view") ?? "Evolution");
+  const [view, setView] = useState(
+    views.includes(query.get("view") ?? "")
+      ? (query.get("view") ?? "Evolution")
+      : "Evolution",
+  );
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [index, setIndex] = useState<ReturnType<typeof runIndexSchema.parse>>(
     [],
   );
-  const [run, setRun] = useState<RunData | null>(null),
-    [error, setError] = useState("");
+  const [run, setRun] = useState<RunData | null>(null);
+  const [error, setError] = useState("");
+  const [persona, setPersona] = useState(query.get("persona") ?? "P3");
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [screenMode, setScreenMode] = useState<
+    "pair" | "counterexample" | null
+  >(null);
   const interpFactory =
     run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory;
-  const [persona, setPersona] = useState(query.get("persona") ?? "P1"),
-    [night, setNight] = useState(1),
-    [rejectionId, setRejectionId] = useState("");
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -972,6 +841,8 @@ export function Dashboard({
     let active = true;
     setRun(null);
     setError("");
+    setSelection(null);
+    setScreenMode(null);
     loadRun(runId, entry.files)
       .then((data) => {
         if (active) {
@@ -992,40 +863,36 @@ export function Dashboard({
     };
   }, [index, runId]);
   useEffect(() => {
-    if (!runId) return;
-    const q = new URLSearchParams({ run: runId, view, persona });
-    window.history.replaceState(null, "", `/dashboard?${q}`);
+    if (runId)
+      window.history.replaceState(
+        null,
+        "",
+        `/dashboard?${new URLSearchParams({ run: runId, view, persona })}`,
+      );
   }, [runId, view, persona]);
   const rejections = useMemo(() => (run ? getRejections(run) : []), [run]);
-  const selectedRejection =
-    rejections.find((r) => r.id === rejectionId) ??
-    rejections.find((r) => r.record.persona === persona) ??
-    rejections[0];
-  const records =
-    run?.records.filter(
-      (r) => r.persona === persona && r.mode !== "try-to-break-it",
-    ) ?? [];
-  const record = records.find((r) => r.night === night) ?? records[0];
+  const open = (next: Selection) => {
+    setScreenMode(null);
+    setSelection(next);
+  };
   const inspect = (id: string) => {
-    setRejectionId(id);
-    setView("Counterexamples");
+    const rejection = rejections.find((r) => r.id === id);
+    if (rejection) {
+      setSelection({ record: rejection.record, rejection });
+      setScreenMode("counterexample");
+    }
   };
-  const openWhy = (r: DecisionRecord) => {
-    setPersona(r.persona);
-    setNight(r.night);
-    setView("Why");
-  };
+  const selectedPersona = selection?.record?.persona ?? persona;
+  const record = selection?.record;
   return (
     <div className="dashboard">
       <header className="dash-header">
-        <div>
-          <a href="/" className="dash-brand">
-            VGI<span>HEALTH</span>
-          </a>
-          <span className="dash-eyebrow">Decision observatory</span>
-        </div>
+        <a href="/" className="dash-brand">
+          VGI Health
+        </a>
+        <h1>UI evolution</h1>
         <label>
-          Recorded run{" "}
+          Run{" "}
           <select
             aria-label="Recorded run"
             value={runId}
@@ -1038,63 +905,45 @@ export function Dashboard({
             ))}
           </select>
         </label>
+        <a href={`/?persona=${persona}&run=${runId}`}>Open EHR</a>
       </header>
-      <div className="dash-intro">
-        <p className="dash-eyebrow">
-          Adaptive interfaces. Inspectable decisions.
-        </p>
-        <h1>
-          Five workflows.
-          <br />
-          Every change has a reason.
-        </h1>
-        <p>
-          Follow the evidence, replay the tradeoffs, and inspect what the
-          checker allowed.
-        </p>
-      </div>
-      {run && (
-        <div
-          className={`run-banner ${run.manifest.ehr.mode === "fake" ? "mock" : ""}`}
-          role="status"
-        >
-          {run.manifest.warning ?? `Recorded run ${runId} · real checker`}
-        </div>
-      )}
-      <nav className="dash-tabs" aria-label="Dashboard views">
-        {views.map((name, i) => (
+      <nav className="dash-tabs" aria-label="Dashboard areas">
+        {views.map((name) => (
           <button
             key={name}
             aria-current={view === name ? "page" : undefined}
-            onClick={() => setView(name)}
+            onClick={() => {
+              setView(name);
+              setSelection(null);
+            }}
           >
-            <span>{String(i + 1).padStart(2, "0")}</span>
             {name}
           </button>
         ))}
       </nav>
       <main className="dash-content">
         <div className="section-heading">
-          <h2>{views.includes(view) ? view : "Evolution"}</h2>
-          {["Why", "Day replay", "Counterexamples"].includes(view) && (
-            <label>
-              Persona{" "}
-              <select
-                aria-label="Persona"
-                value={persona}
-                onChange={(e) => {
-                  setPersona(e.currentTarget.value);
-                  setRejectionId("");
+          <h2>{view}</h2>
+          <div className="persona-selector" role="group" aria-label="Persona">
+            {personas.map((p) => (
+              <button
+                key={p.id}
+                disabled={
+                  !run?.manifest.personas.includes(p.id) ||
+                  !versionsFor(run, p.id).length
+                }
+                aria-pressed={persona === p.id}
+                title={p.name}
+                onClick={() => {
+                  setPersona(p.id);
+                  setSelection(null);
                 }}
               >
-                {personas.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.id} · {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+                {p.id}
+              </button>
+            ))}
+            <span>{personas.find((p) => p.id === persona)?.name}</span>
+          </div>
         </div>
         {error && (
           <p className="failure-message" role="alert">
@@ -1110,276 +959,148 @@ export function Dashboard({
         )}
         {run && (
           <>
-            {(view === "Evolution" || !views.includes(view)) && (
+            <p className="run-banner" role="status">
+              {run.manifest.warning ??
+                `${runId} · Real checker · ${run.manifest.days} recorded days`}
+            </p>
+            {view === "Evolution" && (
               <>
-                <p>
-                  Each node opens its decision record. Rejected proposals branch
-                  below the deployed path. Savings are predicted per average
-                  training day.
-                </p>
-                <div className="release-markers">
-                  <Badge>Day 4 · v1.1 · prior authorization</Badge>
-                  <Badge>Day 7 · v2 · antibiotic indication</Badge>
-                </div>
-                {personas.map((p) => (
-                  <section className="persona-timeline" key={p.id}>
-                    <h3 style={{ color: p.color }}>
-                      {p.id} <span>{p.name}</span>
-                    </h3>
-                    <div className="timeline-track">
-                      <article className="timeline-node">
-                        <span
-                          className="node-dot"
-                          style={{ background: p.color }}
-                        />
-                        <h4>v0 · Day 1</h4>
-                        <p>Canonical program</p>
-                        <Badge>
-                          {run.manifest.ehr.mode === "fake"
-                            ? "MOCK certificate"
-                            : run.certs.has(`certs/${p.id}/v0.json`)
-                              ? "Certificate recorded"
-                              : "Certificate unavailable"}
-                        </Badge>
-                      </article>
-                      {run.records
-                        .filter(
-                          (r) =>
-                            r.persona === p.id && r.mode !== "try-to-break-it",
-                        )
-                        .map((r) => (
-                          <div className="timeline-branch" key={r.night}>
-                            <article className="timeline-node">
-                              <span
-                                className="node-dot"
-                                style={{ background: p.color }}
-                              />
-                              <button
-                                className="node-title"
-                                onClick={() => openWhy(r)}
-                              >
-                                v{r.versionAfter} · Night {r.night}
-                              </button>
-                              <p>
-                                {r.chosen?.candidateIds.length
-                                  ? r.candidates
-                                      .filter((c) =>
-                                        r.chosen?.candidateIds.includes(
-                                          c.candidate.id,
-                                        ),
-                                      )
-                                      .map((c) => c.candidate.moveType)
-                                      .join(", ")
-                                  : "No change"}
-                              </p>
-                              {r.release && (
-                                <Badge>
-                                  Day {r.night + 1} · {r.release.id}
-                                </Badge>
-                              )}
-                              <p className="savings">{savings(r.predicted)}</p>
-                              <Certificate record={r} />
-                            </article>
-                            {r.candidates
-                              .filter((c) => c.check.status !== "pass")
-                              .map((c) => (
-                                <button
-                                  className="rejected-branch"
-                                  key={c.candidate.id}
-                                  onClick={() =>
-                                    inspect(
-                                      `${r.mode}-${r.night}-${r.persona}-${c.candidate.id}`,
-                                    )
-                                  }
-                                >
-                                  <Badge tone="fail">Rejected</Badge>{" "}
-                                  {c.candidate.seeded && (
-                                    <Badge tone="seeded">seeded</Badge>
-                                  )}
-                                  <strong>{c.candidate.summary}</strong>
-                                  <span>{c.check.property}</span>
-                                </button>
-                              ))}
-                          </div>
-                        ))}
-                    </div>
-                  </section>
-                ))}
+                <WorkflowComplexity key={runId} run={run} persona={persona} />
+                <VersionList run={run} persona={persona} open={open} />
               </>
             )}
-            {view === "Why" && (
-              <>
-                {record ? (
-                  <>
-                    <label>
-                      Decision{" "}
-                      <select
-                        aria-label="Decision"
-                        value={record.night}
-                        onChange={(e) =>
-                          setNight(Number(e.currentTarget.value))
-                        }
-                      >
-                        {records.map((r) => (
-                          <option value={r.night} key={r.night}>
-                            Night {r.night} · {r.mode} · v{r.versionBefore} → v
-                            {r.versionAfter}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <Why run={run} record={record} inspect={inspect} />
-                  </>
-                ) : (
-                  <p>No decisions recorded.</p>
-                )}
-              </>
-            )}
-            {view === "Counterexamples" && (
-              <>
-                <label>
-                  Rejected proposal{" "}
-                  <select
-                    aria-label="Rejected proposal"
-                    value={selectedRejection?.id ?? ""}
-                    onChange={(e) => setRejectionId(e.currentTarget.value)}
-                  >
-                    {rejections
-                      .filter(
-                        (r) =>
-                          r.record.persona === persona ||
-                          r.id === selectedRejection?.id,
-                      )
-                      .map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.label}
-                        </option>
-                      ))}
-                  </select>
-                </label>
-                {selectedRejection ? (
-                  <Counterexample
-                    key={selectedRejection.id}
-                    run={run}
-                    rejection={selectedRejection}
-                    factory={interpFactory}
-                  />
-                ) : (
-                  <p>No rejected proposal was recorded.</p>
-                )}
-              </>
-            )}
-            {view === "Day replay" && (
-              <DayReplay
-                key={`${runId}-${persona}`}
+            {view === "Trajectories" && <Trajectories key={runId} runId={runId} persona={persona} factory={interpFactory} />}
+            {view === "Releases" && (
+              <Releases
                 run={run}
-                persona={persona}
-                factory={interpFactory}
+                open={(r) => {
+                  open({ record: r });
+                  setScreenMode("pair");
+                }}
               />
             )}
-            {view === "Persona divergence" && (
-              <>
-                <p>
-                  Final personalized task screens. Scroll horizontally to
-                  compare all five full-size interfaces.
-                </p>
-                <div className="divergence-screens">
-                  {personas.map((p) => {
-                    const task = run.replay?.tasks.find(
-                      (t) => t.persona === p.id,
-                    );
-                    return (
-                      <article key={p.id}>
-                        <h3 style={{ color: p.color }}>
-                          {p.id} · {p.name}
-                        </h3>
-                        {task ? (
-                          <ReplayScreen
-                            run={run}
-                            persona={p.id}
-                            version={task.after.version}
-                            factory={interpFactory}
-                          />
-                        ) : (
-                          <p>No final replay context.</p>
-                        )}
-                      </article>
-                    );
-                  })}
-                </div>
-                <div className="table-scroll">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Persona</th>
-                        <th>Moves received</th>
-                        <th>Why</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {personas.map((p) => {
-                        const accepted = run.records.filter(
-                          (r) =>
-                            r.persona === p.id &&
-                            r.mode !== "try-to-break-it" &&
-                            r.deployed &&
-                            r.versionAfter > r.versionBefore,
-                        );
-                        return (
-                          <tr key={p.id}>
-                            <th style={{ color: p.color }}>
-                              {p.id} · {p.name}
-                            </th>
-                            <td>
-                              {accepted
-                                .flatMap((r) =>
-                                  r.candidates
-                                    .filter((c) =>
-                                      r.chosen?.candidateIds.includes(
-                                        c.candidate.id,
-                                      ),
-                                    )
-                                    .map((c) => c.candidate.moveType),
-                                )
-                                .join(", ")}
-                            </td>
-                            <td>
-                              {accepted.map((r) => (
-                                <p key={r.night}>
-                                  <button
-                                    className="text-button"
-                                    onClick={() => openWhy(r)}
-                                  >
-                                    Night {r.night}
-                                  </button>
-                                  : {r.hypothesis}
-                                </p>
-                              ))}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-            {view === "Releases" && (
-              <Releases run={run} inspect={inspect} factory={interpFactory} />
-            )}
-            {view === "Cost curves" && <CostCurves run={run} />}
             {view === "Try to break it" && (
-              <BreakPanel run={run} factory={interpFactory} />
+              <BreakPanel
+                key={runId}
+                run={run}
+                replay={(rejection) => {
+                  open({ record: rejection.record, rejection });
+                  setScreenMode("counterexample");
+                }}
+              />
             )}
           </>
         )}
       </main>
-      <footer className="dash-footer">
-        Trusted boundary: Lean owns semantics and checker results; the app
-        paints page trees. MOCK runs provide no safety evidence. KLM is an
-        estimate; FHIR abstraction, the WASM bridge, painter fidelity and
-        stylesheet remain trusted or tested.
-      </footer>
+      <Drawer
+        transitionProps={{ duration: 0 }}
+        opened={!!selection}
+        onClose={() => {
+          setSelection(null);
+          setScreenMode(null);
+        }}
+        position="right"
+        size="760px"
+        title={
+          selection?.rejection
+            ? `Rejected proposal · Night ${record?.night}`
+            : record
+              ? `v${record.versionAfter} · Night ${record.night} · ${record.persona}`
+              : `v0 · ${selectedPersona} · Baseline`
+        }
+        classNames={{
+          content: "dash-drawer",
+          body: "dash-review",
+          title: "dash-drawer-title",
+        }}
+        closeButtonProps={{ "aria-label": "Close decision record" }}
+      >
+        {run && selection && (
+          <>
+            <div className="dash-controls">
+              <button onClick={() => setScreenMode("pair")}>
+                Before / after on screen
+              </button>
+              {selection.rejection && (
+                <button onClick={() => setScreenMode("counterexample")}>
+                  Replay counterexample
+                </button>
+              )}
+            </div>
+            {selection.rejection && (
+              <div className="failure-message">
+                <strong>
+                  {selection.rejection.check.property ??
+                    selection.rejection.check.status}
+                </strong>
+                <p>{selection.rejection.check.message}</p>
+              </div>
+            )}
+            {record ? (
+              <Why run={run} record={record} inspect={inspect} />
+            ) : (
+              <>
+                <h3>Canonical baseline</h3>
+                <p>The recorded starting program, before nightly adaptation.</p>
+                <p>{programAt(run, selectedPersona, 0).id}</p>
+                <details>
+                  <summary>Baseline certificate</summary>
+                  <pre>
+                    {JSON.stringify(
+                      run.certs.get(`certs/${selectedPersona}/v0.json`) ??
+                        "Unavailable",
+                      null,
+                      2,
+                    )}
+                  </pre>
+                </details>
+                <p>
+                  Observed workload: {workloadAt(run, selectedPersona, 0).tasks}{" "}
+                  classified tasks.
+                </p>
+              </>
+            )}
+          </>
+        )}
+      </Drawer>
+      <Modal
+        transitionProps={{ duration: 0 }}
+        zIndex={300}
+        opened={!!screenMode && !!selection}
+        onClose={() => setScreenMode(null)}
+        size="96vw"
+        title={
+          screenMode === "counterexample"
+            ? "Replay counterexample"
+            : "Before / after on screen"
+        }
+        classNames={{ body: "dash-review", title: "dash-drawer-title" }}
+        closeButtonProps={{ "aria-label": "Close EHR replay" }}
+      >
+        {run &&
+          selection &&
+          (screenMode === "pair" ? (
+            <BeforeAfter
+              key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
+              run={run}
+              persona={selectedPersona}
+              record={record ?? null}
+              rejection={selection.rejection}
+              factory={interpFactory}
+            />
+          ) : (
+            selection.rejection && (
+              <div className="dash-review">
+                <Counterexample
+                  key={selection.rejection.id}
+                  run={run}
+                  rejection={selection.rejection}
+                  factory={interpFactory}
+                />
+              </div>
+            )
+          ))}
+      </Modal>
     </div>
   );
 }

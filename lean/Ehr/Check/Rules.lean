@@ -118,6 +118,18 @@ def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
       (spec.element? e).any (fun el => el.recordFact? == some fact)
     | _ => true
 
+/-- Linked prefill copies a value without conversion, so its source must be
+known and have the same kind (including the quantity unit). This also rules
+out ill-typed prefilled state being stranded on an archived order line. -/
+def linkedSourcesTyped (spec : Spec) (prog : Program) : Bool :=
+  (allComps prog).all fun sc =>
+    match fieldOf? sc.2.kind with
+    | some (e, _, .linked source) =>
+      match spec.element? e, spec.element? source with
+      | some target, some src => target.kind == src.kind
+      | _, _ => false
+    | _ => true
+
 /-! ## Completability rules -/
 
 /-- Screens with a commit button for `c` that can always be made shown. -/
@@ -130,6 +142,18 @@ def commitScreens (prog : Program) (c : CommitId) : List ScreenId :=
 (including `a`). -/
 def openReach (prog : Program) (a : ScreenId) : List ScreenId :=
   (bfs prog (openGotoEdges prog) a).map (·.1)
+
+/-- Compute each declared screen's open reachability once per check. -/
+def openReachTable (prog : Program) : List (ScreenId × List ScreenId) :=
+  let edges := openGotoEdges prog
+  prog.screens.map fun scr => (scr.id, (bfs prog edges scr.id).map (·.1))
+
+/-- Reuse a table entry, with the original search as a total fallback. -/
+def tableReach (prog : Program) (table : List (ScreenId × List ScreenId))
+    (start : ScreenId) : List ScreenId :=
+  match table.find? (fun entry => entry.1 == start) with
+  | some entry => entry.2
+  | none => openReach prog start
 
 /-- The program has an "add order line" button. -/
 def hasNewLine (prog : Program) : Bool :=
@@ -147,6 +171,21 @@ def drugSlots (prog : Program) : List Slot :=
     match fieldOf? sc.2.kind with
     | some f => if f.1 == drugElement then some f.2.1 else none
     | none => none).eraseDups
+
+/-- A fixed-slot field can still edit an archived line after the current
+slot advances. Such writes must not strand a per-line requirement (including
+one newly triggered by changing a naloxone-risk dose/frequency). Current-slot
+fields alone cannot repair that archived line. -/
+def repairSlots (spec : Spec) (prog : Program) (c : CommitId) : List Slot :=
+  let reqs := spec.entries.filter fun rq => rq.commit == c && rq.perOrderLine
+  let fixed : List Slot := (allComps prog).filterMap fun sc =>
+    match fieldOf? sc.2.kind with
+    | some (e, .fixed n, _) =>
+      if reqs.any (fun rq => rq.element == e ||
+          (rq.when == .naloxoneRisk && (e == doseElement || e == freqElement)))
+      then some (.fixed n) else none
+    | _ => none
+  (drugSlots prog ++ fixed).eraseDups
 
 /-- A field can repair the drug field's slot. With add-line navigation,
 current fields repair only the current line; fixed fields repair their own
@@ -183,11 +222,12 @@ the completability rules for `c` with commit screen `s`:
   a field for the waiver element reachable from `s`;
 - per-order-line requirements: every drug slot has a matching reachable field
   for each per-line element. CR-1 prevents leaving an unfinished current line. -/
-def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
-  match prog.screens.find? (fun x => !(openReach prog x.id).contains s) with
+def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId)
+    (reach : ScreenId → List ScreenId) : Option (ScreenId × String) :=
+  match prog.screens.find? (fun x => !(reach x.id).contains s) with
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
   | none =>
-    let fromS := openReach prog s
+    let fromS := reach s
     let reqs := spec.entries.filter (·.commit == c)
     match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
@@ -203,10 +243,14 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
         s!"a field to enter its waiver")
     | none =>
       let perLine := reqs.filter (·.perOrderLine)
-      match (drugSlots prog).findSome? (fun slot =>
+      match (repairSlots spec prog c).findSome? (fun slot =>
           (perLine.find? fun rq => !openFieldOn prog fromS rq.element (repairsSlot prog slot)).map (slot, ·)) with
       | some (slot, rq) => some (s, s!"commit {c}: order slot {repr slot} has no field the user can reach for {rq.element}")
       | none => none
+
+/-- The uncached public completion-path check. -/
+def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : Option (ScreenId × String) :=
+  completeViaWithReach spec prog c s (openReach prog)
 
 /-- A parsed scalar value that satisfies its kind for every patient and user.
 Identity, targeted scans and cosigns depend on that context and cannot use a
@@ -237,15 +281,56 @@ def entryValuesPossible (spec : Spec) (c : CommitId) : Bool :=
           (!(spec.reviews.any fun review => review.commit == c && review.waivedBy? == some rq.element) || value.nonEmpty) &&
           reqs.all (fun other => other.element != rq.element || entryValueAllowed el other.allowed? value)
 
+/-- A capture-dependent predicate can change after a line is archived. Unlike
+record-only clinical facts, these dependencies are mutable within an episode. -/
+def clinicalUsesCapture : ClinicalPredicate → Bool
+  | .capturedCode .. => true
+  | .and a b | .or a b => clinicalUsesCapture a || clinicalUsesCapture b
+  | .not p => clinicalUsesCapture p
+  | _ => false
+
+/-- Additional contracts can depend on trusted evidence that no UI event
+creates. Until a total collection/refusal-path construction is proved, the
+checker must not certify universal completion from one sample record. This
+conservative failure is kept separate from a semantic counterexample claim. -/
+def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Option String :=
+  match spec.commit? c with
+  | none => some s!"commit {c}: no declared commit"
+  | some cs =>
+    if spec.entries.any (fun rq => rq.commit == c && rq.perOrderLine &&
+        match rq.when with | .clinical p => clinicalUsesCapture p | _ => false) then
+      some s!"commit {c}: capture-dependent clinical predicates can activate requirements on archived lines; universal repair is not established"
+    else if cs.actionLabel?.any (fun label => (allComps prog).any (fun sc =>
+        commitOf? sc.2.kind == some c && sc.2.label != label)) then
+      some s!"commit {c}: a signing button does not use its required action label"
+    else if !(cs.temporal?.getD []).isEmpty then
+      some s!"commit {c}: temporal evidence may be missing or overdue; universal collection/exception route is not established"
+    else if !(cs.expiry?.getD []).isEmpty then
+      some s!"commit {c}: durable order clock may be missing or expired; universal renewal/stop route is not established"
+    else if (spec.displays?.getD []).any (fun rq => match rq.scope with
+        | .commit target => target == c | .phase _ _ => true) then
+      some s!"commit {c}: structured payload may be absent; universal payload collection/phase coverage is not established"
+    else if spec.elements.any (fun el => el.validation?.isSome) then
+      some s!"commit {c}: validated values and relational dependencies need a universal repair construction"
+    else if !defaultsOk spec prog then
+      some s!"commit {c}: required default declarations do not match the program"
+    else none
+
 /-- The completability rules for commit `c`: some commit screen passes
 `completeVia`. Returns the first failure if none does. -/
-def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
-  if !entryValuesPossible spec c then
+def completeForWithReach (spec : Spec) (prog : Program) (c : CommitId)
+    (reach : ScreenId → List ScreenId) : Option (Option ScreenId × String) :=
+  if let some issue := additionalCompletionIssue spec prog c then some (none, issue)
+  else if !entryValuesPossible spec c then
     some (none, s!"commit {c}: allowed entry values have no common context-independent completion value")
   else match commitScreens prog c with
   | [] => some (none, s!"commit {c}: no button for it that the user can always see")
   | s :: rest =>
-    if (s :: rest).any (fun x => (completeVia spec prog c x).isNone) then none
-    else (completeVia spec prog c s).map fun p => (some p.1, p.2)
+    if (s :: rest).any (fun x => (completeViaWithReach spec prog c x reach).isNone) then none
+    else (completeViaWithReach spec prog c s reach).map fun p => (some p.1, p.2)
+
+/-- The original total completion check, retained for proofs and direct callers. -/
+def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
+  completeForWithReach spec prog c (openReach prog)
 
 end Ehr.Check

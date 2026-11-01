@@ -16,16 +16,17 @@ def controlled := deriveGoals Specs.V1.specV1 controlledFacts user .W6 controlle
 #guard controlled.commits == ["signOrders"]
 #guard controlled.values.any (·.element == "consentVerified")
 #guard controlled.values.any (·.element == "hpUpdate")
+#guard controlled.values.any (fun g => g.element == "refills" && g.value? == some (.qty 0 .none))
 #guard controlled.waivers.map (·.value?) == [some (.code "ed-7-day")]
 -- The ideal UI shows CURES for free; exemption entry is optional there.
 #guard floorMetrics "c" Specs.V1.specV1 controlledFacts user controlled ==
   floorMetrics "c" Specs.V1.specV1 controlledFacts user { controlled with waivers := [] }
 #guard curesReason { opioid with
-  supplyDays? := some 6,
+  supplyDays? := some 8,
   curesExemptReason? := some "postoperative-supply-7-days-or-less" } == none
 #guard curesReason { opioid with
   supplyDays? := some 5,
-  curesExemptReason? := some "postoperative-supply-7-days-or-less" } == some "surgery-5-day"
+  curesExemptReason? := some "postoperative-supply-7-days-or-less" } == some "surgery-7-day"
 #guard taskCuresReason { orders := [opioid, { opioid with curesExemptReason? := none }] } == none
 #guard orderValue "duration" opioid == some (.code "3 days")
 #guard orderValue "prn" opioid == some (.code "false")
@@ -41,13 +42,68 @@ def meds : TaskChoices := { administer := [opioid, GoalsTests.warf], noteSection
 #guard (episodes facts .W4 meds).map (fun ep => taskCommits Specs.V1.specV1 .W4 ep.choices) ==
   [["administerMed"], ["administerMed"], ["chartAssessment"]]
 
-/-- A refill's uncaptured proposed order cannot create a popup floor item.
-The floor is derived from goal captures, not from the observed runtime trace. -/
+/-- The current spec binds refill approval to the requested drug. Its
+interaction floor follows that capture. A modification is a new prescription
+and must pass ordinary signing, including Schedule II's zero-refill gate. -/
 def refillGoals := deriveGoals Specs.V1.specV1 facts user .W7
-  { refill? := some "modify", orders := [GoalsTests.warf] } [GoalsTests.warf] none
-#guard !refillGoals.values.any (·.element == "drug")
-#guard refillGoals.expectedAcks == []
-#guard refillGoals.values.any (fun g => g.element == "refillDose" && g.value? == some (.qty 30 .mg))
+  { refill? := some "approve", orders := [GoalsTests.warf] } [GoalsTests.warf] none
+#guard refillGoals.values.any (fun g => g.element == "drug" && g.value? == some (.code "warfarin"))
+#guard refillGoals.values.any (fun g => g.element == "refillScheduleEligibility" &&
+  g.value? == some (.code "notScheduleII"))
+def interactingFacts := { facts with currentMedClasses := ["nsaid"] }
+def interactingRefill := deriveGoals Specs.V1.specV1 interactingFacts user .W7
+  { refill? := some "approve", orders := [GoalsTests.warf] } [GoalsTests.warf] none
+#guard interactingRefill.expectedAcks == [("interactionRefill", "warfarin@" ++ toString facts.medsVersion)]
+def modifiedRefill := deriveGoals Specs.V1.specV1 facts user .W7
+  { refill? := some "modify", orders := [opioid] } [opioid] none
+#guard modifiedRefill.commits == ["signOrders"]
+#guard modifiedRefill.values.any (fun g => g.element == "dose" && g.value? == some (.qty 50 .mg))
+#guard modifiedRefill.values.any (fun g => g.element == "refills" && g.value? == some (.qty 0 .none))
+#guard !modifiedRefill.values.any (·.element == "refillScheduleEligibility")
+def multiControlled := deriveGoals Specs.V1.specV1 facts user .W1
+  { orders := [opioid, GoalsTests.warf] } [opioid, GoalsTests.warf] none
+-- Advancing must satisfy Core's cross-artifact line stop. The last line
+-- needs no series-only date when it is signed as an ordinary prescription.
+#guard multiControlled.values.any (fun g => g.element == "earliestFillDate" && g.slot? == some 0)
+#guard !multiControlled.values.any (fun g => g.element == "earliestFillDate" && g.slot? == some 1)
+def deniedRefill := deriveGoals Specs.V1.specV1 facts user .W7
+  { refill? := some "deny", refillReason? := some "early-refill" } [] none
+#guard deniedRefill.commits == ["denyRefill"]
+#guard deniedRefill.values.any (fun g => g.element == "refillDenyReason" && g.value? == some (.code "early-refill"))
+#guard deniedRefill.expectedAcks == []
+
+def refillResource : Lean.Json := (Lean.Json.parse
+  "{\"resourceType\":\"Task\",\"for\":{\"reference\":\"Patient/p\"},\"focus\":{\"reference\":\"#rx\"},\"contained\":[{\"resourceType\":\"MedicationRequest\",\"id\":\"rx\",\"subject\":{\"reference\":\"Patient/p\"},\"medicationCodeableConcept\":{\"coding\":[{\"code\":\"11289\"}],\"text\":\"warfarin\"},\"dosageInstruction\":[{\"route\":{\"text\":\"PO\"},\"timing\":{\"code\":{\"text\":\"daily\"}},\"doseAndRate\":[{\"doseQuantity\":{\"value\":3,\"unit\":\"mg\"}}]}]}]}").toOption.getD .null
+def renewalTask : Task := {
+  PolicyTests.task with
+  patientId := "p"
+  workflow := .W7
+  choices := { refill? := some "approve" }
+  todayResources := [refillResource] }
+#guard (refillPrescription renewalTask).map (·.drug) == some "warfarin"
+#guard (taskChoices renewalTask).orders == [GoalsTests.warf]
+#guard ((taskEpisodes facts renewalTask).head?.map (·.facts.medToGive?)) == some facts.medToGive?
+-- Reject ambiguous, unrelated and missing requests instead of selecting a home med.
+#guard refillPrescription { renewalTask with patientId := "another-patient" } == none
+#guard refillPrescription { renewalTask with todayResources := [refillResource, refillResource] } == none
+#guard taskEpisodes facts { renewalTask with todayResources := [] } |>.isEmpty
+#guard (taskChoices { renewalTask with choices := {
+  refill? := some "modify", orders := [{ GoalsTests.warf with doseTenths := 20 }] } }).orders.map
+  (·.doseTenths) == [20]
+def renewalDay := simulate Specs.V1.specV1 Canonical.canonicalV1
+  { PolicyTests.p1 with backtrackRate := 0 }
+  { PolicyTests.schedule with tasks := [renewalTask] } (fun _ => interactingFacts) 123
+#guard let day := renewalDay
+  day.tasks.all (·.completed) &&
+  (day.floor.zip day.tasks).all (fun (a, b) => below a b) &&
+  day.trace.any (fun e => e.event == .ack "interactionRefill")
+def denialDay := simulate Specs.V1.specV1 Canonical.canonicalV1
+  { PolicyTests.p1 with backtrackRate := 0 }
+  { PolicyTests.schedule with tasks := [{ renewalTask with choices := {
+      refill? := some "deny", refillReason? := some "early-refill" } }] } (fun _ => facts) 123
+#guard let day := denialDay
+  day.tasks.all (·.completed) && day.trace.any (fun e => match e.event with
+    | .click id => id == "w7Decision.commit.denyRefill" | _ => false)
 
 /-- ED and result workflows can use shared note/order composers through
 Home. Workflow labels must not make otherwise reachable goals unreachable. -/

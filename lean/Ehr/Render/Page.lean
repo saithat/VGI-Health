@@ -20,8 +20,27 @@ structure Ctx where
   disp : Display
   user : User
   s : State
+  /-- A render call resolves the interpreter once. The dependent equality keeps
+  this cache exact, including after a structure update changes any input. -/
+  viewCache : { v : ScreenView // v = view sp prog facts user s } :=
+    ⟨view sp prog facts user s, rfl⟩
 
-def Ctx.v (cx : Ctx) : ScreenView := view cx.sp cx.prog cx.facts cx.user cx.s
+@[inline] def Ctx.v (cx : Ctx) : ScreenView := cx.viewCache.val
+
+theorem Ctx.viewCache_exact (cx : Ctx) :
+    cx.viewCache.val = view cx.sp cx.prog cx.facts cx.user cx.s := cx.viewCache.property
+
+theorem Ctx.v_exact (cx : Ctx) :
+    cx.v = view cx.sp cx.prog cx.facts cx.user cx.s := cx.viewCache.property
+
+@[simp] theorem Ctx.rebuild (cx : Ctx) :
+    ({ sp := cx.sp, prog := cx.prog, facts := cx.facts, disp := cx.disp,
+       user := cx.user, s := cx.s } : Ctx) = cx := by
+  cases cx with
+  | mk sp prog facts disp user s cache =>
+    rcases cache with ⟨v, h⟩
+    cases h
+    rfl
 
 def txt (cl : Cls) (s : String) : Ro := .el .span [cl] [] [.text s]
 def cell (s : String) : Ro := .el .td [] [] [.text s]

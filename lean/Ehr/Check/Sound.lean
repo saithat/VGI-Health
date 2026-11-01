@@ -5,11 +5,12 @@ import Ehr.Check.WritesSound
 import Ehr.Check.EnterOnceSound
 import Ehr.Check.HumanEventsSound
 import Ehr.Check.AlertSound
+import Ehr.Check.NavigationSound
 
 namespace Ehr.Check
 open Ehr Ehr.Props
 
-/-- Assemble all twelve properties from acceptance and the outstanding
+/-- Assemble all thirteen properties from acceptance and the outstanding
 completability obligation. General T1 remains open until that obligation is
 proved from `completeFor`; no clinical domain assumption is added here. -/
 theorem satisfies_of_checked_completable (sp : Spec) (prev : Option Program) (can p : Program)
@@ -25,7 +26,8 @@ theorem satisfies_of_checked_completable (sp : Spec) (prev : Option Program) (ca
    accepted_alertsFire _ _ _ _ h,
    accepted_noFalseAlarms _ _ _ _ h,
    accepted_noRepeatInterruptions _ _ _ _ h,
-   accepted_severityTiers _ _ _ _ h⟩
+   accepted_severityTiers _ _ _ _ h,
+   accepted_navigation _ _ _ _ h⟩
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where

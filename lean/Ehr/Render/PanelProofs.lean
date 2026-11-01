@@ -60,6 +60,7 @@ theorem T11_med_fhir_page (cx : Ctx) (ctx : FactsContext) (b r : Json)
 /-- Tiny's rooming allergy panel with a real parsed, nonempty record. -/
 def tinyFhirCtx : Ctx :=
   { tinyCtx with
+    viewCache := ⟨_, rfl⟩
     facts := Fhir.tinyFacts
     disp := Fhir.tinyDisplay
     s := init tinyCtx.sp tinyCtx.prog Fhir.tinyFacts tinyCtx.user }
@@ -73,9 +74,9 @@ example : ∃ n, Within n (page tinyFhirCtx) ∧ (∃ id, n.HasCompId id) ∧
   · decide
   · decide
 
-example : ∃ n, Within n (page { tinyFhirCtx with s := { tinyFhirCtx.s with screen := "sign" } }) ∧
+example : ∃ n, Within n (page { tinyFhirCtx with viewCache := ⟨_, rfl⟩, s := { tinyFhirCtx.s with screen := "sign" } }) ∧
     (∃ id, n.HasCompId id) ∧ Within (medTr (Fhir.medRow Fhir.tinyMed)).toHtml n := by
-  apply T11_med_fhir_page { tinyFhirCtx with s := { tinyFhirCtx.s with screen := "sign" } }
+  apply T11_med_fhir_page { tinyFhirCtx with viewCache := ⟨_, rfl⟩, s := { tinyFhirCtx.s with screen := "sign" } }
     Tests.context Fhir.tinyBundle Fhir.tinyMed
   · exact Fhir.tiny_parse
   · change Fhir.tinyMed ∈ [Fhir.tinyPatient, Fhir.tinyAllergy, Fhir.tinyMed, Fhir.tinyWeight]; simp

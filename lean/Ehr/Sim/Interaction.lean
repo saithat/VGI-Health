@@ -30,14 +30,17 @@ def fieldAction (ctx : Context) (s : State) (c : Component) : Option Event := do
   let alternatives := ctx.goals.waivers.filter fun g => ctx.sp.reviews.any fun rq =>
     rq.waivedBy? == some g.element && rq.commit == g.commit &&
       whenHolds ctx.facts s rq.when && !reviewMet ctx.sp ctx.prog ctx.facts s rq
+  let el ← ctx.sp.element? e
+  let pending := fun g => s.captured.any fun x =>
+    x.element == e && x.slot == resolveSlot s sl && !x.confirmed &&
+      capturedMeets ctx.facts ctx.user el g { x with confirmed := true } &&
+      elementValueValid ctx.facts s el x.slot x.value
   let g ← (ctx.goals.values ++ alternatives).find? fun g =>
     g.element == e && (g.slot?.isNone || g.slot? == some (resolveSlot s sl)) &&
-      !valueGoalMet ctx.sp ctx.facts ctx.user s g
-  let el ← ctx.sp.element? e
+      !valueGoalMet ctx.sp ctx.facts ctx.user s g &&
+      (pending g || elementValueValid ctx.facts s el (resolveSlot s sl) (goalValue ctx.sp ctx.facts ctx.user g))
   if !el.enteredBy.contains ctx.user.role then none else
-  let pending := s.captured.any fun x =>
-    x.element == e && x.slot == resolveSlot s sl && !x.confirmed &&
-      capturedMeets ctx.facts ctx.user el g { x with confirmed := true }
+  let pending := pending g
   some (if pending then .confirm c.id else .enter c.id (goalValue ctx.sp ctx.facts ctx.user g))
 
 def canAdvance (ctx : Context) (s : State) : Bool :=
@@ -69,8 +72,11 @@ def interestingLeaf (ctx : Context) (s : State) (c : Component) : Bool :=
     | .button .newOrderLine => canAdvance ctx s
     | .button (.markReviewed i) => usefulReview ctx s i
     | .button (.commit cm) => ctx.goals.commits.contains cm && !s.commits.contains cm
-    | _ => ctx.sp.reviews.any fun rq => ctx.goals.commits.contains rq.commit &&
-        !s.commits.contains rq.commit && showsInfo rq.info c.kind && whenHolds ctx.facts s rq.when)
+    | _ => (ctx.sp.reviews.any fun rq => ctx.goals.commits.contains rq.commit &&
+        !s.commits.contains rq.commit && showsInfo rq.info c.kind && whenHolds ctx.facts s rq.when) ||
+        ctx.goals.commits.any (fun cm => !s.commits.contains cm &&
+          (ctx.sp.displays?.getD []).any (fun rq => showsInfo rq.info c.kind &&
+            displayActive ctx.facts s (some cm) rq)))
 
 def relevantAux (ctx : Context) (s : State) (cs : List Component) : Nat → Component → Bool
   | 0, _ => false
@@ -131,6 +137,9 @@ def bfsNav (ctx : Context) : Nat → List (State × List Event) → Std.HashSet 
     bfsNav ctx fuel queue' seen'
 
 def planNavigation (ctx : Context) (s : State) : Option (List Event) :=
-  bfsNav ctx (max 128 (ctx.prog.screens.length * 64)) [(s, [])] (({} : Std.HashSet String).insert (navKey s))
+  -- An undeclared element cannot be captured by the interpreter. Retain its
+  -- goal and report failure instead of exhausting BFS over unrelated screens.
+  if ctx.goals.values.any (fun g => (ctx.sp.element? g.element).isNone) then none
+  else bfsNav ctx (max 128 (ctx.prog.screens.length * 64)) [(s, [])] (({} : Std.HashSet String).insert (navKey s))
 
 end Ehr.Sim

@@ -2,7 +2,7 @@ import Ehr.Canonical.Program
 namespace Ehr
 /-- Replace one screen, keeping its siblings. -/
 def Program.updateScreen (p : Program) (id : ScreenId) (f : Screen → Screen) : Program :=
-  { p with screens := p.screens.map fun s => if s.id == id then f s else s }
+  { p with screens := p.screens.map fun s => if s.id == Canonical.Blueprint.host id then f s else s }
 /-- Replace one component, keeping its siblings. -/
 def Screen.updateComp (s : Screen) (id : CompId) (f : Component → Component) : Screen :=
   { s with components := s.components.map fun c => if c.id == id then f c else c }

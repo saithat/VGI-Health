@@ -74,10 +74,15 @@ theorem popup_captured (sp p f u actor s e a k) :
       · exact stepCore_popup_captured _ _ _ _ _ _ _ _ _ hn
     · exact stepCore_popup_captured _ _ _ _ _ _ _ _ _ hn
 
+/-- Clinical predicates inspect captures, never UI navigation or elapsed time. -/
+theorem clinicalEval_captured (facts : Facts) (s t : State) (p : ClinicalPredicate)
+    (h : t.captured = s.captured) : clinicalEval facts t p = clinicalEval facts s p := by
+  induction p <;> simp_all only [clinicalEval]
+
 private theorem alertKeys_captured (facts : Facts) (s t : State) (c : AlertCond)
     (h : t.captured = s.captured) : alertKeys facts t c = alertKeys facts s c := by
   cases c <;> simp only [alertKeys, drugsInPlay, orderLines, doseOutOfRange,
-    lineDoseMgTenths?, weightKgTenths?, capturedWeightKg?, h]
+    lineDoseMgTenths?, weightKgTenths?, capturedWeightKg?, h, clinicalEval_captured facts s t _ h]
 
 /-- The popup truth invariant holds after every event and every clock advance. -/
 theorem alertsOnlyWhenTrue (ep : Episode) : AlertsOnlyWhenTrue ep := by
@@ -96,7 +101,7 @@ theorem alertsOnlyWhenTrue (ep : Episode) : AlertsOnlyWhenTrue ep := by
   | @wait s d hs ih =>
     intro a k hp
     obtain ⟨al, hal, hid, hk⟩ := ih a k hp
-    exact ⟨al, hal, hid, (alertKeys_captured ep.facts s _ al.cond rfl).symm ▸ hk⟩
+    exact ⟨al, hal, hid, (alertKeys_captured ep.facts s { s with clock := s.clock + d } al.cond rfl).symm ▸ hk⟩
 
 private theorem ackCore_popup_acked (s : State) (a : AlertId) (p : AlertId × String) :
     (ackCore .human s a).1.popup? = some p →
@@ -172,6 +177,7 @@ theorem accepted_noRepeatInterruptions (sp prev can p) (h : check sp prev can p 
   have ht := accepted_structural sp prev can p h
   exact ⟨ht.2.2.2.2.2.2.1, fun facts user _ => interruptsOnce ⟨sp, p, facts, user⟩⟩
 
+#print axioms clinicalEval_captured
 #print axioms popup_captured
 #print axioms alertsOnlyWhenTrue
 #print axioms interruptsOnce

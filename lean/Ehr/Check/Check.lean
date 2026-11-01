@@ -1,4 +1,7 @@
 import Ehr.Check.Rules
+import Ehr.Props.Navigation
+import Ehr.Check.PopupRequests
+import Ehr.Check.ReplayContext
 
 /-!
 # The checker
@@ -6,8 +9,8 @@ import Ehr.Check.Rules
 `check spec prev canonical prog` certifies a candidate UI program before it is
 deployed. It runs a fixed list of rules, in order. Each rule is fast and
 structural: it reads the program's lists, and searches the screen graph
-breadth-first. The verdict is `ok` only if every rule passes (T1 proves that
-then the program satisfies properties 1–12).
+breadth-first. The verdict is `ok` only if every rule passes (the completed safety implications and the remaining completeness obligation
+are assembled in `Ehr.Check.Sound`).
 
 If a rule fails, the verdict names the property, says what is wrong in plain
 words, and gives a **counterexample**: a click path from the start screen to
@@ -44,6 +47,20 @@ structure Rule where
   property : String
   passes : Bool
   explain : Unit → Option Finding
+
+/-- Explain D5 using exactly the renderer's navigation groups and labels. -/
+def navigationFinding (p : Program) : Option Finding :=
+  let nav := Render.uiOverviewNav p
+  if ¬ (nav.map (·.1)).Nodup then
+    some { property := "navigation", message := "D5: navigation group labels are not unique" }
+  else if 12 < nav.length then
+    some { property := "navigation", message := s!"D5: navigation has {nav.length} groups (maximum 12)" }
+  else match nav.find? (fun g => decide (¬ (g.2.map (·.2)).Nodup ∨ 12 < g.2.length)) with
+    | some g => some { property := "navigation", message :=
+        s!"D5: navigation group {g.1} has duplicate labels or {g.2.length} entries (maximum 12)" }
+    | none =>
+      (p.screens.find? fun sc => !nav.any (fun g => g.2.any (·.1 == sc.id))).map fun sc =>
+        { property := "navigation", message := s!"D5: screen {sc.id} is absent from navigation", screen? := some sc.id }
 
 /-- The first component (in screen order) for which `bad` gives a message. -/
 def findComp (prog : Program) (bad : Screen → Component → Option String) :
@@ -157,7 +174,14 @@ def badMacroStep (spec : Spec) (prog : Program) (m : Macro) (st : MacroStep) : O
       | some cm, _, _ => some s!"macro {m.id} clicks {c.id}, which performs commit {cm}; only a human may commit"
       | _, some i, _ => some s!"macro {m.id} clicks {c.id}, which marks {i} reviewed; only a human may review"
       | _, _, some m' => some s!"macro {m.id} clicks {c.id}, which runs macro {m'}"
-      | _, _, _ => none
+      | _, _, _ =>
+        if c.kind == .button .requestPriorAuth then
+          match spec.element? priorAuthElement with
+          | some el => if decide (HumanMustEnter el) then
+              some s!"macro {m.id} clicks request {c.id}, which requires a human field entry"
+            else none
+          | none => none
+        else none
     | .goto _ => none
 
 /-! ## The rules, in order -/
@@ -168,6 +192,8 @@ def plain (property message : String) : Option Finding := some { property, messa
 /-- The checker's rules, in the order they are reported. -/
 def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : List Rule :=
   let required := requiredCommits spec canonical prog
+  let reachTable := openReachTable prog
+  let completion := fun c => completeForWithReach spec prog c (tableReach prog reachTable)
   [ -- 1. well-formed: catalog, unique IDs, references
     { property := "wellFormed", passes := prog.inCatalog spec
       explain := fun _ => compFinding "wellFormed" prog false fun scr c =>
@@ -200,7 +226,7 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         | some (a, .passive) => some s!"A4: alert {c.id} on screen {scr.id} makes the passive alert {a} pop up; passive alerts are shown inline only"
         | _ => none },
     -- 11. A3: no repeat interruptions
-    { property := "noRepeatInterruptions", passes := decide (PopupRequestedOnce spec prog)
+    { property := "noRepeatInterruptions", passes := decide (FilteredPopupRequests spec prog)
       explain := fun _ => compFinding "noRepeatInterruptions" prog false fun scr c =>
         match popupTier spec c with
         | some (a, .interruptive) =>
@@ -239,12 +265,17 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             else none
           | none => none
         | _ => none },
-    { property := "capturesAllOnce", passes := recordSourcesDeclared spec prog
+    { property := "capturesAllOnce", passes := recordSourcesDeclared spec prog && linkedSourcesTyped spec prog
       explain := fun _ => compFinding "capturesAllOnce" prog false fun scr c =>
         match fieldOf? c.kind with
         | some (e, _, .fromRecord fact) =>
           if (spec.element? e).any (fun el => el.recordFact? == some fact) then none
           else some s!"field {c.id} on {scr.id} uses undeclared record source {fact} for {e}"
+        | some (e, _, .linked source) =>
+          match spec.element? e, spec.element? source with
+          | some target, some src => if target.kind == src.kind then none
+              else some s!"field {c.id} on {scr.id} links {source} to {e} with a different kind or unit"
+          | _, _ => some s!"field {c.id} on {scr.id} has an unknown linked source or target"
         | _ => none },
     -- 2. captures all, once (auto-linked elements)
     { property := "capturesAllOnce", passes := decide (LinkedNotRetyped spec prog)
@@ -268,9 +299,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           | none => none
         | none => none },
     -- 6. completable
-    { property := "completable", passes := required.all fun c => (completeFor spec prog c).isNone
+    { property := "completable", passes := required.all fun c => (completion c).isNone
       explain := fun _ => required.findSome? fun c =>
-        (completeFor spec prog c).map fun (scr, msg) =>
+        (completion c).map fun (scr, msg) =>
           { property := "completable", message := msg, screen? := scr
             click? := scr.bind fun z => ((prog.compsOf z).find? fun comp => commitOf? comp.kind == some c).map (·.id) } },
     -- 1. well-formed: landmarks and depth
@@ -325,7 +356,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           let moved := movedTags p prog
           some { property := "budgets"
                  message := s!"{moved.length} components moved since the previous version (budget {spec.design.stabilityBudget}): {", ".intercalate moved}" }
-        | none => none }
+        | none => none },
+    { property := "navigation", passes := decide (NavigationSane prog)
+      explain := fun _ => navigationFinding prog }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure
@@ -335,23 +368,6 @@ def firstFinding (rs : List Rule) : Option Finding :=
     (r.explain ()).getD { property := r.property, message := s!"{r.property}: rule failed" }
 
 /-! ## Counterexamples, replayed through the interpreter -/
-
-/-- The patient used to replay counterexamples. Navigation does not depend on
-the record; the final click shows the hard stop. -/
-def replayFacts : Facts where
-  patientId := "pt-replay"
-  identity := { initials := "AB", sex := "F", ageYears := 40 }
-  allergyVersion := 1
-  allergyClasses := []
-  medsVersion := 1
-  currentMedClasses := []
-  weightToday? := some (700, .kg)
-  careGaps := []
-  abnormalResult := false
-  now := 600
-
-/-- The user used to replay counterexamples: the program's role. -/
-def replayUser (prog : Program) : User := { id := "replay-user", role := prog.role }
 
 /-- Events that open every closed group and unselected tab above `c`, in the
 current state. -/

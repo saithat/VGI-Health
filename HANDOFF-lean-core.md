@@ -1,152 +1,100 @@
-# Handoff: core changes (`lane/lean-core`)
+# Handoff: lean-core
 
-Worktree: `/home/saithat/Projects/VGI-lean`. Main merged at `1f43d67` before
-starting. The orchestrator's five-item core changes queue is complete.
+Worktree: `/home/saithat/Projects/VGI-lean`; branch `lane/lean-core`.
+Read this first. This continuation fetched and fast-forwarded main to `fe475fa`.
+The optional composite-format checkpoint is `133e364` (pushed).
 
-## Completed and pushed, one item per commit
+## Delivered in this continuation
 
-| Item | Commit | Result |
-|---|---|---|
-| 1 / CR-1 | `2637308` | `newOrderLine` blocks while the current drug line lacks applicable per-line entries; the view gives the same reason. |
-| 2 / alerts, CR-2/4 | `5457421` | Explicit informational human alert clicks; macro alert clicks stop with a human-only reason. CR-2 retains the checker's conservative pin rule; CR-4 was already implemented/proven. |
-| 3 / content, CR-3 | `52206f9` | Declared record source enforced on prefill; encounter/weight-based When conditions; workflow-keyed passive targets; optional episode context passed through FHIR. |
-| 4 / world/sim | `fb1ed8c` | Optional typed clinical choices; OrderKind/W6Step; service-order prior-auth support; generic drug-name contract corrected; absolute dose caps. |
-| 5 / GenTS | `ea76226` | 99 types and 24 real-JSON samples, including Display/Html/render rows and API types, Task and DaySchedule; completeness/name-collision checks. |
+- Init-only `ComponentDef { name, params, body }` and
+  `Program.componentDefs : List ComponentDef := []`.
+- Custom Program JSON preserves SOURCE definitions, accepts omission of the new
+  field, and omits empty definitions. Existing generated JSON samples are
+  unchanged, preserving legacy source/hash encodings. Malformed definitions
+  remain parse errors. No new clinical/backend behavior is active yet.
+- GenTS exports 138 types/42 real JSON samples, with optional `componentDefs`.
+  Core guards cover definition/source round trips, legacy omission and malformed
+  field rejection. The feature corpus now includes an unused-definition case.
+- Rebuilt and installed WASM assets with the supplied `.tools` symlink to
+  `/home/saithat/Projects/VGI-wasm/.tools`; binary is 1,924,963 bytes.
+- The proposed constructor/expansion implementation is preserved in
+  `lean/Ehr/Core/composites-pending.patch`. `git apply --check` passes. Applying
+  the patch and running `cd lean && lake build Ehr.Core.Tests` passes. It includes
+  `Kind.use`, total Init-only `Program.expand`, checked load helpers, a
+  `wellFormed` error verdict helper, six candidate theorem/axiom audits, and
+  Tiny vitals-strip guards and a satisfiable expanded witness. There are no
+  `sorry`, `admit`, new axioms or `native_decide` in this patch.
 
-## Follow-ups from the consolidated checker request file
+**The expansion patch is NOT active in this checkpoint. Composite execution is
+unfinished.** It was kept as a concrete reviewable patch so the pushed branch
+continues to build while respecting the explicit prohibition on editing Render.
 
-Human clicks now open the alert's first pending popup candidate, without
-acknowledging it. Passive/unknown/nonfiring/acked alerts do not open; removable
-alerts retain popup opt-in. This supersedes item 2's informational human click.
-T0/Alerts frame lemmas cover the new popup path; statements are unchanged.
-This human-alert follow-up is pushed as `f88c623`.
+## Integration blocker and scope
 
-Checker CR-6 is also resolved in this commit (the final follow-up): prior-auth convenience actions
-preserve every confirmed capture on the current slot and cannot create
-never/human-only captures. Tiny v1.1 exposes a human field and retains its never
-policy. Other specs may authorize the convenience action via a non-human-only
-policy; macros still leave those values awaiting human confirmation.
+Activating `Kind.use` makes `lean/Ehr/Render/Page.lean:157` fail its exhaustive
+Kind match. The owner explicitly said not to edit `lean/Ehr/Render/**`, so no
+Render source was edited. The exact dependency and presentation-key request are
+in `docs/design/changes-requests.md`.
 
-## Validation
+This main checkout also has no checker/deploy or simulation implementation/CLI
+commands; those still exist on the owning branches. They were not merged or
+edited without authorization. Scope questions about API/integration files and
+owning-lane merges were sent to the user; no answer had arrived at this checkpoint.
+The explicit GenTS and generated-WASM instructions were carried out.
 
-- `cd lean && lake build`, `lake check`, `lake comparator`: pass.
-- T0, T2, T3, T6, A2, A4 remain proven. All 18 main-theorem `#print axioms`
-  audits report only `propext`, `Quot.sound`, `Classical.choice`.
-- No theorem statements changed; `Statements.lean` remains DRAFT, unchanged.
-  Its existing challenge-only `sorry` placeholders remain isolated from the
-  finished proof modules. No new unfinished proofs or axioms were introduced.
-- `pnpm --filter agent exec tsc --noEmit --strict --target es2020 --moduleResolution node ../lean/generated/ehr-samples.ts`: pass.
-- World typecheck/lint/test: pass, 52 tests.
-- Agent typecheck/lint/test: pass, 31 tests.
-- App build/lint/test: pass, 78 tests.
-- Core regression guards are in `lean/Ehr/Core/Tests.lean`, imported by Ehr.
-  They cover line hard stops, alert clicks, record source/unit preservation,
-  conditions/workflow targeting, dose caps, typed JSON and public-step service
-  order entry followed by a prior-auth request.
+## Verification of the buildable checkpoint
 
-## Contract details for consumers
+- `cd lean && lake build`: pass (143 jobs).
+- `lake check`: pass, including the final repeat; default kernel accepts,
+  using only `propext`, `Quot.sound`, and `Classical.choice`.
+- `lake comparator`: pass, all 18 original statements, including final repeat.
+- T0, T2, T3, T6, A2 and A4 remain proven, with unchanged statements and only
+  permitted axioms. The earlier strengthened `commitGuard_iff` remains DRAFT
+  for owner review, as in the previous handoff.
+- `lake exe gents` and strict generated-sample TypeScript check: pass.
+- Workspace build/lint and agent typecheck: pass.
+- Agent tests: 31/31. World tests: 92/92. App: 89/90.
+- App's existing main-branch failure: `tests/app.test.tsx:25` expects 16 bad
+  programs, while the merged content catalog contains 24. The real-WASM fixture
+  projection test passes. An owning-app change is requested; the test was not
+  weakened or edited here.
+- `make wasm` and `make wasm-check`: pass.
+- `node lean/Ehr/Core/test-wasm-features.mjs`: pass, 255 native/WASM comparisons
+  across all 85 cases (the previous 84 cases were retained).
 
-- New task/order fields are optional, so old schedules still parse. JSON names
-  omit Lean's `?`. OrderChoice: supplyDays, curesExemptReason, holdReason, kind,
-  code. TaskChoices: painScore, w6Step, refillReason.
-- Missing order kind means medication. Medication `drug` is a lowercase generic
-  formulary name. Imaging/procedure use `kind` and a service `code`, with empty
-  `drug`. The UI captures orderKind/orderCode on one slot; a release spec must
-  declare these fields. Drug alerts still inspect only medication order lines.
-- FactsContext.encounterKind is caller-provided episode context, not historical
-  encounter inference. When.encounter uses Facts.encounterKind.
-- ElementSpec.recordFact is the only permitted record prefill source; none
-  forbids record prefill. Incorrect sources are ignored at runtime and should
-  also be rejected by the checker.
-- AlertSpec.screens contains workflow tags. Use AlertSpec.targetsScreen; screen
-  IDs may change freely without evading passive-alert coverage.
-- maxDoseMgTenths is an absolute per-dose cap, 0 if unspecified. Both weight
-  bounds are capped; absolute overdose detection works without a kg weight.
-  Six existing world reference caps were populated. A drug's largest cap does
-  not represent every smaller regimen-specific cap (notably amoxicillin).
+The pending expansion patch has only targeted build/guard/axiom verification;
+it has NOT passed a full build, `lake check`, Comparator, or WASM execution with
+expansion enabled. Its proof integration is tracked in `TODO_PROOFS.md`.
 
-## Minimal edits outside Core
+## Exactly what's left
 
-- T0/T3/Alerts branch frames; Frame's record-prefill lemma; Alerts' Tiny example.
-- Tiny weight-source metadata, workflow target and human prior-auth field;
-  TinyTests uses the field and checks preservation. V1's four active record
-  sources and three passive workflow targets. No entry/review rule was weakened.
-- Render.Types/Fhir: optional encounter context and its projection.
-- Formulary: six existing world pediatric caps, expressed in tenths of mg.
-- Agent validator: preserve new optional fields and accept new When cases.
-- Ehr.lean: register Core.Tests. Tools/GenTS and Samples: requested generator
-  work. Generated TS is regenerated, never hand-edited.
+1. Render owner supplies the new Kind compatibility arm, or the user explicitly
+   authorizes that edit. Coordinate it with applying
+   `lean/Ehr/Core/composites-pending.patch` so the full build stays valid.
+2. Wire source expansion into **all** API/native/WASM init/step/view/batch paths.
+   Core's pending `Composite.loadInit/loadStep/loadView` fail closed and use the
+   existing interpreter on expansion. Existing `Ehr.Api` entry points are still
+   unchanged and do not yet call these helpers.
+3. Check/deploy owners expand candidate, previous and canonical programs before
+   evaluating properties, reject expansion failures as `wellFormed`, and hash
+   and store the SOURCE program (including definitions). Integrate the actual
+   checker `Satisfies` with expansion and finish its proof bridge. The pending
+   generic property lift is not a claim of checker certification.
+4. Sim owner expands before simulate/min-clicks, including policy/state-space
+   inspection. Render owner expands before render/render-screens and propagates
+   `composite:<name>` into UiNode as a presentation key. Do not edit Render
+   without the requested authorization.
+5. Once active, add the vitals-strip source/use/expanded examples to GenTS's
+   samples and regenerate; verify agent/app schemas preserve definitions/args.
+6. Run the full build, kernel check, Comparator and audits with expansion active;
+   retain T0/T2/T3/T6/A2/A4 and every existing safety rule. Rebuild WASM again and
+   add native/WASM coverage for successful uses and expansion failures. Current
+   installed assets cover only the optional-format checkpoint.
+7. App owner fixes the catalog-count baseline assertion and reruns all TS tests.
+8. Update this handoff to the resulting exact remaining work, and push each
+   meaningful step with the required Codex co-author line.
 
-## Continuation: Schedule II constraints and albuterol cap
-
-Synced `origin/main` at `7c7596b` before changes. The original queue above remains
-complete. New core work:
-
-- `0b929f0`: albuterol absolute cap, 5 mg (`maxDoseMgTenths := 50`), retaining
-  the mg/kg range. Guards cover 52.5/69.6/71.4 kg adolescent cases, doses above
-  and below the capped range, a smaller child and overdose without a weight.
-- `4a11bc8`: added `EntryReq.allowed? : Option (List String)` (optional JSON `allowed`).
-  Allowed strings parse with the element kind and must equal the same capture
-  that satisfies confirmation, human-entry, units and slot checks. Empty lists
-  allow nothing; omitted constraints preserve existing behavior.
-- Added `When.drugClass` as a compatible spelling of `orderClass`, including
-  per-line matching, and `scheduleII` on the four requested Schedule II drugs.
-  Tramadol/lorazepam/alprazolam remain outside that class.
-- Both commit and new-line guards enforce allowed values. The confirmed bad
-  default blocks with `value not allowed: refills (allowed: 0)`.
-- Strengthened T0 coverage with `entryMet_iff_values`,
-  `commitGuard_iff_values`, `T0_entry_values_allowed` and
-  `T0_entry_values_perLine`. The original `T0_entry_values` follows from the
-  stronger theorem; frozen Comparator statements are unchanged. Concrete
-  completing examples discharge the new theorems' hypotheses. All 24 audited
-  theorems use only propext, Classical.choice and Quot.sound. No unfinished
-  proofs, axioms or native_decide were added.
-- Regenerated 99 TS types and 26 real JSON samples, including the exact
-  per-line zero-refills requirement and a constrained example spec.
-- Core regressions exercise all four Schedule II drugs, Schedule IV exclusions,
-  default confirmation, zero entry, wrong units, empty/invalid allowlists,
-  mixed/wrong slots, pending/confirmed capture separation, inactive conditions,
-  public human/macro new-line stops, view reasons, and the JSON step API.
-
-### Continuation validation
-
-- `cd lean && lake build`: pass.
-- `lake exe gents`: pass; generated-sample strict tsc: pass.
-- `lake check`: pass (default kernel accepts the solution).
-- `lake comparator`: pass (`Your solution is okay!`), all 18 frozen statements.
-- Workspace build, typecheck and lint: pass.
-- Agent tests: 31 pass. App tests: 90 pass.
-- World tests: 91 pass, 1 fails because world/src/formulary.ts has not yet
-  mirrored the four new Schedule II classes (the full-field equality contract
-  correctly detects this). Never change that test or remove the core class.
-
-## What's left
-
-Nothing left in the lean-core implementation/proof queue. Both implementation
-steps are committed and pushed; final build, kernel check, Comparator, 24 axiom
-audits and generated-sample typecheck pass. The full TS suite is not yet green:
-the one world mirror failure below requires an owning-lane edit.
-
-Cross-lane adoption is requested in `docs/design/changes-requests.md`:
-
-- World: append `scheduleII` to the four corresponding class lists to restore
-  the Lean/world formulary equality test.
-- Agent: accept `When.drugClass` and preserve optional `entries[].allowed` in
-  zod; add an exact round trip of the generated constrained spec. The current
-  validator rejects drugClass and strips allowed. A concrete minimal patch for
-  world/agent is prepared at `/tmp/lean-core-compat.patch`; ownership exception
-  was requested asynchronously and has not been granted as of this handoff.
-  Apply only with that exception or in the owning lane.
-- Content: add the owner-approved per-line zero-refills requirement to every
-  applicable hospital-spec signing workflow, with rule citation and permanent
-  bad-program-16 regression. Core tests are adoption examples, not production
-  hospital-spec changes.
-- Check: account for allowed values when checking completability and rejecting
-  unsafe defaults/macros; exercise mixed order lines.
-- WASM: rebuild the interpreter assets with the new guard and add the new
-  cases to native/WASM equivalence coverage. App's checked-in binary predates it.
-
-Earlier cross-lane requests in `changes-requests.md` remain owned by their
-lanes: workflow/passive coverage, per-workflow enter-once/source checks,
-service fields and human prior-auth adoption, and typed episode/task context.
-Broader unfinished project proofs remain tracked in TODO_PROOFS.md.
+The previous handoff's five M rule groups, interpreter/API, date-parser fix and
+prior proof milestones remain intact. The original L-group implementations are
+still intentionally unrequested; their designs and all earlier owning-lane
+integration requests remain in `docs/design/changes-requests.md`.

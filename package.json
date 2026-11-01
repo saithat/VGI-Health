@@ -2,5 +2,13 @@
   "name": "vgi-health",
   "private": true,
   "packageManager": "pnpm@11.8.0",
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "complexity": "node scripts/complexity/compute.mjs",
+    "test:complexity": "node --test scripts/complexity/compute.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts",
+    "trajectories": "node scripts/trajectories/index.mjs",
+    "test:trajectories": "pnpm --filter agent exec tsx --test ../scripts/trajectories/index.test.mjs && pnpm --filter app exec playwright test trajectories.spec.ts --project=desktop --workers=1"
+  }
 }

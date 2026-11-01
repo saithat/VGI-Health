@@ -1,349 +1,25 @@
 {
   "checker": "lean ehr check",
+  "profile": "core",
   "programs": {
-    "releases/v1.1/canonical.json": {
-      "status": "rejected",
-      "sha256": "6633eb884aea1e64c288209e8a70a2d533bf9f206296c55c59c87b4645cb4ba0",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1.1/personas/P1.json": {
-      "status": "rejected",
-      "sha256": "cd3ca86b7ebcf8ac985cc891633d815c837d78a778d393ad7d39dd8cc85b4bb9",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1.1/personas/P2.json": {
-      "status": "rejected",
-      "sha256": "72c10256fa100e7bd21ec2bab427092e21bd18dc1028f7eab1f21dd39cc40169",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1.1/personas/P3.json": {
+    "releases/v1/personas/P1.json": {
       "status": "computed",
-      "sha256": "e731314db4bc5f36ceab231aa557ae64cfa1eb6f19a965d8ec460f04593e28f0",
+      "sha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
       "output": "ok"
     },
-    "releases/v1.1/personas/P4.json": {
-      "status": "rejected",
-      "sha256": "f719c496999e9d66880c37d7d4029d1da79555b28b6c84021b449ba532f2f0e2",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1.1/personas/P5.json": {
-      "status": "rejected",
-      "sha256": "1a160e51329e85d32cbffd1731304c5852b66064b736e2edfce0cbf6b061a53d",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1/canonical.json": {
-      "status": "rejected",
-      "sha256": "959193d8929448396a950e458b16a0346e6758eb62d6252f958088e4a1f8d1bd",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "releases/v1/personas/P1.json": {
-      "status": "rejected",
-      "sha256": "bb66820de6530bf1df0a2520000c23c1a1c6b2cdb95e6988056909c5854a2c3a",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
-    },
     "releases/v1/personas/P2.json": {
-      "status": "rejected",
-      "sha256": "2f7ab1a310a400c18d36e9c204b81c2b7446a6f8ac4ee586d677f4f660551c69",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
+      "status": "computed",
+      "sha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
+      "output": "ok"
     },
     "releases/v1/personas/P3.json": {
       "status": "computed",
-      "sha256": "665cb80e19ea3c9f5f36fb194f59abe184a81f155ed9b9571537f5b11d5d5189",
+      "sha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
       "output": "ok"
     },
     "releases/v1/personas/P4.json": {
       "status": "rejected",
-      "sha256": "4d23b4abc8d2667b615b0adfcd68d612d23cfc6ded7d728ea1e3c605d0e774cb",
+      "sha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
       "output": {
         "violation": {
           "screens": [
@@ -353,8 +29,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
           "counterexample": [
             {
               "click": {
@@ -386,8 +62,28 @@
       }
     },
     "releases/v1/personas/P5.json": {
+      "status": "computed",
+      "sha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P1.json": {
+      "status": "computed",
+      "sha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P2.json": {
+      "status": "computed",
+      "sha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P3.json": {
+      "status": "computed",
+      "sha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "output": "ok"
+    },
+    "releases/v1.1/personas/P4.json": {
       "status": "rejected",
-      "sha256": "d8ab3b4b924d8cd3efdf569dc31b355999ef3d8a04651013f471770d7f8ffff3",
+      "sha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
       "output": {
         "violation": {
           "screens": [
@@ -397,8 +93,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
           "counterexample": [
             {
               "click": {
@@ -429,135 +125,29 @@
         }
       }
     },
-    "releases/v2/canonical.json": {
-      "status": "rejected",
-      "sha256": "13473684f726c043b65ca498493c0e8082bd9cb9c2db3adc99c0c11a223c6689",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
+    "releases/v1.1/personas/P5.json": {
+      "status": "computed",
+      "sha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "output": "ok"
     },
     "releases/v2/personas/P1.json": {
-      "status": "rejected",
-      "sha256": "99f89315de6f70f4769bccabd8c21e75a6893fe406065bc16a21df2925430854",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
+      "status": "computed",
+      "sha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
+      "output": "ok"
     },
     "releases/v2/personas/P2.json": {
-      "status": "rejected",
-      "sha256": "14d1af3abdc5fd9fe8d0e94ce4e2f60ccac3eb14c23f53e27601ee95a6d8e0f6",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
-        }
-      }
+      "status": "computed",
+      "sha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
+      "output": "ok"
     },
     "releases/v2/personas/P3.json": {
       "status": "computed",
-      "sha256": "119c8d3df772afcfca0d2f272dade9ffe3d6ddd15a0a6ee43bf2be910573b521",
+      "sha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
       "status": "rejected",
-      "sha256": "94b600716e6e535f08478394c0c74963b84cc4ac4bac3a950c98f12c40d3c40f",
+      "sha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
       "output": {
         "violation": {
           "screens": [
@@ -567,8 +157,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
           "counterexample": [
             {
               "click": {
@@ -600,43 +190,103 @@
       }
     },
     "releases/v2/personas/P5.json": {
+      "status": "computed",
+      "sha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "output": "ok"
+    },
+    "releases/v1/canonical.json": {
       "status": "rejected",
-      "sha256": "f64200e65020142763843b8677b2a4b765afc8db3d5c93213962f19d0f7ff548",
+      "sha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "output": {
         "violation": {
           "screens": [
             "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
           "counterexample": [
             {
               "click": {
-                "comp": "home.work.w1Rooming"
+                "comp": "home.work.w4Worklist"
               }
             },
             {
               "click": {
-                "comp": "w1Rooming.nav.w1Orders"
+                "comp": "w4Worklist.nav.w4Mar"
               }
             },
             {
               "click": {
-                "comp": "w1Orders.toSign"
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v1.1/canonical.json": {
+      "status": "rejected",
+      "sha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
               }
             },
             {
               "click": {
-                "comp": "w1Verify.continue"
+                "comp": "w4Worklist.nav.w4Mar"
               }
             },
             {
               "click": {
-                "comp": "w1Sign.commit.signOrders"
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "releases/v2/canonical.json": {
+      "status": "rejected",
+      "sha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
               }
             }
           ]
@@ -645,7 +295,7 @@
     },
     "programs/bad/01-hidden-allergies.json": {
       "status": "rejected",
-      "sha256": "cad2bd2ee37a7520f08d304ca41634e0f0dacf686dfc285135671c20e20c26c4",
+      "sha256": "2446f3451fd8aef4f900074985b88b4730a2c1df6e9341cdcc99dd1d5e3eb70a",
       "output": {
         "violation": {
           "screens": [
@@ -689,7 +339,7 @@
     },
     "programs/bad/02-prefilled-identity.json": {
       "status": "rejected",
-      "sha256": "cf1119a8308e8f531ce09a92bf2bb0c54b4753a79c456b3599f57e3ada69efb2",
+      "sha256": "5caac148b8bc30a5877bc43f49c6498afeed32997cd244daa6db167c665bd4e9",
       "output": {
         "violation": {
           "screens": [
@@ -728,7 +378,7 @@
     },
     "programs/bad/03-pounds-as-weight.json": {
       "status": "rejected",
-      "sha256": "4708da96c1d4d60cb764b09209a6a3169458a30e2c1484c9c5eb620e72b54d39",
+      "sha256": "14514c761f744515c0a43eb963b33710c2e14a2323c39888c408358063af8674",
       "output": {
         "violation": {
           "screens": [
@@ -755,7 +405,7 @@
     },
     "programs/bad/04-macro-override.json": {
       "status": "rejected",
-      "sha256": "5e6b6fe7bfd125aa1482578af08e0ba6dff3e09f4c4010bbf01d76f54b9bcf5b",
+      "sha256": "96ba15d84af0c0cff1904c536655a73d4b34f4cc5b12e3b0a49999b19267fc10",
       "output": {
         "violation": {
           "screens": [
@@ -793,7 +443,7 @@
     },
     "programs/bad/05-self-cosign.json": {
       "status": "rejected",
-      "sha256": "6510c6dd1d66017cc3c2250259df5b89aa6cfac73bc943edb63c8a4b42646883",
+      "sha256": "8b0f36223d3cab42a119e2abb936614c10c7af8ee0ca48af70a5f97fc36671e2",
       "output": {
         "violation": {
           "screens": [
@@ -826,7 +476,7 @@
     },
     "programs/bad/06-stale-weight.json": {
       "status": "rejected",
-      "sha256": "d7453a2cfd951934ae12d3abfa0ea03077f71c45da4cd4b09cff0e6a4a066873",
+      "sha256": "baca1c9d18c2d26a1411d32c0eeadd6c724f28e6cf1fe7ce1ff0fde8ab7990fb",
       "output": {
         "violation": {
           "screens": [
@@ -847,51 +497,21 @@
     },
     "programs/bad/07-unreachable-refill.json": {
       "status": "rejected",
-      "sha256": "44e58865eeb4e641a87f447569aedffcf4e256abb50dc9e85b44e286941d09cb",
+      "sha256": "c40129d627f3b543a73631e6ec4da546857a9d8fed00325f6f084640cc3c6647",
       "output": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit denyRefill: from screen home the user cannot get back to the denyRefill button on screen w7Decision",
+          "counterexample": []
         }
       }
     },
     "programs/bad/08-forged-consent.json": {
       "status": "rejected",
-      "sha256": "dca59253de5fac58c5771f8e959354f0d28a0fc54119bc5c129824bc4ec8190e",
+      "sha256": "743558daabe8b2bdf04f31ebce21f6055b014a19a8be602b20524d563b7d075b",
       "output": {
         "violation": {
           "screens": [
@@ -917,7 +537,7 @@
     },
     "programs/bad/09-hidden-allergy-alert.json": {
       "status": "rejected",
-      "sha256": "0be33e5282c314ce0b53758543aebd271a7ed72f70bac841051171acb2ef7b79",
+      "sha256": "6e04f03999ce5a006a3c5d9ba1ce1750ff049215f922822bf411dcd3fdc9874f",
       "output": {
         "violation": {
           "screens": [
@@ -949,7 +569,7 @@
     },
     "programs/bad/10-invented-alert.json": {
       "status": "rejected",
-      "sha256": "86500e749ee3e0dc1feaef1f8f4402b95acf9558c9f52af575de6940b6ee3096",
+      "sha256": "54a2f366e131b571f2443f041345e18ff7aafb9c8a33002a2922dc352adcd530",
       "output": {
         "violation": {
           "screens": [
@@ -976,7 +596,7 @@
     },
     "programs/bad/11-repeated-interaction.json": {
       "status": "rejected",
-      "sha256": "52577b548dfd21cc7ba19c1b38f797f3b5ef4abf85f7315f816d3b3ce6a7613e",
+      "sha256": "693f3b4fd770860cb2a026a66b3063d3213a77fa8e904a284a2376ea20c87bdc",
       "output": {
         "violation": {
           "screens": [
@@ -1003,7 +623,7 @@
     },
     "programs/bad/12-passive-popup.json": {
       "status": "rejected",
-      "sha256": "4a0e01d40b7a27f00e89182647eb46a2a8bd395a137f9061b45631937aecb073",
+      "sha256": "516dd2d74210e245e25ae1d2c91467ca65593072f6553956858893084ea0b5ed",
       "output": {
         "violation": {
           "screens": [
@@ -1024,7 +644,7 @@
     },
     "programs/bad/13-no-cures.json": {
       "status": "rejected",
-      "sha256": "5bf8f78b8eb98ba9cf66d1adc3311cd0a717dae50658bc592ef03386375b878f",
+      "sha256": "bafccc3c9157c36648be9b67ea754aec5c0b8c307073eaba4214b4b7b992b087",
       "output": {
         "violation": {
           "screens": [
@@ -1034,8 +654,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
           "counterexample": [
             {
               "click": {
@@ -1068,7 +688,7 @@
     },
     "programs/bad/14-macro-naloxone.json": {
       "status": "rejected",
-      "sha256": "4aa67b604e4053ce4e322110e432535e4aa04685eca7b2382bad0850c22c262c",
+      "sha256": "f474c46a248ce9101c2926bbbe454fc4f69fe9ecd9c2308d21d28aa01d4203de",
       "output": {
         "violation": {
           "screens": [
@@ -1100,7 +720,7 @@
     },
     "programs/bad/15-hidden-controlled-details.json": {
       "status": "rejected",
-      "sha256": "d530da746f87bacce4fbc03e37d562682373ab28d2ca3b14e3f2fc4cd0b39054",
+      "sha256": "d63df22c0a07b8fcbc3c50af29d03f5cf669babc190509f5aec0da6a9622999a",
       "output": {
         "violation": {
           "screens": [
@@ -1144,7 +764,7 @@
     },
     "programs/bad/16-schedule-ii-refills.json": {
       "status": "rejected",
-      "sha256": "7ce8da112c8269089185bc2453542b98ffed3d1394d6d30d3521c11b602f3983",
+      "sha256": "cecbb783596387fea766c9494bd06ab8249529f6042458dc0b0ae3c5f3d3d672",
       "output": {
         "violation": {
           "screens": [
@@ -1154,8 +774,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element weight",
           "counterexample": [
             {
               "click": {
@@ -1186,791 +806,53 @@
         }
       }
     },
-    "programs/canonical/v1.json": {
-      "status": "rejected",
-      "sha256": "959193d8929448396a950e458b16a0346e6758eb62d6252f958088e4a1f8d1bd",
-      "output": {
-        "violation": {
-          "screens": [
-            "home",
-            "w4Worklist",
-            "w4Mar",
-            "w4Admin"
-          ],
-          "property": "writesOnly",
-          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w4Worklist"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/17-no-restraint-care-plan.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v0.json": {
-      "status": "rejected",
-      "sha256": "7a20357c50fd8a3207d068aceb1078479ccdce5168825d9d62d55deb673cccd8",
-      "output": {
-        "violation": {
-          "screens": [
-            "chart",
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-work"
-              }
-            },
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/18-no-op-technique.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v1.json": {
-      "status": "rejected",
-      "sha256": "47f061230cdb6a8524e1857b697919443176500704184b711f73eeadf6d0e3ed",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/19-no-vaccine-provider-address.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v2.json": {
-      "status": "rejected",
-      "sha256": "943c8baa69902f19f150672c92b2191cf1118c2341e71b374d224faa375cfdfa",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/20-no-administration-time.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v3.json": {
-      "status": "rejected",
-      "sha256": "4d1e3a2618875963a1bdafd45a5b69a59b5610a3b57c1197c88b8075af3f1e8f",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/21-no-controlled-strength.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v4.json": {
-      "status": "rejected",
-      "sha256": "9abd0c5133023520fb930022576b508a859ad22291a53f3d4496d13204d3e0a8",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/22-hidden-signing-notice.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P1/v5.json": {
-      "status": "rejected",
-      "sha256": "1855eb35ddcfd9b052abd4a2aa9636d9bde74692f51a5fa2af033fa169ac97c4",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/23-no-telehealth-consent.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v0.json": {
-      "status": "rejected",
-      "sha256": "d7b37ee2c355057832c07ba0c1617a97650276f7b14029fa7514e89cb1388cec",
-      "output": {
-        "violation": {
-          "screens": [
-            "chart",
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-work"
-              }
-            },
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/24-default-refill-eligibility.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v1.json": {
-      "status": "rejected",
-      "sha256": "9b9317ec7a9a29dfc45fea6b081e48aaf52e7405efdd452688f3792a2cd94756",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/25-restart-restraint-clock.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v2.json": {
-      "status": "rejected",
-      "sha256": "6c528d9758541824334a7163973bca43f63be12df39a3b70a1a8dbd5f773e1d7",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/26-stale-preoperative-hp.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v3.json": {
-      "status": "rejected",
-      "sha256": "1757a00df6e30d2a54813596fc4b40121e7345eb5188a3b0239c3c0cfbb45d3d",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/27-expired-controlled-fill.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P2/v4.json": {
-      "status": "rejected",
-      "sha256": "f330fbf0dff9f6a49ff1f6bb3d78ff96920847e0b2c92e08ad10f2c738e0448b",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/28-underage-minor-consent.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v0.json": {
-      "status": "rejected",
-      "sha256": "6a6c50d3300ecdbabdac458395624e9842ad549bc35ca9368900ca5978d9c323",
-      "output": {
-        "violation": {
-          "screens": [
-            "chart",
-            "work"
-          ],
-          "property": "writesOnly",
-          "message": "field drug on screen work writes drug, which role rn may not enter",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-work"
-              }
-            }
-          ]
-        }
-      }
+    "programs/bad/29-invalid-birth-date.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v1.json": {
-      "status": "rejected",
-      "sha256": "9dbac1d297667f442c3658fba11b3fce7f966a45e473bb23ce705a293cff455b",
-      "output": {
-        "violation": {
-          "screens": [
-            "work"
-          ],
-          "property": "writesOnly",
-          "message": "field drug on screen work writes drug, which role rn may not enter",
-          "counterexample": []
-        }
-      }
+    "programs/bad/30-daily-methotrexate-default.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v2.json": {
-      "status": "rejected",
-      "sha256": "cfd1864a3825e5f59a6d88769556d40c7f42cdc46c2e93e02e56d2ec1cb333b5",
-      "output": {
-        "violation": {
-          "screens": [
-            "work"
-          ],
-          "property": "writesOnly",
-          "message": "field drug on screen work writes drug, which role rn may not enter",
-          "counterexample": []
-        }
-      }
+    "programs/bad/31-hidden-result-components.json": {
+      "status": "full-profile only"
     },
-    "runs/mock/programs/P3/v3.json": {
-      "status": "rejected",
-      "sha256": "394651829cf25f4ca33de503cbe7824f7ec1310d880d46839c644defbf00f4b2",
-      "output": {
-        "violation": {
-          "screens": [
-            "work"
-          ],
-          "property": "writesOnly",
-          "message": "field drug on screen work writes drug, which role rn may not enter",
-          "counterexample": []
-        }
-      }
-    },
-    "runs/mock/programs/P3/v4.json": {
-      "status": "rejected",
-      "sha256": "c832e116a9aea466541252e7252ee2a92781e1514ed12b41385268bd7863da17",
-      "output": {
-        "violation": {
-          "screens": [
-            "work"
-          ],
-          "property": "writesOnly",
-          "message": "field drug on screen work writes drug, which role rn may not enter",
-          "counterexample": []
-        }
-      }
-    },
-    "runs/mock/programs/P4/v0.json": {
-      "status": "rejected",
-      "sha256": "6d122b9077600ff11250e53ebf8b26798044859c6ccf5a26c274cbfbdc1b92c4",
-      "output": {
-        "violation": {
-          "screens": [
-            "chart",
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-work"
-              }
-            },
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P4/v1.json": {
-      "status": "rejected",
-      "sha256": "0816c481dca4eb9b03a2fd49879cf3378e1e0d0e5ce96f3f519ff0556606e084",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P4/v2.json": {
-      "status": "rejected",
-      "sha256": "7ff4820ffec8bd6aff5efe8d89b5e4f70ee4a253c597bdb03d932eb59bc5562b",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P4/v3.json": {
-      "status": "rejected",
-      "sha256": "3e519a792b304b923dc32fdaa13ad9541e7290fca44e2b5291b8d9cbc39a1f78",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P4/v4.json": {
-      "status": "rejected",
-      "sha256": "49009d6f53753fb56da564d0b55d62d348e96dd52841ed396b3680eb25a7eae0",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v0.json": {
-      "status": "rejected",
-      "sha256": "fd63aa61461f51fa9b9e4e5665fd51ccddc849dbad611ca32a24be4f954a8ed8",
-      "output": {
-        "violation": {
-          "screens": [
-            "chart",
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-work"
-              }
-            },
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v1.json": {
-      "status": "rejected",
-      "sha256": "3546248142be7205ea20acda67dd72eb895aa82213db080b9eabbaba39d08281",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v2.json": {
-      "status": "rejected",
-      "sha256": "7afc9ded61ab070f8bfbc8db7d8cbca25cfec2a2480400c9bf0fdcf1748c06c4",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v3.json": {
-      "status": "rejected",
-      "sha256": "599fa38ca1f153b9a9f42b9ea3278825e3ff9eedacc1eee0b129bc7313d21c58",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v4.json": {
-      "status": "rejected",
-      "sha256": "0ccb84cc19da918ca71b1d24a2be5d9083069726a26b773bab854f7b783c3ad7",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/mock/programs/P5/v5.json": {
-      "status": "rejected",
-      "sha256": "99b7686c62fa15bf6abbb187655eb44176b1933b362afcad4b97f0426318738a",
-      "output": {
-        "violation": {
-          "screens": [
-            "work",
-            "commit"
-          ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen commit when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "open-commit"
-              }
-            },
-            {
-              "click": {
-                "comp": "commit-action"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "runs/run1-P3/P3/v0.json": {
-      "status": "computed",
-      "sha256": "30ac6bb3ce3bc8172e0cb7fc146b7b3c48b777cfd122786da405c5bf36a4b4d0",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v1.json": {
-      "status": "computed",
-      "sha256": "dcb0021567cd037525d2a7dac30338eeeec13d8a893e733360b1dfff535d4b58",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v2.json": {
-      "status": "computed",
-      "sha256": "c1052bebb22e38d37418415a823c816802c58c0bb5a3b0c1707910f7ab63dd08",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v3.json": {
-      "status": "computed",
-      "sha256": "84c040325a8a792691667099beea17dafd48905f5733418062c76f4564c10465",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v4.json": {
-      "status": "computed",
-      "sha256": "1dd193ecf560eb08972d753ab1a43e97e07b35e6b4f1ea82a5f4894cb763e59d",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v5.json": {
-      "status": "computed",
-      "sha256": "9ba10da812e3f66d5754019612022c88a0cbd43cc60f2d890de3ec745a75c9a0",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v6.json": {
-      "status": "computed",
-      "sha256": "5b576bd8e970222792f053680d7979de5e345f405a35820276097101a2463f9e",
-      "output": "ok"
-    },
-    "runs/run1-P3/P3/v7.json": {
-      "status": "computed",
-      "sha256": "fd3ce0d21dcf2787976c01e9d14bb0ad01ea84918380e892bb5a9c717a0a484e",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v0.json": {
-      "status": "computed",
-      "sha256": "5499d865bcd29cb17c53e6e6fb02985876747fc9dbd3af1b0bc99eb779ed239c",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v1.json": {
-      "status": "computed",
-      "sha256": "a620a7cd3f5c1098495d6d73b8ea0e71f9c19c3e6d09fd638754d578ab1546b7",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v2.json": {
-      "status": "computed",
-      "sha256": "d5855577347d3b278f951c6cc9d7f8dd78346534bb46c4c33157b00754750c22",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v3.json": {
-      "status": "computed",
-      "sha256": "cc7ab4e51a7f71c65d9a849e6122b3345b1a7d0d91828b1da14832af834dc12b",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v4.json": {
-      "status": "computed",
-      "sha256": "82f88dcd7820288c5d0c7b53e63493b86ad415ce91266d025a2b09621239ea00",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v5.json": {
-      "status": "computed",
-      "sha256": "b719a1dd60e139629871c738bb78a5f2dfc3a5415f089c3aa39e3fabbbf318a0",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v6.json": {
-      "status": "computed",
-      "sha256": "2202257c5c1cbc9c8610f0f4158f4a2a7e1d5c07adb1c5810eb5ab897dd8c1e9",
-      "output": "ok"
-    },
-    "runs/run1-P3/programs/P3/v7.json": {
-      "status": "computed",
-      "sha256": "1004b99590f7bffd2335e05e207b97d188de067c45bbe37a9221e4e583676398",
-      "output": "ok"
+    "programs/bad/32-misleading-signing-label.json": {
+      "status": "full-profile only"
     }
   }
 }

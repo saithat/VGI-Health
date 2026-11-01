@@ -146,5 +146,98 @@ theorem exact_of_accept [DecidableEq α] [DecidableEq ε]
   · intro es t n run hg
     exact lower_bound h0 hc run hg
 
+
+/-- Generic transparent bucket-queue search; its result is still untrusted. -/
+structure Node (α ε : Type) where
+  state : α
+  cost : Nat
+  revPath : List ε
+abbrev Queue (α ε : Type) := List (Nat × List (Node α ε))
+
+def setDistance [DecidableEq α] (g : Graph α ε) (v : Table α) (s : α) (n : Nat) : Table α :=
+  v.insert (g.hash s) ((s, n) :: ((v[g.hash s]?).getD []).filter (fun x => !decide (x.1 = s)))
+
+def insertNode (node : Node α ε) : Queue α ε → Queue α ε
+  | [] => [(node.cost, [node])]
+  | (cost, bucket) :: rest =>
+    if node.cost == cost then (cost, node :: bucket) :: rest
+    else if node.cost < cost then (node.cost, [node]) :: (cost, bucket) :: rest
+    else (cost, bucket) :: insertNode node rest
+
+inductive Outcome (α ε : Type)
+  | found (c : Candidate α ε) | bounded | unreachable
+
+def searchLoop [DecidableEq α] (g : Graph α ε) : Nat → Queue α ε → Table α → Outcome α ε
+  | 0, _, _ => .bounded
+  | fuel + 1, q, v =>
+    match q with
+    | [] => .unreachable
+    | (_, []) :: tail => searchLoop g fuel tail v
+    | (cost, node :: rest) :: tail =>
+      let q := if rest.isEmpty then tail else (cost, rest) :: tail
+      if lookup g v node.state != some cost then searchLoop g fuel q v
+      else if g.goal node.state then .found { path := node.revPath.reverse, cost, visited := v }
+      else
+        let (q, v) := (g.moves node.state).foldl (fun (q, v) e =>
+          let t := g.next node.state e
+          let n := cost + g.weight node.state e
+          match lookup g v t with
+          | some old => if old ≤ n then (q, v) else
+              (insertNode { state := t, cost := n, revPath := e :: node.revPath } q, setDistance g v t n)
+          | none => (insertNode { state := t, cost := n, revPath := e :: node.revPath } q, setDistance g v t n)) (q, v)
+        searchLoop g fuel q v
+
+def search [DecidableEq α] [DecidableEq ε] (g : Graph α ε) (start : α) (bound : Nat) : Option (Candidate α ε) :=
+  match searchLoop g bound [(0, [{ state := start, cost := 0, revPath := [] }])] (setDistance g {} start 0) with
+  | .found c => if accept g start c then some c else none
+  | _ => none
+
+theorem search_sound [DecidableEq α] [DecidableEq ε] {g : Graph α ε} {s bound c}
+    (h : search g s bound = some c) :
+    (∃ t, Run g s c.path t c.cost ∧ g.goal t = true) ∧
+    (∀ es t n, Run g s es t n → g.goal t = true → c.cost ≤ n) := by
+  unfold search at h
+  split at h
+  next c' he =>
+    split at h
+    next ha => cases h; exact exact_of_accept ha
+    next => simp at h
+  next => simp at h
+
+/-- Map allowed real runs into an exact state abstraction. -/
+theorem map_run {real : Graph α ε} {abstract : Graph β ε} (abs : α → β)
+    (hm : ∀ s e, e ∈ real.moves s → e ∈ abstract.moves (abs s))
+    (hn : ∀ s e, e ∈ real.moves s → abstract.next (abs s) e = abs (real.next s e))
+    (hw : ∀ s e, abstract.weight (abs s) e = real.weight s e)
+    {s es t n} (run : Run real s es t n) : Run abstract (abs s) es (abs t) n := by
+  induction run with
+  | nil s => exact .nil _
+  | @cons s e es t n he hr ih =>
+    rw [← hw s e]
+    apply Run.cons (hm s e he)
+    rw [hn s e he]
+    exact ih
+
+/-- Lift an abstract path to actual transitions with the same cost. -/
+theorem lift_run {real : Graph α ε} {abstract : Graph β ε} (abs : α → β)
+    (hm : ∀ s e, e ∈ abstract.moves (abs s) → e ∈ real.moves s)
+    (hn : ∀ s e, e ∈ real.moves s → abstract.next (abs s) e = abs (real.next s e))
+    (hw : ∀ s e, abstract.weight (abs s) e = real.weight s e)
+    (es : List ε) : ∀ s t n, Run abstract (abs s) es t n →
+      ∃ u, Run real s es u n ∧ abs u = t := by
+  induction es with
+  | nil => intro s t n hr; cases hr; exact ⟨s, .nil _, rfl⟩
+  | cons e es ih =>
+    intro s t n hr
+    cases hr with
+    | @cons _ _ _ _ cost he tail =>
+      have he' := hm s e he
+      rw [hn s e he'] at tail
+      obtain ⟨u, hu, heq⟩ := ih (real.next s e) t cost tail
+      refine ⟨u, ?_, heq⟩
+      rw [hw s e]
+      exact .cons he' hu
+
 #print axioms exact_of_accept
+#print axioms search_sound
 end Ehr.Sim.Certificate

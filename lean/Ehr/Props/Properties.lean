@@ -1,7 +1,8 @@
 import Ehr.Props.Basics
+import Ehr.Props.Navigation
 
 /-!
-# The properties a certified UI program has (BRIEF 7.2, properties 1–12)
+# The properties a certified UI program has (BRIEF 7.2, properties 1–13)
 
 Each property is stated about the real interpreter. Most come in two kinds of
 parts:
@@ -19,7 +20,7 @@ never tries to type the patient ID"). The interpreter would refuse such a
 step anyway; the checker still rejects the program, so a bad design is never
 deployed even when it would be harmless.
 
-`Satisfies spec prev canonical prog` is the conjunction of all twelve. The
+`Satisfies spec prev canonical prog` is the conjunction of all thirteen. The
 semantic parts hold for every patient record and every user with the
 program's role.
 -/
@@ -214,7 +215,8 @@ def CosignIsSecondUser (ep : Episode) : Prop :=
 
 /-- The program never tries to automate a human step: no field prefills an
 element a human must enter; no macro step types into such a field, clicks a
-commit, review, or macro button. Needs the checker. -/
+commit, review, macro button, or a request action for a human-required
+element. Needs the checker. -/
 def NoAutomationAttempts (spec : Spec) (prog : Program) : Prop :=
   (∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
     HumanMustEnter el → f.2.2 = .none) ∧
@@ -222,7 +224,8 @@ def NoAutomationAttempts (spec : Spec) (prog : Program) : Prop :=
     (setTarget? st = some sc.2.id →
       ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1, ¬ HumanMustEnter el) ∧
     (clickTarget? st = some sc.2.id →
-      commitOf? sc.2.kind = none ∧ reviewOf? sc.2.kind = none ∧ macroOf? sc.2.kind = none))
+      commitOf? sc.2.kind = none ∧ reviewOf? sc.2.kind = none ∧ macroOf? sc.2.kind = none ∧
+      NoHumanRequest spec sc.2.kind))
 
 instance (spec : Spec) (prog : Program) : Decidable (NoAutomationAttempts spec prog) := by
   unfold NoAutomationAttempts; infer_instance
@@ -410,9 +413,16 @@ def SeverityTiers (spec : Spec) (prog : Program) : Prop :=
   NoPassivePopupRequests spec prog ∧
   ∀ facts user, user.role = prog.role → PassiveNeverPopsUp ⟨spec, prog, facts, user⟩
 
+/-! ## 13. Sane navigation
+
+`NavigationSane` is the render lane's decidable `Render.NavSane` over the actual
+navigation tree. D1–D4 and D6 hold for every program by renderer theorems in
+`Ehr.Render.UiProofs`; they do not need additional checker rules.
+-/
+
 /-! ## All together -/
 
-/-- **A certified program.** `prog` satisfies properties 1–12 against `spec`,
+/-- **A certified program.** `prog` satisfies properties 1–13 against `spec`,
 given the previous deployed version `prev` (if any) and the vendor's
 `canonical` program. -/
 def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
@@ -427,6 +437,7 @@ def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) :
   AlertsFire spec prog ∧                  -- 9  (A1)
   NoFalseAlarms spec prog ∧               -- 10 (A2)
   NoRepeatInterruptions spec prog ∧       -- 11 (A3)
-  SeverityTiers spec prog                 -- 12 (A4)
+  SeverityTiers spec prog ∧               -- 12 (A4)
+  NavigationSane prog                    -- 13 (D5)
 
 end Ehr.Props

@@ -537,3 +537,49 @@ morphine, hydromorphone, oxycodone and hydrocodone-acetaminophen. Content adopts
 zero refills as an additional per-line requirement in each signing workflow.
 The core tests and generated samples provide the exact requirement encoding;
 other-lane adoption is recorded in `changes-requests.md`.
+
+## 10. Semantic UI tree + minimal design rules (owner decision, Oct 31; supersedes the raw Html page tree for EHR screens)
+
+Lean emits a **semantic UI tree**. React (Mantine/@medplum/react) draws it with one component per node kind. The vocabulary is small and expressive. Lean decides WHAT is on screen and its structure; React decides how it looks.
+
+```lean
+inductive UiNode
+  | section  (id : String) (title : String) (children : List UiNode)        -- a titled group / card
+  | columns  (children : List UiNode)                                       -- side-by-side layout hint
+  | tabs     (id : String) (labels : List String) (selected : Nat) (body : List UiNode)  -- only the selected body is present
+  | stepper  (steps : List (String × String)) (current : Nat)               -- (screenId, label)
+  | field    (comp : CompId) (label : String) (kind : String) (value : Option String) (unit : Option String)
+             (provenance : Option String) (pendingConfirm : Bool) (humanOnly : Bool) (required : Bool)
+  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- "list" | "table" | "trend" | "summary"
+             (rows : List (List (String × String)))                          -- every relevant record (T11)
+  | alert    (comp : CompId) (alertId : AlertId) (label : String) (severity : String) -- inline only
+  | button   (comp : CompId) (label : String) (role : String) (enabled : Bool) (blockedReason : Option String) (hotkey : Option String)
+             -- role: "primary" (commit) | "secondary" | "nav" | "macro"
+  | text     (s : String)
+
+structure UiScreen where
+  banner : List (String × String)      -- patient banner fields (always first; D1)
+  nav : List (String × List (String × String))   -- groups: (groupLabel, [(screenId, label)])
+  title : String
+  workspace : List UiNode
+  side : List UiNode                   -- optional clinical summary column
+  modal : Option UiNode                -- an interruptive alert (with its ack button) when present
+```
+
+`renderUi : Spec → Program → Facts → Display → User → State → UiScreen` (Init-only, exported to WASM as `ehr_render_ui`).
+
+**Minimal design rules (theorems over every program, record, and state). Just enough to rule out bad UI:**
+- **D1 Landmark:** exactly one banner, first, with at least two patient identifiers (name + DOB or MRN), on every screen.
+- **D2 Required info visible:** on a screen with a commit button, every applicable required review item appears in `workspace` (not only in `side` or a non-selected tab), as an `info` node with all relevant rows (generalizes T10/T11).
+- **D3 Honest actions:** every button has a non-empty label; a `primary` button exists only for commits and is `enabled` iff the interpreter's view enables it; a disabled button has a blocked reason.
+- **D4 Alert presentation:** an interruptive alert that fires appears as `modal`; a passive alert appears only inline (`alert` node), never as `modal`.
+- **D5 Sane navigation:** within a nav group, and among group labels, no duplicate labels; at most 12 entries per group and at most 12 groups; every screen of the program appears in nav (no orphans).
+- **D6 Clear fields:** every field has a non-empty label; `humanOnly` and `provenance` flags are set exactly as the interpreter's view says; `pendingConfirm` fields have a confirm affordance.
+
+Nothing else is constrained: columns, grouping, order, density, colors, and component choice are free.
+
+**React side:**
+- one component per `UiNode` kind (exhaustive switch);
+- AppShell layout (header banner, nav, workspace, optional side, modal).
+
+**Fidelity (offline, before deploy):** generate the expected accessibility tree (roles + names) from `UiScreen` and compare it to the rendered DOM's accessibility tree (Playwright ARIA snapshot). Also check visibility, the legibility minimum, and no element covered. A mismatch blocks the deploy.

@@ -1,16 +1,9 @@
-import Ehr.Check.Check
+import Ehr.Check.ReplayTypes
 
 /-! Counterexample navigation is validated by the public interpreter. The
 last click may be blocked: it is included to display the hard stop. -/
 namespace Ehr.Check
 open Ehr Ehr.Props
-
-/-- A sequence of human events, each accepted by the real interpreter. -/
-inductive OkRun (sp : Spec) (p : Program) (f : Facts) (u : User) :
-    State → List Event → State → Prop
-  | nil (s) : OkRun sp p f u s [] s
-  | cons {s t z e es} : step sp p f u .human s e = (t, .ok) →
-      OkRun sp p f u t es z → OkRun sp p f u s (e :: es) z
 
 theorem OkRun.append {sp p f u s t z xs ys}
     (h : OkRun sp p f u s xs t) (h' : OkRun sp p f u t ys z) :
@@ -46,13 +39,6 @@ theorem followHops_sound (sp p f u) (hops : List Hop) (s : State) :
     split
     · simpa only [] using hok.append (ih t)
     · exact hok
-
-/-- All events before an optional final click were accepted. The final click
-is evaluated by `step` too; it may intentionally show a blocked commit. -/
-def ValidCounterexample (sp : Spec) (p : Program) (es : List Event) : Prop :=
-  ∃ pre s tail, es = pre ++ tail ∧
-    OkRun sp p replayFacts (replayUser p) (init sp p replayFacts (replayUser p)) pre s ∧
-    (tail = [] ∨ ∃ cid, tail = [.click cid])
 
 /-- **T7 (replay).** The checker only emits successfully replayed navigation,
 followed by at most one triggering click. This includes cut paths. -/

@@ -59,6 +59,8 @@ We ship:
 
 **Principle: everything is settled before the clinician opens the EHR.** Nothing is checked at runtime, and nothing may break or block unexpectedly during a shift. Every risk is either proven for **all** inputs (every patient record, every click sequence) or tested offline before a version is deployed. The commit guard is an ordinary hard stop (for example, "Sign" stays disabled until patient-ID re-entry is done), and the checker proves offline that a certified UI never leaves the clinician stuck behind it.
 
+**Semantic UI tree + minimal design rules (owner decision, Oct 31; refines "Lean renders the page"):** Lean emits a semantic UI tree in a small design vocabulary (banner, nav groups, stepper, sections, columns, fields, info tables, alerts, buttons, modal). React with Mantine draws it, one component per node kind. Lean proves just enough design rules to rule out bad UI, without limiting creativity: D1 one patient banner with two identifiers; D2 required review info visible in the workspace; D3 honest, labeled actions (primary only for commits, enabled iff the guard holds); D4 interruptive alerts modal, passive alerts inline only; D6 labeled fields with human-only and provenance markers. D5 (sane navigation: no duplicate labels, ≤12 entries per group, no orphan screens) is a checker rule. The expected accessibility tree is defined in Lean (`aria : UiScreen → AriaNode`), and the design rules are proven over it (owner decision, Oct 31). So the UI is proven down to what a screen reader sees; the only tested step is that React and the browser produce exactly that tree. Before deploy, an ARIA-snapshot check confirms the React drawing matches the proven tree (docs/design/core-model.md section 10).
+
 **Lean renders the page.** Given the program, the state, the click, and the patient's FHIR records, the Lean module returns the next state and the **complete page tree**: elements, text, the rows of every info panel (allergies, meds, dose check, trend points), and style classes from one fixed stylesheet. A generic painter of about 50–80 lines puts that tree in the browser and turns clicks and keystrokes back into events. It makes no decisions. The theorems cover the page tree, for every record: what must be visible is in the tree, legible, and not hidden, and every panel lists every relevant record. The app reads and writes Medplum itself, the way any EHR does: signing an order creates a MedicationRequest, and marking allergies reviewed creates a Provenance record. Each UI program declares which fields write to which FHIR elements. Overnight, the checker proves those declarations stay inside the spec ("writes only").
 
 **What the proofs cover:** the interpreter clinicians click through, the checker, and deploy are **one Lean codebase**. So the theorems are about the code that actually runs, both online in the browser and offline in the pipeline. Nothing is re-implemented in another language.
@@ -164,6 +166,12 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 **Target scale across the tested workflows (approximate):** 25–30 screens, 150+ fields, 100+ actions, 12+ alert or hard-stop types.
 
 **Realism references:** OpenEMR (structure and density); ONC §170.315(g)(3) usability test tasks (task scripts); general production-EHR conventions. Do not copy any vendor's proprietary screens. If possible, have a clinician sanity-check the canonical UI and specs.
+
+### A working EHR on the live backend (owner decision, Oct 31)
+A clinician can be handed the canonical EHR and do real workflows against the local Medplum backend: notes, orders (meds, labs, imaging), diagnoses (ICD-10-CM), CPT / level of service, admit and discharge (inpatient encounters, beds, discharge prescriptions), MAR administration with barcode scans and cosigns, immunizations, results acknowledgment and patient messages, refills, consents, and review receipts. Live mode is the default: sign in as a persona; worklists come from Medplum (seeded from the world generator). On each commit, the app's data module writes the FHIR records in one transaction (a trusted, integration-tested mapping). Lean still decides every screen, guard, and alert. Offline replay remains for the dashboard and no-Docker demos. Only the CPT codes the workflows need ship, with our own labels (CPT is AMA-licensed); ICD-10-CM is public domain.
+
+### The canonical is the certified baseline (owner decision, Oct 31)
+Every persona projection of the canonical, in every release (v1, v1.1, v2), must pass the FULL checker before anything else: properties 1–12, alerts A1–A4, and design rules D1–D6 (including D5 sane navigation). The canonical is what every clinician starts from on Day 1 and what a failed migration falls back to. Personalization only builds up from it. It keeps realistic friction for the agent to optimize, but it never violates a rule.
 
 ### Chart shell (always present)
 - **Patient banner:** name, DOB, MRN, age/sex, photo placeholder, allergies badge, code status, isolation, preferred language, PCP, coverage, care-gap count, critical flags. On inpatient screens it also shows room/bed, attending, and weight with its date.
@@ -361,7 +369,7 @@ Each one is stated in plain words and quantifies over **all** specs and programs
 - **T5 Abstraction facts:** the "weight recorded today in kg" fact holds only if a kg weight Observation dated today exists. The allergy-version fact equals the resource version.
 - **T6 Macros:** a macro behaves exactly like its expansion into canonical steps, or stops at a guard.
 - **T7 (stretch) Counterexamples are genuine:** if the checker rejects, the returned path is a real run that violates the named property.
-- **T8 Releases only tighten:** if spec B only adds requirements to spec A, every program that satisfies B also satisfies A. Applied to the releases: `V1_1` extends `V1` and `V2` extends `V1_1`, so no customization certified against a later spec loses an earlier guarantee.
+- **T8 Releases only tighten (owner-approved wording, Oct 31):** a program certified against a newer release still meets every requirement of the older release: its entry requirements, review requirements, human-only steps, alerts, and units. Only the set of allowed component kinds (the catalog) may grow. The unqualified form (full `Satisfies` transport) is false, and that is proven (`T8_unqualified_false`), because a newer program may use a newly added component kind.
 - **T9 Minimum clicks is exact:** `min-clicks` returns the length of a real completing path, and no shorter completing path exists.
 - **T10 The page shows what must be shown (any program, any record):** every component the interpreter marks as shown appears in the page tree, with its text, at legible size, and with no hidden ancestor. Nothing marked hidden appears. On a commit screen, every required review item appears with its content. The commit button is enabled in the tree exactly when the guard holds.
 - **T11 Panels are complete (any record):** each info panel lists every relevant record from the patient's FHIR data. For example, the allergy panel lists every active AllergyIntolerance, and the current-meds panel every active MedicationRequest. Pre-filled values show their provenance.
@@ -422,7 +430,7 @@ Daily variability: volume (busy and quiet days), acuity, no-shows and add-ons, n
 
 ### 8.3 Fair comparison
 - **Clinical decisions are independent of the UI version.** Each scenario fixes what is ordered, given, or acknowledged, and the disposition. The interface changes only how long those choices take, so the world evolves identically under every UI version.
-- **Floor:** the clicks, keystrokes, and scrolls (and KLM time) of only the human-only steps plus the genuine clinical choices. Report every version as % above the floor, for each metric.
+- **Baseline vs theoretical minimum:** the *baseline* is the canonical UI (certified; Day 1 for everyone). The *theoretical minimum* (called "floor" in code and data) is the clicks, keystrokes, scrolls, and KLM time of only the human-only steps plus the genuine clinical choices. Report every version against both: the saving vs the baseline, and the % above the theoretical minimum.
 
 ### 8.4 Evaluation integrity (no leakage)
 - The agent learns from the traces of days ≤ d (**train**).
@@ -443,6 +451,12 @@ Each night, for each persona:
 8. **Record:** write the decision record and the new version with its certificate.
 
 **Allowed moves:** compose task views; copy frequent actions to a toolbar; reorder or merge sections; bring buried information onto the screen where it's needed; pre-fill with provenance (FHIR SDC style); satisfy prompts with valid receipts; create macros or order-set bundles with guards; add defaults the human confirms; add keyboard or scan shortcuts; collapse panels that are not required.
+
+**New components (owner decision, Oct 31):** the agent may create
+- composite components (`componentDefs`) built from existing kinds, whose meaning is their expansion, so every proof carries over;
+- presentation-only React components that draw an existing node kind or composite in a new way: sandboxed by lint/type rules, verified per version by the ARIA fidelity, visibility, and legibility checks, and deployed atomically with the program.
+
+The agent gets a capabilities manual every night (what it can and can't change, every property and design rule in plain words, the persona's spec rules with citations, budgets, deployment rules, real accepted and rejected examples). It must never touch core or backend behavior: the Lean interpreter, checker, spec, properties, data layer, or FHIR writes.
 
 **Forbidden moves:** edit specs; automate or pre-fill human-only steps; hide required information; write outside the spec; exceed the budgets.
 
@@ -628,12 +642,13 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 
 - [ ] `make install && make run` works on a clean clone with Docker. After install, the demo opens in replay mode with no API key and no internet.
 - [ ] The EHR reads patient data from Medplum and writes commits back (orders, administrations, receipts as Provenance).
-- [ ] The EHR meets the density targets on demo paths and passes the checker.
+- [ ] Every persona projection of the canonical (v1, v1.1, v2) passes the full checker, including D1–D6. It is the certified baseline and the migration fallback.
 - [ ] Seeded bad programs fail, with counterexamples replayed on rendered screens, and the app's hard stop blocks each unsafe commit.
 - [ ] Every deployed version has a certificate, and re-checking it returns ok. The app refuses to load a program whose certificate doesn't match.
 - [ ] The app's screen logic is the Lean interpreter compiled to WASM (or option B, if the owner approved it). Native and WASM builds agree on thousands of random programs and click sequences.
 - [ ] Seeded bad programs 9–12 (alerts) fail with counterexamples. A1–A4 hold for every deployed version.
 - [ ] W7 (refill requests) is built and used in P1's simulated days.
+- [ ] Every visible control works or is removed (owner decision, Oct 31). `pnpm --filter app audit:buttons` clicks every enabled control on every route and EHR screen; each must have an observable effect, and each disabled control must show its reason. No click may throw. The report is in `docs/audits/buttons.md`, and a regression test blocks new dead controls.
 - [ ] The CURES and naloxone rules are in spec v1 with citations; bad programs 13–14 are rejected; `docs/regulations.md` maps every spec rule to its source.
 - [ ] Release v1.1: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
 - [ ] The per-version screen check passes for every deployed version, and runs offline before deploy (a failing version is never deployed).

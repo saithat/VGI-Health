@@ -258,6 +258,7 @@ theorem T10_info (cx : Ctx) (i : InfoId)
   simp only [Bool.and_eq_true] at hinfo
   let it := itemView cx.sp cx.facts cx.s (cx.prog.compsOf cx.s.screen) c
   have hm : it ∈ cx.v.items := by
+    rw [Ctx.v_exact]
     exact List.mem_map.mpr ⟨c, hc, rfl⟩
   have hs : it.shown = true := by
     dsimp [it, itemView]

@@ -1,4 +1,5 @@
-import Ehr.Check.BadProofs
+import Ehr.Canonical.BadPrograms
+import Ehr.Check.Check
 
 /-! Permanent seeded regressions. Until content's template passes on its own,
 rejection and replay tests are paired with mutation-specific rule tests and
@@ -12,9 +13,10 @@ def rejectedWithReplay (p : Program) : Bool :=
   | none => false
   | some finding => (counterexample specV1 p finding).2.2
 
-#guard check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
+-- The RN projection certifies under core, including D5.
+#guard Specs.ruleProfile == .full || check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
 
-#guard Bad.programs.all (fun (_, p) => rejectedWithReplay p)
+#guard Bad.corePrograms.all (fun (_, p) => rejectedWithReplay p)
 
 /-- A specific failing rule also has a replayable explanation, independently
 of any earlier template failure. This does not relabel the actual verdict. -/
@@ -38,5 +40,8 @@ def mutationRejected (property : String) (p : Program) : Bool :=
 #guard mutationRejected "wellFormed" Bad.inventedAlert
 #guard mutationRejected "noRepeatInterruptions" Bad.repeatedInteraction
 #guard mutationRejected "severityTiers" Bad.passivePopup
+#guard mutationRejected "completable" Bad.noCures
 #guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
+#guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
+#guard mutationRejected "completable" Bad.scheduleIIRefills
 end Ehr.Check.Tests

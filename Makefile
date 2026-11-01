@@ -1,14 +1,15 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load synthea fixtures wasm wasm-check
+.PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 APP_PORT ?= 5173
 LIVE_WORLD ?= runs/world/live
 LIVE_DAYS ?= 10
 LIVE_ARGS ?=
+SEED_ARGS ?=
 
 # Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
-# setup (project, client, personas -> .env) and fixture load. Safe to re-run.
+# setup (project, client, personas -> .env), fixture load, and world worklist seed. Safe to re-run.
 install:
 	cd lean && lake build
 	pnpm install
@@ -16,12 +17,13 @@ install:
 	$(MAKE) infra-up
 	$(MAKE) setup
 	$(MAKE) load
+	$(MAKE) seed
 
 run:
 	$(MAKE) wasm-check
 	pnpm --filter app build
 	node scripts/demo-urls.mjs $(APP_PORT)
-	pnpm --filter app exec vite preview --host 0.0.0.0 --port $(APP_PORT) --strictPort
+	pnpm --filter app exec vite preview --host 127.0.0.1 --port $(APP_PORT) --strictPort
 
 # Generate a real local world, then run agent nights with an online LLM backend.
 run-live:
@@ -60,6 +62,10 @@ setup:
 # Upload fixtures/synthea/*.json into Medplum; each file at most once (atomic transaction + marker).
 load:
 	node infra/scripts/load.mjs
+
+# Materialize a living-world day as real Medplum worklists (defaults to world 1, day 1).
+seed:
+	node infra/scripts/seed-world.mjs $(SEED_ARGS)
 
 # Regenerate the raw Synthea population (needs Java 17+, ~200 MB download, ~3 min) and re-trim it
 # into the committed fixtures/synthea/. Not part of install.

@@ -35,18 +35,22 @@ patient-ID-keyed files. Precomputed Facts are a fallback. Facts-only input with
 without a patient Bundle.
 
 Synthea transaction `entry.fullUrl` UUIDs are materialized as resource IDs when
-resource.id is absent. Today's resources replace matching (type,id) resources,
+resource.id is absent. Schedule UUIDs and renderer Synthea identifier tokens
+are validated against the same selected Patient without rewriting its identity.
+Today's resources replace matching (type,id) resources,
 without leaking later tasks backward. Render's `Fhir.parseBundle` derives Facts.
 Structured world clinical observations supply named record values, including the
 naloxone response. No clinical state or display logic is reimplemented in TS.
 
 ## Search spaces and the exactness claim
 
-**Every episode answer is exact within its reported space. It is not a claim of a global
-minimum over every possible interpreter event.** `searchModel` repeats the restriction in the JSON output. Single-episode tasks
-set `exact:true`; multi-episode tasks set `exact:false`, list both per-episode
-spaces and paths, and set `episodeExact:true`. Their counts are independently
-certified episode sums, not a joint optimum across episode/receipt choices.
+**Every task answer is exact within its reported space. It is not a claim of a
+global minimum over every possible interpreter event.** `searchModel` repeats
+the restriction in JSON. Multi-episode tasks are searched jointly, with receipt
+carry and zero-cost resets allowed only after the preceding episode completes.
+They set `exact:true` and include per-episode paths. An optional early review can
+therefore reduce a later episode's cost; counts are not independent episode sums.
+This is per-task optimization, not joint optimization across the whole day.
 
 - **full:** goal-value entries and confirms, goal commit buttons after the
   chosen values are met, goto buttons, tab selections, group toggles, review
@@ -79,7 +83,9 @@ Dijkstra priority queue so concrete searches reduce in the kernel. A TreeMap
 of equality-checked hash buckets holds distances; hash collisions cannot make a
 false certificate pass. Search does not advance KLM time.
 
-`T9_minimum` covers the public auto/fallback function. `T9_minimum_real` connects
+`T9_jointMinimum` covers the CLI’s public joint task search and automatic
+fallbacks; `T9_taskSearch` connects it to actual Core transitions and guarded
+episode resets. `T9_minimum` covers the single-episode auto/fallback function. `T9_minimum_real` connects
 the certificate to actual `Ehr.step` runs, not a copied transition model.
 `History.lean` proves the history equivalence, including safe macros.
 `Certificate.lean` proves replay and the lower bound, including zero-cost edges.
@@ -92,6 +98,24 @@ SplitMix64 plus UTF-8 FNV-1a produces one seeded stream per (seed,task ID).
 Interruptions are assigned before UI-dependent random draws and retained when a
 faster UI skips entries. A fuel bound and commit retry cap prevent loops; stuck
 tasks and rejected/stale receipt reasons are complaints, not successes.
+Navigation fails early when a goal names an undeclared spec element: Core cannot
+capture that value, so exploring more screens cannot complete the task. The
+goal and incomplete result remain in the report.
+
+`TaskContext.lean` binds a renewal to the focused contained MedicationRequest
+in the current task's `todayResources`, validating both patient references.
+Missing or ambiguous prescription context cannot complete approval. The drug
+is a human UI capture, with the spec's eligibility attestation and interaction
+alerts; it is never installed as administration context. Denials use denyRefill.
+Modifications and Schedule II renewals use ordinary signOrders with its full
+prescription gates. Explicit modification and denial reasons remain goals.
+The CLI minimum adapter must call `taskEpisodes`, as persona replay does;
+its cross-lane adoption request is in `docs/design/changes-requests.md`.
+
+Before advancing past an earlier medication line, goal derivation also retains
+Core's per-line requirements from other signing artifacts. This includes the
+series earliest-fill capture required by the current cross-artifact line stop;
+it does not add that series-only field to an ordinary final line.
 
 W4 uses separate medication episodes plus an assessment episode when requested.
 W5 uses separate vaccine episodes plus the medical/note episode. Captures,
@@ -112,21 +136,82 @@ and retains human-only work and required interruptive acknowledgments.
 CURES can be shown on the ideal commit screen at zero review cost, so a waiver
 is not a floor item. The persona records a scenario's exemption; search may use
 the cheaper legal alternative. A batch-wide waiver is offered only when every
-controlled prescription has the same supported exemption. Surgical six/seven-day
-supplies use report review under the hospital's stricter five-day waiver policy.
+controlled prescription has the same supported exemption. The current surgical
+exemption code is surgery-7-day; supplies above seven days use report review.
+Allowed-value requirements (including zero Schedule II refills) constrain
+unspecified goals; conflicting explicit clinical choices remain complaints.
+
+## Current Core contracts
+
+Goals and policy use Core's `clinicalApplies`, `temporalStatus`, `expiryStatus`,
+`elementValueValid` and display guard. Bound age/service/payer/risk facts retain
+Core's unknown policy: unknown applies; a missing fact is never inferred from
+an unrelated identity or encounter label. Scenario-chosen captured-code inputs
+used by conditions become real field goals, including inputs used only by a
+temporal, expiry, display or alert contract. Only their actual UI captures can
+make the commit guard's condition false. An exact-slot condition goal also
+satisfies a matching any-slot entry; it is never replaced by an arbitrary-slot
+goal that could bind to a different visible field.
+
+For unspecified constrained fields, candidate values come from allowed lists,
+specified defaults, declared record sources, and constructive code/range or
+relational candidates. Core checks every candidate. Explicit scenario choices
+that conflict remain goals and produce complaints. This is a finite candidate
+policy, not a complete constraint solver. Pending valid prefills can still be
+confirmed. Relational entries wait for their required source captures; completed
+value goals also recheck Core validation against the current state.
+
+External event evidence, calendars, artifact versions, durable order clocks and
+payloads stay in the trusted Facts input across episode construction. The
+simulator does not generate evidence from an attestation or renew an expired
+order. KLM time and interruptions advance the real interpreter clock before an
+event, so expiry can block a previously ready commit. Incomplete tasks report
+Core's named missing/invalid/overdue obligations. Fixed-clock minimum search
+keeps its documented time model and never claims to schedule missing external
+events. Structured display panels participate in navigation even when no review
+requirement names them; receipts do not bypass their independent contracts.
+
+`FeatureTests.lean` covers completing and rejected runs for all five groups,
+including conditional event obligations, current versus stale clinical/event
+sources, explicit invalid choices, relational dependencies, collapsed payloads,
+expiry across interruptions and certified temporal minimum search.
 
 ## Verification
 
 ```sh
 cd lean
-lake build Ehr.Sim.Audit Ehr.Cli.Sim
+lake build
+lake check
+lake comparator  # the repository's 18 trusted core statements
 # One Lake process at a time.
 cd ..
-python3 lean/Ehr/Sim/cli_smoke.py --days 10 --report /tmp/sim-validation.json
+python3 lean/Ehr/Sim/verify_proofs.py  # explicit single/joint T9 Comparator contracts
+python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 10 --timeout-seconds 240 --report /tmp/sim-validation.json
 ```
 
-The CLI harness checks deterministic replay, all eight floor inequalities for
+The CLI harness defaults to one native worker; `--jobs N` runs independent
+day/persona subprocesses in parallel and collects the report in stable order.
+It never runs Lake workers. `--timeout-seconds` sets each native process's wall
+clock budget (default 120); this does not advance the interpreter's simulated
+clock or change clinical deadlines. It checks deterministic replay, all eight floor inequalities for
 every completed task, and exact interruption retention. It records all incomplete
 tasks; `--require-complete` additionally fails on those scenarios. This distinction
 matters when a schedule requests work absent from its chosen spec/program.
 Current integration blockers and exact remaining work are in `HANDOFF-sim.md`.
+
+`verify_proofs.py` writes temporary Comparator challenge statements and exports
+both their proved counterparts and the standard primitive declarations. Only
+the temporary reference challenge has proof holes; neither simulator proofs nor
+the solution export does. The trusted statement surface is `jointMinimum`,
+`taskInitial`, `realTaskGraph`, `taskDone`, the selected `searchMoves`, and Core's
+`init`/`step` plus their spec predicates. History equivalence and certificate
+acceptance are proved; Dijkstra's untrusted candidate is checked before return.
+Native CLI execution additionally relies on the Lean compiler/runtime.
+
+`State.history` contains only Back-navigation screen IDs. Temporal evidence,
+artifact versions, clinical observations, durable clocks and structured payloads
+live in the fixed `Facts` input; `State.clock` and captures remain in the search
+key. Thus `guardReason_history` is still true for the current core. Its proof
+uses explicit history-invariance lemmas for the recursive clinical and validation
+ASTs, temporal/expiry status, and display contracts, rather than reducing the
+entire guard at once. No heartbeat increase or theorem weakening is needed.

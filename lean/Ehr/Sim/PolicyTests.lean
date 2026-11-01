@@ -1,4 +1,5 @@
 import Ehr.Sim.Policy
+import Ehr.Sim.FeatureTests
 import Ehr.Sim.GoalsTests
 import Ehr.Specs.V1
 import Ehr.Canonical.Program

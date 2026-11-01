@@ -1,5 +1,6 @@
 import Ehr.Canonical.BadPrograms
 import Ehr.Core.View
+import Ehr.Canonical.LegalExamples
 
 /-! Interpreter regressions on real canonical screens. All captures below come
 from human events, prefills, or macros; no test inserts captures into a State. -/
@@ -7,7 +8,7 @@ namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1
 
 /-- Adult clinic patient, with named record values used by the canonical UI. -/
-def adult : Facts where
+def adult : Facts := FeatureExamples.withEvidence {
   patientId := "synthea-rk"
   identity := { initials := "RK", sex := "M", ageYears := 58 }
   allergyVersion := 3
@@ -20,7 +21,7 @@ def adult : Facts where
   now := 600
   record := [("appointmentReason", "Blood pressure follow-up"),
     ("preferredPharmacy", "Community pharmacy"), ("requestPharmacy", "Community pharmacy"),
-    ("patientIdentity", "RK/M/58"), ("weightYesterday", "19.5")]
+    ("patientIdentity", "RK/M/58"), ("weightYesterday", "19.5")] }
 /-- Prescriber for W1, W2, W3 and W7. -/
 def physician : User := { id := "doctor1", role := .physician }
 /-- Pediatric NP. -/
@@ -38,7 +39,7 @@ def hospital : Facts := { adult with
   weightToday? := some (700, .kg)
   currentMedClasses := [], careGaps := [] }
 /-- Pre-op context scopes consent, H&P and anticoagulant requirements. -/
-def preOpFacts : Facts := { hospital with encounterKind? := some "preop" }
+def preOpFacts : Facts := FeatureExamples.withEvidence { hospital with encounterKind? := some "preop" }
 /-- Run actual human events from init. -/
 def run (es : List Event) (p : Program := canonicalV1) (f : Facts := adult)
     (u : User := physician) (sp : Spec := specV1) : State :=
@@ -60,14 +61,15 @@ def enter (s : ScreenId) (xs : List (String × Value)) : List Event :=
   xs.map fun (n, v) => .enter (cid s n) v
 /-- Human confirmation of every field in a filled order row. -/
 def confirmLine (s : ScreenId) (pre : String := "") : List Event :=
-  orderLineElements.map fun e => .confirm (cid s (pre ++ e.id))
+  (orderLineElements.map fun e => .confirm (cid s (pre ++ e.id))) ++
+    LegalExamples.prescription s pre
 /-- A complete clinical line entered by a human, including explicit boolean decisions. -/
 def order (s drug : String) (dose : Nat) (freq : String := "q6h") : List Event := enter s
   [("drug", .code drug), ("dose", .qty dose .mg), ("doseUnit", .code "mg"),
    ("route", .code "PO"), ("freq", .code freq), ("duration", .code "5 days"),
    ("quantity", .qty 20 .none), ("refills", .qty 0 .none),
    ("indication", .text "pain or infection"), ("pharmacy", .code "Community pharmacy"),
-   ("substitution", .code "true"), ("prn", .code "false"), ("orderDiagnosis", .code "R52")]
+   ("substitution", .code "true"), ("prn", .code "false"), ("orderDiagnosis", .code "R52")] ++ LegalExamples.prescription s
 /-- Click a commit and acknowledge only popups actually raised by it. The bound
 exceeds the finite spec alert set. Guard failures remain failures. -/
 def finish (s : State) (screen commit : String) (p : Program := canonicalV1)
@@ -137,7 +139,7 @@ def w3 : State := more w3Lb [.click "w3Sign.nav.w3Triage",
 def w3Disposition : State := more (finish w3 "w3Sign" "signOrders" (f := hospital))
   ([.click "w3Sign.next"] ++ enter "w3Disposition"
     [("dispositionChoice", .code "discharge"), ("visitDiagnosis", .code "R50.9"),
-     ("dispositionCondition", .code "stable")]) (f := hospital)
+     ("dispositionCondition", .code "stable")] ++ LegalExamples.artifact "w3Disposition") (f := hospital)
 #guard (finish w3Disposition "w3Disposition" "disposition" (f := hospital)).commits.contains "disposition"
 
 /-- W4 nurse administering a selected drug, with both physical scans. -/
@@ -148,7 +150,11 @@ def adminPath (drug : String) : List Event :=
    .click "w4Worklist.toMar", .click "w4Mar.openDue"] ++ enter "w4Admin"
   [("wristbandScan", .code adult.patientId), ("medScan", .code drug),
    ("adminStatus", .code "given"), ("adminReason", .code "scheduled"),
-   ("painScore", .code "7")]
+   ("painScore", .code "7")] ++ LegalExamples.artifact "w4Admin" ++
+  [.enter "w4Admin.legal.administeredDrug" (.code drug),
+   .enter "w4Admin.legal.administeredDose" (.code (if drug == "insulin lispro" then "2 units" else if drug == "oxycodone" then "5 mg" else "2 g")),
+   .enter "w4Admin.adminSite" (.code (if drug == "insulin lispro" then "left abdomen" else if drug == "oxycodone" then "not applicable: oral" else "left forearm IV")),
+   .enter "w4Admin.legal.actualAdministrationRoute" (.code (if drug == "insulin lispro" then "subcutaneous" else if drug == "oxycodone" then "PO" else "IV"))]
 /-- W4 insulin without a second nurse is blocked. -/
 def insulinMissing : State := run (adminPath "insulin lispro") (f := adminFacts "insulin lispro") (u := nurse)
 #guard reason (one insulinMissing (.click "w4Admin.commit.administerMed")
@@ -167,7 +173,7 @@ def assessment : State := more (finish insulin "w4Admin" "administerMed" (f := a
   ([.click "w4Admin.toFlowsheet"] ++ enter "w4Flowsheet"
   [("bpSystolic", .qty 1280 .none), ("bpDiastolic", .qty 760 .none), ("heartRate", .qty 720 .none),
    ("respRate", .qty 160 .none), ("temperature", .qty 370 .none), ("spo2", .qty 980 .none),
-   ("painReassessment", .code "3"), ("nursingAssessment", .text "Comfortable; vitals stable.")])
+   ("painReassessment", .code "3"), ("nursingAssessment", .text "Comfortable; vitals stable.")] ++ LegalExamples.artifact "w4Flowsheet")
   (f := adminFacts "insulin lispro") (u := nurse)
 #guard (finish assessment "w4Flowsheet" "chartAssessment" (f := adminFacts "insulin lispro") (u := nurse)).commits.contains "chartAssessment"
 
@@ -189,7 +195,7 @@ def vaccineEntries : List Event := enter "w5Immunizations"
     [("vaccine", .code "150"), ("vaccineLot", .text "FLU24-0931"),
      ("vaccineManufacturer", .text "Synthetic vaccine manufacturer"),
      ("vaccineProvider", .text "np1"), ("visEditionDate", .text "2025-01-31"),
-     ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)]
+     ("vaccineSite", .code "left-deltoid"), ("vaccineRoute", .code "IM"), ("visGiven", .flag true)] ++ LegalExamples.artifact "w5Immunizations"
 /-- W5 vaccine record with lot, route, site, manufacturer, provider and VIS. -/
 def vaccineState : State := more (finish w5 "w5Sign" "signOrders" (f := child) (u := np))
   ([.click "w5Sign.next"] ++ vaccineEntries)
@@ -230,7 +236,7 @@ def opNote : State := run
   ([.click "home.work.w6OpNote", .click "w6OpNote.template"] ++
    ["opPreopDiagnosis", "opPostopDiagnosis", "opProcedure", "opAnesthesia", "opFindings",
     "opSpecimens", "opComplications", "opCondition"].map (fun n => .confirm (cid "w6OpNote" n)) ++
-   [.enter "w6OpNote.opEbl" (.qty 100 .mL)]) (f := hospital) (u := surgeon)
+   [.enter "w6OpNote.opEbl" (.qty 100 .mL)] ++ LegalExamples.artifact "w6OpNote") (f := hospital) (u := surgeon)
 #guard (finish opNote "w6OpNote" "signOpNote" (f := hospital) (u := surgeon)).commits == ["signOpNote"]
 /-- W6 post-op set, each value on each fixed row individually confirmed. -/
 def postOpPath : List Event :=
@@ -248,7 +254,7 @@ def dischargeState : State := run
   ([.click "home.work.w6Discharge"] ++ enter "w6Discharge"
     [("decision0", .code "continue"), ("dischargeDiagnosis", .code "K35.80"),
      ("dischargeFollowUp", .code "2 weeks"), ("dischargeInstructions", .text "Wound care and return precautions."),
-     ("dischargeCondition", .code "stable"), ("dischargeDestination", .code "home")]) (f := hospital) (u := surgeon)
+     ("dischargeCondition", .code "stable"), ("dischargeDestination", .code "home")] ++ LegalExamples.artifact "w6Discharge") (f := hospital) (u := surgeon)
 #guard (finish dischargeState "w6Discharge" "discharge" (f := hospital) (u := surgeon)).commits == ["discharge"]
 
 /-- W7 refill episode: the requested medicine is in play for alert evaluation. -/
@@ -258,7 +264,9 @@ def refill : State := run
   ([.click "home.work.w7Queue", .click "w7Queue.open", .click "w7Review.decide"] ++
    enter "w7Decision" [("refillDecision", .code "approve"), ("refillQuantity", .qty 900 .none),
      ("refillRefills", .qty 30 .none), ("refillProtocolMet", .flag true)] ++
-   [.confirm "w7Decision.refillPharmacy"]) (f := refillFacts)
+   [.confirm "w7Decision.refillPharmacy",
+    .enter "w7Decision.legal.drug" (.code "lisinopril"),
+    .enter "w7Decision.legal.refillScheduleEligibility" (.code "notScheduleII")]) (f := refillFacts)
 #guard (one refill (.click "w7Decision.commit.approveRefill") (f := refillFacts)).1.popup?.map (·.1) == some "activeRxPopup"
 #guard (finish refill "w7Decision" "approveRefill" (f := refillFacts)).commits == ["approveRefill"]
 end Ehr.Canonical.Tests

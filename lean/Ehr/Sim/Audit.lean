@@ -1,4 +1,6 @@
 import Ehr.Sim.IntegrationTests
+import Ehr.Sim.TaskMinimumTests
+import Ehr.Sim.FactsTests
 
 /-! Axiom audit for every named simulator theorem. -/
 
@@ -62,3 +64,43 @@ import Ehr.Sim.IntegrationTests
 #print axioms Ehr.Sim.T9_minimum_real
 #print axioms Ehr.Sim.T9_minimum
 #print axioms Ehr.Sim.MinClicksTests.microSatisfiable
+
+#print axioms Ehr.Sim.Certificate.search_sound
+#print axioms Ehr.Sim.Certificate.map_run
+#print axioms Ehr.Sim.Certificate.lift_run
+#print axioms Ehr.Sim.taskNorm_twice
+#print axioms Ehr.Sim.taskNorm_index
+#print axioms Ehr.Sim.taskNorm_state
+#print axioms Ehr.Sim.taskContext_norm
+#print axioms Ehr.Sim.taskDone_norm
+#print axioms Ehr.Sim.taskMoves_norm
+#print axioms Ehr.Sim.taskWeight_norm
+#print axioms Ehr.Sim.task_ui_safe
+#print axioms Ehr.Sim.task_reset_requires_goal
+#print axioms Ehr.Sim.taskStep_norm
+#print axioms Ehr.Sim.T9_taskSearch
+#print axioms Ehr.Sim.T9_jointMinimum
+
+/- History invariance for the five current core feature groups. -/
+#print axioms Ehr.Sim.clinicalEval_history
+#print axioms Ehr.Sim.clinicalApplies_history
+#print axioms Ehr.Sim.validationHolds_history
+#print axioms Ehr.Sim.elementValueValid_history
+#print axioms Ehr.Sim.validationsOk_history
+#print axioms Ehr.Sim.epochNow_history
+#print axioms Ehr.Sim.eventTime_history
+#print axioms Ehr.Sim.temporalStatus_history
+#print axioms Ehr.Sim.expiryStatus_history
+#print axioms Ehr.Sim.alertKeys_history
+#print axioms Ehr.Sim.alertHolds_history
+#print axioms Ehr.Sim.whenHolds_history
+#print axioms Ehr.Sim.lineMatches_history
+#print axioms Ehr.Sim.entryMet_history
+#print axioms Ehr.Sim.entryReason_history
+#print axioms Ehr.Sim.payloadFieldMet_history
+#print axioms Ehr.Sim.payloadComplete_history
+#print axioms Ehr.Sim.displaysOk_history
+#print axioms Ehr.Sim.extraGuard_history
+#print axioms Ehr.Sim.obligationViews_history
+
+#print axioms Ehr.Sim.valueGoalMet_history

@@ -95,7 +95,7 @@ export function ehrUrl(
   patient: string,
   persona = program.persona,
 ) {
-  return `/ehr?${new URLSearchParams({ release: program.release, program: program.path, persona, patient })}`;
+  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona, patient })}`;
 }
 export const verdictsSchema = z.object({
   programs: z.record(

@@ -4,6 +4,7 @@ import type {
   State,
   ScreenView,
 } from "../../../lean/generated/ehr-types";
+import type { UiScreen } from "../ehr/ui/types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
 
@@ -18,21 +19,60 @@ export function createSession(
   bundle: unknown,
   user: unknown,
 ) {
-  const args = [
+  let args = [
     JSON.stringify(spec),
     JSON.stringify(program),
     JSON.stringify(bundle),
     JSON.stringify(user),
   ] as const;
   let stateJson = interp.init(...args);
-  const readPage = (): Html => JSON.parse(interp.render(...args, stateJson));
-  function readSnapshot(result: StepOutput["result"] | null = null) {
-    const state: State = JSON.parse(stateJson);
-    const view: ScreenView = JSON.parse(interp.view(...args, stateJson));
-    return { page: readPage(), state, view, result };
+  function readSnapshot(
+    result: StepOutput["result"] | null = null,
+    snapshotArgs = args,
+    snapshotState = stateJson,
+  ) {
+    const state: State = JSON.parse(snapshotState);
+    let page: Html | undefined;
+    let view: ScreenView | undefined;
+    const ui: UiScreen | undefined = interp.renderUi
+      ? JSON.parse(interp.renderUi(...snapshotArgs, snapshotState))
+      : undefined;
+    // The semantic painter uses `ui`. Generate legacy HTML and the inspector's
+    // detailed view only when a consumer asks for them. Capture this snapshot's
+    // inputs so reading an old snapshot after a click still returns its tree.
+    return {
+      get page(): Html {
+        return (page ??= JSON.parse(
+          interp.render(...snapshotArgs, snapshotState),
+        ));
+      },
+      get view(): ScreenView {
+        return (view ??= JSON.parse(
+          interp.view(...snapshotArgs, snapshotState),
+        ));
+      },
+      ui,
+      state,
+      result,
+    };
   }
   let snapshot = readSnapshot();
   const listeners = new Set<() => void>();
+  function preview(event: Event): StepOutput {
+    return JSON.parse(interp.step(...args, stateJson, JSON.stringify(event)));
+  }
+  function accept(response: StepOutput, facts?: unknown) {
+    const nextArgs =
+      facts === undefined
+        ? args
+        : ([args[0], args[1], JSON.stringify(facts), args[3]] as const);
+    const nextState = JSON.stringify(response.state);
+    const nextSnapshot = readSnapshot(response.result, nextArgs, nextState);
+    args = nextArgs;
+    stateJson = nextState;
+    snapshot = nextSnapshot;
+    listeners.forEach((listener) => listener());
+  }
   return {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
@@ -41,13 +81,10 @@ export function createSession(
         listeners.delete(listener);
       };
     },
+    preview,
+    accept,
     dispatch(event: Event) {
-      const response: StepOutput = JSON.parse(
-        interp.step(...args, stateJson, JSON.stringify(event)),
-      );
-      stateJson = JSON.stringify(response.state);
-      snapshot = readSnapshot(response.result);
-      listeners.forEach((listener) => listener());
+      accept(preview(event));
     },
   };
 }

@@ -1,3 +1,4 @@
+import Ehr.Check.RuleSound
 import Ehr.Check.GuardSound
 
 namespace Ehr.Check

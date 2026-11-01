@@ -1,5 +1,5 @@
 import Ehr.Sim.Policy
-import Ehr.Sim.MinClicks
+import Ehr.Sim.TaskMinimum
 import Ehr.Render.Fhir
 
 /-!
@@ -80,6 +80,12 @@ def bundleResourcesWithIds (bundle : Json) : List Json :=
       r.setObjVal! "id" (.str (String.ofList (url.toList.drop 9)))
     else r
 
+/-- Schedule fixture UUIDs and renderer wristband identifier tokens name the
+same Patient. Validate either declared identity without rewriting parsed Facts. -/
+def bundlePatientMatches (bundle : Json) (id : String) : Bool :=
+  ((bundleResourcesWithIds bundle).find? (Render.Fhir.resourceType · == "Patient")).any fun r =>
+    Render.Fhir.str r "id" == id || Render.Fhir.patientIdOf r == id
+
 /-- World clinical observations are structured FHIR, not note-section tags.
 Pass their explicit coded values to goal derivation as named record facts. -/
 def clinicalRecord (rs : List Json) : List (String × String) :=
@@ -158,11 +164,8 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         if !task.todayResources.isEmpty then
           throw (IO.userError s!"{task.id}: precomputed Facts cannot merge todayResources; supply a FHIR bundle")
         pure f
-    -- Schedules index fixtures by UUID; render uses the stable Synthea search
-    -- token as patient identity (also used after Medplum assigns a server ID).
-    if f.patientId != task.patientId &&
-        f.patientId != "https://github.com/synthetichealth/synthea|" ++ task.patientId then
-      throw (IO.userError s!"{task.id}: patient ID mismatch: schedule {task.patientId}, facts {f.patientId}")
+    if f.patientId != task.patientId && !(bundle.any (bundlePatientMatches · task.patientId)) then
+      throw (IO.userError s!"{task.id}: patient ID mismatch")
     out := out ++ [(task.id, f)]
   return out
 
@@ -175,14 +178,12 @@ structure TaskMinimum where
   keystrokePath : List Event
   space : SearchSpace
   keystrokeSpace : SearchSpace
-  /-- A single episode has a task-wide certificate. Multiple episodes are
-  independently certified sums; joint optimization is not claimed. -/
+  /-- Joint certificate for all task episodes in the declared space. -/
   exact : Bool
-  episodeExact : Bool := true
   episodeSpaces : List SearchSpace := []
   keystrokeEpisodeSpaces : List SearchSpace := []
   /-- Exactness is scoped; navigation/move restrictions are explicit. -/
-  searchModel : String := "full: goal-relevant moves across reachable screens, no Back/scroll/search; goalDirected: first shown goal field then all non-entry moves; navigationDirected: ready goal actions or shortest BFS navigation; clock fixed; exact only within each reported space; multiple episodes are independent sums, with per-episode spaces listed"
+  searchModel : String := "full: goal-relevant moves across reachable screens, no Back/scroll/search; goalDirected: first shown goal field then all non-entry moves; navigationDirected: ready goal actions or shortest BFS navigation; clock fixed; exact only within each reported space; joint episode search with receipt carry; reset edges only after episode completion"
   /-- Each W4 medication is a separate reset episode. -/
   episodePaths : List (List Event)
   keystrokeEpisodePaths : List (List Event)
@@ -199,31 +200,20 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
     let facts := { factsFor task with now := task.startMin }
     let eps := episodes facts task.workflow task.choices
     if eps.isEmpty then throw s!"{task.id}: no clinical episode is defined by the scenario"
-    let mut result : TaskMinimum := {
-      task := task.id, workflow := task.workflow,
-      clicks := 0, keystrokes := 0, path := [], keystrokePath := [], space := .full,
-      keystrokeSpace := .full, exact := eps.length == 1, episodePaths := [], keystrokeEpisodePaths := [] }
-    for ep in eps do
-      let f := ep.facts
-      let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med?
-      let ctx : Context := { sp, prog, facts := f, user, goals := g }
-      let start := init sp prog f user
-      let click ← optionExcept (minimum ctx .clicks start bound space?) s!"{task.id}: click search exceeded bound or found no completion"
-      let keys ← optionExcept (minimum ctx .keystrokes start bound space?) s!"{task.id}: keystroke search exceeded bound or found no completion"
-      result := { result with
-        clicks := result.clicks + click.cost
-        keystrokes := result.keystrokes + keys.cost
-        path := result.path ++ click.path
-        keystrokePath := result.keystrokePath ++ keys.path
-        space := if click.space == .navigationDirected || result.space == .navigationDirected then .navigationDirected
-          else if click.space == .goalDirected then .goalDirected else result.space
-        keystrokeSpace := if keys.space == .navigationDirected || result.keystrokeSpace == .navigationDirected then .navigationDirected
-          else if keys.space == .goalDirected then .goalDirected else result.keystrokeSpace
-        episodeSpaces := result.episodeSpaces ++ [click.space]
-        keystrokeEpisodeSpaces := result.keystrokeEpisodeSpaces ++ [keys.space]
-        episodePaths := result.episodePaths ++ [click.path]
-        keystrokeEpisodePaths := result.keystrokeEpisodePaths ++ [keys.path] }
-    return result
+    let contexts := eps.map fun ep =>
+      let g := deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
+      { sp, prog, facts := ep.facts, user, goals := g : Context }
+    let click ← optionExcept (jointMinimum contexts .clicks bound space?)
+      s!"{task.id}: joint click search exceeded bound or found no completion"
+    let keys ← optionExcept (jointMinimum contexts .keystrokes bound space?)
+      s!"{task.id}: joint keystroke search exceeded bound or found no completion"
+    return {
+      task := task.id, workflow := task.workflow, clicks := click.cost, keystrokes := keys.cost,
+      path := click.path.filterMap id, keystrokePath := keys.path.filterMap id,
+      space := click.space, keystrokeSpace := keys.space, exact := true,
+      episodeSpaces := List.replicate eps.length click.space,
+      keystrokeEpisodeSpaces := List.replicate eps.length keys.space,
+      episodePaths := Ehr.Sim.episodePaths click.path, keystrokeEpisodePaths := Ehr.Sim.episodePaths keys.path }
   return { tasks }
 
 /-- Shared command boundary, with errors on stderr and nonzero exit. -/

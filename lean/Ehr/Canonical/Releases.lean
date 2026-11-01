@@ -44,7 +44,10 @@ def withAntibioticFields (p : Program) : Program :=
           match c.kind with
           | .field "drug" slot _ =>
             let pre := match slot with | .fixed n => rowPrefix n | .current => ""
-            [c, { indicationField s.id pre slot with parent? := c.parent?, tab := c.tab }]
+            [c, { indicationField s.id pre slot with
+              id := if c.id == cid s.id (pre ++ "drug") then cid s.id (pre ++ "abxIndication")
+                    else c.id ++ ".abxIndication",
+              parent? := c.parent?, tab := c.tab }]
           | _ => [c] } }
 
 /-- Default the indication in antibiotic preference/order-set macros, preserving
@@ -64,7 +67,9 @@ def withAntibioticDefaults (p : Program) : Program :=
                     else if m.id == "w3SepsisSet" then "sepsis"
                     else if m.id == "w3CellulitisSet" then "skin-infection"
                     else "respiratory-infection"
-                  sc.toList.flatMap fun s => [st, .setValue (cid s.id (pre ++ "abxIndication")) indication]
+                  sc.toList.flatMap fun s => [st, .setValue
+                    (if c.id == cid s.id (pre ++ "drug") then cid s.id (pre ++ "abxIndication")
+                     else c.id ++ ".abxIndication") indication]
                 else [st]
               | _ => [st]
             | none => [st]
@@ -74,9 +79,13 @@ def withAntibioticDefaults (p : Program) : Program :=
 column, and an always-open MAR indication row. These are additive changes. -/
 def canonicalV2 : Program :=
   let fields := withAntibioticDefaults (withAntibioticFields canonicalV1_1)
-  let summaries := ["w1Sign", "w3Sign", "w5Sign", "w6Sign"].foldl (fun p id =>
-    p.updateScreen id fun s => s.insertAfter (cid id "orders")
-      [table id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
+  let signing := fields.screens.filter fun s => s.components.any fun c => match c.kind with
+    | .button (.commit k) => k == "signOrders" || Specs.V1.issuanceCommits.contains k
+    | _ => false
+  let summaries := signing.foldl (fun p sc => p.updateScreen sc.id fun s =>
+    let anchor := ((s.components.find? fun c => showsInfo "orderSummary" c.kind).map (·.id)).getD (cid s.id "banner")
+    s.insertAfter anchor
+      [table s.id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
   { summaries.updateScreen "w4Admin" (fun s => s.insertAfter "w4Admin.dose"
       [panel s.id "antibioticIndication" "abxIndication" "Antibiotic indication"]) with
     version := 3, specVersion := "v2" }
