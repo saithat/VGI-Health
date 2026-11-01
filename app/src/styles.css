@@ -152,7 +152,7 @@ body {
     width: 100%;
   }
 }
-.inspector-toggle { position: fixed; right: 14px; bottom: 10px; z-index: 90; box-shadow: 0 1px 6px #263f4d20; }
+.inspector-toggle { position: fixed; right: 14px; bottom: 10px; z-index: 110; box-shadow: 0 1px 6px #263f4d20; }
 .inspector-content { font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
 .inspector-content h2 { font-size: 14px; margin: 10px 0 0; border-top: 1px solid #d6e1e8; padding-top: 12px; }
 .inspector-content pre { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
