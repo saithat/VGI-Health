@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "validatedAt": "2026-11-01T13:24:10.979211+00:00",
   "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity, selected encounter context, conservative LOINC display aliases, readable live receipts and patient-search language polish",
   "baselineCommit": "add0d2e",
@@ -169,559 +170,559 @@
   "metrics": "docs/design/surg-realism-metrics.json",
   "screenshots": [
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/clinician-header-load.png",
       "sha256": "e08c43ac5022e13359a365efd9c0663b86c26b0b739c1e714599c27920a6f1a1",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/home-load.png",
       "sha256": "bb84c02d9e0bd1cd67e62e0288c5806bfd2395c87edec09e2b8f0f495e7182fe",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/lab-results-load.png",
       "sha256": "9baff8ec8950ca11cb6e9b5e50878d9c9fca7b55550dabc4738673c4ac37e40e",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/live-encounter-details.png",
       "sha256": "ec44ecfb51ca01e8c0318f450733d885785b22ddd4b52fe22266ae0e079afdbf",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/live-encounter-picker.png",
       "sha256": "dbb2e36f99c9ab95db276a5a45a270b5d49a00e1fa6b307ed3a9080b042ac9d5",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/live-review-save-normal.png",
       "sha256": "414c7d6f335ac31e786604e4a67c7d869b07e1a32183603b3f9bd470b22b6a01",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/live-review-save.png",
       "sha256": "629c4b5da06ca484888ddca767347a59d539dcd6e774d799e8d98992745465e4",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Close-load.png",
       "sha256": "1b77a2b1613b15c88f329bfd8c75ed16dec242edc569b0722f0865e3c7b6b0dd",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Close-task.png",
       "sha256": "1b77a2b1613b15c88f329bfd8c75ed16dec242edc569b0722f0865e3c7b6b0dd",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Exam-load.png",
       "sha256": "db9493422cc3f2222861ba45d5c4d3583bdffde3f81db0e7178394c1e5b487d3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Exam-task.png",
       "sha256": "db9493422cc3f2222861ba45d5c4d3583bdffde3f81db0e7178394c1e5b487d3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Hpi-load.png",
       "sha256": "c436a50ca23e96f078a1e78d154e8bd1a9d6e5dbfc7aab08b96f82cb85dcd410",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Hpi-task.png",
       "sha256": "c436a50ca23e96f078a1e78d154e8bd1a9d6e5dbfc7aab08b96f82cb85dcd410",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Labs-load.png",
       "sha256": "3da5b39eb76aa3ea601b3e2fd161a288cc1d058bd4d1029bb47ae4a2fd90fe41",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Labs-task.png",
       "sha256": "7e362c7c721f8b8b846842ed549c6d09c31fe51c988d7ced4bb0bbea93fb97b3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1MedRec-load.png",
       "sha256": "5dce14ce602026c94c5f212e1f3b79e873dd24e3915d73c494532da9f3b75a50",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1MedRec-task.png",
       "sha256": "ee4d6670291bb1081f67f8c2c9856d21a41192130d305952eb42013c1429a738",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Orders-load.png",
       "sha256": "32fa94a3527ef68486afcf1078cd53bc984184835e9d9ecfd1813b5a5b332f15",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Orders-task.png",
       "sha256": "d2b530a70a3c97a1fb143f04a6d99c0e49f74c04480f1ec1a680c8a78693d184",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Rooming-load.png",
       "sha256": "c97996c1c61942d7f0c4234c70f924a94f95f773fda886630fa4a6227169383d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Rooming-task.png",
       "sha256": "2ee0629314a4f1afb8c40d7bdbc0b2fdafdc9b477d9b98b77eb31532861bacae",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Sign-load.png",
       "sha256": "16319e313bd7bde5dc0345efabc3e2355d51791b3cb8e5d6f3257024e2e2c6b0",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Sign-task.png",
       "sha256": "7d6a0ba5fa2dfe378132fd2a8f21d3f8db79764eceed86a13e4d1b37faff44cc",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Verify-load.png",
       "sha256": "d3752a644493293309653bbe1daf04334e36b5d948979f0f95f4c4de79382f85",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w1Verify-task.png",
       "sha256": "d3752a644493293309653bbe1daf04334e36b5d948979f0f95f4c4de79382f85",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Consult-load.png",
       "sha256": "d1f648df44bf8ff1f7411c5bfa647c1aa2c585bba587cbe72e761f00c9511de8",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Consult-task.png",
       "sha256": "12bc17e41720d4c5b2d7b3867ce0655a637fab49cc9cca647b856cf7c64ee762",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6ConsultClose-load.png",
       "sha256": "6c6f2c684eb3ee745d0d675e0e447957bf58d88f4ed76bc92a664c4953515791",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6ConsultClose-task.png",
       "sha256": "6c6f2c684eb3ee745d0d675e0e447957bf58d88f4ed76bc92a664c4953515791",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Consults-load.png",
       "sha256": "1c55609e994a9509ead57fec2b03cc0efb2e129982a0d57ec09ad96872270221",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Discharge-load.png",
       "sha256": "6a564efca750fafe1368af52dc15b4547ade1a0a92fd18b95708524fb10c38ec",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Discharge-task.png",
       "sha256": "27432783722311056c7eb627a507ceedb1aa701757876bfc4dd8e7df99046f04",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6OpNote-code-search.png",
       "sha256": "b7d53f24123bcac46c729a333bc47961d425c407b952ce061a82357949bafc77",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6OpNote-code-selected.png",
       "sha256": "ce8da2175711b715b653a2b9047c1b223a6255e12288d51fe55064ce05e7e70c",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6OpNote-load.png",
       "sha256": "0175d49f1f8f8c64dd88ab5083cda3d9de90de0c8e5bc145c6f29e1ff1e78846",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6OpNote-task.png",
       "sha256": "0d6ade5a931cbd175a6a82a2f4f7a79ebeb0789fe9a5e1b93de51bb5fc81925d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Orders-load.png",
       "sha256": "73f0ee5d9804bab361d097d473734d361da70cf81e2876223dae7b1bcc0a4cef",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Orders-task.png",
       "sha256": "116a9846beda91da7ec48452bb5263153843717e6c3e879c37c2dd3ba2dc8847",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6PostOp-load.png",
       "sha256": "2ace13e20c82be127da3d2ca7c7504bc61be574268c912ce129f541a620c3125",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6PostOp-task.png",
       "sha256": "2ace13e20c82be127da3d2ca7c7504bc61be574268c912ce129f541a620c3125",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6PreOp-load.png",
       "sha256": "b1718cc98803700d3570017b920fd14ebb0d5b8529f4a1a2074f344d85baa1c3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6PreOp-task.png",
       "sha256": "a47afc1b7459f0f04e131f0368fa64f2556f8d537d8f571e4286860681232d07",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Rounding-load.png",
       "sha256": "39252b355a716e0e66f6d2f4c9a786fa5ae1717815561c9f94e3f274438943e4",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Rounding-task.png",
       "sha256": "04fcbb81d7b84394647f738f7347e68a37b3aae2fe00dfcb843665086d463a8d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Schedule-load.png",
       "sha256": "764875a76d5f3783a4aade53811a078095682ab028967f34dc7676985d12164e",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Sign-load.png",
       "sha256": "41be7a61bd6e1c46af7ba6cf7b94c3985545413540781583af0118a3812813b5",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Sign-pounds-load.png",
       "sha256": "6e62688487cf3ab0a148de306cd12048c203e877c2d686cd1d139d34bebd13d6",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Sign-pounds-task.png",
       "sha256": "81b82244e7712d09c5e7da346471aa8fbb39c57a03666b3da0bd6c0c6760e3b4",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/after/w6Sign-task.png",
       "sha256": "5bc8f6ad5c606eaa3a5ffb3788c0c0a211935976543cf9fa37fc855f1080347d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/clinician-header-load.png",
       "sha256": "94822cedb8fad2628a3e90a9e8f6144bcc0a04492e3139d8036238c0ad9cc963",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/home-load.png",
       "sha256": "f3b441e35018497dfefd471e499a3b7d79f1f6c469b1a3aca2968c746d3b3991",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/lab-results-load.png",
       "sha256": "a397a514a77b04fae345f174c441d8669840c7c2948139bc767f306f95295e40",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/live-encounter-details.png",
       "sha256": "c953994f94689f591db90cf8693956909b971e3935112e52173cc3ba1fe7487a",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/live-encounter-picker.png",
       "sha256": "86b34a08d30dde4c4948535b77d340b07f5b183ac2c0f3db44bcd8bde438fee4",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/live-review-save.png",
       "sha256": "88844eb01e5838504ae87097ea43c0c2870ffa87eaa37ad2ef8c979ba314099e",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Close-load.png",
       "sha256": "c3f5b0ce2b0145b57f607bd127231f934285ffeb103dd1185ffc5b0f61b1f335",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Close-task.png",
       "sha256": "ec424b05dbfcb0d833b6c8361aca915acdc083800959063549bbca0ce13e237c",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Exam-load.png",
       "sha256": "c6a877cca64b2d4d24d5b64eda800958d66ef10db3070c0bf29d371c97b325c4",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Exam-task.png",
       "sha256": "a61a7255e81ee1cad6eb76e96e05d5807d6772d5fb990b919480871705dd4f2b",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Hpi-load.png",
       "sha256": "8164bb54959badbc4b8f95bbe7ac0e3a3b3d5b512a01645b11f616e74918f869",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Hpi-task.png",
       "sha256": "7425d5605e0bb1b3cfd2fc9e670c19320a51639800507294c74ffe31b045f790",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Labs-load.png",
       "sha256": "3d16c57ec9ab537054d9659d6859cafac81d01a794844746477525097ddb1a45",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Labs-task.png",
       "sha256": "3d16c57ec9ab537054d9659d6859cafac81d01a794844746477525097ddb1a45",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1MedRec-load.png",
       "sha256": "d759c2fd34bdf955384c9d802e83fcdf52c8d1b376aa4fcc33b66a1e302d15ce",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1MedRec-task.png",
       "sha256": "e888b47a2a2e406f987172cc65a46a2fb4b23769c21cfb40f784c87c3d4c180f",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Orders-load.png",
       "sha256": "9ff23a5989991c25a06f975d6577b4d6eb67f668637f91730adfda6482e499f7",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Orders-task.png",
       "sha256": "51fa35712ab1d21e48da847460572ab73d485992e4f2895990ffb740460cc730",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Rooming-load.png",
       "sha256": "71a1a7380d3f081b456b420513f2603f84b7d850f48b3f3368186121cfc35991",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Rooming-task.png",
       "sha256": "85c56b66829eaebb523538aea0d308e764d4e483c2deb3736cdcd2159b1a1013",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Sign-load.png",
       "sha256": "93737ecd0e09e6ee678d049cac5ef2d28ffcdc07ec8f417cbfcf1cacf6cb741a",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Sign-task.png",
       "sha256": "ec2ab1df740c9cd64ad5777818368c7f9ce64a6e71efe1ba34c67850d5f91c96",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Verify-load.png",
       "sha256": "f5c93868baaef2f38e93f800bf200165815c6a69eeaa19165119eff669b23745",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w1Verify-task.png",
       "sha256": "87246e925967dd8b4e7d76656ee59b33aba9f0285982648d4bf3d304102bc75c",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Consult-load.png",
       "sha256": "95f7442ad7607ba2cd3e662d56f2d3b02908c5c6f8a345e6516cc2aa16130424",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Consult-task.png",
       "sha256": "a43473837e78abf5f0d7d079b61610f32c1daa8cac7c21853fd5287097145d71",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6ConsultClose-load.png",
       "sha256": "323bf26c21b7295446bb89f049a90fb547f97b7a0848ad441c4168dc7d18988f",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6ConsultClose-task.png",
       "sha256": "cb1fc3beadd1beaba2ac9de3221e115a2b3eb984abc41534a1b99158750e422d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Discharge-load.png",
       "sha256": "665d94ea8eeabaf59b7c49f8233128f3b24d5a7160481561be9fc3daeca94c15",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Discharge-task.png",
       "sha256": "13008e70812154113e67b41ff59922c066b94150d467eb5cb9f9bbc9a38eb69d",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6OpNote-load.png",
       "sha256": "678fbdc9cb211355caaf31bad6bc5c2d672a92224f9065551633081db42db119",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6OpNote-task.png",
       "sha256": "eedb9f9a5b0b3d8261687686f23299768f442600f3461781227560add4de47fa",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Orders-load.png",
       "sha256": "b241464acbcad44cff565134d26202687f51c8bc3e86ff8f791b684cf7096098",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Orders-task.png",
       "sha256": "c65851bec025ee3ab5a5a102b9f76c03f1ddda34efc1e8cfb54487ad246b2104",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6PostOp-load.png",
       "sha256": "a4da67bb07707f2861a71cc853e96e0007dd1cf41150625222af7c7e9113b1f3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6PostOp-task.png",
       "sha256": "a4da67bb07707f2861a71cc853e96e0007dd1cf41150625222af7c7e9113b1f3",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6PreOp-load.png",
       "sha256": "7123a38173de1c6f04c22477ab389dadafb53b19e3d77894112d81566b01adaa",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6PreOp-task.png",
       "sha256": "7ef4e76a00f65135d529e3d243cc08ee968145c33beb5ab840f16863510bff8e",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Rounding-load.png",
       "sha256": "c32dad4753d15e18fa3f9b52588423558445a25777ea09afd68584538279e523",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Rounding-task.png",
       "sha256": "b4eb5188e8f4a3cee73eee0410716386a78af35d8a45dfab53c2df2d100d39a6",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Sign-load.png",
       "sha256": "5a81f91a23465d12e79d1ff3cfc62e50b1f6a8e0d7f1d7b05b0e107ffb8b27f1",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Sign-pounds-load.png",
       "sha256": "2f6c4230092e7d88b50a695068c08638cdd487769e240567d303399521c3a246",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Sign-pounds-task.png",
       "sha256": "ad24690f9f3cf97da1f253cda2f094b8bb3e0879b981d26a5d36ce26bf79ede8",
       "width": 1440,
       "height": 900
     },
     {
-      "file": "app/shots/final (supersedes earlier captures)",
+      "file": "app/shots/realism/surg/before/w6Sign-task.png",
       "sha256": "354271f186f9fc4e142c0834934753a54a888b3d1c7c23a2a9bde15d8c8c057c",
       "width": 1440,
       "height": 900

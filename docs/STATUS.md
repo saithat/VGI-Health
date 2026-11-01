@@ -1765,3 +1765,11 @@ the owning-lane items above remain.
 ## Archived run1 findings
 
 Run `run1-P3` completed 424/424 tasks over ten days with a real Codex agent, ending at certified v7 after five optimization deployments. Nineteen candidate checks passed and thirteen were rejected. Its early preflight exposed missing anticoagulant review placement in other personas; the current fifteen persona views certify. The obsolete preflight outputs and duplicate sanity scripts were removed. The immutable run retains original release labels and machine paths. Timing in its raw logs is historical evidence, not the current objective.
+
+## Cleanup verification — 2026-11-01
+
+Removed 463 stale files (66,849,966 bytes): obsolete screenshots, old UI videos, preflight outputs, six handoffs after consolidation, duplicate scripts and duplicate audit. Kept the realism/present evidence. Twelve curated replay captures and an integrated-build walkthrough now appear in DEMO.
+
+Fresh default Lean build: 365 jobs passed. WASM source manifest current. Certification: 15/15 personas; 23/23 bad programs rejected. Verification audit: 84 theorems, no unexpected axioms. World: 95 tests passed. Agent: 95 tests passed after building native/app artifacts. Trajectories: 424 tasks, 14,658 events plus three baselines, zero mismatches. Terminology gate leaves only the SQLite system-table name.
+
+Clean-clone make install passed in 81.440 seconds with fresh dependencies/build and the existing Medplum stack; make run/browser verification was still running at this snapshot. Standalone smoke fails because its Inspector control expectation predates the landing-list integration. App suite, lake check and Comparator results were still pending at this snapshot. The app/src/browser/data.ts preflight ID remains for its owning lane under the source exclusion. A full-run recording and final-run re-include remain pending until the full run is chosen.

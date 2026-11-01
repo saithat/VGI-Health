@@ -171,4 +171,4 @@ Captured from the served build at `http://127.0.0.1:5180` in replay mode. These 
 
 [UI browser timeline](../app/shots/final/ui-browser-timeline.png) · [Dashboard](../app/shots/final/dashboard.png) · [Capture hashes](../app/shots/final/manifest.json).
 
-Old-UI MP4s were removed. A new integrated-build replay walkthrough replaces them; the later full-run recording remains pending until that run finishes.
+Old-UI MP4s were removed. [Integrated-build replay walkthrough](recordings/integrated-replay-walkthrough.mp4) replaces them; the later full-run recording remains pending until that run finishes.

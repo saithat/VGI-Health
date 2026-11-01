@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "sourceRevisionAtValidation": "9040afc6f8d961be0870199fc1f8b372b4da9b27",
   "sourceDirtyAtValidation": true,
   "scope": "Connected host cleanup; Lean programs, specs, interpreter and semantic UI unchanged from M10. Subsequent uncommitted prefill-caption work is excluded.",
@@ -28,85 +29,85 @@
   "testClock": "Before/after use distinct review minutes to exercise real new receipts rather than idempotent same-minute repeats. No captured state or review receipt is fabricated.",
   "screenshots": [
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P1-live-inspection-options.png",
       "width": 1440,
       "height": 900,
       "sha256": "9b78b695740ab1198b95cf2be32f04c952c3bcb762384255f67beea10826c67c"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P1-live-inspection-save.png",
       "width": 1440,
       "height": 900,
       "sha256": "f6a8b594b5f9e6c24369ae9730561e13b758c93a1ea733f7c4a153f95af4444d"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P1-live-options.png",
       "width": 1440,
       "height": 900,
       "sha256": "36362861a0df98dcc4cad9d677226a337e512b82931b322b7eb59122d069c01c"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P1-live-save.png",
       "width": 1440,
       "height": 900,
       "sha256": "07e02dcec031f608dc781588610379dfa6f42aca097285a0ded55ceb2bcb9f34"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P1-live-selection.png",
       "width": 1440,
       "height": 900,
       "sha256": "2366fe47f77c771c57a7513cde997cb786f42d2c0a93c4b350aff78dd0f07906"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P4-live-options.png",
       "width": 1440,
       "height": 900,
       "sha256": "e40f55a30fa23eb0627d94a05c08ab3f0c6413555324b182bfaa3b5f89a16f64"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P4-live-save.png",
       "width": 1440,
       "height": 900,
       "sha256": "70c5184ffcd48656db5cf4a376569110bdc96bad8e11d97f0032341f7f851ffb"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/after-P4-live-selection.png",
       "width": 1440,
       "height": 900,
       "sha256": "bff842112c42f337f3a940c6d7cffb8c7e0a048c035b503d5d44d46ad6b7e448"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P1-live-options.png",
       "width": 1440,
       "height": 900,
       "sha256": "3d65ca84fb776cc2febdc6a9cf98b0789f4473c7c952e8b65dd61302f39786c8"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P1-live-save.png",
       "width": 1440,
       "height": 900,
       "sha256": "c9ae52d0d3d829bff841cbc08ff2838f2b655ae1b28a52f48790db19f4cf406f"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P1-live-selection.png",
       "width": 1440,
       "height": 900,
       "sha256": "73e6a82b6e96729b10bc875659e3e13e5b9b2c75a55d1bacd93fdafc804675a3"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P4-live-options.png",
       "width": 1440,
       "height": 900,
       "sha256": "b48182f6d8b4ca0f5ca7ff0b4239111aec54f480300bd6e4f50abc71286ff054"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P4-live-save.png",
       "width": 1440,
       "height": 900,
       "sha256": "e1116f6dabb14ddfecb214cb4dfd0df324af6dab85102a24683d9ec5c11344f9"
     },
     {
-      "path": "app/shots/final (supersedes earlier captures)",
+      "path": "app/shots/realism/amb/before-P4-live-selection.png",
       "width": 1440,
       "height": 900,
       "sha256": "b3155ac4de87e5fce65536ca3620a3bdd5f4d3e11fce1c250c6e56e1083e7918"

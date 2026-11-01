@@ -1,5 +1,11 @@
 {
   "run": "run1-P3",
-  "recordings": [],
-  "status": "Old UI recordings removed; superseded by app/shots/final. Full-run recording pending."
+  "status": "Current integrated UI overview; full-run narrative recording pending.",
+  "recordings": [
+    {
+      "file": "integrated-replay-walkthrough.mp4",
+      "bytes": 1538677,
+      "sha256": "e4aadf197d5d36c9e216b1edf01f464fc06b84f363a242f7a7c8a1e5f0bddf1e"
+    }
+  ]
 }
