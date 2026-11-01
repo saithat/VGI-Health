@@ -4,6 +4,7 @@ import {
   Button,
   Drawer,
   Group,
+  Modal,
   Paper,
   Stack,
   Text,
@@ -24,6 +25,7 @@ import {
   loadWorklist,
   quickSignIn,
   readResource,
+  readSavedResource,
   searchPatients,
   signOut,
   startEncounter,
@@ -193,12 +195,23 @@ function Chart({
   const [error, setError] = useState("");
   const [panel, setPanel] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
+  const [resourceOpen, setResourceOpen] = useState(false);
+  const [savedResource, setSavedResource] = useState<Resource>();
+  const [resourceError, setResourceError] = useState("");
+  function viewResource(link: string) {
+    setResourceOpen(true);
+    setSavedResource(undefined);
+    setResourceError("");
+    void readSavedResource(link)
+      .then(setSavedResource)
+      .catch((error: unknown) => setResourceError(errorText(error)));
+  }
   return (
     <>
       <div
         aria-busy={pending}
         ref={(el) => {
-          if (el) el.inert = pending || panel;
+          if (el) el.inert = pending || panel || resourceOpen;
         }}
       >
         {ui ? (
@@ -222,9 +235,14 @@ function Chart({
                           <ul>
                             {result.links.map((link) => (
                               <li key={link}>
-                                <a href={link} target="_blank" rel="noreferrer">
+                                <Button
+                                  size="compact-xs"
+                                  variant="subtle"
+                                  data-resource-link={link}
+                                  onClick={() => viewResource(link)}
+                                >
                                   {new URL(link).pathname}
-                                </a>
+                                </Button>
                               </li>
                             ))}
                           </ul>
@@ -279,9 +297,14 @@ function Chart({
               <ul>
                 {links.map((link) => (
                   <li key={link}>
-                    <a href={link} target="_blank" rel="noreferrer">
+                    <Button
+                      size="compact-xs"
+                      variant="subtle"
+                      data-resource-link={link}
+                      onClick={() => viewResource(link)}
+                    >
                       {new URL(link).pathname}
-                    </a>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -293,6 +316,29 @@ function Chart({
           <a href="/dashboard">Demo / replay dashboard</a>
         </Stack>
       </Drawer>
+      <Modal
+        opened={resourceOpen}
+        onClose={() => setResourceOpen(false)}
+        title="Saved Medplum resource"
+        size="xl"
+        zIndex={350}
+        closeButtonProps={{ "aria-label": "Close saved resource" }}
+      >
+        {resourceError ? (
+          <Alert role="alert" color="red">
+            {resourceError}
+          </Alert>
+        ) : savedResource ? (
+          <pre
+            aria-label="Saved resource JSON"
+            style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
+          >
+            {JSON.stringify(savedResource, null, 2)}
+          </pre>
+        ) : (
+          <p role="status">Loading saved resource…</p>
+        )}
+      </Modal>
     </>
   );
 }

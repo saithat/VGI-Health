@@ -170,7 +170,7 @@ export function FieldNode({
     required: node.required,
     size: "xs" as const,
     "data-comp-id": node.comp,
-    "data-event": "enter",
+    "data-event": node.kind === "search" ? "search" : "enter",
     className: "clinical-control",
   };
   const options = node.kind

@@ -6,12 +6,11 @@ import { Audit } from "./driver";
 test("fast app regression: report gate and dashboard control effects", async ({
   page,
 }) => {
-  const recorded: { owner: string; status: string; label: string }[] =
-    JSON.parse(
-      readFileSync(resolve("../docs/audits/buttons-app.json"), "utf8"),
-    );
+  const report: {
+    controls: { owner: string; status: string; label: string }[];
+  } = JSON.parse(readFileSync(resolve("../docs/audits/buttons.json"), "utf8"));
   expect(
-    recorded.filter(
+    report.controls.filter(
       (r) => r.owner === "app" && ["dead", "error"].includes(r.status),
     ),
   ).toEqual([]);

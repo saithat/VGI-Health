@@ -12,6 +12,18 @@ const input = z.object({
   request: z.string().trim().min(1).max(2000),
   run: z.string().regex(/^[\w-]+$/),
 });
+/** Recorded manifests may contain another worktree's absolute world path. */
+export function worldInCheckout(
+  recordedWorld: unknown,
+  checkout = root,
+): string {
+  const source = z.string().parse(recordedWorld).replaceAll("\\", "/");
+  const match = /(?:^|\/)runs\/world\/([\w.-]+(?:\/[\w.-]+)*)$/.exec(source);
+  const relative = match?.[1];
+  if (!relative || relative.split("/").includes(".."))
+    throw new Error("Recorded world must be under runs/world in this checkout");
+  return resolve(checkout, "runs/world", relative);
+}
 export function tryBreakPlugin(): Plugin {
   let backend: "claude" | "codex" | null = null;
   let environment = process.env;
@@ -75,6 +87,7 @@ export function tryBreakPlugin(): Plugin {
           error:
             "Select a real run containing this persona for a live attempt.",
         });
+      const world = worldInCheckout(manifest.world);
       busy = true;
       const output = await mkdtemp(resolve(tmpdir(), "vgi-break-"));
       const result = await new Promise<string>((done, reject) => {
@@ -92,6 +105,8 @@ export function tryBreakPlugin(): Plugin {
             backend ?? "codex",
             "--run",
             resolve(root, "runs", data.run),
+            "--world",
+            world,
             "--out",
             output,
           ],

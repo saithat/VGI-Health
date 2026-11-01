@@ -10,6 +10,7 @@ import {
   loadPatientBundle,
   loadWorklist,
   readResource,
+  readSavedResource,
   searchResources,
   serviceLogin,
   signIn,
@@ -297,6 +298,9 @@ describe.skipIf(!available)(
       });
       expect(session.getSnapshot().state.commits).toContain("signOrders");
       expect(result?.links.length).toBeGreaterThan(0);
+      const saved = await readSavedResource(result?.links[0] ?? "");
+      expect(saved.id).toBeTruthy();
+      expect(saved.meta?.versionId).toBeTruthy();
       const resources = bundleResources(
         await loadPatientBundle(patient.id ?? ""),
       );

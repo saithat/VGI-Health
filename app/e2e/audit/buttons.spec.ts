@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
 import { Audit, selector } from "./driver";
-import { writeReport } from "./report";
+import { writeLiveAttempt, writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
 const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
@@ -142,7 +142,14 @@ test("app shell: every shell control has an effect or an explained disabled stat
         const button = page.getByRole("button", { name: label, exact: true });
         if (await button.count()) {
           await audit.click(button, undefined, "app");
-          await page.keyboard.press("Escape");
+          await audit.click(
+            page.getByRole("button", {
+              name: "Close live encounter",
+              exact: true,
+            }),
+            undefined,
+            "app",
+          );
         }
       }
       await page
@@ -193,10 +200,19 @@ test("app shell: every shell control has an effect or an explained disabled stat
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
     });
+    await audit.allShell(async () => {
+      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await page.locator(".clinical-app").waitFor();
+      await page
+        .getByRole("button", { name: "Inspector", exact: true })
+        .click();
+      await page.locator(".patient-switcher summary").click();
+    });
     // Both real and authored runs: every persona, selector, version/release row and drawer action.
     for (const run of ["run1-P3", "mock"]) {
       audit.program = run;
       audit.screen = "Evolution";
+      const checkedDecisionLinks = new Set<string>();
       const setup = async () => {
         await freshGoto(`/dashboard?run=${run}`);
         await page.getByRole("region", { name: "Version history" }).waitFor();
@@ -301,6 +317,42 @@ test("app shell: every shell control has an effect or an explained disabled stat
             undefined,
             "app",
           );
+          // Verify each distinct JSON source link without retaining old WASM documents.
+          const rowButton = page
+            .getByRole("region", { name: "Version history" })
+            .getByRole("button")
+            .nth(v);
+          await rowButton.click();
+          await page
+            .getByRole("button", {
+              name: "Before / after on screen",
+              exact: true,
+            })
+            .waitFor();
+          const sourceLink = page.getByRole("link", {
+            name: "Open recorded decision JSON",
+            exact: true,
+          });
+          const href = (await sourceLink.count())
+            ? await sourceLink.getAttribute("href")
+            : null;
+          if (href && !checkedDecisionLinks.has(href)) {
+            checkedDecisionLinks.add(href);
+            await audit.click(sourceLink, undefined, "app");
+            await setup();
+            const restorePersona = page
+              .getByRole("group", { name: "Persona", exact: true })
+              .getByRole("button", { name: pillLabel, exact: true });
+            if (!(await restorePersona.isDisabled()))
+              await restorePersona.click();
+            audit.persona = pillLabel;
+          } else
+            await page
+              .getByRole("button", {
+                name: "Close decision record",
+                exact: true,
+              })
+              .click();
         }
       }
       if (run === "run1-P3") {
@@ -466,6 +518,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
           "app",
         );
         const verdict = await (await response).json();
+        writeLiveAttempt(verdict);
         console.log("Live attempt result", JSON.stringify(verdict));
         await expect(
           page.getByRole("button", { name: "Run live attempt", exact: true }),
@@ -494,6 +547,17 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     page.setDefaultTimeout(15000);
     audit.setPage(page);
     await page.goto(url);
+  };
+  const restore = async (id: number) => {
+    await page
+      .locator('div[aria-busy="true"]')
+      .waitFor({ state: "hidden", timeout: 30000 });
+    const close = page.getByRole("button", {
+      name: "Close live encounter",
+      exact: true,
+    });
+    if (await close.isVisible()) await close.click();
+    await page.evaluate((id) => window.__buttonAuditSession?.restore(id), id);
   };
   const catalog = catalogSchema.parse(
     await (await request.get("/catalog.json")).json(),
@@ -566,13 +630,11 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         ),
       ];
       const seenScreens = new Set<string>();
+      const checkedResources = new Set<string>();
       const tested = new Set<string>();
       while (queue.length) {
         const checkpoint = queue.shift() ?? -1;
-        await page.evaluate(
-          (id) => window.__buttonAuditSession?.restore(id),
-          checkpoint,
-        );
+        await restore(checkpoint);
         await page.waitForTimeout(30);
         const snapshot = await page.evaluate(() =>
           window.__buttonAuditSession?.snapshot(),
@@ -656,10 +718,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           const key = `${screen}:${target.comp ?? target.label}:${target.event ?? target.tag}:${target.tab}:${target.disabled}`;
           if (tested.has(key)) continue;
           tested.add(key);
-          await page.evaluate(
-            (id) => window.__buttonAuditSession?.restore(id),
-            checkpoint,
-          );
+          await restore(checkpoint);
           await page.waitForTimeout(20);
           while (
             await page
@@ -724,7 +783,62 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               );
             if (value !== undefined) action = () => control.selectOption(value);
           }
+          const errorsBefore = audit.errors.length;
           const row = await audit.click(control, action, "lean");
+          await page
+            .locator('div[aria-busy="true"]')
+            .waitFor({ state: "hidden", timeout: 30000 });
+          const validation = page
+            .getByRole("dialog", {
+              name: "Live Medplum encounter",
+              exact: true,
+            })
+            .getByRole("alert");
+          if (await validation.count())
+            row.effect += `; validation drawer: ${await validation.first().innerText()}`;
+          if (audit.errors.length > errorsBefore) {
+            row.status = "error";
+            row.effect = audit.errors.slice(errorsBefore).join("; ");
+          }
+          const savedLinks = await page
+            .locator("button[data-resource-link]")
+            .filter({ visible: true })
+            .evaluateAll((nodes) =>
+              nodes.map((n) => n.getAttribute("data-resource-link") ?? ""),
+            );
+          for (const link of savedLinks) {
+            if (!link || checkedResources.has(link)) continue;
+            const button = page
+              .getByRole("button", {
+                name: new URL(link).pathname,
+                exact: true,
+              })
+              .first();
+            if (!(await button.isVisible())) continue;
+            checkedResources.add(link);
+            await audit.click(button, undefined, "app");
+            const viewer = page.getByRole("dialog", {
+              name: "Saved Medplum resource",
+              exact: true,
+            });
+            const json = viewer.getByLabel("Saved resource JSON", {
+              exact: true,
+            });
+            await json.waitFor({ timeout: 15000 });
+            const resource = z
+              .object({ resourceType: z.string(), id: z.string() })
+              .passthrough()
+              .parse(JSON.parse(await json.innerText()));
+            expect(link).toContain(resource.id);
+            await audit.click(
+              viewer.getByRole("button", {
+                name: "Close saved resource",
+                exact: true,
+              }),
+              undefined,
+              "app",
+            );
+          }
           const component = programComponents.screens
             .find((s) => s.id === screen)
             ?.components.find((c) => c.id === target.comp);
@@ -755,10 +869,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               ),
             );
         }
-        await page.evaluate(
-          (id) => window.__buttonAuditSession?.restore(id),
-          checkpoint,
-        );
+        await restore(checkpoint);
         const pending = page
           .locator('[data-event="confirm"]:not([inert] *)')
           .filter({ visible: true });
@@ -781,4 +892,9 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
   } finally {
     writeReport(audit.rows, "ehr");
   }
+  expect(
+    audit.rows.filter(
+      (row) => row.owner === "app" && ["dead", "error"].includes(row.status),
+    ),
+  ).toEqual([]);
 });

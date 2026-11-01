@@ -326,6 +326,7 @@ function Why({
   record: DecisionRecord;
   inspect: (id: string) => void;
 }) {
+  const decisionPath = `decisions/night-${String(record.night).padStart(2, "0")}/${record.persona}.json`;
   return (
     <div className="why-flow">
       <section>
@@ -426,13 +427,13 @@ function Why({
       <section>
         <span className="step-label">07 · Certificate</span>
         <Certificate record={record} />
-        <p>
-          <a
-            href={`/runs/${run.manifest.runId}/decisions/night-${String(record.night).padStart(2, "0")}/${record.persona}.json`}
-          >
-            Open recorded decision JSON
-          </a>
-        </p>
+        {(!run.files || run.files.includes(decisionPath)) && (
+          <p>
+            <a href={`/runs/${run.manifest.runId}/${decisionPath}`}>
+              Open recorded decision JSON
+            </a>
+          </p>
+        )}
       </section>
     </div>
   );

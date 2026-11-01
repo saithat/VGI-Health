@@ -135,3 +135,32 @@ export function writeReport(rows: Control[], scope: string) {
     `# Lean-rendered dead controls\n\nContent lane: remove inert components or give them interpreter behavior. Render lane: emit click component metadata for nav/stepper destinations. Static nav entries and stepper labels are listed explicitly even when they are not DOM buttons.\n\n${table(all.filter((r) => r.owner === "lean" && (r.status === "dead" || r.status === "error")))}`,
   );
 }
+
+export function writeLiveAttempt(result: unknown) {
+  const verdict = z
+    .object({
+      request: z.string(),
+      persona: z.string(),
+      verdict: z.enum(["pass", "fail", "invalid-patch"]),
+      property: z.string().nullable(),
+      message: z.string().nullable(),
+      counterexample: z.unknown(),
+      candidate: z.unknown(),
+    })
+    .safeParse(result);
+  mkdirSync(directory, { recursive: true });
+  writeFileSync(
+    resolve(directory, "try-to-break-it.json"),
+    JSON.stringify(
+      verdict.success
+        ? verdict.data
+        : {
+            status: "backend-error",
+            message:
+              "The configured backend did not return a verdict; recorded examples remain available.",
+          },
+      null,
+      2,
+    ) + "\n",
+  );
+}
