@@ -7,13 +7,23 @@ test("fast app regression: report gate and dashboard control effects", async ({
   page,
 }) => {
   const report: {
-    controls: { owner: string; status: string; label: string }[];
+    controls: {
+      owner: string;
+      status: string;
+      label: string;
+      persona: string;
+    }[];
   } = JSON.parse(readFileSync(resolve("../docs/audits/buttons.json"), "utf8"));
   expect(
     report.controls.filter(
       (r) => r.owner === "app" && ["dead", "error"].includes(r.status),
     ),
   ).toEqual([]);
+  expect(
+    new Set(
+      report.controls.filter((r) => r.owner === "lean").map((r) => r.persona),
+    ),
+  ).toEqual(new Set(["P1", "P2", "P3", "P4", "P5", "RN2"]));
   const audit = new Audit(page);
   await page.goto("/dashboard?run=run1-P3");
   await page.getByRole("region", { name: "Version history" }).waitFor();
