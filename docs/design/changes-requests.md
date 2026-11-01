@@ -1015,3 +1015,38 @@ has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
 `programs/bad/` now contains 24. Please update that source test to the current
 24-seed catalog (or derive the reviewed catalog expectation). Render did not
 edit app-owned tests or reduce catalog scope. The other 89 app tests pass.
+
+
+## Sim final checkpoint after second main merge (2026-10-31)
+
+Main `b26f772` is integrated as `bfaa352`. It resolves the app inventory request:
+app build/lint and all 129 tests now pass, including all 24 bad programs and
+real-WASM semantic rendering. World build/lint and all 92 tests pass (its Lean
+contract test is run after Lake builds); agent typecheck/lint and 31 tests pass.
+The full Lean build passes 189 jobs. Kernel check, the 18 repository Comparator
+statements, and explicit single/joint T9 Comparator contracts pass with only
+propext, Quot.sound and Classical.choice.
+
+Sim `54489d4` additionally fixes exact-slot predicate planning: a matching
+any-slot entry must not suppress the scenario's predicate capture on a specific
+slot. Four new real-interpreter regressions bring FeatureTests to 52 checks.
+No property, production spec, safety rule or theorem statement was weakened.
+
+The final native sweep retains all 50 schedules and 1284 tasks, with 1271
+complete and exactly the same 13 baseline service tasks incomplete. All eight
+floor checks and interruption retention pass for completed tasks. All five
+day-one byte replays are deterministic; all 50 reports match the preceding
+full sweep, including complaints. Validation pins the actual merged revision,
+not the shared/moving origin/main reference.
+
+`cli_smoke.py --jobs N --timeout-seconds S` runs independent native processes;
+it never starts parallel Lake processes. The process budget defaults to 120
+seconds. Twenty workers hit that wall budget on a busy RN schedule; the final
+run uses ten workers and an explicit 240-second process budget, keeping every
+clinical deadline, goal, completion and validation check unchanged.
+
+**Exactly two original owning-lane requests remain open:** baseline v1 service
+order declarations/composers for the 13 retained tasks, and the one-line
+`taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
+request is closed. Exact details and the final verification are in HANDOFF-sim.md
+and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
