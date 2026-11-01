@@ -195,7 +195,9 @@ export function predictionVerdict(predicted: Savings | null, measured: ReplayDay
 export async function minClicksByWorkflow(deps: LoopDeps, specVersion: string, before: Program, after: Program, day: TrainDay | undefined): Promise<DecisionRecord['measured']['minClicks']> {
   if (!day) return [];
   const args = { specVersion, schedule: day.schedule, worldDir: deps.worldDir };
-  const b = await deps.ehr.minClicks({ ...args, program: before });
+  // The pre-migration program may be intentionally non-conforming under the
+  // new spec. Measure its old valid workflow rather than searching an impossible task.
+  const b = await deps.ehr.minClicks({ ...args, specVersion: before.specVersion, program: before });
   const a = await deps.ehr.minClicks({ ...args, program: after });
   const wf = new Map(day.schedule.tasks.map((t) => [t.id, t.workflow]));
   const agg = new Map<string, { b: number; a: number; n: number }>();

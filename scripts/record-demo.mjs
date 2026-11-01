@@ -80,7 +80,10 @@ try {
     await dashboard(page, 'Evolution');
     const timeline = page.locator('.persona-timeline').filter({ has: page.getByRole('heading', { name: new RegExp(`^${persona} `) }) });
     await timeline.scrollIntoViewIfNeeded(); await pause(page);
-    const interesting = summary.timelines.find(t => t.persona === persona).nights.find(n => n.mode === 'migrate') ?? summary.timelines.find(t => t.persona === persona).nights.find(n => n.versionAfter > n.versionBefore);
+    const nights = summary.timelines.find(t => t.persona === persona).nights;
+    const decisions = await Promise.all(nights.map(n => read(`runs/${run}/decisions/night-${String(n.night).padStart(2, '0')}/${persona}.json`)));
+    const score = r => r.measured.test?.saving.klmDeciSec ?? r.measured.validation?.saving.klmDeciSec ?? 0;
+    const interesting = decisions.filter(r => r.outcome === 'deployed').sort((a, b) => score(b) - score(a))[0] ?? decisions.find(r => r.mode === 'migrate') ?? decisions[0];
     await click(page, timeline.getByRole('button', { name: new RegExp(`Night ${interesting?.night ?? 1}$`) }));
     await expect(page.getByRole('heading', { name: 'Why', exact: true })).toBeVisible();
     await page.mouse.wheel(0, 470); await pause(page);

@@ -109,3 +109,19 @@ describe('re-running one night of an existing run (night command)', () => {
     expect(JSON.stringify(rec(2, 'P3'))).toBe(before);
   });
 });
+
+
+it('measures pre-release minima under the old spec rather than an impossible new-spec workflow', async () => {
+  const ehr = createFakeEhr();
+  const original = ehr.minClicks.bind(ehr);
+  const calls = vi.spyOn(ehr, 'minClicks').mockImplementation(async (input) => {
+    if (input.specVersion !== input.program.specVersion) throw new Error('old program cannot complete the new requirements');
+    return original(input);
+  });
+  const result = await runDays({ days: 3, personas: ['P3'], llm: new ScriptedLlm(), ehr,
+    worldDir: await fakeWorld(3), runsRoot: await tmp('spec-minima'), runId: 'minima',
+    releaseDays: { v1_1: 2, v2: 3 } });
+  expect(result.timelines[0]?.days).toHaveLength(3);
+  expect(calls.mock.calls.some(([input]) => input.specVersion === 'v1.1')).toBe(true);
+  expect(calls.mock.calls.some(([input]) => input.specVersion === 'v2')).toBe(true);
+});

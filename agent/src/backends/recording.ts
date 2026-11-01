@@ -5,9 +5,10 @@
  * inspects to prove no validation/test data reached a prompt.
  */
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 import { z } from 'zod';
 import type { LlmCallRef } from '../schema.js';
-import { writeJson } from '../util.js';
+import { readJson, writeJson } from '../util.js';
 import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
 
 export const llmRecordSchema = z.object({
@@ -34,12 +35,22 @@ export function llmRecordPath(runDir: string, callId: string): string {
 export class RecordingLlm implements JsonLlm {
   readonly name: JsonLlm['name'];
   readonly model: string;
-  constructor(private readonly inner: JsonLlm, private readonly runDir: string) {
+  constructor(private readonly inner: JsonLlm, private readonly runDir: string, private readonly reuseExisting = false) {
     this.name = inner.name;
     this.model = inner.model;
   }
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
+    const file = llmRecordPath(this.runDir, req.callId);
+    if (this.reuseExisting && existsSync(file)) {
+      const old = await readJson(file, llmRecordSchema);
+      if (old.system !== req.system || old.prompt !== req.prompt || old.schemaName !== req.schemaName ||
+          old.backend !== this.inner.name || old.model !== this.inner.model) {
+        throw new Error(`resume: completed LLM call ${req.callId} differs from the checkpoint; refusing to overwrite it`);
+      }
+      return { json: old.response, backend: this.inner.name, model: old.model, servedBy: old.servedBy,
+        replayOf: { backend: old.backend, model: old.model, source: file }, promptMatched: true, usage: old.usage };
+    }
     const res = await this.inner.complete(req);
     const record: LlmRecord = {
       callId: req.callId,

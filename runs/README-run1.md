@@ -24,7 +24,7 @@ Re-run `node scripts/sanity-run1.mjs` and `node scripts/sanity-run1-commands.mjs
 - `ehr min-clicks`: P3's first day-1 task returns 25 clicks; its per-episode search spaces, paths and exactness scope are retained in `P3-min-clicks.stdout`.
 - `ehr render-screens`: 694 P3 page trees, with the actual RN user and the first scheduled patient's real Synthea bundle.
 - Screen check: all 1,388 desktop/narrow checks passed in 183.8 seconds. Native deploy exited 0 and wrote a real certificate under `/tmp/vgi-run1-deploy/P3/`. Exact commands, exit codes and timings are in `run1-preflight/commands.json`; per-command stdout is preserved.
-- Agent: 34/34 tests, typecheck and lint passed, including round trips of all real release specs and checkpoint/resume across releases.
+- Agent: 36/36 tests, typecheck and lint passed, including round trips of all real release specs and checkpoint/resume across releases.
 - P3 vendor projections also certify against v1.1 and v2.
 - Full `cd lean && lake build`: passed all 215 targets, including the expensive concrete negative proofs.
 
@@ -71,3 +71,7 @@ Night 2 deployed v1 after all 696 page states passed at both viewports. Its held
 Day 4 completed under release v1.1 on numeric program version 2. Codex declined the optional prior-authorization surface for the RN, citing 133 W4 tasks and no ordering work; the customized UI was recertified under the new spec. The real app's demo URLs now list the run's declared personas, avoiding links to absent recorded programs.
 
 Day 5 completed on certified numeric v3. Night 4 deployed the early-allergy-review layout; validation day 5: 33s saved, 0 clicks, 0 keystrokes, 30 scrolls. All three seeded unsafe categories have now been rejected (hidden allergy information, prefilled identity re-entry, pound-sourced kilogram weight).
+
+Day 6 completed on certified v4. Night 5 deployed the task-first administration layout; validation day 6: 388.3s saved, 0 clicks, 0 keystrokes, 353 scrolls.
+
+The first v2 migration proposal passed the checker, but the old-program min-clicks comparison failed: it searched the pre-migration UI under new v2 requirements that the old UI intentionally does not satisfy. Minima now compare each version under its own spec; no certificate gate or spec changed. Resume retains the exact completed Codex migration response when its prompt/backend/model match byte-for-byte, preserving the original response file and provenance. Future calls still use live Codex. Tests cover this recovery and cross-spec minimum comparisons.

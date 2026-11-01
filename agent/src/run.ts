@@ -96,7 +96,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
   const store = new RunStore(dir);
-  const recorder = new RecordingLlm(opts.llm, dir);
+  const recorder = new RecordingLlm(opts.llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
   const screens = opts.screens ?? createScreenChecker(ehr, opts.fhirBundles ? { bundles: opts.fhirBundles } : {});
   const deps: LoopDeps = {
