@@ -79,6 +79,7 @@ try {
         ['Medication', 'Dose', 'Route', 'Instructions', 'Category', 'Order status', 'PRN indication'].includes(key) ||
         !value.startsWith('Given') && !value.startsWith('Held'))), 'other-encounter actual doses stay out of this MAR');
     }
+    source.facts.patientDirectory = equal('facts', { bundle: read(join(fixtures, `${persona}.json`)), context: read(join(fixtures, `${persona}-context.json`)), directoryOnly: true }).facts.patientDirectory;
     const base = { spec: read(join(root, 'releases/v1/spec.json')), program,
       user: read(join(fixtures, `${persona}-user.json`)), ...source };
     const initial = selectAcutePatient(equal, base);

@@ -1,4 +1,4 @@
-import { selectAcutePatient } from './acute-select.mjs';
+import { selectAcutePatient, acuteChartFacts } from './acute-select.mjs';
 /** Export additional selected chart tabs through real native navigation events. */
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -16,7 +16,7 @@ for (const [persona, target] of [['P2', 'w3Provider'], ['P3', 'w4Mar']]) {
   const input = {
     spec: read(path.join(root, 'releases/v1/spec.json')), program,
     user: read(path.join(fixtures, `${persona}-user.json`)),
-    ...native('facts', { bundle: read(path.join(fixtures, `${persona}.json`)), context: read(path.join(fixtures, `${persona}-context.json`)) }),
+    ...acuteChartFacts(native, { bundle: read(path.join(fixtures, `${persona}.json`)), context: read(path.join(fixtures, `${persona}-context.json`)) }),
   };
   const routes = new Map([[program.start, []]]), pending = [program.start];
   while (pending.length) {

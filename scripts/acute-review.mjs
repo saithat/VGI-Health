@@ -1,5 +1,5 @@
 /** Photograph native Lean semantic screens using the production painter.
- * Usage: node scripts/acute-review.mjs <native render-screens directory> <before|after>
+ * Usage: node scripts/acute-review.mjs <native render-screens directory> <before|after|final>
  * Input contains P2/ and P3/ subdirectories; screenshots are always 1440 x 900.
  */
 import { createRequire } from 'node:module';
@@ -10,10 +10,10 @@ import { spawn } from 'node:child_process';
 import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const [input, stage] = process.argv.slice(2);
-if (!input || !['before', 'after'].includes(stage)) throw new Error('Usage: acute-review.mjs <ui-directory> <before|after>');
+if (!input || !['before', 'after', 'final'].includes(stage)) throw new Error('Usage: acute-review.mjs <ui-directory> <before|after|final>');
 const require = createRequire(path.join(root, 'app/package.json'));
 const { chromium } = require('@playwright/test');
-const output = path.join(root, 'app/shots/realism/acute', stage);
+const output = stage === 'final' ? path.join(root, 'app/shots/final') : path.join(root, 'app/shots/realism/acute', stage);
 const screens = [
   ['P2', 'w3TrackBoard', 'w3TrackBoard.open'], ['P2', 'w3Triage', 'w3Triage.weight'],
   ['P2', 'w3Provider', 'w3Provider.assessmentPlan'], ['P2', 'w3OrderSets', 'w3OrderSets.sepsis'],
@@ -49,8 +49,9 @@ try {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   for (const [persona, screen, focus] of screens) {
+    if (stage === 'final' && screen !== 'w4Mar') continue;
     const ui = JSON.parse(await readFile(path.join(input, persona, `${screen}.json`), 'utf8'));
-    await writeFile(path.join(output, `${screen}.json`), JSON.stringify(ui, null, 2) + '\n');
+    if (stage !== 'final') await writeFile(path.join(output, `${screen}.json`), JSON.stringify(ui, null, 2) + '\n');
     await page.goto('http://127.0.0.1:4188/screen-check.html');
     await page.waitForFunction(() => typeof window.renderUi === 'function');
     const viewer = persona === 'P2' ? 'ED physician' : 'Registered nurse';
@@ -58,6 +59,7 @@ try {
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(output, `${screen}.png`), animations: 'disabled' });
+    if (stage === 'final') continue;
     await page.locator(`[data-comp-id="${focus}"][data-event]`).first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
     await page.screenshot({ path: path.join(output, `${screen}-task.png`), animations: 'disabled' });
     process.stdout.write(`${stage}: ${screen}\n`);

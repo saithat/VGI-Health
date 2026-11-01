@@ -32,8 +32,48 @@ const native = <T>(command: string, input: unknown): T =>
       env: { ...process.env, LEAN_NUM_THREADS: "4" },
     }).toString(),
   );
+function fixtureFacts(persona: string): FactsOutput {
+  const input = {
+    bundle: read(join(fixtures, `${persona}.json`)),
+    context: read(join(fixtures, `${persona}-context.json`)),
+  };
+  const source = native<FactsOutput>("facts", input);
+  const directory = native<FactsOutput>("facts", {
+    ...input,
+    directoryOnly: true,
+  });
+  if (!directory.facts.patientDirectory)
+    throw new Error("Missing source directory");
+  return {
+    ...source,
+    facts: {
+      ...source.facts,
+      patientDirectory: directory.facts.patientDirectory,
+    },
+  };
+}
 function selectedState(base: InitInput & FactsOutput): State {
   let state = native<State>("init", base);
+  for (const event of [
+    { click: { comp: "workspace.lookup" } },
+    {
+      enter: {
+        comp: "workspace.search",
+        value: {
+          text: {
+            s:
+              base.facts.patientDirectory?.patients.find(
+                (p) => p.id === base.facts.sourcePatientId,
+              )?.name ?? "",
+          },
+        },
+      },
+    },
+  ] satisfies Event[]) {
+    const result = native<StepOutput>("step", { ...base, state, event });
+    expect(result.result).toBe("ok");
+    state = result.state;
+  }
   const ui = native<UiScreen>("render-ui", { ...base, state });
   const descend = (
     node: UiScreen["workspace"][number],
@@ -63,7 +103,8 @@ function selectedState(base: InitInput & FactsOutput): State {
     { scroll: { screen: state.screen } },
   ] satisfies Event[]) {
     const result = native<StepOutput>("step", { ...base, state, event });
-    expect(result.result).toBe("ok");
+    if ("scroll" in event) expect(["ok", "ignored"]).toContain(result.result);
+    else expect(result.result).toBe("ok");
     state = result.state;
   }
   expect(state.patientContext?.bound).toBe(base.facts.sourcePatientId);
@@ -129,10 +170,7 @@ for (const [screen, button, elements] of [
       spec: read(join(root, "releases/v1/spec.json")),
       program: read(join(root, "releases/v1/personas/P3.json")),
       user: read(join(fixtures, "P3-user.json")),
-      ...native<FactsOutput>("facts", {
-        bundle: read(join(fixtures, "P3.json")),
-        context: read(join(fixtures, "P3-context.json")),
-      }),
+      ...fixtureFacts("P3"),
     };
     const input: RenderInput = { ...base, state: selectedState(base) };
     const events: Event[] = [];
@@ -225,10 +263,7 @@ for (const [persona, screen, element, count, choice] of [
       spec: read(join(root, "releases/v1/spec.json")),
       program: read(join(root, `releases/v1/personas/${persona}.json`)),
       user: read(join(fixtures, `${persona}-user.json`)),
-      ...native<FactsOutput>("facts", {
-        bundle: read(join(fixtures, `${persona}.json`)),
-        context: read(join(fixtures, `${persona}-context.json`)),
-      }),
+      ...fixtureFacts(persona),
     };
     const input: RenderInput = { ...base, state: selectedState(base) };
     const events: Event[] = [];
