@@ -4,6 +4,22 @@ import Ehr.Render.Page
 are untouched; order rows always use this episode's State, never medication history. -/
 namespace Ehr.Render
 
+/-- Standard encounter classes receive clinical labels; unknown source codes survive. -/
+def uiEncounterClass (code : String) : String :=
+  match code with
+  | "EMER" | "emergency" => "Emergency"
+  | "IMP" | "inpatient" => "Inpatient"
+  | "ACUTE" => "Acute inpatient"
+  | "NONAC" => "Non-acute inpatient"
+  | "AMB" | "ambulatory" => "Ambulatory"
+  | "OBSENC" | "observation" => "Observation"
+  | "SS" => "Short stay"
+  | "PRENC" => "Pre-admission"
+  | "HH" => "Home health"
+  | "FLD" => "Field encounter"
+  | "VR" => "Virtual"
+  | other => other
+
 /-- Include explicitly named antithrombotics in chart review even when they
 are outside the small order-entry formulary. This display filter never assigns
 a dose, hold plan or drug-interaction class. Generic names are matched at the
@@ -15,6 +31,7 @@ def uiAntithrombotic (r : MedRow) : Bool :=
     ["aspirin", "clopidogrel", "prasugrel", "ticagrelor", "ticlopidine", "cangrelor",
      "dabigatran", "rivaroxaban"].any (fun generic =>
        name == generic || name.startsWith (generic ++ " "))
+
 
 def uiChars (cs : List Char) : String := cs.foldl String.push ""
 

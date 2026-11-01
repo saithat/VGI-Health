@@ -205,7 +205,8 @@ theorem D1_landmark (sp prog facts disp user s) :
     ("DOB", uiDate disp.banner.dob) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("MRN", disp.banner.mrn) ∈ (renderUi sp prog facts disp user s).banner := by
   by_cases hp : facts.encounterKind? == some "preop" <;>
-    simp [renderUi, uiClinicalBanner, uiEncounterBanner, uiBanner, hp]
+    by_cases ha : facts.encounterKind? == some "emergency" || facts.encounterKind? == some "inpatient" <;>
+    simp [renderUi, uiClinicalBanner, uiEncounterBanner, uiBanner, hp, ha]
 
 /-- Every actual nav entry is precisely one shown, enabled goto component. -/
 theorem uiNav_mem (cx : Ctx) (n : UiNode) :
@@ -264,11 +265,6 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
     simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inl (Or.inl (Or.inl (Or.inr (Or.inl h))))
 
-/-- Read-only additions are clinical info or the visit-progress overview. -/
-def UiReadOnly : UiNode → Prop
-  | .info "" _ _ _ _ | .stepper _ _ => True
-  | _ => False
-
 /-- A source progress overview adds only read-only context. -/
 theorem uiProgress_readOnly (cx : Ctx) (n : UiNode)
     (hn : n ∈ uiAtomsList (uiProgress cx)) : UiReadOnly n := by
@@ -299,25 +295,22 @@ theorem uiSide_source (cx : Ctx) (n : UiNode) (hn : n ∈ uiAtomsList (uiSide cx
   · right
     split at hn <;> simp [uiAtoms] at hn
     subst n; trivial
-  · split at hn
-    · simp at hn
-    · generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
-       ("problemList", "Problems"), ("vitals", "Recent vitals")] : List (String × String)) = pairs at hn
-      right
-      induction pairs with
-      | nil => simp at hn
-      | cons pair pairs ih =>
-        simp only [List.filterMap_cons] at hn
-        split at hn
-        · exact ih hn
-        · rename_i node heq
-          split at heq
-          · contradiction
-          · cases heq
-            simp [uiAtoms] at hn
-            rcases hn with rfl | hn
-            · trivial
-            · exact ih (by simpa only [List.any_eq_true, Bool.and_eq_true] using hn)
+  · generalize uiSummaryPairs cx = pairs at hn
+    right
+    induction pairs with
+    | nil => simp at hn
+    | cons pair pairs ih =>
+      simp only [List.filterMap_cons] at hn
+      split at hn
+      · exact ih hn
+      · rename_i node heq
+        split at heq
+        · contradiction
+        · cases heq
+          simp [uiAtoms] at hn
+          rcases hn with rfl | hn
+          · trivial
+          · exact ih (by simpa only [List.any_eq_true, Bool.and_eq_true] using hn)
 
 /-- Every addressable node on the screen has a shown interpreter witness.
 Only the clinical shell, progress overview and read-only supplements are added. -/

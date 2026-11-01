@@ -105,7 +105,9 @@ test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   await page
     .getByRole("button", { name: "Close inspector", exact: true })
     .click();
-  await component(page, "home.work.w4Worklist").click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Unit Census & MAR",
+  );
   await component(page, "w4Worklist.toMar").click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     /MAR|Medication administration/i,

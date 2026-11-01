@@ -11,7 +11,7 @@ const releaseRoot = before ? '/tmp/content2-before-releases' : `${root}/releases
 const out = `${root}/app/shots/realism/content2/${before ? 'before' : 'after'}`;
 mkdirSync(out, { recursive: true });
 const read = file => JSON.parse(readFileSync(resolve(root, file), 'utf8'));
-const native = (command, input) => JSON.parse(execFileSync(binary, [command], { input: JSON.stringify(input), maxBuffer: 48e6, env: { ...process.env, LEAN_NUM_THREADS: '8' } }));
+const native = (command, input) => JSON.parse(execFileSync(binary, [command], { input: JSON.stringify(input), maxBuffer: 48e6, env: { ...process.env, LEAN_NUM_THREADS: '4' } }));
 const index = read('fixtures/synthea/index.json').patients.map(p => ({...p, source: `fixtures/synthea/${p.file}`}));
 const hospital = read('fixtures/synthetic-hospital/index.json').patients.map(p => ({...p, source: `fixtures/synthetic-hospital/${p.file}`}));
 const overlays = read('fixtures/clinical/overrides.json').entry;

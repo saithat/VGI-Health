@@ -1,0 +1,112 @@
+{
+  "id": "9f1c69b9-235a-47a9-9733-b89b4f885a21",
+  "context": "5ccf406eb3c5a589019ffb5a92c6591e931b140de95ec92b73f76534ba34af91",
+  "passed": true,
+  "projects": [
+    "desktop",
+    "narrow"
+  ],
+  "checkedAt": "2026-11-01T17:28:53.476Z",
+  "entries": [
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Disposition.json",
+      "sha256": "885a633db96f62b56f1ae052a8a5a41a9e04784ef5b7bd01874f628eb58260c0",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3OrderSets.json",
+      "sha256": "2639358b54a9cc1ae800f08f70867765d51742830cda40a565191550fd438154",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Orders.json",
+      "sha256": "1624bcdecd66207997034e0eb57cc7e0dbcc677a97e65888de38d1766d366927",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Provider-chart-imaging.json",
+      "sha256": "367c6e5a259dd157a00efb844b271352647ec30eec7bc05c4ceffdac9ae60b8e",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Provider-chart-results.json",
+      "sha256": "4c2ccda2232a90706cdfab6c33f814991edaf3d0443814831c0bb8ff4d978248",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Provider.json",
+      "sha256": "32c496f3a67b0b5b9b1c16f4bfb3c8cf309e9ebcc1b4cc4c2234a5448e55ee64",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Sign.json",
+      "sha256": "45e13704b5494c68fdd546a2125fece983665755667fd359b30381e350c1eed7",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3TrackBoard.json",
+      "sha256": "9e689c604f9f598275989ee08a7d2f2612d072b7a86da38414aa3351aed0df1d",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w3Triage.json",
+      "sha256": "6922db12eb62eed90a2eca1b3d50249fb28e9227fa1b2aef142f7a8cdde8d446",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Admin.json",
+      "sha256": "58efab19d92b48154a63fed013f8581a4e1cca36a7c75261cc07abcac64ad8f8",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Flowsheet-outline.json",
+      "sha256": "5018999af87996ffa28cdb77003fb51b63213ee5229681e05fe50bff68301282",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Flowsheet.json",
+      "sha256": "861dc21069d03241a571e7932ed1b132cf1e6870f53defcf4f4a22b459835b2a",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Handoff-outline.json",
+      "sha256": "e29d8de2955f7c1319c3169006ef448cfef44c90d88e9429b8f0c24ac7fff9c8",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Handoff.json",
+      "sha256": "293402bab5218c62f61b4fc450c40d199b60a85633e05ff56106cfa5e1f64de0",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Mar-chart-imaging.json",
+      "sha256": "f9c986cb17abdec9575b6e125288bf7979ef2b83d13e5cb5ee9a5195fe1d7c10",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Mar-chart-results.json",
+      "sha256": "bd5a0ad7fa04cf2fdb54d2e6d4da476926f624dd29ad9aa8037ba92d9dfec240",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Mar.json",
+      "sha256": "2dccc172516a2177d9f30c702cb4d51b199e66aadc307b1e86aedcb51c3ebca5",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/after/w4Worklist.json",
+      "sha256": "991e8ca950a9004564c6d1d1f5d22281c62f7b9bde8c313fe9d1cb31067ff064",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/department/p2-track-board.json",
+      "sha256": "e0512137c2529b70ae3e8cb82c498e30089d61d44a9d2d564badf0a2d89121da",
+      "reused": true
+    },
+    {
+      "file": "/home/saithat/Projects/VGI-acute/app/shots/realism/acute/department/p3-census.json",
+      "sha256": "af40108357e3d190677a7e2a27527bf051374a4e7c510b48256a050084205e70",
+      "reused": true
+    }
+  ]
+}

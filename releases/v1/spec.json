@@ -310,6 +310,7 @@
    "id": "inBasketMessages"},
   {"version": "scheduleVersion", "label": "OR Schedule", "id": "orSchedule"},
   {"version": "caseVersion", "label": "Surgical consults", "id": "consultList"},
+  {"version": "", "label": "Selected patient shift tasks", "id": "shiftTasks"},
   {"version": "encounterVersion", "label": "Unit Census", "id": "unitCensus"},
   {"version": "inbasketVersion",
    "label": "In Basket folders",

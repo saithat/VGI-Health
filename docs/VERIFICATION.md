@@ -40,13 +40,13 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 |---|---|---|
 | `T0_commit_needs_guard` | Every newly added commit passed its guard in the preceding state. | U; `lean/Ehr/Proofs/T0.lean:151` |
 | `commitGuard_iff` | The guard passes exactly when the encounter permits this role, entries and reviews are met, interruptive alerts are acknowledged, and the extra checks pass. | U; `lean/Ehr/Proofs/T0.lean:162` |
-| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:363` |
-| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:391` |
-| `T2_receipts_sound` | An applicable review hidden at commit has a matching, timely, role-allowed receipt or a human-entered waiver. | U; `lean/Ehr/Proofs/T2.lean:52` |
-| `T2_shownOnCommit_shown` | A review that forbids receipts and has no waiver is shown when its commit happens. | U; `lean/Ehr/Proofs/T2.lean:66` |
-| `T3_macro_step` | An event sent as a macro cannot add commits, acknowledgments, receipts or human-only captures. | U; `lean/Ehr/Proofs/T3.lean:159` |
-| `T3_macro_run` | Clicking a macro without an open popup preserves those same four protections. | U; `lean/Ehr/Proofs/T3.lean:171` |
-| `T3_prefill_never_human_only` | Entering a screen cannot prefill a new human-only capture. | U; `lean/Ehr/Proofs/T3.lean:184` |
+| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:348` |
+| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:375` |
+| `T2_receipts_sound` | An applicable review hidden at commit has a matching, timely, role-allowed receipt or a human-entered waiver. | U; `lean/Ehr/Proofs/T2.lean:54` |
+| `T2_shownOnCommit_shown` | A review that forbids receipts and has no waiver is shown when its commit happens. | U; `lean/Ehr/Proofs/T2.lean:68` |
+| `T3_macro_step` | An event sent as a macro cannot add commits, acknowledgments, receipts or human-only captures. | U; `lean/Ehr/Proofs/T3.lean:147` |
+| `T3_macro_run` | Clicking a macro without an open popup preserves those same four protections. | U; `lean/Ehr/Proofs/T3.lean:159` |
+| `T3_prefill_never_human_only` | Entering a screen cannot prefill a new human-only capture. | U; `lean/Ehr/Proofs/T3.lean:172` |
 | `T6_macro_is_fold` | A macro has the reference expansion's final state and reports the first stopped step. | U; `lean/Ehr/Proofs/T6.lean:42` |
 | `runMacro_ok_iff` | A macro reports success exactly when its reference expansion does not stop. | U; `lean/Ehr/Proofs/T6.lean:73` |
 | `T6_macro_run_safe` | A clicked macro preserves the four human-action protections, using the expansion proof. | U; `lean/Ehr/Proofs/T6.lean:126` |
@@ -114,14 +114,14 @@ Read these definitions first:
 | `step`, `init`, `runAll` | Handle an event, start an episode, and handle a list of events; `lean/Ehr/Core/Interp.lean`. |
 | `commitGuard`, `commitRoleOk` | Check everything required before committing, including encounter-specific signing permission; `lean/Ehr/Core/Guard.lean`. |
 | `entryMet`, `reviewMet` | Check required captures and reviews; `lean/Ehr/Core/Guard.lean:108`, `:135`. |
-| `extraGuard` | Check time evidence, value constraints, defaults, expiry and required display/action contracts; `lean/Ehr/Core/Basics.lean:808`. |
+| `extraGuard` | Check time evidence, value constraints, defaults, expiry and required display/action contracts; `lean/Ehr/Core/Basics.lean:864`. |
 | `infoShown`, `compShown` | Decide whether the interpreter counts information/components as shown, including screen, group, tab and size conditions; `lean/Ehr/Core/Guard.lean:38`, `lean/Ehr/Core/Basics.lean`. |
 | `ValidReceiptFor`, `HumanWaiverFor` | A review receipt matches version, time and role, or a human supplied a confirmed nonempty waiver; `lean/Ehr/Props/Defs.lean:21`, `:27`. |
 | `macroAct`, `foldMacro` | Expand macro actions through the same event interface and stop at the first failure; `lean/Ehr/Props/Defs.lean:44`, `:54`. |
-| `Reachable`, `EveryStep`, `Always` | States obtainable from the start, including time passing, and conditions over all those events/states; `lean/Ehr/Props/Basics.lean:61`, `:77`, `:72`. |
-| `requiredCommitsFor` | Commits on the canonical or candidate buttons, restricted by role and encounter; `lean/Ehr/Props/Basics.lean:103`. |
+| `Reachable`, `EveryStep`, `Always` | States obtainable from the start, including time passing, and conditions over all those events/states; `lean/Ehr/Props/Basics.lean:62`, `:77`, `:72`. |
+| `requiredCommitsFor` | Commits on the canonical or candidate buttons, restricted by role and encounter; `lean/Ehr/Props/Basics.lean:104`. |
 | `check`, `rules` | Run structural checks and return acceptance or a finding; `lean/Ehr/Check/Check.lean`. |
-| `renderUi`, `UiPresent`, `UiWorkspacePresent` | Construct the semantic screen and observe nodes across the screen or in its workspace only; `lean/Ehr/Render/Ui.lean:312`, `UiContracts.lean:33`, `:38`. |
+| `renderUi`, `UiPresent`, `UiWorkspacePresent` | Construct the semantic screen and observe nodes across the screen or in its workspace only; `lean/Ehr/Render/Ui.lean:671`, `UiContracts.lean:33`, `:38`. |
 | `NavSane`, `uiOverviewNav` | Check the workflow-wide overview, which differs from the interactive `uiNav`; `lean/Ehr/Render/NavRules.lean:12`, `Ui.lean:36`. |
 | `deployPlan`, `certificate` | Plan version/current writes and bind the recorded verdict to hashes of the spec and program; `lean/Ehr/Check/Deploy.lean:90`, `:79`. |
 

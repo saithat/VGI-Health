@@ -66,9 +66,9 @@ add('AllergyIntolerance', id='allergy', clinicalStatus=dict(coding=[dict(code='a
     reaction=[dict(manifestation=[cc('Hives')], severity='moderate')])
 for code, name, unit, values in [('8867-4','Heart rate','/min',[82,79,76]),('9279-1','Respiratory rate','/min',[18,17,16]),
     ('8310-5','Temperature','Cel',[37.3,37.1,37.0]),('2708-6','Oxygen saturation','%',[97,98,98]),
-    ('72514-3','Pain score','{score}',[6,3,2]),('9187-6','Oral intake','mL',[240,180,240]),('9192-6','Urine output','mL',[350,250,400])]:
+    ('72514-3','Pain score','{score}',[6,3,2]),('9000-1','Oral intake','mL',[240,180,240]),('9187-6','Urine output','mL',[350,250,400])]:
     for i, v in enumerate(values):
-        add('Observation', id=f'{code}-{i}', status='final', category=[dict(coding=[dict(code='exam' if code in ['9187-6','9192-6'] else 'vital-signs')])], code=dict(text=name,coding=[dict(code=code)]),
+        add('Observation', id=f'{code}-{i}', status='final', category=[dict(coding=[dict(code='exam' if code in ['9000-1','9187-6'] else 'vital-signs')])], code=dict(text=name,coding=[dict(code=code)]),
             valueQuantity=qty(v,unit), effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00')
 for i,(systolic,diastolic) in enumerate([(128,76),(126,74),(124,72)]):
     add('Observation',id=f'bp-{i}',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Blood pressure',coding=[dict(system='http://loinc.org',code='85354-9')]),

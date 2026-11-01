@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-11-01T17:18:17.157Z",
+  "revision": "4055c6ddaa3c57bcea8e2c97958ffa38f9572f21",
+  "mainRevision": "1721e64a4d2c189faa7ad59950699fae23429c15",
+  "leanHash": "e719f81196748dcfa49d927c3eb0fd88d4d8770ff9a8871f48dd70257aba7505",
+  "counts": {
+    "works": 2785,
+    "disabled-with-reason": 114,
+    "dead": 2,
+    "error": 0
+  },
+  "measurement": "Original audit includes target scrolling/actionability waits in its two-second response interval.",
+  "flaggedControls": [
+    {
+      "route": "/?audit=buttons&inspect=1",
+      "persona": "P1",
+      "program": "canonical-P1",
+      "screen": "w7Review",
+      "label": "Expand section",
+      "comp": "w7Review.chart.includeResolved",
+      "kind": "click / {\"group\":{\"startCollapsed\":true,\"collapsible\":true}}",
+      "owner": "lean",
+      "status": "dead",
+      "effect": "Effect took 11843 ms (limit approximately 2 seconds): Lean state changed; result \"ok\""
+    },
+    {
+      "route": "/?audit=buttons&inspect=1",
+      "persona": "P4",
+      "program": "canonical-P4",
+      "screen": "w2Inbasket",
+      "label": "Expand section",
+      "comp": "w2Inbasket.chart.includeResolved",
+      "kind": "click / {\"group\":{\"startCollapsed\":true,\"collapsible\":true}}",
+      "owner": "lean",
+      "status": "dead",
+      "effect": "Effect took 3590 ms (limit approximately 2 seconds): Lean state changed; result \"ok\""
+    }
+  ],
+  "clinicalConfigurationSamples": [
+    {
+      "persona": "P1",
+      "configurations": 40,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P2",
+      "configurations": 22,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P3",
+      "configurations": 48,
+      "queuedOutsideBudget": 8
+    },
+    {
+      "persona": "P4",
+      "configurations": 37,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P5",
+      "configurations": 48,
+      "queuedOutsideBudget": 9
+    },
+    {
+      "persona": "RN2",
+      "configurations": 48,
+      "queuedOutsideBudget": 8
+    }
+  ],
+  "reportSha256": "60ac57b2fca30b13bbba71192794093f449ce884a626fbb56cfca34abf1b780d",
+  "logSha256": "defa54605eabd7fc4d048e80d97e6e74d5aec4f9de3c954b9883fd3848a1d787"
+}

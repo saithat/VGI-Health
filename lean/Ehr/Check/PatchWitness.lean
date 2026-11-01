@@ -133,6 +133,11 @@ theorem signature_id (s : Screen) : (Blueprint.signature s).id = s.id := by
   dsimp only
   split <;> rfl
 
+theorem signature_workflow (s : Screen) : (Blueprint.signature s).workflow = s.workflow := by
+  unfold Blueprint.signature
+  dsimp only
+  split <;> rfl
+
 /-- Artifact folding retains an ordinary source field on its retained host,
 without evaluating unrelated artifact bodies. -/
 theorem blueprint_keeps_field (source : List Screen) (s : Screen) (c : Component)
@@ -150,7 +155,8 @@ theorem blueprint_keeps_field (source : List Screen) (s : Screen) (c : Component
     unfold Blueprint.clean
     apply List.mem_map.mpr
     refine ⟨c, List.mem_filter.mpr ⟨signature, ?_⟩, ?_⟩
-    · simpa [Blueprint.isShellCopy, signature_id] using shell
+    · simpa only [Blueprint.isShellCopy, signature_id, signature_workflow,
+        Bool.not_eq_true'] using shell
     · simp [Blueprint.route, signature_id, navParent, kind]
   have related := relatedLinks_keeps_field source s _ c clean e slot pf kind legal feature
   refine ⟨_, List.mem_map.mpr ⟨s, List.mem_filter.mpr ⟨screen, host⟩, rfl⟩, ?_⟩

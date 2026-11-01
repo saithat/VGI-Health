@@ -19,7 +19,7 @@ import {
   type Patient,
   type Resource,
 } from "../src/data/medplum";
-import type { Event, Value } from "../../lean/generated/ehr-types";
+import type { Event, Value, UiNode } from "../../lean/generated/ehr-types";
 import { mapCommit, type CommitInput } from "../src/data/commitMapper";
 import releaseSpec from "../../releases/v3/spec.json";
 // Full FHIR mapping remains supported while current release exports use core.
@@ -28,6 +28,39 @@ import mapperSpec from "../tests/fixtures/spec-v3-full.json";
 const available = await backendAvailable();
 const json = async (path: string): Promise<unknown> =>
   JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), "utf8"));
+async function selectChart(
+  session: Awaited<ReturnType<typeof createLiveSession>>,
+) {
+  await session.dispatch({ click: { comp: "workspace.lookup" } });
+  await session.dispatch({
+    enter: {
+      comp: "workspace.search",
+      value: { text: { s: `Integration-${uuid}` } },
+    },
+  });
+  const descend = (node: UiNode): UiNode[] => {
+    if ("button" in node) return [node];
+    if ("presentation" in node)
+      return node.presentation.children.flatMap(descend);
+    if ("rowAction" in node) return node.rowAction.children.flatMap(descend);
+    if ("section" in node) return node.section.children.flatMap(descend);
+    if ("columns" in node) return node.columns.children.flatMap(descend);
+    if ("tabs" in node) return node.tabs.body.flatMap(descend);
+    return [];
+  };
+  const choice = session
+    .getSnapshot()
+    .ui?.workspace.flatMap(descend)
+    .find(
+      (node) =>
+        "button" in node &&
+        node.button.comp.startsWith(`workspace.open|${patient.id}|`),
+    );
+  if (!choice || !("button" in choice))
+    throw new Error("Missing live test patient choice");
+  await session.dispatch({ click: { comp: choice.button.comp } });
+  expect(session.getSnapshot().state.patientContext?.bound).toBe(patient.id);
+}
 const created: string[] = [];
 let user: LiveUser;
 let patient: Patient;
@@ -207,7 +240,7 @@ describe.skipIf(!available)(
           },
         });
       };
-      await click("home.work.w1Rooming");
+      await selectChart(session);
       await enter("w1Rooming.weight", { qty: { tenths: 720, unit: "kg" } });
       await enter("w1Rooming.bpSystolic", {
         qty: { tenths: 1200, unit: "none" },
@@ -429,8 +462,21 @@ describe.skipIf(!available)(
             "ok",
           );
         };
-        await act({ click: { comp: "home.work.w3TrackBoard" } });
-        await act({ click: { comp: "w3TrackBoard.nav.w3Disposition" } });
+        await selectChart(session);
+        expect(session.getSnapshot().state.screen).toBe("w3Triage");
+        const disposition = session
+          .getSnapshot()
+          .view.items.find(
+            (item) =>
+              item.shown &&
+              typeof item.comp.kind === "object" &&
+              "button" in item.comp.kind &&
+              typeof item.comp.kind.button.action === "object" &&
+              "goto" in item.comp.kind.button.action &&
+              item.comp.kind.button.action.goto.screen === "w3Disposition",
+          );
+        if (!disposition) throw new Error("No shown route to ED disposition");
+        await act({ click: { comp: disposition.comp.id } });
         for (const [element, text] of Object.entries({
           dispositionChoice: "admit",
           visitDiagnosis: "J18.9",
@@ -600,7 +646,7 @@ describe.skipIf(!available)(
           await session.dispatch(event);
         }
       };
-      await act({ click: { comp: "home.work.w1Rooming" } });
+      await selectChart(session);
       await act({
         enter: {
           comp: "w1Rooming.weight",

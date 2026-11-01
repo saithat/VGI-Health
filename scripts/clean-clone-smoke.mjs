@@ -36,12 +36,13 @@ try {
   await expect(page.getByRole("button", { name: /^P1 · / })).toBeVisible();
   console.log("Live clinician sign-in loaded");
   for (const persona of ["P1", "P2", "P3", "P4", "P5"]) {
-    await page.goto(`${base}/ehr?mode=replay&persona=${persona}`);
+    await page.goto(`${base}/ehr?mode=replay&persona=${persona}&inspect=1`);
     await page.getByRole("button", { name: "Inspector", exact: true }).click();
     await expect(page.getByLabel("Persona", { exact: true })).toHaveValue(
       persona,
     );
     await page.getByRole("button", { name: "Close inspector", exact: true }).click();
+    await page.getByRole("button", { name: /^Open chart:/ }).first().click();
     const banner = page.getByRole("banner", { name: "Patient banner" }).first();
     await expect(banner).toBeVisible();
     await expect(banner).toContainText(/MRN|DOB|born/i);

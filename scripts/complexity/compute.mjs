@@ -10,12 +10,12 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
-// Bound Lean workers and their reserved stacks under the shared-machine cap.
+// Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
+const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 12000000);
+if (!Number.isSafeInteger(leanMemoryKb) || leanMemoryKb < 1) throw new Error('EHR_LEAN_MEMORY_KB must be a positive integer');
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], {
-    timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_STACK_SIZE_KB: '65536' }, ...options,
-  })
-  : exec(bin, args, { timeout: Number(process.env.EHR_COMMAND_TIMEOUT_MS ?? 600000), ...options });
+  ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], {timeout:180000,env:{...process.env,LEAN_NUM_THREADS:'6',LEAN_STACK_SIZE_KB:'65536'},...options})
+  : exec(bin,args,{timeout:Number(process.env.EHR_COMMAND_TIMEOUT_MS??600000),...options});
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const write = (p, data) => writeFile(p, JSON.stringify(data,(key,value)=>/klm/i.test(key)?undefined:value,2) + '\n');

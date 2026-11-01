@@ -23,6 +23,7 @@ declare global {
       presentationsOrEvent?:
         PresentationBundle | null | ((event: Event) => void),
       onEvent?: (event: Event) => void,
+      viewer?: string,
     ) => void;
   }
 }
@@ -33,7 +34,7 @@ window.renderEhr = (tree) => {
   flushSync(() => root.render(paint(tree, () => {})));
 };
 
-window.renderUi = (screen, presentationsOrEvent, onEvent) => {
+window.renderUi = (screen, presentationsOrEvent, onEvent, viewer) => {
   const presentations =
     typeof presentationsOrEvent === "function"
       ? null
@@ -42,6 +43,7 @@ window.renderUi = (screen, presentationsOrEvent, onEvent) => {
     typeof presentationsOrEvent === "function"
       ? presentationsOrEvent
       : (onEvent ?? (() => {}));
+
   flushSync(() =>
     root.render(
       <MantineProvider theme={clinicalTheme}>
@@ -49,6 +51,7 @@ window.renderUi = (screen, presentationsOrEvent, onEvent) => {
           screen={screen}
           onEvent={emit}
           presentations={presentations}
+          viewer={viewer}
         />
       </MantineProvider>,
     ),
