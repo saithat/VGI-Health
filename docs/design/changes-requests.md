@@ -2730,3 +2730,7 @@ Before captures found that the first P3 replay My Patients / MAR row (Leanne Har
 ## DEMO-HONESTY: archived chart display names (painter owner)
 
 Archived replay panes can expose raw values `disch`, `given`, `Last encounter SS`, and `Department primary-care`. Render these as Discharged, Administered, Short stay, and Primary care respectively while retaining source codes in inspector data. Apply in the shared semantic display formatter, including dashboard/browser replay. DEMO-HONESTY leaves app/src/ehr untouched as required.
+
+## Clinical-day projection consistency (shell → data/content, November 1)
+
+The live department list loader and visible toolbar correctly use the seeded `workspaceDate` (Nov 2, 2026). However `app/src/core/liveSession.ts` still calls `projectLive(..., new Date().toISOString(), ...)` and `factsContext` sets `today: now.slice(0,10)` for the patient chart. Thus list and chart date contexts differ on a later viewing date, affecting dated read-only overview sections and recency facts. Please thread the explicit selected clinical day into the native patient projection, while retaining actual wall-clock timestamps for clinical writes and audit receipts. Add a boundary test proving that the same clinical day feeds directory and selected-patient facts. No painter-side calculation or FHIR mutation should compensate for this.
