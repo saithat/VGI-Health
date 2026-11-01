@@ -21,6 +21,7 @@ function nodes(node) {
   if (node.columns) return [node, ...node.columns.children.flatMap(nodes)];
   if (node.tabs) return [node, ...node.tabs.body.flatMap(nodes)];
   if (node.presentation) return [node, ...node.presentation.children.flatMap(nodes)];
+  if (node.rowAction) return [node, ...node.rowAction.children.flatMap(nodes)];
   return [node];
 }
 function route(program, target) {
@@ -64,6 +65,17 @@ for (const release of ['v1', 'v2', 'v3']) {
       assert.ok(ui.nav.some(([, items]) => items.some(([id]) => id === ui.activeNav)));
     }
     const shown = [...ui.workspace, ...ui.side, ...(ui.modal ? [ui.modal] : [])].flatMap(nodes);
+    const rowControls = {
+      home: ['home.schedule', 'home.openSelectedCase'],
+      w6Schedule: ['w6Schedule.cases', 'w6Schedule.openCase'],
+      w6Consults: ['w6Consults.requests', 'w6Consults.openConsult'],
+    };
+    if (rowControls[screen.id]) {
+      const [target, comp] = rowControls[screen.id];
+      assert.ok(shown.some(n => n.rowAction?.target === target && n.rowAction.row === 0 &&
+        n.rowAction.children.some(child => child.button?.comp === comp)),
+      `${screen.id}: retain the declared source-row goto`);
+    }
     for (const { field } of shown.filter(n => n.field?.provenance)) {
       const label = ui.sourceLabels?.find(([source]) => source === field.provenance)?.[1];
       assert.ok(label?.trim());

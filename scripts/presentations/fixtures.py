@@ -61,15 +61,15 @@ for code,name,unit,lo,hi,values in [('6298-4','Potassium','mmol/L',3.5,5.1,[3.3,
     for i,v in enumerate(values):
         add('Observation', id=f'lab-{code}-{i}',status='final',category=[dict(coding=[dict(code='laboratory')])], code=dict(text=name,coding=[dict(code=code)]),
             effectiveDateTime=f'2026-10-{29+i:02}T06:30:00',valueQuantity=qty(v,unit),referenceRange=[dict(low=qty(lo,unit),high=qty(hi,unit))])
-for i,(med,dose,unit,route,freq,status) in enumerate([
-    ('Acetaminophen 500 mg tablet',500,'mg','Oral','Every 6 hours','active'),
-    ('Cefazolin 1 g injection',1,'g','Intravenous','Every 8 hours','active'),
-    ('Enoxaparin 40 mg/0.4 mL',40,'mg','Subcutaneous','Daily','on-hold'),
-    ('Metoprolol tartrate 25 mg tablet',25,'mg','Oral','Twice daily','active')]):
+for i,(med,dose,unit,route,freq,status,hours,given_hour) in enumerate([
+    ('Acetaminophen 500 mg tablet',500,'mg','Oral','Every 6 hours','active',[8,14],8),
+    ('Cefazolin 1 g injection',1,'g','Intravenous','Every 8 hours','active',[6,14],6),
+    ('Enoxaparin 40 mg/0.4 mL',40,'mg','Subcutaneous','Daily','on-hold',[9],9),
+    ('Metoprolol tartrate 25 mg tablet',25,'mg','Oral','Twice daily','active',[9],9)]):
     add('MedicationRequest',id=f'rx{i}',status=status,intent='order',subject=ref('Patient','p1'),medicationCodeableConcept=cc(med),authoredOn='2026-10-31',requester=dict(display='Nora Shah, MD'),
-        dosageInstruction=[dict(text=f'{dose} {unit}, {route.lower()}, {freq.lower()}',route=cc(route),timing=dict(event=['2026-11-01T08:00:00','2026-11-01T14:00:00']),doseAndRate=[dict(doseQuantity=qty(dose,unit))])])
+        dosageInstruction=[dict(text=f'{dose} {unit}, {route.lower()}, {freq.lower()}',route=cc(route),timing=dict(event=[f'2026-11-01T{hour:02}:00:00' for hour in hours]),doseAndRate=[dict(doseQuantity=qty(dose,unit))])])
     add('MedicationAdministration',id=f'admin{i}',request=ref('MedicationRequest',f'rx{i}'),status='on-hold' if status=='on-hold' else 'completed',subject=ref('Patient','p1'),
-        medicationCodeableConcept=cc(med),effectiveDateTime=f'2026-11-01T08:{10+i*3:02}:00',dosage=dict(dose=qty(dose,unit),route=cc(route)),
+        medicationCodeableConcept=cc(med),effectiveDateTime=f'2026-11-01T{given_hour:02}:{10+i*3:02}:00',dosage=dict(dose=qty(dose,unit),route=cc(route)),
         performer=[dict(actor=dict(display='Jordan Reed, RN'))],statusReason=[cc('Per provider order')] if status=='on-hold' else [])
 body='Subjective\nPain improved this morning. Tolerating oral intake. No nausea or vomiting.\n\nObjective\nAfebrile. Abdomen soft, nondistended. Incisions clean and dry.\n\nAssessment & Plan\nPostoperative day 1 after laparoscopic appendectomy. Advance diet, ambulate, continue multimodal analgesia. Review discharge readiness this afternoon.'
 add('DocumentReference',id='note',status='current',docStatus='final',date='2026-11-01T09:20:00',type=cc('Progress note'),description='General Surgery • Daily Progress',author=[dict(display='Daniel Park, MD')],context=dict(encounter=[dict(display='Inpatient • General Surgery')]),content=[dict(attachment=dict(contentType='text/plain',data=base64.b64encode(body.encode()).decode()))])
@@ -79,8 +79,8 @@ payloads={
  'trackBoard': [dict(Room=f'ED {i+3:02}',Patient=f'{p[0]}, {p[1]}',**{'Age/sex':a,'Chief complaint':c},Acuity=esi,Arrival=f'07:{i*7:02}',LOS=los,RN=rn,Provider=md,Labs=lab,Imaging=img,Disposition=dispo,Status=st) for i,(p,a,c,esi,los,rn,md,lab,img,dispo,st) in enumerate(zip(people,['9 / F','52 / M','38 / F','64 / M','32 / F','68 / M'],['Abdominal pain','Chest pain','Shortness of breath','Fall, left hip pain','Headache','Dizziness'],['ESI 3','ESI 2','ESI 2','ESI 3','ESI 4','ESI 3'],['2h 05m','1h 58m','1h 51m','1h 44m','1h 37m','1h 30m'],['Reed, J','Reed, J','Lopez, M','Lopez, M','Kim, S','Kim, S'],['Shah, N','Shah, N','Foster, E','Foster, E','Shah, N','Foster, E'],['Pending','Complete','Pending','Complete','Ordered','Complete'],['Ordered','Complete','Pending','Complete','—','Ordered'],['—','Admit','—','Consult','Discharge','—'],['Roomed','In progress','In progress','Needs review','Complete','Roomed']))],
  'orSchedule': [dict(Room='OR 2',Start='07:30',Procedure='Laparoscopic cholecystectomy',Patient='Patel, Anika',Surgeon='Daniel Park, MD',Status='Complete'),dict(Room='OR 2',Start='09:15',Procedure='Laparoscopic appendectomy',Patient='Chen, David',Surgeon='Daniel Park, MD',Status='In progress'),dict(Room='OR 2',Start='11:00',Procedure='Open inguinal hernia repair',Patient='Anderson, Robert',Surgeon='Daniel Park, MD',Status='Scheduled')],
  'inBasketFolders':[dict(Folder='Results',Count='14',Unread='6'),dict(Folder='Rx Request',Count='8',Unread='3'),dict(Folder='Patient Messages',Count='12',Unread='4'),dict(Folder='Staff Messages',Count='5',Unread='2')],
- 'inBasketMessages':[dict(Received='Nov 1, 2026 08:42',Patient='Chen, David',Subject='Basic metabolic panel',From='Laboratory',Priority='Routine',Status='Unread'),dict(Received='Nov 1, 2026 08:31',Patient='Patel, Anika',Subject='TSH with reflex free T4',From='Laboratory',Priority='Routine',Status='Unread'),dict(Received='Nov 1, 2026 08:18',Patient='Williams, James',Subject='Hemoglobin A1c',From='Laboratory',Priority='Routine',Status='Needs review')],
- 'worklist':[dict(Due='08:00',Patient='Morgan, Alex',Task='Scheduled medications',Priority='Routine',Status='Due',Owner='Jordan Reed, RN'),dict(Due='08:30',Patient='Morgan, Alex',Task='Pain reassessment',Priority='Routine',Status='Overdue',Owner='Jordan Reed, RN'),dict(Due='10:00',Patient='Morgan, Alex',Task='Vital signs',Priority='Routine',Status='Scheduled',Owner='Jordan Reed, RN')]
+ 'inBasketMessages':[dict(Received=f'Nov 1, 2026 {8-i//6:02}:{42-i%6*7:02}',Patient=f'{people[(i+1)%len(people)][0]}, {people[(i+1)%len(people)][1]}',Subject=subject,From='Laboratory',Priority='Routine',Status='Unread' if i<6 else 'Needs review') for i,subject in enumerate(['Basic metabolic panel','TSH with reflex free T4','Hemoglobin A1c','Complete blood count','Lipid panel','Comprehensive metabolic panel','Urinalysis','Ferritin','Urine culture','Vitamin B12','CBC with differential','Hepatic function panel','Albumin/creatinine ratio, urine','Basic metabolic panel'])],
+ 'worklist':[dict(Due='08:00',Patient='Chen, David',Task='Scheduled medications',Priority='Routine',Status='Due',Owner='Jordan Reed, RN'),dict(Due='08:30',Patient='Chen, David',Task='Pain reassessment',Priority='Routine',Status='Overdue',Owner='Jordan Reed, RN'),dict(Due='10:00',Patient='Chen, David',Task='Vital signs',Priority='Routine',Status='Scheduled',Owner='Jordan Reed, RN')]
 }
 reference=OUT/'growth-reference.json'
 if '--refresh-reference' in sys.argv or not reference.exists():

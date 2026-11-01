@@ -2,7 +2,7 @@
   "method": "Actual P5 presets, same native interpreter for both programs. Shared certified jointMinimum and KLM adapter. Clicks and keys are independently optimized within each reported space. KLM replays the minimum-click path at fixed clock; it is an estimate, not a KLM minimum. Directed spaces make no global-minimum claim. Native min-clicks is also recorded without benchmark fixedValues.",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "binarySha256": "181fc2a9843ea64342b1214ef7dd46f6eb7671520f3300cf39f1d88f2a92dce6",
+  "binarySha256": "bf07a8c35c915b16b51848170bb1fc0607e2336ebf5388e49708bd8aca16cb9e",
   "stages": [
     {
       "stage": "before",
@@ -466,7 +466,7 @@
           "release": "v1",
           "workflow": "W1",
           "task": "benchmark-W1-1",
-          "programSha256": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+          "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
           "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
           "exact": true,
           "fixedElements": [
@@ -508,7 +508,7 @@
           "release": "v1",
           "workflow": "W6",
           "task": "benchmark-W6-1",
-          "programSha256": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+          "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
           "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
           "exact": true,
           "fixedElements": [],
@@ -544,7 +544,7 @@
           "release": "v1",
           "workflow": "W6",
           "task": "benchmark-W6-2",
-          "programSha256": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+          "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
           "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
           "exact": true,
           "fixedElements": [],
@@ -580,7 +580,7 @@
           "release": "v1",
           "workflow": "W6",
           "task": "benchmark-W6-3",
-          "programSha256": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+          "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
           "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
           "exact": true,
           "fixedElements": [],
@@ -616,7 +616,7 @@
           "release": "v2",
           "workflow": "W1",
           "task": "benchmark-W1-1",
-          "programSha256": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+          "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
           "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
           "exact": true,
           "fixedElements": [
@@ -658,7 +658,7 @@
           "release": "v2",
           "workflow": "W6",
           "task": "benchmark-W6-1",
-          "programSha256": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+          "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
           "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
           "exact": true,
           "fixedElements": [],
@@ -694,7 +694,7 @@
           "release": "v2",
           "workflow": "W6",
           "task": "benchmark-W6-2",
-          "programSha256": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+          "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
           "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
           "exact": true,
           "fixedElements": [],
@@ -730,7 +730,7 @@
           "release": "v2",
           "workflow": "W6",
           "task": "benchmark-W6-3",
-          "programSha256": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+          "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
           "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
           "exact": true,
           "fixedElements": [],
@@ -766,7 +766,7 @@
           "release": "v3",
           "workflow": "W1",
           "task": "benchmark-W1-1",
-          "programSha256": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec",
+          "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
           "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
           "exact": true,
           "fixedElements": [
@@ -808,7 +808,7 @@
           "release": "v3",
           "workflow": "W6",
           "task": "benchmark-W6-1",
-          "programSha256": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec",
+          "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
           "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
           "exact": true,
           "fixedElements": [],
@@ -844,7 +844,7 @@
           "release": "v3",
           "workflow": "W6",
           "task": "benchmark-W6-2",
-          "programSha256": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec",
+          "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
           "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
           "exact": true,
           "fixedElements": [],
@@ -880,7 +880,7 @@
           "release": "v3",
           "workflow": "W6",
           "task": "benchmark-W6-3",
-          "programSha256": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec",
+          "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
           "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
           "exact": true,
           "fixedElements": [],
@@ -1025,7 +1025,7 @@
             "tasks": 14,
             "completed": 14,
             "clicks": 728,
-            "klmSeconds": 4491.6
+            "klmSeconds": 4492.7
           },
           {
             "day": 3,
@@ -1041,7 +1041,7 @@
             "tasks": 11,
             "completed": 11,
             "clicks": 483,
-            "klmSeconds": 2745.6
+            "klmSeconds": 2750
           },
           {
             "day": 5,
@@ -1049,7 +1049,7 @@
             "tasks": 17,
             "completed": 17,
             "clicks": 408,
-            "klmSeconds": 2573.9
+            "klmSeconds": 2575
           },
           {
             "day": 6,
@@ -1057,7 +1057,7 @@
             "tasks": 11,
             "completed": 11,
             "clicks": 523,
-            "klmSeconds": 3316
+            "klmSeconds": 3318.2
           },
           {
             "day": 7,
@@ -1073,7 +1073,7 @@
             "tasks": 12,
             "completed": 12,
             "clicks": 552,
-            "klmSeconds": 3318.3
+            "klmSeconds": 3321.6
           },
           {
             "day": 9,
@@ -1089,7 +1089,7 @@
             "tasks": 9,
             "completed": 9,
             "clicks": 329,
-            "klmSeconds": 1915.5
+            "klmSeconds": 1918.8
           }
         ]
       }

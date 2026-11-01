@@ -2332,7 +2332,7 @@
             },
             "timing": {
               "event": [
-                "2026-11-01T08:00:00",
+                "2026-11-01T06:00:00",
                 "2026-11-01T14:00:00"
               ]
             },
@@ -2364,7 +2364,7 @@
         "medicationCodeableConcept": {
           "text": "Cefazolin 1 g injection"
         },
-        "effectiveDateTime": "2026-11-01T08:13:00",
+        "effectiveDateTime": "2026-11-01T06:13:00",
         "dosage": {
           "dose": {
             "value": 1,
@@ -2410,8 +2410,7 @@
             },
             "timing": {
               "event": [
-                "2026-11-01T08:00:00",
-                "2026-11-01T14:00:00"
+                "2026-11-01T09:00:00"
               ]
             },
             "doseAndRate": [
@@ -2442,7 +2441,7 @@
         "medicationCodeableConcept": {
           "text": "Enoxaparin 40 mg/0.4 mL"
         },
-        "effectiveDateTime": "2026-11-01T08:16:00",
+        "effectiveDateTime": "2026-11-01T09:16:00",
         "dosage": {
           "dose": {
             "value": 40,
@@ -2492,8 +2491,7 @@
             },
             "timing": {
               "event": [
-                "2026-11-01T08:00:00",
-                "2026-11-01T14:00:00"
+                "2026-11-01T09:00:00"
               ]
             },
             "doseAndRate": [
@@ -2524,7 +2522,7 @@
         "medicationCodeableConcept": {
           "text": "Metoprolol tartrate 25 mg tablet"
         },
-        "effectiveDateTime": "2026-11-01T08:19:00",
+        "effectiveDateTime": "2026-11-01T09:19:00",
         "dosage": {
           "dose": {
             "value": 25,

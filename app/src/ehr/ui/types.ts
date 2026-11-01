@@ -16,6 +16,13 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
+      rowAction: z.strictObject({
+        target: label,
+        row: nat,
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
       presentation: z.strictObject({
         kind: z.enum(UiPresentationKindValues),
         children: z.array(uiNodeSchema),

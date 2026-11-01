@@ -12,8 +12,32 @@ const corpus = (await readFile(resolve(root, 'app/src/fixtures/presentations/api
 for (const [kind, input] of corpus) {
   const result = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(input)));
   assert.deepEqual(result, native('render-ui', input), kind);
-  assert.equal(result.workspace[1].presentation.kind, kind);
-  assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);
+  if (kind === 'inBasket') {
+    const panes = result.workspace[1].section.children[0].columns.children;
+    assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
+    assert.ok(panes.every(node => node.presentation.children.some(child => child.info)));
+  } else if (kind === 'rowActions') {
+    const children = result.workspace[1].presentation.children[0].section.children;
+    assert.equal(children[0].presentation.kind, 'worklist');
+    assert.deepEqual(children.slice(1).map(node => [node.rowAction.target, node.rowAction.row]), [['records', 0], ['records', 1], ['records', 2]]);
+    for (const [id, target] of [['open-mar', 'mar-detail'], ['open-pain', 'pain-detail'], ['open-vitals', 'vitals-detail']]) {
+      const stepInput = { ...input, event: { click: { comp: id } } };
+      const actual = JSON.parse(wasm.step(JSON.stringify(stepInput)));
+      assert.deepEqual(actual, native('step', stepInput));
+      assert.equal(actual.state.screen, target);
+    }
+    for (const index of ['9007199254740992', '9'.repeat(512)]) {
+      const oversized = structuredClone(input);
+      oversized.program.screens[0].components.find(node => node.id === 'open-mar').tag = `present.row|records|${index}`;
+      const screen = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(oversized)));
+      assert.deepEqual(screen, native('render-ui', oversized));
+      const original = screen.workspace[1].presentation.children[0].section.children.find(node => node.button?.comp === 'open-mar');
+      assert.equal(original?.button.label, 'Open MAR');
+    }
+  } else {
+    assert.equal(result.workspace[1].presentation.kind, kind);
+    assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);
+  }
 }
 const bundle = JSON.parse(await readFile(resolve(root, 'lean/Ehr/Render/TestData/presentations.json'), 'utf8'));
 const factsInput = { bundle, context: { today: '2026-11-01', now: 0, receipts: [], record: [] } };

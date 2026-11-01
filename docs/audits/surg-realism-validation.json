@@ -1,15 +1,15 @@
 {
-  "validatedAt": "2026-11-01T09:04:28.814364+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; structured presentation and labeled case-indication review",
+  "validatedAt": "2026-11-01T09:22:34.407103+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; labeled case evidence and semantic queue row actions",
   "baselineCommit": "add0d2e",
   "mainIntegratedThrough": "251d9a0",
-  "presentationIntegratedThrough": "eb6703e",
-  "leanSourceHash": "da4456ba130aac4722101056abf0f0027fb35bb943683b16bf5169abaaa13bc1",
-  "binarySha256": "43e72187f1487abf765b9ff01757acc12f5ca34282a5e560542b9a240fbad2ac",
+  "presentationIntegratedThrough": "6062379",
+  "leanSourceHash": "f3186bd052885aa53b2e1c35fb00babb33aaf962b21c46e3611c4f2b1464eb2a",
+  "binarySha256": "bf07a8c35c915b16b51848170bb1fc0607e2336ebf5388e49708bd8aca16cb9e",
   "programs": {
-    "v1": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
-    "v2": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
-    "v3": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec"
+    "v1": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+    "v2": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+    "v3": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3"
   },
   "certification": {
     "personaProjections": 15,
@@ -46,7 +46,8 @@
     "testsPassed": 99,
     "fixtureDependentSkipped": 3,
     "failures": 0,
-    "minimumFontPx": 12
+    "minimumFontPx": 12,
+    "rowActionsWalk": true
   },
   "controls": {
     "releaseScreens": 72,
@@ -66,14 +67,14 @@
   "app": {
     "build": true,
     "lint": true,
-    "tests": 186
+    "tests": 192
   },
   "agent": {
     "tests": 82,
     "typecheck": true,
     "lint": true
   },
-  "nativeWasmPresentationComparisons": 13,
+  "nativeWasmPresentationComparisons": 15,
   "archivedRun1P3": {
     "tasks": 424,
     "events": 14658,
@@ -85,7 +86,7 @@
   "screenshots": [
     {
       "file": "app/shots/realism/surg/after/home-load.png",
-      "sha256": "0e37b17358e6ac52b31c5475310bea3d95952e907b1c64b698be819546c87d47",
+      "sha256": "7a93d7ebe95f8b91a911ecf09752c6affa3044aef25ec63f18a3d003ff335881",
       "width": 1440,
       "height": 900
     },
@@ -223,7 +224,7 @@
     },
     {
       "file": "app/shots/realism/surg/after/w6Consults-load.png",
-      "sha256": "cbf8cb7a6507385a1a2d8c95a3dc23588da84604c2c2423d8034b89943cbc1b5",
+      "sha256": "eeacf82f4111fbda24a4e6e88fb3190d5f1e46942e0b1a7f40b95f00210e5e99",
       "width": 1440,
       "height": 900
     },
@@ -301,7 +302,7 @@
     },
     {
       "file": "app/shots/realism/surg/after/w6Schedule-load.png",
-      "sha256": "a34b9ae80c20f182d9e80aec84906cd909d24a8622111a06ba0eb36e424e9ad1",
+      "sha256": "b10ad7ce100cfcd5b88219962f67cc20f0de569e5e6073e325fe6a83f7d8fac4",
       "width": 1440,
       "height": 900
     },
@@ -570,9 +571,9 @@
     "KLM is a model estimate. Directed benchmark search does not establish a global minimum."
   ],
   "nativeWasmSurgicalProjectionComparisons": 2,
-  "metricsProgramUnchangedSince": "b060509",
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "496c5401d21507121bc6d5e0c05d498db654c02f49dd9f5a02ce6efe14f12ce4"
-  }
+    "appSha256": "67e91e9e02b11ad2b51a1c66289af6182580984f12eb20466039bab80e53b047"
+  },
+  "metricsRerun": true
 }

@@ -9,8 +9,26 @@ namespace Ehr.Render
     uiAtoms (uiWrapInfo kind node) = uiAtoms node := by
   cases kind <;> simp [uiWrapInfo, uiAtoms, uiAtomsList]
 
+/-- Row placement preserves the complete original semantic action. -/
+@[simp] theorem uiWrapRow_atoms (tag node) :
+    uiAtoms (uiWrapRow tag node) = uiAtoms node := by
+  unfold uiWrapRow
+  split <;> simp [uiAtoms, uiAtomsList]
+
+/-- Navigation and untagged controls retain their exact original wire node. -/
+@[simp] theorem uiWrapRow_empty (node) : uiWrapRow "" node = node := by
+  have empty : uiRowTarget? "" = none := by decide
+  simp [uiWrapRow, empty]
+
 @[simp] theorem uiAtomsList_nil : uiAtomsList [] = [] := by simp [uiAtomsList]
 @[simp] theorem uiAtomsList_cons (n ns) : uiAtomsList (n :: ns) = uiAtoms n ++ uiAtomsList ns := by simp [uiAtomsList]
+/-- A column layout adds only its layout atom and retains every child's atoms. -/
+@[simp] theorem uiColumnChildren_atoms (tag kids) :
+    uiAtomsList (uiColumnChildren tag kids) =
+      (if uiColumnTag tag then [.columns []] else []) ++ uiAtomsList kids := by
+  unfold uiColumnChildren
+  split <;> simp [uiAtoms]
+
 @[simp] theorem uiAtomsList_append (xs ys) :
     uiAtomsList (xs ++ ys) = uiAtomsList xs ++ uiAtomsList ys := by
   induction xs with
@@ -112,10 +130,11 @@ theorem uiNav_mem (cx : Ctx) (n : UiNode) :
 /-- Relocated nav entries retain the exact semantic click, with no invented id. -/
 theorem uiNavButton_item (cx : Ctx) (it : ItemView) (h : uiNavButton cx it = true) :
     uiItem cx it [] = [.button it.comp.id (uiLabel it.comp.label "Action") "nav" true none none] := by
+  have hnav := h
   cases hk : it.comp.kind <;> simp [uiNavButton, hk] at h
   rename_i a
   cases a <;> simp [uiNavButton, hk] at h
-  simp [uiItem, hk, actionRole, uiButton, h.1.1, uiBlocked, h.1.2]
+  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2]
 
 /-- T10: every semantic contribution of every shown item appears in UiScreen,
 whether its proper region is the shell, navigation, workspace, or side. -/
@@ -220,6 +239,11 @@ theorem uiItem_only_id (cx : Ctx) (it : ItemView) (n : UiNode)
     (hid : uiComp n = some id) : id = it.comp.id := by
   cases hk : it.comp.kind <;>
     simp [uiItem, hk, uiField, uiItemInfo, uiButton, uiAtoms] at hn
+  case group coll start =>
+    by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
+      by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
+      simp_all [uiColumnChildren, uiAtoms, uiComp]
+    all_goals rcases hn with rfl | rfl | rfl <;> simp_all [uiComp]
   all_goals first
     | (rcases hn with rfl | hn; simp_all [uiComp])
     | (subst n; simpa [uiComp] using hid.symm)
@@ -384,16 +408,11 @@ theorem uiItem_honest (cx : Ctx) (it : ItemView) (hm : it ∈ cx.v.items)
     cases action <;> simp [actionRole] at hp
     exact ⟨it, hm, hs, rfl, _, hk⟩
   case group coll start =>
-    by_cases hg : uiNavGroup it = true
-    · simp [hg] at hn
-    · simp only [hg, Bool.false_eq_true, ↓reduceIte] at hn
-      by_cases hc : coll = true
-      · simp [hc, uiAtoms] at hn
-        rcases hn with rfl | rfl
-        · trivial
-        · exact ⟨by split <;> decide, uiBlocked_reason cx _, by simp⟩
-      · simp [hc, uiAtoms] at hn
-        subst n; trivial
+    by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
+      by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
+      simp_all [uiColumnChildren, uiAtoms]
+    all_goals rcases hn with rfl | rfl | rfl <;>
+      first | trivial | exact ⟨by decide, uiBlocked_reason cx _, by simp⟩
 
 /-- D3 covers all screen regions without changing interpreter enablement. -/
 theorem D3_honest_actions (cx : Ctx) (n : UiNode)
@@ -542,8 +561,10 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
       · obtain ⟨_, rfl, _⟩ := hi
         exact uiLabel_nonempty _ _ (by decide)
       · split at hi <;> simp [uiAtoms] at hi
-    · split at hi <;> simp [uiAtoms] at hi
-      split at hi <;> simp [uiAtoms] at hi
+    · rename_i coll start
+      by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
+        by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
+        simp_all [uiColumnChildren, uiAtoms]
     · obtain ⟨_, rfl, _⟩ := hi
       exact uiLabel_nonempty _ _ (by decide)
   · simp [UiReadOnly] at hr

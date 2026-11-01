@@ -67,8 +67,11 @@ def schedule : Screen :=
   let s := "w6Schedule"
   { id := s, title := "OR Schedule", workflow := "W6"
     components := frame s ++ [
-      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases — request status"),
-      goto s "openCase" "w6PreOp" "Open selected case",
+      presented "orSchedule" (group s "caseList" "Surgical cases" (collapsible := false)),
+      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases — request status"
+        (parent := some "caseList")),
+      { goto s "openCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
+        tag := "present.row|" ++ cid s "cases" ++ "|0" },
       goto s "consults" "w6Consults" "Consults",
       goto s "clinic" "w1Rooming" "Surgical clinic",
       goto s "results" "w2Inbasket" "In Basket: Results"] }
@@ -78,8 +81,11 @@ def consultList : Screen :=
   let s := "w6Consults"
   { id := s, title := "Consults", workflow := "W6"
     components := frame s ++ [
-      presented "worklist" (table s "requests" "consultRequest" "Consult requests"),
-      goto s "openConsult" "w6Consult" "Open selected consult",
+      presented "worklist" (group s "consultQueue" "Consult queue" (collapsible := false)),
+      presented "worklist" (table s "requests" "consultRequest" "Consult requests"
+        (parent := some "consultQueue")),
+      { goto s "openConsult" "w6Consult" "Open selected consult" (parent := some "consultQueue") with
+        tag := "present.row|" ++ cid s "requests" ++ "|0" },
       goto s "clinic" "w1Rooming" "Surgical clinic",
       goto s "cases" "w6Schedule" "OR Schedule"] }
 
@@ -387,8 +393,12 @@ def workspaceView (sc : Screen) : Screen :=
       else c :: orderActivities cs remaining
   { sc with components := (orderActivities sc.components activities).flatMap fun c =>
       if c.id == cid sc.id "schedule" then
-        [presented "orSchedule" { c with label := "Today's OR cases — request status" },
-         goto sc.id "openSelectedCase" "w6PreOp" "Open selected case"]
+        [presented "orSchedule" (group sc.id "caseList" "Surgical cases" (collapsible := false)),
+         presented "orSchedule" { c with
+           label := "Today's OR cases — request status"
+           parent? := some (cid sc.id "caseList") },
+         { goto sc.id "openSelectedCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
+           tag := "present.row|" ++ cid sc.id "schedule" ++ "|0" }]
       else if c.id == cid sc.id "work" then [{ c with tag := cid sc.id "navigator" }]
       else [c] }
 

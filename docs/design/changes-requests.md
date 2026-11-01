@@ -5,8 +5,10 @@
 W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
 `present.results`, `present.notes` and `present.table` tags. New case/consult
 list screens use existing `scheduleTasks` and `consultRequest` info IDs, with
-ordinary Lean goto actions next to the selected chart's records. These tables
-are read-only; no row-cell event is implied. P5's landing destinations are
+ordinary Lean goto actions in the selected chart's source row, through the
+`present.row` contract. Clinical cells remain read-only; missing rows retain the
+same control inline. The action opens the selected chart, without switching
+patients. P5's landing destinations are
 `w6Schedule`, `w6Consults`, `w1Rooming` (Clinic Schedule), and results In Basket.
 
 SURG added a separated perioperative section in `Render/Fhir.lean`. Dated

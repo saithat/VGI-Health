@@ -291,15 +291,17 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .panel i | .priorAuth i => [uiItemInfo cx it i "list"]
   | .table i => [uiItemInfo cx it i "table"]
   | .trend i => [uiItemInfo cx it i "trend"]
-  | .button a => [uiButton cx it (actionRole a)]
+  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))]
   | .«macro» _ => [uiButton cx it "macro"]
   | .search _ => [.field it.comp.id (uiLabel it.comp.label "Search chart") "search" none none none false false false]
   | .alert a _ => [.alert it.comp.id a
       (uiLabel (((cx.sp.alert? a).map (·.label)).getD it.comp.label) "Clinical alert")
       (match (cx.sp.alert? a).map (·.tier) with
        | some Tier.interruptive => "interruptive" | some Tier.passive => "passive" | _ => "removable")]
-  | .group coll _ => if uiNavGroup it then [] else [.section it.comp.id (uiTitledLabel cx it it.comp.label "Details" "Section")
-      ((if coll then [.button it.comp.id (if it.expanded then "Collapse section" else "Expand section") "toggle" (uiEnabled cx it.comp.id) (uiBlocked cx it.comp.id) it.comp.hotkey?] else []) ++ if it.expanded then kids else [])]
+  | .group coll _ => if uiNavGroup it then [] else [uiWrapInfo (presentationKind? it.comp.tag "") <|
+      .section it.comp.id (uiTitledLabel cx it it.comp.label "Details" "Section")
+      ((if coll then [.button it.comp.id (if it.expanded then "Collapse section" else "Expand section") "toggle" (uiEnabled cx it.comp.id) (uiBlocked cx it.comp.id) it.comp.hotkey?] else []) ++
+       if it.expanded then uiColumnChildren it.comp.tag kids else [])]
   | .tabs =>
       let siblings := cx.v.items.filter (·.comp.parent? == some it.comp.id)
       let indices := (siblings.map (·.comp.tab)).eraseDups

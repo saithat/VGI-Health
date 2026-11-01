@@ -25,6 +25,44 @@ for (const file of files) {
     expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
       expectedAria(screen),
     );
+    const unreadable = await page
+      .locator(".presentation-status")
+      .evaluateAll((elements) => {
+        const rgb = (value: string) =>
+          (value.match(/[\d.]+/g) ?? []).map(Number);
+        const luminance = (channels: number[]) => {
+          const linear = channels
+            .slice(0, 3)
+            .map((value) =>
+              value / 255 <= 0.04045
+                ? value / 255 / 12.92
+                : ((value / 255 + 0.055) / 1.055) ** 2.4,
+            );
+          return (
+            (linear[0] ?? 0) * 0.2126 +
+            (linear[1] ?? 0) * 0.7152 +
+            (linear[2] ?? 0) * 0.0722
+          );
+        };
+        return elements.flatMap((element) => {
+          const ink = luminance(rgb(getComputedStyle(element).color));
+          let current: Element | null = element;
+          let background = [255, 255, 255];
+          while (current) {
+            const channels = rgb(getComputedStyle(current).backgroundColor);
+            if (channels.length === 3 || channels[3] === 1) {
+              background = channels;
+              break;
+            }
+            current = current.parentElement;
+          }
+          const surface = luminance(background);
+          const ratio =
+            (Math.max(ink, surface) + 0.05) / (Math.min(ink, surface) + 0.05);
+          return ratio < 4.5 ? [{ text: element.textContent, ratio }] : [];
+        });
+      });
+    expect(unreadable).toEqual([]);
     mkdirSync("shots/realism/present", { recursive: true });
     const name = file.replace(/\.json$/, "");
     await page.screenshot({

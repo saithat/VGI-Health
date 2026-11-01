@@ -789,6 +789,22 @@
   content: none;
 }
 
+.clinical-info[data-info-id="scheduleTasks"] [data-column="Actions"],
+.clinical-info[data-info-id="consultRequest"] [data-column="Actions"] {
+  min-width: 160px;
+  width: 160px;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-row-actions .mantine-Button-label,
+.clinical-info[data-info-id="consultRequest"] .presentation-row-actions .mantine-Button-label {
+  white-space: nowrap;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Procedure"] {
+  width: 22%;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Indication"] {
+  width: 15%;
+}
+
 @media (min-width: 701px) {
   .clinical-app .clinical-navbar {
     position: sticky;
