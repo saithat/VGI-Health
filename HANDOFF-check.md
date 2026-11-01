@@ -39,6 +39,11 @@ features have been merged; main was fetched again after those features landed.
    domain/route contracts; do not weaken guards or assume sample success is
    universal completion. Record-only clinical conditions retain conservative
    true/false/unknown coverage. Phase-wide display coverage needs integration.
+   Before display contracts are adopted, extend `Spec.Extends` to preserve its
+   new `displays` field and extend T8 to the five extraGuard contract families;
+   current T8 covers the requested original entry/review/human/unit/alert
+   projection. The concrete v1/v1.1/v2 specs have no display contracts.
+   See CHECK-EXTENDS-DISPLAYS.
 
 4. **Full T7 requires a contract decision.** The existing replay and failed-rule
    theorems remain proved, but full semantic rejection soundness is false for

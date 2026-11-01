@@ -1,0 +1,1701 @@
+{
+  "sourceRevision": "4816d532beabef11445d8e2a2470b9abb9927ad3",
+  "binarySha256": "3b4b78283e542941ac882d9dc5d05043dc9f77723654992f7708b1671135577f",
+  "generatedAt": "2026-11-01T02:26:10.052833+00:00",
+  "personaAccepted": 0,
+  "badRejected": 24,
+  "replayValidation": "All 24 bad fixtures also pass Ehr.Check.Tests.rejectedWithReplay in the full Lake build; this is navigation replay, not full T7 semantic violation evidence.",
+  "results": [
+    {
+      "program": "releases/v1/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "8b3bb64138d0fdd818a85595064b83f42f38c19aac2f27e7528d88553f33bfec",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "42d2374e97e08746fc8fbf40e71250dcd96bd6a1eb3fa1d7a2be1339eed57bf2",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "a881d07f9630341d3f8bbd3f10ae80c80a839b864ae419bc3fb8f94007d5c617",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3SuicideAssessment"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "afbd409dd5a6ea4419794b0208e430625df70c5cef94aebfe6fc1dce8a06a867",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "58faf8e3fa1e6de6babb19489bf2e9acccd4b443d24c986fbbd3b2ff8ddb3316",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "ec0a6630f79f0a69e355831a3902c5612d82c1c9c76823f435a4c19329c0b7ac",
+      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
+      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "c1b6f16762f18414f83c3e3dfa809d6d412ae1e46553d99346db78508a300e0d",
+      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
+      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "74df04e9e6e94dfb17c4aeec5c51d279fba5854ab194066aa45a6eeab3641f70",
+      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
+      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3SuicideAssessment"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "6521c0511d9141149b5f4f142bc0e50242a4b48d7ac7f5a23b55878809d44990",
+      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
+      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v1.1/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "3d682dc4e7cecc78d5e96b797df55fd060be27af9467c6d17f564a0a3557bfbb",
+      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
+      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v2/personas/P1.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "40ab7efc69cf9dbc3fd1288f580b58454f18cb5d51886c607d8c88d78e439475",
+      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
+      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v2/personas/P2.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "56f11c80ca990a4bda0df31f4a360c75cd5c76815ea495a920822484cac99ad0",
+      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
+      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v2/personas/P3.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "c4599478b257d1b8e0132dc79d4ef3413c66a2cda7bba1a4636f5e1edcb2938b",
+      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
+      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3SuicideAssessment"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v2/personas/P4.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "c968d5becf2cc088aa955e1cd1a666afd009f5adf1bea4bfb3510a974b0e5972",
+      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
+      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "releases/v2/personas/P5.json",
+      "group": "persona",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "2f346a7b87267a6cfa1caee2e776729ea34b820782e5ffed7084f35f5848a0da",
+      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
+      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/01-hidden-allergies.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "198f6238f60d73770f02f09671f7a49f255f6092133697bdc27be16ce6d3a5b3",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "allergyList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/02-prefilled-identity.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "958b46b4f10f32d48a07ede2807f1f549f6a7c0de683b390a931bb83c5d7b19e",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w1Sign.patientIdReentry on screen w1Sign prefills patientIdReentry, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/03-pounds-as-weight.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "a5f499a2fc1aece7bd66121bc2fa7e3fcf04260cb3c1e21be5bb9e30ce745f19",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3Triage"
+          ],
+          "property": "writesOnly",
+          "message": "field w3Triage.weight on screen w3Triage writes element weightLb, which is not in the spec",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3Triage"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/04-macro-override.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "2961c3015c2a9e1290a66af0c54050221a2182142dbb7c4e6dd12fd00c8c499e",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3OrderSets",
+            "w3Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badOverride clicks w3Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.nav.w3OrderSets"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3OrderSets.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3Sign.override"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/05-self-cosign.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "8f9f1d2f219402292b7dab0b7ba5666bb6a9c24af6ca1ca720b0c26a8b129f1c",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w4Admin.highAlertCosign on screen w4Admin prefills highAlertCosign, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/06-stale-weight.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "b1cc0d12f9a20aa9e4ab1446f9a0077adf9908d80c436d3cfdd0cd40e7eb98c8",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w5Rooming"
+          ],
+          "property": "units",
+          "message": "field w5Rooming.weight on screen w5Rooming fills weight from record value weightYesterday, a bare number with no unit or date; only weightToday keeps its unit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w5Rooming"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/07-unreachable-refill.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "d25a82ad73440ab8c34aa07b1839a798bc6a12d06d169789d34290ccbd71cba4",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/08-forged-consent.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "ad0930c2d0dc658282eca4a7ad4d89460fbdda3a4f4c81fa680135fadbf24e56",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w6PreOp"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badConsent types into w6PreOp.consentVerified (consentVerified), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w6PreOp"
+              }
+            },
+            {
+              "click": {
+                "comp": "w6PreOp.autoConsent"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/09-hidden-allergy-alert.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "286930433dc5ae7b0003697cf02d65debadc16d6923720dc9c19cd4cf805c7df",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badQuickAmox clicks w1Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.quickAmox"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/10-invented-alert.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "426fc34b2318b0a8ff3fd54c4016642eeb82de77cac1488b991a7b7e8d9364aa",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "wellFormed",
+          "message": "alert w1Orders.everyDose on screen w1Orders names alert doseRangeEveryOrder, which the spec does not have",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/11-repeated-interaction.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "4684f38a4ae57d5ba9605e7c53b8744ef21e9cb64ce0f463072a03252fe89b61",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "noRepeatInterruptions",
+          "message": "A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/12-passive-popup.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "4ce21fa1264f19ca4b2e82d8c05e46ed0be5b9015bd16ebf5848144e8ac66ab7",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming"
+          ],
+          "property": "severityTiers",
+          "message": "A4: alert w1Rooming.careGaps on screen w1Rooming makes the passive alert careGapsInline pop up; passive alerts are shown inline only",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/13-no-cures.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "38e6d61381359920061a4e751d7fbfaf15010862902cb28b0c9be3e24a5fbea2",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/14-macro-naloxone.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "120f441b37cc34bf3366b04c48b946daa4065ae9ce2ef55807d70fd0ec3c84ed",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "humanOnlyKept",
+          "message": "macro badNaloxone types into w1Orders.naloxoneOffer (naloxoneOffer), which only a human may enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.autoNaloxone"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/15-hidden-controlled-details.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "d729a763d9d4fa9cd1d02352b2f55f09122fa999499be5ff189fd4315f5bb831",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "orderSummary is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/16-schedule-ii-refills.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "fc6aae2bfaa922ec78afa05d28fdf048b45b5d8d411c02cbcc3c5e72e45fced4",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/17-no-restraint-care-plan.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "197642bd0a8015304385cdb970f86247f05d6fcf843ab0796b30c5948ae85174",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/18-no-op-technique.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "f17af09df1a8a65fb29bcca3ce2bd28abe48ad9e1bd5c67cbacf89ee2d8d861c",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/19-no-vaccine-provider-address.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "755a61a4945b5ba33139bfb9e796a8a57feaafa95cd5d4ae18bacb5be4c37766",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/20-no-administration-time.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "be0d5a7a4fbd48cc2caa6bd2856d0d61a20d4f4f188aed6d17df493006695ad7",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w3TrackBoard",
+            "w3SuicideAssessment"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w3TrackBoard"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
+              }
+            },
+            {
+              "click": {
+                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/21-no-controlled-strength.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "8caa48cbc01862358c2f659b6744a8bda6cb68ff272bacb68115170cd4cc613a",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/22-hidden-signing-notice.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "1dbe27175f5a7eee06c3429bf3389162b42d2ed4f4972fe428977f321e204e50",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/23-no-telehealth-consent.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "4892ddf6bd02f876dc626dd08abb3b2c22e6978ab1b9b158ee12add14b25610d",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "reviewsBeforeCommit",
+          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "program": "programs/bad/24-default-refill-eligibility.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "934c3a22038ac44357ea98d39d39b54a7aef48f75d3925325b92fdeaff20c426",
+      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
+      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w7Queue",
+            "w7Review",
+            "w7Decision"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w7Decision.legal.refillScheduleEligibility on screen w7Decision prefills refillScheduleEligibility, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w7Queue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Queue.nav.w7Review"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Review.decide"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

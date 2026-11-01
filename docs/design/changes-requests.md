@@ -1238,3 +1238,29 @@ and duplicate-label checks are not relaxed.
 - All five personas, all three releases (same screen inventory): workflow `W1` has 14 entries.
 - All five personas, all three releases (same screen inventory): workflow `W3` has 17 entries.
 - All five personas, all three releases (same screen inventory): workflow `W6` has 18 entries.
+
+## CHECK-EXTENDS-DISPLAYS: future expanded-contract inheritance
+
+The requested T8 projection now covers the actual older entry/review rules and
+static human/unit/alert predicates, directly from `check = ok`. The concrete
+v1→v1.1→v2 transitions have no `Spec.displays` contracts. When content adopts
+the new structured-display contracts, `Spec.Extends` also needs preservation of
+`(displays?.getD [])` as an old-obligations prefix: the existing relation does
+not constrain this new field. Do not claim that the current T8 projection is
+an inheritance theorem for all five new `extraGuard` contract families or for
+continuous phase display. Expanded contract inheritance remains separate from
+the proved per-commit safety theorem and needs this relation/projection work.
+
+## CHECK-SEED13: concrete proposed CURES mutation
+
+For content review (not an asserted proof of the present seed): remove CURES
+panels/review routes and exemption fields across every workflow, then make all
+drug edit fields `unlessReceipt allergyList`. A candidate counterexample enters
+and confirms the original controlled order, then creates a valid allergy-review
+receipt. Drug editors would then remain hidden during any `afterHuman` event
+list (events do not advance the clock); prefills cannot overwrite its existing
+drug capture, and macros use the same visibility checks. With all CURES and
+waiver routes removed, changing the original drug should no longer be an escape.
+Validate every panel/field/macro path before adopting this mutation. This changes
+only a bad fixture, not a hospital rule or the completion property. The current
+seed's cross-workflow escape remains reproducible until the owning lane changes it.
