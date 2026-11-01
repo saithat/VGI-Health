@@ -68,7 +68,7 @@ test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async
     "Latest personalizedNewest real run per persona",
   ]);
   await expect(
-    grid.getByRole("row").filter({ hasText: "Vendor master (reference)" }),
+    grid.getByRole("row").filter({ hasText: "Vendor reference" }),
   ).toContainText("Reference");
   await expect(grid.locator("tbody tr")).toHaveCount(6);
   await page.getByLabel("Show mock data", { exact: true }).check();

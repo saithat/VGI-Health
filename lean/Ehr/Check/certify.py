@@ -105,7 +105,7 @@ def main():
         return 0
     personas = [x for x in results if x["group"] == "persona"]
     bad = [x for x in results if x["group"] == "bad"]
-    reference_reason = "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+    reference_reason = "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     references = []
     for release in ("v1", "v2", "v3"):
         path = f"releases/{release}/canonical.json"

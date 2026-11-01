@@ -67,7 +67,7 @@ function CertificateBadge({
       title={
         property ||
         (status === "reference"
-          ? "Vendor master for comparison; choose a certified role view to sign in."
+          ? "Vendor reference for comparison; choose a certified role view to sign in."
           : undefined)
       }
     >
@@ -191,7 +191,7 @@ function Timeline({
           </svg>
           <div className="timeline-row vendor-track">
             <div className="timeline-row-label">
-              <strong>Vendor master</strong>
+              <strong>Vendor reference</strong>
               <span>Shared reference</span>
             </div>
             {Array.from({ length: 11 }, (_, day) => {
@@ -614,7 +614,7 @@ export function Browse() {
                           <th scope="row">
                             <strong>
                               {persona === "vendor"
-                                ? "Vendor master (reference)"
+                                ? "Vendor reference"
                                 : `${persona} · ${personaNames[persona]}`}
                             </strong>
                             <small>
@@ -709,7 +709,7 @@ export function Browse() {
                   </table>
                 </div>
                 <p className="program-grid-note">
-                  The vendor master is a reference. Sign in through a certified
+                  The vendor reference is shared by every role. Sign in through a certified
                   role view to use that role’s permissions and preset
                   navigation.
                 </p>

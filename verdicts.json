@@ -645,17 +645,17 @@
     "releases/v1/canonical.json": {
       "status": "reference",
       "sha256": "04879a465103ff40421b53aa478c7f450397875a6a8fcdeaeb240262db5e4e56",
-      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+      "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
       "sha256": "98247e4290b5a4fd2468f5900b6baf77d805ba2173f13088faad8452dd21f4cf",
-      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+      "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v3/canonical.json": {
       "status": "reference",
       "sha256": "d61eedc38adc8e1421f29a61d028f5b8fa913da18e2f795b3fd028dc7194993d",
-      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+      "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {
       "status": "full-profile only"

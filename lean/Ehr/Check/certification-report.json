@@ -1,6 +1,6 @@
 {
-  "sourceRevision": "19682db389f91f7eb287d951628c49d4d4b09616",
-  "sourceDirty": false,
+  "sourceRevision": "e4d10c5b95954a4986f59a4dc2aa7eda9208ef8b",
+  "sourceDirty": true,
   "binarySha256": "59eb440f301f80baed8f92ef24c46a6955fdb527c3694d068fb9fd746af72332",
   "profile": "core",
   "fullProfileOnly": [
@@ -1156,7 +1156,7 @@
       "program": "releases/v1/canonical.json",
       "group": "reference",
       "status": "reference",
-      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "reason": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
       "programSha256": "04879a465103ff40421b53aa478c7f450397875a6a8fcdeaeb240262db5e4e56",
       "spec": "releases/v1/spec.json"
     },
@@ -1164,7 +1164,7 @@
       "program": "releases/v2/canonical.json",
       "group": "reference",
       "status": "reference",
-      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "reason": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
       "programSha256": "98247e4290b5a4fd2468f5900b6baf77d805ba2173f13088faad8452dd21f4cf",
       "spec": "releases/v2/spec.json"
     },
@@ -1172,7 +1172,7 @@
       "program": "releases/v3/canonical.json",
       "group": "reference",
       "status": "reference",
-      "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
+      "reason": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
       "programSha256": "d61eedc38adc8e1421f29a61d028f5b8fa913da18e2f795b3fd028dc7194993d",
       "spec": "releases/v3/spec.json"
     }
