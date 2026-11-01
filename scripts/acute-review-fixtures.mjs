@@ -17,7 +17,7 @@ const observation = (id, encounter, code, text, value, unit, time, category = 'v
   resourceType: 'Observation', id, status: 'final', subject: patientRef, encounter: ref('Encounter', encounter),
   code: cc(code, text, 'http://loinc.org'), category: [cc(category, category)],
   effectiveDateTime: time, issued: time,
-  valueQuantity: { value, unit: unit === 'Cel' ? '°C' : unit === '{score}' ? 'score' : unit, system: 'http://unitsofmeasure.org', code: unit },
+  valueQuantity: { value, unit: unit === 'Cel' ? '°C' : unit === '{score}' ? 'score' : unit === 'mm[Hg]' ? 'mmHg' : unit, system: 'http://unitsofmeasure.org', code: unit },
   ...(flag ? { interpretation: [cc(flag, flag, 'http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation')] } : {}),
   ...(low !== undefined ? { referenceRange: [{ low: { value: low, unit }, high: { value: high, unit } }] } : {}),
 });
@@ -26,6 +26,8 @@ const vitals = encounter => (encounter === 'acute-ed-encounter'
   ? ['2026-11-02T07:20:00-08:00', '2026-11-02T07:30:00-08:00']
   : times).flatMap((time, n) => [
   observation(`review-weight-${n}`, encounter, '29463-7', 'Weight', 93.4, 'kg', time),
+  observation(`review-sbp-${n}`, encounter, '8480-6', 'Systolic BP', 140 - n * 4, 'mm[Hg]', time),
+  observation(`review-dbp-${n}`, encounter, '8462-4', 'Diastolic BP', 84 - n * 2, 'mm[Hg]', time),
   observation(`review-hr-${n}`, encounter, '8867-4', 'Heart rate', 88 - n * 6, '/min', time),
   observation(`review-rr-${n}`, encounter, '9279-1', 'Respiratory rate', 20 - n * 2, '/min', time),
   observation(`review-temp-${n}`, encounter, '8310-5', 'Temperature', Number((37.7 - n * 0.3).toFixed(1)), 'Cel', time),

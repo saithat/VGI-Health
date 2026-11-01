@@ -73,6 +73,10 @@ def narrative (c : Component) : Component := { c with tag := c.tag ++ ".narrativ
 def primaryNavigation (c : Component) : Component :=
   { c with tag := c.tag ++ ".primaryNavigation" }
 
+/-- A wide clinical grid omits automatic summary-rail supplements, not authored reviews. -/
+def wideWorkspace (c : Component) : Component :=
+  { c with tag := c.tag ++ ".wideWorkspace" }
+
 /-- A trend chart. -/
 def trend (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) : Component :=

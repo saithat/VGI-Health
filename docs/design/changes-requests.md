@@ -2136,3 +2136,16 @@ event. No new wire constructor or clinical behavior is introduced. Prefill badge
 now show source category only; the underlying provenance is unchanged. These
 small generic painter edits should be preserved when shell/presentation merges.
 The no-op Core search issue above remains open.
+
+
+### ACUTE structured presentation integration
+
+The acute lane integrates `lane/present` transparently, preserving its info children
+and theorem statements. Source grids can request `wideWorkspace` before their
+`present.*` suffix. `Render.Ui` then omits automatic summary-rail supplements;
+authored side components and required commit reviews remain. This is a program
+layout choice, not CSS hiding of semantic nodes. W3 board and W4 worklist/MAR/
+flowsheet request it. MAR Category is order metadata, not an hourly column.
+Current selected acute vitals/results bind their actual current-encounter rows,
+including explicit empty payloads, to prevent silently substituting historical
+outpatient values. Tied current records are retained. No rule is changed.

@@ -49,175 +49,164 @@
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Vital sign",
-              "Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Heart rate"
-            ],
-            [
-              "Value",
-              "82"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Respiratory rate"
-            ],
-            [
-              "Value",
-              "18"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Temperature"
-            ],
-            [
-              "Value",
-              "37.4"
-            ],
-            [
-              "Unit",
-              "°C"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "SpO2"
-            ],
-            [
-              "Value",
-              "96"
-            ],
-            [
-              "Unit",
-              "%"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Pain score"
-            ],
-            [
-              "Value",
-              "4"
-            ],
-            [
-              "Unit",
-              "score"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "95/136"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ]
-        ],
-        "label": "Vital signs — review before disposition",
-        "infoId": "vitals",
-        "display": "table",
-        "comp": "w3Disposition.vitals"
+      "presentation": {
+        "kind": "table",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Vital sign",
+                    "Weight"
+                  ],
+                  [
+                    "Value",
+                    "93.4"
+                  ],
+                  [
+                    "Unit",
+                    "kg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Systolic BP"
+                  ],
+                  [
+                    "Value",
+                    "136"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Diastolic BP"
+                  ],
+                  [
+                    "Value",
+                    "82"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Heart rate"
+                  ],
+                  [
+                    "Value",
+                    "82"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Respiratory rate"
+                  ],
+                  [
+                    "Value",
+                    "18"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Temperature"
+                  ],
+                  [
+                    "Value",
+                    "37.4"
+                  ],
+                  [
+                    "Unit",
+                    "°C"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "SpO2"
+                  ],
+                  [
+                    "Value",
+                    "96"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Pain score"
+                  ],
+                  [
+                    "Value",
+                    "4"
+                  ],
+                  [
+                    "Unit",
+                    "score"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ]
+              ],
+              "label": "Vital signs — review before disposition",
+              "infoId": "vitals",
+              "display": "table",
+              "comp": "w3Disposition.vitals"
+            }
+          }
+        ]
       }
     },
     {
@@ -1150,6 +1139,18 @@
             [
               "Record",
               "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Systolic BP 136 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Diastolic BP 82 mmHg (today)"
             ]
           ],
           [

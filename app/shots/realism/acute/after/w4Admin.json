@@ -158,127 +158,148 @@
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Test",
-              "Glucose"
-            ],
-            [
-              "Value",
-              "186"
-            ],
-            [
-              "Unit",
-              "mg/dL"
-            ],
-            [
-              "Flag",
-              "H"
-            ],
-            [
-              "Range",
-              "70–99"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "final"
-            ]
-          ]
-        ],
-        "label": "Blood glucose — review before insulin",
-        "infoId": "glucoseTrend",
-        "display": "trend",
-        "comp": "w4Admin.glucose"
+      "presentation": {
+        "kind": "trend",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Test",
+                    "Glucose"
+                  ],
+                  [
+                    "Value",
+                    "186"
+                  ],
+                  [
+                    "Unit",
+                    "mg/dL"
+                  ],
+                  [
+                    "Flag",
+                    "H"
+                  ],
+                  [
+                    "Range",
+                    "70–99"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ]
+                ]
+              ],
+              "label": "Blood glucose — review before insulin",
+              "infoId": "glucoseTrend",
+              "display": "trend",
+              "comp": "w4Admin.glucose"
+            }
+          }
+        ]
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Test",
-              "INR"
-            ],
-            [
-              "Value",
-              "1.1"
-            ],
-            [
-              "Unit",
-              "1"
-            ],
-            [
-              "Flag",
-              ""
-            ],
-            [
-              "Range",
-              "0.8–1.2"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "final"
-            ]
-          ]
-        ],
-        "label": "Coagulation results — review before anticoagulants",
-        "infoId": "coagLabs",
-        "display": "table",
-        "comp": "w4Admin.coag"
+      "presentation": {
+        "kind": "results",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Test",
+                    "INR"
+                  ],
+                  [
+                    "Value",
+                    "1.1"
+                  ],
+                  [
+                    "Unit",
+                    "1"
+                  ],
+                  [
+                    "Flag",
+                    ""
+                  ],
+                  [
+                    "Range",
+                    "0.8–1.2"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ]
+                ]
+              ],
+              "label": "Coagulation results — review before anticoagulants",
+              "infoId": "coagLabs",
+              "display": "table",
+              "comp": "w4Admin.coag"
+            }
+          }
+        ]
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Medication",
-              "acetaminophen"
-            ],
-            [
-              "Actual dose",
-              "650"
-            ],
-            [
-              "Unit",
-              "mg"
-            ],
-            [
-              "Route",
-              "PO"
-            ],
-            [
-              "Site",
-              ""
-            ],
-            [
-              "Actual time",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "Given"
-            ],
-            [
-              "Reason",
-              ""
-            ]
-          ]
-        ],
-        "label": "PRN administrations and response",
-        "infoId": "prnHistory",
-        "display": "table",
-        "comp": "w4Admin.prn"
+      "presentation": {
+        "kind": "table",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "acetaminophen"
+                  ],
+                  [
+                    "Actual dose",
+                    "650"
+                  ],
+                  [
+                    "Unit",
+                    "mg"
+                  ],
+                  [
+                    "Route",
+                    "PO"
+                  ],
+                  [
+                    "Site",
+                    ""
+                  ],
+                  [
+                    "Actual time",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "Given"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ]
+                ]
+              ],
+              "label": "PRN administrations and response",
+              "infoId": "prnHistory",
+              "display": "table",
+              "comp": "w4Admin.prn"
+            }
+          }
+        ]
       }
     },
     {
@@ -1246,6 +1267,18 @@
             [
               "Record",
               "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Systolic BP 136 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Diastolic BP 82 mmHg (today)"
             ]
           ],
           [

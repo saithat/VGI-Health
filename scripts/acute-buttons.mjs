@@ -17,6 +17,12 @@ const call = (command, input) => JSON.parse(execFileSync(binary, [command], {
 }));
 const reports = [];
 const programs = [];
+const fixtures = ['P2', 'P3'].map(persona => ({ persona,
+  files: ['', '-context', '-user'].map(suffix => {
+    const file = `${persona}${suffix}.json`;
+    return { file, sha256: createHash('sha256').update(readFileSync(path.join(fixtureDir, file))).digest('hex') };
+  }),
+}));
 for (const release of ['v1', 'v2', 'v3']) {
   const spec = read(path.join(root, 'releases', release, 'spec.json'));
   for (const persona of ['P2', 'P3']) {
@@ -83,8 +89,9 @@ for (const release of ['v1', 'v2', 'v3']) {
 const report = {
   scope: 'Initially shown acute controls, all three current releases and both role projections; native interpreter events. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.',
   sourceRevision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
+  sourceTreeDirty: execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).trim() !== '',
   binarySha256: createHash('sha256').update(readFileSync(binary)).digest('hex'),
-  programs, screens: reports.length, clicked: reports.reduce((sum, row) => sum + row.clicked.length, 0),
+  programs, fixtures, screens: reports.length, clicked: reports.reduce((sum, row) => sum + row.clicked.length, 0),
   tabs: reports.reduce((sum, row) => sum + row.tabs.length, 0),
   disabled: reports.reduce((sum, row) => sum + row.disabled.length, 0), results: reports,
 };

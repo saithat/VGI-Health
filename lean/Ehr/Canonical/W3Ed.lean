@@ -43,7 +43,7 @@ def trackBoard : Screen :=
   let s := "w3TrackBoard"
   { id := s, title := "ED Track Board", workflow := "W3"
     components := frame s ++ [
-      presentation "trackBoard" (table s "board" "edTrackBoard" "Emergency department patients"),
+      presentation "trackBoard" (wideWorkspace (table s "board" "edTrackBoard" "Emergency department patients")),
       primaryNavigation (goto s "open" "w3Triage" "Open selected encounter"),
       panel s "selected" "triageSummary" "Selected encounter — triage summary"
     ] }
@@ -113,7 +113,7 @@ def orderSets : Screen :=
       macroBtn s "cellulitis" "w3CellulitisSet" "Cellulitis" (parent := some "sets")] ++
       orderSetRows s [10, 11] ++ [
       table s "pending" "orderSummary" "Pending orders",
-      goto s "toSign" "w3Sign" "Review and sign",
+      primaryNavigation (goto s "toSign" "w3Sign" "Review and sign"),
       goto s "toOrders" "w3Orders" "Add single orders"
     ] }
 
@@ -121,7 +121,7 @@ def orderSets : Screen :=
 def orders : Screen :=
   let s := "w3Orders"
   { id := s, title := "Orders", workflow := "W3"
-    components := frame s ++ orderComposer s {
+    components := frame s ++ (orderComposer s {
       prefs := [("prefAcetaminophen", "w3PrefAcetaminophen", "Acetaminophen 1 g PO"),
                 ("prefIbuprofen", "w3PrefIbuprofen", "Ibuprofen 600 mg PO"),
                 ("prefOndansetron", "w3PrefOndansetron", "Ondansetron 8 mg IV"),
@@ -130,7 +130,8 @@ def orders : Screen :=
       askDosingWeight := false
       askControlled := false
       signScreen := "w3Sign"
-      extraNav := [("w3OrderSets", "Order sets")] } }
+      extraNav := [("w3OrderSets", "Order sets")] }).map fun c =>
+        if c.id == cid s "toSign" then primaryNavigation c else c }
 
 /-- Sign orders (ED). The dosing weight and the controlled-substance section
 are asked here, because orders arrive from both the order sets and the

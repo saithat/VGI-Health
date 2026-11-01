@@ -18,18 +18,21 @@ wire form (`Html.toPage`) first.
 
 namespace Ehr.Render
 
-deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode, UiNode, UiScreen
+deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
+  UiPresentationKind, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
-  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, Display
+  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, ScheduleRow, BoardRow,
+  MarOrderRow, AdministrationRow, ObservationRow, Display
 
-/-- Old render fixtures predate notes/history; only absent lists default to empty. -/
+/-- Older render fixtures predate the additional display lists; only absent lists default to empty. -/
 private def readDisplay : Lean.Json → Except String Display := Lean.fromJson?
 
 instance (priority := 1100) : Lean.FromJson Display where
   fromJson? j := do
-    let j := ["notes", "history"].foldl (fun j key =>
+    let j := ["notes", "history", "schedule", "board", "marOrders", "administrations",
+      "observations", "labFlags"].foldl (fun j key =>
       match j.getObjVal? key with
       | .ok _ => j
       | .error _ => match j with

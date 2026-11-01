@@ -446,6 +446,67 @@ structure HistoryRow where
   versionId : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- One scheduled appointment, with human-readable participants only. -/
+structure ScheduleRow where
+  time : String
+  patient : String
+  ageSex : String
+  visitType : String
+  status : String
+  complaint : String
+  provider : String
+  location : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- One encounter on a department board. Missing assignments stay empty. -/
+structure BoardRow where
+  room : String
+  patient : String
+  ageSex : String
+  complaint : String
+  acuity : String
+  arrival : String
+  nurse : String
+  provider : String
+  disposition : String
+  status : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A medication order and its explicitly recorded scheduled timestamps. -/
+structure MarOrderRow where
+  /-- Transport identity used only to join administrations; never shown. -/
+  id : String
+  medication : String
+  dose : String
+  route : String
+  frequency : String
+  status : String
+  scheduled : List String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- An actual MedicationAdministration, never inferred from an order. -/
+structure AdministrationRow where
+  /-- Referenced order identity; never a visible clinical column. -/
+  orderId : String
+  medication : String
+  dose : String
+  route : String
+  site : String
+  time : String
+  status : String
+  reason : String
+  performer : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- An Observation series point, including pain, assessments and I&O. -/
+structure ObservationRow where
+  measure : String
+  value : String
+  unit : String
+  time : String
+  status : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The patient's records as the page shows them. Computed in Lean from the
 FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first. -/
 structure Display where
@@ -468,6 +529,13 @@ structure Display where
   growth : List GrowthPoint
   notes : List NoteRow := []
   history : List HistoryRow := []
+  schedule : List ScheduleRow := []
+  board : List BoardRow := []
+  marOrders : List MarOrderRow := []
+  administrations : List AdministrationRow := []
+  observations : List ObservationRow := []
+  /-- Latest lab interpretation by code, computed in Lean. -/
+  labFlags : List (String × String) := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- An empty display (no records). -/
@@ -480,8 +548,16 @@ def Display.empty : Display :=
 
 /-! ## Semantic UI (section 10; Init-only) -/
 
+/-- Read-only clinical layouts. Their child info retains every source row. -/
+inductive UiPresentationKind
+  | table | schedule | trackBoard | orSchedule | worklist | timeGrid | flowsheet
+  | folderList | messages | results | trend | growth | notes
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
+  /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
+  | presentation (kind : UiPresentationKind) (children : List UiNode)
   | section (id : String) (title : String) (children : List UiNode)
   | columns (children : List UiNode)
   | tabs (id : String) (labels : List String) (selected : Nat) (body : List UiNode)

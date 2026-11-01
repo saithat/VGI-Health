@@ -94,6 +94,42 @@
           [
             [
               "Vital sign",
+              "Systolic BP"
+            ],
+            [
+              "Value",
+              "136"
+            ],
+            [
+              "Unit",
+              "mmHg"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Diastolic BP"
+            ],
+            [
+              "Value",
+              "82"
+            ],
+            [
+              "Unit",
+              "mmHg"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
               "Heart rate"
             ],
             [
@@ -244,112 +280,126 @@
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Test",
-              "Glucose"
-            ],
-            [
-              "Value",
-              "186"
-            ],
-            [
-              "Unit",
-              "mg/dL"
-            ],
-            [
-              "Flag",
-              "H"
-            ],
-            [
-              "Range",
-              "70–99"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "final"
-            ]
-          ],
-          [
-            [
-              "Test",
-              "INR"
-            ],
-            [
-              "Value",
-              "1.1"
-            ],
-            [
-              "Unit",
-              "1"
-            ],
-            [
-              "Flag",
-              ""
-            ],
-            [
-              "Range",
-              "0.8–1.2"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "final"
-            ]
-          ],
-          [
-            [
-              "Test",
-              "Creatinine"
-            ],
-            [
-              "Value",
-              "0.9"
-            ],
-            [
-              "Unit",
-              "mg/dL"
-            ],
-            [
-              "Flag",
-              ""
-            ],
-            [
-              "Range",
-              "0.6–1.3"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "Status",
-              "final"
-            ]
-          ]
-        ],
-        "label": "Laboratory results",
-        "infoId": "labResults",
-        "display": "table",
-        "comp": "w3Provider.labs"
+      "presentation": {
+        "kind": "results",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Test",
+                    "Glucose"
+                  ],
+                  [
+                    "Value",
+                    "186"
+                  ],
+                  [
+                    "Unit",
+                    "mg/dL"
+                  ],
+                  [
+                    "Flag",
+                    "H"
+                  ],
+                  [
+                    "Range",
+                    "70–99"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ]
+                ],
+                [
+                  [
+                    "Test",
+                    "INR"
+                  ],
+                  [
+                    "Value",
+                    "1.1"
+                  ],
+                  [
+                    "Unit",
+                    "1"
+                  ],
+                  [
+                    "Flag",
+                    ""
+                  ],
+                  [
+                    "Range",
+                    "0.8–1.2"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ]
+                ],
+                [
+                  [
+                    "Test",
+                    "Creatinine"
+                  ],
+                  [
+                    "Value",
+                    "0.9"
+                  ],
+                  [
+                    "Unit",
+                    "mg/dL"
+                  ],
+                  [
+                    "Flag",
+                    ""
+                  ],
+                  [
+                    "Range",
+                    "0.6–1.3"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ]
+                ]
+              ],
+              "label": "Laboratory results",
+              "infoId": "labResults",
+              "display": "table",
+              "comp": "w3Provider.labs"
+            }
+          }
+        ]
       }
     },
     {
-      "info": {
-        "rows": [],
-        "label": "Imaging reports",
-        "infoId": "imaging",
-        "display": "table",
-        "comp": "w3Provider.imagingTable"
+      "presentation": {
+        "kind": "table",
+        "children": [
+          {
+            "info": {
+              "rows": [],
+              "label": "Imaging reports",
+              "infoId": "imaging",
+              "display": "table",
+              "comp": "w3Provider.imagingTable"
+            }
+          }
+        ]
       }
     },
     {
@@ -1324,6 +1374,18 @@
             [
               "Record",
               "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Systolic BP 136 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Diastolic BP 82 mmHg (today)"
             ]
           ],
           [

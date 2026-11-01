@@ -27,6 +27,8 @@ docs/recordings/.video-*/
 docs/recordings/*-error.png
 # Clinical UI review screenshots
 app/shots/
+# Local content-addressed screen-gate receipts
+runs/screen-check-cache/
 
 # Pinned Synthetic Hospital upstream downloads
 .cache/synthetic-hospital/

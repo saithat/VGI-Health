@@ -1,0 +1,54 @@
+{
+  "scope": "Native ehr min-clicks on the same representative suite tasks and world 1, using the actual v1 role-projected programs before/after production role landing starts. Separate from the union canonical benchmark and its fixed-value KLM replay. Exact only within reported search space.",
+  "binarySha256": "4bd814ffa6fec0e89c317e89a9eddd836b8211adfb89bb82cd68663120bf9532",
+  "rows": [
+    {
+      "persona": "P2",
+      "workflow": "W3",
+      "beforeRevision": "f855328",
+      "afterRevision": "0a9812a",
+      "before": {
+        "clicks": 57,
+        "keystrokes": 241,
+        "exact": true,
+        "space": "navigationDirected",
+        "programSha256": "08d0d9a347aa9bdebb45a3a3c00dfd50d7c93ffe222305d15dfdbd77aa4e1d60"
+      },
+      "after": {
+        "clicks": 56,
+        "keystrokes": 241,
+        "exact": true,
+        "space": "navigationDirected",
+        "programSha256": "aa647d835d01b58d35c69f670a309b508dfee1b1acfa0de907577d71a72227f4"
+      },
+      "delta": {
+        "clicks": -1,
+        "keystrokes": 0
+      }
+    },
+    {
+      "persona": "P3",
+      "workflow": "W4",
+      "beforeRevision": "f855328",
+      "afterRevision": "0a9812a",
+      "before": {
+        "clicks": 21,
+        "keystrokes": 39,
+        "exact": true,
+        "space": "navigationDirected",
+        "programSha256": "be4f437a0a46626a5876d5b26dd57c4d4568f585eb5b4e208c14b401621a0b9a"
+      },
+      "after": {
+        "clicks": 19,
+        "keystrokes": 39,
+        "exact": true,
+        "space": "navigationDirected",
+        "programSha256": "6f7b09791c1d9d3889def9e415ec0b9b74494a1bb1227d4f79350274e87d84ad"
+      },
+      "delta": {
+        "clicks": -2,
+        "keystrokes": 0
+      }
+    }
+  ]
+}

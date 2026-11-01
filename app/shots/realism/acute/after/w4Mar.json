@@ -45,216 +45,6 @@
         "rows": [
           [
             [
-              "Medication",
-              "insulin lispro"
-            ],
-            [
-              "Dose",
-              "4 units"
-            ],
-            [
-              "Route",
-              "SC"
-            ],
-            [
-              "Frequency",
-              "4 units subcutaneously before meals"
-            ],
-            [
-              "Category",
-              "Scheduled"
-            ],
-            [
-              "Order status",
-              "active"
-            ],
-            [
-              "2026-11-01 17:08 -08:00",
-              "Given · 4 units · SC · Left abdomen"
-            ],
-            [
-              "2026-11-02 07:30 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 08:00 -08:00",
-              "Scheduled"
-            ],
-            [
-              "2026-11-02 09:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 12:00 -08:00",
-              "Scheduled"
-            ],
-            [
-              "2026-11-02 17:00 -08:00",
-              "Scheduled"
-            ]
-          ],
-          [
-            [
-              "Medication",
-              "enoxaparin"
-            ],
-            [
-              "Dose",
-              "40 mg"
-            ],
-            [
-              "Route",
-              "SC"
-            ],
-            [
-              "Frequency",
-              "40 mg subcutaneously daily"
-            ],
-            [
-              "Category",
-              "Scheduled"
-            ],
-            [
-              "Order status",
-              "active"
-            ],
-            [
-              "2026-11-01 17:08 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 07:30 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 08:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 09:00 -08:00",
-              "Scheduled"
-            ],
-            [
-              "2026-11-02 12:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 17:00 -08:00",
-              ""
-            ]
-          ],
-          [
-            [
-              "Medication",
-              "ceftriaxone"
-            ],
-            [
-              "Dose",
-              "1000 mg"
-            ],
-            [
-              "Route",
-              "IV"
-            ],
-            [
-              "Frequency",
-              "1 g IV daily"
-            ],
-            [
-              "Category",
-              "Scheduled"
-            ],
-            [
-              "Order status",
-              "active"
-            ],
-            [
-              "2026-11-01 17:08 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 07:30 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 08:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 09:00 -08:00",
-              "Scheduled"
-            ],
-            [
-              "2026-11-02 12:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 17:00 -08:00",
-              ""
-            ]
-          ],
-          [
-            [
-              "Medication",
-              "acetaminophen"
-            ],
-            [
-              "Dose",
-              "650 mg"
-            ],
-            [
-              "Route",
-              "PO"
-            ],
-            [
-              "Frequency",
-              "650 mg by mouth every 6 hours as needed for pain"
-            ],
-            [
-              "Category",
-              "PRN"
-            ],
-            [
-              "Order status",
-              "active"
-            ],
-            [
-              "2026-11-01 17:08 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 07:30 -08:00",
-              "Given · 650 mg · PO"
-            ],
-            [
-              "2026-11-02 08:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 09:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 12:00 -08:00",
-              ""
-            ],
-            [
-              "2026-11-02 17:00 -08:00",
-              ""
-            ]
-          ]
-        ],
-        "label": "Medication administration record",
-        "infoId": "marSchedule",
-        "display": "table",
-        "comp": "w4Mar.grid"
-      }
-    },
-    {
-      "info": {
-        "rows": [
-          [
-            [
               "Ordered medication",
               "insulin lispro"
             ],
@@ -332,6 +122,303 @@
         "enabled": true,
         "comp": "w4Mar.openDue",
         "blockedReason": null
+      }
+    },
+    {
+      "presentation": {
+        "kind": "timeGrid",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "insulin lispro"
+                  ],
+                  [
+                    "Dose",
+                    "4 units"
+                  ],
+                  [
+                    "Route",
+                    "SC"
+                  ],
+                  [
+                    "Frequency",
+                    "4 units subcutaneously before meals"
+                  ],
+                  [
+                    "Category",
+                    "Scheduled"
+                  ],
+                  [
+                    "Order status",
+                    "active"
+                  ],
+                  [
+                    "2026-11-02 07:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    "Scheduled · 08:00"
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 10:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 11:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 12:00 -08:00",
+                    "Scheduled · 12:00"
+                  ],
+                  [
+                    "2026-11-02 13:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 14:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 15:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 16:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 17:00 -08:00",
+                    "Scheduled · 17:00"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "enoxaparin"
+                  ],
+                  [
+                    "Dose",
+                    "40 mg"
+                  ],
+                  [
+                    "Route",
+                    "SC"
+                  ],
+                  [
+                    "Frequency",
+                    "40 mg subcutaneously daily"
+                  ],
+                  [
+                    "Category",
+                    "Scheduled"
+                  ],
+                  [
+                    "Order status",
+                    "active"
+                  ],
+                  [
+                    "2026-11-02 07:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    "Scheduled · 09:00"
+                  ],
+                  [
+                    "2026-11-02 10:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 11:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 12:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 13:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 14:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 15:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 16:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 17:00 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "ceftriaxone"
+                  ],
+                  [
+                    "Dose",
+                    "1000 mg"
+                  ],
+                  [
+                    "Route",
+                    "IV"
+                  ],
+                  [
+                    "Frequency",
+                    "1 g IV daily"
+                  ],
+                  [
+                    "Category",
+                    "Scheduled"
+                  ],
+                  [
+                    "Order status",
+                    "active"
+                  ],
+                  [
+                    "2026-11-02 07:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    "Scheduled · 09:00"
+                  ],
+                  [
+                    "2026-11-02 10:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 11:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 12:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 13:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 14:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 15:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 16:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 17:00 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "acetaminophen"
+                  ],
+                  [
+                    "Dose",
+                    "650 mg"
+                  ],
+                  [
+                    "Route",
+                    "PO"
+                  ],
+                  [
+                    "Frequency",
+                    "650 mg by mouth every 6 hours as needed for pain"
+                  ],
+                  [
+                    "Category",
+                    "PRN"
+                  ],
+                  [
+                    "Order status",
+                    "active"
+                  ],
+                  [
+                    "2026-11-02 07:00 -08:00",
+                    "Given · 07:30 · 650 mg · PO"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 10:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 11:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 12:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 13:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 14:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 15:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 16:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 17:00 -08:00",
+                    ""
+                  ]
+                ]
+              ],
+              "label": "Medication administration record",
+              "infoId": "marSchedule",
+              "display": "table",
+              "comp": "w4Mar.grid"
+            }
+          }
+        ]
       }
     },
     {
@@ -1070,221 +1157,7 @@
     }
   ],
   "title": "MAR",
-  "side": [
-    {
-      "info": {
-        "rows": [],
-        "label": "Allergies",
-        "infoId": "allergyList",
-        "display": "list",
-        "comp": ""
-      }
-    },
-    {
-      "info": {
-        "rows": [
-          [
-            [
-              "Record",
-              "insulin lispro — 4 units subcutaneously before meals"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "enoxaparin — 40 mg subcutaneously daily"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "ceftriaxone — 1 g IV daily"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "acetaminophen — 650 mg by mouth every 6 hours as needed for pain"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"
-            ]
-          ]
-        ],
-        "label": "Active medications",
-        "infoId": "currentMeds",
-        "display": "list",
-        "comp": ""
-      }
-    },
-    {
-      "info": {
-        "rows": [
-          [
-            [
-              "Record",
-              "Full-time employment (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Gingivitis (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Stress (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Sleep apnea (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Sleep disorder (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Medication review due (situation) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Essential hypertension (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Chronic pain (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Chronic low back pain (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Anemia (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Prediabetes (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Impacted molars (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Housing unsatisfactory (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Educated to high school level (finding) (active)"
-            ]
-          ]
-        ],
-        "label": "Problems",
-        "infoId": "problemList",
-        "display": "list",
-        "comp": ""
-      }
-    },
-    {
-      "info": {
-        "rows": [
-          [
-            [
-              "Record",
-              "Weight 93.4 kg (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 82 /min (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 18 /min (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Temperature 37.4 °C (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "SpO2 96 % (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain score 4 score (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body mass index (BMI) [Ratio] 27.77 kg/m2 (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ]
-        ],
-        "label": "Recent vitals",
-        "infoId": "vitals",
-        "display": "list",
-        "comp": ""
-      }
-    }
-  ],
+  "side": [],
   "nav": [
     [
       "Nursing Navigator",

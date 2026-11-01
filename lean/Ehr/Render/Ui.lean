@@ -1,5 +1,5 @@
 import Ehr.Core.Navigation
-import Ehr.Render.UiData
+import Ehr.Render.Presentations
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
 The interpreter resolves visibility exactly once. Nesting consumes no item:
@@ -78,47 +78,50 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
-  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match i with
-  | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
-  | "allergyList" => cx.disp.allergies.map allergyCells
-  | "currentMeds" => cx.disp.meds.map medCells
-  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
-  | "importedHistory" => cx.disp.history.map historyCells
-  | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
-  | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
-  | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
-  | "vitals" => (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
-      latest.code == r.code && latest.date == r.date).map vitalCells
-  | "problemList" => cx.disp.problems.map problemCells
-  | "labs" | "labResults" | "resultTrend" =>
-    if i == "labResults" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
-    cx.disp.labs.flatMap fun r =>
-      [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
-       ("Recorded", uiDate r.date), ("Abnormal", toString r.abnormal)] ::
-      r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
-        ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
-  | "anticoagulants" | "anticoagulantList" =>
-      (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
-  | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
-      [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
-  | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
-      [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
-       ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
-  | "procedures" => cx.disp.procedures.map fun r =>
-      [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
-  | "growthChart" => cx.disp.growth.map fun r =>
-      [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
-       ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
-       ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]
-  | "doseCheck" =>
-      [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
-        |>.getD "No confirmed kg weight available")] ::
-      (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
-        ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
-  | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
-  | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
-      then "Requested" else "Not requested")]]
-  | _ => uiPayloadRows cx i
+  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match structuredRows? cx i with
+  | some rows => rows
+  | none => match i with
+    | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
+    | "allergyList" => cx.disp.allergies.map allergyCells
+    | "currentMeds" => cx.disp.meds.map medCells
+    | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
+    | "importedHistory" => cx.disp.history.map historyCells
+    | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
+    | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
+    | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
+    | "vitals" => if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+      (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
+        latest.code == r.code && latest.date == r.date).map vitalCells
+    | "problemList" => cx.disp.problems.map problemCells
+    | "labs" | "labResults" | "resultTrend" =>
+      if i == "labResults" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+      cx.disp.labs.flatMap fun r =>
+        [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
+         ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
+        r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
+          ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
+    | "anticoagulants" | "anticoagulantList" =>
+        (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
+    | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
+        [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
+    | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
+        [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
+         ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
+    | "procedures" => cx.disp.procedures.map fun r =>
+        [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
+    | "growthChart" => (cx.disp.growth.map fun r =>
+        [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
+         ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
+         ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]) ++ uiPayloadRows cx i
+    | "doseCheck" =>
+        [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
+          |>.getD "No confirmed kg weight available")] ::
+        (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
+          ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
+    | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
+    | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
+        then "Requested" else "Not requested")]]
+    | _ => uiPayloadRows cx i
 where
   valueTextQty (n : Nat) : String := s!"{n / 10}.{n % 10}"
 
@@ -234,6 +237,7 @@ def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × Str
   if uiSideAt cx id && !uiOrderInfo i then uiSummaryRows cx i else uiRows cx i
 
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
+  uiWrapInfo (if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i) <|
   .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
     (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
@@ -292,15 +296,24 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
   it.comp.kind != .banner && !uiNavButton cx it && !uiSideAt cx it.comp.id
 
 
+/-- The program can dedicate its workspace to a wide grid. -/
+def uiWideWorkspace (cx : Ctx) : Bool :=
+  cx.v.items.any fun it => it.shown && (it.comp.tag.splitOn ".").contains "wideWorkspace"
+
+/-- Automatic summaries are optional layout supplements. Authored panels are separate. -/
+def uiSummaryPairs (cx : Ctx) : List (String × String) :=
+  if uiWideWorkspace cx then [] else
+    [("allergyList", "Allergies"), ("currentMeds", "Active medications"),
+     ("problemList", "Problems"), ("vitals", "Recent vitals")]
+
 /-- Fallback summaries are read-only and are emitted only for information not
 already present in the program's side column. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
-    (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+    (if uiWideWorkspace cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
-    ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
-       ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
+    (uiSummaryPairs cx).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)
       then none else some (.info "" label i "list" (uiSummaryRows cx i))
 

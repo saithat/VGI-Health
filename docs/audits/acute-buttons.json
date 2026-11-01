@@ -1,43 +1,80 @@
 {
   "scope": "Initially shown acute controls, all three current releases and both role projections; native interpreter events. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "f855328fffa96d7e8ef53a7940084dcaa8561d66",
-  "binarySha256": "4bd814ffa6fec0e89c317e89a9eddd836b8211adfb89bb82cd68663120bf9532",
+  "sourceRevision": "3cbd6baaa87590c2942112f10fda7d8724ddabbc",
+  "sourceTreeDirty": true,
+  "binarySha256": "c9e47737920b3767b37dee9227b1d38450d73906748ee3309165b4551f6848a8",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "aa647d835d01b58d35c69f670a309b508dfee1b1acfa0de907577d71a72227f4"
+      "sha256": "32f6c079ff242c70da9bd3d13a18d12a7534f224cb4847f7c060b4fc75e699b0"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "6f7b09791c1d9d3889def9e415ec0b9b74494a1bb1227d4f79350274e87d84ad"
+      "sha256": "582fa9b3ccfcdfa9947fdb39bad63753957b3faa8993aef42795d2769af83edc"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "d90f4837ef666cbc049faa131e6c05e642b8c033267d599861ea45c1b6601faf"
+      "sha256": "55f8a53c7e37a610bea90e3b5f0d0f78e91738b4ffc20ab46a1408f402190da2"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "c24ea92580cf73537e5f533731d448723d4fcf9dfac2c35eaea671f611d4131b"
+      "sha256": "d12a61a9b97b673719f556e1b2e435ab9585a12147faecd1819dec0cc42fc212"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "424f0a26aae9807234baa194c09aa9c77542f4721592b806d37cf7ebc2884612"
+      "sha256": "c13d1bdfed55eda5f00749c42f8b61f2b64ca43b399b60a9ee7614d33c4bc499"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "17e53199b25836ec06e030b6934e3f122f7f534724bb989a831c40fd25f81231"
+      "sha256": "bdce31a22338084630f0e35b832d389f86b358ff799376015a264313f9440fc5"
+    }
+  ],
+  "fixtures": [
+    {
+      "persona": "P2",
+      "files": [
+        {
+          "file": "P2.json",
+          "sha256": "69dd443a5571a828e96fd4a5ef3af224a259ee44441cbd60fe7b4b31235ac727"
+        },
+        {
+          "file": "P2-context.json",
+          "sha256": "2cffb227cdf34841812008836553aed4575874fa6877d68648c4720a6360c88d"
+        },
+        {
+          "file": "P2-user.json",
+          "sha256": "9f6d2e60b6092425e2018e498b301aba83523862064c731a7e7d4d827b17d37a"
+        }
+      ]
+    },
+    {
+      "persona": "P3",
+      "files": [
+        {
+          "file": "P3.json",
+          "sha256": "70332a67a89ed36ef9482eaaa23941fc73bdcf09aa524723302f69104b832bd1"
+        },
+        {
+          "file": "P3-context.json",
+          "sha256": "e368be220171a375c8a57f07ecf4553112669ec1f5cdeb831b044144f7f3963a"
+        },
+        {
+          "file": "P3-user.json",
+          "sha256": "1a1baa6990a9d90e4b4dac267ca36b612414f337de2ca648f26eccc22be44120"
+        }
+      ]
     }
   ],
   "screens": 36,
@@ -144,6 +181,7 @@
         "w3Orders.dx",
         "w3Orders.more",
         "w3Orders.newLine",
+        "w3Orders.toSign",
         "w3Orders.back",
         "w3Orders.home",
         "w3Orders.nav.w3TrackBoard",
@@ -151,7 +189,6 @@
         "w3Orders.nav.w3Provider",
         "w3Orders.nav.w3OrderSets",
         "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
         "w3Orders.to.w3OrderSets"
       ],
       "disabled": [],
@@ -182,6 +219,7 @@
         "w3OrderSets.row11.medication",
         "w3OrderSets.row11.dispense",
         "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
         "w3OrderSets.back",
         "w3OrderSets.home",
         "w3OrderSets.nav.w3TrackBoard",
@@ -189,7 +227,6 @@
         "w3OrderSets.nav.w3Provider",
         "w3OrderSets.nav.w3Orders",
         "w3OrderSets.nav.w3Disposition",
-        "w3OrderSets.toSign",
         "w3OrderSets.toOrders"
       ],
       "disabled": [],
@@ -494,6 +531,7 @@
         "w3Orders.dx",
         "w3Orders.more",
         "w3Orders.newLine",
+        "w3Orders.toSign",
         "w3Orders.back",
         "w3Orders.home",
         "w3Orders.nav.w3TrackBoard",
@@ -501,7 +539,6 @@
         "w3Orders.nav.w3Provider",
         "w3Orders.nav.w3OrderSets",
         "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
         "w3Orders.to.w3OrderSets"
       ],
       "disabled": [
@@ -537,6 +574,7 @@
         "w3OrderSets.row11.medication",
         "w3OrderSets.row11.dispense",
         "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
         "w3OrderSets.back",
         "w3OrderSets.home",
         "w3OrderSets.nav.w3TrackBoard",
@@ -544,7 +582,6 @@
         "w3OrderSets.nav.w3Provider",
         "w3OrderSets.nav.w3Orders",
         "w3OrderSets.nav.w3Disposition",
-        "w3OrderSets.toSign",
         "w3OrderSets.toOrders"
       ],
       "disabled": [],
@@ -849,6 +886,7 @@
         "w3Orders.dx",
         "w3Orders.more",
         "w3Orders.newLine",
+        "w3Orders.toSign",
         "w3Orders.back",
         "w3Orders.home",
         "w3Orders.nav.w3TrackBoard",
@@ -856,7 +894,6 @@
         "w3Orders.nav.w3Provider",
         "w3Orders.nav.w3OrderSets",
         "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
         "w3Orders.to.w3OrderSets"
       ],
       "disabled": [
@@ -892,6 +929,7 @@
         "w3OrderSets.row11.medication",
         "w3OrderSets.row11.dispense",
         "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
         "w3OrderSets.back",
         "w3OrderSets.home",
         "w3OrderSets.nav.w3TrackBoard",
@@ -899,7 +937,6 @@
         "w3OrderSets.nav.w3Provider",
         "w3OrderSets.nav.w3Orders",
         "w3OrderSets.nav.w3Disposition",
-        "w3OrderSets.toSign",
         "w3OrderSets.toOrders"
       ],
       "disabled": [],

@@ -580,6 +580,16 @@
     {
       "button": {
         "role": "nav",
+        "label": "Review and sign",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3OrderSets.toSign",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
         "label": "Back",
         "hotkey": null,
         "enabled": true,
@@ -1257,16 +1267,6 @@
     {
       "button": {
         "role": "nav",
-        "label": "Review and sign",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.toSign",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
         "label": "Add single orders",
         "hotkey": null,
         "enabled": true,
@@ -1409,6 +1409,18 @@
             [
               "Record",
               "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Systolic BP 136 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Diastolic BP 82 mmHg (today)"
             ]
           ],
           [

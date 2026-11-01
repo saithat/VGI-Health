@@ -44,7 +44,7 @@ def worklist : Screen :=
   let s := "w4Worklist"
   { id := s, title := "Unit Census & MAR", workflow := "W4"
     components := frame s ++ [
-      presentation "worklist" (table s "work" "shiftWorklist" "My patients — shift tasks"),
+      presentation "worklist" (wideWorkspace (table s "work" "shiftWorklist" "My patients — shift tasks")),
       presentation "table" (table s "newOrders" "newOrders" "Orders requiring review"),
       panel s "handoff" "handoffSummary" "Selected patient — handoff report",
       group s "allergyGroup" "Shift allergy review" (collapsible := false),
@@ -58,9 +58,9 @@ def mar : Screen :=
   let s := "w4Mar"
   { id := s, title := "MAR", workflow := "W4"
     components := frame s ++ [
-      presentation "timeGrid" (table s "grid" "marSchedule" "Medication administration record"),
       panel s "selectedDose" "marDoseDetails" "Selected medication task",
-      primaryNavigation (goto s "openDue" "w4Admin" "Document selected dose")] ++
+      primaryNavigation (goto s "openDue" "w4Admin" "Document selected dose"),
+      presentation "timeGrid" (wideWorkspace (table s "grid" "marSchedule" "Medication administration record"))] ++
       tabStrip s "marTabs" "Details"
         [(.table, "prnHistory", "PRN history"), (.trend, "glucoseTrend", "Glucose"),
          (.table, "coagLabs", "Coagulation labs")] }
@@ -101,7 +101,7 @@ def flowsheet : Screen :=
   let s := "w4Flowsheet"
   { id := s, title := "Flowsheets", workflow := "W4"
     components := frame s ++ [
-      presentation "flowsheet" (table s "history" "flowsheetHistory" "Recent observations by time"),
+      presentation "flowsheet" (wideWorkspace (table s "history" "flowsheetHistory" "Recent observations by time")),
       group s "vitalsGroup" "Vital signs — new documentation" (collapsible := false),
       field s "bpSystolic" "bpSystolic" "BP systolic (mmHg)" (parent := some "vitalsGroup"),
       field s "bpDiastolic" "bpDiastolic" "BP diastolic (mmHg)" (parent := some "vitalsGroup"),
