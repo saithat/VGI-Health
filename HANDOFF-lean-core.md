@@ -1,108 +1,100 @@
 # Handoff: lean-core
 
 Worktree: `/home/saithat/Projects/VGI-lean`; branch `lane/lean-core`.
-Merged `origin/main` at `c0a6541`; `origin/lane/rules-encode` was already included.
-The earlier interpreter/API, Schedule II allowlist and albuterol-cap work remains
-intact. Main has fixed the world Schedule II mirror and adopted the production
-zero-refills requirement.
+Read this first. This continuation fetched and fast-forwarded main to `fe475fa`.
+The optional composite-format checkpoint is `133e364` (pushed).
 
-## Completed
+## Delivered in this continuation
 
-All five catalog M groups are implemented in required rule-count order and were
-pushed independently. They unlock core representations for 181 catalog rules;
-this is not a claim that content has encoded every unlocked rule yet.
+- Init-only `ComponentDef { name, params, body }` and
+  `Program.componentDefs : List ComponentDef := []`.
+- Custom Program JSON preserves SOURCE definitions, accepts omission of the new
+  field, and omits empty definitions. Existing generated JSON samples are
+  unchanged, preserving legacy source/hash encodings. Malformed definitions
+  remain parse errors. No new clinical/backend behavior is active yet.
+- GenTS exports 138 types/42 real JSON samples, with optional `componentDefs`.
+  Core guards cover definition/source round trips, legacy omission and malformed
+  field rejection. The feature corpus now includes an unused-definition case.
+- Rebuilt and installed WASM assets with the supplied `.tools` symlink to
+  `/home/saithat/Projects/VGI-wasm/.tools`; binary is 1,924,963 bytes.
+- The proposed constructor/expansion implementation is preserved in
+  `lean/Ehr/Core/composites-pending.patch`. `git apply --check` passes. Applying
+  the patch and running `cd lean && lake build Ehr.Core.Tests` passes. It includes
+  `Kind.use`, total Init-only `Program.expand`, checked load helpers, a
+  `wellFormed` error verdict helper, six candidate theorem/axiom audits, and
+  Tiny vitals-strip guards and a satisfiable expanded witness. There are no
+  `sorry`, `admit`, new axioms or `native_decide` in this patch.
 
-| Group | Rules | Commit |
-| --- | ---: | --- |
-| event-time-window | 67 | `db1c6bb` |
-| patient-predicate | 59 | `861599d` |
-| value-validation | 34 | `93b537d` |
-| order-expiry-clock | 11 | `b61b61c` |
-| structured-display | 10 | `bfe01dc` |
-| Evidence/local-time/output hardening | — | `7e527f6` |
-| Portable date parser, permanent tests, installed WASM | — | `bab3f87` |
+**The expansion patch is NOT active in this checkpoint. Composite execution is
+unfinished.** It was kept as a concrete reviewable patch so the pushed branch
+continues to build while respecting the explicit prohibition on editing Render.
 
-The final checkpoint adds permanent core-owned native/WASM fixtures, a portable
-ISO/GS1 date parser, rebuilt installed WASM assets and the current manifest.
-The previous long character-list date parser failed on WASM rejection paths;
-the fixed-width group parser retains the same full Gregorian grammar. Invalid
-leap dates, widths, output dates and public state-preserving rejection are tested.
+## Integration blocker and scope
 
-Each feature has Tiny adoption examples and #guard regressions in Core.Tests.
-GenTS exports 137 types and 40 real-JSON samples. New data fields are optional at
-existing boundaries. Closed ASTs support conditions/unknowns, versioned sources,
-time ordering/deadlines/calendars, lexical and relational validation, durable
-expiry/renewal and structured payload/phase/label contracts. Detailed semantics,
-trust boundaries and integration contracts are in docs/design/changes.md and
-changes-requests.md.
+Activating `Kind.use` makes `lean/Ehr/Render/Page.lean:157` fail its exhaustive
+Kind match. The owner explicitly said not to edit `lean/Ehr/Render/**`, so no
+Render source was edited. The exact dependency and presentation-key request are
+in `docs/design/changes-requests.md`.
 
-The three L groups (qualified-authorization, record-level-completeness,
-release-access-policy) have precise designs and test plans in changes-requests.md;
-they were intentionally not implemented, as the owner requested.
+This main checkout also has no checker/deploy or simulation implementation/CLI
+commands; those still exist on the owning branches. They were not merged or
+edited without authorization. Scope questions about API/integration files and
+owning-lane merges were sent to the user; no answer had arrived at this checkpoint.
+The explicit GenTS and generated-WASM instructions were carried out.
 
-## Proof status
+## Verification of the buildable checkpoint
 
-T0, T2, T3, T6, A2 and A4 remain proven. All 25 core axiom audits use only
-`propext`, `Classical.choice` and `Quot.sound`. No new unfinished proofs, axioms,
-`admit` or `native_decide` were introduced. Existing project-wide proof work
-remains tracked in TODO_PROOFS.md.
+- `cd lean && lake build`: pass (143 jobs).
+- `lake check`: pass, including the final repeat; default kernel accepts,
+  using only `propext`, `Quot.sound`, and `Classical.choice`.
+- `lake comparator`: pass, all 18 original statements, including final repeat.
+- T0, T2, T3, T6, A2 and A4 remain proven, with unchanged statements and only
+  permitted axioms. The earlier strengthened `commitGuard_iff` remains DRAFT
+  for owner review, as in the previous handoff.
+- `lake exe gents` and strict generated-sample TypeScript check: pass.
+- Workspace build/lint and agent typecheck: pass.
+- Agent tests: 31/31. World tests: 92/92. App: 89/90.
+- App's existing main-branch failure: `tests/app.test.tsx:25` expects 16 bad
+  programs, while the merged content catalog contains 24. The real-WASM fixture
+  projection test passes. An owning-app change is requested; the test was not
+  weakened or edited here.
+- `make wasm` and `make wasm-check`: pass.
+- `node lean/Ehr/Core/test-wasm-features.mjs`: pass, 255 native/WASM comparisons
+  across all 85 cases (the previous 84 cases were retained).
 
-**DRAFT statement change:** commitGuard_iff adds an independent
-`extraGuard = true` conjunct, describing the stronger executable guard. Its
-value corollary is extended identically; T0_extra_contract proves a new commit
-satisfies those contracts. The other 17 Comparator statements are unchanged.
-No requirement, human step, allowed-value rule or receipt rule was weakened.
+The pending expansion patch has only targeted build/guard/axiom verification;
+it has NOT passed a full build, `lake check`, Comparator, or WASM execution with
+expansion enabled. Its proof integration is tracked in `TODO_PROOFS.md`.
 
-## Final verification
+## Exactly what's left
 
-- `cd lean && lake build`: pass.
-- `lake check`: pass, default kernel accepts the solution.
-- `lake comparator`: pass, all 18 registered statements.
-- `lake exe gents` and generated-sample strict TypeScript check: pass.
-- Workspace build, typecheck and lint: pass.
-- Agent: 31 tests; app: 90 tests; world: 92 tests. All pass.
-- `wasm/build-ehr.sh && wasm/install-into-app.sh`: pass; installed WASM is
-  1,921,816 bytes. Toolchain is the explicitly supplied VGI-wasm/.tools symlink.
-- `make wasm-check`: pass; manifest records current Lean sources/assets.
-- `node lean/Ehr/Core/test-wasm-features.mjs`: pass, 252 native/WASM API
-  comparisons over 84 cases, including all five groups and Schedule II values.
-- Full original equivalence corpus: 4,096 cases, 144,807 step comparisons,
-  144,807 view comparisons and 32 init comparisons; pass. Original seed,
-  every case/event and full byte comparisons were retained. Inputs/native output
-  were batched, with disjoint worker ranges and sequential Lake setup.
-- Renderer/FHIR native/WASM: pass, 174 Synthea bundles and 694 canonical page variants, including stable IDs, RN wristband acceptance/rejection and error envelopes.
+1. Render owner supplies the new Kind compatibility arm, or the user explicitly
+   authorizes that edit. Coordinate it with applying
+   `lean/Ehr/Core/composites-pending.patch` so the full build stays valid.
+2. Wire source expansion into **all** API/native/WASM init/step/view/batch paths.
+   Core's pending `Composite.loadInit/loadStep/loadView` fail closed and use the
+   existing interpreter on expansion. Existing `Ehr.Api` entry points are still
+   unchanged and do not yet call these helpers.
+3. Check/deploy owners expand candidate, previous and canonical programs before
+   evaluating properties, reject expansion failures as `wellFormed`, and hash
+   and store the SOURCE program (including definitions). Integrate the actual
+   checker `Satisfies` with expansion and finish its proof bridge. The pending
+   generic property lift is not a claim of checker certification.
+4. Sim owner expands before simulate/min-clicks, including policy/state-space
+   inspection. Render owner expands before render/render-screens and propagates
+   `composite:<name>` into UiNode as a presentation key. Do not edit Render
+   without the requested authorization.
+5. Once active, add the vitals-strip source/use/expanded examples to GenTS's
+   samples and regenerate; verify agent/app schemas preserve definitions/args.
+6. Run the full build, kernel check, Comparator and audits with expansion active;
+   retain T0/T2/T3/T6/A2/A4 and every existing safety rule. Rebuild WASM again and
+   add native/WASM coverage for successful uses and expansion failures. Current
+   installed assets cover only the optional-format checkpoint.
+7. App owner fixes the catalog-count baseline assertion and reruns all TS tests.
+8. Update this handoff to the resulting exact remaining work, and push each
+   meaningful step with the required Codex co-author line.
 
-The stock wasm/test/equivalence.mjs currently exceeds JavaScript's string limit
-at its all-inputs join. An exact memory-bounded patch is prepared at
-/tmp/wasm-equivalence-memory.patch and requested from the owning WASM lane.
-The full passing workaround report is /tmp/lean-streamed-equivalence-results.json;
-standalone batched runner: /tmp/lean-streamed-equivalence.mjs. No corpus was cut.
-
-## What's left
-
-**Lean-core implementation, proofs, generator and WASM asset queue: nothing left.**
-
-Owning-lane integration remains explicitly requested in changes-requests.md:
-
-- Content: encode the unlocked rules with citations and correct applicability,
-  event bindings, deadlines, clock policies, validation tables and display scopes;
-  use explicit lawful stop/refusal/exception routes.
-- Check: validate the new contracts and certify true/false/unknown, missing/expired,
-  dependency, exception and phase-navigation branches. Preserve per-line allowed
-  values and all existing safety/completability properties.
-- Render/world: populate trusted current-version clinical/event/calendar/order/
-  terminology/payload/phase facts; paint payload groups/selection/pinning and
-  enforce continuous phase presence. Clinical alert keys are opaque snapshot
-  identities; replace the legacy raw-key popup body with clinical label/context
-  before production adoption. Backend scheduler execution remains separate.
-- Agent/app: extend validators to preserve every new constructor/optional field;
-  the existing agent schema still rejects drugClass and strips entries.allowed.
-  Add exact constrained-spec round trips; never strip safety constraints.
-- WASM: apply the stock-runner memory fix while retaining every case/event;
-  the permanent new-feature suite already lives under Core ownership.
-- Owner review: the strengthened commitGuard_iff statement remains DRAFT.
-
-No source files in Specs, Canonical, Props, Check, Render, agent, world or app
-were edited by this continuation. Necessary external edits are the explicitly
-requested generator/sample files, minimal T0/DRAFT-statement compatibility, design
-notes, and the explicitly authorized generated app/public/ehr assets.
+The previous handoff's five M rule groups, interpreter/API, date-parser fix and
+prior proof milestones remain intact. The original L-group implementations are
+still intentionally unrequested; their designs and all earlier owning-lane
+integration requests remain in `docs/design/changes-requests.md`.

@@ -609,3 +609,11 @@ The installed-WASM feature corpus gains an unused-definition source program so
 native/WASM decoder compatibility is checked in addition to native JSON guards.
 The prior 84 feature cases remain intact. This checks the format checkpoint;
 it does not claim WASM composite execution before expansion is wired in.
+
+Checkpoint verification: full `lake build`, `lake check`, Comparator's 18 original
+statements, GenTS/sample strict TypeScript check, workspace build/lint, agent
+31 tests and world 92 tests pass. Installed WASM is 1,924,963 bytes;
+`make wasm-check` and all 255 feature API comparisons pass. App's existing
+catalog-count assertion fails (expects 16 bad programs; main now has 24); its
+other 89 tests pass. That owning-lane repair and all unfinished composite work
+are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.
