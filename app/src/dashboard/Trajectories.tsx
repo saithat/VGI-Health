@@ -1,109 +1,17 @@
 import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
-import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { programSchema, type Program } from "../../../agent/src/schema";
-import type { UiScreen } from "../ehr/ui/types";
+import { useEffect, useRef, useState } from "react";
 import type { InterpFactory } from "./replay";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { readRunJson } from "./data";
-import { readArtifact, verifyRecordedBuild } from "../browser/data";
 import {
-  replayGeometrySchema,
   trajectoryIndexSchema,
-  trajectorySchema,
-  trajectoryBundleSchema,
   type TrajectoryEntry,
   type TrajectoryIndex,
 } from "./trajectories-data";
-import { replayTrajectory, type Trajectory } from "./trajectory-replay";
-import { contentHash } from "../core/buildBinding";
-import { pointerTravel, type GeometryAtlas } from "../metrics/geometry";
-import { TrajectoryFrame } from "./TrajectoryFrame";
+import { TrajectoryPlayer, type LoadedTrajectory } from "./TrajectoryPlayer";
+import { loadTrajectory } from "./trajectory-loader";
 import "./trajectories.css";
 
-type Loaded = {
-  presentations: PresentationBundle | null;
-  geometry: GeometryAtlas | null;
-  task: Trajectory;
-  program: Program;
-  spec: unknown;
-  display: unknown;
-};
-function Playback({
-  loaded,
-  count,
-  factory,
-  label,
-  speed,
-  metrics,
-}: {
-  loaded: Loaded;
-  count: number;
-  factory: InterpFactory;
-  label: string;
-  speed: number;
-  metrics: TrajectoryEntry["metrics"];
-}) {
-  const result = useMemo(() => {
-    const interp = factory(loaded.program);
-    const result = replayTrajectory(
-      interp,
-      loaded.task,
-      loaded.spec,
-      loaded.program,
-      count,
-      loaded.display,
-    );
-    if (!interp.renderUi) throw new Error("Semantic WASM renderer is required");
-    const screen: UiScreen = JSON.parse(
-      interp.renderUi(...result.args, JSON.stringify(result.state)),
-    );
-    return { ...result, screen };
-  }, [loaded, count, factory]);
-  const next = loaded.task.trace[count];
-  const prefix = loaded.task.trace.slice(0, count);
-  const ops = prefix.flatMap((e) => e.ops);
-  const travel = loaded.geometry
-    ? count === 0
-      ? 0
-      : pointerTravel(prefix, loaded.geometry)[loaded.task.id]?.mouseTravelPx
-    : count === loaded.task.trace.length
-      ? metrics.mouseTravelPx
-      : null;
-  return (
-    <article className="trajectory-side" aria-label={label}>
-      <h3>
-        {label} · {count}/{loaded.task.trace.length} events
-      </h3>
-      <p className="trajectory-counters" aria-live="polite">
-        {ops.filter((o) => o === "click").length} clicks ·{" "}
-        {ops.filter((o) => o === "key").length} keys ·{" "}
-        {ops.filter((o) => o === "scroll").length} scrolls · {prefix.length}{" "}
-        events ·{" "}
-        {typeof travel === "number"
-          ? `${travel} px mouse travel`
-          : "mouse travel —"}
-      </p>
-      <p className="trajectory-event">
-        {next ? `Next: ${JSON.stringify(next.event)}` : "Trajectory finished"}
-      </p>
-      {Boolean(result.firstMismatch || loaded.task.nativeMismatch) && (
-        <p role="alert">
-          Replay divergence:{" "}
-          {JSON.stringify(result.firstMismatch ?? loaded.task.nativeMismatch)}
-        </p>
-      )}
-      <TrajectoryFrame
-        presentations={loaded.presentations}
-        title={`${label} EHR`}
-        screen={result.screen}
-        trace={loaded.task.trace}
-        count={count}
-        speed={speed}
-      />
-    </article>
-  );
-}
 function TaskPlayback({
   runId,
   entry,
@@ -113,8 +21,8 @@ function TaskPlayback({
   entry: TrajectoryEntry;
   factory?: InterpFactory | undefined;
 }) {
-  const [loaded, setLoaded] = useState<Loaded | null>(null);
-  const [baseline, setBaseline] = useState<Loaded | null>(null);
+  const [loaded, setLoaded] = useState<LoadedTrajectory | null>(null);
+  const [baseline, setBaseline] = useState<LoadedTrajectory | null>(null);
   const [compare, setCompare] = useState(false);
   const [count, setCount] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -130,87 +38,7 @@ function TaskPlayback({
       return () => {
         active = false;
       };
-    async function load(file: string, metrics: TrajectoryEntry["metrics"]) {
-      if (!factory) throw new Error("Loading the real WASM interpreter…");
-      const task = trajectorySchema.parse(
-        await readRunJson(`/runs/${runId}/trajectories/${file}`),
-      );
-      const [program, spec, fixture] = await Promise.all([
-        readArtifact(`/${task.context.programPath}`),
-        readArtifact(`/${task.context.specPath}`),
-        readArtifact(`/${task.context.fixtureFile}`),
-      ]);
-      const presentations = await verifyRecordedBuild(
-        task.context.programPath,
-        program,
-      );
-      let geometry: GeometryAtlas | null = null;
-      if (typeof metrics.mouseTravelPx === "number") {
-        const hash = await contentHash(program);
-        const componentsHash = await contentHash(presentations ?? []);
-        // Geometry is optional evidence. Never substitute made-up pixel totals.
-        for (const suffix of [`.${componentsHash}`, ""]) {
-          try {
-            const atlas = replayGeometrySchema.parse(
-              await readRunJson(
-                `/runs/${runId}/geometry/${hash}${suffix}.json`,
-              ),
-            );
-            if (
-              atlas.programHash === hash &&
-              (!atlas.componentsSha256 ||
-                atlas.componentsSha256 === componentsHash)
-            ) {
-              geometry = atlas;
-              break;
-            }
-          } catch {
-            /* Historical run may have totals but no geometry atlas. */
-          }
-        }
-      }
-      const bundle = trajectoryBundleSchema.parse(fixture);
-      const parsedProgram = programSchema.parse(program);
-      let resources: { resourceType: string; id?: string | undefined }[] =
-        bundle.entry.map((e) => ({
-          ...e.resource,
-          id: e.resource.id ?? e.fullUrl?.replace(/^urn:uuid:/, ""),
-        }));
-      for (const r of task.context.resources)
-        resources = [
-          ...resources.filter(
-            (x) => !r.id || x.resourceType !== r.resourceType || x.id !== r.id,
-          ),
-          r,
-        ];
-      const interp = factory(parsedProgram);
-      const projection = JSON.parse(
-        interp.facts(
-          JSON.stringify({
-            bundle: {
-              resourceType: "Bundle",
-              entry: resources.map((resource) => ({ resource })),
-            },
-            context: {
-              today: task.context.today,
-              now: task.context.startMin,
-              receipts: [],
-              record: [],
-            },
-          }),
-        ),
-      );
-      if (projection.error) throw new Error(String(projection.error));
-      return {
-        task,
-        geometry,
-        program: parsedProgram,
-        presentations,
-        spec,
-        display: projection.display,
-      };
-    }
-    void load(entry.file, entry.metrics)
+    void loadTrajectory(runId, entry.file, entry.metrics, factory)
       .then((value) => {
         if (active) setLoaded(value);
       })
@@ -218,7 +46,12 @@ function TaskPlayback({
         if (active) setError(String(e));
       });
     if (compare && entry.baseline)
-      void load(entry.baseline.file, entry.baseline.metrics)
+      void loadTrajectory(
+        runId,
+        entry.baseline.file,
+        entry.baseline.metrics,
+        factory,
+      )
         .then((value) => {
           if (active) setBaseline(value);
         })
@@ -435,7 +268,7 @@ function TaskPlayback({
       {!loaded && !error && <p role="status">Loading selected trajectory…</p>}
       <div className={`trajectory-panels${compare ? " compare" : ""}`}>
         {loaded && factory && (
-          <Playback
+          <TrajectoryPlayer
             loaded={loaded}
             factory={factory}
             count={Math.min(count, entry.eventCount)}
@@ -445,7 +278,7 @@ function TaskPlayback({
           />
         )}
         {compare && baseline && factory && entry.baseline && (
-          <Playback
+          <TrajectoryPlayer
             loaded={baseline}
             factory={factory}
             count={Math.min(count, baseline.task.trace.length)}
@@ -521,6 +354,13 @@ export function Trajectories({
   const entry = visible.find((t) => t.id === selected) ?? visible[0];
   return (
     <section className="trajectories" aria-label="All task trajectories">
+      <p>
+        <a
+          href={`/dashboard?${new URLSearchParams({ view: "compare", run: runId, persona })}`}
+        >
+          Compare two trajectories →
+        </a>
+      </p>
       <p>
         {tasks.length} logged tasks for {persona}. Select a day and task to load
         its exact replay context.

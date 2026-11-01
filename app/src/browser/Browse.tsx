@@ -457,6 +457,13 @@ function Timeline({
                 >
                   Compare with previous revision →
                 </a>
+                {run.files?.includes("trajectories/index.json") && (
+                  <a
+                    href={`/dashboard?${new URLSearchParams({ run: run.manifest.runId, persona: selected.persona, view: "compare", day: String(selected.day), revision: String(selected.program.version) })}`}
+                  >
+                    Compare with baseline →
+                  </a>
+                )}
                 <a
                   href={`/dashboard?${new URLSearchParams({ run: run.manifest.runId, persona: selected.persona, view: "Trajectories", day: String(selected.day) })}`}
                 >

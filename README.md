@@ -15,6 +15,52 @@ Start with these files, in order:
 5. [Check/Sound.lean](lean/Ehr/Check/Sound.lean): what checker acceptance proves.
 6. [Render/UiProofs.lean](lean/Ehr/Render/UiProofs.lean): how the EHR tree preserves controls and information.
 
+## What the Lean code does
+
+Lean is both the programming language and the proof language here. The code
+implements the EHR, describes its rules, and proves selected guarantees about
+its behavior.
+
+As counted on 2026-11-01, the repository has **245 Lean source files and
+42,927 lines**, including comments and blank lines. The default build imports
+184 of those files, containing **693 named theorem declarations** and 59
+additional unnamed proof examples. These counts exclude dependencies and build
+outputs. The source is distributed approximately as follows:
+
+| Part | Lines | What it does |
+|---|---:|---|
+| [Data projection and screen rendering](lean/Ehr/Render/) | 9,700 | Reads FHIR records, constructs chart rows and screen trees, and proves selected content-preservation guarantees. |
+| [Hospital rule definitions](lean/Ehr/Specs/) | 7,700 | Defines required fields, reviews, permissions, alerts, units and regulatory/policy requirements. |
+| [Interface checker and its proofs](lean/Ehr/Check/) | 7,100 | Examines proposed screen programs and connects acceptance to the specified properties. |
+| [Reference interfaces](lean/Ehr/Canonical/) | 5,500 | Defines the starting visit, medication, results, pediatric and surgical workflows that the AI can adapt. |
+| [Execution engine](lean/Ehr/Core/) | 4,100 | Handles entering values, navigating, reviewing, acknowledging alerts and signing; maintains the interaction state. |
+| [Simulation and search](lean/Ehr/Sim/) | 3,200 | Runs simulated clinicians, measures interactions and computes certified minima within defined search spaces. |
+| [Property definitions](lean/Ehr/Props/) and [central proofs](lean/Ehr/Proofs/) | 2,900 | Defines precisely what the guarantees mean and proves guard, receipt, automation and alert behavior. Other proofs also live in the sections above. |
+| Supporting code | 2,700 | APIs, command-line tools, examples, exports and proof audits. |
+
+For example, when **signing a medication order**, the rule definitions specify
+the required entries, reviews and acknowledgments. The execution engine checks
+those requirements when the user clicks Sign. Before deployment, the interface
+checker examines whether an AI redesign retains the required structure and
+protections. The proofs establish claims such as "a successful sign passed its
+guard" and "a macro cannot supply a human-only action." The rendering code
+constructs the fields, review panels and enabled or disabled button. Simulation
+exercises the workflow and measures interaction costs.
+
+The **693 named theorems include many supporting lemmas and concrete examples**.
+A small theorem may establish that a value survives navigation, a lookup finds
+the right requirement, a macro preserves acknowledgments, or a required row
+appears in the output. Larger theorems assemble these results into guarantees
+about complete actions or accepted programs. This is not a count of 693
+independent clinical safety rules.
+
+There are **13 main checker properties**. Checker acceptance generally implies
+12; the remaining property, workflow completion, is proved for restricted
+families, with the general case open. There are also separate rendering and
+execution guarantees. These proofs concern the executable EHR engine; the
+following sections explain their scope and the surrounding tested or trusted
+code.
+
 ## What is proved, and what is not
 
 **Proved** means a Lean theorem, kernel-checked, using only `propext`,
@@ -201,7 +247,15 @@ patients, seeds worklists and creates a private `.env`. If another checkout
 already uses the named Medplum stack, copy its `.env` locally first to preserve
 the shared credentials. No AI API key is needed for local work or replay.
 
-The **Demo / replay** link opens the offline catalog. For that catalog alone,
+The **Demo / replay** link opens the offline catalog. In the dashboard,
+**Trajectories** replays any recorded task on the real EHR in a fixed-size
+player (fullscreen, moving cursor, click and scroll animation), and
+**Compare** plays two runs of the same workflow side by side (for example the
+baseline vs. the latest revision), with click, scroll and mouse-travel deltas
+and the agent's changes linked to the moments they matter. Compare links are
+bookmarkable, e.g. `/dashboard?view=compare&run=run1-P3&persona=P3&workflow=W4`.
+
+For the offline catalog alone,
 use `pnpm install && make run`. The dashboard includes the recorded `run1-P3`
 trajectory; its archived replay preserves the recorded clinical events.
 Use `make run APP_PORT=5187` if the default port is occupied.
