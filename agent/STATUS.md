@@ -1,20 +1,56 @@
-## Final urgent verification result
+## Reporting-only floors — 2026-11-01
 
-Core fixes: 103 agent tests, 293 app tests, lint/typechecks, native build (365
-jobs), `make wasm-check`, and 5-persona × 3-day concurrent FAKE/REPLAY/resume all
-pass. The native consumer fixture indexes 15 tasks / 1,095 events plus matched
-baselines with zero mismatches; all 514 applicable conformance cases pass
-(486 explicitly not applicable). No model calls were made.
+The smoke abort at `ehr min-clicks` is fixed by removing theoretical searches
+from the nightly critical path, including normal, surface-feature and migration
+nights. `run-days` never invokes `ehr min-clicks` or complexity. Candidate choice,
+completion checks, safety/certification and deploy gates use simulator results;
+none depends on a searched floor. New decision records keep the legacy
+`measured.minClicks` list empty and explicitly note that it is post-run only.
+The simulator's cheap ideal-interface counts may remain in raw logs; they do not
+invoke search or control acceptance.
 
-**Remaining blocker: complexity did not finish successfully.** P2/P3/P5 finish;
-P1/P4 native benchmark searches exceed the original 180s limit and the generous
-600s retry. W2 reached seven clicks but timed out during independent keystroke
-search. No partial complexity report is published and no gate was weakened.
-See docs/design/changes-requests.md. This prevents claiming full-run readiness;
-resolve native minimum-search performance before relying on the full wrapper.
-The parallel run command below is prepared, but its 60–120-minute estimate does
-not include this unresolved search cost. Raw diagnostics remain under
-/tmp/vgi-parallel-consumer-complexity2.txt; fixture data is outside runs/.
+Post-run `pnpm complexity --run <id>` has a shared per-task wall-clock budget of
+10 seconds and search bound 5,000, covering both adapter and native comparisons.
+The task subprocess is killed on timeout. A bound/timeout becomes **not computed
+(search bound)** with null metrics/floors, never zero. Other report errors are
+explicitly **not computed (report error)**. Computed-only aggregates carry
+expected/computed/missing counts; partial unions are not presented as full floors
+or compared with full simulated workload in the dashboard. Each deployed spec
+snapshot and recorded executable is used, including v0. No historical run data
+is regenerated. A run report does not recompute unrelated canonical references;
+request them explicitly with `--with-canonical`.
+
+```sh
+# Start the complete parallel run (the wrapper prepares and verifies builds):
+scripts/run-overnight.sh core-10day
+# Equivalent prepared loop, with NO reporting searches:
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id core-10day \
+  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
+# Optional post-run floors, with explicit per-task limits:
+pnpm complexity --run core-10day --task-timeout-ms 10000 --search-bound 5000
+```
+
+The wrapper performs floor reporting only after the loop finishes. A reporting
+failure warns and preserves the completed run; safety/conformance failures remain
+failures. Infrastructure, certification, full validation completion, ARIA and
+visibility gates are unchanged. Expected loop wall time remains a planning
+estimate of about 60–120 minutes for five parallel personas, dominated by model
+and cold screen gates, with no floor searches extending or aborting a night.
+
+Regression coverage includes throwing `minClicks` backends for all five personas,
+three parallel days, both ordinary and release calendars, and exact replay.
+The bounded native report was verified with bound 1: every uncomputed task is
+labeled, excluded, and nullable, and the command completes successfully. No live
+model run or probe was started.
+
+Verified: agent 105/105 tests (including 5-persona × 3-day parallel FAKE and
+REPLAY calendars), app 299/299 tests, complexity unit tests 7/7, agent typecheck,
+agent/app lint, app build, native default build and `make wasm-check`. The wrapper
+resume regression verifies real build fingerprints and a failed optional floor
+command without rebuilding or making model calls. Run fixtures stayed in `/tmp`.
 
 ## Parallel run readiness — 2026-11-01
 

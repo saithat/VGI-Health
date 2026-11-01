@@ -34,3 +34,11 @@ it('joins other workers before recording failure and resumes only the unfinished
  const result=await runDays({...opts,llm:new ScriptedLlm(),resume:true});
  expect(result.timelines.every(t=>t.days.length===3)).toBe(true);expect(await readFile(file,'utf8')).toBe(before);
 });
+
+it.each([{v2:4,v3:7},{v2:2,v3:3}])('never calls theoretical searches in any overnight mode (%j)',async releaseDays=>{
+ const ehr=markingEhr();const search=vi.spyOn(ehr,'minClicks').mockRejectedValue(new InfrastructureError('FAKE min-clicks bound / timeout'));
+ const opts={days:3,parallel:true,worldDir:await fakeWorld(3),runsRoot:await tmp('no-nightly-floor'),ehr,releaseDays};
+ const result=await runDays({...opts,runId:'FAKE-no-floor',llm:new ScriptedLlm()});
+ expect(result.timelines).toHaveLength(5);expect(result.timelines.every(t=>t.days.length===3)).toBe(true);expect(search).not.toHaveBeenCalled();
+ const replay=await runDays({...opts,runId:'REPLAY-no-floor',llm:new ReplayLlm(result.dir)});expect(replay.timelines).toEqual(result.timelines);expect(search).not.toHaveBeenCalled();
+});

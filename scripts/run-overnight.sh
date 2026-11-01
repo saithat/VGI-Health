@@ -31,7 +31,9 @@ pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"
 pnpm trajectories --run "$run_id"
-pnpm complexity --run "$run_id"
+if ! pnpm complexity --run "$run_id"; then
+  echo "Post-run floor report unavailable; completed run measurements are retained." >&2
+fi
 pnpm conformance --run "$run_id" --run-only --jobs 5
 # Copy the finished artifacts into the static dashboard. Source/code hashes stay the same.
 if ! $resume; then pnpm --filter app build; fi

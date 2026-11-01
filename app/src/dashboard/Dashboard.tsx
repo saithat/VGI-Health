@@ -900,7 +900,7 @@ function VersionList({
     after: ReturnType<typeof exactAt>,
     before: ReturnType<typeof exactAt>,
   ) =>
-    after && before
+    after && before && typeof after.total.clicks==='number' && typeof before.total.clicks==='number' && !(after.coverage?.notComputed) && !(before.coverage?.notComputed)
       ? `${after.total.clicks - before.total.clicks > 0 ? "+" : ""}${fmt(after.total.clicks - before.total.clicks)} clicks${before.total.mouseTravelPx !== null && after.total.mouseTravelPx !== null ? ` / ${fmt(after.total.mouseTravelPx - before.total.mouseTravelPx)}px mouse` : " · pixel metrics not measured for archived runs"}`
       : "Unavailable";
   return (

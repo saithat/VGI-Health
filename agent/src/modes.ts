@@ -19,7 +19,7 @@ import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './p
 import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
 import {
-  InfrastructureError, MAX_REPAIRS, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
+  InfrastructureError, MAX_REPAIRS, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
@@ -151,7 +151,6 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   const replay = await input.holdout.validate(personalize(next.canonical, persona.params, persona.userId), certified.program, next.specVersion);
   rec.validation.replay = replay;
   rec.measured.validation = replay;
-  rec.measured.minClicks = await minClicksByWorkflow(deps, next.specVersion, input.current, certified.program, input.train[input.train.length - 1]);
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;

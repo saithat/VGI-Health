@@ -1,17 +1,18 @@
 import { z } from "zod";
 
 const metricsSchema = z.object({
-  clicks: z.number().nonnegative(),
-  keystrokes: z.number().nonnegative(),
+  clicks: z.number().nonnegative().nullable(),
+  keystrokes: z.number().nonnegative().nullable(),
   scrolls:z.number().nonnegative().nullable().default(null),scrollPx:z.number().nonnegative().nullable().default(null),mouseTravelPx:z.number().nonnegative().nullable().default(null),
-  screens: z.number().nonnegative(),
-  requiredFields: z.number().nonnegative(),
-  popups: z.number().nonnegative(),
+  screens: z.number().nonnegative().nullable(),
+  requiredFields: z.number().nonnegative().nullable(),
+  popups: z.number().nonnegative().nullable(),
 });
+const coverageSchema=z.object({expected:z.number().int().nonnegative(),computed:z.number().int().nonnegative(),notComputed:z.number().int().nonnegative()});
 const workflowSchema = z.object({
   workflow: z.string(),
   metrics: metricsSchema,
-  floor: metricsSchema,
+  floor: metricsSchema,coverage:coverageSchema.optional(),
 });
 export const complexitySchema = z.object({
   schemaVersion: z.literal(1),
@@ -31,10 +32,11 @@ export const complexitySchema = z.object({
               specVersion: z.string(),
               total: metricsSchema,
               floor: metricsSchema,
-              workflows: z.array(workflowSchema),
+              workflows: z.array(workflowSchema),coverage:coverageSchema.optional(),
               tasks: z.array(
                 z.object({
-                  space: z.enum(["full", "goalDirected", "navigationDirected"]),
+                  space: z.enum(["full", "goalDirected", "navigationDirected"]).nullable().default(null),
+                  status:z.enum(["computed","not-computed"]).default("computed"),reason:z.string().optional(),message:z.string().optional(),
                   exact: z.boolean(),
                 }),
               ),
