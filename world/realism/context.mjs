@@ -56,7 +56,7 @@ export function enrichRefill(original, {date,pharmacy,owner}) {
 }
 
 /** One shared, dated FHIR graph; List resources define the exact visible collections. */
-export function dayContext({seed,day,date,schedules,state,previous,population,charts}) {
+export function dayContext({seed,day,date,schedules,state,previous,population,charts,operationHistory=new Map()}) {
   const entries = new Map();
   const add = (r, persona, kind='list-context') => {
     tag(r,kind,`day-${day}`,...(persona?[persona]:[]));
@@ -67,18 +67,18 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   const allTasks = Object.values(schedules).flatMap(s=>s.tasks);
   const busy = new Set(allTasks.map(t=>t.patientId));
   const roster = [...population].sort((a,b)=>id(seed,day,a.id).localeCompare(id(seed,day,b.id)));
-  const choose = (p) => {
-    const q = roster.find(q=>!busy.has(q.id) && (p==='P4'?q.age<18:q.age>=18) && (!q.personaFits || q.personaFits[p]));
+  const choose = (p,eligible=()=>true) => {
+    const q = roster.find(q=>!busy.has(q.id) && (p==='P4'?q.age<18:q.age>=18) && (!q.personaFits || q.personaFits[p]) && eligible(q.id));
     if(!q) throw new Error(`Insufficient day context population for ${p}`);
     busy.add(q.id); return q.id;
   };
   const pmap = new Map(population.map(p=>[p.id,p]));
   const patient = pid => ref(`Patient/${pid}`,pmap.get(pid)?.name);
   const hospital = make('Organization','hospital',{active:true,name:'VGI Community Hospital'});
-  const pharmacy = make('Organization','pharmacy',{active:true,name:'VGI Community Pharmacy',type:[cc('pharm','Pharmacy','http://terminology.hl7.org/CodeSystem/organization-type')],telecom:[{system:'phone',value:'555-010-2040'}]});
+  const pharmacy = make('Organization','pharmacy',{active:true,name:'VGI Community Pharmacy',type:[cc('prov','Healthcare Provider','http://terminology.hl7.org/CodeSystem/organization-type')],telecom:[{system:'phone',value:'555-010-2040'}]});
   const lab = make('Organization','lab',{active:true,name:'VGI Central Laboratory'});
   const providers = {};
-  for(const p of ['P1','P2','P3','P4','P5','RN2','SURG2']) providers[p] = make('Practitioner',`provider-${p}`,{active:true,identifier:[{system:p==='SURG2'?SYSTEM:'https://vgi-health.example/fhir/sid/persona',value:p}],name:[{text:{P1:'Dr. Maya Chen, MD',P2:'Dr. Marcus Okafor, MD',P3:'Rosa Delgado, RN',P4:'Priya Raman, MSN, CPNP',P5:'Dr. James Whitaker, MD, FACS',RN2:'Ethan Park, RN',SURG2:'Dr. Taylor Morgan'}[p]}]});
+  for(const p of ['P1','P2','P3','P4','P5','RN2','SURG2','SURG3']) providers[p] = make('Practitioner',`provider-${p}`,{active:true,identifier:[{system:p.startsWith('SURG')?SYSTEM:'https://vgi-health.example/fhir/sid/persona',value:p}],name:[{text:{P1:'Dr. Maya Chen, MD',P2:'Dr. Marcus Okafor, MD',P3:'Rosa Delgado, RN',P4:'Priya Raman, MSN, CPNP',P5:'Dr. James Whitaker, MD, FACS',RN2:'Ethan Park, RN',SURG2:'Dr. Taylor Morgan',SURG3:'Dr. Dana Ruiz'}[p]}]});
   const units = {};
   for(const p of Object.keys(LABELS)) units[p] = make('Location',`unit-${p}`,{status:'active',mode:'instance',name:p==='P3'?'4 West Medical-Surgical Unit':LABELS[p],managingOrganization:ref(hospital),physicalType:cc('wa','Ward','http://terminology.hl7.org/CodeSystem/location-physical-type')},p);
   const list = (p,key,name,rows) => make('List',`${p}-${key}`,{status:'current',mode:'snapshot',title:name,code:cc(key,name),date:stamp(date,420),source:ref(providers[p]),entry:rows.map(r=>({item:ref(r)}))},p);
@@ -106,7 +106,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
     const appointments = patients.map((pid,i)=> {
       const start = SHIFTS[p]+i*25+(i>=8?45:0);
       const visit = p==='P4'?['Well Child Visit','Acute Visit','Asthma Follow-up'][i%3]:['Established Patient','Annual Wellness Visit','New Patient','Hospital Follow-up'][i%4];
-      const status = i===1?'noshow':i<4?'fulfilled':i===4?'arrived':i===5?'checked-in':'booked';
+      const status = !tasks.some(t=>t.patientId===pid)&&i===patients.length-1?'noshow':i<4?'fulfilled':i===4?'arrived':i===5?'checked-in':'booked';
       return make('Appointment',`${p}-slot-${i}`,{status,start:stamp(date,start),end:stamp(date,start+25),minutesDuration:25,appointmentType:cc(visit.toLowerCase().replaceAll(' ','-'),visit),serviceType:[{text:LABELS[p]}],description:`${visit} – ${LABELS[p]}`,participant:[{actor:patient(pid),status:'accepted'},{actor:ref(providers[p]),status:'accepted'},{actor:ref(units[p]),status:'accepted'}]},p);
     });
     list(p,'clinic-schedule',`${LABELS[p]} – Full Day`,appointments);
@@ -152,18 +152,26 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   list('P3','my-patients','My Patients – 4 West',wardRows.slice(0,5));
   list('P3','unit-census','4 West Unit Census',wardRows);
   const cases=[];
-  const actual=state.surgicalCases.filter(c=>c.orDay===day);
+  const actual=state.surgicalCases.filter(c=>c.orDay===day).sort((a,b)=>(a.orStartClock??450)-(b.orStartClock??450));
   for(let room=0;room<2;room++) {
     const location=make('Location',`or-room-${room}`,{status:'active',name:`Operating Room ${room+1}`,partOf:ref(units.P5)},'P5');
     for(let slot=0;slot<5;slot++) {
-      const index=room*5+slot,source=actual[index],pid=source?.patientId??choose('P5');
-      const procedure=source?.procedure??['laparoscopic cholecystectomy','laparoscopic inguinal hernia repair','excision of soft tissue mass','laparoscopic appendectomy','umbilical hernia repair'][slot];
-      const start=450+slot*105;
+      const index=room*5+slot,source=actual[index];
+      const procedure=source?.procedure??['laparoscopic cholecystectomy','laparoscopic inguinal hernia repair','excision of soft tissue mass','laparoscopic ventral hernia repair','umbilical hernia repair'][slot];
+      const removal=/cholecystectomy/i.test(procedure)?'cholecystectomy':/appendectomy/i.test(procedure)?'appendectomy':null;
+      const pid=source?.patientId??choose('P5',pid=>{
+        // Background OR cases use the imported cohort, separate from future task episodes.
+        if(!pid.startsWith('sh-'))return false;
+        return !removal||(!operationHistory.get(pid)?.has(removal)&&!charts.get(pid).bundle.entry.some(e=>e.resource.resourceType==='Procedure'&&JSON.stringify(e.resource.code).toLowerCase().includes(removal)));
+      });
+      if(removal) {if(!operationHistory.has(pid))operationHistory.set(pid,new Set());operationHistory.get(pid).add(removal);}
+      const start=source?.orStartClock??450+slot*105;
+      const end=source?.orEndClock??start+75;
       const e=encounter(pid,'P5',`or-enc-${index}`,'SS',stamp(date,start-60),source?.diagnosis??procedure,location);
-      const operatingProvider=room===0?providers.P5:providers.SURG2;
-      if(room===1) e.participant[0].individual=ref(operatingProvider);
-      const request=make('ServiceRequest',`or-case-${index}`,{status:slot===0?'completed':'active',intent:'order',category:[cc('387713003','Surgical procedure',SNOMED)],code:{text:title(procedure)},subject:patient(pid),encounter:ref(e),requester:ref(providers.P5),performer:[ref(operatingProvider)],locationReference:[ref(location)],occurrencePeriod:{start:stamp(date,start),end:stamp(date,start+75)},authoredOn:stamp(calendarAgo(date,7),600),note:[{text:slot===0?'Complete – PACU':slot===1?'In room':slot===2?'Pre-op ready':'Scheduled'}]},'P5');
-      make('Procedure',`or-procedure-${index}`,{status:slot===0?'completed':slot===1?'in-progress':'preparation',basedOn:[ref(request)],subject:patient(pid),encounter:ref(e),code:{text:title(procedure)},location:ref(location),performer:[{actor:ref(operatingProvider)}],...(slot<2?{performedPeriod:{start:stamp(date,start),...(slot===0?{end:stamp(date,start+75)}:{})}}:{})},'P5');
+      const operatingProvider=source?providers.P5:state.context.p5DayType==='or'&&room===0?providers.P5:room===0?providers.SURG2:providers.SURG3;
+      e.participant[0].individual=ref(operatingProvider);
+      const request=make('ServiceRequest',`or-case-${index}`,{status:slot===0?'completed':'active',intent:'order',category:[cc('387713003','Surgical procedure',SNOMED)],code:{text:title(procedure)},subject:patient(pid),encounter:ref(e),requester:ref(providers.P5),performer:[ref(operatingProvider)],locationReference:[ref(location)],occurrencePeriod:{start:stamp(date,start),end:stamp(date,end)},authoredOn:stamp(calendarAgo(date,7),600),note:[{text:slot===0?'Complete – PACU':slot===1?'In room':slot===2?'Pre-op ready':'Scheduled'}]},'P5');
+      make('Procedure',`or-procedure-${index}`,{status:slot===0?'completed':slot===1?'in-progress':'preparation',basedOn:[ref(request)],subject:patient(pid),encounter:ref(e),code:{text:title(procedure)},location:ref(location),performer:[{actor:ref(operatingProvider)}],...(slot<2?{performedPeriod:{start:stamp(date,start),...(slot===0?{end:stamp(date,end)}:{})}}:{})},'P5');
       antiplateletPlan(pid,e,index,source?.urgency==='urgent');
       cases.push(request);
     }

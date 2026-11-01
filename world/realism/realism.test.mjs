@@ -52,7 +52,12 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
     assert.equal(byKey.size,resources.length);
     const lists=resources.filter(r=>r.resourceType==='List');
     const find=(p,code)=>lists.find(r=>r.code.coding[0].code===code&&r.meta.tag.some(t=>t.code===p));
-    for(const p of ['P1','P4']) {const n=find(p,'clinic-schedule').entry.length; assert.ok(n>=12&&n<=18);}
+    for(const p of ['P1','P4']) {
+      const schedule=read(resolve(ROOT,`runs/world/2/day-${day}-${p}.json`));
+      const rows=find(p,'clinic-schedule').entry.map(e=>byKey.get(e.item.reference));
+      assert.ok(rows.length>=12&&rows.length<=18);
+      for(const appt of rows.filter(r=>r.status==='noshow'))assert.ok(!schedule.tasks.some(t=>['W1','W5'].includes(t.workflow)&&appt.participant[0].actor.reference==='Patient/'+t.patientId),'A seen task patient cannot be marked no-show');
+    }
     assert.ok(find('P2','ed-census').entry.length>=12&&find('P2','ed-census').entry.length<=20);
     assert.equal(find('P3','my-patients').entry.length,5);assert.equal(find('P3','unit-census').entry.length,12);
     const unitBeds=find('P3','unit-census').entry.map(row=>byKey.get(byKey.get(row.item.reference).location[0].location.reference).name);
@@ -109,3 +114,41 @@ test('regeneration is byte reproducible and never changes schedules or imported 
 });
 import { readFileSync } from 'node:fs';
 const __read=f=>readFileSync(resolve(ROOT,f),'utf8');
+
+test('background organ-removal cases respect imported history and prior context days',()=>{
+  const history=new Map();
+  const index=read(resolve(ROOT,'fixtures/synthetic-hospital/index.json'));
+  for(const p of index.patients) {
+    const b=read(resolve(ROOT,'fixtures/synthetic-hospital',p.file));
+    history.set(p.id,new Set(b.entry.filter(e=>e.resource.resourceType==='Procedure').flatMap(e=>['cholecystectomy','appendectomy'].filter(word=>JSON.stringify(e.resource.code).toLowerCase().includes(word)))));
+  }
+  for(let day=1;day<=10;day++) {
+    const state=read(resolve(ROOT,`runs/world/2/state-day-${day}.json`));
+    const rs=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
+    for(const r of rs.filter(r=>r.resourceType==='ServiceRequest'&&r.occurrencePeriod)) {
+      const pid=r.subject.reference.slice(8);
+      const original=state.surgicalCases.some(c=>c.orDay===day&&c.patientId===pid);
+      if(original)continue;
+      assert.ok(pid.startsWith('sh-'),'Background cases cannot preempt future task patients');
+      const removal=['cholecystectomy','appendectomy'].find(word=>r.code.text.toLowerCase().includes(word));
+      if(removal) {assert.ok(!history.get(pid).has(removal),`Repeated ${removal}`);history.get(pid).add(removal);}
+    }
+  }
+});
+
+test('department background cases do not double-book the clinic surgeon and actual case times are preserved',()=>{
+  for(let day=1;day<=10;day++) {
+    const state=read(resolve(ROOT,`runs/world/2/state-day-${day}.json`));
+    const rs=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
+    const providers=new Map(rs.filter(r=>r.resourceType==='Practitioner').map(r=>[`Practitioner/${r.id}`,r.identifier[0].value]));
+    for(const r of rs.filter(r=>r.resourceType==='ServiceRequest'&&r.occurrencePeriod)) {
+      const pid=r.subject.reference.slice(8);
+      const actual=state.surgicalCases.find(c=>c.orDay===day&&c.patientId===pid);
+      if(actual?.orStartClock!=null) {
+        const local=r.occurrencePeriod.start.slice(11,16).split(':').map(Number);
+        assert.equal(local[0]*60+local[1],actual.orStartClock);
+      }
+      if(!actual&&state.context.p5DayType!=='or')assert.notEqual(providers.get(r.performer[0].reference),'P5');
+    }
+  }
+});

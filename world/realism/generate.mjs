@@ -56,9 +56,10 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
   const generated=[];
   if(existsSync(resolve(world,'context'))) rmSync(resolve(world,'context'),{recursive:true});
   const manifest=read(resolve(world,'manifest.json'));
+  const operationHistory=new Map();
   for(const d of manifest.perDay) {
     const schedules=Object.fromEntries(['P1','P2','P3','P4','P5'].map(p=>[p,read(resolve(world,`day-${d.day}-${p}.json`))]));
-    const context=dayContext({seed:manifest.seed,day:d.day,date:d.date,schedules,state:read(resolve(world,`state-day-${d.day}.json`)),previous:read(resolve(world,`state-day-${d.day-1}.json`)),population,charts});
+    const context=dayContext({seed:manifest.seed,day:d.day,date:d.date,schedules,state:read(resolve(world,`state-day-${d.day}.json`)),previous:read(resolve(world,`state-day-${d.day-1}.json`)),population,charts,operationHistory});
     const file=`context/day-${String(d.day).padStart(2,'0')}.json`;
     write(resolve(world,file),context); generated.push(file);
   }

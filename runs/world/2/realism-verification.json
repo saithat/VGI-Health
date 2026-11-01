@@ -48,11 +48,11 @@
   },
   "checks": {
     "worldVitest": 95,
-    "clinicalAndReproducibility": 3,
+    "clinicalAndReproducibility": 5,
     "seedRegression": 7,
     "typecheck": "passed",
     "lint": "passed",
-    "manifestBytes": 12500359,
+    "manifestBytes": 12502694,
     "cohortFixtureIntegrity": {
       "patients": 150,
       "sha256Checks": 150,
@@ -70,7 +70,8 @@
         "Provenance": 150
       },
       "status": "passed"
-    }
+    },
+    "totalWorldChecks": 100
   },
   "knownBaselineFailure": {
     "command": "node --test scripts/synthetic-hospital/*.test.mjs",
@@ -90,15 +91,22 @@
     "updatesOnRepeat": 0,
     "sharedPatientCountBefore": 327,
     "sharedPatientCountAfter": 327,
-    "contextSha256": "5a3338c003bbba8076c6593af1424c00f7c15c878880da57ac0b088e03c7c5fb"
+    "contextSha256": "1d056a9244d7889f8c778bbb01c720ec066d971adacc12a8d5704f52d1d6bc46",
+    "unchangedOnRepeat": 5641
   },
   "clinicalCounts": {
     "dnrOrdersAcrossDays": 2,
-    "dropletOrdersAcrossDays": 16
+    "dropletOrdersAcrossDays": 16,
+    "backgroundOrganRemovalHistoryConflicts": 0,
+    "backgroundORSeparatedFromFutureTaskPatients": true,
+    "clinicDaySurgeonNotDoubleBooked": true,
+    "actualCaseTimesPreserved": true,
+    "seenClinicPatientsMarkedNoShow": 0
   },
   "days": [
     {
       "day": 1,
+      "sha256": "1d056a9244d7889f8c778bbb01c720ec066d971adacc12a8d5704f52d1d6bc46",
       "lists": [
         {
           "persona": "P1",
@@ -164,6 +172,7 @@
     },
     {
       "day": 2,
+      "sha256": "3155aee4da101202ce9eaa4e3abe5c078e38a0dbf2970b70df34592cdb9cd503",
       "lists": [
         {
           "persona": "P1",
@@ -229,6 +238,7 @@
     },
     {
       "day": 3,
+      "sha256": "17da76f1fe32dd9c3797db0c9c148b1dc1c096dff669ad8bcef72046271cca2d",
       "lists": [
         {
           "persona": "P1",
@@ -294,6 +304,7 @@
     },
     {
       "day": 4,
+      "sha256": "8dc3abbc94f88a2b42aab72b56fec2122d27dedc1779a240400fab7159dbfeca",
       "lists": [
         {
           "persona": "P1",
@@ -359,6 +370,7 @@
     },
     {
       "day": 5,
+      "sha256": "798793f87da284d2df9c2f19b25b94e566695f4750f268ed0ec05e74ee2d6893",
       "lists": [
         {
           "persona": "P1",
@@ -424,6 +436,7 @@
     },
     {
       "day": 6,
+      "sha256": "7d7ba51b04e732cb12e0a2edbbea6105edea77d7bd45f682ebcc1f55e7a00856",
       "lists": [
         {
           "persona": "P1",
@@ -489,6 +502,7 @@
     },
     {
       "day": 7,
+      "sha256": "c6b78fae93317cd2b9b73c9e5b0e6809d902648175bd6db2638a101a7ce0a228",
       "lists": [
         {
           "persona": "P1",
@@ -554,6 +568,7 @@
     },
     {
       "day": 8,
+      "sha256": "3034e38c6aedd15dc7ad64ad246b8a85c5b74b0feac27311840c841d92ea57e1",
       "lists": [
         {
           "persona": "P1",
@@ -619,6 +634,7 @@
     },
     {
       "day": 9,
+      "sha256": "9deb74d267c39bf6d7bf2e537b05f456ca45a345b245ea2f6eab86e7e45ecb9b",
       "lists": [
         {
           "persona": "P1",
@@ -684,6 +700,7 @@
     },
     {
       "day": 10,
+      "sha256": "911eaaadb909fed2e33cb3999149ada413923f8fcb1e7fb8f8718bce4f0df604",
       "lists": [
         {
           "persona": "P1",

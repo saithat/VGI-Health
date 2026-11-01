@@ -347,3 +347,13 @@ physicalType and partOf/managingOrganization; Practitioners carry identifier,
 active and name. Some resources also retain the existing worklist tag system
 https://vgi-health.example/fhir/CodeSystem/worklist. New views should select the
 explicit List membership, dated realism tags and referenced graph.
+
+Background OR patients come from the imported Synthetic Hospital cohort so
+they cannot preempt a future task patient's surgical episode. Background
+organ-removal cases exclude prior matching source procedures and matching
+procedures already scheduled in earlier context days. This prefix history is
+recreated deterministically without changing the task world state.
+
+Actual surgical requests retain source case start/end times. On P5 clinic days,
+background room cases belong to other surgeons; P5 retains any actual urgent
+case. Each room's performer reference supplies the operating surgeon.
