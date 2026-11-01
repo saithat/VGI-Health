@@ -1,16 +1,14 @@
 import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
 import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { MantineProvider } from "@mantine/core";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { programSchema, type Program } from "../../../agent/src/schema";
 import type { UiScreen } from "../ehr/ui/types";
-import { UiScreenView } from "../ehr/ui/Screen";
 import type { InterpFactory } from "./replay";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { readRunJson } from "./data";
 import { readArtifact, verifyRecordedBuild } from "../browser/data";
 import {
+  replayGeometrySchema,
   trajectoryIndexSchema,
   trajectorySchema,
   trajectoryBundleSchema,
@@ -18,111 +16,33 @@ import {
   type TrajectoryIndex,
 } from "./trajectories-data";
 import { replayTrajectory, type Trajectory } from "./trajectory-replay";
+import { contentHash } from "../core/buildBinding";
+import { pointerTravel, type GeometryAtlas } from "../metrics/geometry";
+import { TrajectoryFrame } from "./TrajectoryFrame";
 import "./trajectories.css";
 
 type Loaded = {
   presentations: PresentationBundle | null;
+  geometry: GeometryAtlas | null;
   task: Trajectory;
   program: Program;
   spec: unknown;
   display: unknown;
 };
-function SemanticFrame({
-  presentations,
-  screen,
-  highlight,
-  title,
-}: {
-  presentations: PresentationBundle | null;
-  screen: UiScreen;
-  highlight?: string | undefined;
-  title: string;
-}) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  const [doc, setDoc] = useState<Document | null>(null);
-  useEffect(() => {
-    // The painter normally uses its window. Inside a portal the replay frame
-    // owns scrolling, so screen transitions must reset that window explicitly.
-    doc?.defaultView?.scrollTo(0, 0);
-  }, [doc, screen.title]);
-  useLayoutEffect(() => {
-    if (!doc) return;
-    // This is a recorded frame. Only the playback controls may advance it.
-    for (const control of doc.querySelectorAll<HTMLElement>(
-      'button, input, select, textarea, [role="tab"]',
-    )) {
-      control.setAttribute("disabled", "");
-      control.setAttribute("aria-disabled", "true");
-      const reason =
-        "Recorded replay; use the playback controls above this EHR";
-      if (!control.title.includes(reason))
-        control.title = [control.title, reason].filter(Boolean).join(" · ");
-    }
-    const nodes = doc.querySelectorAll<HTMLElement>("[data-comp-id]");
-    nodes.forEach((node) => {
-      node.dataset.trajectoryHighlight = String(
-        node.dataset.compId === highlight,
-      );
-      if (node.dataset.compId === highlight)
-        node.scrollIntoView({ block: "nearest" });
-    });
-  }, [doc, screen, highlight]);
-  return (
-    <iframe
-      ref={frame}
-      title={title}
-      className="trajectory-frame"
-      srcDoc="<!doctype html><html><head></head><body></body></html>"
-      onLoad={() => {
-        const document = frame.current?.contentDocument;
-        if (!document) return;
-        document.head.replaceChildren(
-          ...Array.from(
-            window.document.head.querySelectorAll(
-              'style,link[rel="stylesheet"]',
-            ),
-          ).map((node) => node.cloneNode(true)),
-        );
-        const style = document.createElement("style");
-        style.textContent =
-          '[data-trajectory-highlight="true"]{outline:3px solid #e1a324!important;outline-offset:3px;box-shadow:0 0 0 5px #e1a32433!important}body{margin:0}';
-        document.head.append(style);
-        setDoc(document);
-      }}
-    >
-      {doc &&
-        createPortal(
-          <MantineProvider
-            getRootElement={() => doc.documentElement}
-            theme={{
-              components: {
-                ModalRoot: {
-                  defaultProps: { portalProps: { target: doc.body } },
-                },
-              },
-            }}
-          >
-            <UiScreenView
-              screen={screen}
-              onEvent={() => {}}
-              presentations={presentations}
-            />
-          </MantineProvider>,
-          doc.body,
-        )}
-    </iframe>
-  );
-}
 function Playback({
   loaded,
   count,
   factory,
   label,
+  speed,
+  metrics,
 }: {
   loaded: Loaded;
   count: number;
   factory: InterpFactory;
   label: string;
+  speed: number;
+  metrics: TrajectoryEntry["metrics"];
 }) {
   const result = useMemo(() => {
     const interp = factory(loaded.program);
@@ -141,18 +61,15 @@ function Playback({
     return { ...result, screen };
   }, [loaded, count, factory]);
   const next = loaded.task.trace[count];
-  const event = next?.event;
-  const touched =
-    event &&
-    Object.values(event).find((v) => v && typeof v === "object" && "comp" in v);
-  const highlight =
-    touched && typeof touched === "object" && "comp" in touched
-      ? String(touched.comp)
-      : event && "ack" in event
-        ? event.ack.alert
-        : undefined;
   const prefix = loaded.task.trace.slice(0, count);
   const ops = prefix.flatMap((e) => e.ops);
+  const travel = loaded.geometry
+    ? count === 0
+      ? 0
+      : pointerTravel(prefix, loaded.geometry)[loaded.task.id]?.mouseTravelPx
+    : count === loaded.task.trace.length
+      ? metrics.mouseTravelPx
+      : null;
   return (
     <article className="trajectory-side" aria-label={label}>
       <h3>
@@ -161,8 +78,11 @@ function Playback({
       <p className="trajectory-counters" aria-live="polite">
         {ops.filter((o) => o === "click").length} clicks ·{" "}
         {ops.filter((o) => o === "key").length} keys ·{" "}
-        {ops.filter((o) => o === "scroll").length} scrolls ·{" "}
-        {prefix.length} events
+        {ops.filter((o) => o === "scroll").length} scrolls · {prefix.length}{" "}
+        events ·{" "}
+        {typeof travel === "number"
+          ? `${travel} px mouse travel`
+          : "mouse travel —"}
       </p>
       <p className="trajectory-event">
         {next ? `Next: ${JSON.stringify(next.event)}` : "Trajectory finished"}
@@ -173,11 +93,13 @@ function Playback({
           {JSON.stringify(result.firstMismatch ?? loaded.task.nativeMismatch)}
         </p>
       )}
-      <SemanticFrame
+      <TrajectoryFrame
         presentations={loaded.presentations}
         title={`${label} EHR`}
         screen={result.screen}
-        highlight={highlight}
+        trace={loaded.task.trace}
+        count={count}
+        speed={speed}
       />
     </article>
   );
@@ -196,6 +118,10 @@ function TaskPlayback({
   const [compare, setCompare] = useState(false);
   const [count, setCount] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState(1);
+  const player = useRef<HTMLDivElement>(null);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreenError, setFullscreenError] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
@@ -204,7 +130,7 @@ function TaskPlayback({
       return () => {
         active = false;
       };
-    async function load(file: string) {
+    async function load(file: string, metrics: TrajectoryEntry["metrics"]) {
       if (!factory) throw new Error("Loading the real WASM interpreter…");
       const task = trajectorySchema.parse(
         await readRunJson(`/runs/${runId}/trajectories/${file}`),
@@ -218,6 +144,31 @@ function TaskPlayback({
         task.context.programPath,
         program,
       );
+      let geometry: GeometryAtlas | null = null;
+      if (typeof metrics.mouseTravelPx === "number") {
+        const hash = await contentHash(program);
+        const componentsHash = await contentHash(presentations ?? []);
+        // Geometry is optional evidence. Never substitute made-up pixel totals.
+        for (const suffix of [`.${componentsHash}`, ""]) {
+          try {
+            const atlas = replayGeometrySchema.parse(
+              await readRunJson(
+                `/runs/${runId}/geometry/${hash}${suffix}.json`,
+              ),
+            );
+            if (
+              atlas.programHash === hash &&
+              (!atlas.componentsSha256 ||
+                atlas.componentsSha256 === componentsHash)
+            ) {
+              geometry = atlas;
+              break;
+            }
+          } catch {
+            /* Historical run may have totals but no geometry atlas. */
+          }
+        }
+      }
       const bundle = trajectoryBundleSchema.parse(fixture);
       const parsedProgram = programSchema.parse(program);
       let resources: { resourceType: string; id?: string | undefined }[] =
@@ -252,13 +203,14 @@ function TaskPlayback({
       if (projection.error) throw new Error(String(projection.error));
       return {
         task,
+        geometry,
         program: parsedProgram,
         presentations,
         spec,
         display: projection.display,
       };
     }
-    void load(entry.file)
+    void load(entry.file, entry.metrics)
       .then((value) => {
         if (active) setLoaded(value);
       })
@@ -266,7 +218,7 @@ function TaskPlayback({
         if (active) setError(String(e));
       });
     if (compare && entry.baseline)
-      void load(entry.baseline.file)
+      void load(entry.baseline.file, entry.baseline.metrics)
         .then((value) => {
           if (active) setBaseline(value);
         })
@@ -292,12 +244,56 @@ function TaskPlayback({
           }
           return n + 1;
         }),
-      500,
+      1000 / speed,
     );
     return () => window.clearInterval(timer);
-  }, [playing, max]);
+  }, [playing, max, speed]);
+  useEffect(() => {
+    const changed = () =>
+      setFullscreen(document.fullscreenElement === player.current);
+    document.addEventListener("fullscreenchange", changed);
+    return () => document.removeEventListener("fullscreenchange", changed);
+  }, []);
+  useEffect(() => {
+    const keydown = (event: KeyboardEvent) => {
+      if (
+        event.key === "Escape" &&
+        document.fullscreenElement === player.current
+      ) {
+        void document.exitFullscreen();
+        return;
+      }
+      if (
+        !loaded ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        (event.target instanceof Element &&
+          event.target.closest(
+            "input, select, textarea, [contenteditable=true]",
+          ))
+      )
+        return;
+      if (event.code === "Space") {
+        event.preventDefault();
+        if (count >= max) setCount(0);
+        setPlaying((value) => !value);
+      } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        setPlaying(false);
+        setCount((value) =>
+          Math.max(
+            0,
+            Math.min(max, value + (event.key === "ArrowRight" ? 1 : -1)),
+          ),
+        );
+      }
+    };
+    window.addEventListener("keydown", keydown);
+    return () => window.removeEventListener("keydown", keydown);
+  }, [loaded, count, max]);
   return (
-    <div className="trajectory-playback">
+    <div ref={player} className="trajectory-playback" tabIndex={-1}>
       <h3>
         {entry.id} · {entry.workflow} · rev {entry.programVersion} /{" "}
         {entry.release}
@@ -306,7 +302,11 @@ function TaskPlayback({
         Patient {entry.patient.syntheaId} ·{" "}
         {entry.completed ? "Completed" : "Incomplete"}
       </p>
-      <div className="trajectory-controls">
+      <div
+        className="trajectory-controls trajectory-transport"
+        role="group"
+        aria-label="Playback controls"
+      >
         <button
           disabled={!count && !playing}
           title={!count && !playing ? "Already at the first event" : undefined}
@@ -366,6 +366,42 @@ function TaskPlayback({
         <output aria-label="Replay position">
           {count} / {max}
         </output>
+        <label>
+          Speed{" "}
+          <select
+            aria-label="Playback speed"
+            value={speed}
+            onChange={(event) => setSpeed(Number(event.target.value))}
+          >
+            {[0.5, 1, 2, 4].map((value) => (
+              <option key={value} value={value}>
+                {value}×
+              </option>
+            ))}
+          </select>
+        </label>
+        <button
+          disabled={!loaded}
+          onClick={() => {
+            setFullscreenError("");
+            if (document.fullscreenElement === player.current)
+              void document.exitFullscreen();
+            else if (player.current?.requestFullscreen)
+              void player.current
+                .requestFullscreen()
+                .catch(() =>
+                  setFullscreenError(
+                    "Fullscreen is unavailable in this browser. The fixed 1440×900 viewport remains active.",
+                  ),
+                );
+            else
+              setFullscreenError(
+                "Fullscreen is unavailable in this browser. The fixed 1440×900 viewport remains active.",
+              );
+          }}
+        >
+          {fullscreen ? "Exit fullscreen" : "Fullscreen"}
+        </button>
         {entry.baseline && (
           <label>
             <input
@@ -380,10 +416,13 @@ function TaskPlayback({
           </label>
         )}
       </div>
+      {fullscreenError && <p role="status">{fullscreenError}</p>}
       <p className="trajectory-caption">
-        Gold outlines mark the next recorded component. Replay controls drive
-        the real interpreter. Clinical episode resets and receipt carry are
-        preserved.
+        Space: play/pause · ←/→: step · Esc: exit fullscreen. Fixed 1440×900
+        viewport. Gold outlines mark the next recorded component. Replay
+        controls drive the real interpreter. Clinical episode resets and receipt
+        carry are preserved. Mouse travel uses recorded geometry when available,
+        starting this replay at viewport center; a dash means unavailable.
       </p>
       {compare && (
         <p>
@@ -401,14 +440,18 @@ function TaskPlayback({
             factory={factory}
             count={Math.min(count, entry.eventCount)}
             label="Recorded"
+            speed={speed}
+            metrics={entry.metrics}
           />
         )}
-        {compare && baseline && factory && (
+        {compare && baseline && factory && entry.baseline && (
           <Playback
             loaded={baseline}
             factory={factory}
             count={Math.min(count, baseline.task.trace.length)}
             label="Baseline rev 0"
+            speed={speed}
+            metrics={entry.baseline.metrics}
           />
         )}
       </div>
@@ -546,7 +589,8 @@ export function Trajectories({
             <span>
               {t.metrics.clicks}/{t.theoreticalMinimum.clicks} clicks ·{" "}
               {t.metrics.keystrokes}/{t.theoreticalMinimum.keystrokes} keys ·{" "}
-              {t.metrics.mouseTravelPx??"—"}px mouse · {t.metrics.scrolls} scrolls / {t.metrics.scrollPx??"—"}px ·{" "}
+              {t.metrics.mouseTravelPx ?? "—"}px mouse · {t.metrics.scrolls}{" "}
+              scrolls / {t.metrics.scrollPx ?? "—"}px ·{" "}
               {t.completed ? "Completed" : "Incomplete"}
             </span>
           </button>

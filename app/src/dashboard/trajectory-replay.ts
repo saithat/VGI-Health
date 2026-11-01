@@ -109,3 +109,28 @@ export function replayTrajectory(
     };
   return { state, args, eventsVerified, firstMismatch };
 }
+
+/** Component IDs are opaque and must be matched as data, not CSS selectors. */
+export function eventTarget(
+  event: TrajectoryEvent["event"] | undefined,
+): string | undefined {
+  if (!event) return undefined;
+  for (const payload of Object.values(event)) {
+    if (payload && typeof payload === "object") {
+      if ("comp" in payload) return String(payload.comp);
+      if ("alert" in payload) return String(payload.alert);
+    }
+  }
+  return undefined;
+}
+
+export function entryText(event: TrajectoryEvent["event"]): string | null {
+  if ("search" in event) return event.search.query;
+  if (!("enter" in event)) return null;
+  const value = event.enter.value;
+  if ("text" in value) return value.text.s;
+  if ("code" in value) return value.code.c;
+  if ("user" in value) return value.user.u;
+  if ("qty" in value) return String(value.qty.tenths / 10);
+  return String(value.flag.b);
+}

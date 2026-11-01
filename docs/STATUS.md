@@ -858,7 +858,35 @@ event slice and clinical episode contexts: facts input plus `init`/clock seeds.
 The dashboard fetches the index only after opening Trajectories and task files
 only on selection. Persona controls, day, and task search choose the replay.
 Play/pause/step/scrub drive the real WASM interpreter and semantic UI painter;
-gold outlines show the next event's component and counters accumulate trace ops.
+gold outlines show the next actionable component and counters accumulate trace ops.
+
+Playback uses a dedicated iframe document at a fixed logical 1440×900 viewport,
+scaled with a CSS transform to the available area. Its painter window, media
+queries, dialogs and scrolling stay inside that recording; browser resizing
+never reflows the EHR or moves the surrounding dashboard. Fullscreen uses the
+Fullscreen API with a slim transport overlay; Esc exits. Play/pause, step,
+reset, event scrubbing and 0.5×/1×/2×/4× speed work in the shared replay component.
+Space toggles playback and arrow keys step, while form controls retain their
+native keyboard behavior. A component-center cursor and click ripple animate
+before the interpreter's resulting screen appears; entered values animate in
+the actual field. Scroll-only events in compact recordings contain no pixel
+offset, so playback uses the geometry model's clamped one-container-viewport
+page-down rule and reconstructs position when seeking. Optional geometry atlases
+provide accumulating mouse-travel pixels; unavailable measurements stay a dash.
+The archived run remains supported without geometry or new recording fields.
+
+The playback regression checks logical and displayed frame size after ten steps,
+logical size after browser resize, frame-only scrolling, typing, shortcuts and
+fullscreen entry/exit on desktop and narrow Chromium. Captures:
+`app/shots/final/trajectory-playback.png` and
+`app/shots/final/trajectory-playback-fullscreen.png`.
+The current checkout has no `core-10day` recording yet; the loader and playback
+use the selected run's paths and the same trajectory schema without a run-ID
+special case. An aliased `core-10day` recording fixture exercises the alternate
+run paths and optional geometry, including preservation of unavailable pixels;
+it does not claim to be a real new run. Playback gates: app build and lint,
+298 app unit tests (using `EHR_BIN` from the matching existing native build),
+and all six desktop/narrow trajectory tests against the production preview.
 
 Reconstruction calls production `loadFacts`, `taskEpisodes`, goal derivation,
 `init` and `step` through `scripts/trajectories/Contexts.lean`, outside `lean/`.

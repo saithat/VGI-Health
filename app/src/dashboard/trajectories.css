@@ -87,10 +87,17 @@
 }
 .trajectory-side h3 {
   margin: 10px 0;
+  height: 22px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .trajectory-counters {
   font-size: 13px;
   font-variant-numeric: tabular-nums;
+  line-height: 18px;
+  height: 36px;
+  overflow: hidden;
 }
 .trajectory-event {
   font-family: monospace;
@@ -98,16 +105,112 @@
   min-height: 28px;
   overflow-wrap: anywhere;
 }
-.trajectory-frame {
-  display: block;
+.trajectory-stage {
+  position: relative;
   width: 100%;
-  height: 690px;
+  height: clamp(240px, 65vh, 900px);
+  overflow: hidden;
+  background: #152a33;
   border: 1px solid #cbd8dc;
   border-radius: 8px;
+  contain: layout paint;
+}
+.trajectory-frame {
+  position: absolute;
+  display: block;
+  width: 1440px;
+  min-width: 1440px;
+  max-width: none;
+  height: 900px;
+  min-height: 900px;
+  border: 0;
   background: #f6f8f9;
+  transform-origin: top left;
+  pointer-events: none;
+}
+.trajectory-playback:fullscreen {
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  padding: 12px 16px 76px;
+  border: 0;
+  background: #10242d;
+  color: #edf7fa;
+  overflow: hidden;
+}
+.trajectory-playback:fullscreen > h3,
+.trajectory-playback:fullscreen > p,
+.trajectory-playback:fullscreen .trajectory-event,
+.trajectory-playback:fullscreen .trajectory-side > h3 {
+  display: none;
+}
+.trajectory-playback:fullscreen .trajectory-panels {
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr);
+}
+.trajectory-playback:fullscreen .trajectory-side {
+  display: grid;
+  grid-template-rows: 26px minmax(0, 1fr);
+  min-height: 0;
+}
+.trajectory-playback:fullscreen .trajectory-counters {
+  margin: 0;
+  text-align: center;
+}
+.trajectory-playback:fullscreen .trajectory-stage {
+  height: 100%;
+  border-color: #3d5661;
+}
+.trajectory-playback:fullscreen .trajectory-transport {
+  position: absolute;
+  z-index: 5;
+  bottom: 10px;
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  padding: 8px 12px;
+  min-height: 38px;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #526975;
+  border-radius: 8px;
+  background: #203a46ee;
+  box-shadow: 0 4px 16px #0004;
+}
+.trajectory-playback:fullscreen .trajectory-transport input[type="range"] {
+  width: clamp(70px, 18vw, 280px);
+}
+.trajectory-event {
+  height: 32px;
+  overflow: hidden;
 }
 @media (max-width: 1000px) {
   .trajectory-panels.compare {
     grid-template-columns: minmax(0, 1fr);
   }
+  .trajectory-playback:fullscreen .trajectory-panels.compare {
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .trajectory-transport {
+    gap: 8px;
+  }
+  .trajectory-playback:fullscreen {
+    padding-bottom: 150px;
+  }
+  .trajectory-playback:fullscreen .trajectory-transport {
+    left: 4px;
+    right: 4px;
+  }
+}
+
+.trajectory-transport output {
+  width: 10ch;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.trajectory-transport button {
+  min-width: 58px;
 }
