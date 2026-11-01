@@ -40,13 +40,16 @@ def worklist : Screen :=
   let s := "w4Worklist"
   { id := s, title := "Shift worklist", workflow := "W4"
     components := frame s ++ [
-      table s "work" "shiftWorklist" "Due and overdue",
+      { group s "census" "My Patients" (collapsible := false) with tag := "layout.overview.present.table" },
+      { table s "work" "shiftWorklist" "Assigned patients" (parent := some "census") with tag := "present.table" },
+      group s "unitContext" "Unit Census" (startCollapsed := true),
+      { table s "unitCensus" "unitCensus" "4 West — all patients" (parent := some "unitContext") with tag := "present.table" },
       table s "newOrders" "newOrders" "New orders since last shift",
       panel s "handoff" "handoffSummary" "Last handoff",
       group s "allergyGroup" "Allergies",
       panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
       reviewBtn s "allergyList" "Mark allergies reviewed (start of shift)" (parent := some "allergyGroup"),
-      goto s "toMar" "w4Mar" "Open MAR"
+      { goto s "toMar" "w4Mar" "Open MAR" (parent := some "census") with tag := "present.row|" ++ cid s "work" ++ "|0" }
     ] }
 
 /-- The MAR grid, with PRN history, glucose, and coagulation labs on tabs. -/
