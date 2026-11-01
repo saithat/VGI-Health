@@ -103,8 +103,9 @@ UiScreen. The old PageNode API remains available for existing integrations.
 Use `lean/generated/ehr-types.ts`; the JSON encoding is Lean's derived encoding.
 
 UiScreen owns one banner landmark (name, human-readable DOB, MRN keys), real goto-button nav,
-a workspace beginning with a workflow stepper, a clinical side column, and an
-optional modal. JSON key order has no layout meaning: the painter must place the
+a workspace with an optional progress strip, a clinical side column, and an
+optional modal. Clinical activity tags suppress the progress strip in favor of
+their existing section navigation. JSON key order has no layout meaning: the painter must place the
 banner first. Missing identifiers remain empty; the renderer never invents them.
 
 The interpreter resolves visibility, collapsed ancestors, selected tabs, flags,
@@ -120,8 +121,13 @@ It never changes interpreter state, guard outcomes, or original component IDs.
 The supplement/default summaries use empty comp IDs; program side controls retain their real IDs. Hidden-id
 T10 applies to nonempty component IDs. D3 covers workspace, side, navigation, and modal.
 D4 filters passive/unknown modal IDs even in externally supplied malformed states.
-D6 copies raw provenance/human-only/pending flags exactly; the painter may label
-the provenance but must not infer or modify it. Pending fields get a confirm button.
+D6 copies raw provenance/human-only/pending flags exactly. Optional
+`UiScreen.fieldSources` pairs each shown sourced field's component ID with its
+Lean-produced public source caption. The painter displays that caption verbatim
+and attaches it as the field's accessible description; it does not interpret the
+machine provenance key. The original field provenance remains intact. Older
+JSON without this metadata retains its original caption. Pending fields keep
+their existing confirm button. No capture, confirmation, receipt or D-rule is added.
 
 Button roles `confirm` and `ack` select their named events. `toggle` uses the
 existing Event.click for group headers; `primary`, `secondary`, `nav`, and `macro`

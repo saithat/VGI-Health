@@ -573,7 +573,7 @@ inductive UiNode
   | stepper  (steps : List (String × String)) (current : Nat)               -- (screenId, label)
   | field    (comp : CompId) (label : String) (kind : String) (value : Option String) (unit : Option String)
              (provenance : Option String) (pendingConfirm : Bool) (humanOnly : Bool) (required : Bool)
-  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- "list" | "table" | "trend" | "summary"
+  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- list/table/trend/summary/document/status
              (rows : List (List (String × String)))                          -- every relevant record (T11)
   | alert    (comp : CompId) (alertId : AlertId) (label : String) (severity : String) -- inline only
   | button   (comp : CompId) (label : String) (role : String) (enabled : Bool) (blockedReason : Option String) (hotkey : Option String)
@@ -582,6 +582,7 @@ inductive UiNode
 
 structure UiScreen where
   screen? : Option ScreenId := none -- scroll lifecycle only, never visible
+  fieldSources? : Option (List (CompId × String)) := none -- public source captions; raw field provenance stays intact
   banner : List (String × String)      -- patient banner fields (always first; D1)
   nav : List (String × List (String × String))   -- groups: (groupLabel, [(compId, label)])
   title : String
@@ -591,6 +592,12 @@ structure UiScreen where
 ```
 
 `renderUi : Spec → Program → Facts → Display → User → State → UiScreen` (Init-only, exported to WASM as `ehr_render_ui`).
+
+`fieldSources` supplies Lean's public caption for an existing sourced field. The
+painter renders it verbatim and uses it as the field's accessible description.
+The original field still carries its exact machine provenance, value/unit,
+human-only flag and pending-confirmation flag. This optional metadata adds no
+control or state transition; older JSON remains accepted. D6 is unchanged.
 
 `UiCodeChoice` carries the exact code and its display label. `valueSet` wraps the
 unchanged field; selecting a choice sends its original entry event. Searching a
