@@ -549,3 +549,22 @@ GS1 expiry parsing shares that exact full-date grammar. Validation was not
 weakened: leap years, invalid dates, exact widths and public rejection preserving
 the original state are regression-tested. All 252 native/WASM feature API
 comparisons pass with this implementation.
+
+## Render: semantic UI boundary (section 10)
+
+- Added Init-only `UiNode` / `UiScreen` exactly as section 10, with JSON instances
+  and generated TypeScript exports. No field or constructor was changed.
+- `ehr_render_ui` and native `ehr render-ui` accept the existing RenderInput
+  envelope. `ehr render-screens --ui` emits semantic screen variants.
+- Empty action/field labels get a readable fallback. Extra button roles `toggle`,
+  `confirm`, and `ack` identify the existing interpreter events without adding
+  fields to the owner-approved node types. `nav` and `macro` retain their specified
+  roles. Tab labels occupy actual indexes, including sparse tab indexes.
+- The official GenTS generator already exports Render.Types after main's merge;
+  no core generator change was necessary. Generated output is regenerated.
+- Shown items are retained exactly once, with no semantic deduplication. Groups
+  and selected tab bodies nest children in component order; malformed orphan or
+  out-of-order components remain visible at workspace level. A component banner
+  is clinical info, not an additional banner landmark.
+- `NavSane` is a decidable checker-side predicate in Render.NavRules, not a
+  universal renderer theorem. Its evaluation reads the committed P1 release.

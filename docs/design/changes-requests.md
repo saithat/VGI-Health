@@ -745,3 +745,12 @@ run no Lake commands, and the report asserts disjoint full coverage and identica
 WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
+
+## Render → content/checker: section 10 navigation report
+
+`Ehr.Render.NavRules.NavSane spec prog` is ready to wire into certification.
+`#eval reportReleaseNav` reads `releases/v1/personas/P1.json` and its spec.
+Current result is **false**: W1 has 14 entries, W3 17, W6 18, exceeding D5's
+12-entry group limit. Labels within all groups are unique. Render retains every
+screen and does not silently truncate navigation. Content/checker should agree
+on a conforming program/navigation grouping before certifying this release.
