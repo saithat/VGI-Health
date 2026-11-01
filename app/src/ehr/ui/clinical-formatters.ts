@@ -160,6 +160,7 @@ export function clinicalTimestamp(raw: string): string {
   return year ? short.replace(/^(\d{2}\/\d{2})/, `$1/${year}`) : short;
 }
 export function controlCaption(raw: string): string {
+  if (raw.startsWith("Open chart:")) return "Open chart";
   return raw
     .replace(/\s*\((?:human entry|human entry only)\)$/i, "")
     .replace(/^Confirm prefilled value$/i, "Confirm")

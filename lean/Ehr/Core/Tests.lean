@@ -283,6 +283,10 @@ end ScheduleII
 
 namespace EventWindow
 
+/-- A real drug selection keeps the temporal example nonempty. -/
+def eventOrder : State := (step spec program facts user .human Ehr.Examples.TinyTests.atOrder
+  (.enter "drugField" (.code "amoxicillin"))).1
+
 /-- Tiny: an assessment completed within 24 hours before a planned procedure. -/
 def requirement : TemporalReq :=
   { id := "preop-assessment", subject := { event := "assessment-complete", artifactKey := "assessment" }
@@ -305,23 +309,23 @@ def tinySpec : Spec :=
 def stale : Facts :=
   { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
       if e.event == "assessment-complete" then { e with time := 8559 } else e) }
-#guard temporalStatus context atOrder requirement == .met
-#guard temporalStatus stale atOrder requirement == .invalid
-#guard temporalStatus { context with epochMinute? := some 10001 } atOrder requirement == .met
-#guard temporalStatus { stale with epochMinute? := some 10001 } atOrder requirement == .overdue
-#guard temporalStatus { context with episodeId? := some "other" } atOrder requirement == .missing
-#guard temporalStatus { context with artifactBindings? := some [] } atOrder requirement == .missing
+#guard temporalStatus context eventOrder requirement == .met
+#guard temporalStatus stale eventOrder requirement == .invalid
+#guard temporalStatus { context with epochMinute? := some 10001 } eventOrder requirement == .met
+#guard temporalStatus { stale with epochMinute? := some 10001 } eventOrder requirement == .overdue
+#guard temporalStatus { context with episodeId? := some "other" } eventOrder requirement == .missing
+#guard temporalStatus { context with artifactBindings? := some [] } eventOrder requirement == .missing
 #guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es ++ es) }
-  atOrder requirement == .missing
+  eventOrder requirement == .missing
 #guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
-  if e.event == "assessment-complete" then { e with version := 1 } else e) } atOrder requirement == .missing
+  if e.event == "assessment-complete" then { e with version := 1 } else e) } eventOrder requirement == .missing
 #guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
-  if e.event == "assessment-complete" then { e with patient := "other" } else e) } atOrder requirement == .missing
-#guard !commitGuard tinySpec program stale user atOrder "signOrders"
-#guard (clickCommit tinySpec program stale user atOrder "signOrders").1.commits == []
-#guard commitGuard tinySpec program context user atOrder "signOrders"
-#guard (clickCommit tinySpec program context user atOrder "signOrders").1.commits == ["signOrders"]
-#guard (view tinySpec program stale user atOrder).obligations? ==
+  if e.event == "assessment-complete" then { e with patient := "other" } else e) } eventOrder requirement == .missing
+#guard !commitGuard tinySpec program stale user eventOrder "signOrders"
+#guard (clickCommit tinySpec program stale user eventOrder "signOrders").1.commits == []
+#guard commitGuard tinySpec program context user eventOrder "signOrders"
+#guard (clickCommit tinySpec program context user eventOrder "signOrders").1.commits == ["signOrders"]
+#guard (view tinySpec program stale user eventOrder).obligations? ==
   some [{ commit := "signOrders", requirement := "preop-assessment", status := .invalid }]
 #guard roundTrips requirement && roundTrips context
 -- Friday to Monday: one business date crossed, even with duplicate calendar rows.
@@ -334,7 +338,7 @@ def calendarFacts : Facts :=
 
 -- Historical versions do not make unique current-version evidence ambiguous.
 #guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es =>
-  es ++ es.map (fun e => { e with version := 0 })) } atOrder requirement == .met
+  es ++ es.map (fun e => { e with version := 0 })) } eventOrder requirement == .met
 -- 07:00 to 09:00 UTC crosses local midnight in UTC-8, although not UTC midnight.
 #guard timeDistance { context with calendars? := some [{ id := "local", firstDay := -1, lastDay := 1, workingDays := [0], utcOffsets? := some [(-10000, -480)] }] } (.businessDays "local") 420 540 == some 1
 #guard businessLocalDay { id := "local", firstDay := 0, lastDay := 2, workingDays := [], utcOffsets? := some [(0, -480), (1440, -420)] } 1860 == some 1
@@ -345,7 +349,7 @@ def calendarFacts : Facts :=
 #guard temporalOrdering { requirement with metric := .businessDays "hospital", direction? := some .after } 10000 10001
 #guard !temporalOrdering { requirement with metric := .businessDays "hospital", direction? := some .after } 10000 9999
 #guard temporalStatus { calendarFacts with epochMinute? := some 10001, eventEvidence? := calendarFacts.eventEvidence?.map (fun es => es.filter (·.event != "assessment-complete")) }
-  atOrder { requirement with metric := .businessDays "hospital", direction? := some .before } == .overdue
+  eventOrder { requirement with metric := .businessDays "hospital", direction? := some .before } == .overdue
 end EventWindow
 
 namespace PatientPredicate
@@ -532,7 +536,8 @@ def tinyProgram : Program :=
 def context : Facts := { EventWindow.context with infoPayloads? := some [payload] }
 def initial : State := init tinySpec tinyProgram context user
 def selected : State := { initial with captured :=
-  [{ element := "ready", slot := 0, value := .flag true, byHuman := true, confirmed := true }] }
+  [{ element := "ready", slot := 0, value := .flag true, byHuman := true, confirmed := true },
+   { element := "drug", slot := 0, value := .code "amoxicillin", byHuman := true, confirmed := true }] }
 #guard payloadComplete payload contract
 #guard commitGuard tinySpec tinyProgram context user selected "signOrders"
 #guard (step tinySpec tinyProgram context user .human selected (.click "sign")).1.commits == ["signOrders"]

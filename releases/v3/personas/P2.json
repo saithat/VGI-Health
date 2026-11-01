@@ -2575,6 +2575,7 @@
      "kind": {"group": {"startCollapsed": true, "collapsible": true}},
      "id": "w3Disposition.chart.includeResolved"}]}],
  "role": "physician",
+ "patientSelection": true,
  "owner": "P2",
  "macros":
  [{"steps":

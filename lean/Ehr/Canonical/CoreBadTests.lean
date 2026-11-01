@@ -15,11 +15,12 @@ def opioid : State := run (opioidPath)
 /-- A program variant without the sign-screen report, for waiver/receipt tests. -/
 def exemptionProgram : Program := canonicalV1.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
 /-- Enter an exemption while still in the composer, then return to sign. -/
-def withExemption : State := more (run (opioidPath) (p := exemptionProgram))
+def exemptionFacts : Facts := { adult with record := [("facilityKind", "general-acute-care"), ("administrationOnPremises", "true")] }
+def withExemption : State := more (run (opioidPath) (p := exemptionProgram) (f := exemptionFacts))
   [.click "w1Sign.edit", .enter "w1Orders.curesExemptionReason" (.code "admin-in-facility"),
-   .click "w1Orders.toSign", .click "w1Verify.continue"] (p := exemptionProgram)
+   .click "w1Orders.toSign", .click "w1Verify.continue"] (p := exemptionProgram) (f := exemptionFacts)
 #guard Specs.ruleProfile == .full || (cap withExemption "curesExemptionReason").any (·.byHuman)
-#guard Specs.ruleProfile == .full || (finish withExemption "w1Sign" "signOrders" (p := exemptionProgram)).commits == ["signOrders"]
+#guard Specs.ruleProfile == .full || (finish withExemption "w1Sign" "signOrders" (p := exemptionProgram) (f := exemptionFacts)).commits == ["signOrders"]
 /-- A human views the composer's CURES tab and creates a fresh receipt. -/
 def withCuresReceipt : State := more (run (opioidPath) (p := exemptionProgram))
   [.click "w1Sign.edit", .selectTab "w1Orders.orderInfo" 1,

@@ -29,6 +29,7 @@ import {
   formatProvenance,
   severityTone,
   statusTone,
+  sectionTone,
 } from "./display";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
@@ -170,6 +171,7 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
     <Paper
       component="section"
       data-section-id={node.id}
+      data-section-tone={sectionTone(node.title)}
       role="region"
       aria-label={node.title}
       withBorder

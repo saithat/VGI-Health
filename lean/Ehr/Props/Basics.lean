@@ -155,7 +155,7 @@ def Waived (s : State) (rq : ReviewReq) : Prop :=
 /-- Review requirement `rq` is met in state `s`: it does not apply, or its
 info is shown, or a valid receipt covers it, or a human entered its waiver. -/
 def ReviewMetIn (ep : Episode) (s : State) (rq : ReviewReq) : Prop :=
-  Applies ep s rq.when → InfoShown ep s rq.info ∨ ReceiptCovers ep s rq ∨ Waived s rq
+  Applies ep s rq.when → InfoShown ep s rq.info ∨ ReceiptCovers ep s rq ∨ (Waived s rq ∧ waiverEligible ep.facts s rq.waivedBy? = true)
 
 /-- A captured value counts for element `el`: it is for `el`, confirmed,
 valid for the element's kind (the right unit, a checked flag, a matching

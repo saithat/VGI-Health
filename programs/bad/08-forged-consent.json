@@ -14350,6 +14350,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w7Review"}}}},
      "id": "w7Decision.toReview"}]}],
  "role": "surgeon",
+ "patientSelection": true,
  "owner": "seed8",
  "macros":
  [{"steps":

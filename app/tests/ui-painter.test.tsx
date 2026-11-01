@@ -748,7 +748,7 @@ describe("semantic EHR painter", () => {
       ].map(statusTone),
     ).toEqual([
       "gray",
-      "blue",
+      "yellow",
       "red",
       "green",
       "yellow",
@@ -765,11 +765,11 @@ describe("semantic EHR painter", () => {
     expect(statusTone("In progress")).toBe("blue");
     expect(["interruptive", "passive", "removable"].map(severityTone)).toEqual([
       "red",
-      "blue",
+      "yellow",
       "yellow",
     ]);
     expect(severityTone("severe")).toBe("red");
-    expect(severityTone("warning")).toBe("yellow");
+    expect(severityTone("warning")).toBe("orange");
     const { container } = paint([
       {
         info: {

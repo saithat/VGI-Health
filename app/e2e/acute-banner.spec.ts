@@ -1,3 +1,4 @@
+import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 
 for (const [persona, activity, commit] of [
@@ -14,6 +15,7 @@ for (const [persona, activity, commit] of [
     await page.goto(
       `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
+    await enterPatientChart(page);
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });
@@ -74,6 +76,7 @@ for (const [persona, activity, target] of [
     await page.goto(
       `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
+    await enterPatientChart(page);
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });

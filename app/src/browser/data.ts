@@ -9,6 +9,7 @@ import {
   contentHash,
 } from "../core/buildBinding";
 import { z } from "zod";
+import { verdictSchema } from "../../../agent/src/schema";
 
 const programEntrySchema = z.object({
   path: z.string(),
@@ -128,10 +129,10 @@ export function currentProgram(
 }
 export function ehrUrl(
   program: ProgramEntry,
-  patient: string,
   persona = program.persona,
+  day?: number,
 ) {
-  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona, patient })}`;
+  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona, ...(day === undefined ? {} : { day: String(day) }) })}`;
 }
 export const verdictsSchema = z.object({
   programs: z.record(
@@ -241,4 +242,33 @@ export function programSpecPath(program: ProgramEntry): string {
   if (program.path.startsWith("programs/benchmarks/releases/"))
     return `/${program.path.split("/").slice(0, 4).join("/")}/spec.json`;
   return `/releases/${program.release}/spec.json`;
+}
+
+const revisionCheckSchema = z.object({
+  release: z.string(),
+  verdict: verdictSchema,
+  reason: z.string().nullable(),
+  checkOnly: z.literal(true),
+});
+/** Same-origin check-only branch of the local attempt endpoint. */
+export async function recheckRecordedRevision(
+  program: ProgramEntry,
+  persona: string,
+) {
+  const response = await fetch("/__dev/try-to-break-it", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "check-revision",
+      program: program.path,
+      persona,
+    }),
+  });
+  const body: unknown = await response.json();
+  if (
+    !response.ok ||
+    (typeof body === "object" && body !== null && "error" in body)
+  )
+    throw new Error(z.object({ error: z.string() }).parse(body).error);
+  return revisionCheckSchema.parse(body);
 }

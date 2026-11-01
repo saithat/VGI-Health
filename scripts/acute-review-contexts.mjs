@@ -1,3 +1,4 @@
+import { selectAcutePatient } from './acute-select.mjs';
 /** Export additional selected chart tabs through real native navigation events. */
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -30,7 +31,7 @@ for (const [persona, target] of [['P2', 'w3Provider'], ['P3', 'w4Mar']]) {
   }
   const route = routes.get(target);
   if (!route) throw new Error(`No real navigation to ${target}`);
-  let encounter = native('init', input);
+  let encounter = selectAcutePatient(native, input);
   for (const event of route) {
     const step = native('step', { ...input, state: encounter, event });
     if (step.result !== 'ok') throw new Error(`Failed chart navigation: ${JSON.stringify(step.result)}`);
@@ -45,7 +46,7 @@ for (const [persona, target] of [['P2', 'w3Provider'], ['P3', 'w4Mar']]) {
     process.stdout.write(`${file}\n`);
   }
   if (persona === 'P3') for (const [screen, button] of [['w4Flowsheet', 'copyAssessment'], ['w4Handoff', 'template']]) {
-    let draft = native('init', input);
+    let draft = selectAcutePatient(native, input);
     for (const event of [...routes.get(screen), { click: { comp: `${screen}.${button}` } }]) {
       const step = native('step', { ...input, state: draft, event });
       if (step.result !== 'ok') throw new Error(`Failed outline action: ${JSON.stringify(step.result)}`);

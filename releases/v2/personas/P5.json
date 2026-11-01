@@ -8441,6 +8441,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w6Orders"}}}},
      "id": "w6Discharge.prescriptions"}]}],
  "role": "surgeon",
+ "patientSelection": true,
  "owner": "P5",
  "macros":
  [{"steps":

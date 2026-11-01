@@ -4,82 +4,82 @@
   "programs": {
     "releases/v1/personas/P1.json": {
       "status": "certified",
-      "sha256": "96fffe5255ee23b7e425e92a90502a0d2244829c3e6bb1f3652d2689ea1e3bb7",
+      "sha256": "40f5af32346ca10a200b7838c3a0fd929adafc426fb62040d44eebbcb33a52e5",
       "output": "ok"
     },
     "releases/v1/personas/P2.json": {
       "status": "certified",
-      "sha256": "7a5944795922fba787d4de791f812dc073723b0b77bcba3d3b2dc03b389d99d3",
+      "sha256": "94aa9cb84e9ea82d47a787ab0c079394e726fa599959e2e65f0229291c7abb76",
       "output": "ok"
     },
     "releases/v1/personas/P3.json": {
       "status": "certified",
-      "sha256": "e2e84eef7b827a801cb1f8f32c129622dc2e1298cbb6420a4bc11b5c1f6c11b9",
+      "sha256": "4b680e7d57189db4429c4400e417a192ee6b985ae124d789c4cd1a027f954b01",
       "output": "ok"
     },
     "releases/v1/personas/P4.json": {
       "status": "certified",
-      "sha256": "eeb8cc5de78c44da0117dff11376432774df0096a4f0cb3d4431809b34334be0",
+      "sha256": "5be28e5570106a4fc3af3ba6287cc01f19a1541ebb727145581fe79967f8703c",
       "output": "ok"
     },
     "releases/v1/personas/P5.json": {
       "status": "certified",
-      "sha256": "5bb47ac29b65f33156875fada8b5270cbe3fb08b46a9869ecff8f0b342b2340d",
+      "sha256": "896693a691bcdafb9be759022a81df85b225f476d7acaf5fd74ee088d6f8e890",
       "output": "ok"
     },
     "releases/v2/personas/P1.json": {
       "status": "certified",
-      "sha256": "81ed898dde80584d66ec0f5bbf04dc95446dfccaf56a8905747e76b66e9ac4d4",
+      "sha256": "d4fd8dc30a2f814dee278862b3c5070704ce33d759814c6e9bed9fb245bd5915",
       "output": "ok"
     },
     "releases/v2/personas/P2.json": {
       "status": "certified",
-      "sha256": "a23c1303bc849744f032ba25ecf063a638cf81690fcf0ad89ff093ee4a15ac0a",
+      "sha256": "fecab4f23f20ec669ea7bf2b4c5483fac3598a96e6a0b53b96fc142ee721c026",
       "output": "ok"
     },
     "releases/v2/personas/P3.json": {
       "status": "certified",
-      "sha256": "fbbd253172f7673b911ca8c184eb5cae99edca0e094639370892c938abd19169",
+      "sha256": "9cc317932809ef108ad51a9cbe4b6eb01c3244389f200e67b95dbae8d271e78f",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
       "status": "certified",
-      "sha256": "5f35711ec57dc74ad89d4e749000a53b3df4a0f8fe1a56b961823e2f2a063ae1",
+      "sha256": "0935e8d1397cdd0fdbc0e73b50a840db8e936b65b1bc46cbb797cb684f04f0d9",
       "output": "ok"
     },
     "releases/v2/personas/P5.json": {
       "status": "certified",
-      "sha256": "4b9dd7592e2c742c161d228ddc8cc7af1efcbc63d0361ed6a7e39c75bf84c670",
+      "sha256": "2adf856d67de739aa73744f6cb532ecd4f6e1b112f8f273bade1421b904db785",
       "output": "ok"
     },
     "releases/v3/personas/P1.json": {
       "status": "certified",
-      "sha256": "5d4f809c6f53a0c5aee51c1a017ecd6e97c1666c8987c7053ffed6b2cbf154df",
+      "sha256": "c58b5c9a7ebebef7d4943c13301162231a351393883ef0a04324ff9d221433a6",
       "output": "ok"
     },
     "releases/v3/personas/P2.json": {
       "status": "certified",
-      "sha256": "5cf59059c7072fbd800ec15bfb17d8e01698a04690a93ceed4b70f27199cd308",
+      "sha256": "aae884139c220961708d284351b94ccc203b07ccae87be9730e67a896d5c8437",
       "output": "ok"
     },
     "releases/v3/personas/P3.json": {
       "status": "certified",
-      "sha256": "83470fd2ad1ae23aa42309f4fb656024217a9cc2d4d6eb265b5c553bd2a427c1",
+      "sha256": "5e603a110363aa3a90192e86c8e48bbe9f03865215cd32fabe152b9962f4b496",
       "output": "ok"
     },
     "releases/v3/personas/P4.json": {
       "status": "certified",
-      "sha256": "dd382f67e016b92cb8bbe0d88284212b713817c81dab80698f788d3dd06fadc4",
+      "sha256": "8b2828d18f28fb61eddd5f2e77869032c2e1400e330d07e762cb2e3120c0589f",
       "output": "ok"
     },
     "releases/v3/personas/P5.json": {
       "status": "certified",
-      "sha256": "a7c8d4f0e2081c05ced0e00df91e22fd38f51ed5e25dac4fb638c220bbd3189f",
+      "sha256": "28d41371389eccb1a0e4b11b903d65aca6343c0c7ccfa69c0b991c271cc73898",
       "output": "ok"
     },
     "programs/bad/01-hidden-allergies.json": {
       "status": "rejected",
-      "sha256": "a30ae4ea7f8ba0c49357dd3607a6e599443ab1d625976ea926faa62483ffef4f",
+      "sha256": "296925ae69814328c775edc73b38972d8a29de6b0daa84a883975582bf482a6a",
       "output": {
         "violation": {
           "screens": [
@@ -123,7 +123,7 @@
     },
     "programs/bad/02-prefilled-identity.json": {
       "status": "rejected",
-      "sha256": "7a192722309926589dcf3eb318640f402002f34d877a36230f67eca05ea05464",
+      "sha256": "f07ebb13acaf31291283102f1d98f5dbcfc263daf434eeb3c7b33cd6b24a89b5",
       "output": {
         "violation": {
           "screens": [
@@ -162,7 +162,7 @@
     },
     "programs/bad/03-pounds-as-weight.json": {
       "status": "rejected",
-      "sha256": "78ba412a1779499a1fce17a4b2956f8f397152c95d13fb9d1942b6b132e418f1",
+      "sha256": "8174dcd47d40bc89470ddded0b6da25626b283ee226f6f0b91ed7a5ee3f009d8",
       "output": {
         "violation": {
           "screens": [
@@ -189,7 +189,7 @@
     },
     "programs/bad/04-macro-override.json": {
       "status": "rejected",
-      "sha256": "32c896f632aded9ca4b0899a2c9cae3fc5f8299ef6182b0ba04ca9e3f49523a1",
+      "sha256": "674213ac8ad6cfa56e82b031e31a54e85e992676fa3f80b2c738b9db3710281a",
       "output": {
         "violation": {
           "screens": [
@@ -227,7 +227,7 @@
     },
     "programs/bad/05-self-cosign.json": {
       "status": "rejected",
-      "sha256": "bef4635e7cd1ead8aba1ef9c3b983799561312a9b55fb1d5d4f77e62aeb0a982",
+      "sha256": "69e93d6be12b9857c113c78ed271ebfd3d7dda4372c58cdabafad475148591cd",
       "output": {
         "violation": {
           "screens": [
@@ -260,7 +260,7 @@
     },
     "programs/bad/06-stale-weight.json": {
       "status": "rejected",
-      "sha256": "a7622e5036622f5ddc71033cb89a09a5df1ec2907d4243961033e6e9e19545f8",
+      "sha256": "fd691fe6ba82eab059cfb10e759d37a2dd0eca314416c75572bc0246b35ab90a",
       "output": {
         "violation": {
           "screens": [
@@ -281,7 +281,7 @@
     },
     "programs/bad/07-unreachable-refill.json": {
       "status": "rejected",
-      "sha256": "2fb4a83e3b898d21e00aa783f7c088d080326ff4ff60b27bc764daa1228b5bed",
+      "sha256": "b44ed068836f2a60772667e3d41790237c323da7f733a239f0ab1474837b7988",
       "output": {
         "violation": {
           "screens": [
@@ -295,7 +295,7 @@
     },
     "programs/bad/08-forged-consent.json": {
       "status": "rejected",
-      "sha256": "3406879f8be48ae4242db1c9ac3354e8299bd611b7e820c35798cf9ffd06937d",
+      "sha256": "8bcfba43d10357e68beca1470401ab27000109dfdb3a33bee8d3b51df1c8c136",
       "output": {
         "violation": {
           "screens": [
@@ -321,7 +321,7 @@
     },
     "programs/bad/09-hidden-allergy-alert.json": {
       "status": "rejected",
-      "sha256": "5e9ca52f86238d3959b6ec559bca7d5b645c6bc2bc9c77ee17f8e85f9ec17863",
+      "sha256": "69255cea47baec43b85b86e21ab043899f5c6f371fe05e01b99e11cc9f19c80e",
       "output": {
         "violation": {
           "screens": [
@@ -353,7 +353,7 @@
     },
     "programs/bad/10-invented-alert.json": {
       "status": "rejected",
-      "sha256": "1c988261a4b3b3a1587c7c9bd901a849b0915c3f591fc240965be2cbcaa7484b",
+      "sha256": "7da620b7b99013d3d67371688121d8dcfb8cf9fcd9df71178fc3e3e94c0a70cb",
       "output": {
         "violation": {
           "screens": [
@@ -380,7 +380,7 @@
     },
     "programs/bad/11-repeated-interaction.json": {
       "status": "rejected",
-      "sha256": "296f32198c7e5bbf486ab76ce1a05e7df525da760a8c79843cc0594235728092",
+      "sha256": "6f3c3bc2a35ba0610bd1a3db2d410008e99452845422184645360ed6886165b1",
       "output": {
         "violation": {
           "screens": [
@@ -407,7 +407,7 @@
     },
     "programs/bad/12-passive-popup.json": {
       "status": "rejected",
-      "sha256": "cf399ad003d4c125ce81cb67ef0ecc47f7637e8d19c82b8a50a870bdabeeddb6",
+      "sha256": "4a2e9b9a2ff0bf0bfc541335d12286e59807d923b2d3899929c0fb6c4900dbfa",
       "output": {
         "violation": {
           "screens": [
@@ -428,7 +428,7 @@
     },
     "programs/bad/13-no-cures.json": {
       "status": "rejected",
-      "sha256": "b5e1dfba842abd2efd3b7f04fd9770bbb14394529299f61c83c7b2ce99b7d352",
+      "sha256": "890147d9a3b069b45e7c85146b604a57c3a5e1fa4ea880b4fbc68d500ae4e01d",
       "output": {
         "violation": {
           "screens": [
@@ -472,7 +472,7 @@
     },
     "programs/bad/14-macro-naloxone.json": {
       "status": "rejected",
-      "sha256": "3def3a9fb1298de28f9582642ab5b0256035d381bac554cb8afcd4b9715ce0fe",
+      "sha256": "27bdebc23b949439ee26e1ea9c0847bf1ce66b3dd122cb9331a4042c92982679",
       "output": {
         "violation": {
           "screens": [
@@ -504,7 +504,7 @@
     },
     "programs/bad/15-hidden-controlled-details.json": {
       "status": "rejected",
-      "sha256": "530967a6e5b128a60209952d7a23eaec8cdbcba757754efcabeee7a7d4d0b1e5",
+      "sha256": "a59e4aadb36c27c313ab4a5aa6db5bf3a3f80fe679c55c033ab1ebae6ea1de66",
       "output": {
         "violation": {
           "screens": [
@@ -548,7 +548,7 @@
     },
     "programs/bad/16-schedule-ii-refills.json": {
       "status": "rejected",
-      "sha256": "a2eeeb6c9f94d14b4114c7ecac3b62b132073c7ccc81f47668c086d69d28fbd5",
+      "sha256": "57cba28f91312c19fff9da3f1bd24dec5e1e78326a9f236686d7c1574bf17bb4",
       "output": {
         "violation": {
           "screens": [
@@ -559,7 +559,7 @@
             "w1Sign"
           ],
           "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element weight",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
           "counterexample": [
             {
               "click": {
@@ -592,7 +592,7 @@
     },
     "programs/bad/33-np-preop-macro.json": {
       "status": "rejected",
-      "sha256": "7003c1c27be49cab14c8f7200f15e8493e0f81a2db2a13cd2e9d77d607267c4f",
+      "sha256": "cd63d4b326c93f59425d6d43939a005ee3624c194ef8ac0bd2121c6d24babd54",
       "output": {
         "violation": {
           "screens": [
@@ -642,19 +642,186 @@
         }
       }
     },
+    "lean/Ehr/Check/bad/36-cures-without-review.json": {
+      "status": "rejected",
+      "sha256": "302095996c71e21af319d2fa916203cdecd7a3d0cedcc9d42b30e8c1b6c8a55c",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/37-stale-dosing-weight.json": {
+      "status": "rejected",
+      "sha256": "032f6463d68f40c519635415bf1a80cf770f682fb24c6addc4eab6a7681caa35",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "capturesAllOnce",
+          "message": "field w1Orders.dosingWeight on screen w1Orders asks for dosingWeight, which is linked from weight and must not be typed again",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/38-cross-patient-panel.json": {
+      "status": "rejected",
+      "sha256": "342355d66edabc13d2245814c9101157654057c3f412e1393681cf228c6ef305",
+      "output": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "writesOnly",
+          "message": "button foreignAllergies on screen home reviews info patient-A-allergies, which is not in the spec",
+          "counterexample": []
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/39-empty-order-signing.json": {
+      "status": "rejected",
+      "sha256": "a71e5e0186effd5b454883eb42c231355d3f7b5a7d9327684896a09acca39e86",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "lean/Ehr/Check/bad/40-denial-without-reason.json": {
+      "status": "rejected",
+      "sha256": "ff8de0463be3681a5e47341ec2015e7f8f326c16cca1f877864b23f1b9fde24f",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w7Queue",
+            "w7Review",
+            "w7Decision"
+          ],
+          "property": "completable",
+          "message": "commit denyRefill: no field the user can reach for required element refillDenyReason",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w7Queue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Queue.open"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Review.decide"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Decision.commit.denyRefill"
+              }
+            }
+          ]
+        }
+      }
+    },
     "releases/v1/canonical.json": {
       "status": "reference",
-      "sha256": "9b54211d27243070cd32575d692a8e91df2bfa7cad78d7821d4678b49358ee3d",
+      "sha256": "7170f48ad4b88267df49f767cc4f99b1e79f122f61961c843f0dd30bd3bc3539",
       "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "69021af61617324f574f36aa06b749a6c58bcaaf335f48969e344ff0c4915ff1",
+      "sha256": "f1c305e8233a51bdfffc1682bf369d2681f8041ecc4879d034164aa4344be242",
       "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v3/canonical.json": {
       "status": "reference",
-      "sha256": "ee2119a1cdefb593366203a6dfddabc542259fa6f1232edd4f3758df3afdff0e",
+      "sha256": "2d129284bdb2f70515ccc189b5c38202253210b3576028c7795a397bca3cc16a",
       "output": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

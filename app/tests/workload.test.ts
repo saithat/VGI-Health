@@ -27,9 +27,8 @@ describe("simulated realistic workload", () => {
     expect(point.total?.clicks).toBeCloseTo(
       tasks.reduce((n, t) => n + t.clicks, 0) / 89,
     );
-    expect(point.total?.klmSeconds).toBeCloseTo(
-      tasks.reduce((n, t) => n + t.klmDeciSec, 0) / 890,
-    );
+    expect(point.total?.mouseTravelPx).toBeNull();
+    expect(point.total?.scrollPx).toBeNull();
     expect(workloadAt(run, "P3", 99).total).toBeNull();
     expect(workloadAt(run, "P1", 0).total).toBeNull();
   });
@@ -77,7 +76,7 @@ describe("simulated realistic workload", () => {
       tasks: 3,
       completed: 2,
       unclassified: 1,
-      total: { clicks: 12, keystrokes: 10, klmSeconds: 30 },
+      total: { clicks: 12, keystrokes: 10,mouseTravelPx:null,scrollPx:null },
     });
   });
   it("loads exact data independently: realistic savings can change with a flat expert minimum", () => {
@@ -85,9 +84,7 @@ describe("simulated realistic workload", () => {
     expect(exact?.iterations.find((i) => i.version === 3)?.total.clicks).toBe(
       exact?.iterations.find((i) => i.version === 4)?.total.clicks,
     );
-    expect(workloadAt(run, "P3", 3).total?.klmSeconds).not.toBe(
-      workloadAt(run, "P3", 4).total?.klmSeconds,
-    );
+    expect(workloadAt(run,'P3',3).total?.mouseTravelPx).toBeNull();
     expect(run.manifest.ehr.mode).toBe("real");
   });
 });
@@ -108,4 +105,12 @@ it('separates canonical drift from agent saving against the no-agent control and
  const program=run.programs.get('programs/P3/v0.json');if(!program)throw new Error('Missing program');
  sample.programs=new Map([...sample.programs,['programs/P3/v99.json',{...program,version:99}]]);
  expect(versionsFor(sample,'P3')).toEqual([0,1,2,3,4,5,6,7]);
+});
+
+it('timeline deltas use the active canonical and all physical metrics for blind runs',async()=>{
+ const {workloadDelta}=await import('../src/browser/timeline');
+ const day=run.days[0],task=day?.tasks[0];if(!day||!task)throw new Error('Missing fixture');
+ const current={...task,completed:true,clicks:12,keystrokes:8,scrolls:1,scrollPx:900,mouseTravelPx:100};
+ const sample={...run,manifest:{...run.manifest,measurementProtocol:{name:'blind'}},days:[{...day,day:2,programVersion:0,tasks:[{...current,clicks:9999}]},{...day,day:4,programVersion:1,tasks:[current]}],baselines:[{...day,day:4,tasks:[{...current,clicks:15,keystrokes:10,scrolls:2,scrollPx:1000,mouseTravelPx:110}]}]};
+ expect(workloadDelta(sample,{persona:'P3',baseline:false,program:{version:1}})).toEqual({clicks:-3,keys:-2,scrolls:-1,scrollPx:-100,mouseTravelPx:-10});
 });

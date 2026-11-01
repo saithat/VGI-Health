@@ -39,7 +39,8 @@ instance : Lean.ToJson Program where
     ("owner", Lean.toJson p.owner), ("role", Lean.toJson p.role),
     ("specVersion", Lean.toJson p.specVersion), ("start", Lean.toJson p.start),
     ("screens", Lean.toJson p.screens), ("macros", Lean.toJson p.macros)] ++
-    if p.componentDefs.isEmpty then [] else [("componentDefs", Lean.toJson p.componentDefs)]
+    (if p.componentDefs.isEmpty then [] else [("componentDefs", Lean.toJson p.componentDefs)]) ++
+    (match p.patientSelection? with | none => [] | some enabled => [("patientSelection", Lean.toJson enabled)])
 
 /-- The only new optional program field defaults to empty; malformed definitions
 remain errors. Parsing never expands or discards the source used in certificates. -/
@@ -48,6 +49,9 @@ instance : Lean.FromJson Program where
     let componentDefs ← match j.getObjVal? "componentDefs" with
       | .error _ => pure []
       | .ok v => Lean.fromJson? v
+    let patientSelection ← match j.getObjVal? "patientSelection" with
+      | .error _ => pure none
+      | .ok v => some <$> Lean.fromJson? v
     return {
       id := ← j.getObjValAs? String "id"
       version := ← j.getObjValAs? Nat "version"
@@ -57,9 +61,10 @@ instance : Lean.FromJson Program where
       start := ← j.getObjValAs? ScreenId "start"
       screens := ← j.getObjValAs? (List Screen) "screens"
       macros := ← j.getObjValAs? (List Ehr.Macro) "macros"
-      componentDefs := componentDefs }
+      componentDefs := componentDefs, patientSelection? := patientSelection }
 
 deriving instance Lean.ToJson, Lean.FromJson for
+  PatientChoice, PatientListRow, PatientActivity, PatientDirectory, PatientContext,
   DoseUnitRule, DrugInfo, PatientIdentity, Receipt, Facts
 
 deriving instance Lean.ToJson, Lean.FromJson for

@@ -94,7 +94,7 @@ def metrics (task : String) (trace : List TraceEvent) (completed : Bool) : TaskM
       popups := m.popups + (match t.event with | .ack _ => 1 | _ => 0),
       overrides := m.overrides + (match t.event with
         | .ack _ => if t.ops.contains .think then 0 else 1 | _ => 0),
-      searches := m.searches + (match t.event with | .search _ => 1 | _ => 0) }
+      searches := m.searches + (match t.event with | .search _ | .enter "workspace.search" _ => 1 | _ => 0) }
   return { m with
     backtracks := countBacktracks ts,
     klmDeciSec := klmMs (ts.flatMap (·.ops)) / 100, completed }

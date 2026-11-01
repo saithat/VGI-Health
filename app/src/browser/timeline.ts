@@ -97,14 +97,17 @@ export function timelineNodes(
     };
   }).filter((node): node is TimelineNode => node !== null);
 }
-export function workloadDelta(run: RunData | undefined, node: TimelineNode) {
+export function workloadDelta(run: RunData | undefined, node: Pick<TimelineNode,"persona"|"baseline"> & {program:Pick<ProgramEntry,"version">}) {
   if (!run || node.baseline) return null;
-  const baseline = workloadAt(run, node.persona, 0).total;
-  const current = workloadAt(run, node.persona, node.program.version).total;
+  const measured=workloadAt(run,node.persona,node.program.version);
+  const baseline=run.manifest.measurementProtocol?measured.canonical:workloadAt(run,node.persona,0).total;
+  const current=measured.total;
   if (!baseline || !current) return null;
   return {
     clicks: current.clicks - baseline.clicks,
     keys: current.keystrokes - baseline.keystrokes,
-    klm: current.klmSeconds - baseline.klmSeconds,
+    scrolls:current.scrolls-baseline.scrolls,
+    scrollPx:current.scrollPx===null||baseline.scrollPx===null?null:current.scrollPx-baseline.scrollPx,
+    mouseTravelPx: current.mouseTravelPx===null||baseline.mouseTravelPx===null?null:current.mouseTravelPx-baseline.mouseTravelPx,
   };
 }

@@ -395,3 +395,35 @@ adjacent to the list instead of attaching it to another patient's row.
 Ordinary legacy info tables, historical-note lists and trends use the same structured table, note and chart painters as explicit `present.*` nodes. Source-declared current documents retain their document-region semantics within the structured information module. Compact side summaries remain compact. One supplied-status tone map decorates all these views; the source text and clinical events remain unchanged.
 
 Acute integration retains `shiftWorklist` for assigned patient rows and adds the optional read-only `shiftTasks` view for the selected encounter’s source Task records. Both use the shared table/worklist drawings. A dated world census can replace patient rows without replacing the selected patient’s due-task details; this adds no review, attestation or clinical guard.
+
+### Patient workspace selection
+
+Active programs require `patientSelection: true`. Their initial state contains a
+list activity and no selected patient, banner, chart sidebar, captures or reviews.
+The fixed Lean workspace supplies application activities, Patient Lookup and
+source-row actions named `Open chart: <name> (MRN <number>)` when the MRN is
+recorded. The painter forwards their ordinary click/entry events.
+
+`Facts.patientDirectory` is the day-level identity/list projection. It contains
+source Patient IDs, names, MRNs, and the dated persona List rows; it supplies no
+clinical captures or receipts. Optional catalog identity metadata fills a missing
+MRN without replacing a recorded source MRN. `Facts.sourcePatientId` is the exact
+FHIR Patient.id and is separate from the existing wristband/identity-entry token.
+
+`State.patientContext` records the selected and bound source IDs. Opening a chart
+clears patient-specific state before data arrives. The host loads that exact
+patient's offline or Medplum bundle. Lean binds only matching facts; stale or
+foreign facts leave the chart hidden. Application activities and Return controls
+clear the patient context. Clinical activity navigation retains it.
+
+Recorded programs without this flag retain their original replay behavior.
+Interactive historical layouts and fresh simulations add the same fixed
+selection wrapper; recorded source artifacts and saved replay events stay intact.
+
+The `workspace.*` component namespace is reserved by certification so a candidate
+cannot replace a chart action with a workspace action. Lookup entries use the
+ordinary `enter` event on `workspace.search`; row selection uses the ordinary
+click event. Day-list rows preserve their source work-item reference: chart
+loading honors that existing encounter/request while lookup opens the patient's
+existing chart without inventing an encounter. Interactive work dates default
+to the world manifest's first work date and timeline links retain their day.

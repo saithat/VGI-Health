@@ -1,4 +1,5 @@
 // Compare the acute review's supplied imaging and nursing records through both APIs.
+import { selectAcutePatient } from './acute-select.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
@@ -80,7 +81,7 @@ try {
     }
     const base = { spec: read(join(root, 'releases/v1/spec.json')), program,
       user: read(join(fixtures, `${persona}-user.json`)), ...source };
-    const initial = equal('init', base);
+    const initial = selectAcutePatient(equal, base);
     const walkNodes = nodes => nodes.flatMap(node => [node, ...walkNodes(node.section?.children ?? node.columns?.children ?? node.presentation?.children ?? node.valueSet?.children ?? node.chartReferences?.children ?? node.rowAction?.children ?? node.tabs?.body ?? [])]);
     const initialUi = equal('render-ui', { ...base, state: initial });
     const resolvedControl = node => node.section?.id === `${initial.screen}.chart.includeResolved`;

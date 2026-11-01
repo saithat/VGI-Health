@@ -50,7 +50,7 @@ text-only Conditions, 170 AllergyIntolerances, 383 MedicationStatements,
 P2 120, P3 51, P4 34 and P5 90. All 150 were loaded locally; a full rerun
 created zero resources. Five sequential live persona chart checks and an
 offline replay passed using one Chromium browser; screenshot:
-`app/shots/synthetic-hospital-chart.png`.
+`app/shots/final (supersedes earlier captures)`.
 
 DOB is approximate: source integer age subtracted from the Synthea fixture
 reference date, 2026-10-31. Upstream calls that age `age_at_first_encounter`, so
@@ -93,7 +93,7 @@ Fixtures are uncompressed JSON, below the 10 MB budget. The Vite catalog adds a
 validated bundlePath and source for both cohorts; its development server and
 production output serve identical JSON. The browser has a source filter.
 This imports notes and history into Medplum and replay bundles; the certified
-chart's full Notes/history presentation is planned in [HANDOFF-data.md](../../HANDOFF-data.md).
+chart's full Notes/history presentation is planned in [docs/STATUS.md](../../docs/STATUS.md).
 
 Browser verification after starting Vite on 5195:
 `node scripts/synthetic-hospital/verify-live.mjs`. Uses one browser, sequential

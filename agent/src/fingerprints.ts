@@ -28,7 +28,7 @@ export async function runFingerprints(ehr: EhrClient, world: string, root = REPO
     const manifest=z.object({fixtures:z.object({index:z.string()})}).parse(JSON.parse(await readFile(metadata,'utf8')));
     fixtures=await treeHash(path.dirname(path.resolve(root,manifest.fixtures.index)));
   }
-  return { agent:await treeHash(path.join(root,'agent/src')), screenHarness:await treeHash(path.join(root,'app/scripts')), screenTests:await treeHash(path.join(root,'app/e2e')), playwright:await fileHash(path.join(root,'app/playwright.config.ts')), fixtures, ehr: ehr.binary ? await fileHash(ehr.binary) : 'FAKE', releases: specs, world: await treeHash(world),
+  return { interactionModel:await treeHash(path.join(root,'app/src/metrics')),agent:await treeHash(path.join(root,'agent/src')), screenHarness:await treeHash(path.join(root,'app/scripts')), screenTests:await treeHash(path.join(root,'app/e2e')), playwright:await fileHash(path.join(root,'app/playwright.config.ts')), fixtures, ehr: ehr.binary ? await fileHash(ehr.binary) : 'FAKE', releases: specs, world: await treeHash(world),
     app: ehr.mode === 'real' ? z.object({appSha256:z.string().regex(/^[a-f0-9]{64}$/)}).parse(JSON.parse(await readFile(path.join(root,'app/dist/build.json'),'utf8'))).appSha256 : 'FAKE',
     wasm: await fileHash(path.join(root,'app/public/ehr/ehr-interp.wasm')) };
 }

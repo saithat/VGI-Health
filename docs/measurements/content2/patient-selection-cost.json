@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "day": 1,
+      "agent": "runs/run1-P3/programs/P3/v1.json",
+      "tasks": 38,
+      "baselineCompleted": 38,
+      "agentCompleted": 38,
+      "selectionEvents": 49,
+      "selectionOps": {
+        "point": 49,
+        "click": 49,
+        "key": 88
+      },
+      "identical": true
+    },
+    {
+      "day": 5,
+      "agent": "runs/run1-P3/programs/P3/v7.json",
+      "tasks": 37,
+      "baselineCompleted": 37,
+      "agentCompleted": 37,
+      "selectionEvents": 53,
+      "selectionOps": {
+        "point": 53,
+        "click": 53,
+        "key": 128
+      },
+      "identical": true
+    },
+    {
+      "day": 10,
+      "agent": "runs/run1-P3/programs/P3/v7.json",
+      "tasks": 45,
+      "baselineCompleted": 45,
+      "agentCompleted": 45,
+      "selectionEvents": 68,
+      "selectionOps": {
+        "point": 68,
+        "click": 68,
+        "key": 184
+      },
+      "identical": true
+    }
+  ],
+  "mismatches": 0,
+  "model": "Same source directory and task patient; fixed row/lookup policy; P+C pointer cost, K typing and explicit ten-row scrolling. Fresh simulations wrap historical layouts in the current workspace; archived recorded replay keeps its original flag."
+}

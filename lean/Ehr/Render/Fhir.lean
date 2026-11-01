@@ -202,7 +202,8 @@ def displayName (p : Json) : String :=
   let n := officialName p
   let fam := str n "family"
   let given := " ".intercalate (givenNames n)
-  if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
+  if fam == "" && given == "" then str n "text"
+  else if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
 
 /-- A practitioner's supplied name text, else the official structured name. -/
 def practitionerName (r : Json) : String :=
@@ -247,7 +248,10 @@ def patientIdOf (p : Json) : String :=
 def mrnOf (p : Json) : String :=
   match (arr p "identifier").find? (fun i => hasCode (field i "type") "MR") with
   | some i => str i "value"
-  | none => ""
+  | none =>
+    -- The imported Synthetic Hospital converter declares this source identifier
+    -- as its MRN in fixtures/synthetic-hospital/index.json (convert.mjs).
+    (((arr p "identifier").find? (fun i => str i "system" == "http://hospital.smarthealthit.org")).map (str · "value")).getD ""
 
 /-! ## Allergies (T11) -/
 
@@ -2322,6 +2326,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
         fun payload => !acute.any (fun other => other.info == payload.info))
 
   { patientId := patientIdOf p
+    sourcePatientId? := some (str p "id")
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
     allergyClasses := ((allergies.filter allergyActive).flatMap allergyClassesOf).eraseDups
@@ -2373,6 +2378,30 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
     clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
 
+/-- Clinical chart rows must explicitly belong to the open patient. Shared
+reference resources remain available for resolving chart authors and locations. -/
+def chartResources (rs : List Json) (p : Json) : List Json :=
+  rs.filter fun r =>
+    if resourceType r == "Patient" then str r "id" == str p "id"
+    else if ["Practitioner", "Organization", "Location", "Medication", "PractitionerRole"].contains (resourceType r) then true
+    else [field r "subject", field r "patient", field r "for", field r "beneficiary"].any
+      (fun ref => Ambulatory.referenceMatches (str ref "reference") p) ||
+      (resourceType r == "Appointment" && (arr r "participant").any
+        (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p))
+
+/-- The selected patient's chart resources, excluding unrelated patients and lists. -/
+def chartResourcesOfBundle (b : Json) : List Json :=
+  match (bundleResources b).find? (resourceType · == "Patient") with
+  | none => []
+  | some p => chartResources (bundleResources b) p
+
+/-- A scoped chart row always comes from the supplied bundle. -/
+theorem chartResource_mem {b r : Json} (h : r ∈ chartResourcesOfBundle b) : r ∈ bundleResources b := by
+  unfold chartResourcesOfBundle at h
+  split at h
+  · contradiction
+  · exact (List.mem_filter.mp h).1
+
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/
 def parseBundle (ctx : FactsContext) (b : Json) : Except String (Facts × Display) :=
@@ -2381,7 +2410,7 @@ def parseBundle (ctx : FactsContext) (b : Json) : Except String (Facts × Displa
     let rs := bundleResources b
     match rs.find? (resourceType · == "Patient") with
     | none => .error "bundle has no Patient"
-    | some p => .ok (factsOf ctx rs p, displayOf ctx rs p)
+    | some p => .ok (factsOf ctx (chartResourcesOfBundle b) p, displayOf ctx (chartResourcesOfBundle b) p)
 
 /-! ## API record (needs `Lean.Json`) -/
 
@@ -2475,17 +2504,52 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
       rows := payload.rows.zipIdx.map fun (row, index) =>
         if index == 0 && hasSelected then { row with id := "selected-chart" } else row }
 
+/-- The directory contains identities and dated department rows, never chart captures. -/
+def patientDirectory (ctx : FactsContext) (rs : List Json) (extra : List PatientChoice := []) : PatientDirectory :=
+  let patients := (ofType "Patient" rs).map fun p =>
+    { id := str p "id", name := displayName p, mrn := mrnOf p : PatientChoice }
+  let patients := patients.map fun p =>
+    { p with mrn := if p.mrn == "" then ((extra.find? (·.id == p.id)).map (·.mrn)).getD "" else p.mrn }
+  let patients := patients ++ extra.filter (fun p => !patients.any (·.id == p.id))
+  let payloads := worldQueuePayloads ctx rs (Json.mkObj [("id", .str "")])
+  let sources : List (String × List Json) :=
+    [("scheduleTasks", (worldList ctx rs "clinic-schedule").getD []),
+     ("edTrackBoard", (worldList ctx rs "ed-census").getD []),
+     ("shiftWorklist", (worldList ctx rs "my-patients").getD []),
+     ("unitCensus", (worldList ctx rs "unit-census").getD []),
+     ("orSchedule", (worldList ctx rs "or-schedule").getD []),
+     ("consultList", (worldList ctx rs "consults").getD []),
+     ("inBasketResults", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")),
+     ("inBasketMessages", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Communication")),
+     ("inBasketRxRequests", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests"))]
+  let titles := [("scheduleTasks", "Schedule"), ("edTrackBoard", "Track Board"),
+    ("shiftWorklist", "My Patients / MAR"), ("unitCensus", "Unit Census"),
+    ("orSchedule", "OR Schedule"), ("consultList", "Consults"),
+    ("inBasketMessages", "In Basket · Patient Messages"), ("inBasketResults", "In Basket · Results"), ("inBasketRxRequests", "In Basket · Rx Requests")]
+  let activities := sources.filterMap fun (key, source) => do
+    let payload ← payloads.find? (·.info == key)
+    let rows := (source.zip payload.rows).map fun (r, row) =>
+      let patient := ((patients.find? fun p => worldRowMatches (Json.mkObj [("resourceType", .str "Patient"), ("id", .str p.id)]) r).map (·.id)).getD ""
+      { patient := patient, fields := row.fields, source? := some (resourceType r ++ "/" ++ str r "id") : PatientListRow }
+    pure ({ info := key, title := (titles.lookup key).getD key, rows := rows } : PatientActivity)
+  { patients := patients, activities := activities }
+
 /-- Input of `facts`: a FHIR bundle and the context. -/
 structure FactsInput where
   bundle : Json
   context : FactsContext
   /-- Shared dated list graph; chart parsing remains patient scoped. -/
   worldContext? : Option Json := none
+  directoryOnly? : Option Bool := none
+  extraPatients? : Option (List PatientChoice) := none
   deriving Lean.ToJson, Lean.FromJson
 
 /-- `facts` on a parsed input. -/
 def runFacts (i : FactsInput) : Except String FactsOutput :=
-  match i.worldContext? with
+  if i.directoryOnly? == some true then .ok {
+    facts := { (default : Facts) with patientDirectory? := some (patientDirectory i.context
+      (bundleResources (i.worldContext?.getD i.bundle)) (i.extraPatients?.getD [])) }, display := Display.empty }
+  else match i.worldContext? with
   | none => (parseBundle i.context i.bundle).map fun (f, d) => { facts := f, display := d }
   | some graph => do
     let p ← match (bundleResources i.bundle).find? (resourceType · == "Patient") with
@@ -2510,6 +2574,7 @@ def runFacts (i : FactsInput) : Except String FactsOutput :=
     let queues := worldQueuePayloads ctx all p
     let oldPayloads := (f.infoPayloads?.getD []).filter fun q => !queues.any (fun x => x.info == q.info)
     let enriched := { f with
+      patientDirectory? := some (patientDirectory ctx all (i.extraPatients?.getD []))
       infoPayloads? := some (queues ++ oldPayloads)
       artifactBindings? := some (surgicalBindings queues ++ (f.artifactBindings?.getD []).filter (fun b => !queues.any (fun q => q.artifactKey == b.key))) }
     pure { facts := enriched, display := d }

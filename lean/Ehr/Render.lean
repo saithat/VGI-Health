@@ -18,3 +18,5 @@ import Ehr.Render.PresentationProofs
 import Ehr.Render.LabResultsTests
 import Ehr.Render.ObservationTests
 import Ehr.Render.GrowthReadingsTests
+
+import Ehr.Render.WorkspaceProofs

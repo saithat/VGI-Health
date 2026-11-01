@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "sourceRevisionAtValidation": "b409cda6977b7799b7480adec77fc2a153b68b59",
   "sourceDirtyAtValidation": true,
   "leanSourceHash": "5d7223699f028b058d55347bfa151dd9a37a29a4cc60f13e4c4570cef1390976",

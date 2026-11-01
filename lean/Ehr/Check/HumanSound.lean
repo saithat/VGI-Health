@@ -107,7 +107,7 @@ private theorem enterCore_macro_noHuman (sp p f u s cid v) :
               simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx
               rcases hx with ⟨hx, _⟩ | rfl
               · exact hx
-              · have heq : el = req := by simpa [hreq] using hel.symm
+              · have heq : el = req := by simpa [storedCapture, hreq] using hel.symm
                 subst el
                 simp only [Bool.or_eq_true, beq_iff_eq, not_or] at hnot
                 exact False.elim (hh.elim hnot.1 hnot.2)

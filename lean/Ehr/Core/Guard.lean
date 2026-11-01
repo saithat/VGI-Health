@@ -129,6 +129,31 @@ def waived (s : State) : Option ElementId → Bool
   | some e => s.captured.any fun x => x.element == e && x.byHuman && x.confirmed && x.value.nonEmpty
   | none => false
 
+/-- CURES exceptions need the documented category and its clinical limits. -/
+def curesExemptionEligible (facts : Facts) (s : State) (v : Value) : Bool :=
+  let evidence := fun key => (facts.record.lookup key).getD ""
+  let facility := ["general-acute-care", "acute-psychiatric", "special-hospital", "surgical-clinic", "outpatient-surgical"].contains (evidence "facilityKind")
+  let days := s.captured.filterMap fun x => if x.element == "duration" then
+    match x.value with | .code d | .text d => (((d.splitOn "-").headD "").splitOn " ").headD "" |>.toNat? | _ => none else none
+  let directed := (evidence "directedSupplyDays").toNat?
+  let short := directed.any (fun n => 0 < n && n ≤ 7) && days.all (fun n => 0 < n && n ≤ 7) &&
+    !(s.captured.filter (·.element == "refills")).isEmpty &&
+    (s.captured.filter (·.element == "refills")).all (fun x => x.confirmed &&
+      (x.value == .code "0" || x.value == .qty 0 .none))
+  match v with
+  | .code "admin-in-facility" => facility && evidence "administrationOnPremises" == "true"
+  | .code "ed-7-day" => facility && facts.encounterKind? == some "ed" && short
+  | .code "surgery-7-day" => facility && !(evidence "surgicalProcedure").isEmpty && short
+  | .code "hospice" => evidence "hospicePatient" == "true" && evidence "terminallyIll" == "true"
+  | .code "cures-unavailable" => short && evidence "curesUnavailable" == "true" &&
+      evidence "alternatePractitionerUnavailable" == "true" && !(evidence "curesUnavailableReason").isEmpty
+  | _ => false
+
+/-- Other review waivers retain their existing semantics. CURES is eligibility checked. -/
+def waiverEligible (facts : Facts) (s : State) (e : Option ElementId) : Bool :=
+  e != some "curesExemptionReason" || s.captured.any (fun x =>
+    x.element == "curesExemptionReason" && x.byHuman && x.confirmed && curesExemptionEligible facts s x.value)
+
 /-- A review requirement is met: it does not apply; or the info is shown on
 the current screen; or (for `shownOrReceipt`) a valid receipt covers it; or
 its `waivedBy?` element was entered by a human (confirmed, non-empty). -/
@@ -137,7 +162,7 @@ def reviewMet (sp : Spec) (prog : Program) (facts : Facts) (s : State) (rq : Rev
     (match rq.mode with
      | .shownOnCommit => false
      | .shownOrReceipt w roles => s.receipts.any (receiptValid sp facts (nowMin facts s) rq.info w roles)) ||
-    waived s rq.waivedBy?
+    (waived s rq.waivedBy? && waiverEligible facts s rq.waivedBy?)
 
 /-- The user's role may perform the commit (unknown commits: no). -/
 def roleOk (sp : Spec) (user : User) (c : CommitId) : Bool :=
@@ -224,6 +249,7 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
     match sp.entries.find? (fun rq => rq.commit == c && !entryMet sp facts user s rq) with
     | some rq => entryReason sp facts user s rq
     | none =>
+      if !signingHasOrder sp s c then "entry required: drug or complete service order" else
       match sp.reviews.find? (fun rq => rq.commit == c && !reviewMet sp prog facts s rq) with
       | some rq => s!"review required: {rq.info} must be shown" ++
           (match rq.mode with

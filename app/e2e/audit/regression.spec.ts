@@ -1,3 +1,4 @@
+import { enterPatientChart } from "../clinical-navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -62,7 +63,7 @@ test("resolved-problem controls respond within the unchanged deadline", async ({
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
     );
-    await page.locator(".clinical-app").waitFor({ timeout: 30000 });
+    await enterPatientChart(page);
     const program = z
       .object({
         start: z.string(),
@@ -81,8 +82,11 @@ test("resolved-problem controls respond within the unchanged deadline", async ({
         action: z.object({ goto: z.object({ screen: z.string() }) }),
       }),
     });
+    const currentScreen = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.screen ?? "",
+    );
     const route = (() => {
-      const queue: [string, string[]][] = [[program.start, []]];
+      const queue: [string, string[]][] = [[currentScreen, []]];
       const seen = new Set([program.start]);
       for (const [screen, path] of queue) {
         if (screen === target) return path;

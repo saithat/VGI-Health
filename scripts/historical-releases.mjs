@@ -1,7 +1,7 @@
 /** IDs in immutable pre-rename recordings and benchmark contracts. Never use
  * this map for a current release: current v2 means the prior-auth update. */
 export const historicalReleaseAliases = Object.freeze({ 'v1.1': 'v2', v2: 'v3' });
-export const historicalRunIds = new Set(['run1-P3', 'run1-preflight', 'mock']);
+export const historicalRunIds = new Set(['run1-P3', 'mock']);
 export const historicalReleaseId = id => historicalReleaseAliases[id] ?? id;
 export const releaseLabel = (id, runId) => historicalRunIds.has(runId) ? historicalReleaseId(id) : id;
 export const archivedReleaseId = id => Object.entries(historicalReleaseAliases).find(([, current]) => current === id)?.[0] ?? id;

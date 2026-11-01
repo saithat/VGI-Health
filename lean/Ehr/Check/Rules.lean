@@ -210,7 +210,7 @@ def openFieldOn (prog : Program) (screens : List ScreenId) (e : ElementId)
  then be valid but would not count as a nonempty waiver. Other kinds always
  have a nonempty human-enterable witness. -/
 def waiverHasNonemptyValue (spec : Spec) (e : ElementId) : Bool :=
-  (spec.element? e).any fun el =>
+  e != "curesExemptionReason" && (spec.element? e).any fun el =>
     match el.kind with
     | .scan target => target != "wristband" && target != "medication"
     | _ => true
@@ -243,6 +243,12 @@ def doseDependencyIssue (spec : Spec) (prog : Program) (c : CommitId)
       else some (screen.id, s!"commit {c}: dose field {comp.id} needs a reachable formulary drug selection on the same order slot ({repr slot})")
     | none => none
 
+/-- An order-signing action must offer a reachable medication or service composer. -/
+def orderSelectionAvailable (spec : Spec) (prog : Program) (c : CommitId) (screens : List ScreenId) : Bool :=
+  let signing := c == "signOrders" || spec.entries.any (fun rq => rq.commit == c && rq.perOrderLine && rq.element == drugElement)
+  !signing || (doseDrugSelectable spec prog.role c && openFieldOn prog screens drugElement (fun _ => true)) ||
+    (openFieldOn prog screens "orderKind" (fun _ => true) && openFieldOn prog screens "orderCode" (fun _ => true))
+
 /-- Why commit `c` might not stay reachable, or `none` if the program passes
 the completability rules for `c` with commit screen `s`:
 - every screen reaches `s` by buttons the user can always show;
@@ -258,6 +264,9 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
   | none =>
     let fromS := reach s
+    if !orderSelectionAvailable spec prog c fromS then
+      some (s, s!"commit {c}: no reachable medication or service order selection; empty signing is forbidden")
+    else
     let reqs := spec.entries.filter (fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq)
     match reqs.find? (fun rq => !rq.perOrderLine && !(match rq.when with
         | .encounter kind => openEncounterField prog fromS rq.element kind

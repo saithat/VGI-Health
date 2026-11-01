@@ -3,6 +3,8 @@ import Ehr.Core.Basics
 import Ehr.Specs.ClinicalTables
 
 namespace Ehr.Render.Tests
+#guard Ehr.Render.Fhir.mrnOf (Lean.Json.mkObj [("identifier", .arr #[Lean.Json.mkObj [
+  ("system", .str "http://hospital.smarthealthit.org"), ("value", .str "SH00001675")]])]) == "SH00001675"
 open Lean Fhir
 
 def context : FactsContext := { today := "2026-10-31" }
@@ -221,6 +223,11 @@ def assignedPatientExample : Json := patientWithoutMrn.setObjVal! "generalPracti
 def urnPrimaryCareExample : Json := primaryCareProviderExample.setObjVal! "id" (.str "urn:uuid:assigned-pcp")
 #guard (bannerOf context.today [urnPrimaryCareExample] assignedPatientExample).pcp == "Morgan, Taylor"
 
+
+/-- A mixed chart bundle exposes only the open patient's allergy. -/
+def mixedChart : Json := json r#"{"resourceType":"Bundle","entry":[{"resource":{"resourceType":"Patient","id":"B"}},{"resource":{"resourceType":"AllergyIntolerance","id":"own","patient":{"reference":"Patient/B"},"code":{"text":"Own allergy"}}},{"resource":{"resourceType":"AllergyIntolerance","id":"foreign","patient":{"reference":"Patient/A"},"code":{"text":"Private foreign allergy"}}}]}"#
+#guard (output mixedChart).display.allergies.map (·.id) == ["own"]
+#guard (chartResourcesOfBundle mixedChart).all (fun r => str r "id" != "foreign")
 
 end Ehr.Render.Tests
 

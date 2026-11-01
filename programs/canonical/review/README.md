@@ -16,7 +16,7 @@ lake exe export-content
 lake env lean --run Ehr/Canonical/ReviewScreens.lean ../fixtures/synthea/Aaron_Ankunding_4966bd28.json ../programs/canonical/review/P1
 cd ..
 node lean/Ehr/Canonical/review_screens.mjs
-EHR_UI_FILES='["/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Rooming.json","/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Orders.json","/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Sign.json"]' pnpm --filter app exec playwright test ui-check.spec.ts
+EHR_UI_FILES='["programs/canonical/review/P1/w1Rooming.json","programs/canonical/review/P1/w1Orders.json","programs/canonical/review/P1/w1Sign.json"]' pnpm --filter app exec playwright test ui-check.spec.ts
 ```
 
 The renderer's real D5 predicate passes on all five saved personas for v1, v2

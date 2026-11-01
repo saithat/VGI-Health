@@ -12,7 +12,7 @@ it('resumes through the shell wrapper with real fingerprints after runs are copi
  await writeJson(path.join(workspace,'runs/world/2/world.json'),{});
  const ehr=createEhr({fake:false}), world=path.join(REPO_ROOT,'runs/world/2');
  const fingerprints=await runFingerprints(ehr,world);
- expect(fingerprints.ehr).not.toBe('FAKE');expect(fingerprints.app).toMatch(/^[a-f0-9]{64}$/);
+ expect(fingerprints.interactionModel).toMatch(/^[a-f0-9]{64}$/);expect(fingerprints.ehr).not.toBe('FAKE');expect(fingerprints.app).toMatch(/^[a-f0-9]{64}$/);
  await writeJson(path.join(run,'manifest.json'),{world,ehr:{mode:'real',binary:DEFAULT_EHR_BIN},fingerprints});
  const copied=path.join(REPO_ROOT,'app/dist/runs/FAKE-wrapper-resume-test');
  await writeJson(path.join(copied,'changed-run-data.json'),{timestamp:Date.now(),data:'A build copies run data here'});
@@ -29,6 +29,8 @@ it('resumes through the shell wrapper with real fingerprints after runs are copi
   expect(result.stderr).toBe('');expect(result.status,result.stdout+result.stderr).toBe(0);
   const calls=await readFile(log,'utf8');expect(calls).toContain('verify-resume');expect(calls).toContain('run-days');expect(calls).not.toContain('build');
   await writeJson(path.join(run,'manifest.json'),{world,ehr:{mode:'real',binary:DEFAULT_EHR_BIN},fingerprints:{...fingerprints,agent:'changed-gates'}});
+  await expect(verifyResume(run)).rejects.toThrow('fingerprints changed');
+  await writeJson(path.join(run,'manifest.json'),{world,ehr:{mode:'real',binary:DEFAULT_EHR_BIN},fingerprints:{...fingerprints,interactionModel:'changed-pointer-model'}});
   await expect(verifyResume(run)).rejects.toThrow('fingerprints changed');
  }finally{await rm(copied,{recursive:true,force:true});}
 },30000);

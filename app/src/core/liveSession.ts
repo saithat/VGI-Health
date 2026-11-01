@@ -1,3 +1,4 @@
+import { clinicalDate } from "../data/clinicalDate";
 import { z } from "zod";
 import type {
   Event,
@@ -5,11 +6,13 @@ import type {
   Receipt,
 } from "../../../lean/generated/ehr-types";
 import { fhirDisplayContext, reviewSources } from "../data/fhirContext";
+import { keepFocusedTask, selectedRowSource } from "../data/patientDirectory";
 import { createSession } from "./session";
 import type { Interp } from "./interp";
 import {
   bundleResources,
   loadReviewReceipts,
+  loadPatientBundle,
   persistCommit,
   resolveCosigner,
   type Bundle,
@@ -63,7 +66,10 @@ export function factsContext(
     today: now.slice(0, 10),
     now: date.getUTCHours() * 60 + date.getUTCMinutes(),
     receipts,
-    record: [["viewerPersona", user.persona === "RN2" ? "P3" : user.persona], ...record],
+    record: [
+      ["viewerPersona", user.persona === "RN2" ? "P3" : user.persona],
+      ...record,
+    ],
     ...(context?.encounter.id ? { encounterId: context.encounter.id } : {}),
     ...(user.persona === "P2"
       ? { encounterKind: "emergency" }
@@ -82,6 +88,17 @@ export function projectLive(
   screen = "home",
   workflow = "shell",
 ): FactsOutput {
+  const focusedSource = context.task?.id
+    ? `Task/${context.task.id}`
+    : undefined;
+  const inFocus = (entry: NonNullable<Bundle["entry"]>[number]) =>
+    keepFocusedTask(entry.resource, focusedSource, context.patient.id ?? "");
+  const worldContext = context.worldContext
+    ? {
+        ...context.worldContext,
+        entry: context.worldContext.entry?.filter(inFocus),
+      }
+    : undefined;
   const projection: FactsOutput = JSON.parse(
     interp.facts(
       JSON.stringify({
@@ -89,16 +106,18 @@ export function projectLive(
         bundle: {
           ...bundle,
           entry: [
-            ...(bundle.entry ?? []).filter(
-              (entry) =>
-                entry.resource?.resourceType !== "Practitioner" ||
-                entry.resource.id !== user.practitioner.id,
-            ),
+            ...(bundle.entry ?? [])
+              .filter(inFocus)
+              .filter(
+                (entry) =>
+                  entry.resource?.resourceType !== "Practitioner" ||
+                  entry.resource.id !== user.practitioner.id,
+              ),
             { resource: user.practitioner },
           ],
         },
         context: factsContext(user, now, receipts, context),
-        ...(context.worldContext ? { worldContext: context.worldContext } : {}),
+        ...(worldContext ? { worldContext } : {}),
       }),
     ),
   );
@@ -161,7 +180,8 @@ export async function createLiveSession(
   program: unknown,
   bundle: Bundle,
   user: LiveUser,
-  initialContext: LiveContext,
+  initialContext?: LiveContext,
+  workspaceDate = clinicalDate(),
 ) {
   const elements = z
     .object({ elements: z.array(elementSchema) })
@@ -185,38 +205,72 @@ export async function createLiveSession(
     .parse(program).screens;
   let context = initialContext;
   let chart = bundle;
-  const receipts = await loadReviewReceipts(
-    bundle,
-    user,
-    new Date().toISOString(),
-  );
-  const session = createSession(
-    interp,
-    spec,
-    program,
-    projectLive(
+  const patientCharts = new Map<
+    string,
+    { context: LiveContext; chart: Bundle }
+  >();
+  if (initialContext?.patient.id)
+    patientCharts.set(initialContext.patient.id, {
+      context: initialContext,
+      chart,
+    });
+  const selectionEnabled =
+    z.object({ patientSelection: z.boolean().optional() }).parse(program)
+      .patientSelection === true;
+  const directoryBundle = initialContext?.worldContext ?? bundle;
+  const directoryProjection = (): FactsOutput =>
+    JSON.parse(
+      interp.facts(
+        JSON.stringify({
+          bundle: directoryBundle,
+          directoryOnly: true,
+          context: {
+            ...factsContext(user, new Date().toISOString()),
+            today: workspaceDate,
+          },
+        }),
+      ),
+    );
+  const directory = selectionEnabled ? directoryProjection() : undefined;
+  const receipts = context
+    ? await loadReviewReceipts(bundle, user, new Date().toISOString())
+    : [];
+  const scopedProjection = (screen = "home", reviewReceipts = receipts) => {
+    if (!context) {
+      if (!directory)
+        throw new Error("A legacy program requires an encounter context");
+      return directory;
+    }
+    const projection = projectLive(
       interp,
       chart,
       user,
       new Date().toISOString(),
-      receipts,
-      context,
-    ),
-    { id: user.practitioner.id, role: user.role },
-  );
-  let pending = false;
-  let refreshNeeded = false;
-  const projectionFor = (screen: string, receipts: Receipt[]) =>
-    projectLive(
-      interp,
-      chart,
-      user,
-      new Date().toISOString(),
-      receipts,
+      reviewReceipts,
       context,
       screen,
       screens.find((s) => s.id === screen)?.workflow ?? "shell",
     );
+    return directory
+      ? {
+          ...projection,
+          facts: {
+            ...projection.facts,
+            patientDirectory: directory.facts.patientDirectory,
+          },
+        }
+      : projection;
+  };
+  const session = createSession(
+    interp,
+    spec,
+    program,
+    selectionEnabled && directory ? directory : scopedProjection(),
+    { id: user.practitioner.id, role: user.role },
+  );
+  let pending = false;
+  let refreshNeeded = false;
+  const projectionFor = scopedProjection;
   return {
     getSnapshot: session.getSnapshot,
     subscribe: session.subscribe,
@@ -232,7 +286,125 @@ export async function createLiveSession(
           "The previous transaction saved. Reopen the chart to refresh before continuing.",
         );
       const before = session.getSnapshot();
+      if (selectionEnabled) {
+        const selected = before.state.patientContext?.patient;
+        const loaded = selected ? patientCharts.get(selected) : undefined;
+        context = loaded?.context;
+        chart = loaded?.chart ?? directoryBundle;
+      }
       const staged = session.preview(event);
+      const priorPatient = before.state.patientContext?.patient;
+      const selected = staged.state.patientContext?.patient;
+      if (selectionEnabled && selected !== priorPatient) {
+        session.accept(staged, directory);
+        if (!selected) {
+          context = undefined;
+          return undefined;
+        }
+        pending = true;
+        try {
+          const loaded = await loadPatientBundle(selected);
+          const resources = bundleResources(loaded);
+          const patient = resources.find(
+            (r): r is Patient =>
+              r.resourceType === "Patient" && r.id === selected,
+          );
+          if (!patient) throw new Error("Medplum returned a different patient");
+          const source = selectedRowSource(
+            directory?.facts.patientDirectory,
+            staged.state.patientContext,
+            event,
+            selected,
+          );
+          const workItem = bundleResources(directoryBundle).find(
+            (r) => `${r.resourceType}/${r.id}` === source,
+          );
+          const encounterRef =
+            workItem?.resourceType === "Encounter"
+              ? `Encounter/${workItem.id}`
+              : workItem?.resourceType === "Task" ||
+                  workItem?.resourceType === "ServiceRequest"
+                ? workItem.encounter?.reference
+                : undefined;
+          const encounters = resources.filter(
+            (r): r is Encounter => r.resourceType === "Encounter",
+          );
+          const encounter = encounterRef
+            ? encounters.find((r) => `Encounter/${r.id}` === encounterRef)
+            : encounters.sort(
+                (a, b) =>
+                  Number(b.period?.start?.slice(0, 10) === workspaceDate) -
+                    Number(a.period?.start?.slice(0, 10) === workspaceDate) ||
+                  Number(b.status === "in-progress") -
+                    Number(a.status === "in-progress") ||
+                  (b.period?.start ?? "").localeCompare(a.period?.start ?? ""),
+              )[0];
+          if (!encounter)
+            throw new Error(
+              "This chart has no matching existing encounter to open",
+            );
+          const focusedTask =
+            workItem?.resourceType === "Task"
+              ? (resources.find(
+                  (r): r is Task =>
+                    r.resourceType === "Task" && r.id === workItem.id,
+                ) ?? workItem)
+              : undefined;
+          const task =
+            focusedTask?.for?.reference === `Patient/${selected}`
+              ? focusedTask
+              : undefined;
+          const focus = task?.focus?.reference;
+          const requested = focus?.startsWith("#")
+            ? task?.contained?.find(
+                (r): r is MedicationRequest =>
+                  r.resourceType === "MedicationRequest" &&
+                  `#${r.id}` === focus,
+              )
+            : resources.find(
+                (r): r is MedicationRequest =>
+                  r.resourceType === "MedicationRequest" &&
+                  `MedicationRequest/${r.id}` === focus,
+              );
+          const renewal =
+            requested?.subject.reference === `Patient/${selected}`
+              ? requested
+              : undefined;
+          chart = loaded;
+          context = {
+            patient,
+            encounter,
+            worldContext: directoryBundle,
+            ...(task ? { task } : {}),
+            ...(renewal ? { renewal } : {}),
+          };
+          patientCharts.set(selected, { context, chart });
+          const reviews = await loadReviewReceipts(
+            chart,
+            user,
+            new Date().toISOString(),
+          );
+          const projection = projectionFor(staged.state.screen, reviews);
+          if (projection.facts.sourcePatientId !== selected)
+            throw new Error(
+              "Patient identity does not match the selected chart",
+            );
+          const hydrated = JSON.parse(
+            interp.step(
+              JSON.stringify(spec),
+              JSON.stringify(program),
+              JSON.stringify(projection),
+              JSON.stringify({ id: user.practitioner.id, role: user.role }),
+              JSON.stringify(staged.state),
+              JSON.stringify({ scroll: { screen: staged.state.screen } }),
+            ),
+          );
+          session.accept(hydrated, projection);
+          return undefined;
+        } finally {
+          pending = false;
+        }
+      }
       const commits = staged.state.commits.filter(
         (id) => !before.state.commits.includes(id),
       );
@@ -251,6 +423,17 @@ export async function createLiveSession(
         );
         return undefined;
       }
+      if (!context)
+        throw new Error(
+          "Select a patient and an existing encounter before saving",
+        );
+      if (
+        selectionEnabled &&
+        staged.state.patientContext?.patient !== context.patient.id
+      )
+        throw new Error(
+          "The loaded encounter does not belong to the selected patient",
+        );
       pending = true;
       try {
         // Current interpreter emits one commit per click. Reject unexpected
@@ -295,11 +478,14 @@ export async function createLiveSession(
           };
         }
         chart = result.bundle;
+        const encounterId = context.encounter.id;
         const updated = bundleResources(chart).find(
           (r): r is Encounter =>
-            r.resourceType === "Encounter" && r.id === context.encounter.id,
+            r.resourceType === "Encounter" && r.id === encounterId,
         );
         if (updated) context = { ...context, encounter: updated };
+        if (context.patient.id)
+          patientCharts.set(context.patient.id, { context, chart });
         try {
           session.accept(
             staged,

@@ -27,10 +27,10 @@ def firstProgram : Program := { microProgram with screens := microProgram.screen
     { id := "review", kind := .button (.markReviewed "allergyList") }] } else sc }
 def first : Context := { microCtx with prog := firstProgram }
 def secondSpec : Spec := { microSpec with entries := [], reviews := [
-  { commit := "signOrders", info := "allergyList", mode := .shownOrReceipt 720 [.physician] }] }
+  { commit := "signNote", info := "allergyList", mode := .shownOrReceipt 720 [.physician] }] }
 def secondProgram : Program := { microProgram with start := "c", screens := [
   { id := "c", title := "Commit", workflow := "W4", components := [
-    { id := "sign", kind := .button (.commit "signOrders") },
+    { id := "sign", kind := .button (.commit "signNote") },
     { id := "toReview", kind := .button (.goto "d") }] },
   { id := "d", title := "Review", workflow := "W4", components := [
     { id := "allergy", kind := .panel "allergyList" },
@@ -38,7 +38,7 @@ def secondProgram : Program := { microProgram with start := "c", screens := [
     { id := "toCommit", kind := .button (.goto "c") }] }] }
 def second : Context := { microCtx with
   sp := secondSpec, prog := secondProgram,
-  goals := { commits := ["signOrders"], values := [], expectedAcks := [] } }
+  goals := { commits := ["signNote"], values := [], expectedAcks := [] } }
 #guard (minimum first .clicks (init first.sp first.prog facts user) 1000).map (·.cost) == some 3
 #guard (minimum second .clicks (init second.sp second.prog facts user) 1000).map (·.cost) == some 4
 #guard (jointMinimum [first, second] .clicks 5000 (some .full)).map (·.cost) == some 5

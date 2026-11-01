@@ -607,7 +607,7 @@ theorem T11_ui_med_rows (cx : Ctx) (r : MedRow) (hr : r ∈ cx.disp.meds)
 /-- T11 from raw FHIR to semantic UiScreen: every active allergy resource survives. -/
 theorem T11_ui_allergy_fhir (cx : Ctx) (ctx : FactsContext) (b r : Lean.Json)
     (hp : Fhir.parseBundle ctx b = .ok (cx.facts, cx.disp))
-    (hr : r ∈ Fhir.bundleResources b) (ha : Fhir.isAllergy r = true) (active : Fhir.allergyActive r = true)
+    (hr : r ∈ Fhir.chartResourcesOfBundle b) (ha : Fhir.isAllergy r = true) (active : Fhir.allergyActive r = true)
     (hi : infoShown cx.sp cx.prog cx.facts cx.s "allergyList" = true) :
     ∃ comp label display rows,
       UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s)
@@ -617,7 +617,7 @@ theorem T11_ui_allergy_fhir (cx : Ctx) (ctx : FactsContext) (b r : Lean.Json)
 /-- T11 from raw FHIR to semantic UiScreen: every current medication survives. -/
 theorem T11_ui_med_fhir (cx : Ctx) (ctx : FactsContext) (b r : Lean.Json)
     (hp : Fhir.parseBundle ctx b = .ok (cx.facts, cx.disp))
-    (hr : r ∈ Fhir.bundleResources b) (ha : Fhir.isMedRequest r = true) (active : Fhir.medActive r = true)
+    (hr : r ∈ Fhir.chartResourcesOfBundle b) (ha : Fhir.isMedRequest r = true) (active : Fhir.medActive r = true)
     (hi : infoShown cx.sp cx.prog cx.facts cx.s "currentMeds" = true) :
     ∃ comp label display rows,
       UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s)

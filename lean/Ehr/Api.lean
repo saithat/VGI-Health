@@ -1,4 +1,4 @@
-import Ehr.Core.View
+import Ehr.Core.Workspace
 import Ehr.JsonCompat
 
 /-!
@@ -19,16 +19,20 @@ namespace Ehr
 
 /-- The initial state for an episode. -/
 def runInit (i : InitInput) : State :=
-  init i.spec i.program i.facts i.user
+  if Workspace.enabled i.program then Workspace.init i.program else init i.spec i.program i.facts i.user
 
 /-- One human event. -/
 def runStep (i : StepInput) : StepOutput :=
-  let r := step i.spec i.program i.facts i.user .human i.state i.event
+  let r := if Workspace.enabled i.program then Workspace.step i.spec i.program i.facts i.user i.state i.event
+    else step i.spec i.program i.facts i.user .human i.state i.event
   { state := r.1, result := r.2 }
 
 /-- The screen view. -/
 def runView (i : ViewInput) : ScreenView :=
-  view i.spec i.program i.facts i.user i.state
+  if Workspace.enabled i.program && !Workspace.bound i.facts i.state then
+    { screen := i.state.screen, title := (Workspace.activity i.program i.facts i.state).title,
+      items := [], enabled := (Workspace.navigation i.program i.facts i.state ++ Workspace.openControls i.program i.facts i.state).map (·.id), blocked := [] }
+  else view i.spec i.program i.facts i.user i.state
 
 /-- Run one batch case from `init`: one output record per event. -/
 def runBatchCase (caseIdx : Nat) (c : BatchCase) : List BatchStep :=

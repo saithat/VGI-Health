@@ -11,11 +11,11 @@ export const clinicalTokens = {
   secondary: "#526171",
   divider: "#CBD5DF",
   control: "#718096",
-  appBar: "#243E73",
-  appBarHover: "#1C305A",
+  appBar: "#183D48",
+  appBarHover: "#102F39",
   activity: "#DCE6F6",
-  sidebar: "#EBF0FA",
-  section: "#EDF3FB",
+  sidebar: "#F0F3F4",
+  section: "#F1F4F6",
   persona: {
     P1: "#245A81",
     P2: "#984029",
@@ -25,29 +25,38 @@ export const clinicalTokens = {
   },
   blue: { ink: "#245A81", tint: "#E8F1F8", hover: "#1C4868" },
   red: { ink: "#9C2833", tint: "#FCECEE", hover: "#82212B" },
+  orange: { ink: "#94400B", tint: "#FFF0E4", hover: "#783208" },
   yellow: { ink: "#825300", tint: "#FFF3D6", hover: "#694300" },
   green: { ink: "#256348", tint: "#EAF5EE", hover: "#1D503A" },
   violet: { ink: "#65448B", tint: "#F1ECF7", hover: "#523771" },
   gray: { ink: "#526171", tint: "#EDF0F3", hover: "#414E5B" },
 };
 export type ClinicalTone =
-  "blue" | "red" | "yellow" | "green" | "violet" | "gray";
+  "blue" | "red" | "orange" | "yellow" | "green" | "violet" | "gray";
 function tone(color: string): color is ClinicalTone {
-  return ["blue", "red", "yellow", "green", "violet", "gray"].includes(color);
+  return [
+    "blue",
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "violet",
+    "gray",
+  ].includes(color);
 }
 export const clinicalTheme = createTheme({
   primaryColor: "blue",
   primaryShade: 8,
   colors: Object.fromEntries(
-    (["blue", "red", "yellow", "green", "violet", "gray"] as const).map(
-      (color) => {
-        const { ink, tint, hover } = clinicalTokens[color];
-        return [
-          color,
-          [tint, tint, tint, tint, tint, ink, ink, ink, ink, hover] as const,
-        ];
-      },
-    ),
+    (
+      ["blue", "red", "orange", "yellow", "green", "violet", "gray"] as const
+    ).map((color) => {
+      const { ink, tint, hover } = clinicalTokens[color];
+      return [
+        color,
+        [tint, tint, tint, tint, tint, ink, ink, ink, ink, hover] as const,
+      ];
+    }),
   ),
   black: clinicalTokens.ink,
   white: clinicalTokens.surface,
@@ -130,11 +139,11 @@ export const clinicalCssVariables = {
     ]),
   ),
   ...Object.fromEntries(
-    (["blue", "red", "yellow", "green", "violet", "gray"] as const).flatMap(
-      (tone) => [
-        [`--clinical-${tone}-ink`, clinicalTokens[tone].ink],
-        [`--clinical-${tone}-tint`, clinicalTokens[tone].tint],
-      ],
-    ),
+    (
+      ["blue", "red", "orange", "yellow", "green", "violet", "gray"] as const
+    ).flatMap((tone) => [
+      [`--clinical-${tone}-ink`, clinicalTokens[tone].ink],
+      [`--clinical-${tone}-tint`, clinicalTokens[tone].tint],
+    ]),
   ),
 };

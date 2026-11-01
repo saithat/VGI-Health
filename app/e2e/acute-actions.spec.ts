@@ -10,6 +10,7 @@ import type {
   State,
   StepOutput,
   UiScreen,
+  InitInput,
 } from "../../lean/generated/ehr-types";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/ehr/offline";
@@ -31,6 +32,74 @@ const native = <T>(command: string, input: unknown): T =>
       env: { ...process.env, LEAN_NUM_THREADS: "4" },
     }).toString(),
   );
+function selectedState(base: InitInput & FactsOutput): State {
+  let state = native<State>("init", base);
+  const ui = native<UiScreen>("render-ui", { ...base, state });
+  const descend = (
+    node: UiScreen["workspace"][number],
+  ): UiScreen["workspace"] => {
+    if ("button" in node) return [node];
+    if ("presentation" in node)
+      return node.presentation.children.flatMap(descend);
+    if ("rowAction" in node) return node.rowAction.children.flatMap(descend);
+    if ("section" in node) return node.section.children.flatMap(descend);
+    if ("columns" in node) return node.columns.children.flatMap(descend);
+    if ("tabs" in node) return node.tabs.body.flatMap(descend);
+    return [];
+  };
+  const choice = ui.workspace
+    .flatMap(descend)
+    .find(
+      (node) =>
+        "button" in node &&
+        node.button.comp.startsWith(
+          `workspace.open|${base.facts.sourcePatientId}|`,
+        ),
+    );
+  if (!choice || !("button" in choice))
+    throw new Error("Missing acute source patient choice");
+  for (const event of [
+    { click: { comp: choice.button.comp } },
+    { scroll: { screen: state.screen } },
+  ] satisfies Event[]) {
+    const result = native<StepOutput>("step", { ...base, state, event });
+    expect(result.result).toBe("ok");
+    state = result.state;
+  }
+  expect(state.patientContext?.bound).toBe(base.facts.sourcePatientId);
+  const queue: [string, string[]][] = [[state.screen, []]];
+  const seen = new Set([state.screen]);
+  for (const [screen, route] of queue) {
+    if (screen === base.program.start) {
+      for (const comp of route) {
+        const result = native<StepOutput>("step", {
+          ...base,
+          state,
+          event: { click: { comp } },
+        });
+        expect(result.result).toBe("ok");
+        state = result.state;
+      }
+      return state;
+    }
+    for (const comp of base.program.screens.find((item) => item.id === screen)
+      ?.components ?? []) {
+      if (
+        typeof comp.kind === "object" &&
+        "button" in comp.kind &&
+        typeof comp.kind.button.action === "object" &&
+        "goto" in comp.kind.button.action
+      ) {
+        const destination = comp.kind.button.action.goto.screen;
+        if (!seen.has(destination)) {
+          seen.add(destination);
+          queue.push([destination, [...route, comp.id]]);
+        }
+      }
+    }
+  }
+  throw new Error("No clinical route back to the acute landing screen");
+}
 let fixtures: string;
 test.beforeAll(() => {
   fixtures = mkdtempSync(join(tmpdir(), "vgi-acute-actions-"));
@@ -65,7 +134,7 @@ for (const [screen, button, elements] of [
         context: read(join(fixtures, "P3-context.json")),
       }),
     };
-    const input: RenderInput = { ...base, state: native<State>("init", base) };
+    const input: RenderInput = { ...base, state: selectedState(base) };
     const events: Event[] = [];
     await page.exposeFunction("recordAcuteEvent", (event: Event) => {
       events.push(event);
@@ -97,7 +166,7 @@ for (const [screen, button, elements] of [
     };
     await paint();
     await page
-      .locator(`button[data-comp-id="w4Worklist.nav.${screen}"]`)
+      .locator(`button[data-comp-id="${input.state.screen}.nav.${screen}"]`)
       .click();
     await advance(1);
     const original = input.state;
@@ -161,7 +230,7 @@ for (const [persona, screen, element, count, choice] of [
         context: read(join(fixtures, `${persona}-context.json`)),
       }),
     };
-    const input: RenderInput = { ...base, state: native<State>("init", base) };
+    const input: RenderInput = { ...base, state: selectedState(base) };
     const events: Event[] = [];
     await page.exposeFunction("recordAcuteEvent", (event: Event) => {
       events.push(event);
@@ -269,7 +338,7 @@ for (const [
       user: read(join(fixtures, `${persona}-user.json`)),
       ...source,
     };
-    const input: RenderInput = { ...base, state: native<State>("init", base) };
+    const input: RenderInput = { ...base, state: selectedState(base) };
     if (start === "w4Mar") {
       const open = native<StepOutput>("step", {
         ...input,
@@ -383,7 +452,7 @@ test("ED imaging retains the report, linked findings and separate image status",
       context: read(join(fixtures, "P2-context.json")),
     }),
   };
-  const input: RenderInput = { ...base, state: native<State>("init", base) };
+  const input: RenderInput = { ...base, state: selectedState(base) };
   const events: Event[] = [];
   await page.exposeFunction("recordAcuteEvent", (event: Event) => {
     events.push(event);

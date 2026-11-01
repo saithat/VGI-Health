@@ -18,14 +18,15 @@ open Ehr.Specs.V1 Ehr.Specs.V2 Ehr.Specs.V3
 -- or rejection of arbitrary codes: those still need core/check CR-11.
 #guard Specs.ruleProfile == .full || [(specV1, canonicalV1), (specV2, canonicalV2), (specV3, canonicalV3)].all fun (sp, p) =>
   let p := p.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
-  let s := run opioidPath p adult physician sp
+  let f := { adult with record := [("facilityKind", "general-acute-care"), ("surgicalProcedure", "appendectomy"), ("directedSupplyDays", "7")] }
+  let s := run opioidPath p f physician sp
   let entered := more s [.click "w1Sign.edit",
     .enter "w1Orders.curesExemptionReason" (.code "surgery-7-day"),
-    .click "w1Orders.toSign", .click "w1Verify.continue"] p adult physician sp
-  (finish s "w1Sign" "signOrders" p adult physician sp).commits == [] &&
+    .click "w1Orders.toSign", .click "w1Verify.continue"] p f physician sp
+  (finish s "w1Sign" "signOrders" p f physician sp).commits == [] &&
   (cap entered "curesExemptionReason").any (fun c =>
     c.byHuman && c.confirmed && c.value == .code "surgery-7-day") &&
-  (finish entered "w1Sign" "signOrders" p adult physician sp).commits == ["signOrders"]
+  (finish entered "w1Sign" "signOrders" p f physician sp).commits == ["signOrders"]
 
 /-- v2 preserves a complete v1 prescribing path without any new input. -/
 def optionalRelease : State := run w1Path canonicalV2 adult physician specV2

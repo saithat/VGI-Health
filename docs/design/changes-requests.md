@@ -24,6 +24,147 @@ Integrated main `062a4ef` display polish. W4’s fixed normal assessment and “
 The focused screenshot also caught a legacy blood-pressure panel joined in array order. It now shares the coded systolic/diastolic reader with structured observations; unknown or mixed-unit components keep their individual labels/units. `node scripts/check-acute-wasm.mjs` checks both original acute source bundles, all reachable role screens and Imaging tabs. Frozen replay extraction now uses four workers, matching this lane’s resource budget.
 
 The acute lane now supplies the existing `imaging` info from patient-bound DiagnosticReport/ImagingStudy resources, preserving report text and exact linked study/observation context. Board availability distinguishes source order/image/report milestones. W3 provider and W3/W4 Chart Review Imaging opt into the existing `present.notes` layout; there is no new control or info catalog item. Exact Bundle full-URL aliases are retained privately for reference resolution, without suffix matching or visible resource IDs. The desktop banner also stacks above the navigator; stronger browser checks test actual coverage rather than only viewport bounds. Existing clinical rules/spec data and theorem signatures remain unchanged.
+## CHECK conformance repair — 2026-11-01
+
+The five findings below have implementation fixes: CURES waiver membership and
+facility/procedure/supply evidence are checked; changed linked sources discard
+stale dependents and require fresh human confirmation; chart resources are
+patient scoped before facts and display projection; order signing requires an
+order, including a confirmed imaging/procedure-only route; and approval accepts
+only approve/modify, retaining the reasoned denial action. The checker rejects
+programs relying solely on a CURES waiver and programs with no order composer.
+
+Certification: 15/15; bad regressions: 23/23, with five new checker-local cases.
+World 2: 1,284/1,284 across all fifty schedules. Default build, kernel check and
+Comparator pass. App tests: 285; agent tests: 93. The archived run1-P3 replay
+retains its input/spec IDs and matches 14,658 events plus 137 baseline events.
+No `Statements.lean` change was needed. FHIR inclusion proofs now quantify over
+the selected patient's chart resources, rather than unrelated bundle entries.
+
+The positive kg-correction scenario explicitly re-confirms dosing weight after
+source correction and asserts the old confirmation was invalidated; its refusal
+oracle is unchanged. The conformance runner allows up to sixteen independent
+native workers for the owner's deadline. The focused rerun and its exact scope
+are recorded in `conformance/results/gap-families.json`; the earlier full matrix
+is retained as historical evidence, not a claim about the repaired executable.
+
+## RULE CONFORMANCE findings — owner-side held-out evaluation (2026-11-01)
+
+The behavioral suite is [conformance/](../../conformance/README.md). It uses the
+native interpreter, not checker verdicts as expected outcomes. The separate
+[checker audit](../../conformance/results/certifications.json) freshly accepted
+all 15 current role canonicals. No spec, property, interpreter or deployment gate
+was changed by this lane. Exact-program cases, adversarial runtime copies and
+FHIR adapter probes are labeled separately. Run totals and per-revision traces
+are in [run1-P3/conformance.json](../../runs/run1-P3/conformance.json).
+
+### CONFORMANCE-5 → core/content/app: a deny decision bypasses the reason via the approval action
+
+**Trigger and attempt.** A metformin refill request; complete the ordinary refill
+protocol, quantity, refills, pharmacy and reviews. Set `refillDecision = deny`,
+leave `refillDenyReason` absent, then click the semantic `approveRefill` action.
+**Expected:** every route that effects a denial requires its reason.
+**Observed:** `approveRefill` enters `State.commits` with a confirmed deny decision
+and no denial reason. The supplemental
+[23-target evaluation](../../conformance/results/refill-denial-run1-P3.json)
+finds this on all six current P1/P4 canonicals; other personas have no refill
+workflow and are explicitly not applicable.
+
+This is not merely a misleading action label. `app/src/data/commitMapper.ts`,
+the `approveRefill` deny/denied branch, calls `finishTask`, which records the deny
+decision as the completed Task's business status. The native suite does not
+execute database persistence, but this is the actual mapper route it would use.
+The core requires the reason on `denyRefill`, while its `approveRefill` entry
+lacks the full-profile approve/modify-only value constraint. The separate
+dedicated-denial omission tests pass while this alternate route fails.
+
+**Request:** retain the denial reason across action routes, or constrain the
+approval action to approve/modify and preserve the dedicated, reasoned denial
+path. Ordinary approvals and legitimate denials must both remain completable.
+No existing failed outcome is replaced by this additional regression scenario.
+
+### CONFORMANCE-1 → core/check/content: CURES exemptions validate neither membership nor eligibility
+
+**Trigger and attempt.** A Schedule II oxycodone order in a pre-op encounter,
+5 mg every six hours, zero refills, a documented surgical procedure at a general
+acute-care facility. Suppress only the CURES report panel in a program copy, then
+human-enter either `surgery-7-day` with an eight-day directed supply or the code
+`invented-exemption`. Complete the ordinary entries and acknowledge actual alerts.
+
+**Expected:** neither attempt waives CURES; the eligible seven-day surgical
+scenario is the positive control. **Observed:** both bad exemptions permit
+`signOrders`. The [separate probe check](../../conformance/results/cures-probe-check.json)
+also returns `ok` for the P1 v3 program with only CURES report panels removed.
+The suite does not claim the modified program carries the original certificate.
+
+`Core/Guard.lean:waived` accepts any confirmed, nonempty human value. The core
+`ValueKind.coded` name supplies no terminology-membership or facility/procedure/
+supply eligibility check. This is the existing CR-11 limitation, now exercised
+behaviorally by `cures.unknown-exemption` and `cures.procedure-eight-day`.
+**Request:** encode the approved exemption value set and the modeled eligibility
+predicates, with the required clinical/facility/supply evidence, and retain the
+legitimate seven-day path. This is a rule-modeling gap, not a contradiction of a
+theorem that only promises the current simplified waiver semantics.
+
+### CONFORMANCE-2 → FHIR/core/shell: mixed-patient chart input is not defensively scoped
+
+**Trigger and attempt.** Open patient B with a Bundle containing B's Patient and
+weight plus one active AllergyIntolerance explicitly referencing patient A. Its
+unique text is `HELDOUT_A_PRIVATE_ALLERGY`. Call native `ehr facts`, then initialize
+the actual program for B. **Expected:** reject the mixed chart or exclude A's
+clinical resource. **Observed:** B's projected `display.allergies` contains A's
+allergy (`patient-switch.chart-scoping`). The original certified program is used
+unchanged; this is labeled an `adapter-probe`.
+
+`Render/Fhir.lean:parseBundle` selects the first Patient and passes the entire
+resource list to `factsOf`/`displayOf`; allergy projection does not check the
+resource's patient reference. **Request:** scope clinical chart resources to the
+selected patient before producing facts/display rows, while retaining intentional
+multi-patient worklist payloads separately. Test shell selection/race behavior
+after patient selection lands. This probe does **not** demonstrate that today's
+live loader actually returns a mixed bundle. Native `init` independently passes
+the clean A→B reset scenario: captures, acknowledgements, commits and review
+receipts do not carry over.
+
+### CONFORMANCE-3 → core/content: linked dosing weight can retain a superseded source
+
+`entry.signOrders.dosingWeight` exposes a linked copy created while today's
+record-derived weight is still unconfirmed. Entering the source weight later
+does not refresh or confirm that existing copy. The configured `linked:weight`
+field therefore does not immediately carry the newly confirmed source value.
+This first observation alone is a confirmation/link behavior gap, not proof of
+an unsafe commit.
+
+`weight.linked-source-refresh` and the [stronger native reproduction](../../conformance/results/linked-weight-reproduction.json)
+corrects the source to 20 kg after a 70 kg linked copy was created, explicitly
+confirms the existing linked copy, completes the remaining ordinary fields, and
+signs the original accepted P1 v3 program. It records the final source and linked
+captures and every concrete event. `prefillField` refuses to revisit an existing
+capture; `enterCore` updates only the entered element; `confirmCore` confirms the
+old value without revalidating it against its declared linked source.
+
+**Request:** define and enforce the intended source-version/value behavior for
+linked captures when a source changes. Invalidate or refresh stale dependents,
+and ensure a late source correction has a legitimate completing path. Preserve
+both the declared linkage and required-unit checks. No owner-owned rule was
+weakened to make this case pass.
+
+### CONFORMANCE-4 → product/core: an empty medication episode can be signed
+
+`workflow.empty-medication-signing` enters the matching patient-ID re-entry,
+confirmed kg weight and dosing weight, then attempts `signOrders` before any
+drug is selected. **Expected workflow behavior:** refuse the empty medication
+episode. **Observed:** `signOrders` is added to `State.commits` on the unchanged
+accepted program. `entryMet` quantifies per-line requirements over `orderLines`,
+which is empty until a drug capture exists.
+
+This expectation is deliberately stricter than the encoded per-line contract;
+the result does not establish an unsafe MedicationRequest write. **Request:**
+decide whether empty signing should be a no-op or a refused action, and express
+that workflow contract without blocking legitimate imaging/procedure-only
+signing. The ordinary drug-entry case separately instantiates a medication line
+and verifies that replacing its drug with an empty code is refused.
+
 ## SURG → presentation / shell: perioperative views (2026-11-01)
 
 W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
@@ -231,7 +372,7 @@ fails these checks (the remaining rules pass):
 
 Content's bad-program exports and `Specs/Extends.lean` have not yet landed on
 origin/lane/content `6cd108d`. Please preserve the expected properties listed
-in HANDOFF-check.md when exporting the 14 programs. Per-screen component IDs
+in docs/STATUS.md when exporting the 14 programs. Per-screen component IDs
 are accepted; spec-level alert IDs must remain unique.
 
 ## CR-6. Prior-auth requests and the existing semantic properties
@@ -269,7 +410,7 @@ Render will test the generator in a temporary copy without editing your file.
 `wasm/build-ehr.sh` and `wasm/build.py` hardcode `.tools/{emsdk,lean4,libuv}`;
 there is no supported environment override. Please add one (e.g.
 `VGI_TOOLS_DIR`), including the Python paths. The available pinned toolchains
-are in `/home/saithat/Projects/VGI-wasm/.tools`. For this lane's rebuild we
+are in `.tools`. For this lane's rebuild we
 use local ignored symlinks under `.tools` pointing to those read-only inputs.
 
 ## Render → app / infra: patient identity and wristbands (2026-10-31)
@@ -1790,7 +1931,7 @@ clinical deadline, goal, completion and validation check unchanged.
 **Exactly two original owning-lane requests remain open:** baseline v1 service
 order declarations/composers for the 13 retained tasks, and the one-line
 `taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
-request is closed. Exact details and the final verification are in HANDOFF-sim.md
+request is closed. Exact details and the final verification are in docs/STATUS.md
 and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
 # Live Medplum integration requests (lane/app, 2026-10-31)
 
@@ -2111,7 +2252,7 @@ The three existing entry requirements and permissions remain unchanged.
 `np_preop_never_signs` proves the guard refuses every NP pre-op signature;
 `entry_relevant_when_allowed` justifies excluding forbidden-context entries
 from depth and completion checks. All 15 persona baselines now certify.
-The three shared canonical masters mix roles and are reference programs, not
+The three shared canonical vendor references mix roles and are reference programs, not
 single-role deployable baselines; only their persona projections are certified.
 World 1 has 15 pre-op tasks, all P5, and none on day 1. P4 has no pre-op tasks.
 The named P5 pre-op walkthrough signs after the three required human captures.
@@ -2176,13 +2317,13 @@ Validation on world 2: **38 / 1,284** tasks remain incomplete, all with this
 specific dose obstruction; P1 has 4, P2 has 29, P5 has 5. P3/P4 complete all tasks;
 P4 has no pre-op tasks. `lean/Ehr/Sim/validation-world2.json` contains every
 blocked task ID and its exact drug/dose/unit choices. The per-day table is in
-`docs/STATUS.md`. No service-order release mismatch remains.
+`STATUS.md`. No service-order release mismatch remains.
 
 
 Resolved by the check lane: native-unit dose kind, per-slot formulary/selector
 validation, unit-aware composer and UCUM FHIR writes. The same 1,284 tasks now
 complete with zero incomplete; see `lean/Ehr/Sim/validation-world2.json` and
-`docs/STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
+`STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
 
 ## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
 
@@ -2495,6 +2636,16 @@ The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release
 
 The existing display fallback recognizes the observed SNOMED FSN tags `(organism)` and `(substance)` at term boundaries. Other qualifiers and recognized words inside running prose remain. Full clinical source strings/codes, row accessibility labels and native tooltips are retained. Public `fieldSources` captions bypass term cleanup, as do authored note/document bodies. This changes no Lean tree, guard, actor permission, capture, review, source projection or navigation action. The matched terminology baseline is preserved in `before-terms-*` images.
 
+
+### RUN geometry: export all potential popup variants upstream
+
+`ehr render-screens --ui` exports interruptive popup variants, only when its sample condition fires; simulated
+traces on other patients can acknowledge additional interruptive or removable-tier
+immediate popups. Please export these
+reachable display variants in the native exporter. The run lane currently calls
+the existing native facts/init/render-ui commands for those configured popup
+states in an agent-owned adapter, without editing any program, rule or protected
+Lean module. Both the normal screen gate and geometry capture inspect them.
 ## SHELL-PUNCH-2026-11-01: clinician review A2/A3/A5/A10/A11
 
 To canonical/presentation lanes, against main `81691fb`:
@@ -2536,3 +2687,31 @@ permissions, human-only flags, input values or commit/review rules change.
 ### ACUTE shared-list integration (2026-11-01)
 
 The shared world consumer now supplies dated assigned-patient and unit-census queues. `shiftWorklist` retains that shared queue contract. The additive optional `shiftTasks` info catalog entry carries the existing source-bound selected-encounter Task rows, preventing the queue overlay from replacing their due times/statuses. The shared worklist presentation draws these records; no separate painter, clinical rule or synthetic completion state is introduced.
+### Shell → content: in-EHR patient opening integration (1 Nov, 07:53)
+
+The browser now opens a persona/program/day only. It has no external patient
+picker and emits no patient query parameter. Timeline `day=0..10` uses the
+committed world calendar (`chartDateForTimelineDay`); it never selects a patient.
+The replay inspector's external patient switcher is also removed.
+
+Please land the declared `openPatient` action and replay/live patient-loading
+transport on main. The shell will merge it and exercise picking different rows
+inside Schedule / Track Board / Unit Census / OR Schedule. Keep the initial
+landing activity and list-versus-chart banner/Chart Review placement semantic;
+the painter must not infer list mode from screen-title strings or suppress source
+controls. Historical recorded programs remain immutable: please specify their
+supported patient-opening path when they lack the new action. No browser-side
+patching of archived programs is authorized.
+
+Follow-up after reading the in-progress Workspace integration: the
+`patientSelection` opt-in deliberately preserves old program behavior. The owner
+also requires historical revision nodes to start at a list with in-EHR patient
+selection. Frozen run1-P3 programs omit that flag, so removing the external picker
+alone leaves those historical revisions without a patient-changing path. Please
+provide a proof-covered workspace entry mode for historical programs without
+rewriting their recorded JSON/certificates. The shell will not inject the flag or
+invent React-only patient controls.
+
+## 2026-11-01 10:43 PDT — imported chart reference aliases (shell → content/check)
+
+After merging `32369320` / `fc291cbe`, the patient-scope filter removes legitimate imported Synthetic Hospital notes. Reproduce with the existing opt-in `REALISM_SHOTS=after-live-select` shared realism test: select Riley Ellis (MRN SH00001675) through Patient Lookup, then Notes. `fixtures/synthetic-hospital/1675.json` declares Patient id `sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d` with bundle `fullUrl` `urn:uuid:f55e5d3f-2686-5180-a2a5-e17365fdb89d`; its DocumentReferences bind `subject.reference` to that exact fullUrl. `chartResources` / `Ambulatory.referenceMatches` currently compare only the Patient.id forms, so the legitimate note rows disappear and the preexisting realism assertion fails. Preserve patient scoping, resolve the declared bundle fullUrl alias to the selected Patient, and keep foreign-patient records excluded. Add a named native example for the id/fullUrl alias, regenerate WASM, and rerun `realism.spec.ts` with REALISM_SHOTS enabled. Do not relax the note-card or cross-patient assertions.

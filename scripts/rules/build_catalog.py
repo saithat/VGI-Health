@@ -21,7 +21,7 @@ ALL = PRESCRIBERS + ['rn']
 DECISIONS = {}
 SOURCE_HASHES = {
     'cms': 'bd621fbb14c7aa83b6d6df105a2eff268bc8113bee456d1dbd95f0510e99b051',
-    'ca-title22': 'bd75a74dcdd160deb98fa9c675019c4ad5771a72b55dc8308fd83d98b0f29dd1',
+    'ca-title22': 'fa7ff56c349b51183c78a524db0e8253464a188be1858538ec4b95801c737d68',
     'ca-statutes': 'a5fadcf8fbacb9b83c6d75d71ef53d6ce16c94ff6ec8761ae1462af90c77883d',
     'federal-rx': '2c8c9e8362737e72a149566f337b548a8f7cd021fefa96938f3f67f13e55327b',
     'entrenched': '6369ee63d926b74653496e4cf44683b6c9705d002539881daaee75841d52d8ec',
@@ -681,7 +681,7 @@ The first-pass spec-data plan has been executed; `catalog.json` records `encoded
 
 `proposedEncoding.workflowRoutes` records shared-screen routes: preserve patient/encounter and return to the originating workflow. Only the named roles may commit; other roles may view or hand off. A navigation link does not prove artifact creation. ED discharge-planning fields gate disposition directly; W7 new-prescription screens inherit every `signOrders` gate. Per-line captures bind to `.current` or the selected order slot, never an unbound episode slot.
 
-New commits need a resource-producing backend action, a human-only button and a canonical navigator route; `CommitSpec` alone is not an adapter. No new commit may broaden access to a protected action. Validate the JSON with `python -m json.tool docs/rules/catalog.json`; run the content checks in `HANDOFF-content.md`, including missing-field and wrong-role rejections, confirmations, negative coded outcomes and mixed Schedule II/non-II lines. The research builder's `--check` also checks generated-file drift, but rebuilding the research baseline overwrites content encoding metadata: rerun `lean/Ehr/Specs/Rules/encode.py` and the second-pass content mapping afterward. Timing, vocabulary validation, recurrent-event coverage and actual delivery require their own implemented features and evidence.
+New commits need a resource-producing backend action, a human-only button and a canonical navigator route; `CommitSpec` alone is not an adapter. No new commit may broaden access to a protected action. Validate the JSON with `python -m json.tool docs/rules/catalog.json`; run the content checks in `docs/STATUS.md`, including missing-field and wrong-role rejections, confirmations, negative coded outcomes and mixed Schedule II/non-II lines. The research builder's `--check` also checks generated-file drift, but rebuilding the research baseline overwrites content encoding metadata: rerun `lean/Ehr/Specs/Rules/encode.py` and the second-pass content mapping afterward. Timing, vocabulary validation, recurrent-event coverage and actual delivery require their own implemented features and evidence.
 
 ## Research provenance and scope
 

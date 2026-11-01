@@ -2,6 +2,7 @@
  * Browser painting/event mapping is covered separately by the ARIA/painter gates.
  * No simulated clinical captures are inserted; blocked commits must explain why.
  */
+import { selectAcutePatient } from './acute-select.mjs';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -33,10 +34,10 @@ for (const release of ['v1', 'v2', 'v3']) {
     programs.push({ release, persona, path: path.relative(root, programPath), sha256: createHash('sha256').update(readFileSync(programPath)).digest('hex') });
     const user = read(path.join(fixtureDir, `${persona}-user.json`));
     const { facts, display } = call('facts', { bundle: read(path.join(fixtureDir, `${persona}.json`)), context: read(path.join(fixtureDir, `${persona}-context.json`)) });
-    const input = { spec, program, facts, user };
-    const initial = call('init', input);
-    const paths = new Map([[program.start, []]]);
-    const pending = [program.start];
+    const input = { spec, program, facts, display, user };
+    const initial = selectAcutePatient(call, input);
+    const paths = new Map([[initial.screen, []]]);
+    const pending = [initial.screen];
     while (pending.length) {
       const source = pending.shift();
       for (const comp of program.screens.find(screen => screen.id === source).components) {

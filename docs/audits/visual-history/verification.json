@@ -1,0 +1,235 @@
+{
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
+  "scope": "Display-only colors/density and read-only recorded revision inspection. Patient opening integration pending content/main publication.",
+  "build": {
+    "revision": "d12339153b15a09802d72e16ac0b57cb2e7c3a1a",
+    "mainRevision": "3087c1b2c9f79bac22fa7b16934ce081efa5c31e",
+    "leanHash": "2fcf806f1f0405cb7c2833a8ff504c5b290f14c9b331e27881b8278b066488de",
+    "builtAt": "2026-11-01T16:38:49.002Z"
+  },
+  "gates": {
+    "appTests": 282,
+    "agentTests": 93,
+    "ariaContrastHistoryDesktopNarrow": 61,
+    "recordedReplay": "424 tasks / 14658 events + 3 baselines / 137 events; 0 mismatches",
+    "canonicalButtonAudit": {
+      "works": 1366,
+      "disabled-with-reason": 36,
+      "dead": 0,
+      "error": 0
+    },
+    "historyShellButtonAudit": {
+      "works": 352,
+      "disabled-with-reason": 71,
+      "dead": 0,
+      "error": 0
+    },
+    "realismVisualReview": "Passed, full shared shell/browser/clinical review, including notes, home medications, modal and narrow browser"
+  },
+  "pairs": [
+    {
+      "screen": "P1-alert",
+      "fixture": "app/src/fixtures/ui/p1-alert.json",
+      "fixtureSha256": "65e1327a75bfac8dc8ccc7e3e13e4d44ac50bcb32e6bc628de227f2b1e894471",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P1-alert.png",
+        "sha256": "ca45e244735ebd67fc6d25bed74f977f23f4715065686a6d5a2590a57431025e",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P1-alert.png",
+        "sha256": "ccab71be19b124db043bd72d2c95748a96ae538f985d8080dc13fa839d8e309c",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P1-orders",
+      "fixture": "app/src/fixtures/punch/P1-orders.json",
+      "fixtureSha256": "79323ad030d413e8b11d3ec32b0ee0ecbb79f8b41220346154d413f74f4ec31f",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P1-orders.png",
+        "sha256": "ce5f92daa33ff6ca751124269e6c64d844b4e03e5ffdd17ec94c0b3ecca4be7a",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P1-orders.png",
+        "sha256": "69617a337f181d816851ce0602acca14d6636953609ae2c3fbc5a03c4566d826",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P1-schedule",
+      "fixture": "app/src/fixtures/punch/P1-schedule.json",
+      "fixtureSha256": "91d931e0547e20b7334c03a9a60b957a89d3487782fae15adeb0343079297689",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P1-schedule.png",
+        "sha256": "f862a9d83d435bde37dd1908b995eb577ca5997a6c19df1612c0fc924be068be",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P1-schedule.png",
+        "sha256": "ff7e433baea043df7bc11fe55efd38df2b688f469fa4caa8797e79aebbc03d09",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P2-track-board",
+      "fixture": "app/src/fixtures/punch/P2-track-board.json",
+      "fixtureSha256": "41ed874a2a499ee1500e846c595107fa395d10bf08f2a0be884d18040af3d8c7",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P2-track-board.png",
+        "sha256": "d0ba5135a09187f2fbea9d6c84675bcfe8ac32e3ac62388a93601317affd9bad",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P2-track-board.png",
+        "sha256": "32926361733c7855b6a5619d1077692b10c87c88cd5c5afeaa9648de9f0abfc2",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P2-triage",
+      "fixture": "app/src/fixtures/punch/P2-triage.json",
+      "fixtureSha256": "f4c2e3542257967747cbd635229c90eece092d70856cebfa2877cf3f39f69d47",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P2-triage.png",
+        "sha256": "af3db15a0fafd95ac0996aad5e678d2324da96dd2a25520b3b9c1e13e0e42a75",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P2-triage.png",
+        "sha256": "7593b2b22b9a97f6aebd4be3465cff85261ade1fb40196d5a40dc6f5e8fd7d95",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P3-MAR",
+      "fixture": "app/src/fixtures/punch/P3-MAR.json",
+      "fixtureSha256": "6308296d64a3aa9630c850acceed10a79733af25d085ec5c574d46aefc5dea4d",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P3-MAR.png",
+        "sha256": "faa2eaa7a4f35fc76e4f9fd919665512f841da5996dba1872a2ec2ea05a1ed5e",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P3-MAR.png",
+        "sha256": "388eb96f84c7d04b6c9d227154f47616f4704ae7632a643707e7a1210d44f93f",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P3-flowsheet",
+      "fixture": "app/src/fixtures/punch/P3-flowsheet.json",
+      "fixtureSha256": "01af311422dca77a32cffa294b2617eeb92fd17e0c81a60404f53468df4795a1",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P3-flowsheet.png",
+        "sha256": "f64544ae437242dcb0bb6b1e8881c93f6ae2e57554b0cacd2f722cec58d767e7",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P3-flowsheet.png",
+        "sha256": "333c02c82caae0c3d6f6516f478c241051a7cc10675e63e1bb564ba494876079",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P4-growth",
+      "fixture": "app/src/fixtures/punch/P4-growth.json",
+      "fixtureSha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P4-growth.png",
+        "sha256": "ff2598ff8f1b54fd195b0a0e838d99a58a1f10aeb91c52a747bcab1ae55e416a",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P4-growth.png",
+        "sha256": "0c9aa44d56921e676326145e0d9a331adf349542fa6b8a541a9628ebc071c22b",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P4-rooming",
+      "fixture": "app/src/fixtures/punch/P4-rooming.json",
+      "fixtureSha256": "1710fea847f025d9ac7f590e2983bb0904b4a0b3fd49ad193f1a2e059327ee23",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P4-rooming.png",
+        "sha256": "84a235017a4ff56c1237920331ed49b97387eb63fac1432e8bc1957ef23a2326",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P4-rooming.png",
+        "sha256": "6e251efdd7bb5ee70a0758d4b7439915860878ae3dcb0d4b6c3a21163704067a",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P5-OR-schedule",
+      "fixture": "app/src/fixtures/punch/P5-OR-schedule.json",
+      "fixtureSha256": "1534c5806695f624917e27f473d2375eb5ae22e00af02ac34f97d750de4734a8",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P5-OR-schedule.png",
+        "sha256": "b94e20d2144115e83d89463184635bfc23a4d62b35a73f641ea51aff240feb41",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P5-OR-schedule.png",
+        "sha256": "2c6f90aff25d6c503b6c299ea23436ad053be1dfdf2d78c49b76c6636f188905",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P5-op-note",
+      "fixture": "app/src/fixtures/punch/P5-op-note.json",
+      "fixtureSha256": "cac26a9d3dec6b703fbe14c74c05b665fbd0564be7034e0b519fb6e459e6ede3",
+      "before": {
+        "path": "app/shots/realism/color-density/before/P5-op-note.png",
+        "sha256": "0c8b662f3eafada99f7dad7f8d034ab93b46b4ffb6fce4253a34b9f3502280b4",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/color-density/after/P5-op-note.png",
+        "sha256": "c5caac830358724c0bfb42781154c755735d1af388268bbef2769b30bb722987",
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ],
+  "timelineScreenshot": {
+    "path": "app/shots/realism/punch/timeline-diff.png",
+    "sha256": "d30e9d48120960f2829cc258d32b11455485578018f2d9fd1ed7673ded68716d",
+    "width": 1440,
+    "height": 900
+  },
+  "notes": [
+    "All pairs use identical native UiScreen payloads, not live data comparisons.",
+    "P4 Rooming before rendered using the archived d2abcf0 painter in an isolated preview.",
+    "Native checks use the actual current-release spec and never deploy or write run artifacts."
+  ],
+  "canonicalAuditReuse": {
+    "build": "1992a991ceba6a0263ff64beb83fc50d9d7166a0",
+    "verifiedClinicalSourceUnchanged": true
+  },
+  "currentMain": "3087c1b2c9f79bac22fa7b16934ce081efa5c31e",
+  "pending": "Part 3 patient-opening transport: final content-lane source/assets snapshot is not on main as of 16:41 UTC. External picker and patient parameters in user-facing links are removed; in-EHR integration remains required."
+}

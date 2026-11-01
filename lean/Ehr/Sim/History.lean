@@ -125,9 +125,12 @@ Only the Back-navigation list is erased; captures and clock are preserved. -/
     displayShown, actionLabelOk, layoutShown, layout_history, payloadComplete_history]
   rfl
 
+@[simp] theorem signingHasOrder_history (sp s h c) :
+    signingHasOrder sp (withHistory s h) c = signingHasOrder sp s c := rfl
+
 @[simp] theorem extraGuard_history (sp prog facts s h cm) :
     extraGuard sp prog facts (withHistory s h) cm = extraGuard sp prog facts s cm := by
-  simp only [extraGuard, temporalStatus_history, expiryStatus_history, validationsOk_history, displaysOk_history]
+  simp only [extraGuard, signingHasOrder_history, temporalStatus_history, expiryStatus_history, validationsOk_history, displaysOk_history]
 
 @[simp] theorem obligationViews_history (sp facts s h) :
     obligationViews sp facts (withHistory s h) = obligationViews sp facts s := by

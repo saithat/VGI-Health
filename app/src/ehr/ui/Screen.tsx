@@ -1,3 +1,4 @@
+import { sectionTone } from "./display";
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect, useRef } from "react";
@@ -134,6 +135,15 @@ export function PatientBanner({
                         : "red"
                   }
                   variant="light"
+                  data-allergy-state={
+                    allergyDisplay(value) === "Allergies not on file"
+                      ? "unknown"
+                      : /^No Known (?:Drug )?Allergies/.test(
+                            allergyDisplay(value),
+                          )
+                        ? "none"
+                        : "recorded"
+                  }
                   className={`allergy-badge${allergyDisplay(value) === "Allergies not on file" ? " allergy-unknown" : ""}`}
                   size="lg"
                   title={value}
@@ -225,7 +235,12 @@ export function WorkflowNav({
       </Text>
       <div className="workflow-groups">
         {available.map(([group, items]) => (
-          <section key={group} className="workflow-group" aria-label={group}>
+          <section
+            key={group}
+            className="workflow-group"
+            data-section-tone={sectionTone(group)}
+            aria-label={group}
+          >
             <h2 className="nav-group-title">
               <ClinicalIcon
                 name={
@@ -247,6 +262,7 @@ export function WorkflowNav({
                     type="button"
                     aria-current={id === active ? "page" : undefined}
                     className="clinical-nav-link"
+                    data-section-tone={sectionTone(label)}
                     data-comp-id={id}
                     data-event="click"
                     aria-label={label}
@@ -319,7 +335,7 @@ function StockUiScreenView({
       window.removeEventListener("resize", measure);
       root.style.scrollPaddingTop = previousPadding;
     };
-  }, []);
+  }, [screen.banner.length > 0]);
   return (
     <AppShell
       className="clinical-app"
@@ -336,10 +352,24 @@ function StockUiScreenView({
           if (element) element.inert = Boolean(modal);
         }}
       >
-        <PatientBanner
-          fields={bannerFields(screen)}
-          viewer={screen.viewer ?? viewer}
-        />
+        {screen.banner.length > 0 ? (
+          <PatientBanner
+            fields={bannerFields(screen)}
+            viewer={viewer ?? screen.viewer}
+          />
+        ) : (
+          <AppShell.Header
+            component="header"
+            aria-label="Application toolbar"
+            className="clinical-banner"
+          >
+            <div className="clinical-brand">
+              <strong>VGI HEALTH</strong>
+              <span>Clinical workspace</span>
+              <span>{viewer ?? screen.viewer}</span>
+            </div>
+          </AppShell.Header>
+        )}
         <WorkflowNav
           key={active}
           groups={screen.nav}

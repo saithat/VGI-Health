@@ -1,0 +1,143 @@
+{
+  "cases": [
+    {
+      "release": "v1",
+      "persona": "P1",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "rows": 20,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "rows": 5,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v1",
+      "persona": "P4",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v1",
+      "persona": "P5",
+      "rows": 10,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v2",
+      "persona": "P1",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "rows": 20,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "rows": 5,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v2",
+      "persona": "P4",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v2",
+      "persona": "P5",
+      "rows": 10,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v3",
+      "persona": "P1",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "rows": 20,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "rows": 5,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v3",
+      "persona": "P4",
+      "rows": 18,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    },
+    {
+      "release": "v3",
+      "persona": "P5",
+      "rows": 10,
+      "rowSelection": true,
+      "nameOrMrnLookup": true,
+      "foreignFactsHidden": true,
+      "identityStillHuman": true
+    }
+  ],
+  "comparisons": "facts/init/step/render-ui native and Wasm agree",
+  "mismatches": 0,
+  "removedSelectionRejected": true,
+  "reservedNamespaceRejected": true
+}

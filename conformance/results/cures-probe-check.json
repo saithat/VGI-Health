@@ -1,0 +1,7 @@
+{
+  "program": "P1 v3 copy with only curesReport panels removed",
+  "command": "ehr check --spec releases/v3/spec.json --program <copy> --canonical releases/v3/personas/P1.json",
+  "exitCode": 0,
+  "verdict": "ok",
+  "purpose": "Separate audit, not consulted by behavioral suite"
+}

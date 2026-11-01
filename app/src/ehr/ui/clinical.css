@@ -1184,3 +1184,86 @@
     margin: 0;
   }
 }
+
+/* Production density: source order, content and clinical actions are unchanged. */
+.clinical-brand { min-height: 30px; padding: 4px 8px; }
+.clinical-banner-content { min-height: 54px; gap: 4px 8px; padding: 4px 8px; }
+.patient-name { font-size: 16px; line-height: 20px; }
+.patient-avatar { width: 28px; height: 28px; }
+.patient-banner-details { gap: 3px 10px; }
+.allergy-badge { padding: 2px 5px; min-height: 22px; }
+.clinical-app main { padding: 6px 8px; }
+.clinical-workspace-heading { margin-bottom: 6px; gap: 4px; }
+.clinical-workspace-heading h1 { font-size: 16px; line-height: 22px; }
+.clinical-workspace, .clinical-workspace-body { gap: 6px; }
+.clinical-workspace.with-side { grid-template-columns: 166px minmax(0, 1fr); }
+.clinical-side { padding: 5px; gap: 6px; }
+.clinical-section-title { padding: 2px 6px; min-height: 24px; }
+.clinical-section-body { padding: 5px; gap: 5px; }
+.clinical-section-body > .clinical-field { flex-basis: 190px; }
+.clinical-control .mantine-Input-input { min-height: 26px; height: 28px; }
+.clinical-control .mantine-InputWrapper-label { margin-bottom: 2px; }
+.clinical-action button { min-height: 26px; padding: 3px 6px; line-height: 18px; }
+.clinical-info-label { margin-bottom: 4px; }
+.clinical-table-scroll :is(th, td) { height: 24px; padding: 3px 5px; }
+.clinical-summary > div { padding: 3px 0; gap: 5px; }
+.clinical-status { min-height: 18px; padding: 1px 4px; line-height: 16px; }
+.clinical-alert { padding: 6px 8px; border-left-width: 4px; }
+.clinical-note-card { padding: 6px 8px; border-left-color: var(--clinical-violet-ink); }
+.clinical-note-body { line-height: 18px; }
+.clinical-note-list > li + li, .clinical-home-meds > li + li { margin-top: 4px; }
+.clinical-home-meds > li { padding: 3px 0 5px; line-height: 16px; }
+.clinical-tabs .mantine-Tabs-tab { min-height: 28px; padding: 4px 7px; border-radius: 4px 4px 0 0; }
+.clinical-stepper li { min-height: 26px; padding: 2px 5px; }
+.primary-action { padding-top: 6px; }
+.clinical-navigation-bar { padding: 4px 5px; }
+.field-identity, .field-scan, .field-cosign { padding: 6px; }
+.field-cosign { background: var(--clinical-violet-tint); border-left-color: var(--clinical-violet-ink); }
+.status-orange { color: var(--clinical-orange-ink); background: var(--clinical-orange-tint); }
+[data-section-tone="red"] { --section-accent: var(--clinical-red-ink); --section-tint: var(--clinical-red-tint); }
+[data-section-tone="orange"] { --section-accent: var(--clinical-orange-ink); --section-tint: var(--clinical-orange-tint); }
+[data-section-tone="yellow"] { --section-accent: var(--clinical-yellow-ink); --section-tint: var(--clinical-yellow-tint); }
+[data-section-tone="green"] { --section-accent: var(--clinical-green-ink); --section-tint: var(--clinical-green-tint); }
+[data-section-tone="violet"] { --section-accent: var(--clinical-violet-ink); --section-tint: var(--clinical-violet-tint); }
+[data-section-tone="blue"] { --section-accent: var(--clinical-blue-ink); --section-tint: var(--clinical-blue-tint); }
+.clinical-section[data-section-tone] > .clinical-section-title, .nav-group-title {
+  border-left: 4px solid var(--section-accent, var(--clinical-primary));
+  background: var(--section-tint, var(--clinical-section));
+  color: var(--section-accent, var(--clinical-ink));
+}
+.clinical-section[data-section-tone] > .clinical-section-title h2 { color: inherit; }
+.clinical-nav-link[data-section-tone] { border-left: 3px solid var(--section-accent); background: var(--section-tint); color: var(--section-accent); }
+.clinical-nav-link[aria-current="page"] { outline: 1px solid var(--section-accent); outline-offset: -1px; font-weight: 700; }
+.clinical-table-scroll tr[aria-selected="true"], .presentation-table tr[aria-selected="true"], .presentation-table tr[data-current="true"] { background: var(--clinical-selected); box-shadow: inset 3px 0 var(--clinical-primary); }
+@media (min-width: 1100px) {
+  .clinical-shell { grid-template-columns: minmax(0, 1fr); }
+  .clinical-app .clinical-navbar { border-right: 0; border-bottom: 1px solid var(--clinical-control); min-height: 0; padding: 3px 6px; }
+  .clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar { position: static; height: auto; overflow: visible; }
+  .clinical-navbar .nav-eyebrow { margin: 0; padding: 0 4px; font-size: 12px; }
+  .workflow-groups { display: flex; flex-wrap: wrap; gap: 3px 8px; }
+  .workflow-group { display: flex; align-items: stretch; flex-wrap: wrap; margin: 0; gap: 3px; }
+  .nav-group-title { padding: 3px 5px; gap: 4px; }
+  .workflow-links { display: flex; flex-wrap: wrap; gap: 3px; }
+  .workflow-links li { min-height: 26px; }
+  .workflow-links button { width: auto; min-height: 26px; padding: 3px 6px; border-radius: 4px 4px 0 0; }
+  .clinical-navbar .nav-footer { margin: 3px 0 0; padding: 2px 4px; border: 0; }
+  .clinical-workspace-body > .clinical-field { grid-column: span 3; }
+  .clinical-workspace-body > .field-narrative { grid-column: 1 / -1; }
+}
+@media (max-width: 1000px) { .clinical-workspace.with-side { grid-template-columns: minmax(0, 1fr); } }
+.allergy-badge[data-allergy-state="recorded"] { background: var(--clinical-red-ink); color: white; border: 1px solid var(--clinical-red-ink); }
+.clinical-modal .mantine-Modal-header { background: var(--clinical-modal-ink); }
+.clinical-modal .clinical-modal-title { color: white; }
+@media (min-width: 1100px) {
+  .clinical-section-body > .clinical-field { flex-basis: calc(25% - 5px); min-width: min(190px, 100%); }
+  .clinical-section-body > .field-narrative { flex-basis: 100%; }
+}
+.workflow-links button[aria-current="page"] { color: var(--section-accent, var(--clinical-primary)); background: white; box-shadow: inset 0 -2px var(--section-accent, var(--clinical-primary)); }
+/* Keep the source groups and both chrome captions on one compact toolbar row. */
+@media (min-width: 1100px) {
+  .clinical-app .clinical-navbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .clinical-navbar .nav-eyebrow { flex: 0 1 auto; margin: 0; padding: 0 4px; }
+  .clinical-navbar .workflow-groups { flex: 1 1 auto; }
+  .clinical-navbar .nav-footer { flex: 0 1 auto; margin: 0; padding: 0 4px; }
+  .clinical-app main:has(> .clinical-workspace > .clinical-workspace-body > .clinical-field:first-child [data-comp-id$=".chartSearch"]) > .clinical-workspace-heading { min-height: 42px; }
+}

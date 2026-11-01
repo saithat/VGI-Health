@@ -41,7 +41,7 @@ export const jsonPatchOpSchema = z.discriminatedUnion('op', [
 export const jsonPatchSchema = z.array(jsonPatchOpSchema);
 
 /** Predicted saving per average train day; positive = fewer. */
-export const savingsSchema = z.object({ clicks: int, keystrokes: int, scrolls: int, klmDeciSec: int });
+export const savingsSchema = z.object({ clicks: int, keystrokes: int, scrolls: int, klmDeciSec: int.default(0), mouseTravelPx:z.number().nullable().optional(),scrollPx:z.number().nullable().optional() });
 
 export const candidateSourceSchema = z.enum(['llm', 'repair', 'seeded', 'user-request', 'migration-fallback']);
 export const seededKindSchema = z.enum(['allergyHidden', 'idReentryPrefilled', 'lbWeightAccepted']);
@@ -97,12 +97,12 @@ export const llmChoiceSchema = z.object({
 const savingsJson = {
   type: 'object',
   additionalProperties: false,
-  required: ['clicks', 'keystrokes', 'scrolls', 'klmDeciSec'],
+  required: ['clicks', 'keystrokes', 'scrolls', 'mouseTravelPx','scrollPx'],
   properties: {
     clicks: { type: 'integer' },
     keystrokes: { type: 'integer' },
     scrolls: { type: 'integer' },
-    klmDeciSec: { type: 'integer' },
+    mouseTravelPx: {type:['number','null']},scrollPx:{type:['number','null']},
   },
 } as const;
 
@@ -178,13 +178,15 @@ export const metricsSchema = z.object({
   searches: nat,
   backtracks: nat,
   klmDeciSec: nat,
+  mouseTravelPx:z.number().nonnegative().nullable().optional(),scrollPx:z.number().nonnegative().nullable().optional(),
 });
-export const signedMetricsSchema = z.object({ clicks: int, keystrokes: int, scrolls: int, klmDeciSec: int });
+export const signedMetricsSchema = z.object({ clicks: int, keystrokes: int, scrolls: int, klmDeciSec: int.default(0), mouseTravelPx:z.number().nullable().optional(),scrollPx:z.number().nullable().optional() });
 export const pctAboveFloorSchema = z.object({
   clicks: z.number(),
   keystrokes: z.number(),
   scrolls: z.number(),
   klmDeciSec: z.number(),
+  mouseTravelPx:z.number().nullable().optional(),scrollPx:z.number().nullable().optional(),
 });
 
 /** Statistics over TRAIN days only (days <= the current night). */
@@ -202,6 +204,7 @@ export const trainSummarySchema = z.object({
     avgKeystrokes: z.number(),
     avgScrolls: z.number(),
     avgKlmSec: z.number(),
+    avgMouseTravelPx:z.number().nullable().optional(),avgScrollPx:z.number().nullable().optional(),
   })),
   timeSinksByScreen: z.array(z.object({ screen: str, events: nat, klmSec: z.number(), share: z.number() })),
   redundantPrompts: z.array(z.object({ element: str, components: z.array(str), tasksAffected: nat, extraEntries: nat })),
