@@ -11,7 +11,7 @@ export interface RecordedRun {
   replayable: boolean;
 }
 
-// Prefer usable real runs, then the longest recording, newest timestamp and id.
+// Prefer usable real runs, then the newest timestamp, recording length and id.
 // World-generator manifests and incomplete recordings cannot become the demo.
 export function selectDefaultRun(
   runs: RecordedRun[],
@@ -26,8 +26,8 @@ export function selectDefaultRun(
     .filter((run) => run.real && run.replayable)
     .sort(
       (a, b) =>
-        b.days - a.days ||
         b.createdAt.localeCompare(a.createdAt) ||
+        b.days - a.days ||
         a.id.localeCompare(b.id),
     )[0];
   if (best) return best.id;
@@ -71,16 +71,18 @@ export function runsPlugin(): Plugin {
         const replay = JSON.parse(
           await readFile(resolve(root, id, "replay.json"), "utf8"),
         );
-        replayable = ["P1", "P2", "P3", "P4", "P5"].every(
-          (persona) =>
-            manifest.personas?.includes(persona) &&
-            replay.contexts?.some(
-              (context: { persona: string }) => context.persona === persona,
-            ) &&
-            runFiles.some((path) =>
-              new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(path),
-            ),
-        );
+        replayable =
+          Array.isArray(manifest.personas) &&
+          manifest.personas.length > 0 &&
+          manifest.personas.every(
+            (persona: string) =>
+              replay.contexts?.some(
+                (context: { persona: string }) => context.persona === persona,
+              ) &&
+              runFiles.some((path) =>
+                new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(path),
+              ),
+          );
       }
       runs.push({
         id,

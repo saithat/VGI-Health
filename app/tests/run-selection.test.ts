@@ -26,7 +26,7 @@ describe("default recorded demo", () => {
       ),
     ).toBe("mock");
   });
-  it("chooses the longest real recording, then the newest", () => {
+  it("chooses the newest real recording before recording length", () => {
     expect(
       selectDefaultRun(
         [
@@ -37,6 +37,18 @@ describe("default recorded demo", () => {
         "",
       ),
     ).toBe("latest");
+  });
+  it("prefers a newer short real run to an older long one", () => {
+    expect(
+      selectDefaultRun(
+        [
+          run("long", { days: 10 }),
+          run("newest", { days: 2, createdAt: "2026-11-01T00:00:00Z" }),
+          run("mock", { createdAt: "2026-12-01T00:00:00Z" }),
+        ],
+        "",
+      ),
+    ).toBe("newest");
   });
   it("honors explicit overrides and fails for unavailable recordings", () => {
     expect(selectDefaultRun([run("real"), run("mock")], "mock")).toBe("mock");

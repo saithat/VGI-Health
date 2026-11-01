@@ -2,5 +2,11 @@
   "name": "vgi-health",
   "private": true,
   "packageManager": "pnpm@11.8.0",
-  "engines": { "node": ">=22" }
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "complexity": "node scripts/complexity/compute.mjs",
+    "test:complexity": "node --test scripts/complexity/compute.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts"
+  }
 }

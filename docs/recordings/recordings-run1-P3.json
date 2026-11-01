@@ -1,0 +1,35 @@
+{
+  "run": "run1-P3",
+  "persona": "P3",
+  "viewport": [
+    1440,
+    900
+  ],
+  "recordings": [
+    {
+      "file": "01-ehr-day1-vs-final.mp4",
+      "duration": 50.666667,
+      "bytes": 1546940
+    },
+    {
+      "file": "02-dashboard-timeline-why.mp4",
+      "duration": 11.333333,
+      "bytes": 636836
+    },
+    {
+      "file": "03-counterexample.mp4",
+      "duration": 15.933333,
+      "bytes": 237018
+    },
+    {
+      "file": "04-release-v2-migration.mp4",
+      "duration": 15.933333,
+      "bytes": 1012961
+    },
+    {
+      "file": "05-bad-program.mp4",
+      "duration": 49.466667,
+      "bytes": 1321636
+    }
+  ]
+}

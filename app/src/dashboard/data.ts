@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
   decisionRecordSchema,
   dayResultSchema,
@@ -66,6 +67,7 @@ export interface RunData {
   programs: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
+  complexity: ComplexityData | null;
 }
 export type ReadJson = (path: string) => Promise<unknown>;
 
@@ -110,6 +112,7 @@ export async function loadRun(
     programs: new Map(),
     certs: new Map(),
     replay: null,
+    complexity: null,
   };
   await Promise.all(
     files.map(async (file) => {
@@ -124,7 +127,12 @@ export async function loadRun(
         run.programs.set(file, programSchema.parse(await get(file)));
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
-      else if (file === "replay.json")
+      else if (file === "complexity.json") {
+        const complexity = complexitySchema.parse(await get(file));
+        if (complexity.runId !== id)
+          throw new Error("Complexity belongs to another run");
+        run.complexity = complexity;
+      } else if (file === "replay.json")
         run.replay = replaySchema.parse(await get(file));
     }),
   );
