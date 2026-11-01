@@ -9,12 +9,12 @@
     },
     "releases/v1/personas/P2.json": {
       "status": "certified",
-      "sha256": "32f6c079ff242c70da9bd3d13a18d12a7534f224cb4847f7c060b4fc75e699b0",
+      "sha256": "687b54c16242498c8c8e70489396f3f9bee184fdd0dfa3555a9c3d4a8b090f16",
       "output": "ok"
     },
     "releases/v1/personas/P3.json": {
       "status": "certified",
-      "sha256": "582fa9b3ccfcdfa9947fdb39bad63753957b3faa8993aef42795d2769af83edc",
+      "sha256": "110a5e713b613c44f3ad99827994e3569df6d1bfac5b8f684d8a0ba9fb3f44a1",
       "output": "ok"
     },
     "releases/v1/personas/P4.json": {
@@ -34,12 +34,12 @@
     },
     "releases/v2/personas/P2.json": {
       "status": "certified",
-      "sha256": "55f8a53c7e37a610bea90e3b5f0d0f78e91738b4ffc20ab46a1408f402190da2",
+      "sha256": "605b203da566dba1cb48909275569a1792f931868446b0145a9765d6cfad59e3",
       "output": "ok"
     },
     "releases/v2/personas/P3.json": {
       "status": "certified",
-      "sha256": "d12a61a9b97b673719f556e1b2e435ab9585a12147faecd1819dec0cc42fc212",
+      "sha256": "7b7ae2245df9ea8fb2d3b9cb4abc29bb7aad4edb04eb7ede0f3faf6c54f88f54",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
@@ -59,12 +59,12 @@
     },
     "releases/v3/personas/P2.json": {
       "status": "certified",
-      "sha256": "c13d1bdfed55eda5f00749c42f8b61f2b64ca43b399b60a9ee7614d33c4bc499",
+      "sha256": "bd2125b0f88ef63b8e350083762983f92cc17b71101c77855954dbbda38170c6",
       "output": "ok"
     },
     "releases/v3/personas/P3.json": {
       "status": "certified",
-      "sha256": "bdce31a22338084630f0e35b832d389f86b358ff799376015a264313f9440fc5",
+      "sha256": "40ecf5194e19726ed0881a4a8628dfb2f9c29ce73e1268cc9a9fd8bc6ec91b5b",
       "output": "ok"
     },
     "releases/v3/personas/P4.json": {
@@ -79,7 +79,7 @@
     },
     "programs/bad/01-hidden-allergies.json": {
       "status": "rejected",
-      "sha256": "ecb6b719d33fe9fd8a3ee8f4e180cff92c53d3f7ef78d0e10d070798a8a7767f",
+      "sha256": "e3332571bfd268f90c4aacf65abb03fe0a0655bb92548910b360606ab66bd0d0",
       "output": {
         "violation": {
           "screens": [
@@ -123,7 +123,7 @@
     },
     "programs/bad/02-prefilled-identity.json": {
       "status": "rejected",
-      "sha256": "0e9c86c8f03ccb77d7d89c0c8292eb9b5313d95bed77f42216c27aa19c7ec4f5",
+      "sha256": "a45c9efc0f38c036ac6c4213b5ddf4d8507f48f06ba5a8e91b226cdc2768ee92",
       "output": {
         "violation": {
           "screens": [
@@ -162,7 +162,7 @@
     },
     "programs/bad/03-pounds-as-weight.json": {
       "status": "rejected",
-      "sha256": "ea9e357c0c7970b49cce9d2c6555b3139cab73ee79ce4a58e2d955e607be53cc",
+      "sha256": "568284502bc567f6878367b7b9b898cac04903948181249d5bf7a4e805fdd496",
       "output": {
         "violation": {
           "screens": [
@@ -189,7 +189,7 @@
     },
     "programs/bad/04-macro-override.json": {
       "status": "rejected",
-      "sha256": "a7d53899b7b90dce94545cb0cf40d7f37dcf398da3ba759e4960354392e0c807",
+      "sha256": "f1a254739dd3eeb50528413c43ecc311dd5562d9d06c46e4870de2fbc00bcc64",
       "output": {
         "violation": {
           "screens": [
@@ -227,7 +227,7 @@
     },
     "programs/bad/05-self-cosign.json": {
       "status": "rejected",
-      "sha256": "5beb402d6ae15e01d53b50119f763d63711629d2d342e7cab9d3f18e770c62ec",
+      "sha256": "c2be0f434f412d8701466a8dc2bbd1d0a5a34d05c7769a5b373b31192a9e439a",
       "output": {
         "violation": {
           "screens": [
@@ -246,7 +246,7 @@
             },
             {
               "click": {
-                "comp": "w4Worklist.toMar"
+                "comp": "w4Worklist.nav.w4Mar"
               }
             },
             {
@@ -260,7 +260,7 @@
     },
     "programs/bad/06-stale-weight.json": {
       "status": "rejected",
-      "sha256": "0f115772b8ec22d52358741de003a282ca553bb9fc41f15d4272d67a0c68640d",
+      "sha256": "97695501f972255bb757b3301d8f11faa3a383c52d415762b1d7c79bf56acf58",
       "output": {
         "violation": {
           "screens": [
@@ -281,7 +281,7 @@
     },
     "programs/bad/07-unreachable-refill.json": {
       "status": "rejected",
-      "sha256": "34bfe609bc4372199eda53e53ed859d15c61f56cf5b804195836a81ba0999844",
+      "sha256": "661c31583473d21bf48a11ca1138209bcc310123fe00589ba1a6b1a71d9ee126",
       "output": {
         "violation": {
           "screens": [
@@ -295,7 +295,7 @@
     },
     "programs/bad/08-forged-consent.json": {
       "status": "rejected",
-      "sha256": "8a462f1153ed0371983940981f8bf76cdda573d42d6f34f2450e2d88f95869bf",
+      "sha256": "a2e251393ea67a82e8b402225042815a1a1454ed2e21b15d15762f9e46fea3ec",
       "output": {
         "violation": {
           "screens": [
@@ -321,7 +321,7 @@
     },
     "programs/bad/09-hidden-allergy-alert.json": {
       "status": "rejected",
-      "sha256": "b7f50d1f8629ac30feb9e79e42d11b3d7f8a2ba683f5b94f94b163ec9946c84e",
+      "sha256": "914281fbd03bc23dc3acbe4e7258814d8ea483569de6b5b7108c6d230605f1b4",
       "output": {
         "violation": {
           "screens": [
@@ -353,7 +353,7 @@
     },
     "programs/bad/10-invented-alert.json": {
       "status": "rejected",
-      "sha256": "4be6dbdce3c8cda9abf57410ffa6d70d51e1b743c0bc81be7e74905b26dbdecf",
+      "sha256": "e11d159da192a0586bdf03515e3e924d6c609343ef99b74643de2e435e8cedce",
       "output": {
         "violation": {
           "screens": [
@@ -380,7 +380,7 @@
     },
     "programs/bad/11-repeated-interaction.json": {
       "status": "rejected",
-      "sha256": "8689dc1e493314bf4baa572ec9fe0d58cc471bf49a661cbd576c6bd26e9c02fd",
+      "sha256": "4ac4c610861f01fe3934be03ed4b05197dce3c6ed9fc37b52e7155045c8fc42d",
       "output": {
         "violation": {
           "screens": [
@@ -407,7 +407,7 @@
     },
     "programs/bad/12-passive-popup.json": {
       "status": "rejected",
-      "sha256": "8243c327cadc31d351e4dbdcecf7306c951439a8a922620a53ae96f787a652fe",
+      "sha256": "729ce264e3bbef79a9bec04c2781d439825b3e981588736de626dbd5cf67a335",
       "output": {
         "violation": {
           "screens": [
@@ -428,7 +428,7 @@
     },
     "programs/bad/13-no-cures.json": {
       "status": "rejected",
-      "sha256": "820e322e1f14d329794cbf1d74d0ae404e3a8c46326299febc2188116047ba45",
+      "sha256": "bccb93cb98a82a842ab655f7600cfc52aed1a1490ab731fceb7c15169c139426",
       "output": {
         "violation": {
           "screens": [
@@ -472,7 +472,7 @@
     },
     "programs/bad/14-macro-naloxone.json": {
       "status": "rejected",
-      "sha256": "d707f94448d434fdb0452fef5c0b57a570913804f484efd9db106d69a0e94bf8",
+      "sha256": "a0c0575aa0885dd151c6025b1b0e134ebb9c6aa1fff931b8679820338f65144e",
       "output": {
         "violation": {
           "screens": [
@@ -504,7 +504,7 @@
     },
     "programs/bad/15-hidden-controlled-details.json": {
       "status": "rejected",
-      "sha256": "f5329c3489e67f0c43de87940616315cffbc0692fe81b4929f92b606d88c91f2",
+      "sha256": "193b24b79f4ac35d53296661032ce5b0a683ee242b92a7ac939f2717bea8367f",
       "output": {
         "violation": {
           "screens": [
@@ -548,7 +548,7 @@
     },
     "programs/bad/16-schedule-ii-refills.json": {
       "status": "rejected",
-      "sha256": "01b5ed610497bd8f549b82b404fbee4c61269db9a9779ec95ea8fe49b21bfa52",
+      "sha256": "f08db80f28817e943eb919d7c8b28fad41806a19b20f24e8116339eb4b11faca",
       "output": {
         "violation": {
           "screens": [
@@ -592,7 +592,7 @@
     },
     "programs/bad/33-np-preop-macro.json": {
       "status": "rejected",
-      "sha256": "e26f8a35e357d30d8f282c2ff117884b69463d0ef939d48f7999ecd89c2136a1",
+      "sha256": "b5dcd955f7fcb086cc1de794d49445b2f99f156ff2578e9222fa2e482e038cef",
       "output": {
         "violation": {
           "screens": [
@@ -644,17 +644,17 @@
     },
     "releases/v1/canonical.json": {
       "status": "reference",
-      "sha256": "98e7e14f42e137ad444aa6e70ccb5840da0e914088733e12234e427de14bc27f",
+      "sha256": "659fdf47c168acaf45a121784bdc05356d9cbd9f8cc0ce303339156025dfc5b5",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "592bf7964d1d35066f71af07afcb08a06724bc2a97fd6c69c400f44f38db1568",
+      "sha256": "1104f1834f8d4171f8eee98800b28a4b282a640f7fc7fdb94aa86fc512f48e2b",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v3/canonical.json": {
       "status": "reference",
-      "sha256": "d8d44f80739edad00497deac2416cc03865dc53f4778cfcff37a5f09b3a54143",
+      "sha256": "47c5ee77d379e54b471d5973c7f6a066e4f84a21c239c850c80282ed41d9ebf4",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

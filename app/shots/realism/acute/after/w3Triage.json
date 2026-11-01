@@ -309,7 +309,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -339,7 +339,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -369,7 +369,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -399,7 +399,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -429,7 +429,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -459,7 +459,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -489,7 +489,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -519,7 +519,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -549,7 +549,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -579,7 +579,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -609,7 +609,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -639,7 +639,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -669,7 +669,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -699,7 +699,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -729,7 +729,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -759,7 +759,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -789,7 +789,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -819,7 +819,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -849,7 +849,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -879,7 +879,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -909,7 +909,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1216,7 +1216,7 @@
     ],
     [
       "Encounter",
-      "EMER"
+      "Emergency"
     ],
     [
       "Attending",

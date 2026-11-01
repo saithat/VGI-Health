@@ -1,44 +1,44 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "6b5b65a469df6f8a693db06a75335cdf245fbd55",
+  "sourceRevision": "947036cd072954150b07af2cd423c9bec77ce104",
   "sourceTreeDirty": true,
-  "binarySha256": "ec0c99f8a878464eb78f73a31d4ab8a3403c75f0441a10f172fee2b3bfd0b75d",
+  "binarySha256": "91dc4e4499f391069385b7e43c4eb20e112acd900e7f5d3d01a70ec70e7b6a38",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "32f6c079ff242c70da9bd3d13a18d12a7534f224cb4847f7c060b4fc75e699b0"
+      "sha256": "687b54c16242498c8c8e70489396f3f9bee184fdd0dfa3555a9c3d4a8b090f16"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "582fa9b3ccfcdfa9947fdb39bad63753957b3faa8993aef42795d2769af83edc"
+      "sha256": "110a5e713b613c44f3ad99827994e3569df6d1bfac5b8f684d8a0ba9fb3f44a1"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "55f8a53c7e37a610bea90e3b5f0d0f78e91738b4ffc20ab46a1408f402190da2"
+      "sha256": "605b203da566dba1cb48909275569a1792f931868446b0145a9765d6cfad59e3"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "d12a61a9b97b673719f556e1b2e435ab9585a12147faecd1819dec0cc42fc212"
+      "sha256": "7b7ae2245df9ea8fb2d3b9cb4abc29bb7aad4edb04eb7ede0f3faf6c54f88f54"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "c13d1bdfed55eda5f00749c42f8b61f2b64ca43b399b60a9ee7614d33c4bc499"
+      "sha256": "bd2125b0f88ef63b8e350083762983f92cc17b71101c77855954dbbda38170c6"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "bdce31a22338084630f0e35b832d389f86b358ff799376015a264313f9440fc5"
+      "sha256": "40ecf5194e19726ed0881a4a8628dfb2f9c29ce73e1268cc9a9fd8bc6ec91b5b"
     }
   ],
   "fixtures": [
@@ -329,11 +329,11 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff"
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
       ],
       "disabled": [
         {
@@ -721,11 +721,11 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff"
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
       ],
       "disabled": [
         {
@@ -1113,11 +1113,11 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff"
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
       ],
       "disabled": [
         {

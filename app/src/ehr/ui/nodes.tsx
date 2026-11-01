@@ -30,10 +30,8 @@ import {
   statusTone,
 } from "./display";
 import { clinicalTokens } from "./theme";
-import {
-  PresentationContext,
-  StructuredInfo,
-} from "./presentations/StructuredInfo";
+import { StructuredInfo } from "./presentations/StructuredInfo";
+import { PresentationContext, rowLayout } from "./presentations/row-layout";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -480,9 +478,22 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
     </ul>
   );
 }
-export function InfoNode({ node }: Props<"info">) {
+export function InfoNode({ node, onEvent }: Props<"info">) {
   const presentation = useContext(PresentationContext);
-  if (presentation) return <StructuredInfo node={node} kind={presentation} />;
+  if (presentation) {
+    const slots = presentation.rows.get(node);
+    const actions =
+      slots &&
+      new Map(
+        [...slots].map(([row, nodes]) => [
+          row,
+          <UiChildren key={row} nodes={nodes} onEvent={onEvent} />,
+        ]),
+      );
+    return (
+      <StructuredInfo node={node} kind={presentation.kind} actions={actions} />
+    );
+  }
   const values = node.rows
     .flatMap((row) =>
       row
@@ -710,6 +721,33 @@ export function TextNode({ node }: Props<"text">) {
 function unreachable(node: never): never {
   throw new Error(`Unknown semantic UI node: ${String(node)}`);
 }
+function PresentationNode({
+  node,
+  onEvent,
+}: {
+  node: NodeOf<"presentation">;
+  onEvent: Emit;
+}) {
+  const parent = useContext(PresentationContext);
+  const layout = rowLayout(node.kind, node.children, parent);
+  return (
+    <PresentationContext.Provider value={layout}>
+      <UiChildren nodes={node.children} onEvent={onEvent} />
+    </PresentationContext.Provider>
+  );
+}
+function RowActionNode({
+  node,
+  onEvent,
+}: {
+  node: NodeOf<"rowAction">;
+  onEvent: Emit;
+}) {
+  const layout = useContext(PresentationContext);
+  return layout?.embedded.has(node) ? null : (
+    <UiChildren nodes={node.children} onEvent={onEvent} />
+  );
+}
 /** Exhaustive dispatch: extending the wire union requires a matching component. */
 export function StockUiNodeView({
   node,
@@ -722,11 +760,9 @@ export function StockUiNodeView({
 }) {
   switch (true) {
     case "presentation" in node:
-      return (
-        <PresentationContext.Provider value={node.presentation.kind}>
-          <UiChildren nodes={node.presentation.children} onEvent={onEvent} />
-        </PresentationContext.Provider>
-      );
+      return <PresentationNode node={node.presentation} onEvent={onEvent} />;
+    case "rowAction" in node:
+      return <RowActionNode node={node.rowAction} onEvent={onEvent} />;
     case "section" in node:
       return <SectionNode node={node.section} onEvent={onEvent} />;
     case "columns" in node:

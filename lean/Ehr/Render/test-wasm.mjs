@@ -45,6 +45,7 @@ function walk(nodes) {
   return nodes.flatMap((node) => {
     if (node.section) return [node, ...walk(node.section.children)];
     if (node.presentation) return [node, ...walk(node.presentation.children)];
+    if (node.rowAction) return [node, ...walk(node.rowAction.children)];
     if (node.columns) return [node, ...walk(node.columns.children)];
     if (node.tabs) return [node, ...walk(node.tabs.body)];
     return [node];

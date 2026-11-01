@@ -41,87 +41,95 @@
       }
     },
     {
-      "info": {
-        "rows": [
-          [
-            [
-              "Ordered medication",
-              "insulin lispro"
-            ],
-            [
-              "Ordered dose",
-              "4"
-            ],
-            [
-              "Unit",
-              "units"
-            ],
-            [
-              "Route",
-              "SC"
-            ],
-            [
-              "Instructions",
-              "4 units subcutaneously before meals"
-            ],
-            [
-              "Scheduled times (recorded local time)",
-              "2026-11-02 08:00; 2026-11-02 12:00; 2026-11-02 17:00"
-            ],
-            [
-              "Order status",
-              "active"
-            ]
-          ],
-          [
-            [
-              "Medication",
-              "insulin lispro"
-            ],
-            [
-              "Actual dose",
-              "4"
-            ],
-            [
-              "Unit",
-              "units"
-            ],
-            [
-              "Route",
-              "SC"
-            ],
-            [
-              "Site",
-              "Left abdomen"
-            ],
-            [
-              "Actual time",
-              "Nov 1, 2026 17:08"
-            ],
-            [
-              "Status",
-              "Given"
-            ],
-            [
-              "Reason",
-              ""
-            ]
-          ]
-        ],
-        "label": "Selected medication task",
-        "infoId": "marDoseDetails",
-        "display": "list",
-        "comp": "w4Mar.selectedDose"
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Document selected dose",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Mar.openDue",
-        "blockedReason": null
+      "section": {
+        "title": "Selected medication task",
+        "id": "w4Mar.doseActivity",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Ordered medication",
+                    "insulin lispro"
+                  ],
+                  [
+                    "Ordered dose",
+                    "4"
+                  ],
+                  [
+                    "Unit",
+                    "units"
+                  ],
+                  [
+                    "Route",
+                    "SC"
+                  ],
+                  [
+                    "Instructions",
+                    "4 units subcutaneously before meals"
+                  ],
+                  [
+                    "Scheduled times (recorded local time)",
+                    "2026-11-02 08:00; 2026-11-02 12:00; 2026-11-02 17:00"
+                  ],
+                  [
+                    "Order status",
+                    "active"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "insulin lispro"
+                  ],
+                  [
+                    "Actual dose",
+                    "4"
+                  ],
+                  [
+                    "Unit",
+                    "units"
+                  ],
+                  [
+                    "Route",
+                    "SC"
+                  ],
+                  [
+                    "Site",
+                    "Left abdomen"
+                  ],
+                  [
+                    "Actual time",
+                    "Nov 1, 2026 17:08"
+                  ],
+                  [
+                    "Status",
+                    "Given"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ]
+                ]
+              ],
+              "label": "Ordered dose and prior administration",
+              "infoId": "marDoseDetails",
+              "display": "list",
+              "comp": "w4Mar.selectedDose"
+            }
+          },
+          {
+            "button": {
+              "role": "nav",
+              "label": "Document selected dose",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w4Mar.openDue",
+              "blockedReason": null
+            }
+          }
+        ]
       }
     },
     {
@@ -522,7 +530,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -552,7 +560,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -582,7 +590,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -612,7 +620,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -642,7 +650,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -672,7 +680,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -702,7 +710,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -732,7 +740,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -762,7 +770,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -792,7 +800,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -822,7 +830,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -852,7 +860,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -882,7 +890,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -912,7 +920,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -942,7 +950,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -972,7 +980,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -1002,7 +1010,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1032,7 +1040,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1062,7 +1070,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1092,7 +1100,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1122,7 +1130,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1209,7 +1217,7 @@
     ],
     [
       "Encounter",
-      "IMP"
+      "Inpatient"
     ],
     [
       "Attending",

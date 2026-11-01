@@ -159,7 +159,7 @@
     },
     {
       "presentation": {
-        "kind": "trend",
+        "kind": "results",
         "children": [
           {
             "info": {
@@ -197,7 +197,7 @@
               ],
               "label": "Blood glucose — review before insulin",
               "infoId": "glucoseTrend",
-              "display": "trend",
+              "display": "table",
               "comp": "w4Admin.glucose"
             }
           }
@@ -455,7 +455,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -485,7 +485,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -515,7 +515,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -545,7 +545,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -575,7 +575,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -605,7 +605,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -635,7 +635,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -665,7 +665,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -695,7 +695,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -725,7 +725,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -755,7 +755,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -785,7 +785,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -815,7 +815,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -845,7 +845,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -875,7 +875,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -905,7 +905,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -935,7 +935,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -965,7 +965,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -995,7 +995,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1025,7 +1025,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1055,7 +1055,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1392,7 +1392,7 @@
     ],
     [
       "Encounter",
-      "IMP"
+      "Inpatient"
     ],
     [
       "Attending",

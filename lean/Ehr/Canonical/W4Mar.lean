@@ -36,7 +36,10 @@ def chart : List Block :=
 /-- The shell for a W4 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then { c with label := "Nursing Navigator" } else c
+    if c.id == cid s "nav" then { c with label := "Nursing Navigator" }
+    else if c.id == cid s "chart.labResults" then
+      presentation "results" { c with kind := .table "resultTrend" }
+    else c
 
 /-- The shift worklist: due and overdue meds, tasks, new orders, and the
 start-of-shift allergy review. -/
@@ -44,13 +47,16 @@ def worklist : Screen :=
   let s := "w4Worklist"
   { id := s, title := "Unit Census & MAR", workflow := "W4"
     components := frame s ++ [
-      presentation "worklist" (wideWorkspace (table s "work" "shiftWorklist" "My patients — shift tasks")),
+      presentation "worklist" (group s "workActivity" "My patients — shift tasks" (collapsible := false)),
+      presentation "worklist" (wideWorkspace (table s "work" "shiftWorklist" "Shift worklist"
+        (parent := some "workActivity"))),
+      rowAction (cid s "work") 0 (goto s "toMar" "w4Mar" "Open selected patient's MAR"
+        (parent := some "workActivity")),
       presentation "table" (table s "newOrders" "newOrders" "Orders requiring review"),
       panel s "handoff" "handoffSummary" "Selected patient — handoff report",
       group s "allergyGroup" "Shift allergy review" (collapsible := false),
       panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed — shift start" (parent := some "allergyGroup"),
-      primaryNavigation (goto s "toMar" "w4Mar" "Open selected patient's MAR")
+      reviewBtn s "allergyList" "Mark allergies reviewed — shift start" (parent := some "allergyGroup")
     ] }
 
 /-- The MAR grid, with PRN history, glucose, and coagulation labs on tabs. -/
@@ -58,8 +64,11 @@ def mar : Screen :=
   let s := "w4Mar"
   { id := s, title := "MAR", workflow := "W4"
     components := frame s ++ [
-      panel s "selectedDose" "marDoseDetails" "Selected medication task",
-      primaryNavigation (goto s "openDue" "w4Admin" "Document selected dose"),
+      group s "doseActivity" "Selected medication task" (collapsible := false),
+      panel s "selectedDose" "marDoseDetails" "Ordered dose and prior administration"
+        (parent := some "doseActivity"),
+      primaryNavigation (goto s "openDue" "w4Admin" "Document selected dose"
+        (parent := some "doseActivity")),
       presentation "timeGrid" (wideWorkspace (table s "grid" "marSchedule" "Medication administration record"))] ++
       tabStrip s "marTabs" "Details"
         [(.table, "prnHistory", "PRN history"), (.trend, "glucoseTrend", "Glucose"),
@@ -76,7 +85,7 @@ def admin : Screen :=
       group s "fiveRights" "Barcode medication verification" (collapsible := false),
       field s "wristbandScan" "wristbandScan" "1. Scan patient wristband" (parent := some "fiveRights"),
       field s "medScan" "medScan" "2. Scan medication barcode" (parent := some "fiveRights"),
-      presentation "trend" (trend s "glucose" "glucoseTrend" "Blood glucose — review before insulin"),
+      presentation "results" (table s "glucose" "glucoseTrend" "Blood glucose — review before insulin"),
       presentation "results" (table s "coag" "coagLabs" "Coagulation results — review before anticoagulants"),
       presentation "table" (table s "prn" "prnHistory" "PRN administrations and response"),
       alertC s "alert.drugAllergy" "drugAllergyAdmin" "Drug–allergy match" (popup := false),

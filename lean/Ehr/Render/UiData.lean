@@ -4,6 +4,22 @@ import Ehr.Render.Page
 are untouched; order rows always use this episode's State, never medication history. -/
 namespace Ehr.Render
 
+/-- Standard encounter classes receive clinical labels; unknown source codes survive. -/
+def uiEncounterClass (code : String) : String :=
+  match code with
+  | "EMER" | "emergency" => "Emergency"
+  | "IMP" | "inpatient" => "Inpatient"
+  | "ACUTE" => "Acute inpatient"
+  | "NONAC" => "Non-acute inpatient"
+  | "AMB" | "ambulatory" => "Ambulatory"
+  | "OBSENC" | "observation" => "Observation"
+  | "SS" => "Short stay"
+  | "PRENC" => "Pre-admission"
+  | "HH" => "Home health"
+  | "FLD" => "Field encounter"
+  | "VR" => "Virtual"
+  | other => other
+
 def uiChars (cs : List Char) : String := cs.foldl String.push ""
 
 /-- Format complete ISO dates/date-times for display, preserving the recorded

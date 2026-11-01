@@ -45,91 +45,124 @@
         "kind": "worklist",
         "children": [
           {
-            "info": {
-              "rows": [
-                [
-                  [
-                    "Due",
-                    "Nov 2, 2026 08:00"
-                  ],
-                  [
-                    "Patient",
-                    "Ankunding, Aaron Bruno"
-                  ],
-                  [
-                    "Task",
-                    "08:00 medication pass"
-                  ],
-                  [
-                    "Priority",
-                    "routine"
-                  ],
-                  [
-                    "Status",
-                    "requested"
-                  ],
-                  [
-                    "Owner",
-                    "Jordan Lee, RN"
-                  ]
-                ],
-                [
-                  [
-                    "Due",
-                    "Nov 2, 2026 08:00"
-                  ],
-                  [
-                    "Patient",
-                    "Ankunding, Aaron Bruno"
-                  ],
-                  [
-                    "Task",
-                    "Shift assessment and vital signs"
-                  ],
-                  [
-                    "Priority",
-                    "routine"
-                  ],
-                  [
-                    "Status",
-                    "requested"
-                  ],
-                  [
-                    "Owner",
-                    "Jordan Lee, RN"
-                  ]
-                ],
-                [
-                  [
-                    "Due",
-                    "Nov 2, 2026 08:30"
-                  ],
-                  [
-                    "Patient",
-                    "Ankunding, Aaron Bruno"
-                  ],
-                  [
-                    "Task",
-                    "Pain reassessment after PRN medication"
-                  ],
-                  [
-                    "Priority",
-                    "routine"
-                  ],
-                  [
-                    "Status",
-                    "requested"
-                  ],
-                  [
-                    "Owner",
-                    "Jordan Lee, RN"
-                  ]
-                ]
-              ],
-              "label": "My patients — shift tasks",
-              "infoId": "shiftWorklist",
-              "display": "table",
-              "comp": "w4Worklist.work"
+            "section": {
+              "title": "My patients — shift tasks",
+              "id": "w4Worklist.workActivity",
+              "children": [
+                {
+                  "presentation": {
+                    "kind": "worklist",
+                    "children": [
+                      {
+                        "info": {
+                          "rows": [
+                            [
+                              [
+                                "Due",
+                                "Nov 2, 2026 08:00"
+                              ],
+                              [
+                                "Patient",
+                                "Ankunding, Aaron Bruno"
+                              ],
+                              [
+                                "Task",
+                                "08:00 medication pass"
+                              ],
+                              [
+                                "Priority",
+                                "routine"
+                              ],
+                              [
+                                "Status",
+                                "requested"
+                              ],
+                              [
+                                "Owner",
+                                "Jordan Lee, RN"
+                              ]
+                            ],
+                            [
+                              [
+                                "Due",
+                                "Nov 2, 2026 08:00"
+                              ],
+                              [
+                                "Patient",
+                                "Ankunding, Aaron Bruno"
+                              ],
+                              [
+                                "Task",
+                                "Shift assessment and vital signs"
+                              ],
+                              [
+                                "Priority",
+                                "routine"
+                              ],
+                              [
+                                "Status",
+                                "requested"
+                              ],
+                              [
+                                "Owner",
+                                "Jordan Lee, RN"
+                              ]
+                            ],
+                            [
+                              [
+                                "Due",
+                                "Nov 2, 2026 08:30"
+                              ],
+                              [
+                                "Patient",
+                                "Ankunding, Aaron Bruno"
+                              ],
+                              [
+                                "Task",
+                                "Pain reassessment after PRN medication"
+                              ],
+                              [
+                                "Priority",
+                                "routine"
+                              ],
+                              [
+                                "Status",
+                                "requested"
+                              ],
+                              [
+                                "Owner",
+                                "Jordan Lee, RN"
+                              ]
+                            ]
+                          ],
+                          "label": "Shift worklist",
+                          "infoId": "shiftWorklist",
+                          "display": "table",
+                          "comp": "w4Worklist.work"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "rowAction": {
+                    "target": "w4Worklist.work",
+                    "row": 0,
+                    "children": [
+                      {
+                        "button": {
+                          "role": "nav",
+                          "label": "Open selected patient's MAR",
+                          "hotkey": null,
+                          "enabled": true,
+                          "comp": "w4Worklist.toMar",
+                          "blockedReason": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]
@@ -213,16 +246,6 @@
     {
       "button": {
         "role": "nav",
-        "label": "Open selected patient's MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Worklist.toMar",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
         "label": "Back",
         "hotkey": null,
         "enabled": true,
@@ -264,7 +287,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -294,7 +317,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -324,7 +347,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -354,7 +377,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -384,7 +407,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -414,7 +437,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -444,7 +467,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -474,7 +497,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -504,7 +527,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -534,7 +557,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -564,7 +587,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -594,7 +617,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -624,7 +647,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -654,7 +677,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -684,7 +707,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -714,7 +737,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -744,7 +767,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -774,7 +797,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -804,7 +827,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -834,7 +857,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -864,7 +887,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -951,7 +974,7 @@
     ],
     [
       "Encounter",
-      "IMP"
+      "Inpatient"
     ],
     [
       "Attending",

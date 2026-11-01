@@ -36,7 +36,10 @@ def chart : List Block :=
 /-- The shell for a W3 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then { c with label := "ED Navigator" } else c
+    if c.id == cid s "nav" then { c with label := "ED Navigator" }
+    else if c.id == cid s "chart.labResults" then
+      presentation "results" { c with kind := .table "resultTrend" }
+    else c
 
 /-- The ED track board. -/
 def trackBoard : Screen :=
@@ -44,8 +47,11 @@ def trackBoard : Screen :=
   { id := s, title := "ED Track Board", workflow := "W3"
     components := frame s ++ [
       presentation "trackBoard" (wideWorkspace (table s "board" "edTrackBoard" "Emergency department patients")),
-      primaryNavigation (goto s "open" "w3Triage" "Open selected encounter"),
-      panel s "selected" "triageSummary" "Selected encounter — triage summary"
+      group s "selectedActivity" "Selected encounter" (collapsible := false),
+      primaryNavigation (goto s "open" "w3Triage" "Open selected encounter"
+        (parent := some "selectedActivity")),
+      panel s "selected" "triageSummary" "Triage summary"
+        (parent := some "selectedActivity")
     ] }
 
 /-- Triage: vital signs (weight in kg), acuity, arrival, complaint, isolation

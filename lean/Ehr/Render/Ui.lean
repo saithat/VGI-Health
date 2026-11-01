@@ -13,9 +13,9 @@ def uiLabel (s fallback : String) : String := if s = "" then fallback else s
 
 def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
-   ("Age / sex", s!"{d.banner.ageYears} / {d.banner.sex}"),
+   ("Age / sex", (if d.banner.dob == "" then "Age not recorded" else toString d.banner.ageYears) ++ " / " ++ d.banner.sex),
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
-   ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
+   ("Encounter", uiEncounterClass d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
 
 /-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
 def uiBannerWeight (facts : Facts) (d : Display) : String :=
@@ -105,7 +105,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
         latest.code == r.code && latest.date == r.date).map vitalCells
     | "problemList" => cx.disp.problems.map problemCells
     | "labs" | "labResults" | "resultTrend" =>
-      if i == "labResults" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+      if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
       cx.disp.labs.flatMap fun r =>
         [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
          ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
@@ -116,7 +116,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
         [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
     | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
-        [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
+        [("Encounter", r.encType), ("Class", uiEncounterClass r.encClass), ("Start", uiDate r.start),
          ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
     | "procedures" => cx.disp.procedures.map fun r =>
         [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
@@ -263,7 +263,8 @@ def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) 
       if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
   else if scope == "chart" then
     (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
-      "importedHistory", "labResults", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx)
+      "importedHistory", (if (infoPayload cx.facts "resultTrend").isSome then "resultTrend" else "labResults"),
+      "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx)
   else
     (cx.v.items.filter (·.shown)).flatMap fun item => match item.comp.kind with
       | .panel info | .table info | .trend info => uiRows cx info
@@ -314,7 +315,7 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .panel i | .priorAuth i => [uiItemInfo cx it i "list"]
   | .table i => [uiItemInfo cx it i "table"]
   | .trend i => [uiItemInfo cx it i "trend"]
-  | .button a => [uiButton cx it (actionRole a)]
+  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))]
   | .«macro» _ => [uiButton cx it "macro"]
   | .search scope =>
       let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""
@@ -326,8 +327,10 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
       (uiLabel (((cx.sp.alert? a).map (·.label)).getD it.comp.label) "Clinical alert")
       (match (cx.sp.alert? a).map (·.tier) with
        | some Tier.interruptive => "interruptive" | some Tier.passive => "passive" | _ => "removable")]
-  | .group coll _ => if uiNavGroup it then [] else [.section it.comp.id (uiTitledLabel cx it it.comp.label "Details" "Section")
-      ((if coll then [.button it.comp.id (if it.expanded then "Collapse section" else "Expand section") "toggle" (uiEnabled cx it.comp.id) (uiBlocked cx it.comp.id) it.comp.hotkey?] else []) ++ if it.expanded then kids else [])]
+  | .group coll _ => if uiNavGroup it then [] else [uiWrapInfo (presentationKind? it.comp.tag "") <|
+      .section it.comp.id (uiTitledLabel cx it it.comp.label "Details" "Section")
+      ((if coll then [.button it.comp.id (if it.expanded then "Collapse section" else "Expand section") "toggle" (uiEnabled cx it.comp.id) (uiBlocked cx it.comp.id) it.comp.hotkey?] else []) ++
+       if it.expanded then uiColumnChildren it.comp.tag kids else [])]
   | .tabs =>
       let siblings := cx.v.items.filter (·.comp.parent? == some it.comp.id)
       let indices := (siblings.map (·.comp.tab)).eraseDups

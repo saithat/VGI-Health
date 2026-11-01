@@ -113,6 +113,34 @@ def currentVitalContext : Ctx := { latestVitalsContext with
 #guard (uiRows { latestVitalsContext with facts := factsOf context resources patient } "vitals").isEmpty
 #guard (uiRows { latestVitalsContext with facts := factsOf context resources patient } "labResults").isEmpty
 
+/-- Longitudinal Chart Review retains raw historical values, units and flags,
+while a current-encounter decision panel remains scoped to that encounter. -/
+def historicalGlucose : Json := Json.mkObj
+  [("resourceType", .str "Observation"), ("id", .str "prior-glucose"),
+   ("subject", reference "Patient/selected"), ("status", .str "final"),
+   ("encounter", reference "Encounter/prior-clinic"), ("code", concept "2339-0"),
+   ("category", .arr #[concept "laboratory"]),
+   ("effectiveDateTime", .str "2026-10-01T08:15:00-07:00"),
+   ("valueQuantity", Json.mkObj [("value", toJson (99 : Nat)), ("unit", .str "mg/dL")]),
+   ("interpretation", .arr #[concept "N"])]
+
+/-- Both named projections read the same actual source bundle. -/
+def longitudinalResultsContext : Ctx :=
+  { latestVitalsContext with
+    facts := factsOf context (resources ++ [historicalGlucose, glucose "Patient/selected", glucose "Patient/other"]) patient }
+
+#guard (uiRows longitudinalResultsContext "labResults").length == 1
+#guard (uiRows longitudinalResultsContext "resultTrend").length == 2
+#guard (uiRows longitudinalResultsContext "resultTrend").any (fun row =>
+  row.lookup "Value" == some "99" && row.lookup "Flag" == some "N")
+#guard (uiRows longitudinalResultsContext "labResults").all (fun row => row.lookup "Value" != some "99")
+#guard (uiSearchSource longitudinalResultsContext "chart").any (fun row => row.lookup "Value" == some "99")
+#guard (uiRows { longitudinalResultsContext with facts := factsOf context resources patient } "resultTrend").isEmpty
+
+/-- Missing birth dates are not displayed as a known newborn age. -/
+def unknownAgeBoardExample := (acuteBoardRows context resources patient).head!.lookup "Age/sex"
+#guard unknownAgeBoardExample == some "Age not recorded / U"
+
 #guard acuteTimeColumn "2026-11-02T08:07:00-08:00" == "2026-11-02 08:07 -08:00"
 #guard acuteTimeColumn "2026-11-02T16:07:00Z" == "2026-11-02 16:07 UTC"
 

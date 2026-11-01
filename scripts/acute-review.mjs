@@ -5,6 +5,7 @@
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
@@ -22,6 +23,12 @@ const screens = [
   ['P3', 'w4Admin', 'w4Admin.wristbandScan'], ['P3', 'w4Flowsheet', 'w4Flowsheet.painReassessment'],
   ['P3', 'w4Handoff', 'w4Handoff.handoffSituation'],
 ];
+for (const [persona, screen, focus] of [
+  ['P2', 'w3Provider-chart-results', 'w3Provider.chart'],
+  ['P3', 'w4Mar-chart-results', 'w4Mar.chart'],
+]) {
+  if (existsSync(path.join(input, persona, `${screen}.json`))) screens.push([persona, screen, focus]);
+}
 const server = spawn('pnpm', ['--filter', 'app', 'exec', 'vite', '--host', '127.0.0.1', '--port', '4188', '--strictPort'], { cwd: root, stdio: 'ignore', detached: true });
 let browser;
 try {
@@ -43,7 +50,7 @@ try {
     await page.goto('http://127.0.0.1:4188/screen-check.html');
     await page.waitForFunction(() => typeof window.renderUi === 'function');
     const viewer = persona === 'P2' ? 'ED physician' : 'Registered nurse';
-    await page.evaluate(({ screen, viewer }) => window.renderUi(screen, null, viewer), { screen: ui, viewer });
+    await page.evaluate(({ screen, viewer }) => window.renderUi(screen, null, undefined, viewer), { screen: ui, viewer });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(output, `${screen}.png`), animations: 'disabled' });

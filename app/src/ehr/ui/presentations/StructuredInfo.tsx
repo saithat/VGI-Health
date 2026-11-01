@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
 import { DisplayValue } from "../display";
@@ -6,10 +6,8 @@ import { ClinicalChart } from "./charts";
 import { MarGrid } from "./MarGrid";
 import "./presentations.css";
 
-export const PresentationContext = createContext<
-  UiPresentationKind | undefined
->(undefined);
 export type Info = NodeOf<"info">;
+export type RowActions = ReadonlyMap<number, ReactNode>;
 
 /** Color decorates source text. It never determines a clinical value. */
 export function suppliedTone(value: string): string | undefined {
@@ -58,9 +56,11 @@ function isStatus(key: string, kind: UiPresentationKind): boolean {
 export function RecordTable({
   node,
   kind,
+  actions,
 }: {
   node: Info;
   kind: UiPresentationKind;
+  actions?: RowActions | undefined;
 }) {
   const columns = [
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
@@ -78,6 +78,7 @@ export function RecordTable({
                 {key}
               </th>
             ))}
+            {!!actions?.size && <th scope="col">Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -114,6 +115,13 @@ export function RecordTable({
                     </td>
                   );
                 })}
+                {!!actions?.size && (
+                  <td data-column="Actions">
+                    <div className="presentation-row-actions">
+                      {actions.get(i)}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))
           )}
@@ -148,7 +156,13 @@ function GrowthRecords({ node }: { node: Info }) {
     </>
   );
 }
-function FolderList({ node }: { node: Info }) {
+function FolderList({
+  node,
+  actions,
+}: {
+  node: Info;
+  actions?: RowActions | undefined;
+}) {
   return (
     <ul className="presentation-folders" aria-label={node.label}>
       {node.rows.length === 0 && <li>No records on file</li>}
@@ -175,6 +189,9 @@ function FolderList({ node }: { node: Info }) {
               )}
             </span>
           ))}
+          {actions?.get(i) && (
+            <div className="presentation-row-actions">{actions.get(i)}</div>
+          )}
         </li>
       ))}
     </ul>
@@ -217,9 +234,11 @@ function NoteCards({ node }: { node: Info }) {
 export function StructuredInfo({
   node,
   kind,
+  actions,
 }: {
   node: Info;
   kind: UiPresentationKind;
+  actions?: RowActions | undefined;
 }) {
   return (
     <div
@@ -229,7 +248,7 @@ export function StructuredInfo({
     >
       <h3 className="presentation-heading">{node.label}</h3>
       {kind === "folderList" ? (
-        <FolderList node={node} />
+        <FolderList node={node} actions={actions} />
       ) : kind === "notes" ? (
         <NoteCards node={node} />
       ) : (
@@ -238,11 +257,11 @@ export function StructuredInfo({
             <ClinicalChart node={node} kind={kind} />
           )}
           {kind === "timeGrid" ? (
-            <MarGrid node={node} />
+            <MarGrid node={node} actions={actions} />
           ) : kind === "growth" ? (
             <GrowthRecords node={node} />
           ) : (
-            <RecordTable node={node} kind={kind} />
+            <RecordTable node={node} kind={kind} actions={actions} />
           )}
         </>
       )}

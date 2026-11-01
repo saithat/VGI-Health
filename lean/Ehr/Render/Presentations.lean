@@ -39,6 +39,30 @@ def presentationKind? (tag info : String) : Option UiPresentationKind :=
 def uiWrapInfo (kind : Option UiPresentationKind) (node : UiNode) : UiNode :=
   match kind with | none => node | some k => .presentation k [node]
 
+/-- A normal group can explicitly request the existing semantic column container. -/
+def uiColumnTag (tag : String) : Bool :=
+  tag == "layout.columns" || tag.endsWith ".layout.columns"
+
+/-- Columns change layout only; every child remains present in source order. -/
+def uiColumnChildren (tag : String) (children : List UiNode) : List UiNode :=
+  if uiColumnTag tag then [.columns children] else children
+
+/-- An explicit row tag names an info component and zero-based source row. -/
+def uiRowTarget? (tag : String) : Option (CompId × Nat) := do
+  if tag == "" then none else match tag.splitOn "|" with
+  | [head, target, row] =>
+    if !(head == "present.row" || head.endsWith ".present.row") || target == "" then none
+    else
+      let index ← row.toNat?
+      if index ≤ 9007199254740991 then some (target, index) else none
+  | _ => none
+
+/-- The original semantic control is retained with all of its event metadata. -/
+def uiWrapRow (tag : String) (node : UiNode) : UiNode :=
+  match uiRowTarget? tag with
+  | some (target, row) => .rowAction target row [node]
+  | none => node
+
 /-- Human-facing schedule columns, without FHIR references or resource IDs. -/
 def scheduleCells (r : ScheduleRow) : List (String × String) :=
   [("Time", uiDate r.time), ("Patient", r.patient), ("Age/sex", r.ageSex),

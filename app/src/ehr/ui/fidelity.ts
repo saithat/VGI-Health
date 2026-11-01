@@ -1,5 +1,5 @@
 import type { UiPresentationKind } from "../../../../lean/generated/ehr-types";
-import type { UiNode, UiScreen } from "./types";
+import type { NodeOf, UiNode, UiScreen } from "./types";
 
 export interface AriaEntry {
   role: string;
@@ -19,25 +19,90 @@ function nest(parent: AriaEntry, children: AriaEntry[]): AriaEntry[] {
     })),
   ];
 }
+interface ExpectedRowPlacement {
+  rows: Map<NodeOf<"info">, Map<number, UiNode[]>>;
+  placed: Set<NodeOf<"rowAction">>;
+}
+/** Independent placement model: explicit targets may only bind an existing source row. */
+function expectedRowPlacement(
+  kind: UiPresentationKind,
+  nodes: UiNode[],
+): ExpectedRowPlacement {
+  const infos: NodeOf<"info">[] = [];
+  const actions: NodeOf<"rowAction">[] = [];
+  const scan = (nodes: UiNode[], view: UiPresentationKind) => {
+    for (const node of nodes) {
+      if ("presentation" in node)
+        scan(node.presentation.children, node.presentation.kind);
+      else if ("columns" in node) scan(node.columns.children, view);
+      else if ("section" in node) scan(node.section.children, view);
+      else if ("tabs" in node) scan(node.tabs.body, view);
+      else if ("rowAction" in node) actions.push(node.rowAction);
+      else if (
+        "info" in node &&
+        view !== "growth" &&
+        view !== "trend" &&
+        view !== "notes"
+      )
+        infos.push(node.info);
+    }
+  };
+  scan(nodes, kind);
+  const rows: ExpectedRowPlacement["rows"] = new Map();
+  const placed: ExpectedRowPlacement["placed"] = new Set();
+  for (const action of actions) {
+    if (!Number.isSafeInteger(action.row) || action.row < 0) continue;
+    const target = infos.find(
+      (info) => info.comp === action.target && info.rows.length > action.row,
+    );
+    if (!target) continue;
+    const slots = rows.get(target) ?? new Map<number, UiNode[]>();
+    slots.set(action.row, [
+      ...(slots.get(action.row) ?? []),
+      ...action.children,
+    ]);
+    rows.set(target, slots);
+    placed.add(action);
+  }
+  return { rows, placed };
+}
 /** Independent model-to-accessibility projection, used only by release checks. */
 export function expectedNodeAria(
   node: UiNode,
   confirmProvided = false,
   presentation?: UiPresentationKind,
+  placement?: ExpectedRowPlacement,
 ): AriaEntry[] {
   switch (true) {
     case "presentation" in node:
       return expectedChildrenAria(
         node.presentation.children,
         node.presentation.kind,
+        placement ??
+          expectedRowPlacement(
+            node.presentation.kind,
+            node.presentation.children,
+          ),
       );
+    case "rowAction" in node:
+      return placement?.placed.has(node.rowAction)
+        ? []
+        : expectedChildrenAria(
+            node.rowAction.children,
+            presentation,
+            placement,
+          );
     case "section" in node:
       return nest(
         entry("region", node.section.title),
-        expectedChildrenAria(node.section.children, presentation),
+        expectedChildrenAria(node.section.children, presentation, placement),
       );
     case "columns" in node:
-      return expectedChildrenAria(node.columns.children, presentation);
+      return expectedChildrenAria(
+        node.columns.children,
+        presentation,
+        placement,
+      );
     case "tabs" in node:
       return [
         ...nest(
@@ -46,7 +111,7 @@ export function expectedNodeAria(
         ),
         ...nest(
           entry("tabpanel", node.tabs.labels[node.tabs.selected] ?? ""),
-          expectedChildrenAria(node.tabs.body, presentation),
+          expectedChildrenAria(node.tabs.body, presentation, placement),
         ),
       ];
     case "stepper" in node:
@@ -75,8 +140,13 @@ export function expectedNodeAria(
     }
     case "info" in node:
       if (presentation) {
+        const controls = [...(placement?.rows.get(node.info) ?? [])]
+          .sort(([left], [right]) => left - right)
+          .flatMap(([, children]) =>
+            expectedChildrenAria(children, presentation, placement),
+          );
         if (presentation === "folderList" || presentation === "notes")
-          return [entry("list", node.info.label)];
+          return nest(entry("list", node.info.label), controls);
         const names = new Set<string>();
         if (presentation === "trend" || presentation === "growth") {
           for (const row of node.info.rows) {
@@ -101,12 +171,27 @@ export function expectedNodeAria(
         }
         return [
           ...[...names].map((name) => entry("img", name)),
-          entry("table", node.info.label),
+          ...nest(entry("table", node.info.label), controls),
           ...(presentation === "growth" &&
           node.info.rows.some((row) =>
             row.some(([key, value]) => key === "Percentile" && value !== ""),
           )
             ? [entry("table", `${node.info.label} reference data`)]
+            : []),
+          ...(presentation === "timeGrid" &&
+          node.info.rows.some((row) =>
+            row.some(
+              ([key, value]) =>
+                ![
+                  "Medication",
+                  "Dose",
+                  "Route",
+                  "Frequency",
+                  "Order status",
+                ].includes(key) && value.split(" · ").length > 3,
+            ),
+          )
+            ? [entry("list", `${node.info.label} administration details`)]
             : []),
         ];
       }
@@ -146,6 +231,7 @@ export function expectedNodeAria(
 function expectedChildrenAria(
   nodes: UiNode[],
   presentation?: UiPresentationKind,
+  placement?: ExpectedRowPlacement,
 ): AriaEntry[] {
   return nodes.flatMap((node) =>
     expectedNodeAria(
@@ -158,6 +244,7 @@ function expectedChildrenAria(
             other.button.comp === node.field.comp,
         ),
       presentation,
+      placement,
     ),
   );
 }

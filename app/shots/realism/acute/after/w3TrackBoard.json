@@ -120,189 +120,197 @@
       }
     },
     {
-      "button": {
-        "role": "nav",
-        "label": "Open selected encounter",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.open",
-        "blockedReason": null
-      }
-    },
-    {
-      "info": {
-        "rows": [
-          [
-            [
-              "Chief complaint",
-              "Shortness of breath and fever"
-            ],
-            [
-              "Acuity",
-              "ESI 2"
-            ],
-            [
-              "Arrival",
-              "Nov 2, 2026 07:15"
-            ],
-            [
-              "Arrival mode",
-              "Ambulance"
-            ],
-            [
-              "Location",
-              "ED · A04"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Systolic BP"
-            ],
-            [
-              "Value",
-              "136"
-            ],
-            [
-              "Unit",
-              "mmHg"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Diastolic BP"
-            ],
-            [
-              "Value",
-              "82"
-            ],
-            [
-              "Unit",
-              "mmHg"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Heart rate"
-            ],
-            [
-              "Value",
-              "82"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Respiratory rate"
-            ],
-            [
-              "Value",
-              "18"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Temperature"
-            ],
-            [
-              "Value",
-              "37.4"
-            ],
-            [
-              "Unit",
-              "°C"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "SpO2"
-            ],
-            [
-              "Value",
-              "96"
-            ],
-            [
-              "Unit",
-              "%"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Pain score"
-            ],
-            [
-              "Value",
-              "4"
-            ],
-            [
-              "Unit",
-              "score"
-            ],
-            [
-              "Recorded",
-              "Nov 2, 2026 07:30"
-            ]
-          ]
-        ],
-        "label": "Selected encounter — triage summary",
-        "infoId": "triageSummary",
-        "display": "list",
-        "comp": "w3TrackBoard.selected"
+      "section": {
+        "title": "Selected encounter",
+        "id": "w3TrackBoard.selectedActivity",
+        "children": [
+          {
+            "button": {
+              "role": "nav",
+              "label": "Open selected encounter",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3TrackBoard.open",
+              "blockedReason": null
+            }
+          },
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Chief complaint",
+                    "Shortness of breath and fever"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "Nov 2, 2026 07:15"
+                  ],
+                  [
+                    "Arrival mode",
+                    "Ambulance"
+                  ],
+                  [
+                    "Location",
+                    "ED · A04"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Weight"
+                  ],
+                  [
+                    "Value",
+                    "93.4"
+                  ],
+                  [
+                    "Unit",
+                    "kg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Systolic BP"
+                  ],
+                  [
+                    "Value",
+                    "136"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Diastolic BP"
+                  ],
+                  [
+                    "Value",
+                    "82"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Heart rate"
+                  ],
+                  [
+                    "Value",
+                    "82"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Respiratory rate"
+                  ],
+                  [
+                    "Value",
+                    "18"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Temperature"
+                  ],
+                  [
+                    "Value",
+                    "37.4"
+                  ],
+                  [
+                    "Unit",
+                    "°C"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "SpO2"
+                  ],
+                  [
+                    "Value",
+                    "96"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ],
+                [
+                  [
+                    "Vital sign",
+                    "Pain score"
+                  ],
+                  [
+                    "Value",
+                    "4"
+                  ],
+                  [
+                    "Unit",
+                    "score"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:30"
+                  ]
+                ]
+              ],
+              "label": "Triage summary",
+              "infoId": "triageSummary",
+              "display": "list",
+              "comp": "w3TrackBoard.selected"
+            }
+          }
+        ]
       }
     },
     {
@@ -349,7 +357,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -379,7 +387,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -409,7 +417,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -439,7 +447,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -469,7 +477,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -499,7 +507,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -529,7 +537,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -559,7 +567,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -589,7 +597,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -619,7 +627,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -649,7 +657,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -679,7 +687,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -709,7 +717,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -739,7 +747,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -769,7 +777,7 @@
                   ],
                   [
                     "Class",
-                    "EMER"
+                    "Emergency"
                   ],
                   [
                     "Start",
@@ -799,7 +807,7 @@
                   ],
                   [
                     "Class",
-                    "IMP"
+                    "Inpatient"
                   ],
                   [
                     "Start",
@@ -829,7 +837,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -859,7 +867,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -889,7 +897,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -919,7 +927,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -949,7 +957,7 @@
                   ],
                   [
                     "Class",
-                    "AMB"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
@@ -1044,7 +1052,7 @@
     ],
     [
       "Encounter",
-      "EMER"
+      "Emergency"
     ],
     [
       "Attending",

@@ -20,7 +20,7 @@ export const layoutSchema: z.ZodType<Layout> = z.lazy(() => z.union([
     }
   }),
 ]));
-export const presentationSourceSchema = z.strictObject({ name: z.string().regex(/^[A-Z][A-Za-z0-9]{0,63}$/), key: z.string().regex(/^(section|columns|tabs|stepper|field|info|alert|button|text|composite:[\w-]+)$/), source: z.string().max(30000) });
+export const presentationSourceSchema = z.strictObject({ name: z.string().regex(/^[A-Z][A-Za-z0-9]{0,63}$/), key: z.string().regex(/^(presentation|rowAction|section|columns|tabs|stepper|field|info|alert|button|text|composite:[\w-]+)$/), source: z.string().max(30000) });
 export type PresentationSource = z.infer<typeof presentationSourceSchema>;
 export const presentationBundleSchema = z.strictObject({
   schemaVersion: z.literal(1), owner: z.string(), version: z.number().int().nonnegative(),

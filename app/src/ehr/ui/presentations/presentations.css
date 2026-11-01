@@ -90,6 +90,24 @@
 .table-orSchedule td:nth-child(3) {
   width: 28%;
 }
+.table-messages th:nth-child(1) {
+  width: 19%;
+}
+.table-messages th:nth-child(2) {
+  width: 17%;
+}
+.table-messages th:nth-child(3) {
+  width: 29%;
+}
+.table-messages th:nth-child(4) {
+  width: 12%;
+}
+.table-messages th:nth-child(5) {
+  width: 9%;
+}
+.table-messages th:nth-child(6) {
+  width: 14%;
+}
 .table-timeGrid th,
 .table-timeGrid td,
 .table-flowsheet th,
@@ -367,12 +385,40 @@
   padding-right: 4px;
   padding-left: 4px;
 }
+.presentation-mar .mar-day-heading {
+  text-align: center;
+  background: var(--clinical-banner, #e8eef2);
+  border-right: 1px solid var(--p-border);
+}
+.presentation-mar .mar-hour-heading {
+  text-align: center;
+  padding: 5px 2px;
+}
 @media (max-width: 900px) {
   .presentation-chart svg text {
     font-size: 28px;
   }
 }
 .presentation-mar .presentation-status {
+  font-weight: 400;
+}
+.mar-documentation {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mar-documentation li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 12px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--p-border);
+}
+.mar-documentation-time {
+  color: var(--p-muted);
+}
+.mar-documentation .presentation-status {
   font-weight: 400;
 }
 
@@ -394,4 +440,31 @@
   color: var(--p-muted);
   border-bottom: 1px solid var(--p-border);
   background: var(--p-surface);
+}
+.presentation-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: start;
+}
+.presentation-row-actions .clinical-action {
+  margin: 0;
+}
+.presentation-row-actions button {
+  white-space: normal;
+  height: auto;
+  min-height: 28px;
+  text-align: left;
+  padding: 4px 6px;
+}
+
+/* The columns exist in UiScreen; only their proportions belong to the painter. */
+.clinical-columns:has(> .presentation-folderList) {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .clinical-columns:has(> .presentation-folderList) {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

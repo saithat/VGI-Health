@@ -7,7 +7,7 @@
     "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
   },
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "ehrSha256": "ec0c99f8a878464eb78f73a31d4ab8a3403c75f0441a10f172fee2b3bfd0b75d",
+  "ehrSha256": "91dc4e4499f391069385b7e43c4eb20e112acd900e7f5d3d01a70ec70e7b6a38",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
@@ -5924,7 +5924,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -6145,7 +6145,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -6362,7 +6362,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -6579,7 +6579,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -6794,7 +6794,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -7004,7 +7004,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -18492,7 +18492,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -18713,7 +18713,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -18930,7 +18930,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -19147,7 +19147,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -19362,7 +19362,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -19572,7 +19572,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -31060,7 +31060,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -31281,7 +31281,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -31498,7 +31498,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -31715,7 +31715,7 @@
                 },
                 {
                   "click": {
-                    "comp": "w4Worklist.toMar"
+                    "comp": "w4Worklist.nav.w4Mar"
                   }
                 },
                 {
@@ -31930,7 +31930,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {
@@ -32140,7 +32140,7 @@
               },
               {
                 "click": {
-                  "comp": "w4Worklist.toMar"
+                  "comp": "w4Worklist.nav.w4Mar"
                 }
               },
               {

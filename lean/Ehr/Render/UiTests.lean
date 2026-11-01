@@ -318,4 +318,13 @@ def uiSearchNoteSummary := uiSearchSummary
 #guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Weight" != none
 #guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Isolation" == some "Not recorded"
 
+/-- Encounter codes receive readable clinical labels without changing source facts. -/
+def emergencyClassExample := uiEncounterClass "EMER"
+#guard emergencyClassExample == "Emergency"
+#guard uiEncounterClass "IMP" == "Inpatient"
+#guard uiEncounterClass "OBSENC" == "Observation"
+#guard uiEncounterClass "local-class" == "local-class"
+#guard ((uiBanner { Display.empty with banner := { Display.empty.banner with sex := "F" } }).lookup "Age / sex") ==
+  some "Age not recorded / F"
+
 end Ehr.Render

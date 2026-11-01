@@ -18,7 +18,7 @@ const call = (command, input) => JSON.parse(execFileSync(binary, [command], {
 const reports = [];
 const programs = [];
 const uiNodes = node => [node, ...(node.section?.children ?? node.columns?.children ??
-  node.presentation?.children ?? node.tabs?.body ?? []).flatMap(uiNodes)];
+  node.presentation?.children ?? node.rowAction?.children ?? node.tabs?.body ?? []).flatMap(uiNodes)];
 const fixtures = ['P2', 'P3'].map(persona => ({ persona,
   files: ['', '-context', '-user'].map(suffix => {
     const file = `${persona}${suffix}.json`;

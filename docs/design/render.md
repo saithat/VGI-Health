@@ -161,3 +161,10 @@ includes its unit; other captured prescription/prescriber values remain explicit
 No historical MedicationRequest becomes a new episode order. Missing captures are
 not invented. Dates preserve recorded wall time and omit ISO offset syntax in the
 display. Verbatim regulatory text must come from content (request outstanding).
+
+Structured clinical layouts and row-action placement use the additive
+[presentation contract](presentation-contract.md). `presentation` and `rowAction`
+are transparent to clinical presence; the original complete info and action
+nodes remain the proof target. A source group tagged `layout.columns` emits
+semantic columns. Browser-only filters, synthetic actions and inferred clinical
+statuses are not part of this drawing contract.

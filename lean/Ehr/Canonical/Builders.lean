@@ -73,6 +73,10 @@ def narrative (c : Component) : Component := { c with tag := c.tag ++ ".narrativ
 def primaryNavigation (c : Component) : Component :=
   { c with tag := c.tag ++ ".primaryNavigation" }
 
+/-- Place an existing action in a supplied clinical row; its event stays unchanged. -/
+def rowAction (target : CompId) (row : Nat) (c : Component) : Component :=
+  { c with tag := c.tag ++ ".present.row|" ++ target ++ "|" ++ toString row }
+
 /-- A wide clinical grid omits automatic summary-rail supplements, not authored reviews. -/
 def wideWorkspace (c : Component) : Component :=
   { c with tag := c.tag ++ ".wideWorkspace" }

@@ -1085,15 +1085,21 @@ def acuteParticipant (encounter : Json) (role : String) : String :=
 /-- A supplied active ED encounter is one board row. Missing assignments, LOS
 and disposition remain empty; no default acuity or progress is invented. -/
 def acuteBoardRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
-  ((ofType "Encounter" (acutePatientResources rs patient)).filter fun encounter =>
+  let encounters := (ofType "Encounter" (acutePatientResources rs patient)).filter fun encounter =>
     str (field encounter "class") "code" == "EMER" &&
-    ["arrived", "triaged", "in-progress", "onleave"].contains (str encounter "status")).map fun encounter =>
+    ["arrived", "triaged", "in-progress", "onleave"].contains (str encounter "status")
+  let selected := fun encounter => (acuteEncounter ctx rs patient).any
+    (fun current => str encounter "id" == str current "id")
+  -- The selected encounter is first for orientation. Opening remains attached
+  -- to its separate exact-selector summary, never another encounter's board row.
+  ((encounters.filter selected) ++ (encounters.filter fun encounter => !selected encounter)).map fun encounter =>
     let sources := (acutePatientResources rs patient).filter fun r =>
       acuteRefersTo (field r "encounter") encounter
     let imagingOrders := (ofType "ServiceRequest" sources).filter fun r =>
       (arr r "category").any (hasCode · "imaging")
     [("Room", (encRow encounter).location), ("Patient", displayName patient),
-     ("Age/sex", s!"{ageYears (str patient "birthDate") ctx.today} / {sexOf patient}"),
+     ("Age/sex", (if str patient "birthDate" == "" then "Age not recorded"
+       else toString (ageYears (str patient "birthDate") ctx.today)) ++ " / " ++ sexOf patient),
      ("Chief complaint", ccText (first encounter "reasonCode")),
      ("Acuity", ccText (field encounter "priority")), ("Arrival", str (field encounter "period") "start"),
      ("LOS", " ".intercalate ([qtyText (field encounter "length"), qtyUnitText (field encounter "length")].filter (· != ""))),
@@ -1255,6 +1261,7 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
    ("marSchedule", acuteMarRows ctx rs patient),
    ("flowsheetHistory", acuteFlowsheetRows ctx rs patient),
    ("labResults", if acuteCare then labs.map acuteLabRow else []),
+   ("resultTrend", if acuteCare then (newestFirst obsWhen (sources.filter isLab)).map acuteLabRow else []),
    ("vitals", if acuteCare then acuteVitalRows ctx rs patient else []),
    ("marDoseDetails", acuteDoseRows ctx rs patient),
    ("glucoseTrend", labCodes ["2339-0", "2345-7", "41653-7", "14743-9"]),
@@ -1272,7 +1279,7 @@ def acutePayloads (ctx : FactsContext) (rs : List Json) (patient : Json) : List 
   let acuteCare := (acuteEncounter ctx rs patient).any fun encounter =>
     ["EMER", "IMP"].contains (str (field encounter "class") "code")
   ((acuteSupportingRows ctx rs patient).filter (fun (info, rows) =>
-    !rows.isEmpty || (["labResults", "vitals"].contains info && acuteCare))).map fun (info, rows) =>
+    !rows.isEmpty || (["labResults", "resultTrend", "vitals"].contains info && acuteCare))).map fun (info, rows) =>
     { info, patient := patientIdOf patient, artifactKey := "acute:" ++ info
       artifact := "acute-chart:" ++ patientIdOf patient, version := listVersion rs
       rows := rows.zipIdx.map fun (fields, slot) => { id := info ++ ":" ++ toString slot, slot, fields } }
