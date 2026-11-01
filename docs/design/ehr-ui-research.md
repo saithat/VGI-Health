@@ -1365,3 +1365,30 @@ order and ancestry still use the unchanged independent semantic projection;
 known-bad controls must still fail. Display tests cover conservative aliases,
 unknown narrative, source immutability, ambiguity, mismatched BP time/units,
 blank grid cells, wall time/DST, human-only metadata and exact action dispatch.
+
+Final integration note: the presentation lane's unified table/trend/note/document
+path is merged with this pass. Literal note titles and imported provenance remain
+verbatim; empty structured data uses its named note; both render paths share the
+same explicit status colors, with high results red. The compact vitals, MAR
+metadata/hour separation, source tooltips and navigation-only row hit areas are
+retained. The nine matched after captures were regenerated after the merge.
+
+The merged source passes 270 app tests, 35 desktop checks and 30 narrow checks,
+including all nine frozen trees, exact control/landmark ARIA, source-cell and
+visible-display checks, contrast, focus and reflow. The agent suite has 84 passing
+tests. WASM freshness and the recorded run's zero mismatches are recorded in the
+verification receipt. The presentation integration supplies native evidence for
+15/15 certifications, 18/18 core rejections, all 1,284 world-2 tasks, default
+Lean/kernel/Comparator checks, and unchanged measurements for 21 workflow groups
+and 27 task metrics/native paths. These are inherited checks, not additional
+native runs performed by the shell pass. Its controls and interpreter are
+unchanged. The final canonical audit is stored separately in
+`docs/audits/punch-final/`; the exact build and source/screenshot hashes are in
+`docs/audits/shell-punch-verification.json`.
+
+Final canonical control sample on the merged painter: 1,367 working interactions,
+36 explained disabled states, zero dead controls and zero errors. The wider
+deployed-context sample records 2,806 working interactions, 114 explained
+disabled states, zero dead controls and zero errors; its real unsafe agent
+proposal was rejected and the counterexample replayed successfully. Both scopes
+and their exact build identities are preserved separately.

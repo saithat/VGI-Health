@@ -56,7 +56,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P1-schedule.png",
-        "sha256": "f0a4f5bad15de0bd69e75b0d36d9d4b69d4afd4dd014e55abd3c7ea064cdc077",
+        "sha256": "f862a9d83d435bde37dd1908b995eb577ca5997a6c19df1612c0fc924be068be",
         "width": 1440,
         "height": 900
       }
@@ -73,7 +73,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P2-track-board.png",
-        "sha256": "e129e4cad6fb3553dcb0682a9327875199e2a56b228e08aed15609d983848f70",
+        "sha256": "d0ba5135a09187f2fbea9d6c84675bcfe8ac32e3ac62388a93601317affd9bad",
         "width": 1440,
         "height": 900
       }
@@ -90,7 +90,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P2-triage.png",
-        "sha256": "7057615ec902b9768ad5f0527100fad1ce337c4179899ea48c42e4cebb8dce10",
+        "sha256": "af3db15a0fafd95ac0996aad5e678d2324da96dd2a25520b3b9c1e13e0e42a75",
         "width": 1440,
         "height": 900
       }
@@ -107,7 +107,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P3-MAR.png",
-        "sha256": "71acb8b3bf4e3fad809cdb50d1426084946723a8cf1cc9bb51dcea2e80646286",
+        "sha256": "faa2eaa7a4f35fc76e4f9fd919665512f841da5996dba1872a2ec2ea05a1ed5e",
         "width": 1440,
         "height": 900
       }
@@ -124,7 +124,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P3-flowsheet.png",
-        "sha256": "0a9f8ba30826923860795863bee38513f17373bb65904dccdfd9c4c6d1269a20",
+        "sha256": "f64544ae437242dcb0bb6b1e8881c93f6ae2e57554b0cacd2f722cec58d767e7",
         "width": 1440,
         "height": 900
       }
@@ -158,7 +158,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P5-OR-schedule.png",
-        "sha256": "61689d67a9ab92e84cf20c624c1a19f2f0605e06d8bd780bfa1e6a3be546ea23",
+        "sha256": "b94e20d2144115e83d89463184635bfc23a4d62b35a73f641ea51aff240feb41",
         "width": 1440,
         "height": 900
       }
@@ -175,7 +175,7 @@
       },
       "after": {
         "path": "app/shots/realism/punch/after/populated/P5-op-note.png",
-        "sha256": "db30c1384745e8cd52b6741d9eb5eafefa07001d3c6c81140b68bd74d909b220",
+        "sha256": "0c8b662f3eafada99f7dad7f8d034ab93b46b4ffb6fce4253a34b9f3502280b4",
         "width": 1440,
         "height": 900
       }
@@ -188,5 +188,62 @@
     "A10 explicit encounter row bindings",
     "A11 supplied patient percentiles and semantic measure tabs"
   ],
-  "note": "The following presentation-lane integration will be verified separately; these gates bind this exact frozen source build."
+  "note": "The following presentation-lane integration will be verified separately; these gates bind this exact frozen source build.",
+  "finalIntegration": {
+    "generatedAt": "2026-11-01T15:39:41.475643+00:00",
+    "publishedCodeRevision": "eb3a711bc33d9d117695f2863ccfaa7d91e02e29",
+    "build": {
+      "revision": "8c7af56956a4e1c1d1b57f0b1c688fd13f8ae2d0",
+      "mainRevision": "f59ed3acb148ac5de07ad9a01970732b79334af8",
+      "leanHash": "35b6d95d5e0ce93f3d23373d7763360eedf18a1e03909449fcfcd252d7ae0ea2",
+      "builtAt": "2026-11-01T15:28:33.829Z"
+    },
+    "testedGitTree": "29abdad14cb1e7caae2db53b305c92fb63bc495c",
+    "publishedGitTree": "29abdad14cb1e7caae2db53b305c92fb63bc495c",
+    "treeNote": "Merge-message attribution cleanup only; tested and published code trees match.",
+    "gates": {
+      "appTests": 270,
+      "agentTests": 84,
+      "desktop": 35,
+      "narrow": 30,
+      "canonicalAudit": {
+        "works": 1367,
+        "disabled-with-reason": 36,
+        "dead": 0,
+        "error": 0
+      },
+      "wasm": "fresh"
+    },
+    "inheritedNativeEvidence": "docs/audits/presentation-verification.json",
+    "runtimeSha256": {
+      "app/src/ehr/ui/AppHeader.tsx": "58077e1a66f8251f0419571f0e688e6554f98382783a5ca30478710e4e4d519f",
+      "app/src/ehr/ui/FieldChoices.ts": "c131657a8e2540b58910c84e386aee9bd438a6d08af35f76701162514e9c8987",
+      "app/src/ehr/ui/Icons.tsx": "f27efb23d43abd5c362d07f4b05e1026f808565ac482cb6cf5bfb6770d7658ab",
+      "app/src/ehr/ui/README.md": "9b3b52c854a9a8125415cdfb4e45ef0239a375e36b81054fe9fd29f2cbc9fe0d",
+      "app/src/ehr/ui/Screen.tsx": "83af89ea9e9dad6491bdd43ad80fee96c45bccf1a0d2ac9029137731faa696d0",
+      "app/src/ehr/ui/SourceLabels.ts": "a4e7c212fdd1a2b02440227aae4c519d83b89513a1d31c7dc38d3636ff0282f2",
+      "app/src/ehr/ui/chrome.css": "47f79610e71a78919c8f15b1273c0a0cf196e098d3aee406e1a5803c8585c783",
+      "app/src/ehr/ui/clinical-display.ts": "d59110ccbebbf1c1bbfa11423d503d6d78d6735878b38d5465f1672912c7fc8a",
+      "app/src/ehr/ui/clinical-formatters.ts": "7023267a5f695b9951f5328b838f0c255aeaefa021375ed2669ba854307e4588",
+      "app/src/ehr/ui/clinical-metadata.tsx": "f12f2fef718f8c102b0422da08c38eb027ebf27ca22937c84f5c631a7ce99968",
+      "app/src/ehr/ui/clinical.css": "c65abf59be37b01f60b758221cc1b324bcbf90ba361d71e441cc31b4ab78db3e",
+      "app/src/ehr/ui/custom/example/v0/Review.tsx": "c8ddaa3182ffb0b6f35498567daec46127b27dfae60e42a972fb34d7584a6238",
+      "app/src/ehr/ui/display.tsx": "228698b2fdbac42eeddc8a046db973b9ac01dcad1d3b00db7ea7201d3dcc5db1",
+      "app/src/ehr/ui/events.ts": "247a64dad087d8d32b52355bc8275bb3c3e08e36c93d30a804ea590a02fc5885",
+      "app/src/ehr/ui/fidelity.ts": "0fac4dfc192093300e9eac08b6d17db68adba57250d9f8a9b4290a4986ec26fb",
+      "app/src/ehr/ui/nodes.tsx": "b5637bcbd497d3e4b79e92682cebb1ba6e83f3c086fa3380bc31508f60c33e8e",
+      "app/src/ehr/ui/personas.ts": "7df210fd1042cc1f1829590607d67b3e0eb5efbe95858c3924990cd6c8af2b50",
+      "app/src/ehr/ui/presentation-helpers.tsx": "8344b7de11fc4ebad66a32ab784c48b7ef8a71e88aa36a69475ab03e4ade3183",
+      "app/src/ehr/ui/presentation-types.ts": "4c9765e1012f8d05302a104e2c84865d4e3797ee004548584cd9fe96a58a060b",
+      "app/src/ehr/ui/presentations/MarGrid.tsx": "95f857d14217c4ed706dde03b6b6bb91951f3eb14394192ded7f859159e93ded",
+      "app/src/ehr/ui/presentations/README.md": "17b16ce72a53128f60186b6c06cde7fc9af84c032a57143446b8deebb320bfb1",
+      "app/src/ehr/ui/presentations/StructuredInfo.tsx": "824067d273d2667148dc1c617e5f4560d24b1e4f541bc351c7bb1714dbc373b3",
+      "app/src/ehr/ui/presentations/charts.tsx": "6461fab13b44591a5ce73633bfd1c8f7ea480d783448ac2b62cb0c73f8ea8b25",
+      "app/src/ehr/ui/presentations/presentations.css": "d421ef3b387804fdf30465fea84a19c3197c9fb816c402c31dae86d519046a78",
+      "app/src/ehr/ui/presentations/row-layout.ts": "dbf6a66e4a50ee18ab335e2a6eaa6b657e1b7fa9c41f4663ca31a2a674a8a3f0",
+      "app/src/ehr/ui/presentations.tsx": "f39c5d5607eb3e7044c0d51250d6d5167fbb80823d93037b14b682b8777c795e",
+      "app/src/ehr/ui/theme.ts": "24798836ed8d29129c27454f9ff3733d8a7352c99fb9be6ce6b0ecda569b8133",
+      "app/src/ehr/ui/types.ts": "efabc09a307f23ccef5bd3271d8b7020ae0180e0e36359a27805cf9055d0ea8e"
+    }
+  }
 }
