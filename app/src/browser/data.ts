@@ -12,6 +12,10 @@ const programEntrySchema = z.object({
   deployed: z.boolean(),
   mock: z.boolean(),
   version: z.number(),
+  recordedCertificate: z
+    .enum(["certified", "rejected"])
+    .nullable()
+    .default(null),
   expectedProperty: z.string().optional(),
 });
 const patientSchema = z.object({

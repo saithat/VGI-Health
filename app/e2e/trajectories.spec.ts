@@ -75,7 +75,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
   ).toHaveCount(1);
   await expect(
-    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · v5 \/ v3/ }),
+    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · rev 5 \/ v3/ }),
   ).toBeVisible();
   await expect(
     frame.getByRole("banner", { name: "Patient banner" }),

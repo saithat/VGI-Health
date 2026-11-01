@@ -1,6 +1,7 @@
+import { PatientPicker } from "./PatientPicker";
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent } from "react";
-import { Button, TextInput, Switch } from "@mantine/core";
+import { Button, Switch } from "@mantine/core";
 import { navigate } from "../navigation";
 import { AppHeader } from "../ehr/ui/AppHeader";
 import { ClinicalIcon } from "../ehr/ui/Icons";
@@ -14,7 +15,6 @@ import {
   readArtifact,
   verdictsSchema,
   type Catalog,
-  type Patient,
   type ProgramEntry,
 } from "./data";
 import {
@@ -27,175 +27,6 @@ import {
 import "./browser.css";
 
 type Verdicts = ReturnType<typeof verdictsSchema.parse>["programs"];
-const sourceName = (source: string) =>
-  source === "synthetic-hospital" ? "Synthetic Hospital" : "Synthea";
-const flagsFor = (patient: Patient) => [
-  ...Object.entries(patient.flags)
-    .filter(([, enabled]) => enabled)
-    .map(([flag]) => flag),
-  ...(patient.encounterClass === "EMER" ? ["ED"] : []),
-  ...(patient.encounterClass === "IMP" ? ["inpatient"] : []),
-];
-
-export function PatientPicker({
-  catalog,
-  value,
-  onChange,
-}: {
-  catalog: Catalog;
-  value: string;
-  onChange: (patient: Patient) => void;
-}) {
-  const [search, setSearch] = useState("");
-  const [source, setSource] = useState("");
-  const [flags, setFlags] = useState<string[]>([]);
-  const patients = catalog.patients.filter(
-    (patient) =>
-      `${patient.name} ${patient.mrn ?? ""}`
-        .toLowerCase()
-        .includes(search.toLowerCase()) &&
-      (!source || patient.source === source) &&
-      flags.every((flag) => flagsFor(patient).includes(flag)),
-  );
-  const selected = catalog.patients.find((patient) => patient.id === value);
-  return (
-    <section className="patient-picker" aria-label="Choose a patient">
-      <div className="browser-section-heading">
-        <ClinicalIcon name="user" />
-        <h2>Patient</h2>
-        <span>{catalog.patients.length} synthetic charts</span>
-      </div>
-      <TextInput
-        type="search"
-        label="Search by name or MRN"
-        value={search}
-        leftSection={<ClinicalIcon name="search" />}
-        onChange={(event) => setSearch(event.currentTarget.value)}
-      />
-      <div className="patient-filters" aria-label="Patient source">
-        {[
-          ["", "All sources"],
-          ["synthea", "Synthea"],
-          ["synthetic-hospital", "Synthetic Hospital"],
-        ].map(([id, label]) => (
-          <button
-            type="button"
-            className="filter-chip"
-            key={id}
-            aria-pressed={source === id}
-            disabled={source === id}
-            title={source === id ? "Current patient source" : undefined}
-            onClick={() => setSource(id ?? "")}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className="patient-filters" aria-label="Patient filters">
-        {[
-          "pediatric",
-          "allergic",
-          "anticoagulated",
-          "surgical",
-          "ED",
-          "inpatient",
-        ].map((flag) => (
-          <button
-            type="button"
-            className="filter-chip"
-            key={flag}
-            aria-pressed={flags.includes(flag)}
-            onClick={() =>
-              setFlags((current) =>
-                current.includes(flag)
-                  ? current.filter((item) => item !== flag)
-                  : [...current, flag],
-              )
-            }
-          >
-            {flag}
-          </button>
-        ))}
-      </div>
-      <p className="patient-match-count" role="status">
-        {patients.length} matching patients
-      </p>
-      <div
-        className="patient-cards"
-        role="group"
-        aria-label="Matching patients"
-      >
-        {patients.map((patient) => (
-          <button
-            type="button"
-            className="patient-card"
-            key={patient.id}
-            aria-pressed={value === patient.id}
-            disabled={value === patient.id}
-            title={value === patient.id ? "Selected patient" : undefined}
-            onClick={() => onChange(patient)}
-          >
-            <strong>{patient.name}</strong>
-            <span>
-              {patient.age} years · {patient.sex} · MRN{" "}
-              {patient.mrn ?? "not recorded"}
-            </span>
-            <span className="patient-card-tags">
-              {flagsFor(patient).map((flag) => (
-                <span
-                  key={flag}
-                  className={`browser-badge ${flag === "allergic" ? "warning" : "info"}`}
-                >
-                  {flag}
-                </span>
-              ))}
-            </span>
-          </button>
-        ))}
-        {!patients.length && <p>No patients match these filters.</p>}
-      </div>
-      {selected && (
-        <div className="selected-patient" aria-label="Selected patient summary">
-          <span className="browser-eyebrow">SELECTED CHART</span>
-          <h3>{selected.name}</h3>
-          <p>
-            {selected.age} years · {selected.sex} ·{" "}
-            {sourceName(selected.source)}
-          </p>
-          <dl>
-            <div>
-              <dt>Allergies</dt>
-              <dd className={selected.allergies.length ? "allergy-text" : ""}>
-                {selected.allergies.join(", ") || "No allergy records on file"}
-              </dd>
-            </div>
-            <div>
-              <dt>Problems on file</dt>
-              <dd>{selected.problems.join(" · ") || "No problems on file"}</dd>
-            </div>
-            <div>
-              <dt>Latest recorded weight</dt>
-              <dd>
-                {selected.weight ? (
-                  <>
-                    {selected.weight.value}
-                    <br />
-                    <span className="browser-muted">
-                      {formatDisplayValue(selected.weight.date) ||
-                        "Date not recorded"}
-                    </span>
-                  </>
-                ) : (
-                  "Not recorded"
-                )}
-              </dd>
-            </div>
-          </dl>
-        </div>
-      )}
-    </section>
-  );
-}
 function propertyOf(output: unknown): string {
   if (typeof output !== "object" || output === null || !("violation" in output))
     return "";
@@ -228,11 +59,11 @@ function CertificateBadge({
   const status =
     program.run && (record?.certificate || certificate?.verdict === "ok")
       ? "certified"
-      : (verdict?.status ?? "not computed");
+      : (program.recordedCertificate ?? verdict?.status ?? "not computed");
   const property = propertyOf(verdict?.output);
   return (
     <span
-      className={`browser-badge ${status === "certified" ? "success" : status === "rejected" ? "danger" : "neutral"}`}
+      className={`browser-badge ${program.mock ? "warning" : status === "certified" ? "success" : status === "rejected" ? "danger" : "neutral"}`}
       title={
         property ||
         (status === "reference"
@@ -240,15 +71,17 @@ function CertificateBadge({
           : undefined)
       }
     >
-      {status === "certified"
-        ? "✓ Certified"
-        : status === "reference"
-          ? "Reference"
-          : status === "rejected"
-            ? `Rejected${property ? ` · ${property}` : ""}`
-            : status === "full-profile only"
-              ? "Full-profile only"
-              : "Not computed"}
+      {program.mock
+        ? "MOCK certificate"
+        : status === "certified"
+          ? "✓ Certified"
+          : status === "reference"
+            ? "Reference"
+            : status === "rejected"
+              ? `Rejected${property ? ` · ${property}` : ""}`
+              : status === "full-profile only"
+                ? "Full-profile only"
+                : "Not computed"}
     </span>
   );
 }
@@ -435,7 +268,7 @@ function Timeline({
                               ? 0
                               : -1
                           }
-                          aria-label={`${persona} ${personaNames[persona]}, day ${day}, revision ${node.program.version}, ${verdicts[node.program.path]?.status === "certified" || run?.certs.get(`certs/${persona}/v${node.program.version}.json`)?.verdict === "ok" || node.record?.certificate ? "certified" : "certificate not computed"}; open EHR`}
+                          aria-label={`${persona} ${personaNames[persona]}, day ${day}, revision ${node.baseline ? 0 : node.program.version}, ${node.program.mock ? "mock authored, " : ""}${verdicts[node.program.path]?.status === "certified" || run?.certs.get(`certs/${persona}/v${node.program.version}.json`)?.verdict === "ok" || node.record?.certificate ? "certified" : "certificate not computed"}; open EHR`}
                           title={node.summary}
                           onFocus={() => setSelectedKey(nodeKey(node))}
                           onMouseEnter={() => setSelectedKey(nodeKey(node))}
@@ -592,7 +425,7 @@ export function Browse() {
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [run, setRun] = useState<RunData>();
   const [verdicts, setVerdicts] = useState<Verdicts>({});
-  const [showMock, setShowMock] = useState(false);
+  const [showMock, setShowMock] = useState(query.get("mock") === "1");
   const [error, setError] = useState("");
   const [runError, setRunError] = useState("");
   useEffect(() => {
@@ -609,7 +442,7 @@ export function Browse() {
             : defaultPatient(data, query.get("persona") ?? "P3").id,
         );
         setRunId((current) =>
-          data.runs.some((run) => run.id === current && !run.mock)
+          data.runs.some((run) => run.id === current && (!run.mock || showMock))
             ? current
             : (data.runs.find((run) => !run.mock)?.id ?? ""),
         );
@@ -633,6 +466,19 @@ export function Browse() {
       active = false;
     };
   }, [runId]);
+  useEffect(() => {
+    if (!catalog || !patient) return;
+    const params = new URLSearchParams({
+      patient,
+      ...(runId ? { run: runId } : {}),
+      ...(showMock ? { mock: "1" } : {}),
+    });
+    window.history.replaceState(
+      null,
+      "",
+      `/browse?${params}${window.location.hash}`,
+    );
+  }, [catalog, patient, runId, showMock]);
   const selected = catalog?.patients.find((item) => item.id === patient);
   const visibleRuns =
     catalog?.runs.filter((run) => showMock || !run.mock) ?? [];

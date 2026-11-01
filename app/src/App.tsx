@@ -6,7 +6,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createSession } from "./core/session";
 import type { Interp } from "./core/interp";
-import { PatientPicker } from "./browser/Browse";
+import { PatientPicker } from "./browser/PatientPicker";
 import {
   currentProgram,
   defaultPatient,
@@ -74,7 +74,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
           <UiScreenView
             screen={ui}
             onEvent={dispatch}
-            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} baseline`}`}
+            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`}`}
           />
         ) : (
           <Alert color="red" role="alert">

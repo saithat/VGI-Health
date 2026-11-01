@@ -863,3 +863,18 @@
 .home-med-status {
   color: var(--clinical-muted);
 }
+.clinical-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.clinical-section-title .clinical-action {
+  flex: 0 0 auto;
+}
+.clinical-section-title .mantine-Button-root {
+  min-height: 24px;
+  height: 24px;
+  min-width: 28px;
+  padding: 2px 5px;
+}

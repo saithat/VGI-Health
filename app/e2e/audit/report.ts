@@ -128,11 +128,11 @@ export function writeReport(rows: Control[], scope: string) {
   )}\n`;
   writeFileSync(
     resolve(directory, "buttons.md"),
-    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker.\n\n${comparison}\nApp coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.\n\nEach enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
+    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker.\n\n${comparison}\nApp coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.\n\nEach sampled enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
   );
   writeFileSync(
     resolve(directory, "ehr-dead-controls.md"),
-    `# Lean-rendered dead controls\n\nContent lane: remove inert components or give them interpreter behavior. Render lane: emit click component metadata for nav/stepper destinations. Static nav entries and stepper labels are listed explicitly even when they are not DOM buttons.\n\n${table(all.filter((r) => r.owner === "lean" && (r.status === "dead" || r.status === "error")))}`,
+    `# Lean-rendered dead controls\n\nContent lane: remove inert components or give them interpreter behavior. Render lane: emit click component metadata for nav/stepper destinations. Navigator entries without interpreter buttons are listed explicitly. A semantic progress stepper is a noninteractive list, not a button.\n\n${table(all.filter((r) => r.owner === "lean" && (r.status === "dead" || r.status === "error")))}`,
   );
 }
 

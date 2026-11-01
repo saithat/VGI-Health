@@ -87,6 +87,7 @@ export async function buildCatalog() {
       "P1";
     let deployed = false;
     let mock = false;
+    let recordedCertificate = null;
     if (recorded) {
       try {
         deployed =
@@ -104,6 +105,17 @@ export async function buildCatalog() {
           "fake";
       } catch {
         /* Unfinished recording. */
+      }
+      if (!mock) {
+        try {
+          const certificate = await readJson(
+            `runs/${recorded[1]}/certs/${persona}/v${program.version}.json`,
+          );
+          recordedCertificate =
+            certificate.verdict === "ok" ? "certified" : "rejected";
+        } catch {
+          /* A recording without a certificate remains explicitly uncomputed. */
+        }
       }
     }
     programs.push({
@@ -130,6 +142,7 @@ export async function buildCatalog() {
       run: recorded?.[1] ?? null,
       deployed,
       mock,
+      recordedCertificate,
       version: program.version,
       ...(bad
         ? {
@@ -191,9 +204,10 @@ export async function buildCatalog() {
       return {
         ...patient,
         encounterClass: encounters[0]?.class?.code ?? "",
-        mrn: person?.identifier?.find((identifier) =>
-          identifier.type?.coding?.some((code) => code.code === "MR"),
-        )?.value,
+        mrn:
+          person?.identifier?.find((identifier) =>
+            identifier.type?.coding?.some((code) => code.code === "MR"),
+          )?.value ?? patient.mrn,
         allergies: resources
           .filter((resource) => resource.resourceType === "AllergyIntolerance")
           .map((resource) => codingText(resource.code)),

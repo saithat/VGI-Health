@@ -34,7 +34,7 @@ A clinical-only rerun can select personas with `AUDIT_PERSONAS=P2,P3` and
 `--grep 'Lean EHR'` on the Playwright command. It replaces observations only for
 those personas and requires the existing report to match the exact build revision,
 build timestamp, main revision, and Lean hash. The normal `audit:buttons` command
-always starts a fresh complete census. Clinical traversal deduplicates the
+always starts a fresh bounded sample. Clinical traversal deduplicates the
 rendered control configuration, not arbitrary histories or off-screen expansion
 order. Supplemental form preparation enters ordinary synthetic data through
 visible controls; it never invents identity, barcode, or second-clinician evidence.
@@ -44,3 +44,18 @@ control, enabled state, tab body, field-confirm action, or modal. Patient table
 text and removed controls alone do not trigger another traversal. Already queued
 controls are tested from their saved state, so many data variants cannot multiply
 the same click case. Popup links also collect console/page errors and HTTP errors.
+
+The 1 Nov shared-shell pass bounds the browser audit to 48 observed control
+configurations per persona. Shell sampling covers two patient cards and two
+timeline nodes per role, every other visible control kind up to 80 controls per
+surface, two decision revisions per role, two path events per replay, and three
+task selections. Those data rows share event handlers. Each sampled control still
+uses the original effect/disabled-reason checks. Full program rendering, all
+world-2 tasks, certification, and exact ARIA checks remain separate required
+gates. The report is an observed sample and must not be called an exhaustive
+state census. Reports are written per persona instead of on every checkpoint.
+Navigation buttons with the same declared `goto` destination and enabled state
+share one sampled clinical dispatch per persona. The target comes from the
+program's typed action payload, not a label guess; all other controls retain
+screen/component/tab keys. This avoids repeatedly testing the same destination
+from every chart section. Only actually clicked controls produce observations.

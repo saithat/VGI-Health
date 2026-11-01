@@ -5,9 +5,11 @@ import { ClinicalIcon } from "./Icons";
 export function AppHeader({
   active,
   children,
+  title,
 }: {
   active: "browse" | "dashboard" | "live";
   children?: React.ReactNode;
+  title?: string;
 }) {
   return (
     <>
@@ -19,16 +21,22 @@ export function AppHeader({
           </strong>
         </a>
         <span className="app-header-divider" />
-        <span className="app-workspace-name">
-          {active === "browse"
-            ? "UI browser"
-            : active === "dashboard"
-              ? "Recorded dashboard"
-              : "Clinical workspace"}
-        </span>
-        <span className="app-header-context">
+        {title ? (
+          <h1 className="app-workspace-name">{title}</h1>
+        ) : (
+          <span className="app-workspace-name">
+            {active === "browse"
+              ? "UI browser"
+              : active === "dashboard"
+                ? "Recorded dashboard"
+                : "Clinical workspace"}
+          </span>
+        )}
+        <div
+          className={`app-header-context${children ? " app-header-controls" : ""}`}
+        >
           {children ?? "Synthetic training environment"}
-        </span>
+        </div>
       </header>
       <nav className="app-activities" aria-label="Application activities">
         {(

@@ -1,5 +1,6 @@
 .app-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
   min-height: 48px;
@@ -53,4 +54,37 @@
   background: white;
   color: var(--clinical-primary);
   border-bottom-color: var(--clinical-primary);
+}
+.app-header h1.app-workspace-name {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+}
+.app-header-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+}
+.app-header-context a {
+  color: white;
+}
+@media (max-width: 760px) {
+  .app-header {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .app-header-context {
+    margin-left: 0;
+  }
+  .app-activities {
+    padding: 0 8px;
+  }
+  .app-activities a,
+  .app-activities > span {
+    padding: 8px 12px;
+  }
 }

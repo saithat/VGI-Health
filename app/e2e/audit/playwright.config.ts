@@ -6,7 +6,7 @@ export default defineConfig({
   testMatch: ["buttons.spec.ts", "performance.spec.ts", "regression.spec.ts"],
   workers: 1,
   fullyParallel: false,
-  timeout: 7200000,
+  timeout: 1200000,
   reporter: "list",
   outputDir: "../../test-results/buttons",
   use: {

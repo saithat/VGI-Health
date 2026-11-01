@@ -66,6 +66,11 @@ export function UiChildren({
   );
 }
 export function SectionNode({ node, onEvent }: Props<"section">) {
+  const first = node.children[0];
+  const toggle =
+    first && "button" in first && first.button.role === "toggle"
+      ? first.button
+      : null;
   return (
     <Paper
       component="section"
@@ -77,9 +82,13 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
     >
       <div className="clinical-section-title">
         <h2>{node.title}</h2>
+        {toggle && <ButtonNode node={toggle} onEvent={onEvent} />}
       </div>
       <Stack gap="sm" className="clinical-section-body">
-        <UiChildren nodes={node.children} onEvent={onEvent} />
+        <UiChildren
+          nodes={toggle ? node.children.slice(1) : node.children}
+          onEvent={onEvent}
+        />
       </Stack>
     </Paper>
   );
@@ -620,7 +629,13 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
             aria-describedby={
               !node.enabled && node.blockedReason ? reasonId : undefined
             }
-            title={node.enabled ? undefined : (node.blockedReason ?? undefined)}
+            title={
+              !node.enabled
+                ? (node.blockedReason ?? undefined)
+                : node.role === "toggle"
+                  ? node.label
+                  : undefined
+            }
             data-comp-id={node.comp}
             data-event={
               node.role === "ack"
@@ -646,7 +661,11 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
               ) : undefined
             }
           >
-            {node.label}
+            {node.role === "toggle" ? (
+              <ClinicalIcon name="chevron" />
+            ) : (
+              node.label
+            )}
           </Button>
         </span>
       </Tooltip>

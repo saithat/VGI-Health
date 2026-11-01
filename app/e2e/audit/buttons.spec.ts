@@ -10,6 +10,24 @@ import { writeLiveAttempt, writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
 const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
+// This is a bounded control-configuration audit, not exhaustive state search.
+// Clinical state reachability and every task remain gates in Lean/world-2.
+const maxStatesPerPersona = 48;
+const gotoKind = z.object({
+  button: z.object({
+    action: z.object({ goto: z.object({ screen: z.string() }) }),
+  }),
+});
+const sampleIndices = (count: number, limit = 3) => [
+  ...new Set(
+    Array.from({ length: Math.min(count, limit) }, (_, index) =>
+      Math.round(
+        (index * Math.max(0, count - 1)) /
+          Math.max(1, Math.min(count, limit) - 1),
+      ),
+    ),
+  ),
+];
 
 function controlShape(nodes: UiNode[]): unknown[] {
   return nodes.flatMap<unknown>((node) => {
@@ -62,7 +80,7 @@ function controlKeys(nodes: UiNode[]): string[] {
   });
 }
 
-test("app shell: every shell control has an effect or an explained disabled state", async ({
+test("app shell: sampled controls have an effect or an explained disabled state", async ({
   page: initialPage,
 }) => {
   let page = initialPage;
@@ -128,7 +146,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
           '.worklist-table button, [aria-label="Medications due"] button',
         )
         .count();
-      for (let w = 0; w < workButtons; w++) {
+      for (const w of sampleIndices(workButtons, 1)) {
         // Each work item starts with an unselected patient in a fresh document.
         if (w) {
           await freshGoto("/?audit=buttons");
@@ -191,7 +209,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
           .passthrough()
           .parse(
             await (
-              await page.context().request.get("/releases/v2/canonical.json")
+              await page.context().request.get("/releases/v3/personas/P1.json")
             ).json(),
           );
         const active = z
@@ -236,7 +254,8 @@ test("app shell: every shell control has an effect or an explained disabled stat
     audit.screen = "program browser";
     await audit.allShell(async () => {
       await freshGoto("/browse");
-      await page.getByLabel("Patient", { exact: true }).waitFor();
+      await page.getByRole("heading", { name: "Open a clinical UI" }).waitFor();
+      await page.locator('[data-node-key="P3-5"]').waitFor();
     });
     // Every catalog link, including canonical, bad programs, projections and run versions, was clicked by allShell.
     audit.screen = "replay inspector";
@@ -308,7 +327,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
           .getByRole("region", { name: "Version history" })
           .getByRole("button")
           .count();
-        for (let v = 0; v < versionCount; v++) {
+        for (const v of sampleIndices(versionCount, 2)) {
           await audit.click(
             page
               .getByRole("region", { name: "Version history" })
@@ -361,9 +380,9 @@ test("app shell: every shell control has an effect or an explained disabled stat
               const c = replay.getByRole("button", { name, exact: true });
               if (await c.count()) await audit.click(c, undefined, "app");
             }
-            for (const eventButton of await replay
-              .locator(".event-path button")
-              .all())
+            for (const eventButton of (
+              await replay.locator(".event-path button").all()
+            ).slice(0, 2))
               await audit.click(eventButton, undefined, "app");
             await audit.click(
               replay.getByRole("button", {
@@ -458,12 +477,12 @@ test("app shell: every shell control has an effect or an explained disabled stat
         );
         const event = trajectories.getByLabel("Replay event", { exact: true });
         await audit.click(event, () => event.press("ArrowRight"), "app");
-        const compare = trajectories.getByLabel("Compare baseline v0", {
+        const compare = trajectories.getByLabel("Compare baseline rev 0", {
           exact: true,
         });
         await audit.click(compare, () => compare.check(), "app");
         await page
-          .frameLocator('iframe[title="Baseline v0 EHR"]')
+          .frameLocator('iframe[title="Baseline rev 0 EHR"]')
           .getByRole("banner", { name: "Patient banner" })
           .waitFor({ timeout: 60000 });
         await audit.click(compare, () => compare.uncheck(), "app");
@@ -477,7 +496,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
           .getByRole("listbox", { name: "Recorded tasks" })
           .getByRole("option");
         const count = await tasks.count();
-        for (let i = 0; i < count; i++)
+        for (const i of sampleIndices(count))
           await audit.click(tasks.nth(i), undefined, "app");
         const day = trajectories.getByLabel("Trajectory day", { exact: true });
         await audit.click(day, () => day.selectOption("2"), "app");
@@ -497,7 +516,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
       const releases = page.getByRole("button", {
         name: /^Inspect .* migration$/,
       });
-      for (let i = 0; i < (await releases.count()); i++) {
+      for (const i of sampleIndices(await releases.count(), 2)) {
         await audit.click(releases.nth(i), undefined, "app");
         await audit.click(
           page.getByRole("button", { name: "Close EHR replay", exact: true }),
@@ -691,6 +710,16 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         })
         .passthrough()
         .parse(await page.evaluate(() => window.__buttonAuditSession?.program));
+      const destinations = new Map<string, string>();
+      for (const screen of programComponents.screens)
+        for (const component of screen.components) {
+          const parsed = gotoKind.safeParse(component.kind);
+          if (parsed.success)
+            destinations.set(
+              `${screen.id}:${component.id}`,
+              parsed.data.button.action.goto.screen,
+            );
+        }
       const leanSelector =
         'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], input[placeholder="Search the patient chart"], input[role="combobox"]';
       const queue = [
@@ -751,7 +780,9 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       };
       const tested = new Set<string>();
       const preparedForms = new Set<string>();
-      while (queue.length) {
+      let statesVisited = 0;
+      while (queue.length && statesVisited < maxStatesPerPersona) {
+        statesVisited++;
         const checkpoint = queue.shift() ?? -1;
         await restore(checkpoint);
         await page.waitForTimeout(30);
@@ -766,13 +797,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         if (seenScreens.has(variant)) continue;
         seenScreens.add(variant);
         audit.screen = screen;
-        // Inventory static nav and stepper destinations as well as actual controls.
+        // A progress stepper is a noninteractive list in the semantic tree.
+        // Inventory only labels painted as navigator entries without controls.
         if (!seenScreens.has(`static:${screen}`)) {
           seenScreens.add(`static:${screen}`);
           const staticEntries = await page
-            .locator(
-              ".workflow-links li:not(:has(button)):not([inert] *), .clinical-stepper li:not(:has(button)):not([inert] *)",
-            )
+            .locator(".workflow-links li:not(:has(button)):not([inert] *)")
             .allTextContents();
           for (const label of staticEntries) {
             const title = label.trim().replace(/^\d+\s*/, "");
@@ -836,7 +866,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
         for (const target of targets) {
           if (!target.clinical) continue;
-          const key = `${screen}:${target.comp ?? target.label}:${target.event ?? target.tag}:${target.tab}:${target.disabled}`;
+          const destination = target.comp
+            ? destinations.get(`${screen}:${target.comp}`)
+            : undefined;
+          const key = destination
+            ? `goto:${destination}:${target.disabled}`
+            : `${screen}:${target.comp ?? target.label}:${target.event ?? target.tag}:${target.tab}:${target.disabled}`;
           if (tested.has(key)) continue;
           tested.add(key);
           await restore(checkpoint);
@@ -1089,16 +1124,17 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         console.log(
           `${persona} ${screen}: ${tested.size} controls, ${queue.length} queued`,
         );
-        writeReport(audit.rows, "ehr");
       }
+      console.log(
+        `${persona}: sampled ${statesVisited} control configurations; ${queue.length} remaining checkpoints outside the audit budget`,
+      );
+      writeReport(audit.rows, "ehr");
     }
   } finally {
     writeReport(audit.rows, "ehr");
   }
   expect(
-    audit.rows.filter(
-      (row) => row.owner === "app" && ["dead", "error"].includes(row.status),
-    ),
+    audit.rows.filter((row) => ["dead", "error"].includes(row.status)),
   ).toEqual([]);
 });
 

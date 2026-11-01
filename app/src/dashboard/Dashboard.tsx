@@ -1,4 +1,5 @@
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
+import { AppHeader } from "../ehr/ui/AppHeader";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type {
@@ -1152,11 +1153,7 @@ export function Dashboard({
   const record = selection?.record;
   return (
     <div className="dashboard">
-      <header className="dash-header">
-        <a href="/" className="dash-brand">
-          VGI Health
-        </a>
-        <h1>UI evolution</h1>
+      <AppHeader active="dashboard" title="UI evolution">
         <label>
           Run{" "}
           <select
@@ -1174,7 +1171,7 @@ export function Dashboard({
         <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>
           Open EHR
         </a>
-      </header>
+      </AppHeader>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button

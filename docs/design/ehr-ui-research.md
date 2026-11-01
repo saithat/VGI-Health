@@ -180,7 +180,7 @@ Persona application: P1/P4 ambulatory views emphasize the encounter banner and v
 
 The UI browser is an experiment navigation surface, separate from clinical EHR controls. It leads with a vendor reference trunk and five clinician forks. Only recorded deployments create personalized revision nodes. Other branches show certified role baselines at release days with “no run yet”. Day labels refer to the end-of-day deployment after that night's decision; workload deltas are recorded workflow means versus rev 0, and missing measurements remain explicit. The release grid shows v1/v2/v3 in order and treats the mixed-role vendor master as a reference. Paths appear in tooltips and replay URLs, not in clinical labels.
 
-Before captures: `app/shots/realism/shell/before/` at 1440×900 for browser, dashboard, orders, triage and MAR, plus a narrow browser capture. Before review: the old browser is an unstructured link catalog; the EHR has a gray application bar and an empty left column on programs with no navigator; the dashboard lacks a consistent colored activity frame. After captures and per-screen review follow below once the final checks run.
+Before captures (re-captured from detached pre-redesign commit `75282d1`, with loaded dashboard data): `app/shots/realism/shell/before/` at 1440×900 for browser, dashboard, orders, triage and MAR, plus a narrow browser capture. Before review: the old browser is an unstructured link catalog; the EHR has a gray application bar and an empty left column on programs with no navigator; the dashboard lacks a consistent colored activity frame. After captures and per-screen review follow below once the final checks run.
 
 Self-review after the first visual milestone:
 
@@ -197,3 +197,20 @@ Self-review after the first visual milestone:
 Source-projection findings for integration: the current Lean banner exports demographics, encounter, allergies and code status, but no weight or isolation field. The painter styles those fields when supplied and does not invent them. In the Synthetic Hospital example, the banner's MRN is a UUID despite the fixture index having a human MRN; this needs correction in the FHIR projection/fixture source. The shared-shell lane has not replaced that value in React. The note's imported source-date/shift explanation is moved from the visible title into its existing accessible row/tooltip; note narrative dates remain verbatim from the source.
 
 Validation at the first milestone: app build/lint; 171 app unit tests and 43 agent tests; public-reference palette review; automated visible-text contrast on browser and dashboard; semantic ARIA/visibility checks; role-baseline live login; archived run1-P3 verification (424 tasks, 14,658 events plus three baseline replays, zero mismatches); certification 15/15 and core rejection 17/17. The remaining full button traversal and native checks are recorded with the later verification milestone.
+
+Further Epic-specific cross-check (1 Nov): [Mass General Brigham's Storyboard workspace guide](https://clinicalhelp.mgb.org/phsviewer/PHSviewer_addTab.pdf), pp.1–2, explicitly ties default activity tabs to the user's role and illustrates a compact tab strip separate from patient context. [Johns Hopkins' Storyboard transition note](https://medicine-matters.blogs.hopkinsmedicine.org/2020/06/epic-tip-of-the-week-june-26-2020/) describes role/encounter-specific context at the left with activities across the top. [UI Health Care's Epic basics resource catalog](https://epicsupport.sites.uiowa.edu/epic-resources/hyperspace-epic-basics) likewise treats workspace navigation, chart search, chart review and menu personalization as common platform tools. These support one shared shell with role presets; they do not support separate branded applications per persona or generic buttons labeled with study workflow IDs. VGI retains the explicitly requested top patient banner plus a left summary rail, rather than claiming a pixel-exact reproduction of the 2020 Storyboard layout.
+
+
+Interpreter-level baseline measurement, before → after the painter refinement (`pnpm complexity --release-root releases`, including native `ehr min-clicks` for each fixed task). All 21 workflow/release combinations are identical; evidence is `docs/audits/shell-complexity.json`. Minima are exact within the reported `navigationDirected` space, not a global UI optimum. KLM replays the minimum-click path at a fixed clock and is not itself optimized. These estimates do not measure human visual search.
+
+| Workflow | v1 / v2 clicks | v1 / v2 KLM (s) | v3 clicks | v3 KLM (s) | Change |
+| --- | ---: | ---: | ---: | ---: | --- |
+| W1 | 39 | 143.2 | 39 | 143.2 | 0 clicks / 0 s |
+| W2 | 7 | 21.45 | 7 | 21.45 | 0 clicks / 0 s |
+| W3 | 57 | 198.45 | 57 | 198.45 | 0 clicks / 0 s |
+| W4 | 25 | 129.95 | 25 | 129.95 | 0 clicks / 0 s |
+| W5 | 48 | 175.45 | 49 | 179.8 | 0 clicks / 0 s |
+| W6 | 52 | 178.3 | 53 | 182.65 | 0 clicks / 0 s |
+| W7 | 12 | 27.5 | 12 | 27.5 | 0 clicks / 0 s |
+
+The post-merge replay smoke now checks the active core profile directly: signing stays disabled until human identity re-entry, the valid baseline signs through the interpreter, and the bad allergy-tab program remains blocked specifically by the missing allergy review. The removed full-profile legal-field selectors were stale test inputs, not removed UI requirements. No checker/spec/property was edited.

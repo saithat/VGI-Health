@@ -250,11 +250,30 @@ export class Audit {
         )
         .filter({ visible: true });
     await setup();
-    const count = await shell().count();
-    console.log(`Shell inventory: ${count} controls at ${this.page.url()}`);
-    for (let i = 0; i < count; i++) {
+    // Rows differing only in patient data share a renderer and event handler.
+    // Sample those and timeline destinations; retain other control kinds.
+    const indices = await shell().evaluateAll((elements) => {
+      const counts = new Map<string, number>();
+      return elements
+        .flatMap((element, index) => {
+          if (element.matches('.patient-card[aria-pressed="true"]')) return [];
+          const group = element.matches(".patient-card")
+            ? "patient-card"
+            : element.matches(".timeline-node")
+              ? `timeline-${element.getAttribute("data-node-key")?.split("-")[0]}`
+              : "";
+          const count = counts.get(group) ?? 0;
+          counts.set(group, count + 1);
+          return !group || count < 2 ? [index] : [];
+        })
+        .slice(0, 80);
+    });
+    console.log(
+      `Shell inventory: ${await shell().count()} controls; ${indices.length} representative controls at ${this.page.url()}`,
+    );
+    for (const i of indices) {
       if (i) await setup();
-      if (i % 20 === 0) console.log(`Shell ${i}/${count}`);
+      if (i % 20 === 0) console.log(`Shell ${i}/${indices.length}`);
       const control = shell().nth(i);
       if (
         !(await control.isVisible()) ||

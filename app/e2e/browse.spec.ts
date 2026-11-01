@@ -49,6 +49,10 @@ test("browser leads with the real run, filters charts and opens P3 day 5", async
   );
   await expect(page).toHaveURL(/persona=P3/);
   await expect(page.locator(".clinical-app")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByLabel("Selected patient summary")).toContainText(
+    "Aaron",
+  );
 });
 
 test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async ({
