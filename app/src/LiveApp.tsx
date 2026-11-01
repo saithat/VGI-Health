@@ -1,5 +1,5 @@
+import { clinicalDate } from "./data/clinicalDate";
 import { CURRENT_RELEASE } from "./core/currentRelease";
-import { worldWorkDate } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -651,6 +651,7 @@ function PatientWorkspaceHome({
   onLogout: () => void;
 }) {
   const [loaded, setLoaded] = useState<{
+    date: string;
     session: Session;
     presentations: PresentationBundle | null;
   }>();
@@ -681,7 +682,7 @@ function PatientWorkspaceHome({
       }
       const date =
         new URLSearchParams(window.location.search).get("date") ??
-        (await worldWorkDate());
+        clinicalDate();
       const [graph, patients] = await Promise.all([
         loadListContext(user, date),
         searchPatients(""),
@@ -705,7 +706,11 @@ function PatientWorkspaceHome({
         date,
       );
       if (active)
-        setLoaded({ session, presentations: content.presentations ?? null });
+        setLoaded({
+          date,
+          session,
+          presentations: content.presentations ?? null,
+        });
     }
     void load().catch((error: unknown) => {
       if (active) setError(errorText(error));
@@ -727,7 +732,7 @@ function PatientWorkspaceHome({
     <Chart
       session={loaded.session}
       presentations={loaded.presentations}
-      viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
+      viewer={`${clinicianRoleNames[user.persona] ?? "Clinician"} · Clinical date: ${loaded?.date ?? clinicalDate()}`}
       onClose={() => {
         void loaded.session
           .dispatch({ click: { comp: "workspace.return" } })
@@ -758,9 +763,7 @@ function Home({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
-  const [workDate, setWorkDate] = useState(() =>
-    new Date().toLocaleDateString("en-CA"),
-  );
+  const [workDate, setWorkDate] = useState(() => clinicalDate());
   useEffect(() => {
     let active = true;
     void loadWorklist(user, workDate)
@@ -1168,6 +1171,7 @@ function Home({
                   selection.bundle,
                   user,
                   { ...context, worldContext: selection.worldContext },
+                  workDate,
                 );
               })
               .then(setSession)

@@ -2,7 +2,7 @@
 // Materialize a world day as real FHIR worklists. Existing resources are never overwritten.
 import { MedplumClient } from '@medplum/core';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEnv, PERSONA_SYSTEM, REPO_ROOT } from './lib.mjs';
@@ -511,6 +511,7 @@ export async function main(args = process.argv.slice(2)) {
   if (!opts.dryRun) {
     const resources = await verifyReferences(client, data, patients, practitioners);
     await printWorklists(client, data, practitioners);
+    if (!opts.verifyOnly) writeFileSync(resolve(REPO_ROOT, "infra/seeded-world-day.json"), JSON.stringify({ date: data.date, day: data.day }) + "\n");
     const prns = resources.filter((r) => r.resourceType === 'MedicationRequest' && r.category?.some((c) => c.coding?.some((v) => v.code === 'inpatient')) && r.dosageInstruction?.some((d) => d.asNeededBoolean));
     console.log(`P3: PRN orders=${prns.length}`);
   }
