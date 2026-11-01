@@ -33,8 +33,9 @@ export const roles = { signOrders: ['physician', 'np', 'surgeon'], signNote: ['p
 // Role projections intentionally expose a subset of authorized workflows. These
 // are fixed product contracts, not inferred from controls in the tested layout.
 export const personaCommits = { P1: ['signOrders', 'signNote', 'ackResult', 'approveRefill', 'denyRefill'],
-  P2: ['signOrders', 'disposition'], P3: ['administerMed', 'chartAssessment'],
-  P4: ['signOrders', 'signNote', 'recordImmunization'], P5: ['signOrders', 'signNote', 'signOpNote', 'discharge'] };
+  P2: ['signOrders', 'signNote', 'disposition'], P3: ['administerMed', 'chartAssessment'],
+  P4: ['signOrders', 'signNote', 'recordImmunization', 'ackResult', 'approveRefill', 'denyRefill'],
+  P5: ['signOrders', 'signNote', 'ackResult', 'signOpNote', 'discharge'] };
 export const reviews = {
   signOrders: ['allergyList', 'currentMeds', 'doseCheck', 'curesReport', 'orderSummary', 'anticoagulantList'],
   ackResult: ['resultDetail', 'resultTrend'], approveRefill: ['relevantLabs', 'lastVisit', 'adherence'],

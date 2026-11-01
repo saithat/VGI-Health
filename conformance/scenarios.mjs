@@ -108,7 +108,8 @@ for (const [id, panels] of Object.entries(reviews)) for (const panel of panels) 
   add(`review.${id}.${panel}`, `Core ${id} review: ${panel}`, `Attempt signing without a prior review receipt; ${panel} must already be shown`,
     t => supports(t, id) && (panel !== 'anticoagulantList' || t.program.role !== 'np'), f => {
       let ctx = context(id);
-      if (id === 'signOrders') ctx = context(id, { drug: 'oxycodone', freq: 'q6h', facts: { ...facts(), encounterKind: 'preop' } });
+      if (id === 'signOrders') ctx = context(id, { drug: 'oxycodone', freq: 'q6h',
+        facts: f.target.program.role === 'np' ? facts() : facts({ encounterKind: 'preop' }) });
       if (panel === 'glucoseTrend') ctx = context(id, { facts: { ...facts(), medToGive: 'insulin lispro' } });
       if (panel === 'coagLabs') ctx = context(id, { facts: { ...facts(), medToGive: 'heparin' } });
       // Analgesic assessment is conditional; omit it for non-analgesic drugs.

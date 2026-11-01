@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { scenarioCatalog } from './scenarios.mjs';
 import { entries } from './clinical.mjs';
-import { context, facts } from './clinical.mjs';
+import { context, facts, personaCommits } from './clinical.mjs';
 const read = name => JSON.parse(readFileSync(new URL(`../${name}`, import.meta.url), 'utf8'));
 
 test('hand-written scenarios account for every exported core entry, review and alert', () => {
@@ -30,4 +30,12 @@ test('scenario definitions contain semantic intents rather than canonical compon
 test('projected absence of today’s weight is never replaced by a fixture default', () => {
   const projected = facts(); delete projected.weightToday;
   assert.equal(context('signOrders', { facts: projected }).facts.weightToday, undefined);
+});
+
+test('fixed persona workflow contracts cover every commit exposed by all 15 canonicals', () => {
+  for (const release of ['v1', 'v2', 'v3']) for (const persona of Object.keys(personaCommits)) {
+    const p = read(`releases/${release}/personas/${persona}.json`);
+    const exposed = new Set(p.screens.flatMap(s => s.components.flatMap(c => c.kind?.button?.action?.commit ? [c.kind.button.action.commit.commit] : [])));
+    assert.deepEqual([...exposed].sort(), [...personaCommits[persona]].sort(), `${release}/${persona}`);
+  }
 });
