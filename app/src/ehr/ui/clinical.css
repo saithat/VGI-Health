@@ -663,11 +663,23 @@
   font-size: 12px;
 }
 .clinical-modal {
+  /* A modal is blocking. This framing does not rename its clinical severity. */
+  --clinical-modal-ink: var(--clinical-red-ink);
+  --clinical-modal-tint: var(--clinical-red-tint);
   background: var(--clinical-surface);
-  border-top: 3px solid var(--clinical-primary);
+  border-top: 3px solid var(--clinical-modal-ink);
+}
+.clinical-modal:has([data-alert-tone="yellow"]) {
+  --clinical-modal-ink: var(--clinical-yellow-ink);
+  --clinical-modal-tint: var(--clinical-yellow-tint);
+}
+.clinical-modal:has([data-alert-tone="blue"]) {
+  --clinical-modal-ink: var(--clinical-blue-ink);
+  --clinical-modal-tint: var(--clinical-blue-tint);
 }
 .clinical-modal .mantine-Modal-header {
-  background: var(--clinical-surface);
+  background: var(--clinical-modal-tint);
+  border-bottom: 1px solid var(--clinical-modal-ink);
 }
 .clinical-modal-title {
   color: var(--clinical-ink);
@@ -685,6 +697,8 @@
 }
 .clinical-modal-body .clinical-section-title {
   padding: 4px 0;
+  background: var(--clinical-modal-tint);
+  border-left-color: var(--clinical-modal-ink);
 }
 .clinical-modal-body .clinical-section-body {
   padding: 12px 0;
@@ -877,8 +891,4 @@
   height: 24px;
   min-width: 28px;
   padding: 2px 5px;
-}
-.clinical-modal:has([data-alert-tone="red"]) .mantine-Modal-header {
-  background: var(--clinical-red-tint);
-  border-bottom: 1px solid var(--clinical-red-ink);
 }

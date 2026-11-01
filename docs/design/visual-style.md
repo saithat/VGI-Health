@@ -93,7 +93,7 @@ No state is communicated by red/green alone. A care-gap count does not become a 
 
 ## Alert presentation and color code
 
-Interruption **tier** and clinical **severity** are independent. The painter must not infer either from color or placement. The current wire's `severity` field carries a legacy tier string on some alerts. Per the owner's shared-shell brief, explicit `interruptive` is framed red, `removable` amber and `passive` blue. That framing does not rename the alert as clinically severe or change acknowledgment, modality or enabled state. Explicit clinical severity strings use the table below.
+Interruption **tier** and clinical **severity** are independent. The painter must not infer either from color or placement. The current wire's `severity` field carries a legacy tier string on some alerts. Per the owner's shared-shell brief, explicit `interruptive` is framed red, `removable` amber and `passive` blue. That framing does not rename the alert as clinically severe or change acknowledgment, modality or enabled state. Explicit clinical severity strings use the table below. A legacy modal without an alert node uses a red blocking frame; this does not add a severity label.
 
 | Severity / condition | Treatment | Original VGI labeling pattern |
 | --- | --- | --- |
