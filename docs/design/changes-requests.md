@@ -474,3 +474,81 @@ Content's Schedule II rule is implemented and regenerated in all three release s
 **Check/app/WASM:** certify matching persona canonicals from `releases/<version>/personas/`, reject all sixteen permanent seeds with replayable counterexamples, and rebuild/test WASM against the allowed-value guard. Seed 16 confirms a default of three and strands that value on a sign screen with no navigation or correction field. Tests verify there are no outgoing navigation edges and attempts to edit the hidden composer field are ignored. Restoring canonical navigation allows human correction to zero; the guard is never relaxed. No checker implementation exists in this merged worktree, so content does not claim a `¬ Satisfies` theorem or production certificate.
 
 **W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.
+
+## Rules catalog core extensions: adoption contract
+
+Core's event-time-window API is `CommitSpec.temporal` (optional list), with
+`TemporalReq {id, subject: EventRef, anchor: EventRef, metric, minOffset,
+maxOffset, deadline}`. All offsets are inclusive signed integers. `EventRef`
+selects `{event, artifactKey}`. Render/FHIR must supply `Facts.episodeId`,
+`epochMinute` (UTC epoch minutes), `artifactBindings`, `eventEvidence` and,
+for business-day rules, `calendars` with hospital-local epoch dates and explicit
+coverage. Evidence must come from trusted record/scheduler events, not a typed
+attestation, and must retain distinct completion/filing events. Core does not
+assert a physical event occurred. Tiny adoption: CoreTests.EventWindow.
+
+- Content: bind each unlocked temporal rule to its real artifact commit and
+  completion/filing/anchor event; set exact jurisdictional bounds/deadline and
+  citations. Exceptions must be explicit separate lawful routes, never invented
+  timely evidence. Do not equate panel visibility with evidence completion.
+- Check: validate refs, bounds, calendar coverage obligations and evidence
+  collection/exception route reachability. Treat missing evidence as a live
+  branch; never certify completability just because the present sample is met.
+- Agent/app: preserve optional commit/Facts fields and all new JSON constructors;
+  show `ScreenView.obligations` and blocked reasons; never manufacture evidence.
+- Render/world: maintain absolute event timestamps and current artifact bindings
+  across adapter calls; expose missing/overdue obligations, including offscreen.
+
+## L-cost design: qualified-authorization (35 rules; do not implement yet)
+
+Introduce opaque CapabilityId and ActionIntent {patient, episode, artifact,
+version, action, scope}. `CapabilityReq` on commit/release intents names the
+required licenses/scopes, privilege, relationship or designated-party role;
+ordinary demo Role remains only the coarse UI permission. AuthEvidence contains
+issuer, subject UserId, capability, intent binding, validFrom/until, policyVersion,
+revocationVersion and authenticated signature reference. The trusted identity
+adapter verifies signatures and supplies a complete current revocation snapshot.
+The guard universally checks requirements against the signed-in user and exact
+intent; absent/ambiguous/stale evidence blocks. No free-text cosign value counts
+as authentication. Checker covers every intent-producing path and required
+identity/exception collection routes. Prove new-commit authorization and replay
+failure after version/relationship/user/revocation changes; exercise expired,
+wrong-patient, self-sign and absent credential witnesses. Backend is responsible
+for identity proofing, license accuracy and revocation delivery. Integrate with
+T0 as independent guard conjuncts, never weaken the existing role/human checks.
+
+## L-cost design: record-level-completeness (38 rules; do not implement yet)
+
+Add ArtifactId/version, RecordSetId and a finite authoritative snapshot
+{patient, version, members, completeAsOf}. `RecordSetReq` names a set, applicability,
+per-member field/value/provenance requirements, parent-child linkage and allowed
+age, plus closed sum/count bounds (refills, cumulative supply). Per-member
+captures use artifact ID/version rather than ephemeral UI slot. Guard quantifies
+over the whole trusted set, rejecting missing/duplicate/stale members and
+cross-artifact witnesses; empty sets require an explicit empty-set policy.
+Artifact-writing commits emit date/time/author metadata and invalidate old linked
+receipts when member versions change. Checker verifies every writer's target
+and member binding and reachable collection route. Prove each new commit has
+one current-version witness for every required member and aggregate bounds hold;
+test extra unseen members, deleted/versioned members, swapped slots, partial
+snapshots, duplicate IDs and overflow boundaries. Storage durability, retention
+and actual inventory completeness remain backend assumptions. Compose temporal
+rules with per-member evidence, and require capability rules on relevant writers.
+
+## L-cost design: release-access-policy (10 rules; do not implement yet)
+
+Introduce ReadIntent/ReleaseIntent separate from ackResult, containing patient,
+data categories and artifact versions, recipient/relationship/jurisdiction,
+purpose, service context and requested scope. `ReadReleaseReq` is a closed policy
+AST with explicit deny/allow/review-needed outcomes and refusal/appeal routes.
+Versioned ConsentEvidence binds grantor, recipient, exact scope, purpose,
+validity interval, jurisdiction, hold and revocation version. Missing context or
+policy conflicts deny; stale grants never authorize a newer intent. Every modeled
+read/export/release route must call the same guard, including preview/search,
+download and batch paths. Checker enumerates those paths and validates
+review/revocation reachability. Prove emitted release intents satisfy policy,
+and revocation/version changes invalidate grants; test mixed-category requests,
+wrong recipients, holds, unknown jurisdiction, partial consent and cache replay.
+Backend enforces tokens, delivery, physical export and encryption; UI eligibility
+is not proof of successful transmission. Compose qualified capabilities with
+consent, never replace either with a checkbox or an ackResult receipt.

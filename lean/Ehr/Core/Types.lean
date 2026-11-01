@@ -127,11 +127,81 @@ structure InfoSpec where
   version : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- A named clinical or documentation event (completion and filing are distinct). -/
+abbrev EventId := String
+
+/-- Select current-version evidence through a caller-supplied artifact binding. -/
+structure EventRef where
+  event : EventId
+  artifactKey : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Elapsed minutes or hospital-calendar business dates crossed. -/
+inductive TimeMetric
+  | minutes
+  | businessDays (calendar : String)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Subject time minus anchor time must lie in these inclusive bounds.
+The deadline is an explicit offset from the anchor, in the same metric.
+Missing evidence always blocks; passing a deadline also exposes overdue status. -/
+structure TemporalReq where
+  id : String
+  subject : EventRef
+  anchor : EventRef
+  metric : TimeMetric := .minutes
+  minOffset : Int
+  maxOffset : Int
+  deadline : Int
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Current artifact identity/version, supplied by the record adapter. -/
+structure ArtifactBinding where
+  key : String
+  artifact : String
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted evidence, never manufactured by a UI click or typed attestation.
+Timestamps are UTC epoch minutes, including times before the epoch. -/
+structure EventEvidence where
+  event : EventId
+  patient : String
+  episode : String
+  actor : UserId
+  artifact : String
+  version : Nat
+  time : Int
+  /-- Only anchors may describe planned future events. -/
+  planned : Bool := false
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Hospital-local business dates as epoch-day numbers, with explicit coverage.
+The adapter owns timezone/holiday conversion; duplicate dates do not add days. -/
+structure BusinessCalendar where
+  id : String
+  firstDay : Int
+  lastDay : Int
+  workingDays : List Int
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Status of an event obligation, also returned by the screen view. -/
+inductive ObligationStatus
+  | met | missing | invalid | overdue
+  deriving DecidableEq, Repr, Inhabited
+
+structure ObligationView where
+  commit : CommitId
+  requirement : String
+  status : ObligationStatus
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A commit and the roles allowed to perform it. -/
 structure CommitSpec where
   id : CommitId
   label : String
   roles : List Role
+  temporal? : Option (List TemporalReq) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a requirement applies. -/
@@ -446,6 +516,12 @@ structure Facts where
   record : List (String × String) := []
   /-- Kind of this episode, e.g. "preop". Absent means no encounter-kind match. -/
   encounterKind? : Option String := none
+  episodeId? : Option String := none
+  /-- Absolute time; the existing receipt clock retains its original meaning. -/
+  epochMinute? : Option Int := none
+  artifactBindings? : Option (List ArtifactBinding) := none
+  eventEvidence? : Option (List EventEvidence) := none
+  calendars? : Option (List BusinessCalendar) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -562,6 +638,7 @@ structure ItemView where
 
 /-- The current screen as the app should paint it. -/
 structure ScreenView where
+  obligations? : Option (List ObligationView) := none
   screen : ScreenId
   title : String
   /-- Every component on the screen, in render order. -/

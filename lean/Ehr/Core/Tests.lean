@@ -263,4 +263,57 @@ def mixed : State :=
 
 end ScheduleII
 
+namespace EventWindow
+
+/-- Tiny: an assessment completed within 24 hours before a planned procedure. -/
+def requirement : TemporalReq :=
+  { id := "preop-assessment", subject := { event := "assessment-complete", artifactKey := "assessment" }
+    anchor := { event := "procedure-start", artifactKey := "procedure" }
+    minOffset := -1440, maxOffset := 0, deadline := 0 }
+def context : Facts :=
+  { facts with
+    epochMinute? := some 10000, episodeId? := some "episode-1",
+    artifactBindings? := some [{ key := "assessment", artifact := "a", version := 2 },
+                               { key := "procedure", artifact := "p", version := 1 }],
+    eventEvidence? := some [
+      { event := "assessment-complete", patient := facts.patientId, episode := "episode-1"
+        actor := "clinician", artifact := "a", version := 2, time := 8560 },
+      { event := "procedure-start", patient := facts.patientId, episode := "episode-1"
+        actor := "scheduler", artifact := "p", version := 1, time := 10000 }] }
+def tinySpec : Spec :=
+  { spec with
+    entries := [], reviews := [], alerts := [],
+    commits := [{ id := "signOrders", label := "Sign", roles := [.physician], temporal? := some [requirement] }] }
+def stale : Facts :=
+  { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
+      if e.event == "assessment-complete" then { e with time := 8559 } else e) }
+#guard temporalStatus context atOrder requirement == .met
+#guard temporalStatus stale atOrder requirement == .invalid
+#guard temporalStatus { context with epochMinute? := some 10001 } atOrder requirement == .met
+#guard temporalStatus { stale with epochMinute? := some 10001 } atOrder requirement == .overdue
+#guard temporalStatus { context with episodeId? := some "other" } atOrder requirement == .missing
+#guard temporalStatus { context with artifactBindings? := some [] } atOrder requirement == .missing
+#guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es ++ es) }
+  atOrder requirement == .missing
+#guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
+  if e.event == "assessment-complete" then { e with version := 1 } else e) } atOrder requirement == .missing
+#guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es => es.map fun e =>
+  if e.event == "assessment-complete" then { e with patient := "other" } else e) } atOrder requirement == .missing
+#guard !commitGuard tinySpec program stale user atOrder "signOrders"
+#guard (clickCommit tinySpec program stale user atOrder "signOrders").1.commits == []
+#guard commitGuard tinySpec program context user atOrder "signOrders"
+#guard (clickCommit tinySpec program context user atOrder "signOrders").1.commits == ["signOrders"]
+#guard (view tinySpec program stale user atOrder).obligations? ==
+  some [{ commit := "signOrders", requirement := "preop-assessment", status := .invalid }]
+#guard roundTrips requirement && roundTrips context
+-- Friday to Monday: one business date crossed, even with duplicate calendar rows.
+def calendarFacts : Facts :=
+  { context with calendars? := some [{ id := "hospital", firstDay := 0, lastDay := 10, workingDays := [1, 2, 3, 4, 7, 7, 8] }] }
+#guard timeDistance calendarFacts (.businessDays "hospital") (4 * 1440) (7 * 1440) == some 1
+#guard timeDistance calendarFacts (.businessDays "hospital") (7 * 1440) (4 * 1440) == some (-1)
+#guard timeDistance calendarFacts (.businessDays "hospital") 0 (11 * 1440) == none
+#guard timeDistance context .minutes 10000 8560 == some (-1440)
+
+end EventWindow
+
 end Ehr.CoreTests

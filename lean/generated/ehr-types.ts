@@ -164,12 +164,103 @@ export interface InfoSpec {
 }
 
 /**
+ * A named clinical or documentation event (completion and filing are distinct).
+ */
+export type EventId = string;
+
+/**
+ * Select current-version evidence through a caller-supplied artifact binding.
+ */
+export interface EventRef {
+  event: EventId;
+  artifactKey: string;
+}
+
+/**
+ * Elapsed minutes or hospital-calendar business dates crossed.
+ */
+export type TimeMetric =
+  | "minutes"
+  | { businessDays: { calendar: string } };
+
+/**
+ * Subject time minus anchor time must lie in these inclusive bounds.
+ * The deadline is an explicit offset from the anchor, in the same metric.
+ * Missing evidence always blocks; passing a deadline also exposes overdue status.
+ */
+export interface TemporalReq {
+  id: string;
+  subject: EventRef;
+  anchor: EventRef;
+  metric: TimeMetric;
+  minOffset: number;
+  maxOffset: number;
+  deadline: number;
+}
+
+/**
+ * Current artifact identity/version, supplied by the record adapter.
+ */
+export interface ArtifactBinding {
+  key: string;
+  artifact: string;
+  version: number;
+}
+
+/**
+ * Trusted evidence, never manufactured by a UI click or typed attestation.
+ * Timestamps are UTC epoch minutes, including times before the epoch.
+ */
+export interface EventEvidence {
+  event: EventId;
+  patient: string;
+  episode: string;
+  actor: UserId;
+  artifact: string;
+  version: number;
+  time: number;
+  /**
+   * Only anchors may describe planned future events.
+   */
+  planned: boolean;
+}
+
+/**
+ * Hospital-local business dates as epoch-day numbers, with explicit coverage.
+ * The adapter owns timezone/holiday conversion; duplicate dates do not add days.
+ */
+export interface BusinessCalendar {
+  id: string;
+  firstDay: number;
+  lastDay: number;
+  workingDays: number[];
+}
+
+/**
+ * Status of an event obligation, also returned by the screen view.
+ */
+export type ObligationStatus =
+  | "met"
+  | "missing"
+  | "invalid"
+  | "overdue";
+/** All values of `ObligationStatus`. */
+export const ObligationStatusValues = ["met", "missing", "invalid", "overdue"] as const;
+
+export interface ObligationView {
+  commit: CommitId;
+  requirement: string;
+  status: ObligationStatus;
+}
+
+/**
  * A commit and the roles allowed to perform it.
  */
 export interface CommitSpec {
   id: CommitId;
   label: string;
   roles: Role[];
+  temporal?: TemporalReq[];
 }
 
 /**
@@ -572,6 +663,14 @@ export interface Facts {
    * Kind of this episode, e.g. "preop". Absent means no encounter-kind match.
    */
   encounterKind?: string;
+  episodeId?: string;
+  /**
+   * Absolute time; the existing receipt clock retains its original meaning.
+   */
+  epochMinute?: number;
+  artifactBindings?: ArtifactBinding[];
+  eventEvidence?: EventEvidence[];
+  calendars?: BusinessCalendar[];
 }
 
 /**
@@ -740,6 +839,7 @@ export interface ItemView {
  * The current screen as the app should paint it.
  */
 export interface ScreenView {
+  obligations?: ObligationView[];
   screen: ScreenId;
   title: string;
   /**

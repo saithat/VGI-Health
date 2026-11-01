@@ -160,7 +160,8 @@ def reviewsOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : Comm
 /-- Guard items 1–3: role, entries, reviews. -/
 def guardBase (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : Bool :=
-  roleOk sp user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c
+  roleOk sp user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
+    extraGuard sp prog facts s c
 
 /-- The full commit guard: role, entries, reviews, and interruptive alerts
 acknowledged. -/
@@ -205,6 +206,9 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
           (match rq.waivedBy? with
            | some e => s!" (or a reason entered in {e})"
            | none => "")
-      | none => "guard"
+      | none =>
+        match (obligationViews sp facts s).find? (fun o => o.commit == c && o.status != .met) with
+        | some o => s!"event obligation: {o.requirement} ({reprStr o.status})"
+        | none => if extraGuard sp prog facts s c then "guard" else "additional commit contract"
 
 end Ehr

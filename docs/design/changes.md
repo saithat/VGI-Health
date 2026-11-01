@@ -381,3 +381,30 @@ and the JSON API. GenTS regenerates the optional list and new constructor;
 real JSON samples include the requirement and an example spec. Content/check,
 agent validators, and WASM artifact adoption are requested explicitly in
 `changes-requests.md`, respecting lane ownership.
+
+## Rules catalog: event-time-window (67 rules, M)
+
+`CommitSpec.temporal?` adds independent `TemporalReq` obligations. Event refs
+select a unique current artifact binding and evidence with matching patient,
+episode, artifact/version and nonempty actor. Completion and filing are separate
+event IDs. Only anchor evidence may be planned; future actual evidence fails.
+`Facts.epochMinute?` plus the interpreter clock uses signed UTC epoch minutes,
+independent of the existing day-relative receipt clock. Inclusive signed offsets
+express both before and after windows. An explicit deadline distinguishes missing,
+invalid and overdue obligations. Completed timely obligations stay met thereafter.
+Business-day calculations require a named calendar covering both local epoch dates;
+the trusted adapter supplies timezone and holiday mapping. Missing/ambiguous inputs
+fail closed. No typed UI value can fabricate external event evidence.
+
+`extraGuard` strengthens `guardBase`; screen views expose all obligation statuses
+and commit buttons use the same guard/reason. GenTS now exports Int as number and
+the evidence, calendar and temporal types, with real JSON samples. Tiny examples
+and boundary/identity/version/calendar regression guards live in Core.Tests.
+
+**DRAFT statement change:** `commitGuard_iff` (and its value corollary) now has
+an additional `extraGuard = true` conjunct. This is necessary to describe the
+stronger executable guard; the other 17 Comparator statements remain unchanged.
+The proof implementation and matching DRAFT Statements entry are minimal
+compatibility edits explicitly requested by the orchestrator. No finished proof
+uses sorry, admit, new axioms or native_decide. Adapter, checker route coverage
+and production content adoption remain owning-lane work below.

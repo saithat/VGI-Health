@@ -45,7 +45,7 @@ partial def tsType (known : NameSet) (e : Expr) : Except String String := do
   match e with
   | .const n _ =>
     if n == ``String then return "string"
-    else if n == ``Nat then return "number"
+    else if n == ``Nat || n == ``Int then return "number"
     else if n == ``Bool then return "boolean"
     else if n == ``Lean.Json then return "unknown"
     else if known.contains n then return tsName n
@@ -186,7 +186,7 @@ def main (args : List String) : IO UInt32 := do
   let known := decls.foldl (fun s d => s.insert d.name) {}
   -- Fail generation if a module rename accidentally drops a public boundary.
   for n in [``Ehr.Render.Display, ``Ehr.Render.Html, ``Ehr.Render.PageNode,
-            ``Ehr.Task, ``Ehr.DaySchedule] do
+            ``Ehr.TemporalReq, ``Ehr.EventEvidence, ``Ehr.Task, ``Ehr.DaySchedule] do
     unless known.contains n do
       throw (IO.userError s!"missing required exported type {n}")
   let names := decls.map (fun d => tsName d.name)

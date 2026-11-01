@@ -240,6 +240,67 @@ def hasValidReceipt (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Bool 
       | .shownOnCommit => false
       | .shownOrReceipt w roles => s.receipts.any (receiptValid sp facts (nowMin facts s) i w roles)
 
+/-! ## Bound event evidence and temporal obligations -/
+
+/-- Absolute interpreter time; absence never falls back to a day-relative clock. -/
+def epochNow (facts : Facts) (s : State) : Option Int :=
+  facts.epochMinute?.map (· + Int.ofNat (s.clock / 600))
+
+/-- Require unique bindings/evidence, patient, episode, actor and current version.
+An old episode or an obsolete document cannot satisfy a current obligation. -/
+def eventTime (facts : Facts) (s : State) (ref : EventRef) (allowPlanned : Bool) : Option Int := do
+  let episode ← facts.episodeId?
+  let now ← epochNow facts s
+  let [binding] := (facts.artifactBindings?.getD []).filter (·.key == ref.artifactKey) | none
+  let [ev] := (facts.eventEvidence?.getD []).filter (fun e =>
+    e.event == ref.event && e.artifact == binding.artifact) | none
+  if episode.isEmpty || binding.artifact.isEmpty || ev.patient != facts.patientId ||
+      ev.episode != episode || ev.version != binding.version || ev.actor.isEmpty ||
+      (!allowPlanned && ev.planned) || (now < ev.time && !ev.planned) then none
+  else some ev.time
+
+/-- Signed distance. Calendar coverage must include both endpoints.
+Business-day offsets count working dates in (earlier date, later date]. -/
+def timeDistance (facts : Facts) (metric : TimeMetric) (a b : Int) : Option Int :=
+  match metric with
+  | .minutes => some (b - a)
+  | .businessDays name => do
+    let [cal] := (facts.calendars?.getD []).filter (·.id == name) | none
+    let lo := min (a / 1440) (b / 1440)
+    let hi := max (a / 1440) (b / 1440)
+    if cal.firstDay > lo || cal.lastDay < hi then none else
+      let n := (cal.workingDays.eraseDups.filter (fun d => lo < d && d ≤ hi)).length
+      some (if a ≤ b then Int.ofNat n else -Int.ofNat n)
+
+/-- Evaluate one obligation. A missing/invalid subject is overdue only after
+its explicit deadline; an already completed valid event stays met thereafter. -/
+def temporalStatus (facts : Facts) (s : State) (rq : TemporalReq) : ObligationStatus :=
+  match eventTime facts s rq.anchor true, epochNow facts s with
+  | some anchor, some now =>
+    let overdue : Bool := match timeDistance facts rq.metric anchor now with
+      | some d => rq.deadline < d
+      | none => false
+    match eventTime facts s rq.subject false with
+    | some subject =>
+      match timeDistance facts rq.metric anchor subject with
+      | some d =>
+        if rq.minOffset ≤ d && d ≤ rq.maxOffset && d ≤ rq.deadline then .met
+        else if overdue then .overdue else .invalid
+      | none => .invalid
+    | none => if overdue then .overdue else .missing
+  | _, _ => .missing
+
+/-- Additional commit contracts. Kept separate from entries/review receipts. -/
+def extraGuard (sp : Spec) (_prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
+  match sp.commit? c with
+  | none => false
+  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met)
+
+/-- All event obligations, including ones on screens without a commit button. -/
+def obligationViews (sp : Spec) (facts : Facts) (s : State) : List ObligationView :=
+  sp.commits.flatMap fun cs => (cs.temporal?.getD []).map fun rq =>
+    { commit := cs.id, requirement := rq.id, status := temporalStatus facts s rq }
+
 /-! ## Order lines -/
 
 /-- The order lines: each captured drug with its slot (prefilled or not). -/

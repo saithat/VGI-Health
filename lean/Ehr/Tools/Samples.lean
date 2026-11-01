@@ -45,6 +45,9 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "temporalRequirement" "TemporalReq" Ehr.CoreTests.EventWindow.requirement,
+  mk "temporalFacts" "Facts" Ehr.CoreTests.EventWindow.context,
+  mk "temporalSpec" "Spec" Ehr.CoreTests.EventWindow.tinySpec,
   mk "scheduleIIRefillsRequirement" "EntryReq" Ehr.CoreTests.ScheduleII.zeroRefills,
   mk "scheduleIIRefillsSpec" "Spec" Ehr.CoreTests.ScheduleII.constrainedSpec,
   mk "sampleDisplay" "Display" Ehr.Render.Display.empty,

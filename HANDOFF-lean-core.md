@@ -150,3 +150,16 @@ Earlier cross-lane requests in `changes-requests.md` remain owned by their
 lanes: workflow/passive coverage, per-workflow enter-once/source checks,
 service fields and human prior-auth adoption, and typed episode/task context.
 Broader unfinished project proofs remain tracked in TODO_PROOFS.md.
+
+## Rules-catalog continuation (owner request)
+
+Merged origin/main and origin/lane/rules-encode at c0a6541. The new queue is
+five M groups, in count order: event-time-window, patient-predicate,
+value-validation, order-expiry-clock, structured-display. Event-time-window
+implementation is complete; see docs/design/changes.md and CoreTests.EventWindow.
+`commitGuard_iff` gained the necessary extraGuard conjunct and remains DRAFT;
+all other Comparator statements are unchanged. L-group designs and precise
+owning-lane temporal adoption requests are in changes-requests.md.
+
+Remaining in this continuation: patient-predicate, value-validation,
+order-expiry-clock, structured-display; final TS verification and WASM rebuild.

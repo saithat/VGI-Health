@@ -95,7 +95,8 @@ def view (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State) 
   let comps := prog.compsOf s.screen
   let statuses := (comps.filter (compShown sp facts s comps)).filterMap fun c =>
     (actionStatus sp prog facts user s c).map (c.id, ·)
-  { screen := s.screen
+  { obligations? := some (obligationViews sp facts s)
+    screen := s.screen
     title := match prog.screen? s.screen with
       | some sc => sc.title
       | none => ""
