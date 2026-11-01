@@ -5,7 +5,7 @@ namespace Ehr.Sim.MinClicksTests
 open Ehr Ehr.Sim Ehr.Examples.Tiny
 
 /-- A small satisfiable instance of the real interpreter: one field, two
-screens, a goal commit. Small enough for kernel `decide`, not native_decide. -/
+screens, a goal commit. Small enough for kernel `decide`. -/
 def microSpec : Spec := { spec with
   elements := [{
     id := "x", label := "X", kind := .text, enteredBy := [.physician],
@@ -28,6 +28,7 @@ def microAnswer := certifiedSearch microCtx .full .clicks microStart 100
 #guard microAnswer.map (·.cost) == some 3
 #guard (minimum microCtx .keystrokes microStart 100).map (·.cost) == some 2
 #guard (certifiedSearch microCtx .goalDirected .clicks microStart 100).map (·.cost) == microAnswer.map (·.cost)
+#guard (certifiedSearch microCtx .navigationDirected .clicks microStart 100).map (·.cost) == microAnswer.map (·.cost)
 
 /-- The hypotheses of T9 are met by the actual Dijkstra output. -/
 theorem microSatisfiable : ∃ c, certifiedSearch microCtx .full .clicks microStart 100 = some c := by
@@ -35,6 +36,15 @@ theorem microSatisfiable : ∃ c, certifiedSearch microCtx .full .clicks microSt
   cases he : microAnswer with
   | none => simp [he] at h
   | some c => exact ⟨c, he⟩
+
+/-- Instantiate the public CLI contract on a kernel-computed nonempty answer. -/
+example : ∃ r, minimum microCtx .clicks microStart 100 = some r ∧
+    MinimumCorrect microCtx .clicks microStart r := by
+  have h : (minimum microCtx .clicks microStart 100).isSome = true := by decide
+  cases hr : minimum microCtx .clicks microStart 100 with
+  | none => simp [hr] at h
+  | some r => exact ⟨r, rfl, T9_minimum microCtx .clicks microStart 100 none r hr⟩
+example : (minimum microCtx .clicks microStart 100).map (·.cost) ≠ some 2 := by decide
 
 /-- Removing an action makes the alleged path fail replay. -/
 example : Certificate.replay (searchGraph microCtx .full .clicks) (forgetHistory microStart)

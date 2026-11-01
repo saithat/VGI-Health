@@ -28,3 +28,5 @@ import Ehr.Core.Tests
 import Ehr.Sim.MinClicksTests
 import Ehr.Canonical.BadTests
 import Ehr.Canonical.ReleaseTests
+import Ehr.Sim.IntegrationTests
+import Ehr.Sim.Audit

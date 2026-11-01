@@ -1894,7 +1894,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w1Orders.dosingWeight"},
     {"visibility": "always",
@@ -2038,7 +2038,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w1Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w1Orders.controlled",
@@ -2432,7 +2434,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "labDiagnosis"}},
      "id": "w1Labs.labDiagnosis"},
     {"visibility": "always",
@@ -3327,7 +3329,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w1Close.claimDiagnosis"},
     {"visibility": "always",
@@ -5045,7 +5047,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -5212,7 +5214,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -5600,7 +5602,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w3Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w3Orders.more",
@@ -5949,7 +5953,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w3Sign.dosingWeight"},
     {"visibility": "always",
@@ -8310,7 +8314,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w5Orders.dosingWeight"},
     {"visibility": "always",
@@ -8469,7 +8473,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w5Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w5Orders.controlled",
@@ -9423,7 +9429,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w5Close.claimDiagnosis"},
     {"visibility": "always",
@@ -10014,7 +10020,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w6ConsultClose.claimDiagnosis"},
     {"visibility": "always",
@@ -10715,7 +10721,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w6Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w6Orders.more",
@@ -11252,7 +11260,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -11419,7 +11427,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -11586,7 +11594,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 12}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row12.orderDiagnosis"},
     {"visibility": "always",
@@ -11753,7 +11761,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 13}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row13.orderDiagnosis"},
     {"visibility": "always",
@@ -12077,7 +12085,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w6Sign.dosingWeight"},
     {"visibility": "always",

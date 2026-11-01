@@ -1894,7 +1894,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w1Orders.dosingWeight"},
     {"visibility": "always",
@@ -2038,7 +2038,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w1Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w1Orders.controlled",
@@ -2432,7 +2434,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "labDiagnosis"}},
      "id": "w1Labs.labDiagnosis"},
     {"visibility": "always",
@@ -3327,7 +3329,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w1Close.claimDiagnosis"},
     {"visibility": "always",
@@ -5045,7 +5047,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -5212,7 +5214,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w3OrderSets.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -5600,7 +5602,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w3Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w3Orders.more",
@@ -5949,7 +5953,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w3Sign.dosingWeight"},
     {"visibility": "always",
@@ -6923,39 +6927,6 @@
      "kind": {"group": {"startCollapsed": false, "collapsible": true}},
      "id": "w4Admin.fiveRights"},
     {"visibility": "always",
-     "tag": "w4Admin.wristbandScan",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w4Admin.fiveRights",
-     "label": "Scan wristband",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "wristbandScan"}},
-     "id": "w4Admin.wristbandScan"},
-    {"visibility": "always",
-     "tag": "w4Admin.medScan",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w4Admin.fiveRights",
-     "label": "Scan medication",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "medScan"}},
-     "id": "w4Admin.medScan"},
-    {"visibility": "always",
-     "tag": "w4Admin.highAlertCosign",
-     "tab": 0,
-     "size": "normal",
-     "label": "Double check: second nurse",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "highAlertCosign"}},
-     "id": "w4Admin.highAlertCosign"},
-    {"visibility": "always",
      "tag": "w4Admin.painScore",
      "tab": 0,
      "size": "normal",
@@ -6971,55 +6942,6 @@
      "label": "Documentation",
      "kind": {"group": {"startCollapsed": false, "collapsible": true}},
      "id": "w4Admin.documentation"},
-    {"visibility": "always",
-     "tag": "w4Admin.adminStatus",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w4Admin.documentation",
-     "label": "Given / held / refused",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "adminStatus"}},
-     "id": "w4Admin.adminStatus"},
-    {"visibility": "always",
-     "tag": "w4Admin.adminReason",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w4Admin.documentation",
-     "label": "Reason / comment",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "adminReason"}},
-     "id": "w4Admin.adminReason"},
-    {"visibility": "always",
-     "tag": "w4Admin.adminSite",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w4Admin.documentation",
-     "label": "Site",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "adminSite"}},
-     "id": "w4Admin.adminSite"},
-    {"visibility": "always",
-     "tag": "w4Admin.heldNpo",
-     "tab": 0,
-     "size": "normal",
-     "label": "Document held: NPO",
-     "kind": {"macro": {"id": "w4HeldNpo"}},
-     "id": "w4Admin.heldNpo"},
-    {"visibility": "always",
-     "tag": "w4Admin.commit.administerMed",
-     "tab": 0,
-     "size": "normal",
-     "label": "Administer",
-     "kind": {"button": {"action": {"commit": {"commit": "administerMed"}}}},
-     "id": "w4Admin.commit.administerMed",
-     "hotkey": "Ctrl+Enter"},
     {"visibility": "always",
      "tag": "w4Admin.toFlowsheet",
      "tab": 0,
@@ -7264,43 +7186,6 @@
      "kind": {"table": {"info": "prnHistory"}},
      "id": "w4Flowsheet.prn"},
     {"visibility": "always",
-     "tag": "w4Flowsheet.painReassessment",
-     "tab": 0,
-     "size": "normal",
-     "label": "Pain reassessment (0–10)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "painReassessment"}},
-     "id": "w4Flowsheet.painReassessment"},
-    {"visibility": "always",
-     "tag": "w4Flowsheet.copyAssessment",
-     "tab": 0,
-     "size": "normal",
-     "label": "Copy forward last assessment",
-     "kind": {"macro": {"id": "w4CopyAssessment"}},
-     "id": "w4Flowsheet.copyAssessment"},
-    {"visibility": "always",
-     "tag": "w4Flowsheet.nursingAssessment",
-     "tab": 0,
-     "size": "normal",
-     "label": "Nursing assessment",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "nursingAssessment"}},
-     "id": "w4Flowsheet.nursingAssessment"},
-    {"visibility": "always",
-     "tag": "w4Flowsheet.commit.chartAssessment",
-     "tab": 0,
-     "size": "normal",
-     "label": "File assessment",
-     "kind": {"button": {"action": {"commit": {"commit": "chartAssessment"}}}},
-     "id": "w4Flowsheet.commit.chartAssessment",
-     "hotkey": "Ctrl+Enter"},
-    {"visibility": "always",
      "tag": "w4Flowsheet.toHandoff",
      "tab": 0,
      "size": "normal",
@@ -7463,57 +7348,6 @@
      "label": "Last handoff",
      "kind": {"panel": {"info": "handoffSummary"}},
      "id": "w4Handoff.last"},
-    {"visibility": "always",
-     "tag": "w4Handoff.template",
-     "tab": 0,
-     "size": "normal",
-     "label": "SBAR template",
-     "kind": {"macro": {"id": "w4HandoffTemplate"}},
-     "id": "w4Handoff.template"},
-    {"visibility": "always",
-     "tag": "w4Handoff.handoffSituation",
-     "tab": 0,
-     "size": "normal",
-     "label": "Situation",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "handoffSituation"}},
-     "id": "w4Handoff.handoffSituation"},
-    {"visibility": "always",
-     "tag": "w4Handoff.handoffBackground",
-     "tab": 0,
-     "size": "normal",
-     "label": "Background",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "handoffBackground"}},
-     "id": "w4Handoff.handoffBackground"},
-    {"visibility": "always",
-     "tag": "w4Handoff.handoffAssessment",
-     "tab": 0,
-     "size": "normal",
-     "label": "Assessment",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "handoffAssessment"}},
-     "id": "w4Handoff.handoffAssessment"},
-    {"visibility": "always",
-     "tag": "w4Handoff.handoffRecommendation",
-     "tab": 0,
-     "size": "normal",
-     "label": "Recommendation",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "handoffRecommendation"}},
-     "id": "w4Handoff.handoffRecommendation"},
     {"visibility": "always",
      "tag": "w4Handoff.toWorklist",
      "tab": 0,
@@ -8312,7 +8146,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w5Orders.dosingWeight"},
     {"visibility": "always",
@@ -8471,7 +8305,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w5Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w5Orders.controlled",
@@ -9425,7 +9261,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w5Close.claimDiagnosis"},
     {"visibility": "always",
@@ -9763,17 +9599,6 @@
        "element": "visitDiagnosis"}},
      "id": "w6Consult.visitDiagnosis"},
     {"visibility": "always",
-     "tag": "w6Consult.surgeryDecision",
-     "tab": 0,
-     "size": "normal",
-     "label": "Surgical decision",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "surgeryDecision"}},
-     "id": "w6Consult.surgeryDecision"},
-    {"visibility": "always",
      "tag": "w6Consult.homeMeds",
      "tab": 0,
      "size": "normal",
@@ -10016,7 +9841,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "claimDiagnosis"}},
      "id": "w6ConsultClose.claimDiagnosis"},
     {"visibility": "always",
@@ -10262,43 +10087,12 @@
      "kind": {"panel": {"info": "consentDocument"}},
      "id": "w6PreOp.consent"},
     {"visibility": "always",
-     "tag": "w6PreOp.consentVerified",
-     "tab": 0,
-     "size": "normal",
-     "label": "Surgical consent verified",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "consentVerified"}},
-     "id": "w6PreOp.consentVerified"},
-    {"visibility": "always",
      "tag": "w6PreOp.anticoagulants",
      "tab": 0,
      "size": "normal",
      "label": "Anticoagulants and antiplatelets",
      "kind": {"table": {"info": "anticoagulantList"}},
      "id": "w6PreOp.anticoagulants"},
-    {"visibility": "always",
-     "tag": "w6PreOp.medsToHold",
-     "tab": 0,
-     "size": "normal",
-     "label": "Medications to hold",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "medsToHold"}},
-     "id": "w6PreOp.medsToHold"},
-    {"visibility": "always",
-     "tag": "w6PreOp.hpUpdate",
-     "tab": 0,
-     "size": "normal",
-     "label": "H&P update (day of surgery)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "hpUpdate"}},
-     "id": "w6PreOp.hpUpdate"},
     {"visibility": "always",
      "tag": "w6PreOp.npoStatus",
      "tab": 0,
@@ -10717,7 +10511,9 @@
      "label": "Associated diagnosis (ICD-10)",
      "kind":
      {"field":
-      {"slot": "current", "prefill": "none", "element": "orderDiagnosis"}},
+      {"slot": "current",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
+       "element": "orderDiagnosis"}},
      "id": "w6Orders.orderDiagnosis"},
     {"visibility": "always",
      "tag": "w6Orders.more",
@@ -11254,7 +11050,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row10.orderDiagnosis"},
     {"visibility": "always",
@@ -11421,7 +11217,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row11.orderDiagnosis"},
     {"visibility": "always",
@@ -11588,7 +11384,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 12}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row12.orderDiagnosis"},
     {"visibility": "always",
@@ -11755,7 +11551,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 13}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "visitDiagnosis"}},
        "element": "orderDiagnosis"}},
      "id": "w6PostOp.row13.orderDiagnosis"},
     {"visibility": "always",
@@ -12079,7 +11875,7 @@
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
+       "prefill": {"linked": {"element": "weight"}},
        "element": "dosingWeight"}},
      "id": "w6Sign.dosingWeight"},
     {"visibility": "always",
@@ -12354,167 +12150,12 @@
      "kind": {"panel": {"info": "intraopRecord"}},
      "id": "w6OpNote.intraop"},
     {"visibility": "always",
-     "tag": "w6OpNote.template",
-     "tab": 0,
-     "size": "normal",
-     "label": "Template: laparoscopic appendectomy",
-     "kind": {"macro": {"id": "w6OpNoteTemplate"}},
-     "id": "w6OpNote.template"},
-    {"visibility": "always",
      "tag": "w6OpNote.note",
      "tab": 0,
      "size": "normal",
      "label": "Brief op note",
      "kind": {"group": {"startCollapsed": false, "collapsible": true}},
      "id": "w6OpNote.note"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opPreopDiagnosis",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Pre-op diagnosis",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opPreopDiagnosis"}},
-     "id": "w6OpNote.opPreopDiagnosis"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opPostopDiagnosis",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Post-op diagnosis",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opPostopDiagnosis"}},
-     "id": "w6OpNote.opPostopDiagnosis"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opProcedure",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Procedure",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opProcedure"}},
-     "id": "w6OpNote.opProcedure"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opSurgeons",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Surgeon / assistants",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opSurgeons"}},
-     "id": "w6OpNote.opSurgeons"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opAnesthesia",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Anesthesia",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opAnesthesia"}},
-     "id": "w6OpNote.opAnesthesia"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opFindings",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Findings",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opFindings"}},
-     "id": "w6OpNote.opFindings"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opEbl",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Estimated blood loss (mL)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "opEbl"}},
-     "id": "w6OpNote.opEbl"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opSpecimens",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Specimens",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opSpecimens"}},
-     "id": "w6OpNote.opSpecimens"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opDrains",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Drains",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "opDrains"}},
-     "id": "w6OpNote.opDrains"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opImplants",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Implants",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opImplants"}},
-     "id": "w6OpNote.opImplants"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opComplications",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Complications",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opComplications"}},
-     "id": "w6OpNote.opComplications"},
-    {"visibility": "always",
-     "tag": "w6OpNote.opCondition",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6OpNote.note",
-     "label": "Condition",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "opCondition"}},
-     "id": "w6OpNote.opCondition"},
-    {"visibility": "always",
-     "tag": "w6OpNote.commit.signOpNote",
-     "tab": 0,
-     "size": "normal",
-     "label": "Sign op note",
-     "kind": {"button": {"action": {"commit": {"commit": "signOpNote"}}}},
-     "id": "w6OpNote.commit.signOpNote",
-     "hotkey": "Ctrl+Enter"},
     {"visibility": "always",
      "tag": "w6OpNote.next",
      "tab": 0,
@@ -13764,8 +13405,8 @@
      "label": "Back to chart review",
      "kind": {"button": {"action": {"goto": {"screen": "w7Review"}}}},
      "id": "w7Decision.toReview"}]}],
- "role": "physician",
- "owner": "canonical",
+ "role": "np",
+ "owner": "seed6",
  "macros":
  [{"steps":
    [{"setValue":
@@ -14060,32 +13701,6 @@
    "label": "Morphine 10 mg IV q4h PRN",
    "id": "w3PrefMorphine"},
   {"steps":
-   [{"setValue": {"value": "held", "comp": "w4Admin.adminStatus"}},
-    {"setValue": {"value": "npo", "comp": "w4Admin.adminReason"}}],
-   "label": "Document held: NPO",
-   "id": "w4HeldNpo"},
-  {"steps":
-   [{"setValue":
-     {"value":
-      "Neuro: alert and oriented x3. Cardiac: regular. Respiratory: clear, room air. GI: soft, tolerating diet. GU: voiding. Skin: intact. Safety: fall precautions in place. (Copied forward.)",
-      "comp": "w4Flowsheet.nursingAssessment"}}],
-   "label": "Copy forward last assessment",
-   "id": "w4CopyAssessment"},
-  {"steps":
-   [{"setValue":
-     {"value": "Stable overnight.", "comp": "w4Handoff.handoffSituation"}},
-    {"setValue":
-     {"value": "Admitted from the ED; see H&P.",
-      "comp": "w4Handoff.handoffBackground"}},
-    {"setValue":
-     {"value": "Vital signs stable; pain controlled.",
-      "comp": "w4Handoff.handoffAssessment"}},
-    {"setValue":
-     {"value": "Continue current plan; reassess pain after PRN doses.",
-      "comp": "w4Handoff.handoffRecommendation"}}],
-   "label": "SBAR template",
-   "id": "w4HandoffTemplate"},
-  {"steps":
    [{"setValue": {"value": "amoxicillin", "comp": "w5Orders.drug"}},
     {"setValue": {"value": "45", "comp": "w5Orders.doseMgPerKg"}},
     {"setValue": {"value": "mg", "comp": "w5Orders.doseUnit"}},
@@ -14290,20 +13905,6 @@
     {"setValue": {"value": "0", "comp": "w6Orders.refills"}}],
    "label": "Ondansetron 8 mg IV q8h PRN",
    "id": "w6PrefOndansetron"},
-  {"steps":
-   [{"setValue": {"value": "K35.80", "comp": "w6OpNote.opPreopDiagnosis"}},
-    {"setValue": {"value": "K35.80", "comp": "w6OpNote.opPostopDiagnosis"}},
-    {"setValue": {"value": "44970", "comp": "w6OpNote.opProcedure"}},
-    {"setValue": {"value": "general", "comp": "w6OpNote.opAnesthesia"}},
-    {"setValue":
-     {"value": "Inflamed, non-perforated appendix. No abscess.",
-      "comp": "w6OpNote.opFindings"}},
-    {"setValue":
-     {"value": "Appendix to pathology", "comp": "w6OpNote.opSpecimens"}},
-    {"setValue": {"value": "none", "comp": "w6OpNote.opComplications"}},
-    {"setValue": {"value": "stable", "comp": "w6OpNote.opCondition"}}],
-   "label": "Template: laparoscopic appendectomy",
-   "id": "w6OpNoteTemplate"},
   {"steps":
    [{"setValue":
      {"value":

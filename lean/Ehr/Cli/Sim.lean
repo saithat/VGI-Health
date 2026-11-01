@@ -115,6 +115,18 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
     paths := (Render.Fhir.arr j "patients").map fun patient =>
       (Render.Fhir.str patient "id", p.parent.getD root / Render.Fhir.str patient "file")
   let mut bundles : List (String × Json) := []
+  if world.extension == some "json" && (← world.pathExists) then
+    let j ← readJson world
+    let inputs := if Render.Fhir.resourceType j == "Bundle" then [j] else
+      (j.getArr?.toOption.getD #[]).toList
+    for b in inputs do
+      if Render.Fhir.resourceType b != "Bundle" then throw (IO.userError "expected a FHIR Bundle")
+      match (bundleResourcesWithIds b).find? (Render.Fhir.resourceType · == "Patient") with
+      | none => throw (IO.userError "FHIR Bundle has no Patient")
+      | some patient =>
+        let id := Render.Fhir.str patient "id"
+        if (bundles.lookup id).isSome then throw (IO.userError s!"duplicate patient Bundle {id}; merge its resources first")
+        bundles := (id, b) :: bundles
   let mut extras : List (String × List Json) := []
   let mut out := []
   for task in schedule.tasks do
@@ -159,9 +171,14 @@ structure TaskMinimum where
   keystrokePath : List Event
   space : SearchSpace
   keystrokeSpace : SearchSpace
+  /-- A single episode has a task-wide certificate. Multiple episodes are
+  independently certified sums; joint optimization is not claimed. -/
   exact : Bool
+  episodeExact : Bool := true
+  episodeSpaces : List SearchSpace := []
+  keystrokeEpisodeSpaces : List SearchSpace := []
   /-- Exactness is scoped; navigation/move restrictions are explicit. -/
-  searchModel : String := "full: goal-relevant workflow moves, no Back/scroll/search; goalDirected: first shown goal field, ready goal actions, otherwise shortest BFS navigation; clock fixed; exact only within each reported space"
+  searchModel : String := "full: goal-relevant moves across reachable screens, no Back/scroll/search; goalDirected: first shown goal field then all non-entry moves; navigationDirected: ready goal actions or shortest BFS navigation; clock fixed; exact only within each reported space; multiple episodes are independent sums, with per-episode spaces listed"
   /-- Each W4 medication is a separate reset episode. -/
   episodePaths : List (List Event)
   keystrokeEpisodePaths : List (List Event)
@@ -176,14 +193,16 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
   let user : User := { id := prog.owner, role := prog.role }
   let tasks ← schedule.tasks.mapM fun task => do
     let facts := { factsFor task with now := task.startMin }
+    let eps := episodes facts task.workflow task.choices
+    if eps.isEmpty then throw s!"{task.id}: no clinical episode is defined by the scenario"
     let mut result : TaskMinimum := {
       task := task.id, workflow := task.workflow,
       clicks := 0, keystrokes := 0, path := [], keystrokePath := [], space := .full,
-      keystrokeSpace := .full, exact := true, episodePaths := [], keystrokeEpisodePaths := [] }
-    for ep in episodes facts task.workflow task.choices do
+      keystrokeSpace := .full, exact := eps.length == 1, episodePaths := [], keystrokeEpisodePaths := [] }
+    for ep in eps do
       let f := ep.facts
       let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med?
-      let ctx : Context := { sp, prog, facts := f, user, goals := g, workflow? := some task.workflow }
+      let ctx : Context := { sp, prog, facts := f, user, goals := g }
       let start := init sp prog f user
       let click ← optionExcept (minimum ctx .clicks start bound space?) s!"{task.id}: click search exceeded bound or found no completion"
       let keys ← optionExcept (minimum ctx .keystrokes start bound space?) s!"{task.id}: keystroke search exceeded bound or found no completion"
@@ -192,8 +211,12 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
         keystrokes := result.keystrokes + keys.cost
         path := result.path ++ click.path
         keystrokePath := result.keystrokePath ++ keys.path
-        space := if click.space == .goalDirected then .goalDirected else result.space
-        keystrokeSpace := if keys.space == .goalDirected then .goalDirected else result.keystrokeSpace
+        space := if click.space == .navigationDirected || result.space == .navigationDirected then .navigationDirected
+          else if click.space == .goalDirected then .goalDirected else result.space
+        keystrokeSpace := if keys.space == .navigationDirected || result.keystrokeSpace == .navigationDirected then .navigationDirected
+          else if keys.space == .goalDirected then .goalDirected else result.keystrokeSpace
+        episodeSpaces := result.episodeSpaces ++ [click.space]
+        keystrokeEpisodeSpaces := result.keystrokeEpisodeSpaces ++ [keys.space]
         episodePaths := result.episodePaths ++ [click.path]
         keystrokeEpisodePaths := result.keystrokeEpisodePaths ++ [keys.path] }
     return result
@@ -205,12 +228,22 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--world", "--fhir", "--seed", "--bound", "--space"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
     let prog ← readAs Program (← required fs "--program")
-    let schedule ← readAs DaySchedule (← required fs "--schedule")
+    let schedule ← match fs.lookup "--task" with
+      | some path => do
+        let task ← readAs Task path
+        pure { day := task.day, persona := task.persona, load := "normal", tasks := [task] : DaySchedule }
+      | none => readAs DaySchedule (← required fs "--schedule")
+    if (fs.lookup "--task").isSome then
+      if (fs.lookup "--schedule").isSome then throw (IO.userError "use --task or --schedule")
+    if (schedule.tasks.map (·.id)).eraseDups.length != schedule.tasks.length then
+      throw (IO.userError "schedule contains duplicate task IDs")
+    if !schedule.tasks.all (fun t => t.day == schedule.day && t.persona == schedule.persona) then
+      throw (IO.userError "task day/persona must match the schedule")
     if schedule.day < 1 || schedule.day > 10 then throw (IO.userError "schedule day must be 1..10")
     let world ← match (fs.lookup "--world").or (fs.lookup "--fhir") with
       | some p => pure (System.FilePath.mk p)
@@ -219,6 +252,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let factsFor := fun task => (facts.lookup task.id).getD default
     if mode == "simulate" then
       let params ← readAs PersonaParams (← required fs "--persona")
+      if params.id != schedule.persona then throw (IO.userError "persona does not match the schedule")
       let seedStr := (fs.lookup "--seed").getD "0"
       let seed ← ioExcept (optionExcept seedStr.toNat? "--seed must be a nonnegative integer")
       IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
@@ -228,10 +262,15 @@ def command (mode : String) (args : List String) : IO UInt32 := do
         | "auto" => pure none
         | "full" => pure (some SearchSpace.full)
         | "goalDirected" => pure (some SearchSpace.goalDirected)
-        | other => throw (IO.userError s!"unknown --space {other}; use auto, full, goalDirected")
+        | "navigationDirected" => pure (some SearchSpace.navigationDirected)
+        | other => throw (IO.userError s!"unknown --space {other}; use auto, full, goalDirected, navigationDirected")
       match minSchedule sp prog schedule factsFor bound space with
       | .error e => throw (IO.userError e)
-      | .ok result => IO.println (encodeJson result)
+      | .ok result =>
+        if (fs.lookup "--task").isSome then
+          if let some task := result.tasks.head? then IO.println (encodeJson task)
+          else throw (IO.userError "no task result")
+        else IO.println (encodeJson result)
     return 0
   catch e => IO.eprintln s!"{mode}: {e}"; return 1
 

@@ -2,17 +2,31 @@ import Ehr.Canonical.Sanity
 import Ehr.Specs.V2
 namespace Ehr.Canonical
 
-/-- Optional status and request controls in the shared order composer. The
-current core action records a request on a medication order slot; it is not a
-payer API transaction. Medical-service-only slots are requested in CR-9. -/
+/-- Optional prior-auth status/request controls in shared medication composers.
+Medication use anticipates the proposed drug rule; service controls below
+provide the final-rule imaging/procedure demonstration. -/
 def withPriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
   s.insertAfter (cid id "pending")
     [mk id "priorAuthStatus" (.priorAuth "priorAuthStatus") "Prior-auth status",
      button id "requestPriorAuth" .requestPriorAuth "Request prior authorization"]
 
+/-- Imaging/procedure ordering with actual service-only prior-auth requests. -/
+def withServicePriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
+  s.insertAfter (cid id "banner")
+    [group id "servicePriorAuth" "Imaging / procedure authorization" (collapsible := false),
+     button id "newServiceOrder" .newOrderLine "Add imaging / procedure order"
+       (parent := some "servicePriorAuth"),
+     lineField id "orderKind" "orderKind" "Kind: imaging / procedure" (parent := some "servicePriorAuth"),
+     lineField id "orderCode" "orderCode" "Service code" (parent := some "servicePriorAuth"),
+     mk id "servicePriorAuthStatus" (.priorAuth "priorAuthStatus") "Service prior-auth status"
+       (parent := some "servicePriorAuth"),
+     button id "requestServicePriorAuth" .requestPriorAuth "Request service prior authorization"
+       (parent := some "servicePriorAuth")]
+
 /-- Canonical optional-feature release. No previous required field is moved. -/
 def canonicalV1_1 : Program :=
-  { ["w1Orders", "w3Orders", "w5Orders", "w6Orders"].foldl withPriorAuth canonicalV1 with
+  { ["w1Labs", "w6PreOp"].foldl withServicePriorAuth
+      (["w1Orders", "w3Orders", "w5Orders", "w6Orders"].foldl withPriorAuth canonicalV1) with
     version := 2, specVersion := "v1.1" }
 
 /-- One coded stewardship field, bound to the same slot as the drug. -/

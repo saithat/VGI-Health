@@ -1,3 +1,4 @@
+import Ehr.Specs.V1
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
 import Ehr.Canonical.W3Ed
@@ -55,6 +56,19 @@ def withWorkflowAlerts (s : Screen) : Screen :=
       then none
       else some (alertC s.id ("workflowAlert." ++ a) a label false) }
 
+/-- Honor every auto-linked declaration in the hospital spec. Copies remain
+visible, but navigating does not ask the human to transcribe the source again. -/
+def withRequiredLinks (s : Screen) : Screen :=
+  { s with components := s.components.map fun c => match c.kind with
+      | .field e slot _ =>
+        match Specs.V1.specV1.elements.find? (·.id == e) with
+        | some el => match el.linkedFrom? with
+          | some src => if el.prefill == .autoLinked then
+              { c with kind := .field e slot (.linked src) } else c
+          | none => c
+        | none => c
+      | _ => c }
+
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
   id := "canonical"
@@ -64,7 +78,7 @@ def canonicalV1 : Program where
   specVersion := "v1"
   start := "home"
   screens := ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
-    W5.screens ++ W6.screens ++ W7.screens).map withWorkflowAlerts
+    W5.screens ++ W6.screens ++ W7.screens).map (withRequiredLinks ∘ withWorkflowAlerts)
   macros := W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros
 

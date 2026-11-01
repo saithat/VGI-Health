@@ -22,11 +22,33 @@ requiring this panel to be shown (docs/regulations.md §5.2). -/
 def priorAuthStatus : InfoSpec :=
   { id := "priorAuthStatus", label := "Prior authorization status", version := "" }
 
+/-- Optional imaging/procedure classification. This creates a service slot,
+not a medication line; the core keeps its codes out of drug alerts. -/
+def orderKind : ElementSpec where
+  id := "orderKind"
+  label := "Service order kind (imaging / procedure)"
+  kind := .coded "order-kind"
+  enteredBy := prescribers
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "ServiceRequest.category"
+
+/-- Optional service code for imaging/procedures covered by the final payer
+prior-auth rule. No prescription requirement is attached to this element. -/
+def orderCode : ElementSpec where
+  id := "orderCode"
+  label := "Imaging / procedure code"
+  kind := .coded "service-code"
+  enteredBy := prescribers
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "ServiceRequest.code"
+
 /-- v1.1 adds only optional content and its catalog tag; old requirements stay exact. -/
 def specV1_1 : Spec :=
   { specV1 with
     version := "v1.1"
-    elements := specV1.elements ++ [priorAuthRequest]
+    elements := specV1.elements ++ [priorAuthRequest, orderKind, orderCode]
     infos := specV1.infos ++ [priorAuthStatus]
     design := { specV1.design with catalog := specV1.design.catalog ++ ["priorAuth"] } }
 

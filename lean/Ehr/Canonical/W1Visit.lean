@@ -9,9 +9,9 @@ labs) → order verification → sign orders → visit close (sign note).
 Deliberate friction (BRIEF 5):
 - allergies are asked about three times: "mark reviewed" in rooming, a
   checkbox in the composer, and a checkbox on the verification step;
-- weight is typed in rooming and again as the dosing weight in the composer;
+- weight is typed in rooming and displayed again as a linked dosing weight;
 - the diagnosis is typed for the visit, for each order line, and again for
-  the claim;
+  the claim (the declared auto-linked copies now carry their source);
 - an extra "order verification" screen sits between the composer and the sign
   screen;
 - copy-forward and templates fill long text (note bloat);

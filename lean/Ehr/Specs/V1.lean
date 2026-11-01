@@ -453,8 +453,7 @@ def visitDiagnosis : ElementSpec where
   fhirTarget := "Encounter.diagnosis.condition"
 
 /-- The diagnosis on the insurance claim. It is linked from the visit
-diagnosis, so it should be entered once. The canonical UI still asks for it
-again; a personalized UI may link it. -/
+diagnosis, so it should be entered once. The canonical UI displays its linked copy with source provenance. -/
 def claimDiagnosis : ElementSpec where
   id := "claimDiagnosis"
   label := "Billing diagnosis (ICD-10)"
@@ -638,8 +637,8 @@ def prn : ElementSpec where
   fhirTarget := "MedicationRequest.dosageInstruction.asNeededBoolean"
 
 /-- The diagnosis this order is for (ICD-10). It is linked from the visit
-diagnosis, so it should be entered once. The canonical UI asks again on each
-order line; a personalized UI may link it. -/
+diagnosis, so it should be entered once. The canonical UI shows a linked copy on each
+order line, so it need not be transcribed again. -/
 def orderDiagnosis : ElementSpec where
   id := "orderDiagnosis"
   label := "Associated diagnosis (ICD-10)"

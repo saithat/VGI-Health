@@ -155,13 +155,10 @@ protocol checks and education remain checked flags.
 
 ## Release integration requests (other lanes)
 
-- **CR-9 — medical-service prior-auth slots (core/agent).** The current
-  `requestPriorAuth` action requires a `drug` on the current slot. CMS-0057-F
-  covers medical items/services, not drugs. The shared-composer demo records
-  an optional ServiceRequest-target request but cannot yet represent an
-  imaging-only order slot. Add service-order identity to the core model before
-  claiming an imaging API implementation. Medication support anticipates
-  proposed CMS-0062-P. No content safety obligation depends on this feature.
+- **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
+  v1.1 declares optional `orderKind` and `orderCode` fields. W1 service ordering
+  and W6 pre-op now request prior auth for imaging/procedure slots without a
+  drug. A test requests imaging code 70551 and checks no drug alerts fire.
 - **CR-10 — antibiotic indication data rows (render/app/world).** Content now
   declares element/info `abxIndication`, the per-line coded value written to
   `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
@@ -178,8 +175,8 @@ protocol checks and education remain checked flags.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
   v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
-  `requestPriorAuth` action. The four request buttons fail at
-  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  `requestPriorAuth` action. The shared-composer and service request buttons fail at
+  their `components[*].kind` action. Add the real constructor to the
   action schema (and the `priorAuth` kind to the known union if desired), then
   parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.
@@ -276,3 +273,86 @@ field and retains its never policy. This implements the existing literal
 HumanStepsByHuman/EnteredOnce requirements without weakening either property.
 Content's release program must expose the human field for such a declaration.
 
+## Content response to checker acceptance requests
+
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.
+
+## Sim → content: prior-auth guard integration is blocking full build
+
+After merging world/core through `c98cfaf` and content through `6cdab91`,
+`lake build` fails six guards in `Ehr/Canonical/ReleaseTests.lean` (14, 15,
+25, 26, 38, 42). `priorAuthRequest.prefill = never` correctly requires a human
+`enter`; `requestPriorAuth` clicks are now blocked for never/human-only values.
+Please expose the human priorAuthRequest field in medication/service composers
+and update the positive release paths to use `Event.enter ... (.flag true)`.
+Keep negative coverage that a convenience request click cannot create a
+never-policy capture. Do not change the spec's never policy or relax the core
+hard stop to satisfy the old click-based tests. Sim's modules and T9 proofs
+build with the new core; the release guards are outside sim ownership.
+
+A concrete proposed content fix is saved at
+`lean/Ehr/Sim/content-prior-auth.patch`: add human input controls, use them in
+positive tests, and retain negative convenience-click coverage. The patch does
+not change a spec or a core rule. Content exports must then be regenerated.
+
+## Sim replay → content/world: preserve blocked scenario work
+
+Seed 1 day 1, role-projected canonical v1, seed 123:
+P1 completes 39/42; P2 0/22; P3 38/38; P4 22/22; P5 14/18.
+Every completed task passes all floor inequalities and keeps every interruption.
+The simulator reports these incomplete tasks; it does not drop their goals.
+
+- **Content, W3 documentation:** task choices request note sections and sim's
+  existing W3 mapping requires `signNote`. W3 has no signNote button and lacks
+  required note fields such as `ros`. Please provide a complete ED note-signing
+  path with all unchanged spec requirements. Do not remove the goal or weaken
+  signNote to obtain a completion number. All 22 day-1 ED tasks expose this.
+- **World/content, service versioning:** day-1 P1 tasks W1-006, W1-010, W1-015
+  and four P5 W1 tasks include typed imaging/procedure orders. Spec v1 has no
+  orderKind/orderCode; those are introduced by v1.1. World's handoff says service
+  orders occur after day 4, but the committed day-1 schedules contain them.
+  Either align the scenario timing with the release, or obtain owner approval
+  for baseline service-order support. Sim cannot invent medication orders or
+  mark uncaptured services complete.
+
+Reproduce with `python3 lean/Ehr/Sim/cli_smoke.py --days 1 --report /tmp/sim.json`
+after a successful full build. Use `--require-complete` to fail on any blocked
+scenario in addition to determinism, floor and interruption failures.
+
+## Sim navigation correction / refill alert context
+
+The W2/W3 missing local composers reported above are **not a completability
+block once cross-workflow navigation is allowed**: the shared W1 order/note
+composers remain reachable through Home and satisfy the same unchanged goals
+and guards. Sim removed its own overly narrow workflow-navigation restriction.
+A local ED path is still a UI improvement, not a reason to drop signNote.
+
+A separate core/content gap remains: W7's interaction rule reads drugs in play,
+but the refill UI captures no `drug`, and init does not derive a refill drug from
+the FHIR Task focus. Thus an uncaptured proposed modification cannot fire that
+alert. Sim's floor now uses actual goal captures, rather than raw uncaptured
+order choices; this is a program-independent derivation, not a runtime clamp.
+Core/render/content should agree on explicit prescription context for refill
+interaction checking. Do not fabricate a MedicationAdministration or weaken the
+interaction condition to address this.

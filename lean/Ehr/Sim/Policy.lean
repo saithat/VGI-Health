@@ -136,15 +136,6 @@ def earlyReview (ctx : Context) (s : State) : Option Event :=
       then some (.click c.id) else none
     | _ => none
 
-/-- A task stays in its workflow for persona navigation. Min-clicks separately
-reports the broader goal-relevant search space. -/
-def workflowContext (ctx : Context) (wf : Workflow) : Context :=
-  let label := match wf with
-    | .W1 => "W1" | .W2 => "W2" | .W3 => "W3" | .W4 => "W4"
-    | .W5 => "W5" | .W6 => "W6" | .W7 => "W7"
-  { ctx with prog := { ctx.prog with screens := ctx.prog.screens.filter fun sc =>
-    sc.workflow == label || sc.workflow == "shell" || sc.id == ctx.prog.start } }
-
 /-- Fuel is structural. Failed, non-alert commits have a separate retry cap.
 All unconsumed interruptions attach to the last goal action of the last episode. -/
 def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode : Bool) :
@@ -158,9 +149,8 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
       let (n, next) := draw out.rng 1000
       out := { out with rng := next }
       if n < params.backtrackRate && out.state.popup?.isNone then
-        let navCtx := workflowContext ctx task.workflow
         let turns := (shown ctx out.state).filter fun c => match c.kind with
-          | .button (.goto t) => t != out.state.screen && (navCtx.prog.screen? t).isSome
+          | .button (.goto t) => t != out.state.screen && (ctx.prog.screen? t).isSome
           | _ => false
         if !turns.isEmpty then
           let (idx, next) := draw out.rng turns.length
@@ -175,8 +165,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
     let mut pathLen := 0
     let mut event := e?
     if event.isNone then
-      let navCtx := workflowContext ctx task.workflow
-      if let some path := planNavigation navCtx out.state then
+      if let some path := planNavigation ctx out.state then
         pathLen := path.length
         event := path.head?
     match event with
@@ -241,7 +230,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := ep.facts
       let f := { f with receipts := facts.receipts ++ r.state.receipts }
-      let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers }, workflow? := some task.workflow }
+      let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
       r := { r with
         state := { init sp prog f user with clock := r.elapsedMs / 100 },
         complaints := r.complaints ++ g.problems }

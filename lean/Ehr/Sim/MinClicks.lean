@@ -10,18 +10,18 @@ and macros without Back clicks. It omits Back, scroll and search. Repeated
 identical review receipts are omitted. Clock remains fixed (no KLM time in this
 minimum-action model). The full captured list is preserved, not sorted.
 
-`goalDirected` forces the first shown unmet goal field and popup
-acknowledgment; otherwise it uses available goal actions, or BFS navigation
-to the next action. It restricts navigation and macros as well as entry order. Exactness is among
-runs of the reported space; goal-directed results do not claim global minima.
-Each objective tries full first for small tasks. Auto mode skips full above
-12 values or 20 screens, and falls back to goal-directed on the state bound.
-The CLI can explicitly select either space with --space.
+`goalDirected` forces the first shown unmet field, otherwise retaining all
+non-entry moves, as proposed in the handoff. `navigationDirected` additionally
+chooses BFS navigation to the next action. Exactness is among runs of the
+reported space, never a global optimality claim. Auto skips full above 12
+values, goalDirected above 15 values, and both above 20 screens; bounds and
+explicit --space selections remain available.
+
 -/
 namespace Ehr.Sim
 open Ehr
 
-inductive SearchSpace | full | goalDirected
+inductive SearchSpace | full | goalDirected | navigationDirected
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson
 inductive Objective | clicks | keystrokes
   deriving DecidableEq, Repr, Inhabited
@@ -55,7 +55,7 @@ def fullMoves (ctx : Context) (s : State) : List Event :=
       if ctx.goals.commits.contains cm && !s.commits.contains cm &&
         commitValuesMet ctx.sp ctx.facts ctx.user ctx.goals s cm then [.click c.id] else []
     | .button (.markReviewed i) => if newReview ctx s i then [.click c.id] else []
-    | .button (.goto t) => if destinationAllowed ctx t then [.click c.id] else []
+    | .button (.goto _) => [.click c.id]
     | .group true _ | .macro _ => [.click c.id]
     | .button .newOrderLine => if canAdvance ctx s then [.click c.id] else []
     | .tabs => tabEvents (ctx.prog.compsOf s.screen) c
@@ -76,12 +76,23 @@ def directedMoves (ctx : Context) (s : State) : List Event :=
       let ready := actions ctx s
       if !ready.isEmpty then ready else ((planNavigation ctx s).getD []).take 1
 
+/-- The handoff's broader goal-directed space: fixed first-field entry,
+but all non-entry alternatives (navigation, reviews, commits, macros) remain. -/
+def goalDirectedMoves (ctx : Context) (s : State) (all : List Event) : List Event :=
+  match s.popup? with
+  | some p => [.ack p.1]
+  | none =>
+    match (shown ctx s).findSome? (fieldAction ctx s) with
+    | some e => [e]
+    | none => all.filter fun e => match e with | .enter .. | .confirm _ => false | _ => true
+
 def searchMoves (ctx : Context) (space : SearchSpace) (s : State) : List Event :=
   let s := forgetHistory s
   let all := fullMoves ctx s
   match space with
   | .full => all
-  | .goalDirected => (directedMoves ctx s).filter (all.contains ·)
+  | .goalDirected => (goalDirectedMoves ctx s all).filter (all.contains ·)
+  | .navigationDirected => (directedMoves ctx s).filter (all.contains ·)
 
 /-- A small structural FNV-style Nat hash. Hash collisions remain in equality
 checked buckets; neither derived Hashable nor opaque machine hash is trusted. -/
@@ -196,14 +207,18 @@ space. No uncertified upper bound is returned as a minimum. -/
 def minimum (ctx : Context) (obj : Objective) (start : State) (bound := 20000)
     (space? : Option SearchSpace := none) : Option Minimum :=
   let fullBudget := if ctx.goals.values.length > 12 || ctx.prog.screens.length > 20 then 0 else bound
+  let goalBudget := if ctx.goals.values.length > 15 || ctx.prog.screens.length > 20 then 0 else bound
   match space? with
   | some space => (certifiedSearch ctx space obj start bound).map fun c =>
       { cost := c.cost, path := c.path, space }
   | none =>
     match certifiedSearch ctx .full obj start fullBudget with
     | some c => some { cost := c.cost, path := c.path, space := .full }
-    | none => (certifiedSearch ctx .goalDirected obj start bound).map fun c =>
-        { cost := c.cost, path := c.path, space := .goalDirected }
+    | none =>
+      match certifiedSearch ctx .goalDirected obj start goalBudget with
+      | some c => some { cost := c.cost, path := c.path, space := .goalDirected }
+      | none => (certifiedSearch ctx .navigationDirected obj start bound).map fun c =>
+          { cost := c.cost, path := c.path, space := .navigationDirected }
 
 /-- Every `certifiedSearch` answer has an allowed replay at its cost, and no
 cheaper run in the selected graph reaches the task goals. -/
@@ -232,6 +247,7 @@ theorem T9_certifiedSearch (ctx space obj start bound c)
   cases space with
   | full => exact h
   | goalDirected => simpa using (List.mem_filter.mp h).2
+  | navigationDirected => simpa using (List.mem_filter.mp h).2
 
  theorem searchMoves_safe (ctx space s e) (h : e ∈ searchMoves ctx space s) :
     safeEvent ctx s e = true := by
@@ -322,6 +338,53 @@ theorem T9_minimum_real (ctx space obj start bound c)
     apply lower es (forgetHistory v) n (abstract_run ctx space obj run)
     simpa only [forgetHistory, done_history] using gv
 
+
+/-- Public result contract: actual replay, its exact weight, and a lower bound
+for all real interpreter runs allowed by the result's declared search space. -/
+def MinimumCorrect (ctx : Context) (obj : Objective) (start : State) (r : Minimum) : Prop :=
+  ctx.done (runAll ctx.sp ctx.prog ctx.facts ctx.user .human start r.path) = true ∧
+  (∃ t, Certificate.Run (realGraph ctx r.space obj) start r.path t r.cost) ∧
+  (∀ es t n, Certificate.Run (realGraph ctx r.space obj) start es t n → ctx.done t = true → r.cost ≤ n)
+
+/-- T9 for the function used by the CLI, including full-to-directed fallback.
+No result escapes the certificate checks in either branch. -/
+theorem T9_minimum (ctx obj start bound space? r)
+    (h : minimum ctx obj start bound space? = some r) : MinimumCorrect ctx obj start r := by
+  cases space? with
+  | some space =>
+    simp only [minimum] at h
+    cases hc : certifiedSearch ctx space obj start bound with
+    | none => simp [hc] at h
+    | some c =>
+      simp only [hc, Option.map_some, Option.some.injEq] at h
+      cases h
+      exact T9_minimum_real ctx space obj start bound c hc
+  | none =>
+    simp only [minimum] at h
+    let fullBudget := if ctx.goals.values.length > 12 || ctx.prog.screens.length > 20 then 0 else bound
+    cases hf : certifiedSearch ctx .full obj start fullBudget with
+    | some c =>
+      simp only [show (if ctx.goals.values.length > 12 || ctx.prog.screens.length > 20 then 0 else bound) = fullBudget from rfl, hf, Option.some.injEq] at h
+      cases h
+      exact T9_minimum_real ctx .full obj start fullBudget c hf
+    | none =>
+      simp only [show (if ctx.goals.values.length > 12 || ctx.prog.screens.length > 20 then 0 else bound) = fullBudget from rfl, hf] at h
+      let goalBudget := if ctx.goals.values.length > 15 || ctx.prog.screens.length > 20 then 0 else bound
+      cases hd : certifiedSearch ctx .goalDirected obj start goalBudget with
+      | some c =>
+        simp only [show (if ctx.goals.values.length > 15 || ctx.prog.screens.length > 20 then 0 else bound) = goalBudget from rfl, hd, Option.some.injEq] at h
+        cases h
+        exact T9_minimum_real ctx .goalDirected obj start goalBudget c hd
+      | none =>
+        simp only [show (if ctx.goals.values.length > 15 || ctx.prog.screens.length > 20 then 0 else bound) = goalBudget from rfl, hd] at h
+        cases hn : certifiedSearch ctx .navigationDirected obj start bound with
+        | none => simp [hn] at h
+        | some c =>
+          simp only [hn, Option.map_some, Option.some.injEq] at h
+          cases h
+          exact T9_minimum_real ctx .navigationDirected obj start bound c hn
+
 #print axioms T9_certifiedSearch
 #print axioms T9_minimum_real
+#print axioms T9_minimum
 end Ehr.Sim

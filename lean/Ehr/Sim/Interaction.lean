@@ -12,7 +12,6 @@ structure Context where
   facts : Facts
   user : User
   goals : Goals
-  workflow? : Option Workflow := none
 
 def Context.next (ctx : Context) (s : State) (e : Event) : State :=
   (step ctx.sp ctx.prog ctx.facts ctx.user .human s e).1
@@ -51,26 +50,6 @@ def canAdvance (ctx : Context) (s : State) : Bool :=
 def tabEvents (cs : List Component) (c : Component) : List Event :=
   ((cs.filter (·.parent? == some c.id)).map (·.tab)).eraseDups.map (.selectTab c.id ·)
 
-def workflowName : Workflow → String
-  | .W1 => "W1" | .W2 => "W2" | .W3 => "W3" | .W4 => "W4"
-  | .W5 => "W5" | .W6 => "W6" | .W7 => "W7"
-
-def destinationAllowed (ctx : Context) (target : ScreenId) : Bool :=
-  match ctx.workflow? with
-  | none => true
-  | some wf => (ctx.prog.screen? target).any fun sc =>
-      sc.workflow == workflowName wf || sc.workflow == "shell" || sc.id == ctx.prog.start
-
-/-- Real navigation, including Back for the persona. Search and scroll do not
-change interpreter state and are charged separately by the policy. -/
-def navigation (ctx : Context) (s : State) (allowBack := true) : List Event :=
-  (shown ctx s).flatMap fun c => match c.kind with
-    | .button (.goto t) => if destinationAllowed ctx t then [.click c.id] else []
-    | .button .back => if allowBack then [.click c.id] else []
-    | .button .newOrderLine => if canAdvance ctx s then [.click c.id] else []
-    | .group true _ => [.click c.id]
-    | .tabs => tabEvents (ctx.prog.compsOf s.screen) c
-    | _ => []
 
 def usefulReview (ctx : Context) (s : State) (i : InfoId) : Bool :=
   ctx.goals.commits.any fun cm => !s.commits.contains cm &&
@@ -80,6 +59,38 @@ def usefulReview (ctx : Context) (s : State) (i : InfoId) : Bool :=
        | .shownOnCommit => false
        | .shownOrReceipt w roles => !s.receipts.any
           (receiptValid ctx.sp ctx.facts (nowMin ctx.facts s) rq.info w roles)))
+
+/-- A leaf that can reveal an unmet field, required review, or goal commit.
+Goto/Back buttons are retained as possible transit routes. -/
+def interestingLeaf (ctx : Context) (s : State) (c : Component) : Bool :=
+  (fieldAction ctx s c).isSome ||
+    (match c.kind with
+    | .button (.goto _) | .button .back => true
+    | .button .newOrderLine => canAdvance ctx s
+    | .button (.markReviewed i) => usefulReview ctx s i
+    | .button (.commit cm) => ctx.goals.commits.contains cm && !s.commits.contains cm
+    | _ => ctx.sp.reviews.any fun rq => ctx.goals.commits.contains rq.commit &&
+        !s.commits.contains rq.commit && showsInfo rq.info c.kind && whenHolds ctx.facts s rq.when)
+
+def relevantAux (ctx : Context) (s : State) (cs : List Component) : Nat → Component → Bool
+  | 0, _ => false
+  | n + 1, c => interestingLeaf ctx s c || cs.any (fun child =>
+      child.parent? == some c.id && relevantAux ctx s cs n child)
+
+/-- Real BFS navigation. Closing a group cannot reveal a previously hidden
+field/review, so only useful openings are explored. Tabs without any route to
+an unmet goal/review are omitted. Full minimum search retains all toggles.
+Search and scroll do not change state and are charged separately by policy. -/
+def navigation (ctx : Context) (s : State) (allowBack := true) : List Event :=
+  let cs := ctx.prog.compsOf s.screen
+  let relevant := relevantAux ctx s cs (cs.length + 1)
+  (shown ctx s).flatMap fun c => match c.kind with
+    | .button (.goto _) => [.click c.id]
+    | .button .back => if allowBack then [.click c.id] else []
+    | .button .newOrderLine => if canAdvance ctx s then [.click c.id] else []
+    | .group true _ => if !s.expanded.contains c.id && relevant c then [.click c.id] else []
+    | .tabs => ((cs.filter (fun child => child.parent? == some c.id && relevant child)).map (·.tab)).eraseDups.map (.selectTab c.id ·)
+    | _ => []
 
 /-- A field, a currently possible goal commit, or a needed review receipt. -/
 def actions (ctx : Context) (s : State) : List Event :=

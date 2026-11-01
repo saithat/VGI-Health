@@ -89,7 +89,7 @@ def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   else if e == "freq" || e == "frequency" then some (.code o.freq)
   else if e == "indication" then o.indication?.map .text
   else if e == "abxIndication" then o.indication?.map .code
-  else if e == "prn" then some (.code (if o.prn then "yes" else "no"))
+  else if e == "prn" then some (.code (toString o.prn))
   else if e == "duration" then o.supplyDays?.map (fun n => .code s!"{n} days")
   else if e == "orderKind" then some (.code (match o.kind?.getD .medication with
     | .medication => "medication" | .imaging => "imaging" | .procedure => "procedure"))
@@ -108,6 +108,15 @@ def curesReason (o : OrderChoice) : Option String := do
     if o.supplyDays?.any (· ≤ 5) then some "surgery-5-day" else none
   else if ["admin-in-facility", "ed-7-day", "surgery-5-day", "hospice", "cures-unavailable"].contains r then some r
   else none
+
+/-- A single commit-wide waiver is used only when every controlled order has
+the same documented exemption. Mixed or partly exempt prescriptions review
+CURES instead of waiving the whole batch from one exempt line. -/
+def taskCuresReason (choices : TaskChoices) : Option String := do
+  let controlled := choices.orders.filter (fun o => inClass o.drug "controlled-II-IV")
+  let first ← controlled.head?
+  let reason ← curesReason first
+  if controlled.all (fun o => curesReason o == some reason) then some reason else none
 
 /-- Elements filled once per immunization (slot = index). -/
 def immunizationElements : List ElementId := ["vaccine", "immunization", "cvx"]
@@ -130,9 +139,9 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
   | _ =>
     if el.id == weightElement || el.id == "dosingWeight" then weightKgGoal facts
     else if el.id == "painScore" || el.id == "painReassessment" then choices.painScore?.map (fun n => .code (toString n))
-    else if el.id == "refillReason" then choices.refillReason?.map .text
+    else if (el.id == "refillReason" || el.id == "refillDenyReason") then choices.refillReason?.map .text
     else if el.id == "curesExemptionReason" then
-      (choices.orders.findSome? curesReason).map .code
+      (taskCuresReason choices).map .code
     else if el.id == "naloxoneOffer" then some (.code
       (if facts.record.lookup "naloxoneOffer" == some "accepted" then "prescribed" else "offered-declined"))
     else if el.id == "adminStatus" then med?.map fun m => .code (if m.holdReason?.isSome then "held" else "given")
@@ -196,7 +205,7 @@ def hypothetical (orders : List OrderChoice) (extra : List ValueGoal) : State :=
     if o.kind?.getD .medication != .medication then none else
     some { element := drugElement, slot := i, value := .code o.drug, byHuman := true, confirmed := true }
   let others : List Captured := extra.filterMap fun g =>
-    if g.element == drugElement then none else
+    if g.element == drugElement && !orders.isEmpty then none else
     g.value?.map fun v =>
       { element := g.element, slot := g.slot?.getD 0, value := v, byHuman := true, confirmed := true }
   { screen := "", history := [], captured := drugs ++ others, receipts := [], acked := []
@@ -256,27 +265,49 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       match sp.element? rq.element with
       | some el => entryGoals facts user choices med? orders hyp0 el rq
       | none => []
+  let explicitChoices : List ValueGoal :=
+    let pain := match choices.painScore?, commits.head? with
+      | some score, some cm =>
+        if wf == .W4 && choices.administer.isEmpty then [] else
+        [{ element := "painScore", value? := some (.code (toString score)), commit := cm }]
+      | _, _ => []
+    let refillDose := if wf == .W7 && choices.refill? == some "modify" then
+      choices.orders.take 1 |>.map fun o =>
+        { element := "refillDose", value? := orderValue "dose" o, commit := "approveRefill" }
+      else []
+    let reason := if wf == .W7 then match choices.refillReason? with
+      | some reason => [{
+          element := (if choices.refill? == some "deny" then "refillDenyReason" else "refillNote"),
+          value? := some (.text reason), commit := "approveRefill" }]
+      | none => []
+      else []
+    pain ++ refillDose ++ reason
   let waiver := sp.reviews.flatMap fun rq =>
     if !commits.contains rq.commit || !whenHolds facts hyp0 rq.when then [] else
-    match rq.waivedBy?, choices.orders.findSome? curesReason with
+    match rq.waivedBy?, taskCuresReason choices with
     | some e, some reason => [{ element := e, value? := some (.code reason), commit := rq.commit }]
     | _, _ => []
   let services := ((List.range orders.length).zip orders).flatMap fun (i, o) =>
     if o.kind?.getD .medication == .medication then [] else
     ["orderKind", "orderCode"].map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
-  let checked := (dedupGoals (raw ++ services)).map (checkFit sp facts user)
+  let checked := (dedupGoals (raw ++ explicitChoices ++ services)).map (checkFit sp facts user)
   let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
-  let hyp := hypothetical orders values
+  -- Final alerts use the values actually required by this task, not uncaptured
+  -- order choices (for example a refill modification with no drug goal).
+  let hyp := hypothetical [] values
   let acks := sp.alerts.flatMap fun al =>
     if al.tier == .interruptive && commits.contains al.commit then
       (alertKeys facts hyp al.cond).map (al.id, ·)
     else []
+  let assumptions := if values.any (·.element == "naloxoneOffer") &&
+    (facts.record.lookup "naloxoneOffer").isNone then
+      ["naloxone response unspecified; modeling offered-declined"] else []
   let missing := if commits.isEmpty then [s!"no commit in spec {sp.version} for workflow {repr wf}"] else []
   {
     commits, values, waivers := checkedWaivers.map (·.1), expectedAcks := acks,
-    problems := missing ++ checked.flatMap (·.2) ++ checkedWaivers.flatMap (·.2) }
+    problems := missing ++ assumptions ++ checked.flatMap (·.2) ++ checkedWaivers.flatMap (·.2) }
 
 /-- An episode resets captures/commits while keeping the day's review receipts.
 W4 medications and W5 vaccines each require their own commit. -/
@@ -306,7 +337,8 @@ def episodes (facts : Facts) (wf : Workflow) (ch : TaskChoices) : List Episode :
       [{ facts, choices := { ch with administer := [] }, orders := [] }]
     meds ++ assessment
   | .W5 =>
-    let medical := if ch.orders.isEmpty && (ch.noteSections.filter (· != "visGiven")).isEmpty then [] else
+    let medical := if ch.orders.isEmpty && (ch.noteSections.filter (· != "visGiven")).isEmpty &&
+      (!ch.immunizations.isEmpty || ch.noteSections.isEmpty) then [] else
       [{ facts, choices := { ch with immunizations := [] }, orders := ch.orders }]
     let vaccines := ch.immunizations.map fun v =>
       { facts, choices := { ch with orders := [], immunizations := [v], noteSections := [] }, orders := [] : Episode }

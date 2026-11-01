@@ -6,7 +6,7 @@ import Ehr.Canonical.Builders
 Track board → triage (weight sometimes typed in lb) → provider evaluation →
 order sets or single orders → sign orders → disposition (admit, discharge, …).
 
-Deliberate friction: the dosing weight is typed again in the composer; order
+Deliberate friction: the dosing weight is displayed again on signing (linked from weight); order
 sets fill every value, and each one still needs a confirm; ED orders still ask
 for dispense quantity, refills, and pharmacy; triage and evaluation are
 separate screens.
