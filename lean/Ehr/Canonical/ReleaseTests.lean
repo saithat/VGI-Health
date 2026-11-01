@@ -155,7 +155,8 @@ def collapsedMar : Program := canonicalV3.updateScreen "w4Admin" fun s =>
   (adminFacts "insulin lispro") nurse).commits == ["administerMed"]
 #guard (finish (run w5Path (forPersona specV1 canonicalV1 "P4" .np) child np)
   "w5Sign" "signOrders" (forPersona specV1 canonicalV1 "P4" .np) child np).commits == ["signOrders"]
-#guard (finish (run preOpPath (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
+#guard (finish (run ([.click "home.work.w6Schedule", .click "w6Schedule.openCase"] ++ preOpPath.drop 1)
+    (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon)
   "w6Sign" "signOrders" (forPersona specV1 canonicalV1 "P5" .surgeon) preOpFacts surgeon).commits == ["signOrders"]
 
 -- Every added artifact action still completes after optional and stewardship

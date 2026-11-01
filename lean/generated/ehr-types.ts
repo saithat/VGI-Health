@@ -2171,6 +2171,14 @@ export interface ObservationRow {
 }
 
 /**
+ * A supplied practitioner name. Its logical identity is transport metadata.
+ */
+export interface ClinicianRow {
+  id: UserId;
+  name: string;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
@@ -2220,6 +2228,10 @@ export interface Display {
    * Latest lab interpretation by code, computed in Lean.
    */
   labFlags: [string, string][];
+  /**
+   * Optional practitioner identities; the header requires a unique user match.
+   */
+  clinicians?: ClinicianRow[];
   /**
    * Full per-observation results, including qualitative values and components.
    */
@@ -2290,6 +2302,15 @@ export type UiNode =
   | { text: { s: string } };
 
 /**
+ * Code quick picks carry their display mode, not clinical defaults or rules.
+ */
+export interface UiCodeChoices {
+  options: [string, string][];
+  showCode: boolean;
+  allowOther: boolean;
+}
+
+/**
  * A semantic screen. The banner is the first and sole banner landmark.
  */
 export interface UiScreen {
@@ -2302,7 +2323,27 @@ export interface UiScreen {
    */
   fieldSources?: [CompId, string][];
   banner: [string, string][];
+  /**
+   * Signed-in clinical role, supplied by the same Lean user as permissions.
+   */
+  viewer?: string;
   nav: [string, [string, string][]][];
+  /**
+   * The declared navigator component that opens the current screen, if any.
+   */
+  activeNav?: CompId;
+  /**
+   * Readable labels for prefill sources; raw provenance remains on each field.
+   */
+  sourceLabels?: [string, string][];
+  /**
+   * Entry guidance for a field, including recorded values in another unit.
+   */
+  entryHints?: [CompId, string][];
+  /**
+   * Optional department quick picks: raw code and readable description.
+   */
+  fieldChoices?: [CompId, UiCodeChoices][];
   title: string;
   workspace: UiNode[];
   side: UiNode[];
@@ -2335,6 +2376,10 @@ export interface FactsContext {
    * Episode kind supplied by the caller, e.g. "preop".
    */
   encounterKind?: string;
+  /**
+   * The selected FHIR Encounter. Its identity stays in transport metadata.
+   */
+  encounterId?: string;
   /**
    * Extra named record values, added after the ones derived from the bundle.
    */
@@ -2401,6 +2446,20 @@ export interface AmbulatoryMessageRow {
   priority: string;
   status: string;
   folder: string;
+}
+
+/**
+ * One surgical request on its actual planned date. Status is the request's
+ * status; this does not assert that a patient is roomed or a procedure completed.
+ */
+export interface SurgicalCaseRow {
+  room: string;
+  start: string;
+  procedure: string;
+  indication: string;
+  patient: string;
+  surgeon: string;
+  status: string;
 }
 
 /**

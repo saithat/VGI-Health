@@ -38,7 +38,8 @@ def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
 /-- Apply the pre-set view before permissions, removing links to absent screens. -/
 def presetProgram (owner : String) (p : Program) : Program :=
   if !["P1", "P2", "P3", "P4", "P5"].contains owner then p else
-  let screens := p.screens.filter (presetScreen owner)
+  let screens := (p.screens.filter (presetScreen owner)).map fun sc =>
+    if owner == "P5" then W6.workspaceView (W6.clinicView sc) else sc
   let host := if screens.any (fun s => s.workflow == "W6") then none else
     (screens.find? (fun s => s.components.any (fun c => c.kind == .button (.commit "signOrders")))).map (·.id)
   let screens := screens.map fun s => if host != some s.id then s else

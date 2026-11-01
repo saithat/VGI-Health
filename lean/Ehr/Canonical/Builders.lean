@@ -100,6 +100,16 @@ def group (s : ScreenId) (name : String) (label : String) (collapsible : Bool :=
     Component :=
   mk s name (.group collapsible startCollapsed) label parent tab
 
+/-- A structured information view; its original info and all rows are retained. -/
+def presented (kind : String) (c : Component) : Component :=
+  { c with tag := c.tag ++ ".present." ++ kind }
+
+/-- A narrative input retains its ordinary field binding and capture policy. -/
+def narrative (s : ScreenId) (name : String) (element : ElementId) (label : String)
+    (parent : Option String := none) : Component :=
+  let c := field s name element label parent
+  { c with tag := c.tag ++ ".multiline" }
+
 /-- A tab container. Children choose their tab with `tab`. -/
 def tabsC (s : ScreenId) (name : String) (label : String)
     (parent : Option String := none) : Component :=

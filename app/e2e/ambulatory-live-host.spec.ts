@@ -57,7 +57,7 @@ for (const { persona, screen, inspecting } of cases) {
           "",
       );
     await page
-      .getByRole("button", { name: "Search Medplum", exact: true })
+      .getByRole("button", { name: "Search patients", exact: true })
       .click();
     await page
       .locator(".patient-search + ul button")
@@ -161,15 +161,24 @@ for (const { persona, screen, inspecting } of cases) {
         .getByRole("button", { name: "Close saved resource", exact: true })
         .click();
     }
-    await page.locator(".live-controls button").click();
+    await page
+      .getByRole("button", {
+        name: inspecting ? "Live encounter" : "Encounter options",
+        exact: true,
+      })
+      .click();
     const options = page.getByRole("dialog");
     await expect(options).toBeVisible();
-    if (phase === "before" || inspecting)
-      await expect(options).toContainText("Encounter/");
-    else
-      await expect(options).not.toContainText(
-        /Medplum|Encounter\/|\/medplum\/|Provenance\//,
+    if (phase === "before") await expect(options).toContainText("Encounter/");
+    else {
+      await expect(options).toContainText(
+        patient.name.split(" ").at(-1) ?? patient.name,
       );
+      await expect(options).not.toContainText(
+        /Encounter\/|\/medplum\/|Provenance\/|[0-9a-f]{8}-[0-9a-f]{4}-/i,
+      );
+      if (!inspecting) await expect(options).not.toContainText("Medplum");
+    }
     await page.screenshot({
       path: `shots/realism/amb/${capture}-options.png`,
       animations: "disabled",

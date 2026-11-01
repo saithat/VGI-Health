@@ -202,6 +202,11 @@ def displayName (p : Json) : String :=
   let given := " ".intercalate (givenNames n)
   if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
 
+/-- A practitioner's supplied name text, else the official structured name. -/
+def practitionerName (r : Json) : String :=
+  let text := (str (officialName r) "text").trimAscii.toString
+  if text != "" then text else (displayName r).trimAscii.toString
+
 /-- First letter of the first given name and of the family name, upper case. -/
 def initials (p : Json) : String :=
   let n := officialName p
@@ -500,6 +505,25 @@ def fmtHundredths (n : Nat) : String :=
 /-- Interpretation codes that mean abnormal. -/
 def abnormalCodes : List String := ["H", "L", "HH", "LL", "A", "AA", "HU", "LU", "<", ">"]
 
+/-- Department display names for supplied standard LOINC labels. Recorded codes
+and calculation methods are preserved; custom local names remain authoritative. -/
+def labDisplayAliases : List (String × String × String) :=
+  [("2160-0", "Creatinine [Mass/volume] in Serum or Plasma", "Creatinine"),
+   ("4548-4", "Hemoglobin A1c/Hemoglobin.total in Blood", "Hemoglobin A1c"),
+   ("718-7", "Hemoglobin [Mass/volume] in Blood", "Hemoglobin"),
+   ("33914-3", "Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M", "eGFR (MDRD)")]
+
+/-- Only a known system/code and its standard label (or a code-only label)
+receive the department caption. Unknown codes and qualified names keep their text. -/
+def labDisplayName (concept : Json) : String :=
+  let source := ccText concept
+  let coding := (codings concept).headD .null
+  let code := str coding "code"
+  if str coding "system" != "http://loinc.org" then source else
+  ((labDisplayAliases.find? fun (knownCode, standardName, _) =>
+    code == knownCode && (source == standardName || source == code)).map
+      fun (_, _, label) => label).getD source
+
 /-- One lab result: code, name, value text, unit, time, value × 100,
 reference range (×100, if known), flagged abnormal by the source. -/
 structure LabPoint where
@@ -521,7 +545,7 @@ def labPoint (r : Json) : LabPoint :=
     | some lo, some hi => some (lo, hi)
     | _, _ => none
   let fromTable := (refRanges.find? (·.1 == code)).map (·.2)
-  { code, name := ccText (field r "code"), value := v, unit := u, date := obsWhen r
+  { code, name := labDisplayName (field r "code"), value := v, unit := u, date := obsWhen r
     hundredths? := h, range? := fromObs <|> fromTable
     flagged := (arr r "interpretation").any (fun cc => abnormalCodes.contains (firstCode cc)) }
 
@@ -831,8 +855,8 @@ def humanRef (rs : List Json) (ref : Json) : String :=
   if display != "" then display else
     match referenced? rs ref with
     | none => ""
-    | some r => if resourceType r == "Patient" || resourceType r == "Practitioner"
-      then displayName r else str r "name"
+    | some r => if resourceType r == "Patient" then displayName r
+      else if resourceType r == "Practitioner" then practitionerName r else str r "name"
 
 /-- The banner fields. -/
 def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
@@ -1080,14 +1104,14 @@ def labResultFlag (r : Json) : String :=
 
 /-- One result retains its own raw value and metadata, never the latest row's unit. -/
 def labResultRow (r : Json) : LabResultRow :=
-  { code := firstCode (field r "code"), name := ccText (field r "code")
+  { code := firstCode (field r "code"), name := labDisplayName (field r "code")
     value := labResultValue r, unit := qtyUnitText (field r "valueQuantity"), date := obsWhen r
     refRange := labResultRange r, flag := labResultFlag r, status := str r "status" }
 
 /-- Component values keep their names and units and inherit the report's time/status. -/
 def labComponentResultRow (parent component : Json) : LabResultRow :=
   let row := labResultRow component
-  { row with name := ccText (field parent "code") ++ " • " ++ row.name
+  { row with name := labDisplayName (field parent "code") ++ " • " ++ row.name
              date := obsWhen parent, status := str parent "status" }
 
 /-- Retain the report row and every component, without merging same-time records. -/
@@ -1464,16 +1488,193 @@ end Ambulatory
 
 /-! ## Facts and display -/
 
+/-! ## Perioperative chart projections
+
+These views read supplied FHIR resources for the selected patient. They do not
+invent OR times, rooms, consent verification, time-outs or postoperative events.
+The surgical and consultation codes are also used by infra/seed-world.mjs.
+-/
+
+/-- Clinical reference text, resolving a supplied resource without displaying
+an internal FHIR reference when its human-readable name is absent. -/
+def periopReferenceName (rs : List Json) (ref : Json) : String :=
+  let label := str ref "display"
+  if label != "" then label else
+  match rs.find? (fun r => str r "id" != "" &&
+    (resourceType r ++ "/" ++ str r "id" == str ref "reference" ||
+      str r "id" == str ref "reference")) with
+  | none => "Not recorded"
+  | some r =>
+    let name := if resourceType r == "Location" || resourceType r == "Organization"
+      then str r "name" else if resourceType r == "Practitioner"
+        then practitionerName r else displayName r
+    if name == "" then "Not recorded" else name
+
+/-- Relative server references and normalized transaction fullUrls identify the
+same selected resource. Missing identities never match each other. -/
+def periopReferenceMatches (target ref : Json) : Bool :=
+  let id := str target "id"
+  id != "" && (str ref "reference" == id ||
+    str ref "reference" == resourceType target ++ "/" ++ id)
+
+/-- A resource belongs to the selected chart only through its explicit subject. -/
+def periopSubject (p r : Json) : Bool :=
+  periopReferenceMatches p (field r "subject")
+
+/-- Expand the supplied surgical terminology labels used by the case feed.
+Other source text and codes are retained; this assigns no new diagnosis. -/
+def periopIndicationText (cc : Json) : String :=
+  match ccText cc with
+  | "appendicitis" => "Appendicitis"
+  | "acute-cholecystitis" => "Acute cholecystitis"
+  | "symptomatic-cholelithiasis" => "Symptomatic cholelithiasis"
+  | "inguinal-hernia" => "Inguinal hernia"
+  | "umbilical-hernia" => "Umbilical hernia"
+  | text => text
+
+/-- One surgical request on its actual planned date. Status is the request's
+status; this does not assert that a patient is roomed or a procedure completed. -/
+structure SurgicalCaseRow where
+  room : String
+  start : String
+  procedure : String
+  indication : String
+  patient : String
+  surgeon : String
+  status : String
+  deriving Repr, Inhabited
+
+/-- The surgical worklist comes from dated surgical ServiceRequests, including
+date-only requests. A date-only request never acquires an invented start time. -/
+def surgicalCaseRows (today : String) (rs : List Json) (p : Json) : List SurgicalCaseRow :=
+  (rs.filter fun r => resourceType r == "ServiceRequest" && periopSubject p r &&
+    (arr r "category").any (hasCode · "387713003") &&
+    !["entered-in-error", "revoked"].contains (str r "status") &&
+    ((str r "occurrenceDateTime").startsWith today ||
+      (str (field r "occurrencePeriod") "start").startsWith today)).map fun r =>
+    { room := periopReferenceName rs (first r "locationReference")
+      start := let exact := str r "occurrenceDateTime"
+        if exact != "" then exact else str (field r "occurrencePeriod") "start"
+      procedure := knownText (ccText (field r "code"))
+      indication := knownText ("; ".intercalate ((arr r "reasonCode").map periopIndicationText))
+      patient := displayName p
+      surgeon := periopReferenceName rs (first r "performer")
+      status := knownText (str r "status") }
+
+/-- The OR-schedule contract retains the supplied indication as an extra column.
+It is the request's reason, not a confirmed operative diagnosis. -/
+def SurgicalCaseRow.cells (r : SurgicalCaseRow) : List (String × String) :=
+  [("Room", r.room), ("Start", r.start), ("Procedure", r.procedure),
+   ("Indication", r.indication), ("Patient", r.patient), ("Surgeon", r.surgeon), ("Status", r.status)]
+
+/-- Open consultation requests retain their request time, indication and owner. -/
+def surgicalConsultRows (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "ServiceRequest" && periopSubject p r &&
+    hasCode (field r "code") "11429006" &&
+    !["entered-in-error", "revoked", "completed"].contains (str r "status")).map fun r =>
+    [("Received", str r "authoredOn"), ("Patient", displayName p),
+     ("Task", knownText (ccText (field r "code"))),
+     ("Reason", "; ".intercalate ((arr r "reasonCode").map periopIndicationText)),
+     ("Priority", knownText (str r "priority")), ("Status", knownText (str r "status")),
+     ("Requested by", periopReferenceName rs (field r "requester")),
+     ("Owner", periopReferenceName rs (first r "performer")),
+     ("Location", periopReferenceName rs (first r "locationReference"))]
+
+/-- Consent documents remain evidence on file, independent of the surgeon's
+human verification field and of the team's surgical time-out. -/
+def surgicalConsentRows (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "Consent" &&
+    periopReferenceMatches p (field r "patient") &&
+    str r "status" != "entered-in-error").map fun r =>
+    [("Document status", knownText (str r "status")), ("Recorded", str r "dateTime"),
+     ("Scope", ccText (field r "scope")),
+     ("Procedure / consent terms", "; ".intercalate ((arr (field r "provision") "code").map ccText)),
+     ("Verification", "Verify the signed document against the planned procedure and site")]
+
+/-- Today's recorded procedures supply operative evidence. Historical procedures
+cannot masquerade as today's intra-operative record. No completion is inferred. -/
+def surgicalRecordRows (today : String) (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "Procedure" && periopSubject p r &&
+    !["entered-in-error", "not-done"].contains (str r "status") &&
+    ((str r "performedDateTime").startsWith today ||
+      (str (field r "performedPeriod") "start").startsWith today)).map fun r =>
+    [("Procedure", ccText (field r "code")), ("Status", str r "status"),
+     ("Start", let exact := str r "performedDateTime"
+       if exact != "" then exact else str (field r "performedPeriod") "start"),
+     ("End", str (field r "performedPeriod") "end"),
+     ("Location", periopReferenceName rs (field r "location")),
+     ("Team", "; ".intercalate ((arr r "performer").map fun performer =>
+       periopReferenceName rs (field performer "actor"))),
+     ("Recorded findings", "; ".intercalate ((arr r "note").map (str · "text")))]
+
+/-- Optional read-only payloads are versioned by the supplied resource set.
+They satisfy no physical-event attestation and introduce no new clinical guard. -/
+def surgicalPayloads (today : String) (rs : List Json) (p : Json) : List InfoPayload :=
+  let views := [("scheduleTasks", (surgicalCaseRows today rs p).map SurgicalCaseRow.cells),
+    ("consultRequest", surgicalConsultRows rs p), ("consentDocument", surgicalConsentRows rs p),
+    ("intraopRecord", surgicalRecordRows today rs p)]
+  views.map fun (info, rows) =>
+    { info, patient := patientIdOf p, artifactKey := "render.periop." ++ info
+      artifact := "FHIR/perioperative/" ++ info, version := listVersion rs
+      rows := rows.zipIdx.map fun (fields, slot) =>
+        { id := info ++ "." ++ toString slot, slot, fields } }
+
+/-- Matching bindings let the existing payload reader enforce version identity. -/
+def surgicalBindings (payloads : List InfoPayload) : List ArtifactBinding :=
+  payloads.map fun p => { key := p.artifactKey, artifact := p.artifact, version := p.version }
+
+/-! ## Practitioner display identity -/
+
+/-- Only named Practitioner records can label the signed-in clinician. No
+resource ID, patient name or specialty is substituted for a missing name. -/
+def clinicianRows (rs : List Json) : List ClinicianRow :=
+  (ofType "Practitioner" rs).filterMap fun r =>
+    let id := str r "id"
+    let name := practitionerName r
+    if id == "" || name == "" then none else some { id, name }
+
+/-! ## Selected encounter context -/
+
+/-- Keep the selected encounter for contextual fields, while retaining all
+other record types. An unknown or foreign selection never becomes another visit. -/
+def encounterRecords (ctx : FactsContext) (rs : List Json) (p : Json) : List Json :=
+  match ctx.encounterId? with
+  | none => rs
+  | some id => rs.filter fun r => resourceType r != "Encounter" ||
+      (id != "" && str r "id" == id && periopSubject p r)
+
+/-- Explicit episode scope has priority. Otherwise a selected encounter's
+standard class supplies its setting. A clinical role never implies pre-op. -/
+def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option String :=
+  match ctx.encounterKind? with
+  | some kind => some kind
+  | none =>
+    if ctx.encounterId?.isNone then none else
+    (latestEncounter (encounterRecords ctx rs p)).bind fun enc =>
+      let coding := field enc "class"
+      if str coding "system" != "http://terminology.hl7.org/CodeSystem/v3-ActCode" then none else
+      match str coding "code" with
+      | "AMB" => some "ambulatory"
+      | "EMER" => some "emergency"
+      | "IMP" | "ACUTE" | "NONAC" => some "inpatient"
+      | _ => none
+
 /-- The facts the spec needs. -/
 def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
   let allergies := rs.filter isAllergy
   let meds := rs.filter isMedRequest
   let labs := labRows rs
-  let visitDx := match latestEncounter rs with
+  let visitDx := match latestEncounter (encounterRecords ctx rs p) with
     | some e => firstCode (first e "reasonCode")
     | none => ""
-  let supporting := Ambulatory.payloads ctx rs p
+  let surgical := surgicalPayloads ctx.today rs p
+  let ambulatory := Ambulatory.payloads ctx rs p
+  let setting := encounterKindOf ctx rs p
+  let preop := setting == some "preop" ||
+    (setting.isNone && !(surgicalCaseRows ctx.today rs p).isEmpty)
+  let supporting := (surgical.filter fun payload => payload.info != "scheduleTasks" || preop) ++
+    (ambulatory.filter fun payload => payload.info != "scheduleTasks" || !preop)
   { patientId := patientIdOf p
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
@@ -1487,7 +1688,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     abnormalResult := labs.any (·.abnormal)
     now := ctx.now
     medToGive? := ctx.medToGive?
-    encounterKind? := ctx.encounterKind?
+    encounterKind? := encounterKindOf ctx rs p
     receipts := ctx.receipts
     infoPayloads? := some supporting
     artifactBindings? := some (supporting.map fun payload =>
@@ -1498,7 +1699,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
   let dob := str p "birthDate"
   { asOf := ctx.today
-    banner := bannerOf ctx.today rs p
+    banner := bannerOf ctx.today (encounterRecords ctx rs p) p
     allergies := allergyRows rs
     meds := medRows rs
     vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)
@@ -1515,7 +1716,8 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     history := historyRows rs
     schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
     marOrders := marOrderRows rs, administrations := administrationRows rs
-    observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs }
+    observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
+    clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

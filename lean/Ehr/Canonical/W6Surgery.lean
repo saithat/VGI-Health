@@ -1,4 +1,6 @@
 import Ehr.Canonical.Builders
+import Ehr.Canonical.W1Visit
+import Ehr.Core.Navigation
 
 /-!
 # W6: surgical day (P5, general surgeon)
@@ -29,21 +31,63 @@ namespace Ehr.Canonical.W6
 
 open Ehr.Canonical
 
-/-- The W6 navigator (the sign screen is reached from the composer or the
-post-op order set). -/
+/-- Surgical activities open a case; these sections document its phases. -/
 def nav : List (ScreenId × String) :=
-  [("w6Consult", "Consult"), ("w6ConsultClose", "Consult close"), ("w6PreOp", "Pre-op"),
-   ("w6Orders", "Orders"), ("w6PostOp", "Post-op order set"), ("w6OpNote", "Op note"),
-   ("w6Rounding", "Rounding"), ("w6Discharge", "Discharge")]
+  [("w6Schedule", "Case list"), ("w6Consults", "Consult list"),
+   ("w6Consult", "Consult note"), ("w6ConsultClose", "Sign Consult"),
+   ("w6PreOp", "Preprocedure"), ("w6Orders", "Orders"),
+   ("w6Sign", "Sign Orders"), ("w6OpNote", "Brief Op Note"),
+   ("w6PostOp", "Postprocedure Orders"), ("w6Rounding", "Rounding"),
+   ("w6Discharge", "Discharge")]
 
 /-- The chart-review tabs on W6 screens. -/
 def chart : List Block :=
-  [(.table, "imaging", "Imaging"), (.table, "labResults", "Results"),
-   (.panel, "priorNotes", "Notes"), (.panel, "surgicalHistory", "Surgical history"),
-   (.table, "encounterHistory", "Encounters")]
+  [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
+   (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
+   (.table, "problemList", "Problems"), (.panel, "allergyList", "Allergies"),
+   (.table, "imaging", "Imaging"), (.panel, "surgicalHistory", "Surgical history")]
 
-/-- The shell for a W6 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
+/-- A real navigator group survives blueprint cleanup, so case links are not
+repeated as an unlabeled bank of footer buttons. -/
+def frame (s : ScreenId) : List Component :=
+  let consultation := ["w6Consults", "w6Consult", "w6ConsultClose"].contains s
+  shell s [] [] chart ++
+    [{ group s "caseSummary" (if consultation then "Consult context" else "Surgical case") (collapsible := false) with
+        tag := cid s "perioperative.sidebar" },
+     panel s "caseSummary.procedure" (if consultation then "consultRequest" else "scheduleTasks")
+       (if consultation then "Request" else "Case request") (parent := some "caseSummary")] ++
+    [{ group s "caseNavigation" "Surgical navigator" (collapsible := false) with
+        tag := cid s "navigator" }] ++
+    nav.map (fun (target, label) =>
+      goto s ("nav." ++ target) target label (parent := some "caseNavigation"))
+
+/-- The OR list is distinct from the selected patient's preprocedure record.
+The adjacent action is an ordinary interpreter goto, not a decorative table cell. -/
+def schedule : Screen :=
+  let s := "w6Schedule"
+  { id := s, title := "OR Schedule", workflow := "W6"
+    components := frame s ++ [
+      presented "orSchedule" (group s "caseList" "Surgical cases" (collapsible := false)),
+      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases — request status"
+        (parent := some "caseList")),
+      { goto s "openCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
+        tag := "present.row|" ++ cid s "cases" ++ "|0" },
+      goto s "consults" "w6Consults" "Consults",
+      goto s "clinic" "w1Rooming" "Surgical clinic",
+      goto s "results" "w2Inbasket" "In Basket: Results"] }
+
+/-- Surgical consultation requests are a work queue, separate from the note. -/
+def consultList : Screen :=
+  let s := "w6Consults"
+  { id := s, title := "Consults", workflow := "W6"
+    components := frame s ++ [
+      presented "worklist" (group s "consultQueue" "Consult queue" (collapsible := false)),
+      presented "worklist" (table s "requests" "consultRequest" "Consult requests"
+        (parent := some "consultQueue")),
+      { goto s "openConsult" "w6Consult" "Open selected consult" (parent := some "consultQueue") with
+        tag := "present.row|" ++ cid s "requests" ++ "|0" },
+      goto s "clinic" "w1Rooming" "Surgical clinic",
+      goto s "cases" "w6Schedule" "OR Schedule"] }
 
 /-- ED consult: the request, imaging, labs, vitals; the consult note; the
 surgical decision; home medications. -/
@@ -55,52 +99,59 @@ def consult : Screen :=
       table s "imagingTable" "imaging" "Imaging",
       table s "labs" "labResults" "Labs",
       panel s "vitals" "vitals" "Vital signs",
-      field s "chiefComplaint" "chiefComplaint" "Reason for consult",
-      field s "hpi" "hpi" "History of present illness",
-      field s "ros" "ros" "Review of systems",
-      field s "exam" "exam" "Physical exam",
-      field s "assessmentPlan" "assessmentPlan" "Assessment and plan",
-      field s "visitDiagnosis" "visitDiagnosis" "Diagnosis (ICD-10)",
-      field s "surgeryDecision" "surgeryDecision" "Surgical decision",
+      group s "history" "History of present illness" (collapsible := false),
+      field s "chiefComplaint" "chiefComplaint" "Reason for consult" (parent := some "history"),
+      narrative s "hpi" "hpi" "HPI" (parent := some "history"),
+      narrative s "ros" "ros" "Review of systems" (parent := some "history"),
+      group s "assessment" "Examination and surgical plan" (collapsible := false),
+      narrative s "exam" "exam" "Physical examination" (parent := some "assessment"),
+      narrative s "assessmentPlan" "assessmentPlan" "Assessment and plan" (parent := some "assessment"),
+      field s "visitDiagnosis" "visitDiagnosis" "Diagnosis (ICD-10-CM)" (parent := some "assessment"),
+      field s "surgeryDecision" "surgeryDecision" "Surgical decision" (parent := some "assessment"),
       group s "homeMeds" "Home medications",
       table s "meds" "currentMeds" "Home medications" (parent := some "homeMeds"),
       field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
         (parent := some "homeMeds") (slot := .fixed 0),
       field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
         (parent := some "homeMeds") (slot := .fixed 1),
-      goto s "next" "w6ConsultClose" "Next: close consult"
+      goto s "next" "w6ConsultClose" "Review consult"
     ] }
 
 /-- Consult close: billing diagnosis, level of service, follow-up, instructions;
 Sign note. -/
 def consultClose : Screen :=
   let s := "w6ConsultClose"
-  { id := s, title := "Close consult", workflow := "W6"
+  { id := s, title := "Sign Consult", workflow := "W6"
     components := frame s ++ [
-      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
-      field s "levelOfService" "levelOfService" "Level of service",
-      field s "followUp" "followUp" "Plan / follow-up",
-      field s "patientInstructions" "patientInstructions" "Instructions (e.g. NPO)",
+      group s "billing" "Diagnosis and charges" (collapsible := false),
+      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10-CM)" (parent := some "billing"),
+      field s "levelOfService" "levelOfService" "Level of service" (parent := some "billing"),
+      group s "plan" "Follow-up and patient instructions" (collapsible := false),
+      field s "followUp" "followUp" "Follow-up" (parent := some "plan"),
+      narrative s "patientInstructions" "patientInstructions" "Instructions / NPO plan" (parent := some "plan"),
       commitBtn s "signNote" "Sign consult note",
-      goto s "next" "w6PreOp" "Next: pre-op"
+      goto s "next" "w6PreOp" "Preprocedure"
     ] }
 
 /-- Pre-op: consent, anticoagulants and meds to hold, H&P update, NPO status,
 allergies, current meds. -/
 def preOp : Screen :=
   let s := "w6PreOp"
-  { id := s, title := "Pre-op", workflow := "W6"
+  { id := s, title := "Preprocedure", workflow := "W6"
     components := frame s ++ [
       table s "phases" "surgicalChecklist" "Before induction",
+      group s "interval" "H&P update" (collapsible := false),
+      narrative s "hpUpdate" "hpUpdate" "Interval history and physical" (parent := some "interval"),
       panel s "consent" "consentDocument" "Consent on file",
-      field s "consentVerified" "consentVerified" "Surgical consent verified",
+      group s "verification" "Consent verification" (collapsible := false),
+      field s "consentVerified" "consentVerified" "Signed consent matches procedure and site" (parent := some "verification"),
       table s "anticoagulants" "anticoagulantList" "Anticoagulants and antiplatelets",
-      field s "medsToHold" "medsToHold" "Medications to hold",
-      field s "hpUpdate" "hpUpdate" "H&P update (day of surgery)",
-      field s "npoStatus" "npoStatus" "NPO since",
+      group s "preparation" "Medication holds and fasting" (collapsible := false),
+      narrative s "medsToHold" "medsToHold" "Medication hold / restart plan" (parent := some "preparation"),
+      field s "npoStatus" "npoStatus" "Last oral intake / NPO since" (parent := some "preparation"),
       panel s "allergies" "allergyList" "Allergies",
       table s "meds" "currentMeds" "Current medications",
-      goto s "toOrders" "w6Orders" "Pre-op orders"
+      goto s "toOrders" "w6Orders" "Preprocedure orders"
     ] }
 
 /-- The W6 order composer (prophylaxis, single post-op orders, rounding
@@ -124,20 +175,29 @@ def orders : Screen :=
 10–13). -/
 def postOp : Screen :=
   let s := "w6PostOp"
-  { id := s, title := "Post-op order set", workflow := "W6"
+  { id := s, title := "Postprocedure Orders", workflow := "W6"
     components := frame s ++ [
-      macroBtn s "appendectomySet" "w6AppendectomySet" "Appendectomy post-op order set",
-      group s "care" "Post-op care",
+      group s "sets" "Order sets" (collapsible := false),
+      macroBtn s "appendectomySet" "w6AppendectomySet" "Laparoscopic appendectomy — postoperative" (parent := some "sets"),
+      group s "care" "Diet and activity" (collapsible := false),
       field s "postOpDiet" "postOpDiet" "Diet" (parent := some "care"),
       field s "postOpActivity" "postOpActivity" "Activity" (parent := some "care"),
-      field s "vteMechanical" "vteMechanical" "VTE prophylaxis: mechanical" (parent := some "care"),
-      field s "postOpLabs" "postOpLabs" "Morning labs" (parent := some "care"),
-      field s "postOpVitalsFreq" "postOpVitalsFreq" "Vital signs frequency" (parent := some "care"),
-      field s "nursingOrders" "nursingOrders" "Nursing orders" (parent := some "care")] ++
-      orderSetRows s [10, 11, 12, 13] ++ [
+      group s "prevention" "VTE prevention" (collapsible := false),
+      field s "vteMechanical" "vteMechanical" "Mechanical prophylaxis" (parent := some "prevention"),
+      group s "monitoring" "Labs and monitoring" (collapsible := false),
+      field s "postOpLabs" "postOpLabs" "Morning labs" (parent := some "monitoring"),
+      field s "postOpVitalsFreq" "postOpVitalsFreq" "Vital signs" (parent := some "monitoring"),
+      group s "nursing" "Nursing care" (collapsible := false),
+      narrative s "nursingOrders" "nursingOrders" "Wound care, pulmonary hygiene and I&O" (parent := some "nursing")] ++
+      (orderSetRows s [10, 11, 12, 13]).map (fun c =>
+        if c.id == cid s "row10" then { c with label := "Pain — scheduled analgesia", kind := .group false false }
+        else if c.id == cid s "row11" then { c with label := "Pain — as needed", kind := .group false false }
+        else if c.id == cid s "row12" then { c with label := "VTE — pharmacologic prophylaxis", kind := .group false false }
+        else if c.id == cid s "row13" then { c with label := "Nausea and vomiting", kind := .group false false }
+        else c) ++ [
       table s "pending" "orderSummary" "Pending orders",
       goto s "toSign" "w6Sign" "Review and sign",
-      goto s "toOrders" "w6Orders" "Add single orders"
+      goto s "toOrders" "w6Orders" "Add orders"
     ] }
 
 /-- Sign orders (surgery): pre-op or post-op. Everything required is shown,
@@ -159,39 +219,43 @@ def sign : Screen :=
       alertC s "alert.weightLb" "weightInLb" "Weight entered in pounds" (popup := false),
       alertC s "alert.highAlert" "highAlertOrderNotice" "High-alert medication ordered"
         (popup := true),
-      group s "weights" "Weights",
+      group s "weights" "Dosing weight" (collapsible := false),
       field s "weight" "weight" "Weight today (kg)" (parent := some "weights"),
       field s "dosingWeight" "dosingWeight" "Dosing weight (kg)" (parent := some "weights")] ++
       controlledFields s ++ [
       field s "patientIdReentry" "patientIdReentry" "Re-enter patient ID (initials/sex/age)",
       commitBtn s "signOrders" "Sign orders" (hotkey := none),
       goto s "edit" "w6Orders" "Edit orders",
-      goto s "toOpNote" "w6OpNote" "Op note"
+      goto s "toOpNote" "w6OpNote" "Brief Op Note"
     ] }
 
 /-- The brief op note: intra-op record on screen; the op-note fields. -/
 def opNote : Screen :=
   let s := "w6OpNote"
-  { id := s, title := "Brief op note", workflow := "W6"
+  { id := s, title := "Brief Op Note", workflow := "W6"
     components := frame s ++ [
       table s "phases" "surgicalChecklist" "Before leaving the OR",
       panel s "intraop" "intraopRecord" "Intra-op record",
       macroBtn s "template" "w6OpNoteTemplate" "Template: laparoscopic appendectomy",
-      group s "note" "Brief op note",
-      field s "opPreopDiagnosis" "opPreopDiagnosis" "Pre-op diagnosis" (parent := some "note"),
-      field s "opPostopDiagnosis" "opPostopDiagnosis" "Post-op diagnosis" (parent := some "note"),
-      field s "opProcedure" "opProcedure" "Procedure" (parent := some "note"),
+      group s "note" "Diagnoses and procedure" (collapsible := false),
+      field s "opPreopDiagnosis" "opPreopDiagnosis" "Pre-op diagnosis (ICD-10-CM)" (parent := some "note"),
+      field s "opPostopDiagnosis" "opPostopDiagnosis" "Post-op diagnosis (ICD-10-CM)" (parent := some "note"),
+      field s "opProcedure" "opProcedure" "Procedure (CPT)" (parent := some "note"),
       field s "opSurgeons" "opSurgeons" "Surgeon / assistants" (parent := some "note"),
-      field s "opAnesthesia" "opAnesthesia" "Anesthesia" (parent := some "note"),
-      field s "opFindings" "opFindings" "Findings" (parent := some "note"),
-      field s "opEbl" "opEbl" "Estimated blood loss (mL)" (parent := some "note"),
-      field s "opSpecimens" "opSpecimens" "Specimens" (parent := some "note"),
-      field s "opDrains" "opDrains" "Drains" (parent := some "note"),
-      field s "opImplants" "opImplants" "Implants" (parent := some "note"),
-      field s "opComplications" "opComplications" "Complications" (parent := some "note"),
-      field s "opCondition" "opCondition" "Condition" (parent := some "note"),
+      group s "anesthesia" "Anesthesia and blood loss" (collapsible := false),
+      field s "opAnesthesia" "opAnesthesia" "Anesthesia" (parent := some "anesthesia"),
+      field s "opEbl" "opEbl" "Estimated blood loss (mL)" (parent := some "anesthesia"),
+      group s "findings" "Operative findings" (collapsible := false),
+      narrative s "opFindings" "opFindings" "Findings / operative details" (parent := some "findings"),
+      group s "devices" "Specimens, drains and implants" (collapsible := false),
+      narrative s "opSpecimens" "opSpecimens" "Specimens to pathology" (parent := some "devices"),
+      field s "opDrains" "opDrains" "Drains" (parent := some "devices"),
+      field s "opImplants" "opImplants" "Implants" (parent := some "devices"),
+      group s "outcome" "Complications and disposition" (collapsible := false),
+      field s "opComplications" "opComplications" "Complications" (parent := some "outcome"),
+      field s "opCondition" "opCondition" "Condition on transfer" (parent := some "outcome"),
       commitBtn s "signOpNote" "Sign op note",
-      goto s "next" "w6PostOp" "Next: post-op orders"
+      goto s "next" "w6PostOp" "Postprocedure orders"
     ] }
 
 /-- Rounding: overnight events, vitals, labs, a progress note; modify orders. -/
@@ -200,9 +264,11 @@ def rounding : Screen :=
   { id := s, title := "Rounding", workflow := "W6"
     components := frame s ++ [
       table s "events" "overnightEvents" "Overnight events",
-      panel s "vitals" "vitals" "Vital signs (24 h)",
+      panel s "vitals" "vitals" "Recorded vital signs",
       table s "labs" "labResults" "Labs",
-      field s "progressNote" "progressNote" "Progress note",
+      table s "activeOrders" "openOrders" "Active orders",
+      group s "soap" "Surgery progress note" (collapsible := false),
+      narrative s "progressNote" "progressNote" "Subjective, objective, assessment and plan" (parent := some "soap"),
       goto s "modify" "w6Orders" "Modify orders",
       goto s "toDischarge" "w6Discharge" "Discharge"
     ] }
@@ -221,29 +287,32 @@ def dischargeScreen : Screen :=
         field s ("decision" ++ toString i) "dischargeMedRec"
           s!"Medication {i + 1}: continue / stop / change / new" (parent := some "medRec")
           (slot := .fixed i)) ++ [
-      field s "dischargeDiagnosis" "dischargeDiagnosis" "Discharge diagnosis (ICD-10)",
-      field s "dischargeFollowUp" "dischargeFollowUp" "Follow-up appointment",
-      macroBtn s "instructionsTemplate" "w6DischargeTemplate" "Instructions: appendectomy",
-      field s "dischargeInstructions" "dischargeInstructions" "Discharge instructions",
-      field s "dischargeCondition" "dischargeCondition" "Condition at discharge",
-      field s "dischargeDestination" "dischargeDestination" "Discharge to",
       goto s "prescriptions" "w6Orders" "Discharge prescriptions",
+      group s "outcome" "Discharge diagnosis and disposition" (collapsible := false),
+      field s "dischargeDiagnosis" "dischargeDiagnosis" "Discharge diagnosis (ICD-10-CM)" (parent := some "outcome"),
+      field s "dischargeCondition" "dischargeCondition" "Condition at discharge" (parent := some "outcome"),
+      field s "dischargeDestination" "dischargeDestination" "Discharge to" (parent := some "outcome"),
+      group s "followup" "Follow-up and after-visit summary" (collapsible := false),
+      field s "dischargeFollowUp" "dischargeFollowUp" "Surgery follow-up" (parent := some "followup"),
+      macroBtn s "instructionsTemplate" "w6DischargeTemplate" "Appendectomy discharge instructions" (parent := some "followup"),
+      narrative s "dischargeInstructions" "dischargeInstructions" "Wound care, activity and return precautions" (parent := some "followup"),
       commitBtn s "discharge" "Discharge patient"
     ] }
 
-/-- An inpatient order line (inpatient pharmacy, no refills). -/
-def inpatientLine (drug dose route freq quantity indication : String) (prn : Bool := false) :
+/-- An inpatient order line. Procedure-specific sets supply their own diagnosis. -/
+def inpatientLine (drug dose route freq quantity indication : String) (prn : Bool := false)
+    (diagnosis : String := "") :
     OrderLine :=
   { drug, dose, route, freq, duration := "3 days", quantity, indication
-    pharmacy := "Inpatient pharmacy", prn, diagnosis := "K35.80" }
+    pharmacy := "Inpatient pharmacy", prn, diagnosis }
 
 /-- The W6 macros: the post-op order set, the preference list, and templates. -/
 def macros : List Macro := [
   orderSet "w6AppendectomySet" "Appendectomy post-op order set" "w6PostOp"
-    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain",
-     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true),
-     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis",
-     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true)]
+    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain" (diagnosis := "K35.80"),
+     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true) (diagnosis := "K35.80"),
+     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis" (diagnosis := "K35.80"),
+     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true) (diagnosis := "K35.80")]
     (extra := [.setValue (cid "w6PostOp" "postOpDiet") "clear-liquids",
                .setValue (cid "w6PostOp" "postOpActivity") "ambulate-tid",
                .setValue (cid "w6PostOp" "vteMechanical") "scd",
@@ -252,7 +321,7 @@ def macros : List Macro := [
                .setValue (cid "w6PostOp" "nursingOrders") "Incentive spirometry q1h while awake; dressing check daily; strict intake and output."]),
   preference "w6PrefCefazolin" "Cefazolin 2 g IV (surgical prophylaxis)" "w6Orders"
     { drug := "cefazolin", dose := "2000", route := "IV", freq := "once", duration := "1 dose"
-      quantity := "1", indication := "surgical prophylaxis", pharmacy := "", diagnosis := "K35.80" },
+      quantity := "1", indication := "surgical prophylaxis", pharmacy := "", diagnosis := "" },
   preference "w6PrefAcetaminophen" "Acetaminophen 1 g q6h" "w6Orders"
     (inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "pain"),
   preference "w6PrefOxycodone" "Oxycodone 10 mg q6h PRN" "w6Orders"
@@ -277,6 +346,60 @@ def macros : List Macro := [
 
 /-- The W6 screens. -/
 def screens : List Screen :=
-  [consult, consultClose, preOp, orders, postOp, sign, opNote, rounding, dischargeScreen]
+  [schedule, consultList, consult, consultClose, preOp, orders, sign, opNote, postOp, rounding, dischargeScreen].map fun sc =>
+    { sc with components := sc.components.map fun c => match c.kind with
+        | .table "scheduleTasks" | .table "consultRequest" => c
+        | .table "labResults" => presented "results" c
+        | .panel "priorNotes" => presented "notes" c
+        | .table _ => presented "table" c
+        | _ => c }
+
+/-- Surgical clinic uses the same ambulatory screens with a surgical-history
+tab and note prompts appropriate to consultation and postoperative follow-up. -/
+def clinicView (sc : Screen) : Screen :=
+  if sc.workflow != "W1" then sc else
+  let entries := W1.nav ++ (if W1.nav.any (·.1 == sc.id) then [] else [(sc.id, sc.title)])
+  let chartItems := sc.components.filter (·.parent? == some (cid sc.id "chart"))
+  let surgicalTab := if sc.components.any (fun c => match c.kind with
+      | .panel "surgicalHistory" | .table "surgicalHistory" => true | _ => false) then [] else
+    [panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
+      (parent := some "chart") (tab := (chartItems.map (·.tab)).foldl max 0 + 1)]
+  { sc with components :=
+      [{ group sc.id "visitNavigation" "Visit navigator" (collapsible := false) with
+          tag := cid sc.id "navigator" }] ++
+      entries.map (fun (target, label) =>
+        goto sc.id ("nav." ++ target) target label (parent := some "visitNavigation")) ++
+      (sc.components.filter (fun c => !c.id.startsWith (cid sc.id "nav."))).map (fun c => match c.kind with
+      | .field e _ _ =>
+        let label := if e == "chiefComplaint" then "Reason for visit / postoperative concern"
+          else if e == "exam" then "Examination / surgical site"
+          else if e == "assessmentPlan" then "Assessment and surgical plan" else c.label
+        { c with label, tag := if ["hpi", "ros", "exam", "assessmentPlan", "patientInstructions"].contains e
+            then c.tag ++ ".multiline" else c.tag }
+      | _ => c) ++ surgicalTab }
+
+/-- The surgeon's landing page is an OR list with a real selected-case action.
+This is the role's preset view of the shared workspace, not another workflow. -/
+def workspaceView (sc : Screen) : Screen :=
+  if sc.id != "home" then sc else
+  let activities := (presetLandings "P5").filterMap fun (target, _) =>
+    sc.components.find? (fun c => c.id.startsWith (cid sc.id "work.") && c.kind == .button (.goto target))
+  let rec orderActivities : List Component → List Component → List Component
+    | [], _ => []
+    | c :: cs, remaining =>
+      if c.id.startsWith (cid sc.id "work.") then match remaining with
+        | [] => orderActivities cs []
+        | next :: rest => next :: orderActivities cs rest
+      else c :: orderActivities cs remaining
+  { sc with components := (orderActivities sc.components activities).flatMap fun c =>
+      if c.id == cid sc.id "schedule" then
+        [presented "orSchedule" (group sc.id "caseList" "Surgical cases" (collapsible := false)),
+         presented "orSchedule" { c with
+           label := "Today's OR cases — request status"
+           parent? := some (cid sc.id "caseList") },
+         { goto sc.id "openSelectedCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
+           tag := "present.row|" ++ cid sc.id "schedule" ++ "|0" }]
+      else if c.id == cid sc.id "work" then [{ c with tag := cid sc.id "navigator" }]
+      else [c] }
 
 end Ehr.Canonical.W6

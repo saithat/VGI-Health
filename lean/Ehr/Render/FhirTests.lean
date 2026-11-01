@@ -35,6 +35,39 @@ def parsed := output clinical
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null
 
+/-- Standard names may be shortened without changing a locally qualified label. -/
+def creatinineConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"2160-0","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#
+def a1cConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"4548-4","display":"Hemoglobin A1c/Hemoglobin.total in Blood"}]}"#
+def hemoglobinConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"718-7","display":"Hemoglobin [Mass/volume] in Blood"}]}"#
+#guard labDisplayName creatinineConcept == "Creatinine"
+#guard labDisplayName a1cConcept == "Hemoglobin A1c"
+#guard labDisplayName hemoglobinConcept == "Hemoglobin"
+#guard labDisplayName (creatinineConcept.setObjVal! "text" (.str "Point-of-care creatinine")) == "Point-of-care creatinine"
+#guard labDisplayName (json r#"{"coding":[{"system":"http://loinc.org","code":"2160-0"}]}"#) == "Creatinine"
+#guard labDisplayName (json r#"{"coding":[{"system":"local","code":"2160-0","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#) == "Creatinine [Mass/volume] in Serum or Plasma"
+#guard labDisplayName (json r#"{"coding":[{"system":"http://loinc.org","code":"unknown","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#) == "Creatinine [Mass/volume] in Serum or Plasma"
+
+/-- A short MDRD caption retains the reported value, indexed unit, time and flag. -/
+def mdrdDisplayObservation : Json := json r#"{"resourceType":"Observation","status":"final","code":{"coding":[{"system":"http://loinc.org","code":"33914-3","display":"Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M"}]},"effectiveDateTime":"2026-11-03T08:00:00Z","valueQuantity":{"value":58.2,"unit":"mL/min/{1.73_m2}"},"referenceRange":[{"low":{"value":60},"high":{"value":100}}],"interpretation":[{"coding":[{"code":"L"}]}]}"#
+#guard (labPoint mdrdDisplayObservation).name == "eGFR (MDRD)"
+#guard (labPoint mdrdDisplayObservation).code == "33914-3"
+#guard (labPoint mdrdDisplayObservation).value == "58.2"
+#guard (labPoint mdrdDisplayObservation).unit == "mL/min/{1.73_m2}"
+#guard (labPoint mdrdDisplayObservation).date == "2026-11-03T08:00:00Z"
+#guard (labPoint mdrdDisplayObservation).hundredths? == some 5820
+#guard (labPoint mdrdDisplayObservation).range? == some (6000, 10000)
+#guard (labPoint mdrdDisplayObservation).flagged
+
+/-- A profile may supply HumanName.text without separate given/family parts. -/
+def displayClinician : Json := json r#"{"resourceType":"Practitioner","id":"display-clinician","name":[{"use":"official","text":"Dr. Morgan Rivera"}]}"#
+/-- Resource identity alone never becomes a displayed clinician name. -/
+def unnamedClinician : Json := json r#"{"resourceType":"Practitioner","id":"opaque-clinician-id"}"#
+#guard (clinicianRows [displayClinician]).map (·.name) == ["Dr. Morgan Rivera"]
+#guard (clinicianRows [unnamedClinician]).isEmpty
+#guard (clinicianRows [displayClinician.setObjVal! "resourceType" (.str "Patient")]).isEmpty
+#guard (clinicianRows [displayClinician.setObjVal! "id" (.str "")]).isEmpty
+#guard practitionerName (json r#"{"name":[{"family":"Rivera","given":["Morgan"]}]}"#) == "Rivera, Morgan"
+#guard humanRef [displayClinician] (json r#"{"reference":"Practitioner/display-clinician"}"#) == "Dr. Morgan Rivera"
 /-- Administrative gender does not stand in for the reference-population code. -/
 def administrativeGenderOnlyExample : Json := json "{\"gender\":\"male\"}"
 #guard growthReferenceSex administrativeGenderOnlyExample == none
@@ -106,10 +139,72 @@ def surgery : Json := json r#"{"resourceType":"Procedure","code":{"text":"Append
 #guard (Lean.fromJson? (json r#"{"patientId":"old","identity":{"initials":"AB","sex":"F","ageYears":40},"allergyVersion":0,"allergyClasses":[],"medsVersion":0,"currentMedClasses":[],"careGaps":[],"abnormalResult":false,"now":0,"receipts":[],"record":[]}"#) : Except String Facts).toOption.any (fun f => f.notesVersion == 0 && f.historyVersion == 0)
 #guard (Lean.fromJson? ((Lean.toJson parsed.facts).setObjVal! "notesVersion" (.str "bad")) : Except String Facts).isOk == false
 
+/-- A dated surgical order for one patient, with no fabricated OR-room name. -/
+def periopPatient : Json := json r#"{"resourceType":"Patient","id":"periop-a","name":[{"given":["Alex"],"family":"Example"}]}"#
+def periopOrder : Json := json r#"{"resourceType":"ServiceRequest","id":"case-a","status":"active","intent":"order","category":[{"coding":[{"code":"387713003"}]}],"code":{"text":"Laparoscopic appendectomy"},"subject":{"reference":"Patient/periop-a"},"occurrenceDateTime":"2026-10-31","performer":[{"reference":"Practitioner/internal-provider-id"}]}"#
+def periopConsult : Json := json r#"{"resourceType":"ServiceRequest","id":"consult-a","status":"active","code":{"coding":[{"code":"11429006","display":"Surgical consultation"}]},"subject":{"reference":"Patient/periop-a"},"priority":"urgent","reasonCode":[{"text":"Right lower quadrant pain"}]}"#
+def periopConsent : Json := json r#"{"resourceType":"Consent","status":"active","patient":{"reference":"Patient/periop-a"},"dateTime":"2026-10-31T07:00:00Z","scope":{"text":"Treatment"}}"#
+def periopOtherPatient : Json := periopOrder.setObjVal! "subject" (json r#"{"reference":"Patient/another-patient"}"#)
+def periopRows := surgicalCaseRows context.today [periopOrder, periopOtherPatient] periopPatient
+#guard periopRows.length == 1
+#guard (periopRows.head!).patient == "Example, Alex"
+#guard (periopRows.head!).start == "2026-10-31"
+#guard (periopRows.head!).room == "Not recorded"
+#guard (periopRows.head!).surgeon == "Not recorded"
+#guard (periopRows.head!).indication == "Unknown"
+/-- The case request carries its own indication, independent of chart problems. -/
+def periopCholecystectomy : Json := (periopOrder.setObjVal! "code"
+  (json r#"{"text":"Laparoscopic cholecystectomy"}"#)).setObjVal! "reasonCode"
+  (json r#"[{"coding":[{"system":"http://hl7.org/fhir/sid/icd-10-cm","code":"K80.20","display":"Calculus of gallbladder without cholecystitis"}]}]"#)
+#guard ((surgicalCaseRows context.today [periopCholecystectomy] periopPatient).head!).cells.lookup
+  "Indication" == some "Calculus of gallbladder without cholecystitis"
+#guard periopIndicationText (json r#"{"text":"symptomatic-cholelithiasis"}"#) == "Symptomatic cholelithiasis"
+#guard periopIndicationText (json r#"{"text":"Unspecified abdominal pain"}"#) == "Unspecified abdominal pain"
+#guard (surgicalCaseRows "2026-11-01" [periopOrder] periopPatient).isEmpty
+#guard (surgicalConsultRows [periopConsult, periopOtherPatient] periopPatient).length == 1
+/-- A request's authored time is not a due deadline. -/
+def periopReceivedConsult := periopConsult.setObjVal! "authoredOn" (.str "2026-10-31T10:15:00Z")
+#guard (surgicalConsultRows [periopReceivedConsult] periopPatient).head!.lookup "Received" ==
+  some "2026-10-31T10:15:00Z"
+#guard (surgicalConsultRows [periopReceivedConsult] periopPatient).head!.lookup "Due" == none
+#guard (surgicalConsultRows [periopConsult.setObjVal! "status" (.str "completed")] periopPatient).isEmpty
+#guard (surgicalConsentRows [periopConsent] periopPatient).head!.lookup "Document status" == some "active"
+#guard !(surgicalConsentRows [periopConsent] periopPatient).any (fun row => row.any (fun cell => cell.2 == "Verified" || cell.2 == "Time-out complete"))
+#guard (surgicalRecordRows context.today [surgery] periopPatient).isEmpty
+/-- Derived display payloads pass the ordinary patient/version reader. -/
+def periopFacts := factsOf context [periopPatient, periopOrder, periopConsent] periopPatient
+#guard (infoPayload periopFacts "scheduleTasks").any (fun p => p.rows.length == 1)
+#guard (infoPayload { periopFacts with patientId := "another-patient" } "scheduleTasks").isNone
+#guard (periopFacts.record.lookup "consentVerified").isNone
+#guard !periopReferenceMatches .null .null
+#guard periopReferenceMatches (periopPatient.setObjVal! "id" (.str "urn:uuid:case-patient"))
+  (json r#"{"reference":"urn:uuid:case-patient"}"#)
 /-- Logical resource identity is not a medical record number. -/
 def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-resource-id"}"#
 #guard mrnOf patientWithoutMrn == ""
 #guard patientIdOf patientWithoutMrn == "opaque-resource-id"
+
+/-- The selected clinic is older than the ward stay, and remains the active context. -/
+def selectedClinic : Json := json r#"{"resourceType":"Encounter","id":"selected-clinic","subject":{"reference":"Patient/periop-a"},"period":{"start":"2026-10-01"},"class":{"system":"http://terminology.hl7.org/CodeSystem/v3-ActCode","code":"AMB"},"reasonCode":[{"coding":[{"code":"K40.90"}]}]}"#
+/-- A more recent encounter must remain in history without replacing selection. -/
+def newerWard : Json := json r#"{"resourceType":"Encounter","id":"newer-ward","subject":{"reference":"Patient/periop-a"},"period":{"start":"2026-10-31"},"class":{"system":"http://terminology.hl7.org/CodeSystem/v3-ActCode","code":"IMP"},"reasonCode":[{"coding":[{"code":"R10.9"}]}]}"#
+/-- Explicit source selection, without a role-derived episode kind. -/
+def clinicContext : FactsContext := { context with encounterId? := some "selected-clinic" }
+#guard (factsOf clinicContext [selectedClinic, newerWard] periopPatient).encounterKind? == some "ambulatory"
+#guard (factsOf clinicContext [selectedClinic, newerWard] periopPatient).record.lookup "visitDiagnosis" == some "K40.90"
+#guard (displayOf clinicContext [selectedClinic, newerWard] periopPatient).banner.encounterClass == "AMB"
+#guard (displayOf clinicContext [selectedClinic, newerWard] periopPatient).encounters.length == 2
+#guard (factsOf { clinicContext with encounterKind? := some "preop" }
+  [selectedClinic, newerWard] periopPatient).encounterKind? == some "preop"
+#guard encounterRecords context [selectedClinic, newerWard] periopPatient == [selectedClinic, newerWard]
+#guard (factsOf { clinicContext with encounterId? := some "missing" }
+  [selectedClinic, newerWard] periopPatient).encounterKind?.isNone
+#guard (displayOf { clinicContext with encounterId? := some "missing" }
+  [selectedClinic, newerWard] periopPatient).banner.encounterClass == ""
+#guard (factsOf clinicContext [selectedClinic.setObjVal! "subject"
+  (json r#"{"reference":"Patient/another-patient"}"#), newerWard] periopPatient).encounterKind?.isNone
+#guard (factsOf clinicContext [selectedClinic.setObjVal! "class"
+  (json r#"{"system":"unknown","code":"AMB"}"#)] periopPatient).encounterKind?.isNone
 #guard parsed.display.banner.weight?.map (fun (weight, unit, _) => (weight, unit)) == parsed.facts.weightToday?
 #guard (output emptyBundle).display.banner.weight? == none
 #guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none
@@ -237,4 +332,15 @@ def refillComparisonContractExample :=
 /-- Every generated supporting view passes the ordinary patient/version binding. -/
 def clinicFacts : Facts := factsOf context [clinicPatient, clinicAppointment, clinicRefill] clinicPatient
 #guard (clinicFacts.infoPayloads?.getD []).all fun payload => (infoPayload clinicFacts payload.info).isSome
+/-- Shared queue IDs select one source view; all views retain their ordinary binding. -/
+def integratedPreopFactsExample : Facts := factsOf { context with encounterKind? := some "preop" }
+  [periopPatient, periopOrder, periopConsent] periopPatient
+#guard (integratedPreopFactsExample.infoPayloads?.getD []).all fun payload =>
+  (infoPayload integratedPreopFactsExample payload.info).isSome
+#guard (infoPayload integratedPreopFactsExample "scheduleTasks").any fun payload =>
+  payload.rows.any fun row => row.fields.lookup "Procedure" == some "Laparoscopic appendectomy"
+#guard (infoPayload clinicFacts "scheduleTasks").any fun payload =>
+  payload.rows.any fun row => (row.fields.lookup "Visit type").isSome
+#guard (labResultRow mdrdDisplayObservation).name == "eGFR (MDRD)"
+
 end Ehr.Render.Tests

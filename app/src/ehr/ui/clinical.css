@@ -210,6 +210,15 @@
   font-size: 12px;
   line-height: 16px;
 }
+.clinical-nav-group-title {
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--clinical-primary);
+  border-bottom: 1px solid var(--clinical-border);
+}
+.workflow-links li {
+  padding: 0;
+}
 .workflow-links button {
   display: flex;
   align-items: center;
@@ -237,12 +246,6 @@
 .workflow-links button:focus-visible {
   outline: 2px solid var(--clinical-primary);
   outline-offset: 2px;
-}
-.workflow-links li[aria-current="page"] {
-  border-color: var(--clinical-primary);
-  background: var(--clinical-selected);
-  color: var(--clinical-primary);
-  font-weight: 600;
 }
 .nav-dot {
   width: 4px;
@@ -333,6 +336,14 @@
   border-radius: 4px;
   box-shadow: none;
 }
+.clinical-section[data-section-id^="w6"] > .clinical-section-title {
+  background: #e8f3f0;
+  color: #205c54;
+  border-left: 3px solid #247d6f;
+}
+.clinical-section[data-section-id^="w6"] > .clinical-section-title h2 {
+  color: #205c54;
+}
 .clinical-section-title {
   padding: 4px 8px;
   min-height: 28px;
@@ -361,11 +372,11 @@
 .clinical-section-body > .clinical-field {
   flex: 1 1 208px;
 }
-.clinical-workspace-body > .field-narrative {
-  grid-column: 1 / -1;
-}
 .clinical-section-body > .field-narrative {
   flex-basis: 100%;
+}
+.clinical-workspace-body > .field-narrative {
+  grid-column: 1 / -1;
 }
 .clinical-section-body > .clinical-action {
   flex: 0 1 auto;
@@ -482,6 +493,11 @@
 }
 .provenance-chip .mantine-Badge-label {
   white-space: normal;
+}
+.clinical-entry-hint {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--clinical-muted);
 }
 .clinical-info {
   min-width: 0;
@@ -838,6 +854,40 @@
 .clinical-info[data-info-id="encounterNotes"] td,
 .clinical-info[data-info-id="priorNotes"] td {
   white-space: pre-wrap;
+}
+
+/* Perioperative review panes retain every record in a local scroll area. */
+.clinical-info[data-info-id="labResults"][data-comp-id^="w6"] .presentation-table-wrap {
+  max-height: 320px;
+  overflow: auto;
+}
+.clinical-info[data-info-id="vitals"][data-comp-id^="w6"] {
+  max-height: 240px;
+  overflow: auto;
+}
+
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] .record-secondary {
+  display: block;
+  margin-top: 3px;
+}
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] li > span + span::before {
+  content: none;
+}
+
+.clinical-info[data-info-id="scheduleTasks"] [data-column="Actions"],
+.clinical-info[data-info-id="consultRequest"] [data-column="Actions"] {
+  min-width: 160px;
+  width: 160px;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-row-actions .mantine-Button-label,
+.clinical-info[data-info-id="consultRequest"] .presentation-row-actions .mantine-Button-label {
+  white-space: nowrap;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Procedure"] {
+  width: 22%;
+}
+.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Indication"] {
+  width: 15%;
 }
 
 /* A program without semantic navigator entries has one storyboard column. */

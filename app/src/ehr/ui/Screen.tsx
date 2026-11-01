@@ -8,6 +8,8 @@ import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { allergyDisplay, sectionCaption } from "./clinical-display";
 import { clinicalCssVariables } from "./theme";
+import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
+import { FieldChoicesContext } from "./FieldChoices";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 
@@ -152,12 +154,12 @@ export function PatientBanner({
 }
 export function WorkflowNav({
   groups,
+  active,
   onEvent,
-  title,
 }: {
   groups: UiScreen["nav"];
+  active: string | undefined;
   onEvent: Emit;
-  title?: string;
 }) {
   const available = groups.filter(([, items]) => items.length > 0);
   if (!available.length) return null;
@@ -199,10 +201,10 @@ export function WorkflowNav({
                 <li key={id}>
                   <button
                     type="button"
+                    aria-current={id === active ? "page" : undefined}
                     className="clinical-nav-link"
                     data-comp-id={id}
                     data-event="click"
-                    aria-current={label === title ? "page" : undefined}
                     aria-label={label}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
@@ -233,15 +235,22 @@ function StockUiScreenView({
   viewer?: string | undefined;
 }) {
   const modal = screen.modal;
+  const active = screen.activeNav;
   const shellRef = useRef<HTMLDivElement | null>(null);
-  const stepper = screen.workspace.find((node) => "stepper" in node);
-  const active =
-    stepper && "stepper" in stepper
-      ? stepper.stepper.steps[stepper.stepper.current]?.[0]
-      : undefined;
+  const mainScroll = useRef<HTMLElement | null>(null);
+  const draw = (nodes: UiNode[]) => (
+    <SourceLabelsContext.Provider value={screen.sourceLabels ?? []}>
+      <EntryHintsContext.Provider value={screen.entryHints ?? []}>
+        <FieldChoicesContext.Provider value={screen.fieldChoices ?? []}>
+          <UiChildren nodes={nodes} onEvent={onEvent} />
+        </FieldChoicesContext.Provider>
+      </EntryHintsContext.Provider>
+    </SourceLabelsContext.Provider>
+  );
   // A new screen starts at its heading. Ordinary field updates retain position.
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
+    mainScroll.current?.scrollTo?.(0, 0);
   }, [screen.screen, active, screen.title]);
   // Geometry only: preserve patient identity above a long chart without hiding
   // a tall banner on a small viewport. No clinical state is derived here.
@@ -287,14 +296,21 @@ function StockUiScreenView({
           if (element) element.inert = Boolean(modal);
         }}
       >
-        <PatientBanner fields={bannerFields(screen)} viewer={viewer} />
-        <WorkflowNav
-          key={`${active ?? ""}:${screen.title}`}
-          groups={screen.nav}
-          onEvent={onEvent}
-          title={screen.title}
+        <PatientBanner
+          fields={bannerFields(screen)}
+          viewer={screen.viewer ?? viewer}
         />
-        <AppShell.Main>
+        <WorkflowNav
+          key={active}
+          groups={screen.nav}
+          active={active}
+          onEvent={onEvent}
+        />
+        <AppShell.Main
+          ref={(element) => {
+            mainScroll.current = element;
+          }}
+        >
           <div className="clinical-workspace-heading">
             <div>
               <Text size="xs" c="dimmed" mb={3}>
@@ -304,20 +320,17 @@ function StockUiScreenView({
                 {sectionCaption(screen.title)}
               </Title>
             </div>
-            <Badge color="gray" size="md">
-              Patient chart
-            </Badge>
           </div>
           <div
             className={`clinical-workspace${screen.side.length ? " with-side" : ""}`}
           >
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
-                <UiChildren nodes={screen.side} onEvent={onEvent} />
+                {draw(screen.side)}
               </aside>
             )}
             <div className="clinical-workspace-body">
-              <UiChildren nodes={screen.workspace} onEvent={onEvent} />
+              {draw(screen.workspace)}
             </div>
           </div>
           <div className="workspace-footer">
@@ -350,7 +363,7 @@ function StockUiScreenView({
           <Modal.Body>
             {modal && (
               <div className="clinical-modal-body" data-autofocus tabIndex={-1}>
-                <UiChildren nodes={[modal]} onEvent={onEvent} />
+                {draw([modal])}
               </div>
             )}
           </Modal.Body>

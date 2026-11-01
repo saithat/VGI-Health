@@ -117,17 +117,49 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
 /** Offline boundary only; the clinician path forwards Lean output unchanged. */
 export const uiScreenSchema: z.ZodType<UiScreen> = z
   .strictObject({
+    banner: z.array(pair),
+    viewer: label.optional(),
+    nav: z.array(z.tuple([label, z.array(pair)])),
+    activeNav: label.optional(),
+    sourceLabels: z.array(pair).optional(),
+    entryHints: z.array(pair).optional(),
+    fieldChoices: z
+      .array(
+        z.tuple([
+          label,
+          z.strictObject({
+            options: z.array(pair),
+            showCode: z.boolean(),
+            allowOther: z.boolean(),
+          }),
+        ]),
+      )
+      .optional(),
     screen: label.optional(),
     fieldSources: z.array(pair).optional(),
-    banner: z.array(pair),
-    nav: z.array(z.tuple([label, z.array(pair)])),
     title: label,
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
   })
-  .transform(({ screen, fieldSources, ...rest }) => ({
-    ...rest,
-    ...(screen === undefined ? {} : { screen }),
-    ...(fieldSources === undefined ? {} : { fieldSources }),
-  }));
+  .transform(
+    ({
+      screen: screenId,
+      fieldSources,
+      viewer,
+      activeNav,
+      sourceLabels,
+      entryHints,
+      fieldChoices,
+      ...screen
+    }) => ({
+      ...screen,
+      ...(screenId === undefined ? {} : { screen: screenId }),
+      ...(fieldSources === undefined ? {} : { fieldSources }),
+      ...(viewer === undefined ? {} : { viewer }),
+      ...(activeNav === undefined ? {} : { activeNav }),
+      ...(sourceLabels === undefined ? {} : { sourceLabels }),
+      ...(entryHints === undefined ? {} : { entryHints }),
+      ...(fieldChoices === undefined ? {} : { fieldChoices }),
+    }),
+  );

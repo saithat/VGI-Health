@@ -116,7 +116,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     // Home entries get separate clean logins, including the baseline.
     for (const persona of [...personas, "baseline"]) {
       await page.context().clearCookies();
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -159,7 +159,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       for (const w of sampleIndices(workButtons, 1)) {
         // Each work item starts with an unselected patient in a fresh document.
         if (w) {
-          await freshGoto("/?audit=buttons");
+          await freshGoto("/?audit=buttons&inspect=1");
           await page.getByLabel("Patient search", { exact: true }).waitFor();
           await page
             .getByLabel("Worklist date", { exact: true })
@@ -179,7 +179,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         );
       }
       await audit.click(
-        page.getByRole("button", { name: "Search Medplum", exact: true }),
+        page.getByRole("button", { name: "Search patients", exact: true }),
         undefined,
         "app",
       );
@@ -672,7 +672,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     for (const persona of selectedPersonas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
-      await freshGoto("/?audit=buttons");
+      await freshGoto("/?audit=buttons&inspect=1");
       await page.evaluate(() => {
         localStorage.clear();
         sessionStorage.clear();
@@ -708,7 +708,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         .getByLabel("Patient search", { exact: true })
         .fill(names[0] ?? "");
       await page
-        .getByRole("button", { name: "Search Medplum", exact: true })
+        .getByRole("button", { name: "Search patients", exact: true })
         .click();
       await page
         .locator(".patient-search + ul button")
@@ -1016,10 +1016,8 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           for (const link of savedLinks) {
             if (!link || checkedResources.has(link)) continue;
             const button = page
-              .getByRole("button", {
-                name: new URL(link).pathname,
-                exact: true,
-              })
+              .locator(`button[data-resource-link=${JSON.stringify(link)}]`)
+              .filter({ visible: true })
               .first();
             if (!(await button.isVisible())) continue;
             checkedResources.add(link);

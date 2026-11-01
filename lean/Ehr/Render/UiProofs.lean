@@ -204,7 +204,8 @@ theorem D1_landmark (sp prog facts disp user s) :
     ("Patient", disp.banner.name) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("DOB", uiDate disp.banner.dob) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("MRN", disp.banner.mrn) ∈ (renderUi sp prog facts disp user s).banner := by
-  simp [renderUi, uiClinicalBanner, uiBanner]
+  by_cases hp : facts.encounterKind? == some "preop" <;>
+    simp [renderUi, uiClinicalBanner, uiEncounterBanner, uiBanner, hp]
 
 /-- Every actual nav entry is precisely one shown, enabled goto component. -/
 theorem uiNav_mem (cx : Ctx) (n : UiNode) :

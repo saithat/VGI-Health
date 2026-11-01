@@ -1,0 +1,88 @@
+/** Capture saved Lean surgery screens with the actual painter at 1440 x 900.
+ * Usage: node lean/Ehr/Canonical/review_surgery.mjs <render-screens directory> <before|after>
+ * No clinical values or controls are supplied by this script.
+ */
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+import { readFile, mkdir } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+const root = fileURLToPath(new URL('../../../', import.meta.url)).replace(/\/$/, '');
+const require = createRequire(`${root}/app/package.json`);
+const { chromium } = require('@playwright/test');
+const [source, stage] = process.argv.slice(2);
+if (!source || !['before', 'after'].includes(stage)) throw new Error('Supply a screen directory and before or after');
+const out = `${root}/app/shots/realism/surg/${stage}`;
+// A baseline checkout can supply its own painter for a true before image.
+const painterRoot = process.env.EHR_REVIEW_APP_ROOT ?? root;
+const server = spawn(process.execPath, [`${root}/app/node_modules/vite/bin/vite.js`, '--host', '127.0.0.1', '--port', '4196', '--strictPort'], { cwd: `${painterRoot}/app`, stdio: ['ignore', 'ignore', 'pipe'], detached: true });
+let startup = '';
+server.stderr.on('data', chunk => { startup = (startup + chunk).slice(-5000); });
+let browser;
+try {
+  let ready = false;
+  for (let n = 0; n < 100; n++) {
+    try { ready = (await fetch('http://127.0.0.1:4196/screen-check.html')).ok; } catch {}
+    if (ready) break;
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+  if (!ready) throw new Error(`Review server did not start: ${startup}`);
+  await mkdir(out, { recursive: true });
+  browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  for (const [screen, focus] of process.env.EHR_REVIEW_ONLY_EXTRA ? [] : [
+    ['home', null], ['w6Schedule', null], ['w6Consults', null],
+    ['w1Rooming', 'w1Rooming.chiefComplaint'], ['w1MedRec', 'w1MedRec.decision0'],
+    ['w1Hpi', 'w1Hpi.hpi'], ['w1Exam', 'w1Exam.exam'], ['w1Close', 'w1Close.patientInstructions'],
+    ['w1Orders', 'w1Orders.drug'], ['w1Labs', 'w1Labs.labTest'],
+    ['w1Verify', 'w1Verify.allergyReconfirmSigning'], ['w1Sign', 'w1Sign.patientIdReentry'],
+    ['w6Consult', 'w6Consult.chiefComplaint'], ['w6ConsultClose', 'w6ConsultClose.levelOfService'],
+    ['w6PreOp', 'w6PreOp.hpUpdate'], ['w6Orders', 'w6Orders.drug'],
+    ['w6Sign', 'w6Sign.patientIdReentry'], ['w6OpNote', 'w6OpNote.opPreopDiagnosis'],
+    ['w6Sign-pounds', 'w6Sign.weight'],
+    ['w6PostOp', 'w6PostOp.postOpDiet'], ['w6Rounding', 'w6Rounding.progressNote'],
+    ['w6Discharge', 'w6Discharge.dischargeInstructions'],
+  ]) {
+    let bytes;
+    try { bytes = await readFile(`${source}/${screen}.json`, 'utf8'); }
+    catch (error) { if (error.code === 'ENOENT' && ['w6Schedule', 'w6Consults', 'w6Sign-pounds'].includes(screen)) continue; throw error; }
+    const ui = JSON.parse(bytes);
+    await page.goto('http://127.0.0.1:4196/screen-check.html');
+    await page.waitForFunction(() => typeof window.renderUi === 'function');
+    await page.evaluate(screen => window.renderUi(screen), ui);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `${out}/${screen}-load.png`, animations: 'disabled' });
+    if (focus) {
+      await page.locator(`[data-comp-id="${focus}"][data-event]`).first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      await page.screenshot({ path: `${out}/${screen}-task.png`, animations: 'disabled' });
+    }
+    process.stdout.write(`${screen}: captured\n`);
+  }
+  if (process.env.EHR_REVIEW_EXTRA_UI) {
+    const ui = JSON.parse(await readFile(process.env.EHR_REVIEW_EXTRA_UI, 'utf8'));
+    await page.goto('http://127.0.0.1:4196/screen-check.html');
+    await page.waitForFunction(() => typeof window.renderUi === 'function');
+    await page.evaluate(screen => window.renderUi(screen), ui);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `${out}/clinician-header-load.png`, animations: 'disabled' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: '/tmp/surg-clinician-header-narrow.png', animations: 'disabled' });
+    process.stdout.write('source clinician header: captured at desktop and narrow widths\n');
+  }
+  if (process.env.EHR_REVIEW_RESULT_UI) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const ui = JSON.parse(await readFile(process.env.EHR_REVIEW_RESULT_UI, 'utf8'));
+    await page.goto('http://127.0.0.1:4196/screen-check.html');
+    await page.waitForFunction(() => typeof window.renderUi === 'function');
+    await page.evaluate(screen => window.renderUi(screen), ui);
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('[data-info-id="labResults"]').first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await page.screenshot({ path: `${out}/lab-results-load.png`, animations: 'disabled' });
+    process.stdout.write('source laboratory results: captured\n');
+  }
+} finally {
+  if (browser) await browser.close();
+  if (server.pid && server.exitCode === null) {
+    process.kill(-server.pid, 'SIGTERM');
+    await new Promise(resolve => server.once('exit', resolve));
+  }
+}

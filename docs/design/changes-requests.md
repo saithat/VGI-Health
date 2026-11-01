@@ -1,5 +1,126 @@
 # Cross-lane change requests
 
+## SURG → presentation / shell: perioperative views (2026-11-01)
+
+W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
+`present.results`, `present.notes` and `present.table` tags. New case/consult
+list screens use existing `scheduleTasks` and `consultRequest` info IDs, with
+ordinary Lean goto actions in the selected chart's source row, through the
+`present.row` contract. Clinical cells remain read-only; missing rows retain the
+same control inline. The action opens the selected chart, without switching
+patients. P5's landing destinations are
+`w6Schedule`, `w6Consults`, `w1Rooming` (Clinic Schedule), and results In Basket.
+
+SURG added a separated perioperative section in `Render/Fhir.lean`. Dated
+surgical ServiceRequests (category SNOMED 387713003) project Room / Start /
+Procedure / Indication / Patient / Surgeon / Status. Indication comes only from
+the request's `reasonCode`, not an inferred or confirmed postoperative diagnosis.
+Consultation ServiceRequests (code
+11429006) project the request list. Both codes match `infra/seed-world.mjs`.
+Selected-patient Consent and today's Procedure records supply consent-on-file
+and intra-op evidence. FHIR references resolve to display names or `Not recorded`,
+never raw resource IDs. No room, start time, consent verification, time-out or
+postoperative completion is invented. These are version-bound optional payloads;
+no spec rule was added. Live sessions retain Lean-derived payloads when merging
+adapter context; an explicit payload for the same info ID takes precedence.
+
+Surgical clinic uses the normal W1 navigator, adding a Surgical history chart
+tab and multiline clinical note prompts through P5's preset. `*.multiline` on
+a text field selects the generic textarea painter; its entry event, provenance,
+human-only marker and guard remain unchanged. Other lanes can use the additive
+`narrative` builder without implementing clinical behavior in React.
+
+The generic painter now renders every `UiScreen.nav` entry as its declared Lean
+click. The ARIA gate checks every navigation button. `UiScreen.activeNav` is an
+optional, Lean-derived component ID based on the actual goto target; it is
+omitted for archived screens that have no current navigator entry. A declared
+navigator replaces the numbered progress overview. P5's existing W1 links are
+grouped into a Visit navigator in the preset; no clinical binding is changed.
+Do not put consent or anticoagulant review copies in a permanent sidebar: doing
+so could accidentally satisfy a shown-review requirement on every screen.
+
+`UiScreen.sourceLabels` optionally supplies readable source text for field
+provenance. The original field provenance stays byte-for-byte identical for D6;
+the generic painter looks up the supplied label. Unknown source identifiers are
+never exposed as clinical text. The painter's fixed `Active encounter` badge was
+removed because it asserted a status without a Lean/FHIR source. Desktop
+navigators stay in view while the clinical document scrolls.
+
+`UiScreen.entryHints` supplies per-component guidance for recorded weight units.
+Metric weight controls emit kg and leave incompatible recorded numbers out of
+the editable kg value; the original value/unit remains visible in the hint.
+This fixes the prior pounds-entry dead end without converting, confirming, or
+changing captured state in the renderer. D6's raw provenance and flags are
+unchanged. A real-WASM probe records the human kg entry in `surg-controls.json`.
+
+The seeded OR ServiceRequest supplies the case and planned room, but no active
+perioperative Encounter. For explicit pre-op facts, Lean now labels the banner
+`Preoperative chart review`, `Planned OR` and `Surgeon`, using the existing
+patient/version-bound request payload. It no longer presents the previous
+ambulatory class/attending/location as this surgical episode. This does not
+create an admission, assert the patient is in the OR, or invent an encounter
+selector. A future active-encounter source should remain distinct from the
+request. Consult `authoredOn` is labeled `Received`, never a due deadline.
+
+`UiScreen.viewer` optionally supplies the signed-in clinical role from the same
+Lean `User` used for permissions. The shell uses that label; user IDs stay in
+proof/transport metadata. Legacy saved screens may omit the optional field.
+
+`UiScreen.fieldChoices` optionally supplies department code favorites for actual
+visible coded fields: component ID plus `options` (raw code, readable label),
+`showCode` and `allowOther`. The surgeon preset supplies surgical ICD-10-CM/CPT
+quick picks and readable local anesthesia/diet/activity/yes-no terms. All options
+and display modes come from Lean. The painter filters these supplied terms and
+submits the existing raw code only on selection. Filtering never captures a
+value, picks a diagnosis, changes confirmation, or replaces clinical validation.
+Manual codes remain available. This is a small department preference list,
+not a terminology service. Archived screens omit this additive metadata.
+
+The shared browser control audit now traverses `presentation` and `rowAction`
+containers when deriving control shapes and coverage keys, matching the existing
+Lean observers and DOM controls. The surgical audit also compares both actual
+case/consult FHIR projections between native Lean and WASM before exercising
+buttons and fields. These are verification changes, without clinical behavior.
+
+`FactsContext.encounterId` optionally identifies the selected FHIR Encounter.
+Lean uses only that patient's matching encounter for banner context and the
+encounter-diagnosis prefill; the complete encounter history remains available.
+Unknown or foreign selections do not fall back to a different visit. Explicit
+`encounterKind` retains priority, including simulated pre-op requirements.
+Otherwise a recognized HL7 encounter class supplies the setting. The live
+adapter passes its selected reference and no longer infers pre-op from P5's role.
+No guard, permission or specification is changed.
+
+Live receipts use the existing Lean spec's human labels. Saved-record buttons
+retain their transport references in data attributes; their visible text and the
+encounter picker omit internal IDs/paths. Notifications sit below the patient
+banner. Normal sessions show readable save confirmation; the encounter drawer,
+saved-record actions and Inspector require explicit `inspect=1` debug mode. The
+technical viewer retains the original saved resource for audit. Actual P5
+allergy-review walks verify the persisted Provenance binding in debug mode and
+absence of technical controls in normal mode, with 1440×900 captures. The
+existing return-to-worklist action remains available as `Close chart` in normal
+sessions; only the technical drawer and saved-record tools require debug mode.
+
+
+SURG adds optional `Display.clinicians` from typed `ClinicianRow` projections of
+supplied Practitioner records. The live adapter appends the intact authenticated
+profile, replacing only a duplicate of that same resource identity. Lean's
+`uiClinicianViewer` requires a unique match to the permission-bearing `User.id`;
+missing/ambiguous names retain the role-only caption. `UiScreen.viewer` remains
+an ordinary optional string, so the painter and archived screen format need no
+new clinical logic. Human patient-identity confirmation, permissions and clinical
+facts remain independent of this displayed name.
+
+
+SURG adds four conservative `labDisplayName` aliases in the existing typed FHIR
+lab reader: standard creatinine, hemoglobin A1c, hemoglobin and MDRD eGFR labels.
+The exact LOINC system/code and standard source wording (or a code-only label)
+are required. Custom qualified labels and unknown systems/codes keep their text.
+Only `LabPoint.name` changes; codes, values, units, time, ranges, flags and trends
+remain source data. Explicit supplied info payloads keep their own labels. No
+new UI kind, clinical rule, code migration or browser interpretation is added.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

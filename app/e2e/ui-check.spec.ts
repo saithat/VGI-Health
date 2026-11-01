@@ -182,6 +182,7 @@ for (const file of fixtures)
     const bannerText = normalize(
       (await page.getByRole("banner").textContent()) ?? "",
     );
+    if (screen.viewer) expect(bannerText).toContain(normalize(screen.viewer));
     for (const [label, value] of screen.banner)
       if (value)
         expect(bannerText).toContain(
@@ -191,9 +192,16 @@ for (const file of fixtures)
               : formatDisplayValue(value),
           ),
         );
-    const infos = [...screen.side, ...screen.workspace]
-      .flatMap(nodes)
-      .flatMap((node) => ("info" in node ? [node.info] : []));
+    const allNodes = [...screen.side, ...screen.workspace].flatMap(nodes);
+    const structuredInfos = new Set(
+      allNodes
+        .filter((node) => "presentation" in node)
+        .flatMap(nodes)
+        .flatMap((node) => ("info" in node ? [node.info] : [])),
+    );
+    const infos = allNodes.flatMap((node) =>
+      "info" in node ? [node.info] : [],
+    );
     const panels = (await page.locator("[data-info-id]").allTextContents()).map(
       normalize,
     );
@@ -202,7 +210,9 @@ for (const file of fixtures)
       for (const row of info.rows)
         for (const [key, value] of row) {
           const medication =
-            info.infoId === "currentMeds" && key === "Instructions"
+            !structuredInfos.has(info) &&
+            info.infoId === "currentMeds" &&
+            key === "Instructions"
               ? row.find(([name]) => name === "Medication")?.[1]
               : undefined;
           if (value)

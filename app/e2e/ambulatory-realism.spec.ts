@@ -9,7 +9,7 @@ import type {} from "../src/ehr/offline";
 // Run after builds finish; this suite uses one browser and no build process.
 const root = process.env.EHR_AMB_UI_ROOT;
 const phase = process.env.EHR_AMB_SHOT_PHASE ?? "after";
-const output = "shots/realism/amb";
+const output = process.env.EHR_AMB_SHOT_DIR ?? "shots/realism/amb";
 function descendants(node: UiNode): UiNode[] {
   if ("valueSet" in node)
     return [node, ...node.valueSet.children.flatMap(descendants)];

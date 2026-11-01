@@ -14,7 +14,9 @@ export interface Control {
   status: "works" | "disabled-with-reason" | "dead" | "error";
   effect: string;
 }
-const directory = resolve(process.env.AUDIT_REPORT_DIR ?? "../docs/audits");
+const directory = resolve(
+  process.env.EHR_AUDIT_DIR ?? process.env.AUDIT_REPORT_DIR ?? "../docs/audits",
+);
 const escape = (s: string) => s.replaceAll("|", "\\|").replaceAll(/\s+/g, " ");
 export function writeReport(rows: Control[], scope: string) {
   mkdirSync(directory, { recursive: true });

@@ -54,7 +54,7 @@ const nameOf = (patient: Patient) =>
   [...(patient.name?.[0]?.given ?? []), patient.name?.[0]?.family]
     .filter(Boolean)
     .join(" ") ||
-  patient.id;
+  "Name not recorded";
 const patientReference = (resource: Resource) => {
   if (resource.resourceType === "Appointment")
     return resource.participant.find((p) =>
@@ -282,25 +282,27 @@ function Chart({
                       message: inspecting ? (
                         <>
                           {result.message}
-                          <ul>
-                            {result.links.map((link) => (
-                              <li key={link}>
-                                <Button
-                                  size="compact-xs"
-                                  variant="subtle"
-                                  data-resource-link={link}
-                                  onClick={() => viewResource(link)}
-                                >
-                                  {new URL(link).pathname}
-                                </Button>
-                              </li>
-                            ))}
-                          </ul>
+                          {inspecting && (
+                            <ul>
+                              {result.links.map((link, index) => (
+                                <li key={link}>
+                                  <Button
+                                    size="compact-xs"
+                                    variant="subtle"
+                                    data-resource-link={link}
+                                    onClick={() => viewResource(link)}
+                                  >
+                                    View saved record {index + 1}
+                                  </Button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </>
                       ) : result.refreshRequired ? (
                         "Your changes have been saved. Return to the worklist and reopen the chart before continuing."
                       ) : (
-                        "Your changes have been saved."
+                        `${result.message}. Your changes have been saved.`
                       ),
                       color: result.refreshRequired ? "orange" : "green",
                       autoClose: 12000,
@@ -319,13 +321,24 @@ function Chart({
         )}
       </div>
       <div className="live-controls">
+        {!inspecting && (
+          <Button
+            size="xs"
+            variant="default"
+            loading={pending}
+            title={pending ? "Saving encounter changes" : undefined}
+            onClick={() => setPanel(true)}
+          >
+            Encounter options
+          </Button>
+        )}
         <Button
           size="xs"
           loading={pending}
           title={pending ? "Saving encounter changes" : undefined}
-          onClick={() => setPanel(true)}
+          onClick={inspecting ? () => setPanel(true) : onClose}
         >
-          {inspecting ? "Live encounter" : "Encounter options"}
+          {inspecting ? "Live encounter" : "Close chart"}
         </Button>
       </div>
       <Drawer
@@ -341,9 +354,10 @@ function Chart({
         }}
       >
         <Stack>
-          {inspecting && (
-            <Text>Encounter/{session.getContext().encounter.id}</Text>
-          )}
+          <Text>
+            {ui?.banner.find(([label]) => label === "Patient")?.[1] ||
+              "Patient chart"}
+          </Text>
           {error && (
             <Alert role="alert" color="red">
               {inspecting ? error : "Unable to save this change."}
@@ -357,7 +371,7 @@ function Chart({
             <div role="status">
               <p>Saved resources</p>
               <ul>
-                {links.map((link) => (
+                {links.map((link, index) => (
                   <li key={link}>
                     <Button
                       size="compact-xs"
@@ -365,7 +379,7 @@ function Chart({
                       data-resource-link={link}
                       onClick={() => viewResource(link)}
                     >
-                      {new URL(link).pathname}
+                      View saved record {index + 1}
                     </Button>
                   </li>
                 ))}
@@ -497,7 +511,9 @@ function SelectEncounter({
               .filter((t) => t.status !== "completed")
               .map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.description ?? t.code?.text ?? "Request"}
+                  {t.description ??
+                    t.code?.text ??
+                    "Request details not recorded"}
                 </option>
               ))}
           </select>
@@ -515,7 +531,7 @@ function SelectEncounter({
                 <option key={m.id} value={m.id}>
                   {m.medicationCodeableConcept?.text ??
                     m.medicationCodeableConcept?.coding?.[0]?.display ??
-                    "Medication order"}{" "}
+                    "Medication name not recorded"}{" "}
                   · {m.dosageInstruction?.[0]?.text}
                 </option>
               ))}
@@ -531,7 +547,7 @@ function SelectEncounter({
               <option value="">Select a bed for admit</option>
               {beds.map((b) => (
                 <option key={b.id} value={b.id}>
-                  {b.name ?? b.id}
+                  {b.name ?? "Bed name not recorded"}
                 </option>
               ))}
             </select>
@@ -723,7 +739,7 @@ function Home({
     <main className="browser-page live-home">
       <nav aria-label="Workspace">
         <strong>
-          VGI HEALTH · LIVE · {user.persona}
+          VGI HEALTH · LIVE · {clinicianRoleNames[user.persona] ?? "Clinician"}
           {baseline ? " · ORIGINAL CANONICAL" : ""}
         </strong>
         <a href="/browse">Demo / replay</a>
@@ -967,7 +983,7 @@ function Home({
             .then((results) => {
               setPatients(results);
               notifications.show({
-                message: `${results.length} patients found`,
+                message: `${results.length} patient${results.length === 1 ? "" : "s"} found`,
               });
             })
             .catch((e: unknown) => setError(errorText(e)))
@@ -983,9 +999,9 @@ function Home({
         <Button
           type="submit"
           loading={pending}
-          title={pending ? "Searching Medplum" : undefined}
+          title={pending ? "Searching patients" : undefined}
         >
-          Search Medplum
+          Search patients
         </Button>
       </form>
       <ul>

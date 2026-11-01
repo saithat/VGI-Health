@@ -9,10 +9,11 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
-// Lean's mapped libraries need more virtual address space than resident memory.
-// Keep workers at four and bound the address-space reservation on shared hosts.
+// Bound Lean workers and their reserved stacks under the shared-machine cap.
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', 'ulimit -v 12000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
+  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], {
+    timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_STACK_SIZE_KB: '65536' }, ...options,
+  })
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');

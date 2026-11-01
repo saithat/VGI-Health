@@ -8,7 +8,7 @@ def presetWorkflows : String → List String
   | "P2" => ["W3"]
   | "P3" => ["W4"]
   | "P4" => ["W5", "W2", "W7"]
-  | "P5" => ["W1", "W2", "W6"]
+  | "P5" => ["W6", "W1", "W2"]
   | _ => ["W1", "W2", "W3", "W4", "W5", "W6", "W7"]
 
 /-- Agent forks keep the stable persona ID while their owner may be a user UUID. -/
@@ -25,12 +25,13 @@ def navigatorNames (s : Screen) : String × String :=
   let stepName := match s.id with
     | "w1Hpi" => "History / ROS" | "w1Exam" => "Exam / Assessment & Plan" | "w1Close" | "w5Close" => "Sign Visit"
     | "w3TrackBoard" => "ED Track Board" | "w4Worklist" => "Unit Census & MAR"
-    | "w5Rooming" => "Rooming" | "w6Consult" => "Consults" | "w6ConsultClose" => "Sign Consult"
+    | "w5Rooming" => "Rooming" | "w6Consults" => "Consults"
+    | "w6Consult" => "Consult note" | "w6ConsultClose" => "Sign Consult"
     | _ => s.title
   let activity := match s.workflow with
     | "W1" => "Schedule" | "W2" => "In Basket: Results" | "W3" => "ED Track Board"
     | "W4" => "Unit Census & MAR" | "W5" => "Schedule"
-    | "W6" => if ["w6Consult", "w6ConsultClose"].contains s.id then "Consults" else "OR Schedule"
+    | "W6" => if ["w6Consults", "w6Consult", "w6ConsultClose"].contains s.id then "Consults" else "OR Schedule"
     | "W7" => "In Basket: Rx Requests" | _ => "Chart Review"
   (activity, stepName)
 
@@ -40,7 +41,8 @@ def presetLandings : String → List (ScreenId × String)
   | "P2" => [("w3TrackBoard", "ED Track Board")]
   | "P3" => [("w4Worklist", "Unit Census & MAR")]
   | "P4" => [("w5Rooming", "Schedule"), ("w2Inbasket", "In Basket: Results"), ("w7Queue", "In Basket: Rx Requests")]
-  | "P5" => [("w6PreOp", "OR Schedule"), ("w1Rooming", "Consults"), ("w2Inbasket", "In Basket: Results")]
+  | "P5" => [("w6Schedule", "OR Schedule"), ("w6Consults", "Consults"),
+             ("w1Rooming", "Clinic Schedule"), ("w2Inbasket", "In Basket: Results")]
   | _ => []
 
 /-- A schedule row opens its encounter; Schedule remains the activity's name. -/

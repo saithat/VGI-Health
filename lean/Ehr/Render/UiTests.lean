@@ -4,12 +4,107 @@ import Ehr.Render.NavRules
 
 namespace Ehr.Render
 
+/-- Antiplatelets in the chart are visible even outside the prescribing catalog. -/
+def chartClopidogrel : MedRow where
+  id := "platelet-record"
+  name := "Clopidogrel 75 MG Oral Tablet"
+  rxnorm := ""
+  drug := ""
+  sig := "Daily"
+  status := "active"
+  authored := "2026-10-31"
+  prescriber := ""
+  versionId := "1"
+#guard uiAntithrombotic chartClopidogrel
+#guard uiAntithrombotic { chartClopidogrel with name := "aspirin 81 MG Oral Tablet" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Clopidogrel-like investigational product" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Acetaminophen 500 MG Oral Tablet" }
+
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
+#guard uiSourceText uiRoomCtx "record:unmappedInternalId" == "From chart"
+#guard uiSourceText uiRoomCtx "linked:unmappedInternalId" == "Linked value"
+#guard uiSourceText uiRoomCtx "macro" == "From template / preference list"
+#guard uiSourceText uiRoomCtx "default" == "Default value"
+/-- A compact surgical request keeps field labels and every supplied value. -/
+def uiSurgicalCaseCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, facts := Tests.periopFacts }
+#guard uiSummaryRows uiSurgicalCaseCtx "scheduleTasks" == uiRows uiSurgicalCaseCtx "scheduleTasks"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Procedure" ==
+  some "Laparoscopic appendectomy"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Status" == some "active"
+/-- A planned surgical request cannot inherit a historical visit's location. -/
+def uiPreopBannerFacts : Facts := { Tests.periopFacts with encounterKind? := some "preop" }
+def uiHistoricalVisitDisplay : Display :=
+  { uiRoomCtx.disp with banner := { uiRoomCtx.disp.banner with
+      encounterClass := "AMB", attending := "Previous clinician", location := "Previous clinic" } }
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Encounter context" ==
+  some "Preoperative chart review"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Planned OR" == some "Not recorded"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Location" == none
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Attending" == none
+#guard uiCaseValue { uiPreopBannerFacts with patientId := "another-patient" } "Room" == "Not recorded"
+#guard (uiClinicalBanner Tests.periopFacts uiHistoricalVisitDisplay).lookup "Last location" == some "Previous clinic"
+#guard uiViewer .surgeon == "General surgeon"
+#guard uiViewer .rn == "Registered nurse"
+/-- A displayed name is bound to the user who carries the permissions. -/
+def clinicianHeaderUser : User := { id := "display-clinician", role := .surgeon }
+def clinicianHeaderDisplay : Display :=
+  { uiRoomCtx.disp with clinicians? := some [{ id := "display-clinician", name := "Dr. Morgan Rivera" }] }
+#guard uiClinicianViewer clinicianHeaderUser clinicianHeaderDisplay == "Dr. Morgan Rivera · General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "another-user" } clinicianHeaderDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser uiRoomCtx.disp == "General surgeon"
+/-- Ambiguous source identities and missing names do not select another person. -/
+def ambiguousClinicianDisplay : Display :=
+  { clinicianHeaderDisplay with clinicians? := some [
+    { id := "display-clinician", name := "Dr. Morgan Rivera" },
+    { id := "display-clinician", name := "Another clinician" }] }
+#guard uiClinicianViewer clinicianHeaderUser ambiguousClinicianDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "display-clinician", name := " " }] } == "General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "" }
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "", name := "Unknown identity" }] } == "General surgeon"
+/-- A visible surgical diagnosis field receives choices without a default. -/
+def surgicalPickerElement : ElementSpec :=
+  { id := "pickerDiagnosis", label := "Diagnosis", kind := .coded "icd10",
+    enteredBy := [.surgeon], prefill := .defaultConfirm, friction := .compliance,
+    fhirTarget := "Condition.code" }
+def surgicalPickerCtx : Ctx :=
+  { uiRoomCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "surgical-picker-reviewer", role := .surgeon }
+    sp := { uiRoomCtx.sp with elements := uiRoomCtx.sp.elements ++ [surgicalPickerElement] }
+    prog := { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+        [{ id := "pickerDiagnosis", label := "Diagnosis", kind := .field "pickerDiagnosis" (.fixed 0) .none }] }
+      else screen } }
+#guard ((uiFieldChoices surgicalPickerCtx).lookup "pickerDiagnosis").any (fun set =>
+  set.showCode && set.allowOther && set.options.lookup "K80.20" ==
+    some "Gallbladder stones, no cholecystitis or obstruction")
+#guard (uiAtomsList (renderUi surgicalPickerCtx.sp surgicalPickerCtx.prog surgicalPickerCtx.facts
+  surgicalPickerCtx.disp surgicalPickerCtx.user surgicalPickerCtx.s).workspace).any (fun node => match node with
+  | .field "pickerDiagnosis" _ _ value _ _ pending _ _ => value.isNone && !pending
+  | _ => false)
+#guard (uiFieldChoices { surgicalPickerCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "different-role", role := .physician } }).isEmpty
+#guard (surgicalProcedureChoices.lookup "47562") == some "Laparoscopic cholecystectomy"
+#guard (surgicalChoices (.coded "boolean")).lookup "true" == some "Yes"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
     { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"), label := "Weight", tag := "weight" }
+/-- A pounds record cannot be displayed or resubmitted as a kg input value. -/
+def uiPoundsWeightItem : ItemView :=
+  { uiWeightItem with value? := some (.qty 1600 .lb) }
+#guard match uiField uiRoomCtx uiPoundsWeightItem "weight" with
+  | .field _ _ _ value unit provenance pending human _ =>
+    value.isNone && unit == some "kg" && provenance == uiPoundsWeightItem.provenance? &&
+      pending == uiPoundsWeightItem.pendingConfirm && human == uiPoundsWeightItem.humanOnly
+  | _ => false
+#guard (uiEntryHint uiRoomCtx uiPoundsWeightItem).any (fun text =>
+  text.startsWith "Recorded value: 160" && text.endsWith "lb. Enter the weight in kg.")
+#guard uiEntryHint uiRoomCtx uiWeightItem == none
 def uiSignItem : ItemView :=
   itemView uiSignCtx.sp uiSignCtx.facts uiSignCtx.s (uiSignCtx.prog.compsOf uiSignCtx.s.screen)
     { id := "signButton", kind := .button (.commit "signOrders"), label := "Sign", hotkey? := some "Ctrl+Enter", tag := "sign" }
@@ -388,6 +483,14 @@ def uiNavSavedCollapsedCtx : Ctx :=
     uiNavSavedCollapsedCtx.disp uiNavSavedCollapsedCtx.user uiNavSavedCollapsedCtx.s).nav ==
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
+#guard uiShellScreen.activeNav? == none
+/-- A selected navigator item follows its declared target, even when labels differ. -/
+def uiCurrentNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components ++
+      [{ id := "shell.nav.current", kind := .button (.goto "shell"), label := "Current section",
+         tag := "nav.current", parent? := some "shell.nav" }] } } }
+#guard uiActiveNav uiCurrentNavCtx == some "shell.nav.current"
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 
 /-- Flat canonical navigation tags keep their existing event and move to the shell. -/

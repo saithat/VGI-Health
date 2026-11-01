@@ -4,6 +4,18 @@ import Ehr.Render.Page
 are untouched; order rows always use this episode's State, never medication history. -/
 namespace Ehr.Render
 
+/-- Include explicitly named antithrombotics in chart review even when they
+are outside the small order-entry formulary. This display filter never assigns
+a dose, hold plan or drug-interaction class. Generic names are matched at the
+start of the recorded medication name, on a word boundary.
+Sources: AHA Types of Heart Medications; MedlinePlus P2Y12 inhibitors. -/
+def uiAntithrombotic (r : MedRow) : Bool :=
+  let name := r.name.toLower
+  inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet" ||
+    ["aspirin", "clopidogrel", "prasugrel", "ticagrelor", "ticlopidine", "cangrelor",
+     "dabigatran", "rivaroxaban"].any (fun generic =>
+       name == generic || name.startsWith (generic ++ " "))
+
 def uiChars (cs : List Char) : String := cs.foldl String.push ""
 
 /-- Public clinical headings for structured adapter fields. Unrecognized

@@ -198,6 +198,273 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("searches Lean procedure descriptions and emits the selected raw code", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "procedure",
+            label: "Procedure (CPT)",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "procedure",
+          {
+            options: [
+              ["44970", "Laparoscopic appendectomy"],
+              ["47562", "Laparoscopic cholecystectomy"],
+            ],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "Procedure (CPT)" });
+    fireEvent.input(input, { target: { value: "cholecystectomy" } });
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("option", {
+        name: "Laparoscopic cholecystectomy (47562)",
+      }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "procedure", value: { code: { c: "47562" } } },
+    });
+  });
+  it("retains manual code entry beyond the department quick picks", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "diagnosis",
+            label: "Diagnosis",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "diagnosis",
+          {
+            options: [["K35.80", "Acute appendicitis, unspecified"]],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    fireEvent.input(screen.getByRole("combobox", { name: "Diagnosis" }), {
+      target: { value: "R10.84" },
+    });
+    fireEvent.click(screen.getByRole("option", { name: "Use code: R10.84" }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "diagnosis", value: { code: { c: "R10.84" } } },
+    });
+  });
+  it("displays local labels without turning a supplied macro value into human entry", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "prn",
+            label: "As needed",
+            kind: "code",
+            value: "true",
+            provenance: "macro",
+            pendingConfirm: true,
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "prn",
+          {
+            options: [
+              ["true", "Yes"],
+              ["false", "No"],
+            ],
+            showCode: false,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "As needed" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected code input");
+    expect(input.value).toBe("Yes");
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(input);
+    fireEvent.click(screen.getByRole("option", { name: /^No$/ }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "prn", value: { code: { c: "false" } } },
+    });
+  });
+  it("shows the clinical role supplied by Lean in the banner", () => {
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      viewer: "General surgeon",
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={vi.fn()} />
+      </MantineProvider>,
+    );
+    expect(screen.getByRole("banner").textContent).toContain("General surgeon");
+  });
+  it("keeps a recorded pounds hint separate from the blank kg entry and submits kg", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            entryHints: [
+              ["weight", "Recorded value: 160 lb. Enter the weight in kg."],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  comp: "weight",
+                  label: "Weight",
+                  kind: "qty",
+                  unit: "kg",
+                  value: null,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(onEvent).not.toHaveBeenCalled();
+    expect(
+      screen.getByText("Recorded value: 160 lb. Enter the weight in kg."),
+    ).toBeTruthy();
+    const input = screen.getByRole("textbox", { name: "Weight" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected a weight input");
+    expect(input.value).toBe("");
+    fireEvent.change(input, { target: { value: "80" } });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "weight", value: { qty: { tenths: 800, unit: "kg" } } },
+    });
+  });
+  it("paints Lean's source label while retaining the original field and confirm action", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            sourceLabels: [
+              ["record:internalSource", "From chart — Recorded weight"],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  provenance: "record:internalSource",
+                  pendingConfirm: true,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(screen.getByText("From chart — Recorded weight")).toBeTruthy();
+    expect(screen.queryByText("record:internalSource")).toBeNull();
+    expect(screen.queryByText("Active encounter")).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirm Clinical value" }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({ confirm: { comp: field.comp } });
+  });
+  it("dispatches the component IDs declared by Lean navigation", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse(rooming);
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            nav: [["Surgical navigator", [["case.open", "Open case"]]]],
+            activeNav: "case.open",
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^Open case$/ }));
+    expect(onEvent).toHaveBeenCalledWith({ click: { comp: "case.open" } });
+    expect(
+      screen
+        .getByRole("button", { name: /^Open case$/ })
+        .getAttribute("aria-current"),
+    ).toBe("page");
+    expect(
+      screen.getByRole("list", { name: "Surgical navigator screens" }),
+    ).toBeTruthy();
+  });
+  it("preserves multiline narrative as an ordinary human text entry", () => {
+    const onEvent = vi.fn();
+    paint(
+      [{ field: { ...field, kind: "textarea", humanOnly: true } }],
+      onEvent,
+    );
+    const input = screen.getByRole("textbox", { name: "Clinical value" });
+    expect(input.tagName).toBe("TEXTAREA");
+    fireEvent.change(input, {
+      target: { value: "Findings:\nInflamed appendix." },
+    });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: {
+        comp: "entry",
+        value: { text: { s: "Findings:\nInflamed appendix." } },
+      },
+    });
+    expect(screen.getByText("Clinician entry required")).toBeTruthy();
+  });
   it("keeps imported chart provenance accessible while presenting medication and note cards", () => {
     paint([
       {
@@ -1245,4 +1512,88 @@ it("retains source row actions inline when their target is a read-only document"
   expect(
     screen.getByRole("region", { name: "Visit documentation" }).textContent,
   ).toContain("Entered documentation");
+});
+
+it("combines surgical favorites with shared value-set, source and confirmation metadata", () => {
+  const emit = vi.fn();
+  const model: UiScreen = {
+    banner: [["Patient", "Alex Morgan"]],
+    viewer: "Dr. Morgan Rivera · General surgeon",
+    title: "Assessment & Plan",
+    nav: [],
+    side: [],
+    modal: null,
+    sourceLabels: [["record:diagnosis", "Older source caption"]],
+    fieldSources: [[field.comp, "Source: Chart diagnosis"]],
+    fieldChoices: [
+      [
+        field.comp,
+        {
+          options: [
+            ["K80.20", "Gallbladder stones"],
+            ["K40.90", "Inguinal hernia"],
+          ],
+          showCode: true,
+          allowOther: true,
+        },
+      ],
+    ],
+    workspace: [
+      {
+        valueSet: {
+          options: [{ code: "I10", label: "Primary hypertension" }],
+          allowCustom: true,
+          children: [
+            {
+              field: {
+                ...field,
+                label: "Diagnosis",
+                kind: "code",
+                value: "K80.20",
+                provenance: "record:diagnosis",
+                pendingConfirm: true,
+                humanOnly: true,
+              },
+            },
+          ],
+        },
+      },
+      {
+        button: {
+          comp: field.comp,
+          label: "Confirm chart diagnosis",
+          role: "confirm",
+          enabled: true,
+          blockedReason: null,
+          hotkey: null,
+        },
+      },
+    ],
+  };
+  expect(uiScreenSchema.parse(model)).toEqual(model);
+  render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>,
+  );
+  expect(screen.getByText("Source: Chart diagnosis")).not.toBeNull();
+  expect(screen.queryByText("Older source caption")).toBeNull();
+  expect(screen.getAllByRole("button")).toHaveLength(1);
+  const input = screen.getByRole("combobox", { name: "Diagnosis" });
+  fireEvent.click(input);
+  expect(
+    screen.queryByRole("option", { name: "Primary hypertension" }),
+  ).toBeNull();
+  fireEvent.input(input, { target: { value: "hernia" } });
+  expect(emit).not.toHaveBeenCalled();
+  fireEvent.click(
+    screen.getByRole("option", { name: "Inguinal hernia (K40.90)" }),
+  );
+  expect(emit).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: field.comp, value: { code: { c: "K40.90" } } },
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Confirm chart diagnosis" }),
+  );
+  expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: field.comp } });
 });

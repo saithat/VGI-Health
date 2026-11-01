@@ -59,13 +59,12 @@ export function factsContext(
     now: date.getUTCHours() * 60 + date.getUTCMinutes(),
     receipts,
     record,
+    ...(context?.encounter.id ? { encounterId: context.encounter.id } : {}),
     ...(user.persona === "P2"
       ? { encounterKind: "emergency" }
       : user.persona === "P3" || user.persona === "RN2"
         ? { encounterKind: "inpatient" }
-        : user.persona === "P5"
-          ? { encounterKind: "preop" }
-          : {}),
+        : {}),
   };
 }
 export function projectLive(
@@ -81,7 +80,18 @@ export function projectLive(
   const projection: FactsOutput = JSON.parse(
     interp.facts(
       JSON.stringify({
-        bundle,
+        // Pass the authenticated FHIR profile intact; Lean binds its name to User.id.
+        bundle: {
+          ...bundle,
+          entry: [
+            ...(bundle.entry ?? []).filter(
+              (entry) =>
+                entry.resource?.resourceType !== "Practitioner" ||
+                entry.resource.id !== user.practitioner.id,
+            ),
+            { resource: user.practitioner },
+          ],
+        },
         context: factsContext(user, now, receipts, context),
       }),
     ),
@@ -99,7 +109,7 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
-  const external = fhirDisplayContext(
+  const displayContext = fhirDisplayContext(
     bundle,
     context.patient.id ?? "",
     projection.facts.patientId,
@@ -110,20 +120,24 @@ export function projectLive(
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...external,
-      artifactBindings: [
-        ...(projection.facts.artifactBindings ?? []).filter(
-          (binding) =>
-            !external.artifactBindings.some((item) => item.key === binding.key),
-        ),
-        ...external.artifactBindings,
-      ],
+      ...displayContext,
+      // Keep Lean's read-only FHIR projections. An explicit adapter payload
+      // replaces the same view rather than creating an ambiguous duplicate.
       infoPayloads: [
         ...(projection.facts.infoPayloads ?? []).filter(
-          (payload) =>
-            !external.infoPayloads.some((item) => item.info === payload.info),
+          (p) =>
+            !displayContext.infoPayloads.some((other) => other.info === p.info),
         ),
-        ...external.infoPayloads,
+        ...displayContext.infoPayloads,
+      ],
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (b) =>
+            !displayContext.artifactBindings.some(
+              (other) => other.key === b.key,
+            ),
+        ),
+        ...displayContext.artifactBindings,
       ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
@@ -146,6 +160,16 @@ export async function createLiveSession(
   const elements = z
     .object({ elements: z.array(elementSchema) })
     .parse(spec).elements;
+  const labels = z
+    .object({
+      commits: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+      infos: z
+        .array(z.object({ id: z.string(), label: z.string() }))
+        .default([]),
+    })
+    .parse(spec);
   const screens = z
     .object({
       screens: z.array(
@@ -284,7 +308,15 @@ export async function createLiveSession(
             message: `Saved. Facts refresh failed: ${error instanceof Error ? error.message : String(error)}. Reopen the chart.`,
           };
         }
-        return { links: result.links, message: `${commitId} saved to Medplum` };
+        const label = receipt
+          ? (labels.infos.find((info) => info.id === receipt.info)?.label ??
+            "Chart")
+          : (labels.commits.find((commit) => commit.id === commitId)?.label ??
+            "Changes");
+        return {
+          links: result.links,
+          message: receipt ? `${label} review recorded` : `Saved: ${label}`,
+        };
       } finally {
         pending = false;
       }

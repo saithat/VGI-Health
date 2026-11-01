@@ -17,7 +17,10 @@ Object.entries(clinicalCssVariables).forEach(([name, value]) =>
 createRoot(root).render(
   <React.StrictMode>
     <MantineProvider theme={clinicalTheme}>
-      <Notifications position="top-right" />
+      <Notifications
+        position="bottom-right"
+        classNames={{ root: "clinical-notifications" }}
+      />
       <Router />
     </MantineProvider>
   </React.StrictMode>,

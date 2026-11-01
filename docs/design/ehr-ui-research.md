@@ -1,5 +1,340 @@
 # EHR UI pattern research
 
+## Canonical realism: P5 general surgeon (perioperative)
+
+Research and implementation review: 2026-11-01, SURG lane. This is the shared vendor canonical with a surgeon's permissions and activity preset. The baseline retains the separate consult signature, order review, per-field order-set confirmations, kg-weight confirmation, human consent verification, and independent note/order/discharge commits. No clinical rule is changed.
+
+### Evidence and target layouts
+
+
+Results summaries now use short department captions for four supplied standard
+labels, checked against the official definitions for
+[creatinine](https://loinc.org/2160-0),
+[hemoglobin A1c](https://loinc.org/4548-4),
+[hemoglobin](https://loinc.org/718-7), and
+[MDRD eGFR](https://loinc.org/33914-3). The MDRD method stays explicit. Lean
+requires the exact LOINC system/code and its standard supplied label, or a
+code-only label; custom local wording and unknown systems/codes retain their
+original text. Historical codes are not remapped, and no value or calculation
+is changed. Detailed explicit result payloads retain their supplied labels.
+The goal is a readable clinical test column beside the existing value, unit,
+reference range, date and flag, rather than a terminology description spanning
+several lines in each row.
+
+
+
+The signed-in clinician name is read from the authenticated FHIR
+[Practitioner profile](https://hl7.org/fhir/R4/practitioner.html), using its
+[HumanName](https://hl7.org/fhir/R4/datatypes.html#HumanName) text or official
+structured name. Lean requires a unique match to the permission-bearing user's
+ID before adding that name to the role label. Missing names, foreign identities
+and duplicate matches leave the role alone; no resource ID is substituted.
+The live adapter passes the intact authenticated profile, and Lean supplies the
+existing `UiScreen.viewer` text. This display metadata does not enter or confirm
+the human-only patient identity field. Supplied Practitioner references can also
+resolve their recorded human name rather than a transport path.
+
+
+The live clinic now uses the selected encounter's recorded setting. The
+[FHIR R4 encounter-class value set](https://hl7.org/fhir/R4/v3/ActEncounterCode/vs.html)
+defines ambulatory, emergency and inpatient classes independently of the
+clinician's role. Lean reads a recognized class from the selected patient's
+encounter when no explicit episode kind was supplied. Explicit pre-op task
+scope keeps priority. Selecting an older clinic encounter therefore retains that
+clinic's banner and diagnosis while preserving the newer ward encounter in
+Chart Review. Missing/foreign selections stay unknown. This corrects the prior
+live-adapter assumption that every surgeon encounter was pre-op.
+
+Live save receipts previously exposed commit IDs and FHIR resource paths, and
+the encounter picker printed transport IDs. They now use the spec's readable
+labels and numbered saved-record actions, with the original bindings retained.
+The save notification sits below the banner. Normal clinical sessions show the
+readable confirmation; saved-record actions, the encounter drawer and Inspector
+require explicit `inspect=1` debug mode when opened manually. Save-error
+recovery remains available in normal sessions. The technical viewer still opens the
+actual saved record. Two P5 clinic walks record genuine allergy reviews, check
+the persisted Provenance in debug mode, and verify the selected ambulatory
+context, unobscured banner and absence of technical controls in normal mode.
+The existing return-to-worklist action remains available as `Close chart` in
+normal sessions; it does not change encounter status or discard saved records.
+
+Code entry follows the same department-preference pattern: search a readable
+term, select its code, then retain the clinical code with its description. The
+surgeon preset supplies 15 diagnosis quick picks and the three procedure codes
+already present in the project's surgical case feed. Diagnosis codes were
+checked against the [CMS ICD-10-CM index](https://www.cms.gov/medicare/coding-billing/icd-10-codes)
+and its [FY2027 code descriptions](https://www.cms.gov/files/zip/2027-code-descriptions-tabular-order.zip)
+(effective October 1, 2026); labels are concise original paraphrases. Procedure
+names reuse the project's existing case terminology. This is a small department
+preference list, with manual codes retained, rather than a full terminology
+catalog. Nothing chooses a diagnosis or fills a blank operative note. Local
+anesthesia, diet, activity and yes/no choices display readable labels while
+retaining their existing raw values. Lean supplies the choices; React only
+filters and paints them. Browser checks cover term selection, an unlisted manual
+code, untouched blank fields after filtering, and persistence across navigation.
+
+Public hospital training, rather than promotional artwork, is the primary reference. Salem Health's [surgeon workspace tip sheet, pp.1–5](https://www.salemhealth.org/docs/default-source/common-ground-docs-and-images/surgeon-buttons-tip-sheet.pdf?sfvrsn=5d1cc7e5_2) was read and its preprocedure, postprocedure and brief-note screenshots inspected. It shows schedule/status-board entry, a preprocedure navigator with H&P update, consent and orders, and postprocedure floor/discharge sections with a brief-note template. VGI adopts these information groups and phase terminology, with original composition and styling. No vendor screenshots or assets are stored in this repository.
+
+Alberta Health Services' [Connect Care surgical procedures manual](https://manual.connect-care.ca/workflows/surgical-procedures) distinguishes phases of care and active orders from work saved in a queue and orders signed for later release. VGI only offers its implemented active-sign action: it must not label a normal signature “Sign & Hold”. A pending-order list is draft information; navigating to the next phase cannot activate it.
+
+Boston Medical Center's [ChartLink quick-start guide, pp.16–20](https://www.bmc.org/sites/default/files/2025-10/BMCHS%20EpicCare%20ChartLink%20Quick%20Start%20Guide.pdf) separates selecting order preferences from associating a patient's diagnoses. Its surgical case entry includes diagnosis alongside date, location/provider and procedure, with a separate action to open a listed case. VGI therefore shows the supplied surgical request's **Indication** beside its procedure. This is request evidence, not a confirmed postoperative diagnosis or automatic order association. Generic medication preferences leave association for the clinician; only the explicitly named appendectomy set carries its procedure-specific diagnosis. An unused appendicitis value in the generic preference input helper was removed without changing any macro's emitted steps.
+
+The [CST PowerChart provider discharge guide](https://cstcernerhelp.healthcarebc.ca/Workflows/Inpatient/Admission_Transfer_Discharge/Discharge_Patient_Home_%28Provider%29.htm) supports chart review, medication reconciliation, discharge orders and documentation as separate parts of discharge. Mount Sinai General Surgery's [resident handbook](https://www.mssurg.com/table-of-contents), sections 3 and 7, supports a compact daily note focused on overnight symptoms, diet/bowel function, wound exam, I&O, labs and plans, and a structured brief operative report. These are workflow examples, not new legal requirements.
+
+| Screen | Target reading order and production pattern |
+| --- | --- |
+| OR Schedule | Room, start, procedure, indication, patient, surgeon, status in a compact schedule table; ordinary `Open selected case` action in the selected chart's row. Keep the department queue distinct from its patient's preprocedure navigator. Missing room or case timing remains unknown. |
+| Consults | Consult request list with patient, requesting service, reason, priority and status; `Open selected consult` enters the note. Surgical clinic remains the ordinary ambulatory visit navigator, with surgical history accessible in chart review. |
+| Surgical consult | Request and relevant imaging/results first; then reason, HPI/ROS, exam, assessment/diagnosis and surgical decision in named sections; home-medication reconciliation. `Review consult` opens billing/follow-up and its separate note signature. |
+| Sign Consult | Billing diagnosis/level of service, plan and patient instructions; sign consult note. It does not sign orders or advance the physical surgical phase. |
+| Preprocedure | Case/checklist and H&P review; interval H&P update; consent document plus human verification; anticoagulants/hold plan; NPO; allergies/current medications; prophylaxis orders. A consent document is never presented as a completed team time-out. |
+| Orders | Search/catalog, preference list, medication dosing, prescription details, pending orders and review/sign. The same composer is available during pre-op, floor care, rounds and discharge. No invented phase-dependent signature or “Sign & Hold”. |
+| Sign Orders | Pending orders and visible allergy/medication/anticoagulant/dose evidence; weight and linked dosing weight; controlled-prescription review; human identity immediately above its sign button. |
+| Brief Op Note | Intra-op evidence, optional procedure template; diagnoses/procedure/team, anesthesia/EBL, findings, specimens/drains/implants, complications/condition; sign note. Narrative findings have their own section rather than sharing a dense row with numeric EBL. |
+| Postprocedure Orders | Choose procedure set; diet/activity, VTE prevention, monitoring/labs and nursing care; separate medication sections for analgesia, VTE and nausea; pending orders; review/sign. The selected set fills drafts and still requires confirmations. |
+| Rounding | Overnight events, dated recorded vitals, supplied I&O, results and active orders; SOAP progress note; modify orders or discharge. No fabricated output totals or postoperative-day counter. |
+| Discharge | Current medications/allergies; reconciliation decisions; discharge prescriptions; diagnosis/condition/destination; follow-up; instructions and return precautions; final discharge action. Medication signing remains a separate route. |
+
+The [structured presentation contract](presentation-contract.md) uses `present.orSchedule`, `present.worklist`, `present.table`, `present.results` and `present.notes`. Clinical cells remain read-only. The Home/OR Schedule and Consults row actions are the original Lean goto buttons, placed with `present.row` tags inside a noncollapsible presentation group; an Open text column is not a control. Missing source rows retain the same button inline. This placement neither switches patients nor adds a new clinical event. All safety information remains in the workspace at its required signature. Additional chart summaries never replace it.
+
+P5's shared-workspace preset starts with today's OR cases and `Open selected case`; the OR Schedule activity retains the dedicated case-list view. This preserves the normal single chart-opening action from a schedule instead of forcing a detour through a clinic rooming screen. Activities follow the P5 preset order: OR Schedule, Consults, Clinic Schedule, In Basket: Results. The clinic navigator reuses W1's section order on every screen. The simulator follows the existing goto graph; no task-specific navigation policy or label matching is added.
+
+CST's [Perioperative Tracking guide](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Perioperative_Tracking/Navigate_to_Perioperative_Tracking.htm) confirms a room-organized slate with one patient per row and a separate chart-opening action. Its [tracking-filter guide](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Perioperative_Tracking/Perioperative_Tracking_Filters_and_Rules.htm) distinguishes today's cases from other dates and phase-specific views. VGI's dated surgical-request projection therefore filters to its supplied date; a day-only request stays a date, without an invented time. An `active` request remains an order status, never a claimed `Roomed` or `Complete` status. The surgical summary rail brings the case before the shared chart summaries; consent and anticoagulant reviews remain in the workspace.
+
+### Visual review and measurement
+
+The first case review also exposed antiplatelets missing from the filtered hold-review list: their generic names were present in the chart, but outside the small prescribing formulary. The display now includes explicitly named aspirin, clopidogrel, prasugrel, ticagrelor, ticlopidine and cangrelor, plus named dabigatran/rivaroxaban, alongside the existing formulary anticoagulants. Names are matched at a word boundary; no hold interval, dosing rule or interaction class is inferred. Sources: [AHA medication classes](https://www.heart.org/en/health-topics/heart-attack/treatment-of-a-heart-attack/cardiac-medications), [MedlinePlus P2Y12 inhibitors](https://medlineplus.gov/ency/patientinstructions/000100.htm). The complete medication list remains visible at signing and reconciliation.
+
+The signing review exposed two additional presentation defects. Raw provenance keys were visible, and a pounds prefill could make the numeric input keep submitting pounds. Lean now supplies readable `sourceLabels` and `entryHints`. The original provenance, human-only and pending-confirm flags remain identical for D6. A metric weight input stays in kg, leaves an incompatible recorded value out of the editable number, and displays that original value/unit in its hint. No conversion or confirmation happens automatically. A real-WASM probe uses the seeded pounds consult, checks the blank kg input and recorded-value hint, then verifies a human kg entry. The numeric DOM event also has a painter regression test.
+
+The fixed React `Active encounter` badge was removed: a status must come from the clinical source. In particular, FHIR distinguishes a finished encounter from an encounter in progress. [FHIR R4 encounter status](https://hl7.org/fhir/R4/valueset-encounter-status.html). The OR request supplies a planned room and surgeon, but the seeded world does not supply an active perioperative Encounter. For the explicit pre-op episode, Lean therefore shows **Preoperative chart review / Planned OR / Surgeon**, rather than the previous ambulatory encounter's class, attending and clinic location. These values use the ordinary selected-patient/version-bound request reader; missing data stays `Not recorded`. No admission or current physical location is inferred.
+
+CST's [right-patient/right-encounter guide](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Patient_Overview/Find_Right_Patient_and_Right_Encounter.htm) distinguishes opening a patient's chart from choosing the encounter used for documentation. Its [previous-visit guide](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Patient_Information/Locate_Previous_Visit_Information.htm) reinforces that distinction. This supports keeping planned surgical context separate from historical encounter metadata. The consult queue's request timestamp is now **Received**: FHIR `authoredOn` supplies creation time, not a due deadline. The header's signed-in role is also supplied by Lean's permission-bearing `User`; no user ID is displayed as a name.
+
+The second case review adds the request's indication to Home and OR Schedule, and keeps labeled procedure, indication, surgeon and request status in every surgical summary rail. Consult rails likewise preserve the request's labels. Previously those values formed a single bold line, without an indication. The supplied feed's five surgical terminology labels receive readable spacing/capitalization in Lean; other source text is preserved. This display change adds no default, confirmation or navigation step. At milestone `c05d292`, the regenerated canonical JSON was byte-identical. The subsequent row-action grouping is measured again against the same frozen baseline.
+
+Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load and task-focused views. The capture script is `lean/Ehr/Canonical/review_surgery.mjs`; its input is actual native `ehr render-screens --ui` output. `review_surgery_data.mjs` builds the inputs from committed World 2, day 2, through the actual FHIR seeder and Synthea import normalization. The OR case is Destiny Mitchell's laparoscopic cholecystectomy; the consult is Dina West's appendicitis request. These are synthetic records. No clinical outcomes are manufactured for the pictures.
+
+The integrated shared shell adds the indigo signed-in role bar, blue chart strips, explicit recorded weight/date and isolation status. On desktop, the banner and navigator remain visible while the workspace scrolls; opening a section returns that workspace to its heading. This fixes the earlier task-focused screenshots where patient identity scrolled away. The only current-section marker is on the actual Lean navigation button. The final 1440×900 review covers all surgical and clinic screens below, with the pre-op banner's planned context and the consult queue's Received column explicitly checked.
+
+The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 44 before and 49 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the clinician-header before image is the real landing capture from `73192de`. The focused laboratory before image uses the pushed `da22847` painter and native screen. The extra named-clinician view is a native/WASM identity fixture; the ordinary workflow and live views use their supplied clinician profiles. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
+
+### Screen-by-screen visual review
+
+Compared with Salem's navigator and brief-note examples, the improvement is primarily information hierarchy and a stable section list. Teal surgical section headings make phase/document groups easy to scan. The common VGI shell remains an original design. All records remain in their tables/lists; the long perioperative results and vitals reports use local scroll panes, and the desktop navigator stays in view. The ARIA/visibility gate checks rows after scrolling them into view.
+
+| Screen | Before → after observation | After image |
+| --- | --- | --- |
+| Clinician identity | A role-only bar → the recorded clinician name and role, matched to the same signed-in user. The P5 source fixture resolves to Whitaker, James. A separate named Practitioner fixture checks identity binding without assuming the persona ID; missing or duplicate matches retain the role alone. | [Role-only before](../../app/shots/realism/surg/before/clinician-header-load.png), [source P5 after](../../app/shots/realism/surg/after/home-load.png), [identity fixture](../../app/shots/realism/surg/after/clinician-header-load.png) |
+| Surgeon landing | Generic schedule and a bank of activity links → actual dated OR request row with indication, real case-opening button and the surgeon's ordered activity preset. The first row-action review wrapped the label onto three lines; the final action column gives it enough width. | [OR landing](../../app/shots/realism/surg/after/home-load.png) |
+| OR Schedule | New dedicated activity. Room/start/procedure/indication/patient/surgeon/request status are visible in one row. Its opening control is the original Lean goto, placed in the Actions cell; clinical cells remain read-only. | [Case list](../../app/shots/realism/surg/after/w6Schedule-load.png) |
+| Consults | New request queue with its original opening button in the Actions cell. Requesting clinician, reason, urgency, owner and location are supplied records. The side panel shows consult context rather than an empty today's-OR card. | [Consult list](../../app/shots/realism/surg/after/w6Consults-load.png) |
+| Consult note | Undifferentiated small text fields after long reports → named History and Examination/surgical-plan sections with full-width narratives. Results/vitals remain accessible in bounded report panes. | [Consult note](../../app/shots/realism/surg/after/w6Consult-task.png) |
+| Sign Consult | Flat billing/follow-up fields → diagnosis/charges and follow-up/instructions groups. The independent consult signature remains. | [Consult signature](../../app/shots/realism/surg/after/w6ConsultClose-task.png) |
+| Preprocedure | Loose checklist/fields and little case context → H&P update, actual consent-on-file evidence, separate unchecked human verification, antithrombotic review and hold/fasting sections. No completed time-out is implied. | [Preprocedure](../../app/shots/realism/surg/after/w6PreOp-task.png) |
+| Orders | Existing search, preferences and complete prescription composer retained. A surgical navigator and case context replace the numbered progress strip and footer navigation bank. | [Order composer](../../app/shots/realism/surg/after/w6Orders-task.png) |
+| Sign Orders | Required review tables stay in the workspace. Dosing weight is open, its source labels are readable, and identity remains immediately above signing. | [Signing](../../app/shots/realism/surg/after/w6Sign-task.png) |
+| Pounds signing review | A kg-labeled field showed/submitted the recorded pounds unit → separate recorded-value guidance and blank kg entries. The original alert and confirmation requirements remain. | [Pounds review](../../app/shots/realism/surg/after/w6Sign-pounds-task.png) |
+| Brief Op Note | One dense mixed grid with single-line findings → diagnoses/procedure/team, anesthesia/EBL, findings, specimens/devices and outcome sections. Narratives have room to document. Diagnosis/procedure fields now search Lean-supplied terms, retain raw codes, and show descriptions below aligned inputs. The first open-dropdown review exposed dark text on a dark highlight; the final painter inherits the option's contrasting foreground, with a browser contrast assertion. | [Brief Op Note](../../app/shots/realism/surg/after/w6OpNote-task.png), [code search](../../app/shots/realism/surg/after/w6OpNote-code-search.png), [explicit draft selections](../../app/shots/realism/surg/after/w6OpNote-code-selected.png) |
+| Postprocedure Orders | Generic numbered medication rows → diet/activity, VTE, monitoring, nursing, scheduled/PRN pain, prophylaxis and nausea groups. Draft set values still require their original confirmations. | [Postprocedure](../../app/shots/realism/surg/after/w6PostOp-task.png) |
+| Laboratory summary labels | Multi-line standard terminology names → short clinical captions for the four verified tests, with MDRD retained. Local qualified names remain intact. Values, units, reference ranges, dates, flags, codes and trend points stay identical to the previous real-WASM projections. | [Before](../../app/shots/realism/surg/before/lab-results-load.png), [after](../../app/shots/realism/surg/after/lab-results-load.png) |
+| Rounding | Single-line progress field below an unbounded historical lab report → SOAP narrative with adjacent active-order review and scrollable reports. The vitals label no longer claims a 24-hour restriction. | [Rounding](../../app/shots/realism/surg/after/w6Rounding-task.png) |
+| Discharge | Flat fields → medication reconciliation, diagnosis/disposition, and follow-up/AVS sections. Prescriptions, note/order signatures and discharge remain distinct. | [Discharge](../../app/shots/realism/surg/after/w6Discharge-task.png) |
+| Clinic rooming | Generic visit prompt → postoperative/surgical reason prompt and a stable Visit navigator. Existing vitals, screenings and allergy review remain. | [Rooming](../../app/shots/realism/surg/after/w1Rooming-task.png) |
+| Clinic medication reconciliation | Existing complete medication review and modeled decision slots retained; navigation is now in the left list and Surgical history is available in chart review. | [Medication reconciliation](../../app/shots/realism/surg/after/w1MedRec-task.png) |
+| Clinic history | One-line HPI/ROS → two full-width narratives. Current section stays in its normal navigator position. | [History](../../app/shots/realism/surg/after/w1Hpi-task.png) |
+| Clinic examination/A&P | One-line documentation → examination/surgical-site and assessment/surgical-plan narratives, followed by the existing problem list. | [Exam and plan](../../app/shots/realism/surg/after/w1Exam-task.png) |
+| Clinic visit close | Existing diagnosis, service level, follow-up and signature preserved; instructions become a narrative field and the visit section remains selectable. | [Visit close](../../app/shots/realism/surg/after/w1Close-task.png) |
+| Clinic medication orders | Complete shared composer retained; the visit navigator and surgical-history tab supply the surgical context. No extra surgical workflow button is added to the composer. | [Clinic orders](../../app/shots/realism/surg/after/w1Orders-task.png) |
+| Clinic laboratory orders | Existing laboratory ordering and signing route retained; the same Visit navigator and chart history are available. | [Laboratory orders](../../app/shots/realism/surg/after/w1Labs-task.png) |
+| Clinic verification | Required allergy/dose verification remains in the workspace. The change is navigation/context, with no hidden review substituted. | [Verification](../../app/shots/realism/surg/after/w1Verify-task.png) |
+| Clinic order signature | The independent order signature and human identity remain. Readable sources and kg-entry guidance use the same generic painter as surgery. | [Clinic signing](../../app/shots/realism/surg/after/w1Sign-task.png) |
+
+
+| Live encounter selection | The encounter picker printed transport IDs → patient names, recorded date, class and status. Actual selected references remain bound in the adapter. | [Encounter picker](../../app/shots/realism/surg/after/live-encounter-picker.png) |
+| Live review confirmation | A save toast covered the patient banner and printed review/resource IDs → readable allergy-review confirmation below the banner. Normal sessions omit record-viewer controls. | [Normal clinic](../../app/shots/realism/surg/after/live-review-save-normal.png), [debug save](../../app/shots/realism/surg/after/live-review-save.png) |
+| Live technical encounter details | The always-visible technical drawer printed encounter/resource paths → explicit debug-only context with the patient's name and numbered saved-record actions. Opening the action still verifies the actual saved Provenance. | [Debug context](../../app/shots/realism/surg/after/live-encounter-details.png) |
+
+### Efficiency and validation evidence
+
+Machine-readable before/after measurements: [surg-realism-metrics.json](surg-realism-metrics.json). Control probes: [surg-controls.json](../audits/surg-controls.json). The measurement script uses the existing certified `Measure.lean` adapter and `ehr min-clicks` on the actual P5 presets, plus all ten World-2 P5 schedules. Both programs run under the same native interpreter. The stock `pnpm complexity --release-root releases` union benchmark is retained separately in `programs/benchmarks/canonical-complexity.json`; its workflow totals are not the P5 preset totals.
+
+Clicks and keys are optimized independently within the reported search space. These P5 measurements use `navigationDirected`; they do not establish a global minimum over all interpreter moves. KLM replays the minimum-click path at a fixed clock and is an estimate, not a KLM minimum or a clinician timing study. World-2 replay uses the actual release day transitions and seed 7, including the simulated interruptions/detours. Layout changes can alter its policy path and random draws; fewer clicks need not imply a lower total KLM estimate.
+
+The code-choice increment retains those measurements: the model counts the
+interpreter's raw-code entry, rather than timing a clinician's terminology
+search. It therefore makes no estimated time-saving claim for the new quick picks.
+
+| P5 benchmark | Releases | Minimum clicks before → after | KLM seconds before → after |
+| --- | --- | --- | --- |
+| W1 surgical clinic | v1/v2/v3 | 39 → 39 | 141.60 → 141.60 |
+| W6 pre-op episode | v1/v2 | 30 → 25 | 96.55 → 92.90 |
+| W6 pre-op episode | v3 | 31 → 26 | 100.90 → 97.25 |
+| W6 op-note episode | v1/v2/v3 | 12 → 12 | 43.50 → 43.50 |
+| W6 discharge episode | v1/v2/v3 | 12 → 12 | 40.65 → 40.65 |
+| W6 benchmark sum | v1/v2 | 54 → 49 | 180.70 → 177.05 |
+| W6 benchmark sum | v3 | 55 → 50 | 185.05 → 181.40 |
+
+The W6 sum covers three independent benchmark episodes; the op-note/discharge benchmark choices contain no additional prescriptions. Actual postprocedure sets, consults, rounding and varying prescription loads are exercised by the World-2 replay. That replay completes all 136 P5 tasks in both programs: **4,780 → 4,698 clicks**, with estimated KLM **26,449.5 → 28,847.9 seconds** (+9.1%). The row-action grouping retains the same click paths; its section structure adds 15.4 estimated seconds across the replay compared with `c05d292`. This mixed result is retained, rather than adjusting the simulator or simplifying clinical content to improve the score. The baseline still has the required identity, reviews and confirmation work; the realistic selected-case entry removes a clinic detour from the directed pre-op benchmark.
+
+Validation for the structured-renderer milestone: **15/15** persona projections certified, **18/18** bad programs rejected, **1,284/1,284** World-2 tasks complete, and archived run1-P3 **0 mismatches** (14,658 recorded events plus 137 baseline events). Lean default build and kernel replay pass with only the permitted axioms; root/checker/render Comparators pass 18/21/43 theorems. The browser checks 45 actual P5 screen states at desktop and narrow widths: 99 tests pass, with three fixture-dependent skips. The control probe covers 72 release/screens, 1,030 enabled buttons, 29 explained disabled buttons and 537 alternate tabs, with no failures. App build/lint/170 tests and agent 41 tests/typecheck/lint pass. The [validation manifest](../audits/surg-realism-validation.json) ties these results and all 80 pictures to source/program hashes.
+
+The renderer adds readable metadata and transparent structured layouts to archived programs, including a hint for any recorded non-kg weight. It does not change the archived interpreter events or state transitions. The real-WASM trajectory verification was rerun after these changes; no archived program was rewritten.
+
+Main integration through `251d9a0` preserves both the structured widgets and the runner's versioned presentation wrapper. Both independent presentation test suites are retained. With the built app in place, app build/lint/186 tests and agent 82 tests/typecheck/lint pass. The 45-state browser gate passes again with cache reuse disabled (99 pass, three fixture-dependent skips), the clinical walk passes, and the updated trajectory verifier reports zero mismatches. Lean source and the WASM fingerprint are unchanged by this merge. [Integration evidence](../audits/surg-main-integration.json).
+
+Presentation integration through `6062379` adds source-row placement for the existing Home/OR Schedule and Consults goto buttons. The first visual pass exposed wrapping and a fixed-table action-column sizing issue; the final review keeps the full action label visible and preserves readable procedure/indication columns. The independent custom-presentation and structured-widget suites remain, with 192 app tests. Kernel checking, all three Comparator suites, 15/15 certification, 18/18 bad-program rejection, 1,284/1,284 simulated tasks, 1,030 enabled control probes, 15 structured native/WASM comparisons, both clinical/row-action browser walks, and the 45-state browser gate pass; archived replay has zero mismatches. The P5 and stock complexity measurements are regenerated. [Current validation](../audits/surg-realism-validation.json).
+
+Shared-shell integration through `a462b19` preserves the semantic navigator, multiline fields, entry hints and row actions. The role now comes from Lean's permission-bearing user, and pre-op context no longer displays the unrelated historical clinic as a current location. The desktop banner/section-scroll behavior has a real-browser regression. App build/lint/206 tests, agent 84 tests/typecheck/lint, the full proof and certification gates, 1,284 simulated tasks, the 45-state browser gate and archived replay all pass. Both surgical native/WASM FHIR projections match; min-click/KLM evidence and all after screenshots are refreshed. [Current validation](../audits/surg-realism-validation.json).
+
+The surgical code-choice milestone passes the same full proof, certification,
+simulation and archived-replay gates, with 209 app tests and 84 agent tests.
+All 120 coded-field instances with supplied choices across the 72 release/screens
+bind to visible semantic fields and retain manual entry. The real-WASM browser
+walk verifies code selection, no capture during filtering, persistence, and
+keyboard-highlight contrast of at least 4.5:1. The keyboard walk keeps the pointer outside the dropdown and waits for each declared highlight before the next key. The 45-state desktop/narrow gate
+passes again without cache reuse (99 pass, three fixture-dependent skips).
+The 82-image set includes the two additional draft code-choice views. Min-click
+and KLM measurements are regenerated and unchanged by this increment.
+
+Main integration through `924425f` retains the surgeon's active-section IDs,
+field choices and persistent desktop banner while adopting the shared semantic
+navigation regions. Existing enabled navigation-tagged gotos move into the shell
+with their original component IDs and events; hotkey/blocked controls retain
+their metadata in the workspace. Archived run1-P3 still has zero mismatches.
+All proof/certification/simulation gates pass. The shared visual/search/contrast
+walk passes 13 tests across the role palettes, and the 45-state desktop/narrow
+gate passes 99 tests with three fixture-dependent skips. Surgical screenshots
+are refreshed. The broader [app/EHR control audit](../audits/surg-browser-controls.json)
+records 2,704 working controls, 113 explained disabled states, and no dead/error
+controls across six roles. This is bounded configuration coverage (up to 48 per
+role), supplemented by complete world-2 task replay and the 72-screen P5 probe.
+Its report and regression gate support an isolated output directory, preserving
+the shared lane's separate live-agent evidence.
+
+
+The selected-encounter increment integrates main through `062a4ef`, preserving
+structured tables, source row actions, code quick picks and multiline fields
+while adopting its display cleanup and explicit-debug Inspector. The live P5
+adapter now passes the selected encounter to Lean instead of treating a
+surgeon's clinic visit as pre-op. Native and WASM agree on both real surgical
+projections and three selected-encounter fixtures; named Lean examples also
+cover unknown/foreign references, explicit pre-op priority and unknown code
+systems. The complete encounter history stays available in Chart Review.
+The live browser checks a real persisted allergy-review Provenance and the
+normal clinic's absence of technical controls. Its readable receipt stays below
+the patient banner; closing the chart returns to the worklist through the existing
+shell action, without changing the clinical encounter status. The initial notification-offset review exposed empty toast
+containers covering controls; the final CSS targets only the bottom-right
+container, and the full live click path passes.
+
+App build/lint and 226 tests pass, along with agent typecheck/lint and 84 tests.
+The 17 clinical/search/contrast/live browser tests and all 45 semantic screen
+states pass (99 checks, three fixture-dependent skips, no cache reuse).
+The shared display test distinguishes structured source-cell formatting from
+the legacy medication-card formatting while retaining exact ARIA equality and
+checking every supplied row value. All proof/certification/simulation gates and
+archived replay pass again. Min-click/KLM measurements are regenerated and
+unchanged. The current [validation manifest](../audits/surg-realism-validation.json)
+binds the selected-encounter increment, artifact hashes and all 89 images. The refreshed shared control audit records 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; its fast regression gate passes. Coverage is bounded to 48 configurations per role, with per-role remaining checkpoints retained in the report.
+
+
+The clinician-identity increment adds a typed optional Practitioner projection,
+with exact native/WASM UI agreement for matched, foreign and duplicate profile
+fixtures. Named Lean examples also reject missing names, empty identities and
+Patient resources used as practitioner names. The source P5 fixture shows
+`Whitaker, James · General surgeon`; the authenticated live profile supplies
+`Dr. James Whitaker, MD, FACS · General surgeon`. No display name is hardcoded in
+the painter. All 91 before/after images are refreshed or retained with their
+baseline revisions recorded; the narrow identity fixture was also inspected.
+The source caption remains fully visible after wrapping onto its own line.
+
+The same proof, certification, full-world simulation and archived replay gates
+pass. App build/lint/226 tests and agent typecheck/lint/84 tests pass. The semantic
+viewer-caption assertion now checks Lean's exact supplied string; 46 states pass
+101 desktop/narrow checks with three fixture-dependent skips, without cache
+reuse. The 17 clinical/live/search/contrast tests pass, including actual saved
+Provenance binding and normal close-chart behavior. Click/KLM measurements are
+regenerated and unchanged. The refreshed six-role control audit and regression gate pass with 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; the report retains the bounded configuration coverage and remaining checkpoints. [Current artifact-bound validation](../audits/surg-realism-validation.json).
+
+
+The laboratory-caption increment keeps the results table and every row intact.
+The focused native before/after view shows standard test names on a single line,
+leaving more trend rows visible beside the original values, units, dates, ranges
+and flags. The live clinic's `eGFR (MDRD)` caption has a positive browser assertion.
+The 93-image set includes this focused comparison. The real-WASM projection
+comparison records four renamed tests in the case and one in the consult; all
+other facts and display fields are exactly equal to the previous green build.
+The supplied codes and MDRD method are preserved, including historical codes.
+
+Default build, kernel checking and the 18/21/43 Comparator suites pass; 15/15
+projections certify, 18/18 bad programs reject, 1,284/1,284 tasks complete, and
+archived replay has zero mismatches. App build/lint/226 tests and agent
+typecheck/lint/84 tests pass. The 46-state semantic gate passes 101 checks with
+three fixture-dependent skips, and the 17 clinical/live/search/contrast tests
+pass. The refreshed six-role control audit and regression pass: 2,704 working controls, 113 explained disabled states, no dead controls and no errors. Bounded coverage and remaining checkpoints are retained in the report. Regenerated min-click/KLM results are unchanged by this increment.
+[Current validation](../audits/surg-realism-validation.json) and
+[projection evidence](../audits/surg-controls.json) retain the source/artifact
+bindings and exact caption changes.
+
+
+The final app-shell wording pass renames the existing patient-search action to
+`Search patients`, uses `Searching patients` while pending, and correctly says
+`1 patient found` for a single result. Its search callback, permissions and clinical
+context are unchanged. The live picker/save screenshots are refreshed. The
+20-test clinical/live-login/search/contrast walk passes, along with app
+build/lint/226 tests and agent typecheck/lint/84 tests. Native proof, certification,
+simulation and measurement evidence is reused only for the identical Lean/WASM
+fingerprint `82f2f766`; `wasm-check` confirms it remains current. The final 46-state browser gate passes 101 checks with three fixture-dependent skips. The six-role control audit and regression pass with 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors. A shared temporary-filesystem quota interrupted the first audit before completion; completed SURG proof scratch was removed and a fresh audit/regression passed against the identical app artifact. The report preserves bounded coverage and remaining checkpoints.
+
+### Ambulatory/SURG integration of main `e4d10c5` (2026-11-01)
+
+Both research sections and the earlier image evidence are retained. The shared
+semantic vocabulary has one presentation enum and transparent value-set,
+reference-curve and row-action wrappers. One painter path accepts the shared
+value sets and field-specific surgical favorites, preserving code entry,
+filtering without capture, explicit confirmation, human-only markers and public
+source captions. The existing UiProofs theorem statements from both parents
+remain unchanged; no spec or property definition changes.
+
+The two FHIR supporting-view collections now produce one bound `scheduleTasks`
+payload: the pre-op setting uses surgical cases, the ambulatory setting uses
+appointments, and a dated surgical request can supply the queue when no setting
+is available. Other source views coexist. Complete per-observation lab results
+retain their values/components and use SURG's conservative standard-name
+captions. The shell uses main's responsive sticky banner/navigation, with Lean's
+active navigator identity and screen-based scroll reset. Both Encounter options
+and direct Close chart remain available; the ordinary encounter panel uses the
+patient's readable name, while saved-record inspection retains its real binding.
+The surgical live lab check follows Chart Review → Results.
+
+At 1440×900, visual review of the four requested screens confirms:
+
+| Screen | Integration review |
+| --- | --- |
+| [P1 home](../../app/shots/realism/surg/integration/p1-home.png) | The ambulatory appointment row, status, encounter-opening action and In Basket activities remain intact; no perioperative columns leak into the schedule. |
+| [P4 growth](../../app/shots/realism/surg/integration/p4-growth.png) | Measured weight/height points, the separately sourced WHO/CDC curves, reference labels and complete measurement table remain present. The red allergy banner wraps while retaining patient identity. |
+| [P5 OR Schedule](../../app/shots/realism/surg/integration/p5-or-schedule.png) | The source case's room, start, procedure, indication, patient, surgeon, status and real row control remain intact. Historical encounter labels remain distinct from the planned OR context. |
+| [P5 op note](../../app/shots/realism/surg/integration/p5-op-note.png) | The surgical navigator's active section, case summary, coded diagnoses/procedure, team, anesthesia, EBL and narrative groups remain intact. Findings remain empty until actual entry or an explicitly chosen template. |
+
+The integrated milestone passes the 359-job default build, kernel replay,
+root/checker/renderer Comparators, D1–D6, 15/15 persona certifications and 18/18
+core negative cases. World 2 completes 1,284/1,284 tasks and the archived P3
+replay has zero mismatches. Native/WASM agrees across 72 surgical release
+screens, 34 ambulatory screens and 16 structured fixtures. App build/lint/255
+tests, agent typecheck/lint/84 tests, 213 semantic browser checks (three intended
+viewport skips) and 59 realism/live-flow cases pass. The bounded six-role census
+records 2,792 working controls, 113 explained disabled states, zero dead controls
+and zero errors; its regression passes. Remaining checkpoints outside the
+48-configuration limit are recorded explicitly for the nursing roles. All 93
+prior SURG screenshot checksums remain unchanged.
+
+Current build-bound verification is recorded in
+[the integration report](../audits/surg-ambulatory-integration.json) and
+[the bounded control census](../audits/surg-integrated-browser-controls.json).
+Artifacts were regenerated through content export, gents, WASM, certification
+and the canonical complexity benchmark; generated conflicts were not hand-merged.
+
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
 ## Evidence and reuse boundary

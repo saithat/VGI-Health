@@ -19,12 +19,12 @@ wire form (`Html.toPage`) first.
 namespace Ehr.Render
 
 deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
-  UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiScreen
+  UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiCodeChoices, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, LabResultRow, ProblemRow, ImmRow,
   EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, ScheduleRow, BoardRow,
-  MarOrderRow, AdministrationRow, ObservationRow
+  MarOrderRow, AdministrationRow, ObservationRow, ClinicianRow
 
 private def readObservationRow : Lean.Json → Except String ObservationRow := Lean.fromJson?
 
