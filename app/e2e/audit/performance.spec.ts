@@ -6,7 +6,14 @@ test("performance: cold dashboard and EHR round trip", async ({
   browser,
   baseURL,
 }) => {
-  const result: object[] = [];
+  const result: {
+    host: string;
+    label: string;
+    bytes: number;
+    requests: number;
+    interactiveMs: number;
+    wasmRequests: number;
+  }[] = [];
   for (const host of ["127.0.0.1", "vgi-audit.example.ts.net"]) {
     const context = await browser.newContext();
     // Route to loopback while sending a real non-localhost Host header.
@@ -55,6 +62,7 @@ test("performance: cold dashboard and EHR round trip", async ({
     const chart = await context.newPage();
     await chart.goto(`${origin}/ehr?mode=replay&persona=P3`);
     await chart.locator(".clinical-app").waitFor({ timeout: 60000 });
+    const timeOrigin = await chart.evaluate(() => performance.timeOrigin);
     const chartClient = await context.newCDPSession(chart);
     await chartClient.send("Network.enable");
     chartClient.on("Network.loadingFinished", (event) => {
@@ -98,6 +106,20 @@ test("performance: cold dashboard and EHR round trip", async ({
     await switchTo("/dashboard?run=run1-P3", '[aria-label="Version history"]');
     await switchTo("/ehr?mode=replay&persona=P3", ".clinical-app");
     await expect(chart.getByRole("alert")).toHaveCount(0);
+    if (process.env.AUDIT_PHASE !== "before") {
+      expect(await chart.evaluate(() => performance.timeOrigin)).toBe(
+        timeOrigin,
+      );
+      const measures = result.filter((r) => r.host === host);
+      expect(measures.every((r) => r.wasmRequests === 0)).toBe(true);
+      expect(
+        measures.find((r) => r.label === "cold dashboard")?.requests ??
+          Infinity,
+      ).toBeLessThan(30);
+      expect(
+        measures.find((r) => r.label === "cold dashboard")?.bytes ?? Infinity,
+      ).toBeLessThan(1000000);
+    }
     await context.close();
   }
   mkdirSync(resolve("../docs/audits"), { recursive: true });

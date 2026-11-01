@@ -107,7 +107,13 @@ export function TabsNode({ node, onEvent }: Props<"tabs">) {
     >
       <Tabs.List aria-label="Chart tabs">
         {node.labels.map((label, index) => (
-          <Tabs.Tab key={index} value={String(index)}>
+          <Tabs.Tab
+            key={index}
+            value={String(index)}
+            data-comp-id={node.id}
+            data-event="selectTab"
+            data-tab-index={index}
+          >
             {label}
           </Tabs.Tab>
         ))}

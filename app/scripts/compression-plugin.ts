@@ -40,7 +40,6 @@ export function compressionPlugin(): Plugin {
       await compress(output);
     },
     configurePreviewServer(server) {
-      if (process.env.VGI_AUDIT_UNCOMPRESSED_BASELINE === "1") return;
       server.middlewares.use(async (req, res, next) => {
         const url = new URL(req.url ?? "/", "http://localhost");
         const file = resolve(output, `.${decodeURIComponent(url.pathname)}`);

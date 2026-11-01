@@ -1344,3 +1344,26 @@ rendering about 1.4 seconds in a Node WASM measurement. The app now computes
 legacy HTML and the inspection view lazily, with immutable snapshot inputs.
 Please continue profiling semantic rendering/structured-payload checks in Lean;
 UI logic remains there. No files under lean/ were edited for these changes.
+
+## Visible control audit handoff (lane/app, 2026-10-31)
+
+The owner requires every visible enabled control to produce an observable effect
+within approximately two seconds. The app shell audit and fixes are in
+`docs/audits/buttons.md`. The precise clinical inventory, including program,
+screen, component id, label, action, and observed result, is generated in
+[`ehr-dead-controls.md`](../audits/ehr-dead-controls.md).
+
+**Content lane:** remove placeholder Navigator, Sidebar and Patient workspace
+buttons from the canonical, or give them a meaningful interpreter action. Remove
+search fields whose input is ignored, or implement their search result behavior.
+Current selected tabs and repeated actions need a state change, or an explicitly
+disabled reason. Retain actual clinical guard reasons; the audit must not invent
+patient evidence to make a commit clickable. Commit paths blocked by missing
+phase/temporal/source contracts remain content/core integration work.
+
+**Render lane:** export component click metadata for every nav and stepper entry
+that should navigate. The React painter must dispatch the exported component id;
+a screen destination alone is insufficient authority to invent a click. The
+inventory also records static nav/stepper destinations with a null component id
+when no click metadata exists. Re-run the slow Lean audit after landing exports
+and the committed WASM; no local Lean build is required.

@@ -78,14 +78,16 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
       </div>
       {window.location.pathname === "/ehr" && (
         <>
-          <Button
-            size="compact-xs"
-            variant="default"
-            className="inspector-toggle"
-            onClick={() => setInspecting(true)}
-          >
-            Inspector
-          </Button>
+          {!inspecting && (
+            <Button
+              size="compact-xs"
+              variant="default"
+              className="inspector-toggle"
+              onClick={() => setInspecting(true)}
+            >
+              Inspector
+            </Button>
+          )}
           <Drawer
             opened={inspecting}
             onClose={() => setInspecting(false)}

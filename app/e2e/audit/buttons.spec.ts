@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
-import { Audit, selector } from "./driver";
+import { Audit } from "./driver";
 import { writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
@@ -43,6 +43,46 @@ test("app shell: every shell control has an effect or an explained disabled stat
       await page
         .getByLabel("Patient search", { exact: true })
         .waitFor({ timeout: 30000 });
+      const date = page.getByLabel("Worklist date", { exact: true });
+      await audit.click(date, () => date.fill("2026-11-02"), "app");
+      await page
+        .getByText("Loading Medplum worklist…", { exact: true })
+        .waitFor({ state: "hidden" });
+      await audit.click(
+        page.getByRole("button", { name: "Refresh worklist", exact: true }),
+        undefined,
+        "app",
+      );
+      await page
+        .getByText("Loading Medplum worklist…", { exact: true })
+        .waitFor({ state: "hidden" });
+      const workButtons = await page
+        .locator(
+          '.worklist-table button, [aria-label="Medications due"] button',
+        )
+        .count();
+      for (let w = 0; w < workButtons; w++) {
+        // Each work item starts with an unselected patient in a fresh document.
+        if (w) {
+          await freshGoto("/?audit=buttons");
+          await page.getByLabel("Patient search", { exact: true }).waitFor();
+          await page
+            .getByLabel("Worklist date", { exact: true })
+            .fill("2026-11-02");
+          await page
+            .getByText("Loading Medplum worklist…", { exact: true })
+            .waitFor({ state: "hidden" });
+        }
+        await audit.click(
+          page
+            .locator(
+              '.worklist-table button, [aria-label="Medications due"] button',
+            )
+            .nth(w),
+          undefined,
+          "app",
+        );
+      }
       await audit.click(
         page.getByRole("button", { name: "Search Medplum", exact: true }),
         undefined,
@@ -59,7 +99,8 @@ test("app shell: every shell control has an effect or an explained disabled stat
           .evaluateAll((nodes) =>
             nodes.map((n) => (n instanceof HTMLOptionElement ? n.value : "")),
           );
-        const value = values.find((v) => v && v !== "");
+        const current = await control.inputValue();
+        const value = values.find((v) => v && v !== current);
         if (value)
           await audit.click(control, () => control.selectOption(value), "app");
       }
@@ -89,6 +130,11 @@ test("app shell: every shell control has an effect or an explained disabled stat
         .getByRole("button", { name: /Back to worklist/ })
         .first();
       if (await back.isVisible()) await audit.click(back, undefined, "app");
+      await audit.click(
+        page.getByRole("button", { name: "Sign out", exact: true }),
+        undefined,
+        "app",
+      );
     }
     writeReport(audit.rows, "app");
     audit.persona = "—";
@@ -115,6 +161,13 @@ test("app shell: every shell control has an effect or an explained disabled stat
       undefined,
       "app",
     );
+    await audit.allShell(async () => {
+      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await page.locator(".clinical-app").waitFor();
+      await page
+        .getByRole("button", { name: "Inspector", exact: true })
+        .click();
+    });
     // Both real and authored runs: every persona, selector, version/release row and drawer action.
     for (const run of ["run1-P3", "mock"]) {
       const setup = async () => {
@@ -144,24 +197,42 @@ test("app shell: every shell control has an effect or an explained disabled stat
           .getByRole("button")
           .count();
         for (let v = 0; v < versionCount; v++) {
-          await page
-            .getByRole("region", { name: "Version history" })
-            .getByRole("button")
-            .nth(v)
-            .click();
-          const drawer = page.getByRole("dialog", {
-            name: "Decision record",
-            exact: true,
-          });
+          await audit.click(
+            page
+              .getByRole("region", { name: "Version history" })
+              .getByRole("button")
+              .nth(v),
+            undefined,
+            "app",
+          );
+          console.log(
+            `${run} ${pillLabel}: version row ${v + 1}/${versionCount}`,
+          );
           const dialog = page.getByRole("dialog").first();
-          for (const label of [
+          await dialog
+            .getByRole("button", {
+              name: "Before / after on screen",
+              exact: true,
+            })
+            .waitFor();
+          for (const detail of await dialog.locator("summary").all())
+            await audit.click(detail, undefined, "app");
+          const replayLabels = [
             "Before / after on screen",
-            "Replay counterexample",
-          ]) {
+            ...Array(
+              await dialog
+                .getByRole("button", {
+                  name: "Replay counterexample",
+                  exact: true,
+                })
+                .count(),
+            ).fill("Replay counterexample"),
+          ];
+          let rejectionIndex = 0;
+          for (const label of replayLabels) {
             const button = dialog
               .getByRole("button", { name: label, exact: true })
-              .first();
-            if (!(await button.count())) continue;
+              .nth(label === "Replay counterexample" ? rejectionIndex++ : 0);
             await audit.click(button, undefined, "app");
             const replay = page.getByRole("dialog").last();
             await expect(
@@ -178,6 +249,10 @@ test("app shell: every shell control has an effect or an explained disabled stat
               const c = replay.getByRole("button", { name, exact: true });
               if (await c.count()) await audit.click(c, undefined, "app");
             }
+            for (const eventButton of await replay
+              .locator(".event-path button")
+              .all())
+              await audit.click(eventButton, undefined, "app");
             await audit.click(
               replay.getByRole("button", {
                 name: "Close EHR replay",
@@ -187,7 +262,6 @@ test("app shell: every shell control has an effect or an explained disabled stat
               "app",
             );
           }
-          void drawer;
           await audit.click(
             page.getByRole("button", {
               name: "Close decision record",
@@ -315,6 +389,21 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           .parse(
             await page.evaluate(() => window.__buttonAuditSession?.program),
           ).id ?? `live/${persona}`;
+      const programComponents = z
+        .object({
+          screens: z.array(
+            z.object({
+              id: z.string(),
+              components: z.array(
+                z.object({ id: z.string(), kind: z.unknown() }),
+              ),
+            }),
+          ),
+        })
+        .passthrough()
+        .parse(await page.evaluate(() => window.__buttonAuditSession?.program));
+      const leanSelector =
+        'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], input[placeholder="Search the patient chart"], input[role="combobox"]';
       const queue = [
         await page.evaluate(
           () => window.__buttonAuditSession?.checkpoint() ?? -1,
@@ -334,7 +423,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
         if (!snapshot) throw new Error("Missing audit session");
         const screen = snapshot.state.screen;
-        const variant = `${screen}:${JSON.stringify(snapshot.state.tabSel)}:${JSON.stringify(snapshot.state.popup)}:${JSON.stringify(snapshot.state.captured.filter((c) => !c.confirmed).map((c) => c.element))}`;
+        const variant = `${screen}:${JSON.stringify(snapshot.state.tabSel)}:${JSON.stringify(snapshot.state.popup)}:${JSON.stringify(snapshot.state.acked)}:${JSON.stringify(snapshot.state.receipts)}:${JSON.stringify(snapshot.state.commits)}:${JSON.stringify(snapshot.state.captured.map((c) => [c.element, c.confirmed]))}`;
         if (seenScreens.has(variant)) continue;
         seenScreens.add(variant);
         audit.screen = screen;
@@ -343,7 +432,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           seenScreens.add(`static:${screen}`);
           const staticEntries = await page
             .locator(
-              ".workflow-links li:not(:has(button)), .clinical-stepper li:not(:has(button))",
+              ".workflow-links li:not(:has(button)):not([inert] *), .clinical-stepper li:not(:has(button)):not([inert] *)",
             )
             .allTextContents();
           for (const label of staticEntries)
@@ -363,22 +452,29 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         // Expand every workflow group before indexing controls, then checkpoint it.
         while (
           await page
-            .locator('.workflow-groups button[aria-expanded="false"]')
+            .locator(
+              '.workflow-groups button[aria-expanded="false"]:not([inert] *)',
+            )
             .count()
         )
           await page
-            .locator('.workflow-groups button[aria-expanded="false"]')
+            .locator(
+              '.workflow-groups button[aria-expanded="false"]:not([inert] *)',
+            )
             .first()
             .click();
-        const targets = await page.locator(selector).evaluateAll((nodes) =>
+        const targets = await page.locator(leanSelector).evaluateAll((nodes) =>
           nodes
             .filter(
               (el) => el.getClientRects().length && !el.closest("[inert]"),
             )
             .map((el, index) => ({
               index,
+              disabled: el.matches(":disabled, [aria-disabled='true']"),
+              clinical: !!el.closest(".clinical-app, .clinical-modal"),
               comp: el.getAttribute("data-comp-id"),
               event: el.getAttribute("data-event"),
+              tab: el.getAttribute("data-tab-index") ?? (el.getAttribute("role") === "tab" ? el.textContent : ""),
               label:
                 el.getAttribute("aria-label") ||
                 el.textContent?.trim() ||
@@ -387,6 +483,10 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             })),
         );
         for (const target of targets) {
+          if (!target.clinical) continue;
+          const key = `${screen}:${target.comp ?? target.label}:${target.event ?? target.tag}:${target.tab}:${target.disabled}`;
+          if (tested.has(key)) continue;
+          tested.add(key);
           await page.evaluate(
             (id) => window.__buttonAuditSession?.restore(id),
             checkpoint,
@@ -394,16 +494,20 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           await page.waitForTimeout(20);
           while (
             await page
-              .locator('.workflow-groups button[aria-expanded="false"]')
+              .locator(
+                '.workflow-groups button[aria-expanded="false"]:not([inert] *)',
+              )
               .count()
           )
             await page
-              .locator('.workflow-groups button[aria-expanded="false"]')
+              .locator(
+                '.workflow-groups button[aria-expanded="false"]:not([inert] *)',
+              )
               .first()
               .click();
           const controls = page
             .locator(
-              selector
+              leanSelector
                 .split(", ")
                 .map((s) => `${s}:not([inert] *)`)
                 .join(", "),
@@ -412,15 +516,18 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           const control = controls.nth(target.index);
           if (!(await control.count()) || !(await control.isVisible()))
             continue;
-          const key = `${screen}:${target.comp ?? target.label}:${target.event ?? target.tag}:${await control.isDisabled()}`;
-          if (tested.has(key)) continue;
-          tested.add(key);
-          if (await control.evaluate((el) => !el.closest(".clinical-app")))
-            continue;
           let action: (() => Promise<unknown>) | undefined;
           if (target.tag === "INPUT" || target.tag === "TEXTAREA") {
             const type = await control.getAttribute("type");
-            if (type === "checkbox") {
+            if ((await control.getAttribute("role")) === "combobox") {
+              action = async () => {
+                await control.click();
+                const option = page.getByRole("option").first();
+                if (await option.count()) await option.click();
+                else await control.fill("72");
+                await page.keyboard.press("Escape");
+              };
+            } else if (type === "checkbox") {
               const checked = await control.isChecked();
               action = () => control.setChecked(!checked);
             } else
@@ -449,11 +556,11 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             if (value !== undefined) action = () => control.selectOption(value);
           }
           const row = await audit.click(control, action, "lean");
-          const component = snapshot.view.items.find(
-            (item) => item.comp.id === target.comp,
-          )?.comp;
+          const component = programComponents.screens
+            .find((s) => s.id === screen)
+            ?.components.find((c) => c.id === target.comp);
           if (component)
-            row.kind = `${target.event ?? target.tag} / ${JSON.stringify(component.kind)}`;
+            row.kind = `${target.event ?? target.tag}${target.tab ? ` index ${target.tab}` : ""} / ${JSON.stringify(component.kind)}`;
           const after = await page.evaluate(() =>
             window.__buttonAuditSession?.snapshot(),
           );
@@ -466,6 +573,23 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
                 () => window.__buttonAuditSession?.checkpoint() ?? -1,
               ),
             );
+        }
+        await page.evaluate(
+          (id) => window.__buttonAuditSession?.restore(id),
+          checkpoint,
+        );
+        const pending = page
+          .locator('[data-event="confirm"]:not([inert] *)')
+          .filter({ visible: true });
+        if (await pending.count()) {
+          let confirmed = 0;
+          while ((await pending.count()) && confirmed++ < 40)
+            await pending.first().click();
+          queue.push(
+            await page.evaluate(
+              () => window.__buttonAuditSession?.checkpoint() ?? -1,
+            ),
+          );
         }
         console.log(
           `${persona} ${screen}: ${tested.size} controls, ${queue.length} queued`,

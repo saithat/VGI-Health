@@ -74,17 +74,26 @@ export function createSession(
     snapshot = nextSnapshot;
     listeners.forEach((listener) => listener());
   }
-  const checkpoints: { args: typeof args; state: string }[] = [];
+  const checkpoints: {
+    args: typeof args;
+    state: string;
+    snapshot: typeof snapshot;
+  }[] = [];
   installButtonAudit({
     program,
-    snapshot: () => ({ state: snapshot.state, result: snapshot.result, ui: snapshot.ui, view: snapshot.view }),
-    checkpoint: () => checkpoints.push({ args, state: stateJson }) - 1,
+    snapshot: () => ({
+      state: snapshot.state,
+      result: snapshot.result,
+      ui: snapshot.ui,
+    }),
+    checkpoint: () =>
+      checkpoints.push({ args, state: stateJson, snapshot }) - 1,
     restore(id) {
       const saved = checkpoints[id];
       if (!saved) throw new Error("Unknown audit checkpoint");
       args = saved.args;
       stateJson = saved.state;
-      snapshot = readSnapshot();
+      snapshot = saved.snapshot;
       listeners.forEach((listener) => listener());
     },
   });

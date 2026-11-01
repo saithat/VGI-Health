@@ -3,7 +3,7 @@ import type { Control } from "./report";
 import type {} from "../../src/core/buttonAudit";
 
 export const selector =
-  'button, a[href], [role="tab"], [role="menuitem"], summary, select, input:not([type="hidden"]), textarea';
+  'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input:not([type="hidden"]), textarea';
 export class Audit {
   rows: Control[] = [];
   errors: string[] = [];
@@ -40,6 +40,7 @@ export class Audit {
         .join("|"),
       state: JSON.stringify(window.__buttonAuditSession?.snapshot().state),
       result: JSON.stringify(window.__buttonAuditSession?.snapshot().result),
+      observedAt: window.__buttonAuditObservation?.at,
     }));
   }
   async click(
@@ -58,6 +59,7 @@ export class Audit {
         )?.trim() ||
         el.getAttribute("title") ||
         el.tagName,
+      href: el instanceof HTMLAnchorElement ? el.href : null,
       comp: el.getAttribute("data-comp-id"),
       kind:
         el.getAttribute("data-event") ||
@@ -85,7 +87,7 @@ export class Audit {
         owner ??
         (metadata.comp ||
         (await control.evaluate(
-          (el) => !!el.closest(".clinical-app, .ehr-shell"),
+          (el) => !!el.closest(".clinical-app, .clinical-modal, .ehr-shell"),
         ))
           ? "lean"
           : "app"),
@@ -100,11 +102,39 @@ export class Audit {
       return row;
     }
     const before = await this.fingerprint();
+    await this.page.evaluate(
+      ({ dom, state }) => {
+        window.__buttonAuditObservation?.disconnect();
+        const observation: { at: number | null; disconnect: () => void } = {
+          at: null,
+          disconnect: () => observer.disconnect(),
+        };
+        const observer = new MutationObserver(() => {
+          if (
+            observation.at === null &&
+            (document.body.innerText !== dom ||
+              JSON.stringify(window.__buttonAuditSession?.snapshot().state) !==
+                state)
+          )
+            observation.at = Date.now();
+        });
+        window.__buttonAuditObservation = observation;
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          characterData: true,
+        });
+      },
+      { dom: before.dom, state: before.state },
+    );
+    const clickedAt = Date.now();
+    let effectAt: number | null | undefined;
     const errorCount = this.errors.length,
       writeCount = this.writes.length;
     try {
       if (action) await action();
-      else await control.click({ timeout: 2200 });
+      else await control.click({ timeout: 15000 });
       await this.page.waitForTimeout(80);
       let after = await this.fingerprint();
       const changed = () =>
@@ -115,10 +145,15 @@ export class Audit {
         (before.state !== after.state && after.result !== '"ignored"') ||
         this.writes.length > writeCount;
       const start = Date.now();
-      while (!changed() && Date.now() - start < 1900) {
+      while (
+        !changed() &&
+        !(owner === "lean" && after.result === '"ignored"') &&
+        Date.now() - start < 1900
+      ) {
         await this.page.waitForTimeout(100);
         after = await this.fingerprint();
       }
+      effectAt = after.observedAt ?? (changed() ? Date.now() : undefined);
       if (this.errors.length > errorCount) {
         row.status = "error";
         row.effect = this.errors.slice(errorCount).join("; ");
@@ -133,6 +168,20 @@ export class Audit {
                 ? `Lean state changed; result ${after.result}`
                 : "DOM changed";
       }
+      if (metadata.href && new URL(metadata.href).pathname === "/ehr") {
+        await this.page
+          .locator(".clinical-app, [role=alert]")
+          .first()
+          .waitFor({ timeout: 30000 });
+        if (await this.page.getByRole("alert").count()) {
+          row.status = "error";
+          row.effect = await this.page.getByRole("alert").first().innerText();
+        } else row.effect += "; real EHR rendered";
+      }
+      if (this.errors.length > errorCount) {
+        row.status = "error";
+        row.effect = this.errors.slice(errorCount).join("; ");
+      }
       if (
         row.owner === "lean" &&
         metadata.comp &&
@@ -146,6 +195,13 @@ export class Audit {
       row.status = "error";
       row.effect = String(e).split("\n").slice(0, 3).join(" ");
     }
+    if (row.status === "works" && (effectAt ?? Date.now()) - clickedAt > 2400) {
+      row.status = "dead";
+      row.effect = `Effect took ${(effectAt ?? Date.now()) - clickedAt} ms (limit approximately 2 seconds): ${row.effect}`;
+    }
+    await this.page.evaluate(() =>
+      window.__buttonAuditObservation?.disconnect(),
+    );
     this.rows.push(row);
     console.log(
       `${row.owner} ${row.status}: ${this.persona} / ${this.screen} / ${row.label.slice(0, 75)}`,
@@ -153,17 +209,29 @@ export class Audit {
     return row;
   }
   async allShell(setup: () => Promise<void>) {
+    const shell = () =>
+      this.page
+        .locator(
+          selector
+            .split(", ")
+            .map(
+              (s) =>
+                `${s}:not(.clinical-app *):not(.clinical-modal *):not(.ehr-shell *)`,
+            )
+            .join(", "),
+        )
+        .filter({ visible: true });
     await setup();
-    const count = await this.page.locator(selector).count();
+    const count = await shell().count();
     console.log(`Shell inventory: ${count} controls at ${this.page.url()}`);
     for (let i = 0; i < count; i++) {
       if (i) await setup();
       if (i % 20 === 0) console.log(`Shell ${i}/${count}`);
-      const control = this.page.locator(selector).nth(i);
+      const control = shell().nth(i);
       if (
         !(await control.isVisible()) ||
         (await control.evaluate(
-          (el) => !!el.closest(".clinical-app, .ehr-shell"),
+          (el) => !!el.closest(".clinical-app, .clinical-modal, .ehr-shell"),
         ))
       )
         continue;

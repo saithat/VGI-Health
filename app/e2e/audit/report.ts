@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { z } from "zod";
+import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 export interface Control {
   route: string;
@@ -54,7 +55,33 @@ export function writeReport(rows: Control[], scope: string) {
   writeFileSync(
     resolve(directory, "buttons.json"),
     JSON.stringify(
-      { generatedAt: new Date().toISOString(), counts, controls: all },
+      {
+        generatedAt: new Date().toISOString(),
+        revision: execFileSync("git", ["rev-parse", "HEAD"], {
+          encoding: "utf8",
+        }).trim(),
+        mainRevision: execFileSync("git", ["rev-parse", "origin/main"], {
+          encoding: "utf8",
+        }).trim(),
+        leanHash: JSON.parse(readFileSync("public/ehr/manifest.json", "utf8"))
+          .leanSourceHash,
+        counts,
+        byOwner: Object.fromEntries(
+          ["app", "lean"].map((owner) => [
+            owner,
+            Object.fromEntries(
+              ["works", "disabled-with-reason", "dead", "error"].map(
+                (status) => [
+                  status,
+                  all.filter((r) => r.owner === owner && r.status === status)
+                    .length,
+                ],
+              ),
+            ),
+          ]),
+        ),
+        controls: all,
+      },
       null,
       2,
     ) + "\n",

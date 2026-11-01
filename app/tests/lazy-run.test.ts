@@ -1,3 +1,5 @@
+import { resolve } from "node:path";
+import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 import { loadRunSummary, loadRunDetails } from "../src/dashboard/data";
 import { versionsFor } from "../src/dashboard/workload";
@@ -45,6 +47,34 @@ describe("dashboard loading budget", () => {
         files: [],
       })),
     ).rejects.toThrow("another run");
+  });
+  it("hydrates the selected persona's day traces only when details open", async () => {
+    const recorded = JSON.parse(
+      await readFile(
+        resolve(import.meta.dirname, "../../runs/run1-P3/days/day-01/P3.json"),
+        "utf8",
+      ),
+    );
+    const run = await loadRunSummary("run1-P3", async () => ({
+      manifest: {
+        runId: "run1-P3",
+        days: 1,
+        personas: ["P3"],
+        ehr: { mode: "real" },
+      },
+      records: [],
+      days: [{ ...recorded, trace: [] }],
+      complexity: null,
+      files: ["days/day-01/P3.json", "days/day-01/P1.json"],
+    }));
+    const paths: string[] = [];
+    const detail = await loadRunDetails(run, "P3", async (path) => {
+      paths.push(path);
+      return recorded;
+    });
+    expect(paths).toEqual(["/runs/run1-P3/days/day-01/P3.json"]);
+    expect(run.days[0]?.trace).toEqual([]);
+    expect(detail.days[0]?.trace.length).toBeGreaterThan(0);
   });
   it("keeps already hydrated test runs without additional I/O", async () => {
     const run = {

@@ -11,7 +11,6 @@ export function catalogPlugin(): Plugin {
       attach(server);
     },
     configurePreviewServer(server) {
-      if (process.env.VGI_AUDIT_UNCOMPRESSED_BASELINE === "1") return;
       attach(server);
     },
   };

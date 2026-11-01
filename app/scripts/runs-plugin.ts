@@ -102,7 +102,6 @@ export function runsPlugin(): Plugin {
       attach(server);
     },
     configurePreviewServer(server) {
-      if (process.env.VGI_AUDIT_UNCOMPRESSED_BASELINE === "1") return;
       attach(server);
     },
   };
@@ -138,6 +137,7 @@ export function runsPlugin(): Plugin {
         }
         const summary = /^\/runs\/([\w-]+)\/summary.json$/.exec(url.pathname);
         if (summary) {
+          res.setHeader("Content-Type", "application/json");
           const id = summary[1] ?? "";
           const entry = (await index()).find((r) => r.id === id);
           if (!entry) throw new Error("Unknown run");

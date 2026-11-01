@@ -207,14 +207,14 @@ export async function loadRunDetails(
         detail.replay = replaySchema.parse(
           await read(`/runs/${run.manifest.runId}/${file}`),
         );
-      else if (file.startsWith(`programs/${persona}/`))
+      else if (new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(file))
         detail.programs.set(
           file,
           programSchema.parse(
             await read(`/runs/${run.manifest.runId}/${file}`),
           ),
         );
-      else if (file.startsWith(`certs/${persona}/`))
+      else if (new RegExp(`^certs/${persona}/v\\d+\\.json$`).test(file))
         detail.certs.set(
           file,
           certificateSchema.parse(

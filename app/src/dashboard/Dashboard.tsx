@@ -435,6 +435,22 @@ function Why({
   );
 }
 
+/** Paint the modal's loading state before doing synchronous Lean rendering. */
+function DeferredReplay({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let timer = 0;
+    const frame = requestAnimationFrame(() => {
+      timer = window.setTimeout(() => setReady(true), 0);
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, []);
+  return ready ? children : <p role="status">Rendering recorded EHR…</p>;
+}
+
 function BeforeAfter({
   run,
   persona,
@@ -1302,29 +1318,33 @@ export function Dashboard({
         {selection && !detail && !detailError && (
           <p role="status">Loading EHR replay…</p>
         )}
-        {detail &&
-          selection &&
-          (screenMode === "pair" ? (
-            <BeforeAfter
-              key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
-              run={detail}
-              persona={selectedPersona}
-              record={record ?? null}
-              rejection={selection.rejection}
-              factory={interpFactory}
-            />
-          ) : (
-            selection.rejection && (
-              <div className="dash-review">
-                <Counterexample
-                  key={selection.rejection.id}
-                  run={detail}
-                  rejection={selection.rejection}
-                  factory={interpFactory}
-                />
-              </div>
-            )
-          ))}
+        <DeferredReplay
+          key={`${screenMode}-${selectedPersona}-${record?.night ?? 0}`}
+        >
+          {detail &&
+            selection &&
+            (screenMode === "pair" ? (
+              <BeforeAfter
+                key={`${runId}-${selectedPersona}-${record?.night ?? 0}-${selection.rejection?.id ?? "accepted"}`}
+                run={detail}
+                persona={selectedPersona}
+                record={record ?? null}
+                rejection={selection.rejection}
+                factory={interpFactory}
+              />
+            ) : (
+              selection.rejection && (
+                <div className="dash-review">
+                  <Counterexample
+                    key={selection.rejection.id}
+                    run={detail}
+                    rejection={selection.rejection}
+                    factory={interpFactory}
+                  />
+                </div>
+              )
+            ))}
+        </DeferredReplay>
       </Modal>
     </div>
   );
