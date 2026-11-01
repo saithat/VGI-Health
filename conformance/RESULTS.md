@@ -42,8 +42,7 @@ seven regression scenarios have 83 applicable passes across these 23 inputs.
 They cover CURES exemption eligibility, linked/current dosing weight, defensive
 FHIR patient scoping, empty medication signing and denial through the approval
 action. All legitimate positive workflows complete. No new gap was found in
-this evaluation. Earlier findings and their repairs remain documented in
-[changes-requests.md](../docs/design/changes-requests.md) and Git history.
+this evaluation. The seven regression scenarios retain the repaired cases.
 
 Validation: 20 suite/integrity/isolation tests and 16 dashboard/data tests pass.
 The isolation tests execute the actual overnight bwrap configuration and inspect

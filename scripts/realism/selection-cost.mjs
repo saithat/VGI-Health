@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 const read=p=>JSON.parse(readFileSync(p,'utf8'));
 const run=(program,day)=>JSON.parse(execFileSync('lean/.lake/build/bin/ehr',['simulate','--spec',`v${day<4?1:day<7?2:3}`,'--program',program,'--persona','runs/world/2/personas/P3.json','--schedule',`runs/world/2/day-${day}-P3.json`,'--world','runs/world/2','--seed',String(7000+day)],{maxBuffer:100e6,env:{...process.env,LEAN_NUM_THREADS:'8'}}));
@@ -18,4 +18,5 @@ for(const day of [1,5,10]){
   const expected=selection(baseline);assert.deepEqual(selection(agent),expected,'Baseline and real agent pay identical patient-selection cost');
   cases.push({day,agent:program,tasks:expected.length,baselineCompleted:baseline.tasks.filter(t=>t.completed).length,agentCompleted:agent.tasks.filter(t=>t.completed).length,selectionEvents:expected.reduce((n,t)=>n+t.events.length,0),selectionOps:expected.flatMap(t=>t.events.flatMap(e=>e.ops)).reduce((out,op)=>(out[op]=(out[op]??0)+1,out),{}),identical:true});
 }
+mkdirSync('docs/measurements/content2', {recursive:true});
 writeFileSync('docs/measurements/content2/patient-selection-cost.json',JSON.stringify({cases,mismatches:0,model:'Same source directory and task patient; fixed row/lookup policy; P+C pointer cost, K typing and explicit ten-row scrolling. Fresh simulations wrap historical layouts in the current workspace; archived recorded replay keeps its original flag.'},null,2)+'\n');console.log(JSON.stringify(cases));

@@ -54,7 +54,7 @@ credentials were reused. These are not cold-machine/image-download timings.
   The refreshed receipt changes **no runtime source, WASM binary, bridge input
   or asset hash**. The stale-asset guard stays enabled.
 - `make install` defaults Lean to four workers and installs the frozen pnpm
-  lockfile. The harness forces four workers even when its parent lane uses more.
+  lockfile. The harness defaults to four workers and honors an explicit `LEAN_NUM_THREADS`.
 - README Quick start now leads with the required `make install && make run`,
   lists prerequisites, explains generated credentials and distinguishes live
   operation, real recorded runs and mock illustrations.

@@ -2,7 +2,7 @@
 
 This file maps each rule in the hospital governance spec (BRIEF sections 5, 5a, 7.5, 9a, 9b) to a real, public source, or says plainly that the rule is our own design.
 
-**Status (2026-10-31).** The content lane implements `lean/Ehr/Specs/V1.lean`, `V2.lean` and `V3.lean`; JSON is generated into `releases/<version>/spec.json`. Spec docstrings use the owner's four source classes below. The owner-approved EPCS, Schedule II and vaccine rules are implemented with interpreter regressions; checker certification and rendered data completeness remain owning-lane integration work (see `docs/design/changes-requests.md`).
+**Status.** Hospital rules live in `lean/Ehr/Specs/V1.lean`, `V2.lean` and `V3.lean`; JSON exports live in `releases/<version>/spec.json`. Docstrings identify law, entrenched practice and Hospital policy (not law). Current releases use the core profile. See [VERIFICATION](VERIFICATION.md) for certification scope and full-catalog limits.
 
 **This is not legal advice.** It is a research note for a demo. Quotes are short excerpts (about 25 words at most). Read the source before you rely on a row.
 

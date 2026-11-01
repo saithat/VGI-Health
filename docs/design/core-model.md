@@ -554,8 +554,7 @@ Per-line requirements and the new-line hard stop both enforce it.
 `orderClass` remains an equivalent existing constructor. The new class tags
 morphine, hydromorphone, oxycodone and hydrocodone-acetaminophen. Content adopts
 zero refills as an additional per-line requirement in each signing workflow.
-The core tests and generated samples provide the exact requirement encoding;
-other-lane adoption is recorded in `changes-requests.md`.
+The core tests and generated samples provide the exact requirement encoding.
 
 ## 10. Semantic UI tree + minimal design rules (owner decision, Oct 31; supersedes the raw Html page tree for EHR screens)
 

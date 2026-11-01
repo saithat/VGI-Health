@@ -40,11 +40,9 @@ sign, an interaction popup, and bad-program sign. Each has an initial viewport
 It uses the same painter, theme and styles as the live route. The source fixtures
 are actual Lean output, not retouched presentation data.
 
-The initial semantic wire has contract gaps recorded in
-`docs/design/changes-requests.md` (navigation lacks an Event, coded choices and
-specialized kinds are not preserved, some content labels contain authoring
-instructions). Workspace action buttons remain fully interactive by comp id;
-nav destinations/stepper are an overview until that Event exists.
+The painter uses Lean's control IDs, labels and declared actions.
+See the [presentation contract](../../../../docs/design/presentation-contract.md)
+and [verification scope](../../../../docs/VERIFICATION.md) for its requirements.
 
 Visual tokens live in `theme.ts`, following `docs/design/visual-style.md` and
 `docs/design/ehr-ui-research.md`. The shell and portaled modal share those tokens;

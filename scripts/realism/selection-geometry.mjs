@@ -36,5 +36,6 @@ try{
   cases.push({persona,day,tasks:costs.length,states:captured.states.length,clicks:trace.filter(e=>!e.event.scroll).length,scrolls:costs.reduce((n,c)=>n+c.scrolls,0),scrollPx:costs.reduce((n,c)=>n+c.scrollPx,0),mouseTravelPx:costs.reduce((n,c)=>n+c.mouseTravelPx,0),equalAgent,missingTargets:0,source:'Chromium, actual day/lookup semantic trees',appSha256:captured.appSha256,viewport:{width:1440,height:900}});
   console.log(JSON.stringify(cases.at(-1)));
  }
+ mkdirSync('docs/measurements/content2', {recursive:true});
  writeFileSync('docs/measurements/content2/patient-selection-geometry.json',JSON.stringify({cases,source:'Selection prefix only, common viewport-center pointer entry per task; the full day metric also counts clinical travel.',missingTargets:0},null,2)+'\n');
 }finally{broker.stdin.end();await new Promise(resolve=>broker.on('exit',resolve));}

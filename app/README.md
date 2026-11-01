@@ -76,8 +76,7 @@ typed, unit-tested transaction builder. `liveSession.ts` previews each event in
 Lean and publishes commits only after the transaction succeeds; failed writes
 retain inputs. Success refetches and reprojects the full chart, and exposes
 resource links in the toast and **Live encounter** panel. Review receipts target
-exact FHIR `_history` versions. Explicit caller context and outstanding spec
-bindings are documented in [changes-requests.md](../docs/design/changes-requests.md).
+exact FHIR `_history` versions. See the [verification scope](../docs/VERIFICATION.md) for adapter limits.
 Rooming vitals save with `signNote`; file the note first if ordering needs a
 persisted weight. Unmapped regulatory commits fail explicitly. See the root
 README for workflow limits and the CPT code-system license note.

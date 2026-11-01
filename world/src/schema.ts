@@ -48,7 +48,7 @@ export const PERSONAS: readonly Persona[] = PersonaSchema.options;
  * `structure OrderChoice`: one clinical decision, fixed per scenario and
  * independent of the UI.
  *
- * `drug`: the lowercase generic formulary name, per docs/design/changes.md.
+ * `drug`: the lowercase generic formulary name, as defined in lean/Ehr/Formulary.lean.
  */
 export const OrderChoiceSchema = z.strictObject({
   drug: z.string(),

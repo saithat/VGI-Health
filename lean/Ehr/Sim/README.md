@@ -109,8 +109,6 @@ is a human UI capture, with the spec's eligibility attestation and interaction
 alerts; it is never installed as administration context. Denials use denyRefill.
 Modifications and Schedule II renewals use ordinary signOrders with its full
 prescription gates. Explicit modification and denial reasons remain goals.
-The CLI minimum adapter must call `taskEpisodes`, as persona replay does;
-its cross-lane adoption request is in `docs/design/changes-requests.md`.
 
 Before advancing past an earlier medication line, goal derivation also retains
 Core's per-line requirements from other signing artifacts. This includes the

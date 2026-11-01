@@ -6,9 +6,9 @@ commit=$(git -C "$repo" rev-parse HEAD)
 test_root=$(mktemp -d "${TMPDIR:-/tmp}/vgi-clean-clone.XXXXXX")
 clone="$test_root/repo"
 port=${CLEAN_CLONE_PORT:-5189}
-# Keep this check independent of unwritable/shared package stores. Lean must
-# stay at four workers even if the invoking lane uses a larger default.
-export LEAN_NUM_THREADS=4
+# Use an isolated package store. Fresh Lean builds default to four workers;
+# callers can choose a different bound.
+export LEAN_NUM_THREADS=${LEAN_NUM_THREADS:-4}
 export pnpm_config_store_dir=${pnpm_config_store_dir:-$test_root/pnpm-store}
 export PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH:-$test_root/browsers}
 server_pid=

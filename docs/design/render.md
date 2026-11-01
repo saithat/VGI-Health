@@ -30,8 +30,7 @@ Allergy and medication versions hash the sorted id@meta.versionId keys of all
 resources of their type, including inactive resources. Medplum versions are
 UUIDs, so summing numeric versions is impossible. FNV-1a is reduced to 52 bits
 for exact JavaScript integer transport. Order independence is exact; freedom
-from digest collisions is a trusted assumption. A String version is requested
-in changes-requests.md for future exactness.
+from digest collisions is not proved.
 
 Info IDs: patientBanner, allergyList, currentMeds, vitals, resultTrend/labs,
 problemList, immunizations, growthChart, encounters, procedures, doseCheck,

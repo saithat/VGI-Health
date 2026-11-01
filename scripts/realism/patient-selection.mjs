@@ -69,5 +69,6 @@ for(const release of ['v1','v2','v3'])for(const persona of ['P1','P2','P3','P4',
   cases.push({release,persona,rows:rows.length,rowSelection:true,nameOrMrnLookup:true,foreignFactsHidden:true,identityStillHuman:true});
 }
 const report={cases,comparisons:'facts/init/step/render-ui native and Wasm agree',mismatches:0,removedSelectionRejected:true,reservedNamespaceRejected:true};
+mkdirSync(resolve(root,'docs/measurements/content2'), {recursive:true});
 writeFileSync(resolve(root,'docs/measurements/content2/patient-selection-parity.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({cases:cases.length,mismatches:0}));
