@@ -1,4 +1,4 @@
-{"version": 3,
+{"version": 2,
  "start": "home",
  "specVersion": "v2",
  "screens":
@@ -1463,16 +1463,6 @@
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w1Orders.drug"},
     {"visibility": "always",
-     "tag": "w1Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w1Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w1Orders.abxIndication"},
-    {"visibility": "always",
      "tag": "w1Orders.dose",
      "tab": 0,
      "size": "normal",
@@ -2464,13 +2454,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w1Sign.orders"},
-    {"visibility": "always",
-     "tag": "w1Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w1Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w1Sign.allergies",
      "tab": 0,
@@ -4065,18 +4048,6 @@
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "drug"}},
      "id": "w3OrderSets.row10.drug"},
     {"visibility": "always",
-     "tag": "w3OrderSets.row10.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3OrderSets.row10.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w3OrderSets.row10.abxIndication"},
-    {"visibility": "always",
      "tag": "w3OrderSets.row10.dose",
      "tab": 0,
      "size": "normal",
@@ -4245,18 +4216,6 @@
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "drug"}},
      "id": "w3OrderSets.row11.drug"},
-    {"visibility": "always",
-     "tag": "w3OrderSets.row11.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3OrderSets.row11.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w3OrderSets.row11.abxIndication"},
     {"visibility": "always",
      "tag": "w3OrderSets.row11.dose",
      "tab": 0,
@@ -4612,16 +4571,6 @@
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w3Orders.drug"},
-    {"visibility": "always",
-     "tag": "w3Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w3Orders.abxIndication"},
     {"visibility": "always",
      "tag": "w3Orders.dose",
      "tab": 0,
@@ -4990,13 +4939,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w3Sign.orders"},
-    {"visibility": "always",
-     "tag": "w3Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w3Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w3Sign.allergies",
      "tab": 0,
@@ -5788,13 +5730,6 @@
      "label": "Dose details",
      "kind": {"panel": {"info": "marDoseDetails"}},
      "id": "w4Admin.dose"},
-    {"visibility": "always",
-     "tag": "w4Admin.antibioticIndication",
-     "tab": 0,
-     "size": "normal",
-     "label": "Antibiotic indication",
-     "kind": {"panel": {"info": "abxIndication"}},
-     "id": "w4Admin.antibioticIndication"},
     {"visibility": "always",
      "tag": "w4Admin.allergies",
      "tab": 0,
@@ -6989,16 +6924,6 @@
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w5Orders.drug"},
     {"visibility": "always",
-     "tag": "w5Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w5Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w5Orders.abxIndication"},
-    {"visibility": "always",
      "tag": "w5Orders.dose",
      "tab": 0,
      "size": "normal",
@@ -7418,13 +7343,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w5Sign.orders"},
-    {"visibility": "always",
-     "tag": "w5Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w5Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w5Sign.doseCheck",
      "tab": 0,
@@ -8972,16 +8890,6 @@
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w6Orders.drug"},
     {"visibility": "always",
-     "tag": "w6Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w6Orders.abxIndication"},
-    {"visibility": "always",
      "tag": "w6Orders.dose",
      "tab": 0,
      "size": "normal",
@@ -9469,18 +9377,6 @@
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "drug"}},
      "id": "w6PostOp.row10.drug"},
     {"visibility": "always",
-     "tag": "w6PostOp.row10.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6PostOp.row10.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w6PostOp.row10.abxIndication"},
-    {"visibility": "always",
      "tag": "w6PostOp.row10.dose",
      "tab": 0,
      "size": "normal",
@@ -9649,18 +9545,6 @@
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "drug"}},
      "id": "w6PostOp.row11.drug"},
-    {"visibility": "always",
-     "tag": "w6PostOp.row11.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6PostOp.row11.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w6PostOp.row11.abxIndication"},
     {"visibility": "always",
      "tag": "w6PostOp.row11.dose",
      "tab": 0,
@@ -9831,18 +9715,6 @@
       {"slot": {"fixed": {"n": 12}}, "prefill": "none", "element": "drug"}},
      "id": "w6PostOp.row12.drug"},
     {"visibility": "always",
-     "tag": "w6PostOp.row12.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6PostOp.row12.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 12}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w6PostOp.row12.abxIndication"},
-    {"visibility": "always",
      "tag": "w6PostOp.row12.dose",
      "tab": 0,
      "size": "normal",
@@ -10011,18 +9883,6 @@
      {"field":
       {"slot": {"fixed": {"n": 13}}, "prefill": "none", "element": "drug"}},
      "id": "w6PostOp.row13.drug"},
-    {"visibility": "always",
-     "tag": "w6PostOp.row13.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w6PostOp.row13.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 13}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w6PostOp.row13.abxIndication"},
     {"visibility": "always",
      "tag": "w6PostOp.row13.dose",
      "tab": 0,
@@ -10323,13 +10183,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w6Sign.orders"},
-    {"visibility": "always",
-     "tag": "w6Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w6Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w6Sign.allergies",
      "tab": 0,
@@ -12006,8 +11859,6 @@
    "id": "w1PrefMetformin"},
   {"steps":
    [{"setValue": {"value": "amoxicillin", "comp": "w1Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w1Orders.abxIndication"}},
     {"setValue": {"value": "1000", "comp": "w1Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w1Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w1Orders.route"}},
@@ -12019,8 +11870,6 @@
    "id": "w1PrefAmoxicillin"},
   {"steps":
    [{"setValue": {"value": "azithromycin", "comp": "w1Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w1Orders.abxIndication"}},
     {"setValue": {"value": "500", "comp": "w1Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w1Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w1Orders.route"}},
@@ -12069,8 +11918,6 @@
   {"steps":
    [{"goto": {"screen": "w3OrderSets"}},
     {"setValue": {"value": "ceftriaxone", "comp": "w3OrderSets.row10.drug"}},
-    {"setValue":
-     {"value": "sepsis", "comp": "w3OrderSets.row10.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3OrderSets.row10.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row10.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row10.route"}},
@@ -12086,8 +11933,6 @@
     {"setValue":
      {"value": "A41.9", "comp": "w3OrderSets.row10.orderDiagnosis"}},
     {"setValue": {"value": "vancomycin", "comp": "w3OrderSets.row11.drug"}},
-    {"setValue":
-     {"value": "sepsis", "comp": "w3OrderSets.row11.abxIndication"}},
     {"setValue": {"value": "1250", "comp": "w3OrderSets.row11.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row11.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row11.route"}},
@@ -12142,8 +11987,6 @@
   {"steps":
    [{"goto": {"screen": "w3OrderSets"}},
     {"setValue": {"value": "cefazolin", "comp": "w3OrderSets.row10.drug"}},
-    {"setValue":
-     {"value": "skin-infection", "comp": "w3OrderSets.row10.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3OrderSets.row10.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row10.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row10.route"}},
@@ -12212,8 +12055,6 @@
    "id": "w3PrefOndansetron"},
   {"steps":
    [{"setValue": {"value": "ceftriaxone", "comp": "w3Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w3Orders.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w3Orders.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3Orders.route"}},
@@ -12262,8 +12103,6 @@
    "id": "w4HandoffTemplate"},
   {"steps":
    [{"setValue": {"value": "amoxicillin", "comp": "w5Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w5Orders.abxIndication"}},
     {"setValue": {"value": "45", "comp": "w5Orders.doseMgPerKg"}},
     {"setValue": {"value": "mg", "comp": "w5Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w5Orders.route"}},
@@ -12297,8 +12136,6 @@
    "id": "w5PrefAcetaminophen"},
   {"steps":
    [{"setValue": {"value": "azithromycin", "comp": "w5Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w5Orders.abxIndication"}},
     {"setValue": {"value": "10", "comp": "w5Orders.doseMgPerKg"}},
     {"setValue": {"value": "mg", "comp": "w5Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w5Orders.route"}},
@@ -12416,8 +12253,6 @@
    "id": "w6AppendectomySet"},
   {"steps":
    [{"setValue": {"value": "cefazolin", "comp": "w6Orders.drug"}},
-    {"setValue":
-     {"value": "surgical-prophylaxis", "comp": "w6Orders.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w6Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w6Orders.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w6Orders.route"}},

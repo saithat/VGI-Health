@@ -125,7 +125,7 @@
       "date": "2026-11-05",
       "weekday": "Thu",
       "events": [
-        "vendor-release-v1.1-prior-auth",
+        "vendor-release-v2-prior-auth",
         "flu-week"
       ],
       "loads": {
@@ -232,7 +232,7 @@
       "date": "2026-11-10",
       "weekday": "Tue",
       "events": [
-        "vendor-release-v2-antibiotic-indication"
+        "vendor-release-v3-antibiotic-indication"
       ],
       "loads": {
         "P1": "normal",

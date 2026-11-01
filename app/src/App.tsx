@@ -12,6 +12,7 @@ import {
   loadCatalog,
   personas,
   readArtifact,
+  programSpecPath,
   verdictsSchema,
   type Catalog,
   type ProgramEntry,
@@ -210,7 +211,7 @@ export function App() {
       if (!program)
         throw new Error("Program is not in the committed UI catalog");
       const release = query.get("release") ?? program.release;
-      if (!["v1", "v1.1", "v2"].includes(release))
+      if (!["v1", "v2", "v3"].includes(release))
         throw new Error("Unknown release");
       const patientId = query.get("patient");
       const patient = patientId
@@ -220,7 +221,7 @@ export function App() {
         throw new Error("Patient is not in the committed patient fixtures");
       const [interp, spec, source, bundle, verdicts] = await Promise.all([
         (interpreter ??= loadWasmInterp()),
-        readArtifact(`/releases/${release}/spec.json`),
+        readArtifact(programSpecPath({ ...program, release })),
         readArtifact(`/${program.path}`),
         readArtifact(`/${patient.bundlePath}`),
         readArtifact("/verdicts.json")

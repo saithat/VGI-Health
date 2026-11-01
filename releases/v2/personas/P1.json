@@ -1,4 +1,4 @@
-{"version": 3,
+{"version": 2,
  "start": "home",
  "specVersion": "v2",
  "screens":
@@ -1391,16 +1391,6 @@
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w1Orders.drug"},
     {"visibility": "always",
-     "tag": "w1Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w1Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w1Orders.abxIndication"},
-    {"visibility": "always",
      "tag": "w1Orders.dose",
      "tab": 0,
      "size": "normal",
@@ -2423,13 +2413,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w1Sign.orders"},
-    {"visibility": "always",
-     "tag": "w1Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w1Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w1Sign.allergies",
      "tab": 0,
@@ -3920,8 +3903,6 @@
    "id": "w1PrefMetformin"},
   {"steps":
    [{"setValue": {"value": "amoxicillin", "comp": "w1Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w1Orders.abxIndication"}},
     {"setValue": {"value": "1000", "comp": "w1Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w1Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w1Orders.route"}},
@@ -3933,8 +3914,6 @@
    "id": "w1PrefAmoxicillin"},
   {"steps":
    [{"setValue": {"value": "azithromycin", "comp": "w1Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w1Orders.abxIndication"}},
     {"setValue": {"value": "500", "comp": "w1Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w1Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w1Orders.route"}},

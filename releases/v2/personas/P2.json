@@ -1,4 +1,4 @@
-{"version": 3,
+{"version": 2,
  "start": "home",
  "specVersion": "v2",
  "screens":
@@ -810,18 +810,6 @@
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "drug"}},
      "id": "w3OrderSets.row10.drug"},
     {"visibility": "always",
-     "tag": "w3OrderSets.row10.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3OrderSets.row10.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 10}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w3OrderSets.row10.abxIndication"},
-    {"visibility": "always",
      "tag": "w3OrderSets.row10.dose",
      "tab": 0,
      "size": "normal",
@@ -990,18 +978,6 @@
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "drug"}},
      "id": "w3OrderSets.row11.drug"},
-    {"visibility": "always",
-     "tag": "w3OrderSets.row11.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3OrderSets.row11.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 11}},
-       "prefill": "none",
-       "element": "abxIndication"}},
-     "id": "w3OrderSets.row11.abxIndication"},
     {"visibility": "always",
      "tag": "w3OrderSets.row11.dose",
      "tab": 0,
@@ -1357,16 +1333,6 @@
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w3Orders.drug"},
-    {"visibility": "always",
-     "tag": "w3Orders.abxIndication",
-     "tab": 0,
-     "size": "normal",
-     "parent": "w3Orders.medication",
-     "label": "Antibiotic indication (required for antibiotics)",
-     "kind":
-     {"field":
-      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
-     "id": "w3Orders.abxIndication"},
     {"visibility": "always",
      "tag": "w3Orders.dose",
      "tab": 0,
@@ -1766,13 +1732,6 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w3Sign.orders"},
-    {"visibility": "always",
-     "tag": "w3Sign.antibioticIndications",
-     "tab": 0,
-     "size": "normal",
-     "label": "Order indications (per antibiotic line)",
-     "kind": {"table": {"info": "abxIndication"}},
-     "id": "w3Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w3Sign.allergies",
      "tab": 0,
@@ -2254,8 +2213,6 @@
  [{"steps":
    [{"goto": {"screen": "w3OrderSets"}},
     {"setValue": {"value": "ceftriaxone", "comp": "w3OrderSets.row10.drug"}},
-    {"setValue":
-     {"value": "sepsis", "comp": "w3OrderSets.row10.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3OrderSets.row10.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row10.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row10.route"}},
@@ -2271,8 +2228,6 @@
     {"setValue":
      {"value": "A41.9", "comp": "w3OrderSets.row10.orderDiagnosis"}},
     {"setValue": {"value": "vancomycin", "comp": "w3OrderSets.row11.drug"}},
-    {"setValue":
-     {"value": "sepsis", "comp": "w3OrderSets.row11.abxIndication"}},
     {"setValue": {"value": "1250", "comp": "w3OrderSets.row11.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row11.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row11.route"}},
@@ -2327,8 +2282,6 @@
   {"steps":
    [{"goto": {"screen": "w3OrderSets"}},
     {"setValue": {"value": "cefazolin", "comp": "w3OrderSets.row10.drug"}},
-    {"setValue":
-     {"value": "skin-infection", "comp": "w3OrderSets.row10.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3OrderSets.row10.dose"}},
     {"setValue": {"value": "mg", "comp": "w3OrderSets.row10.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3OrderSets.row10.route"}},
@@ -2397,8 +2350,6 @@
    "id": "w3PrefOndansetron"},
   {"steps":
    [{"setValue": {"value": "ceftriaxone", "comp": "w3Orders.drug"}},
-    {"setValue":
-     {"value": "respiratory-infection", "comp": "w3Orders.abxIndication"}},
     {"setValue": {"value": "2000", "comp": "w3Orders.dose"}},
     {"setValue": {"value": "mg", "comp": "w3Orders.doseUnit"}},
     {"setValue": {"value": "IV", "comp": "w3Orders.route"}},

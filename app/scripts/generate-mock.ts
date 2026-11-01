@@ -235,7 +235,7 @@ for (const [i, p] of personas.entries()) {
     const surface = night === 3;
     const migrate = night === 6;
     const show = surface && ["P1", "P5"].includes(p.id);
-    const spec = migrate || night > 6 ? "v2" : surface ? "v1.1" : "v1";
+    const spec = migrate || night > 6 ? "v3" : surface ? "v2" : "v1";
     const patch =
       night === 1
         ? [{ op: "replace", path: "/start", value: "work" }]
@@ -647,7 +647,7 @@ for (const [i, p] of personas.entries()) {
       release:
         surface || migrate
           ? {
-              id: surface ? "v1.1" : "v2",
+              id: surface ? "v2" : "v3",
               specVersion: spec,
               recheck: migrate ? fail : pass,
               items: surface
@@ -733,7 +733,7 @@ await write("manifest.json", {
   backend: "scripted",
   model: "MOCK-authored-fixture",
   ehr: { mode: "fake", binary: null },
-  releaseDays: { v1_1: 4, v2: 7 },
+  releaseDays: { v2: 4, v3: 7 },
   warning:
     "MOCK RUN · Authored example data. No real checker, simulator, LLM, or clinical writes. Certificates and savings are illustrative.",
 });

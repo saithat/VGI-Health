@@ -20,7 +20,7 @@ def check_schedule(job, args):
     """One read-only native replay, independent of every other schedule."""
     day, persona = job
     release_days = json.loads((ROOT / "world/releases.json").read_text())
-    version = "v1" if day < release_days["v1_1"] else "v1.1" if day < release_days["v2"] else "v2"
+    version = "v1" if day < release_days["v2"] else "v2" if day < release_days["v3"] else "v3"
     binary = str(args.binary.resolve())
     report = {"schedules": [], "incomplete": [], "floorViolations": [], "interruptionViolations": [], "determinism": True}
     schedule_path = args.world / f"day-{day}-{persona}.json"

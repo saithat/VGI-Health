@@ -13,8 +13,8 @@ def presetLabelsValid (p : Program) : Bool :=
     p.macros.all (fun m => presetLabelValid m.label) &&
     (Render.uiOverviewNav p).all (fun g => presetLabelValid g.1 && g.2.all (fun e => presetLabelValid e.2))
 
-#guard [(Specs.V1.specV1, canonicalV1), (Specs.V1_1.specV1_1, canonicalV1_1),
-  (Specs.V2.specV2, canonicalV2)].all fun (sp, master) => personaRoles.all fun (id, role) =>
+#guard [(Specs.V1.specV1, canonicalV1), (Specs.V2.specV2, canonicalV2),
+  (Specs.V3.specV3, canonicalV3)].all fun (sp, master) => personaRoles.all fun (id, role) =>
     let p := forPersona sp master id role
     presetLabelsValid p && p.screens.all (presetScreen id) && p.screens.length < master.screens.length &&
       (presetLandings id).all (fun (target, label) => (p.screen? "home").any (fun home =>

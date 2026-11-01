@@ -55,6 +55,7 @@ export const trajectoryIndexSchema = z
   .object({
     schemaVersion: z.literal(1),
     runId: z.string(),
+    releaseNaming: z.string().optional(),
     minimumDefinition: z.string(),
     tasks: z.array(z.object({ ...fields, baseline: baseline.optional() })),
   })

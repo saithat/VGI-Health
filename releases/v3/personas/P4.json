@@ -1,6 +1,6 @@
-{"version": 2,
+{"version": 3,
  "start": "home",
- "specVersion": "v1.1",
+ "specVersion": "v3",
  "screens":
  [{"workflow": "shell",
    "title": "Schedule",
@@ -1088,6 +1088,16 @@
      {"field": {"slot": "current", "prefill": "none", "element": "drug"}},
      "id": "w5Orders.drug"},
     {"visibility": "always",
+     "tag": "w5Orders.abxIndication",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w5Orders.medication",
+     "label": "Antibiotic indication (required for antibiotics)",
+     "kind":
+     {"field":
+      {"slot": "current", "prefill": "none", "element": "abxIndication"}},
+     "id": "w5Orders.abxIndication"},
+    {"visibility": "always",
      "tag": "w5Orders.dose",
      "tab": 0,
      "size": "normal",
@@ -1507,6 +1517,13 @@
      "label": "Orders to sign",
      "kind": {"table": {"info": "orderSummary"}},
      "id": "w5Sign.orders"},
+    {"visibility": "always",
+     "tag": "w5Sign.antibioticIndications",
+     "tab": 0,
+     "size": "normal",
+     "label": "Order indications (per antibiotic line)",
+     "kind": {"table": {"info": "abxIndication"}},
+     "id": "w5Sign.antibioticIndications"},
     {"visibility": "always",
      "tag": "w5Sign.doseCheck",
      "tab": 0,
@@ -2761,6 +2778,8 @@
    "id": "w2RepeatLetter"},
   {"steps":
    [{"setValue": {"value": "amoxicillin", "comp": "w5Orders.drug"}},
+    {"setValue":
+     {"value": "respiratory-infection", "comp": "w5Orders.abxIndication"}},
     {"setValue": {"value": "45", "comp": "w5Orders.doseMgPerKg"}},
     {"setValue": {"value": "mg", "comp": "w5Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w5Orders.route"}},
@@ -2794,6 +2813,8 @@
    "id": "w5PrefAcetaminophen"},
   {"steps":
    [{"setValue": {"value": "azithromycin", "comp": "w5Orders.drug"}},
+    {"setValue":
+     {"value": "respiratory-infection", "comp": "w5Orders.abxIndication"}},
     {"setValue": {"value": "10", "comp": "w5Orders.doseMgPerKg"}},
     {"setValue": {"value": "mg", "comp": "w5Orders.doseUnit"}},
     {"setValue": {"value": "PO", "comp": "w5Orders.route"}},

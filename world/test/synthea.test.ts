@@ -1,3 +1,4 @@
+import { historicalReleaseEventId } from "../../scripts/historical-releases.mjs";
 import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
@@ -32,7 +33,9 @@ it("keeps the committed seed-1 replay identical to the generator and below 15 MB
 
 it("preserves world 1 state, tasks and random draws except pre-release service choices", () => {
   for (const d of run.days) {
-    expect(JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"))).toEqual(d.state);
+    const legacy = JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"));
+    legacy.context.scriptedEvents = legacy.context.scriptedEvents.map(historicalReleaseEventId);
+    expect(legacy).toEqual(d.state);
     for (const p of PERSONAS) {
       const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1/day-${d.state.day}-${p}.json`), "utf8")));
       for (const task of original.tasks) {

@@ -1,4 +1,4 @@
-# Project Brief: Certified Adaptive Clinical Interfaces (v2)
+# Project Brief: Certified Adaptive Clinical Interfaces (v3)
 
 > This is the project spec for coding agents. Build in the schedule order (section 11). If time runs short, propose cuts to the owner; never cut on your own. This brief says *what* must be modeled and proven, not the exact Lean definitions.
 >
@@ -81,7 +81,7 @@ We ship:
 
 Counterexamples replay in the **real app**, in a dashboard frame, so judges see the violation on the screens clinicians would actually see.
 
-**The hospital spec is written in Lean,** one module per version (`lean/Ehr/Specs/V1.lean`, `V2.lean`, …), so a vendor release is a reviewable Lean diff.
+**The hospital spec is written in Lean,** one module per version (`lean/Ehr/Specs/V1.lean`, `V3.lean`, …), so a vendor release is a reviewable Lean diff.
 
 **Languages:** Lean for the spec, interpreter (semantics), checker, simulation, deploy, and proofs. TypeScript for the app UI (React), the agent loop, and the world generator.
 
@@ -171,7 +171,7 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 A clinician can be handed the canonical EHR and do real workflows against the local Medplum backend: notes, orders (meds, labs, imaging), diagnoses (ICD-10-CM), CPT / level of service, admit and discharge (inpatient encounters, beds, discharge prescriptions), MAR administration with barcode scans and cosigns, immunizations, results acknowledgment and patient messages, refills, consents, and review receipts. Live mode is the default: sign in as a persona; worklists come from Medplum (seeded from the world generator). On each commit, the app's data module writes the FHIR records in one transaction (a trusted, integration-tested mapping). Lean still decides every screen, guard, and alert. Offline replay remains for the dashboard and no-Docker demos. Only the CPT codes the workflows need ship, with our own labels (CPT is AMA-licensed); ICD-10-CM is public domain.
 
 ### The canonical is the certified baseline (owner decision, Oct 31)
-Every persona projection of the canonical, in every release (v1, v1.1, v2), must pass the FULL checker before anything else: properties 1–12, alerts A1–A4, and design rules D1–D6 (including D5 sane navigation). The canonical is what every clinician starts from on Day 1 and what a failed migration falls back to. Personalization only builds up from it. It keeps realistic friction for the agent to optimize, but it never violates a rule.
+Every persona projection of the canonical, in every release (v1, v2, v3), must pass the FULL checker before anything else: properties 1–12, alerts A1–A4, and design rules D1–D6 (including D5 sane navigation). The canonical is what every clinician starts from on Day 1 and what a failed migration falls back to. Personalization only builds up from it. It keeps realistic friction for the agent to optimize, but it never violates a rule.
 
 ### Chart shell (always present)
 - **Patient banner:** name, DOB, MRN, age/sex, photo placeholder, allergies badge, code status, isolation, preferred language, PCP, coverage, care-gap count, critical flags. On inpatient screens it also shows room/bed, attending, and weight with its date.
@@ -247,7 +247,7 @@ For every commit (sign orders, sign note, approve refill, acknowledge result, ad
 
 ### Rule sources (owner decision, Oct 31)
 - **New rules come from law, or are entrenched:** federal or California statutes and regulations (`basis: law`), or requirements a hospital is very unlikely to drop (`basis: entrenched`), each with a concrete reason: Joint Commission accreditation (deemed status), a CMS-required attestation (e.g. the SAFER Guides self-assessment), a Leapfrog/payer contract standard, or a near-universal standard of care. Plain recommendations are not added.
-- **Existing non-law rules stay, labeled honestly** as "entrenched (reason)" where that applies (e.g. barcode scanning: Leapfrog/standard of care; two patient identifiers: Joint Commission), otherwise "hospital policy (not law)" in spec docstrings, the dashboard, and the demo. These are patient-ID re-entry, barcode scanning, the second-nurse double check, weight in kg only, and release v2's antibiotic indication (modeled on CDC stewardship guidance; stewardship programs themselves are required by 42 CFR §482.42 and H&S §1288.85).
+- **Existing non-law rules stay, labeled honestly** as "entrenched (reason)" where that applies (e.g. barcode scanning: Leapfrog/standard of care; two patient identifiers: Joint Commission), otherwise "hospital policy (not law)" in spec docstrings, the dashboard, and the demo. These are patient-ID re-entry, barcode scanning, the second-nurse double check, weight in kg only, and release v3's antibiotic indication (modeled on CDC stewardship guidance; stewardship programs themselves are required by 42 CFR §482.42 and H&S §1288.85).
 - **Rules catalog (owner decision, Oct 31: encode them):** `docs/rules/catalog.json` holds 458 binding rules (CMS CoPs + EMTALA, Title 22, CA statutes, federal Rx/records) and 98 entrenched ones, each with a verbatim quote and link. Every rule that the spec language can express is encoded into spec v1 (`lean/Ehr/Specs/Rules/`), with canonical support. Cheap new language features (event time windows, patient predicates, order expiry) unlock more. Rules a UI checker cannot verify (audit logs, transmission, retention) are marked out of scope in the catalog, never silently dropped. The same proven properties cover every encoded rule.
 - **Product properties are not legal rules:** the alert-fatigue rules A1–A4, the budgets, and receipts are part of the product's design goals, and are labeled as such.
 
@@ -286,7 +286,7 @@ Every prompt in the canonical UI is tagged with one class:
 ### Component catalog (about 12 kinds)
 Banner, field, choice, read-only panel, trend chart, table, alert/warning, button, group, tab container, macro/bundle, and search. Each kind has a defined meaning in the Lean semantics: what it shows, what it captures, and whether it counts as "shown."
 
-The agent may propose a new kind. It is added only with owner approval, with its Lean meaning, and with the proofs re-checked. Vendor releases may also add kinds (release v1.1, section 9b).
+The agent may propose a new kind. It is added only with owner approval, with its Lean meaning, and with the proofs re-checked. Vendor releases may also add kinds (release v2, section 9b).
 
 ### App rendering rules
 - Lean renders these rules into the page tree (proven):
@@ -467,20 +467,20 @@ The agent gets a capabilities manual every night (what it can and can't change, 
 
 **Scripted events:**
 - **Day 5:** P1 covers urgent care for a day. The task mix shifts, and the agent adapts without discarding P1's usual customizations.
-- **Day 4:** vendor release v1.1, the prior-auth feature (section 9b).
-- **Day 7:** vendor release v2, antibiotic indication (section 9a).
+- **Day 4:** vendor release v2, the prior-auth feature (section 9b).
+- **Day 7:** vendor release v3, antibiotic indication (section 9a).
 - Tempting bad proposals: expect them, or seed them, so that at least the first three seeded bad programs appear as real logged rejections.
 
-## 9a. Vendor release example: v2 "Antibiotic indication required" (Day 7)
+## 9a. Vendor release example: v3 "Antibiotic indication required" (Day 7)
 
 A vendor release changes the canonical system: the **Lean spec**, the **canonical UI program**, and sometimes the component catalog. Every user's customized UI must conform before their next login, without wiping their personalization. This is the worked example. It is a hypothetical stewardship policy for the demo.
 
 ### What ships in the release
 ```
-lean/Ehr/Specs/V2.lean        new spec module (imports V1_1; old modules are never edited)
-releases/v2/RELEASE_NOTES.md  items R2-1 … R2-4, in plain language
-releases/v2/canonical.json    the vendor's new canonical UI program
-releases/v2/spec.json         generated by `ehr spec-export`
+lean/Ehr/Specs/V3.lean        new spec module (imports V2; old modules are never edited)
+releases/v3/RELEASE_NOTES.md  items R3-1 … R3-4, in plain language
+releases/v3/canonical.json    the vendor's new canonical UI program
+releases/v3/spec.json         generated by `ehr spec-export`
 ```
 
 ### The Lean spec change (illustrative; exact definitions are up to lane A)
@@ -491,10 +491,10 @@ In plain words:
 
 Roughly:
 ```lean
-/-- Release v2: antibiotic orders carry a confirmed indication,
+/-- Release v3: antibiotic orders carry a confirmed indication,
     and nurses see it before giving the drug. -/
-def specV2 : Spec :=
-  specV1_1
+def specV3 : Spec :=
+  specV2
   |>.addElement { id := .abxIndication, kind := .coded "abx-indications",
                   enteredBy := [.physician, .np],
                   prefill := .defaultHumanConfirms, friction := .compliance }
@@ -503,23 +503,23 @@ def specV2 : Spec :=
   |>.addReview  { commit := .administerMed, when := .medClass .antibiotic,
                   element := .abxIndication, mode := .shownOnCommitScreen }
 
-theorem specV2_extends_specV1_1 : specV2.Extends specV1_1 := by decide   -- feeds T8
+theorem specV3_extends_specV2 : specV3.Extends specV2 := by decide   -- feeds T8
 ```
 
 ### The canonical UI change
 | Release note | Canonical program change |
 |---|---|
-| R2-1 | Order composer: a required **Indication** picker appears for antibiotic orders, with a hard stop "Indication required." |
-| R2-2 | Sign-orders screen: an **Indication** column in the order summary. |
-| R2-3 | MAR administration panel: an **Indication** row next to the dose for antibiotics. |
-| R2-4 | Order sets containing antibiotics (ED sepsis, surgical prophylaxis) inherit R2-1. |
+| R3-1 | Order composer: a required **Indication** picker appears for antibiotic orders, with a hard stop "Indication required." |
+| R3-2 | Sign-orders screen: an **Indication** column in the order summary. |
+| R3-3 | MAR administration panel: an **Indication** row next to the dose for antibiotics. |
+| R3-4 | Order sets containing antibiotics (ED sepsis, surgical prophylaxis) inherit R3-1. |
 
 CI checks both directions:
-- The new canonical program passes against `specV2`.
-- The **old** canonical program fails against `specV2`. The counterexample is the path to "Sign orders" with an amoxicillin order and no indication. This shows the release has teeth.
+- The new canonical program passes against `specV3`.
+- The **old** canonical program fails against `specV3`. The counterexample is the path to "Sign orders" with an amoxicillin order and no indication. This shows the release has teeth.
 
 ### What happens on Day 7 (pipeline, for every user, before their next login)
-1. **Re-check** each user's current program against `specV2`. Expected failures:
+1. **Re-check** each user's current program against `specV3`. Expected failures:
    - P1's repeat-prescription macro (signs without an indication);
    - P2's ED order-set macro;
    - P3's streamlined MAR (indication not shown);
@@ -527,7 +527,7 @@ CI checks both directions:
    - P5's post-op order set.
 2. **Migration mode:** the agent gets the release notes, the Lean spec diff, the counterexamples, and the user's decision history. It proposes the **minimal patch** that restores conformance while keeping the user's customizations. The patch must pass `ehr check`.
 3. **Fallback:** if migration still fails after N attempts, deploy the new canonical program plus only the customizations that still pass, and flag the user. T4 means nothing uncertified is ever published.
-4. **Migration report** per user: what changed and why (mapped to R2-1…R2-4), the customizations kept or dropped, and the certificate.
+4. **Migration report** per user: what changed and why (mapped to R3-1…R3-4), the customizations kept or dropped, and the certificate.
 
 **Expected, distinct migrations:**
 - **P1:** the indication is pre-filled from the visit diagnosis, and the human confirms it.
@@ -538,24 +538,24 @@ CI checks both directions:
 
 **One migration goes wrong first (for the demo):** P3's first attempt puts the indication in a collapsed "Details" drawer on the MAR panel. The checker rejects it ("Reviews before commit: indication not shown"), and the counterexample replays the administration path in the real app with the drawer closed. The second attempt passes.
 
-## 9b. Vendor release example: v1.1 "Prior-authorization status" (feature, Day 4)
+## 9b. Vendor release example: v2 "Prior-authorization status" (feature, Day 4)
 
 This release changes the **catalog and the Lean semantics**, not just spec content.
 
 **What ships:**
 ```
-lean/Ehr/Specs/V1_1.lean        spec module: imports V1, adds optional elements only
+lean/Ehr/Specs/V2.lean        spec module: imports V1, adds optional elements only
 lean/Ehr/Catalog/…              new component kind `priorAuthStatus` with its Lean meaning
-releases/v1.1/RELEASE_NOTES.md  items R1.1-1 … R1.1-3
-releases/v1.1/canonical.json    canonical program with the panel in the order composer
-releases/v1.1/spec.json         generated by `ehr spec-export`
+releases/v2/RELEASE_NOTES.md  items R2-1 … R2-3
+releases/v2/canonical.json    canonical program with the panel in the order composer
+releases/v2/spec.json         generated by `ehr spec-export`
 ```
 
 **Content:** a prior-authorization status panel and a "request prior auth" action in the order composer, for imaging and procedures (not drugs: CMS-0057-F excludes drugs; drug prior auth appears only in the proposed rule CMS-0062-P). The motivation is CMS's interoperability and prior-authorization rule, which requires payer prior-auth APIs from January 2027. The feature is **optional** in the spec, with no required review.
 
 **What must happen:**
 - The new kind gets a defined meaning in the semantics: what it shows, that it writes only a ServiceRequest/Task for the prior-auth request, and that it counts as "shown." T0–T6 are re-checked with the new kind; the generic proofs must still go through.
-- `V1_1` extends `V1` (T8).
+- `V2` extends `V1` (T8).
 - Every personalized UI still passes the checker. Nothing is migrated, and nobody's customizations change.
 - The agent decides **per persona** whether and where to surface the new feature, based on that persona's traces, and records why:
   - **P1** (orders imaging and specialty meds): inline in the order composer.
@@ -564,7 +564,7 @@ releases/v1.1/spec.json         generated by `ehr spec-export`
   - **P3:** not applicable (doesn't order).
   - **P4:** surfaced only if their traces show specialty orders.
 
-Release v2 (Day 7) then builds on v1.1: `V2` imports `V1_1`.
+Release v3 (Day 7) then builds on v2: `V3` imports `V2`.
 
 ## 10. Decision transparency
 
@@ -585,7 +585,7 @@ Release v2 (Day 7) then builds on v1.1: `V2` imports `V1_1`.
   3. Counterexample viewer (replayed on real screens).
   4. Trace replay of version 0 versus version N, side by side, with live click, keystroke, and scroll counters and timers.
   5. Persona divergence: the five final UIs side by side.
-  6. Release view: for v1.1, each persona's decision on surfacing the prior-auth panel; for v2, five personas, one regulation, five different certified patches.
+  6. Release view: for v2, each persona's decision on surfacing the prior-auth panel; for v3, five personas, one regulation, five different certified patches.
 - **Not in scope (owner decision, Oct 31):** before/after screen diff with highlights; navigation Sankey; heatmaps; inferred persona model; move statistics; day view.
 
 ## 11. Schedule (deadline: Sun Nov 1, 4:30 PM PDT)
@@ -606,7 +606,7 @@ About 26 hours from kickoff (Sat 2:30 PM), including the owner's sleep. Agents w
 **Phase 1 · Sat 4:30–10:00 PM · six parallel lanes**
 - **A, Lean:** the semantics, structural checks, counterexamples, `run-batch`, and `deploy`.
 - **A2, WASM:** the Emscripten build of the interpreter, JS bindings for the app, the build-equivalence tests, and size and speed checks. Option B (`ehr serve`) only if the spike failed and the owner signed off.
-- **B, EHR content:** spec v1 content (with lane A); the canonical program (W1–W7); the seeded bad programs; releases v1.1 and v2 (spec modules, canonical programs, release notes).
+- **B, EHR content:** spec v1 content (with lane A); the canonical program (W1–W7); the seeded bad programs; releases v2 and v3 (spec modules, canonical programs, release notes).
 - **C, App:** the React renderer with catalog components and dense EHR styling, Medplum login and data access, and the dashboard shell.
 - **D, Simulation:** FHIR abstraction (Lean); persona policies, metrics, and `min-clicks`; the living-world generator (TS) with cross-persona flow.
 - **E, Infra:** the Medplum stack in `make install` / `make run`; storing deployed programs and certificates in Medplum; fixture export for simulation; the per-version headless screen check.
@@ -618,7 +618,7 @@ About 26 hours from kickoff (Sat 2:30 PM), including the owner's sleep. Agents w
 
 **Phase 3 · Sun 8 AM – 12:30 PM**
 - **Owner review 3 (8 AM, 30 min):** proof status, the first run's decision records, and which rejections occurred.
-- The dashboard views, releases v1.1 and v2 with migrations, and the final recorded run.
+- The dashboard views, releases v2 and v3 with migrations, and the final recorded run.
 - Proofs continue.
 
 **Phase 4 · Sun 12:30–2:30 PM · demo polish**
@@ -642,7 +642,7 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 
 - [ ] `make install && make run` works on a clean clone with Docker. After install, the demo opens in replay mode with no API key and no internet.
 - [ ] The EHR reads patient data from Medplum and writes commits back (orders, administrations, receipts as Provenance).
-- [ ] Every persona projection of the canonical (v1, v1.1, v2) passes the full checker, including D1–D6. It is the certified baseline and the migration fallback.
+- [ ] Every persona projection of the canonical (v1, v2, v3) passes the full checker, including D1–D6. It is the certified baseline and the migration fallback.
 - [ ] Seeded bad programs fail, with counterexamples replayed on rendered screens, and the app's hard stop blocks each unsafe commit.
 - [ ] Every deployed version has a certificate, and re-checking it returns ok. The app refuses to load a program whose certificate doesn't match.
 - [ ] The app's screen logic is the Lean interpreter compiled to WASM (or option B, if the owner approved it). Native and WASM builds agree on thousands of random programs and click sequences.
@@ -650,15 +650,15 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 - [ ] W7 (refill requests) is built and used in P1's simulated days.
 - [ ] Every visible control works or is removed (owner decision, Oct 31). `pnpm --filter app audit:buttons` clicks every enabled control on every route and EHR screen; each must have an observable effect, and each disabled control must show its reason. No click may throw. The report is in `docs/audits/buttons.md`, and a regression test blocks new dead controls.
 - [ ] The CURES and naloxone rules are in spec v1 with citations; bad programs 13–14 are rejected; `docs/regulations.md` maps every spec rule to its source.
-- [ ] Release v1.1: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
+- [ ] Release v2: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
 - [ ] The per-version screen check passes for every deployed version, and runs offline before deploy (a failing version is never deployed).
 - [ ] EHR screens are drawn by the generic painter from Lean's page tree; T10 and T11 are proven.
 - [ ] All five personas show test-day clicks, keystrokes, scrolls, and KLM time falling toward the floor, with minimum clicks per task reported for every version, across busy and quiet days, and their final UIs differ meaningfully.
 - [ ] Every night has a complete decision record with alternatives, plus predicted versus measured savings.
 - [ ] At least three logged rejections with counterexamples (allergy hidden, ID re-entry pre-filled, lb weight).
 - [ ] Simulation runs as work-days: login → shift → logout → overnight adaptation → certified deploy at next login.
-- [ ] Release v2 ships as a new Lean spec module and a new canonical program. The new canonical passes, the old canonical fails with a counterexample, and `specV2` extends `specV1` (T8).
-- [ ] Release v2: failing UIs are detected and migrated with minimal patches that keep customizations; five distinct migrations, all certified before next login, all documented.
+- [ ] Release v3 ships as a new Lean spec module and a new canonical program. The new canonical passes, the old canonical fails with a counterexample, and `specV3` extends `specV1` (T8).
+- [ ] Release v3: failing UIs are detected and migrated with minimal patches that keep customizations; five distinct migrations, all certified before next login, all documented.
 - [ ] T0–T5 and T8 proven with a clean `lake check` and Comparator run; T6, T7, and T9 proven or clearly marked as open.
 - [ ] Each main theorem has a satisfiable `example` and `¬ Satisfies` lemmas for the seeded bad programs.
 - [ ] The Playwright fidelity test passes for the canonical and final versions. The expected ARIA snapshot is generated from Lean's screen description, not hand-written.

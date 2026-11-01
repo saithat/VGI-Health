@@ -8,14 +8,14 @@
       "painterReason": "Pre-op orders need an attending co-signature"
     },
     {
-      "release": "v1.1",
+      "release": "v2",
       "persona": "P4",
       "nativeMatchesWasm": true,
       "preopCommitRefused": true,
       "painterReason": "Pre-op orders need an attending co-signature"
     },
     {
-      "release": "v2",
+      "release": "v3",
       "persona": "P4",
       "nativeMatchesWasm": true,
       "preopCommitRefused": true,

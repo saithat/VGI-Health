@@ -2,7 +2,7 @@ import Ehr.Check.ReplayTypes
 import Ehr.Props.OldObligations
 import Ehr.Props.Contracts
 import Ehr.Props.Navigation
-import Ehr.Specs.V2
+import Ehr.Specs.V3
 
 /-! Comparator challenge statements for the completed semantic checker clauses.
 The `sorry` bodies are intentional challenge placeholders, exactly as in the
@@ -87,16 +87,16 @@ theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
     ∀ facts user, user.role = p.role → OldObligations old ⟨new, p, facts, user⟩ := by
   sorry
 
-theorem T8_v1_to_v1_1 {prev : Option Program} {canonical p : Program}
-    (hs : check Specs.V1_1.specV1_1 prev canonical p = .ok) :
-    ∀ facts user, user.role = p.role →
-      OldObligations Specs.V1.specV1 ⟨Specs.V1_1.specV1_1, p, facts, user⟩ := by
-  sorry
-
-theorem T8_v1_1_to_v2 {prev : Option Program} {canonical p : Program}
+theorem T8_v1_to_v2 {prev : Option Program} {canonical p : Program}
     (hs : check Specs.V2.specV2 prev canonical p = .ok) :
     ∀ facts user, user.role = p.role →
-      OldObligations Specs.V1_1.specV1_1 ⟨Specs.V2.specV2, p, facts, user⟩ := by
+      OldObligations Specs.V1.specV1 ⟨Specs.V2.specV2, p, facts, user⟩ := by
+  sorry
+
+theorem T8_v2_to_v3 {prev : Option Program} {canonical p : Program}
+    (hs : check Specs.V3.specV3 prev canonical p = .ok) :
+    ∀ facts user, user.role = p.role →
+      OldObligations Specs.V2.specV2 ⟨Specs.V3.specV3, p, facts, user⟩ := by
   sorry
 
 theorem accepted_navigation (sp : Spec) (prev : Option Program) (can p : Program)

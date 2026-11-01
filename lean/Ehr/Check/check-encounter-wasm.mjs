@@ -26,7 +26,7 @@ function buttons(value) {
   return [...(value.button ? [value.button] : []), ...Object.values(value).flatMap(buttons)];
 }
 const results = [];
-for (const release of ['v1', 'v1.1', 'v2']) {
+for (const release of ['v1', 'v2', 'v3']) {
   const input = { spec: read(`releases/${release}/spec.json`),
     program: read(`releases/${release}/personas/P4.json`), facts,
     user: { id: 'P4', role: 'np' } };

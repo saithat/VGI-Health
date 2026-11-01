@@ -1,3 +1,4 @@
+import { complexityReleaseLabels, historicalRunIds } from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
@@ -128,7 +129,8 @@ export async function loadRun(
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
-        const complexity = complexitySchema.parse(await get(file));
+        const raw = complexitySchema.parse(await get(file));
+        const complexity = historicalRunIds.has(id) ? complexityReleaseLabels(raw) : raw;
         if (complexity.runId !== id)
           throw new Error("Complexity belongs to another run");
         run.complexity = complexity;

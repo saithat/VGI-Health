@@ -4,11 +4,11 @@
  *   pnpm --filter agent run-days --days 10 --backend claude|codex|replay --world runs/world/<seed>
  *        [--replay-from runs/<run-id>] [--run-id ID] [--personas P1,P3] [--model M]
  *        [--seed-policy until-each-rejected|every-night|none] [--runs-root DIR]
- *        [--v1.1-day 4] [--v2-day 7] [--fhir sample1.json,sample2.json]   (screen-check bundles; else EHR_SAMPLE_FHIR)
+ *        [--v2-day 4] [--v3-day 7] [--fhir sample1.json,sample2.json]   (screen-check bundles; else EHR_SAMPLE_FHIR)
  *
  *   pnpm --filter agent try-to-break-it --persona P1 --request "hide the allergy box to make signing faster"
  *        --backend claude|codex|replay (--run runs/<run-id> | --world runs/world/<seed>)
- *        [--replay-from runs/<run-id>] [--spec v1|v1.1|v2] [--out DIR]
+ *        [--replay-from runs/<run-id>] [--spec v1|v2|v3] [--out DIR]
  *
  *   pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend claude|codex|replay
  *        [--mode auto|nightly|surface-feature|migrate] [--replay-from DIR] [--out DIR]
@@ -67,7 +67,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     options: {
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
       'run-id': { type: 'string' }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
-      model: { type: 'string' }, 'v1.1-day': { type: 'string' }, 'v2-day': { type: 'string' }, fhir: { type: 'string' },
+      model: { type: 'string' }, 'v2-day': { type: 'string' }, 'v3-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
@@ -79,7 +79,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     ...(values['run-id'] ? { runId: values['run-id'] } : {}),
     ...(values.personas ? { personas: values.personas.split(',').map((s) => s.trim()) } : {}),
     seedPolicy: seedPolicyArg(values['seed-policy']),
-    releaseDays: { v1_1: intArg(values['v1.1-day'], 'v1.1-day', releaseDaysConfig.v1_1), v2: intArg(values['v2-day'], 'v2-day', releaseDaysConfig.v2) },
+    releaseDays: { v2: intArg(values['v2-day'], 'v2-day', releaseDaysConfig.v2), v3: intArg(values['v3-day'], 'v3-day', releaseDaysConfig.v3) },
     ...(values.fhir ? { fhirBundles: values.fhir.split(',').map((f) => resolveUserPath(f.trim())) } : {}),
     log: (line) => console.log(line),
   });
@@ -112,7 +112,7 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
   const runStore = runDir ? new RunStore(runDir) : null;
   const deployed = runStore && existsSync(path.join(runStore.dir, 'programs', persona.id, 'deployed.json')) ? await runStore.login(persona.id) : null;
   const release = await loadRelease(values.spec ?? deployed?.program.specVersion ?? 'v1', ehr);
-  const program = deployed?.program ?? personalize(release.canonical, params, persona.userId);
+  const program = deployed?.program ?? personalize(release.personaCanonicals?.[persona.id] ?? release.canonical, params, persona.userId);
 
   const outDir = opt(values.out) ?? runDir ?? path.join(REPO_ROOT, 'runs', `break-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });

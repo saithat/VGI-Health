@@ -109,7 +109,7 @@ def passivePinned (spec : Spec) (prog : Program) : Bool :=
 def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
   spec.alerts.all fun al =>
     al.tier != .passive || canonical.screens.all fun scr =>
-      !presetScreen prog.owner scr || !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
+      !presetScreen prog.presetOwner scr || !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
 
 /-- Every record prefill names the source declared by that spec element. -/
 def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=

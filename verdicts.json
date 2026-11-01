@@ -27,54 +27,54 @@
       "sha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
       "output": "ok"
     },
-    "releases/v1.1/personas/P1.json": {
-      "status": "certified",
-      "sha256": "4c3ed42be8053676e97444c18ec2c03a3026f718eeaf48cee1f6840caf188681",
-      "output": "ok"
-    },
-    "releases/v1.1/personas/P2.json": {
-      "status": "certified",
-      "sha256": "376ebe5f3353e1b371ae2b3b8395ab6674886582cdb65b0f0e71fcf345661d69",
-      "output": "ok"
-    },
-    "releases/v1.1/personas/P3.json": {
-      "status": "certified",
-      "sha256": "2480db46eb75a1f19763bb109799df75177d7fee2d519a932bd46592c7990513",
-      "output": "ok"
-    },
-    "releases/v1.1/personas/P4.json": {
-      "status": "certified",
-      "sha256": "c045f98fe9f19f47f0b54fe7ff47c0fe1296524e788368f63e400796fa6ee229",
-      "output": "ok"
-    },
-    "releases/v1.1/personas/P5.json": {
-      "status": "certified",
-      "sha256": "c8216a6835c51063921e00e9685c621045fd988328c2ab9108876d2f8d8cabd2",
-      "output": "ok"
-    },
     "releases/v2/personas/P1.json": {
       "status": "certified",
-      "sha256": "737f29a9e6e618645afa6778061789ddc92ca51685392960782808ff71c09386",
+      "sha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
       "output": "ok"
     },
     "releases/v2/personas/P2.json": {
       "status": "certified",
-      "sha256": "25120924c1e93d7b9728e2c13af38e7bfada44dee2885dee0635ef4688eef1f6",
+      "sha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
       "output": "ok"
     },
     "releases/v2/personas/P3.json": {
       "status": "certified",
-      "sha256": "59231e19ad0cf18ab0fda25e65002e3bfbb15660b9e2070c35f3bbcbddb37efc",
+      "sha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
       "status": "certified",
-      "sha256": "8b0942666032787f88da07902c757850a57a87fbc6f3992e577cca8221b562c0",
+      "sha256": "b672b5f88dac72ea6d5bc766a7804ffa4864f277c4cbde2b3c38bf58bb07e101",
       "output": "ok"
     },
     "releases/v2/personas/P5.json": {
       "status": "certified",
-      "sha256": "ed39af5bc34759596819d921fe556c1485c67ed369fe8f311b23ab3e27c263dd",
+      "sha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+      "output": "ok"
+    },
+    "releases/v3/personas/P1.json": {
+      "status": "certified",
+      "sha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
+      "output": "ok"
+    },
+    "releases/v3/personas/P2.json": {
+      "status": "certified",
+      "sha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
+      "output": "ok"
+    },
+    "releases/v3/personas/P3.json": {
+      "status": "certified",
+      "sha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
+      "output": "ok"
+    },
+    "releases/v3/personas/P4.json": {
+      "status": "certified",
+      "sha256": "6d0d9b75b5b3637be581ec9f845615b5590e411ccdb6ea291683bd0b471f0eae",
+      "output": "ok"
+    },
+    "releases/v3/personas/P5.json": {
+      "status": "certified",
+      "sha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
       "output": "ok"
     },
     "programs/bad/01-hidden-allergies.json": {
@@ -660,14 +660,14 @@
       "sha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
-    "releases/v1.1/canonical.json": {
-      "status": "reference",
-      "sha256": "c6d57ad65d8e07b110c13ec08fbe9079b6068ac49c6ac5170bb106c8edc334bd",
-      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
-    },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "e0fc15d7b266da46b4a35bf0ee4bacf9d851d8928375f8453720295a49b0c764",
+      "sha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+    },
+    "releases/v3/canonical.json": {
+      "status": "reference",
+      "sha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

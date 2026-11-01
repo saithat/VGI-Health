@@ -12,7 +12,7 @@
 --- a/lean/Ehr/Core/Basics.lean
 +++ b/lean/Ehr/Core/Basics.lean
 @@ -46,6 +46,7 @@
- `"priorAuth"`, so it needs the release v1.1 catalog too. -/
+ `"priorAuth"`, so it needs the release v2 catalog too. -/
  def Kind.catalogTag : Kind → String
    | .banner => "banner"
 +  | .use .. => "use"

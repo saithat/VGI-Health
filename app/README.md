@@ -13,7 +13,7 @@ pnpm --filter app test
 Medplum sign-in form. Quick-login reads the shared password only through a
 loopback-only server endpoint; it is never included in built assets. The live
 home queries actual worklists, patient search and full charts. Select an encounter
-and optional Task, MAR order or admission bed before opening the canonical v2 EHR.
+and optional Task, MAR order or admission bed before opening the canonical v3 EHR.
 
 The visible **Demo / replay** switch opens the offline clinical UI browser and
 recorded dashboard. These need no Docker or Medplum. Open `/browse` for
@@ -167,7 +167,7 @@ APP_TEST_PORT=4187 pnpm --filter app test:smoke
 
 `mock` is not a real agent run: all decisions, checker verdicts, certificates and
 savings are authored examples. The three injected unsafe candidates are labeled
-`seeded`. P3's failed v2 migration is a repair proposal, not a seeded attack.
+`seeded`. P3's failed v3 migration is a repair proposal, not a seeded attack.
 The break panel shows the recorded request beside its verdict and explicitly
 distinguishes it from text entered by an audience member. It never claims to
 have checked arbitrary text. Real recorded attempts in `break/*.json` use the
@@ -211,7 +211,7 @@ contain. Supply the app-only `replay.json` alongside them:
 Replace `{}` with real spec, synthetic FHIR bundle and user JSON. Supply a
 context for each required persona/version/spec combination; `version` and
 `specVersion` can be omitted for a shared context. Counterexamples use the
-decision's spec (including v2 rechecking an older program). Candidate JSON
+decision's spec (including v3 rechecking an older program). Candidate JSON
 patches are applied to the recorded `versionBefore` using the agent's own patch
 engine; migration screens replay the checker path up to the commit. Pair both
 task traces with the **same task and patient inputs**. Each side's

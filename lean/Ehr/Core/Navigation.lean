@@ -11,6 +11,10 @@ def presetWorkflows : String → List String
   | "P5" => ["W1", "W2", "W6"]
   | _ => ["W1", "W2", "W3", "W4", "W5", "W6", "W7"]
 
+/-- Agent forks keep the stable persona ID while their owner may be a user UUID. -/
+def Program.presetOwner (p : Program) : String :=
+  if ["P1", "P2", "P3", "P4", "P5"].contains p.id then p.id else p.owner
+
 /-- Shared patient selection, search and chart review stay in every pre-set view. -/
 def presetScreen (owner : String) (screen : Screen) : Bool :=
   !["P1", "P2", "P3", "P4", "P5"].contains owner ||

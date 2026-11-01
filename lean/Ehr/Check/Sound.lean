@@ -55,7 +55,7 @@ def emptyProgram : Program where
 example : Satisfies emptySpec none emptyProgram emptyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
-    simp [requiredCommitsFor, requiredCommits, presetScreen, commitButtons, emptyProgram] at hc)
+    simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, emptyProgram] at hc)
 
 #print axioms satisfies_of_checked_completable
 end Ehr.Check

@@ -4,7 +4,7 @@ import Ehr.Check.NavigationSound
 import Ehr.Check.ReachCacheSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.MonotonicityObstruction
-import Ehr.Specs.V2
+import Ehr.Specs.V3
 
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Proofs
@@ -154,19 +154,19 @@ theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
   · intro s reach al mem tier target fires
     exact passive s reach al (he.2.2.2.2.2.1 ▸ mem) tier target fires
 
-/-- v1.1 certification preserves the v1 hospital's obligations. -/
-theorem T8_v1_to_v1_1 {prev : Option Program} {canonical p : Program}
-    (hs : check Specs.V1_1.specV1_1 prev canonical p = .ok) :
-    ∀ facts user, user.role = p.role →
-      OldObligations Specs.V1.specV1 ⟨Specs.V1_1.specV1_1, p, facts, user⟩ :=
-  T8_checked_old_obligations Specs.V1_1.specV1_1_extends_specV1 hs
-
-/-- v2 certification preserves the v1.1 hospital's obligations. -/
-theorem T8_v1_1_to_v2 {prev : Option Program} {canonical p : Program}
+/-- v2 certification preserves the v1 hospital's obligations. -/
+theorem T8_v1_to_v2 {prev : Option Program} {canonical p : Program}
     (hs : check Specs.V2.specV2 prev canonical p = .ok) :
     ∀ facts user, user.role = p.role →
-      OldObligations Specs.V1_1.specV1_1 ⟨Specs.V2.specV2, p, facts, user⟩ :=
-  T8_checked_old_obligations Specs.V2.specV2_extends_specV1_1 hs
+      OldObligations Specs.V1.specV1 ⟨Specs.V2.specV2, p, facts, user⟩ :=
+  T8_checked_old_obligations Specs.V2.specV2_extends_specV1 hs
+
+/-- v3 certification preserves the v2 hospital's obligations. -/
+theorem T8_v2_to_v3 {prev : Option Program} {canonical p : Program}
+    (hs : check Specs.V3.specV3 prev canonical p = .ok) :
+    ∀ facts user, user.role = p.role →
+      OldObligations Specs.V2.specV2 ⟨Specs.V3.specV3, p, facts, user⟩ :=
+  T8_checked_old_obligations Specs.V3.specV3_extends_specV2 hs
 
 -- A satisfiable hypothesis, using the fully proved vocabulary-extension example.
 example : ∀ facts user, user.role = vocabularyProgram.role →
@@ -190,6 +190,6 @@ example : ∀ facts user, user.role = expandedProgram.role →
 #print axioms extends_static
 #print axioms T8_checked_old_obligations
 #print axioms T8_old_obligations
-#print axioms T8_v1_to_v1_1
-#print axioms T8_v1_1_to_v2
+#print axioms T8_v1_to_v2
+#print axioms T8_v2_to_v3
 end Ehr.Check

@@ -66,8 +66,8 @@ def roleProjectionValid (sp : Spec) (p : Program) : Bool :=
 
 #guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V1.specV1
   (forPersona Specs.V1.specV1 canonicalV1 id role)
-#guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V1_1.specV1_1
-  (forPersona Specs.V1_1.specV1_1 canonicalV1_1 id role)
 #guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V2.specV2
   (forPersona Specs.V2.specV2 canonicalV2 id role)
+#guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V3.specV3
+  (forPersona Specs.V3.specV3 canonicalV3 id role)
 end Ehr.Canonical
