@@ -147,9 +147,9 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
       refine ⟨capture n, ?_, ?_⟩
       · rcases hn with rfl | rfl <;> simp [s₂, s₁, setCaptured, capture]
       · simp [capture, Scalar.element, capturedSatisfies, valid, entryValueAllowed]
-    have perLine : entryDirectMet (spec k r m a t moreAlerts automation.isSome) f u
+    have perLine : entryMet (spec k r m a t moreAlerts automation.isSome) f u
         { s₂ with acked := ack, popup? := none } entry = true := by
-      simp only [entryDirectMet, spec, Spec.element?, Scalar.element, drug, entry,
+      simp only [entryMet, spec, Spec.element?, Scalar.element, drug, entry,
         List.find?_cons, beq_self_eq_true, ↓reduceIte]
       apply List.all_eq_true.mpr
       intro line hl
@@ -159,7 +159,7 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
       simpa [lineMatches, Scalar.element] using good line.1 hn
     have entries : entriesOk (spec k r m a t moreAlerts automation.isSome) f u { s₂ with acked := ack, popup? := none } "recordReview" = true := by
       change (entryMet (spec k r m a t moreAlerts automation.isSome) f u _ entry && true) = true
-      simp only [entryMet, perLine, Bool.or_true, Bool.true_and]
+      simp only [perLine, Bool.and_true]
     have reviews : reviewsOk (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f
         { s₂ with acked := ack, popup? := none } "recordReview" = true := by
       change (reviewMet (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f _ (Scalar.review m) && true) = true
