@@ -671,13 +671,20 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         catalog,
         persona === "RN2" ? "P3" : persona,
       );
+      const names = patient.name
+        .replace(/^(?:Mr|Mrs|Ms|Dr)\.?\s+/i, "")
+        .split(" ");
       await page
         .getByLabel("Patient search", { exact: true })
-        .fill(patient.name.split(" ")[0] ?? "");
+        .fill(names[0] ?? "");
       await page
         .getByRole("button", { name: "Search Medplum", exact: true })
         .click();
-      await page.locator(".patient-search + ul button").first().click();
+      await page
+        .locator(".patient-search + ul button")
+        .filter({ hasText: names.at(-1) ?? patient.name })
+        .first()
+        .click();
       await page
         .getByRole("button", { name: "Start new encounter", exact: true })
         .click();
@@ -950,8 +957,14 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               exact: true,
             })
             .getByRole("alert");
-          if (await validation.count())
-            row.effect += `; validation drawer: ${await validation.first().innerText()}`;
+          if (await validation.count()) {
+            const message = await validation.first().innerText();
+            row.effect += `; validation drawer: ${message}`;
+            if (
+              /WebAssembly|out of memory|call stack|RuntimeError/i.test(message)
+            )
+              row.status = "error";
+          }
           if (audit.errors.length > errorsBefore) {
             row.status = "error";
             row.effect = audit.errors.slice(errorsBefore).join("; ");
@@ -1005,6 +1018,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             window.__buttonAuditSession?.snapshot(),
           );
           if (
+            row.status !== "error" &&
             component &&
             typeof component.kind === "object" &&
             component.kind !== null &&

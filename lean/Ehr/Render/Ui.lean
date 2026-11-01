@@ -245,42 +245,51 @@ def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
 
 /-- Search reads typed chart rows or the supplied code catalog. It never replaces
 required reviews, captures clinical evidence, or selects an order. -/
+def uiSearchLabs (cx : Ctx) : List (List (String × String)) :=
+  cx.disp.labs.map fun row => [("Test", row.name), ("Value", row.value), ("Unit", row.unit),
+    ("Range", row.refRange), ("Recorded", uiDate row.date), ("Abnormal", toString row.abnormal)]
+
 def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
   if scope == "formulary" then
     formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
   else if scope == "loinc" then
-    uiRows cx "labResults" ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
+    uiSearchLabs cx ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
       if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
   else if scope == "chart" then
     (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
-      "importedHistory", "labResults", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx)
+      "importedHistory", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx) ++ uiSearchLabs cx
   else
     (cx.v.items.filter (·.shown)).flatMap fun item => match item.comp.kind with
-      | .panel info | .table info | .trend info => uiRows cx info
+      | .panel info | .table info | .trend info =>
+          if ["labs", "labResults", "resultTrend"].contains info then uiSearchLabs cx else uiRows cx info
       | _ => []
 
 /-- A bounded excerpt is centered near the matching text. Ellipses mark omitted
 text; the full note remains in Chart Review and required review panels. -/
 def uiSearchExcerpt (text query : String) : String :=
-  let before := ((text.toLower.splitOn query.toLower).headD "").toList.length
+  let before := ((text.toLower.splitOn query.toLower).headD "").length
   let start := before - 60
-  let chars := text.toList
-  (if start > 0 then "…" else "") ++ String.ofList ((chars.drop start).take 200) ++
-    (if chars.length > start + 200 then "…" else "")
+  let excerpt := (text.toSlice.drop start).take 200
+  (if start > 0 then "…" else "") ++ excerpt.toString ++
+    (if (text.toSlice.drop (start + 200)).isEmpty then "" else "…")
+
+def uiSearchCells (row : List (String × String)) : List (String × String) :=
+  (row.filter fun pair =>
+    pair.2 != "" && pair.2 != "Unknown" && pair.2 != "Not recorded" &&
+      !["Source", "Source date", "Shift days"].contains pair.1 &&
+      !pair.2.startsWith "urn:uuid:").map fun pair =>
+        if pair.1 == "Title" then (pair.1, (pair.2.splitOn ". Source date").headD pair.2) else pair
 
 /-- Search is a summary view. Opaque encounter references and converter metadata
 stay out of the result list; existing full source panels remain unchanged. -/
 def uiSearchSummary (row : List (String × String)) (query : String) : List (String × String) :=
-  let pairs := row.filter fun pair =>
-    pair.2 != "" && pair.2 != "Unknown" && pair.2 != "Not recorded" &&
-      !["Source", "Source date", "Shift days"].contains pair.1 &&
-      !pair.2.startsWith "urn:uuid:"
+  let pairs := uiSearchCells row
   match pairs with
   | [] => [("Record", "Matching record")]
   | first :: rest =>
-      [("Record", first.1 ++ ": " ++ first.2)] ++
+      [("Record", first.1 ++ ": " ++ (if first.2.length > 240 then uiSearchExcerpt first.2 query else first.2))] ++
       if rest.isEmpty then [] else [("Details", " · ".intercalate (rest.map fun pair =>
-        if pair.1 == "Text" then "Excerpt: " ++ uiSearchExcerpt pair.2 query
+        if pair.1 == "Text" || pair.2.length > 240 then "Excerpt: " ++ uiSearchExcerpt pair.2 query
         else pair.1 ++ ": " ++ pair.2))]
 
 /-- Case-insensitive matching reads full supplied values and displays concise
@@ -288,9 +297,11 @@ summaries. Empty results are explicit. Full source panels are never filtered. -/
 def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × String)) :=
   let needle := query.toLower
   let rows := (uiSearchSource cx scope).filter fun row =>
-    row.any fun pair => (pair.2.toLower.splitOn needle).length > 1
+    (uiSearchCells row).any fun pair => (pair.2.toLower.splitOn needle).length > 1
   if rows.isEmpty then [[("Search", "No matching records")]]
-  else rows.map fun row => uiSearchSummary row query
+  else (rows.take 25).map (fun row => uiSearchSummary row query) ++
+    if (rows.drop 25).isEmpty then [] else
+      [[("Record", "More results available"), ("Details", "Showing the first 25 matches. Refine your search to narrow the results.")]]
 
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
