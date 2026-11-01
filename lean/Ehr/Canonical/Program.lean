@@ -1,5 +1,6 @@
 import Ehr.Specs.V1
 import Ehr.Canonical.Rules
+import Ehr.Canonical.CorePlacements
 import Ehr.Canonical.Blueprint
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
@@ -97,7 +98,7 @@ def canonicalV1 : Program where
   start := "home"
   screens := (Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
     W5.screens ++ W6.screens ++ W7.screens
-    if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base)).map
+    if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment)).map
       (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews)
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)

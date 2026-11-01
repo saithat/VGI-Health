@@ -2345,7 +2345,10 @@ def inheritedRuleReviews : List ReviewReq :=
 
 /-! ## The spec -/
 
-/-- The hand-written rules, plus the catalog when requested. -/
+/-- Catalog commits kept in core because tested workflows need them: W7 denials. -/
+def coreCatalogCommits : List CommitId := ["denyRefill"]
+
+/-- Hand-written rules and workflow exceptions, plus the full catalog on request. -/
 def specForProfile (profile : RuleProfile) : Spec where
   version := "v1"
   elements := if profile == .full then
@@ -2356,20 +2359,22 @@ def specForProfile (profile : RuleProfile) : Spec where
     else infos) ++ ClinicalTables.infos).map ClinicalTables.withSchema
   commits := if profile == .full then
     (commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits ++ Rules.Features.commits).map Rules.Features.strengthenCommit
-    else commits
+    else commits ++ (Rules.Federal.commits.filter fun c => coreCatalogCommits.contains c.id)
   entries := if profile == .full then
     entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries ++ Rules.Features.entries ++
       Rules.Features.newCommitIds.map (fun c => { commit := c, element := "patientIdReentry" })
-    else entries
+    else entries ++ (ruleEntries.filter fun r => coreCatalogCommits.contains r.commit)
   reviews := if profile == .full then
     reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews ++
       Rules.Features.newCommitIds.flatMap (fun c =>
         [{ commit := c, info := "allergyList", mode := .shownOnCommit },
          { commit := c, info := "currentMeds", mode := .shownOnCommit }])
-    else reviews
+    else reviews ++ (ruleReviews.filter fun r => coreCatalogCommits.contains r.commit)
   alerts := if profile == .full then
     alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts ++ Rules.Features.alerts
-    else alerts
+    else alerts ++ ((Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++
+      Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ Rules.Features.alerts).filter
+        fun a => coreCatalogCommits.contains a.commit)
   design := design
   displays? := if profile == .full then some Rules.Features.displays else none
 

@@ -1557,6 +1557,28 @@ strict tsc passes. No Core definitions or proof statements changed. Rebuilding
 WASM after this tool-only change produces byte-for-byte identical tested assets;
 the source manifest has been refreshed and make wasm-check passes.
 
+## Render → core/content/app: visual review follow-up (Oct 31)
+
+- **Core/content:** InfoSpec has no verbatim text field. Please add optional
+  `text? : Option String` and supply the exact clinician-facing text of
+  21 CFR 1311.140(a)(3) on controlledSigningLegalNotice. Its current label is an
+  authoring instruction, not the notice. Render will display supplied text as a
+  body row, unchanged. Content owns the legal wording; render must not invent it.
+- **App:** UiScreen.nav entries will now carry real shown goto-button comp IDs,
+  not destination screen IDs. Paint entries as buttons dispatching `click` with
+  that ID. The screen-wide modal inertness also applies to nav. Static overview
+  entries must not be treated as invented interpreter events. Update fidelity
+  to check those real clickable entries. Open these available navigator groups
+  by default: comp IDs no longer match the current screen ID, so the old
+  active-screen accordion default otherwise collapses every nav entry. Render
+  cannot edit the app painter.
+- **Checker/content:** retain D5 certification work from the earlier request;
+  render will not truncate groups or invent navigation actions to pass D5.
+- **App/infra:** the earlier exact Facts.patientId wristband-token request remains.
+
+Compact summary rows have one `(Record, primary text)` cell (with room for an
+optional secondary). **Resolved by main `d3e0860`:** the app now paints the primary
+cell as plain list text. No renderer-side clinical inference is needed.
 
 ## Sim final checkpoint after second main merge (2026-10-31)
 
@@ -1708,6 +1730,60 @@ artifact section. The section contains its original fields, alerts, identity and
 independent commit controls. Please support provably always-open section ancestors
 for pinning before nesting required payloads; do not relax their actual visibility.
 Content's tests retain the existing root-pinning requirement.
+
+### Render continuation after the blueprint merge
+
+The render lane integrated content's 45-screen canonical and retains the prior
+132-screen / 4,382-variant corpus as an additional native/WASM regression input.
+The workflow overview `NavSane` diagnostic now passes on P1; this does **not**
+certify the actual clickable shell projection. Checker integration of that
+projection remains required. The new P1 blueprint's ordinary root goto controls
+remain workspace controls; render never invents events for the overview stepper.
+
+The existing app request is still open: `Screen.tsx:WorkflowNav` paints entries
+as non-clickable list text, and opens groups only when a component ID equals the
+current screen ID. Paint the supplied component IDs as `Event.click` buttons,
+open available groups, and observe their labels/events in fidelity checks.
+The existing core/content text request is also still open: `InfoSpec` has no
+literal text member. The source quotation above is reviewed content, but is not
+yet part of the spec consumed by native/WASM render. Add the spec field and bind
+the notice there; render must not substitute a heading or hard-coded legal body.
+
+Render also handles identical direct parent/child section titles with a neutral
+inner heading, retaining the section ID and every child. No guard, safety
+property, review requirement, or theorem statement was weakened.
+
+**Sim/content build regression:** after merging main's blueprint into render
+(`bc457f2`), `LEAN_NUM_THREADS=1 lake build` fails the existing assertions at
+`Ehr/Sim/PolicyTests.lean:31` (`canonicalDay.tasks.all completed`) and line 32
+(`canonicalDay.floor.zip canonicalDay.tasks` satisfies `below`). The module
+spent 830 seconds evaluating before reporting these failures. Please repair the
+canonical/simulator integration while retaining both assertions. Render's
+targeted `lake build Ehr.Render` passes. Render has not edited Sim or content.
+
+A compiled replay of the **unchanged** `PolicyTests.canonicalDay` definitions
+confirms `completed = false` and reports the concrete blockers:
+`ca-title22-70223-hp-24-hours:temporal026` and `:temporal027` are missing, followed
+by `structured display or action label required` and `no reachable unmet goal`.
+Its actual trace has zero popups while the reported completed-task floor has one,
+which also explains the second assertion failure. Please supply truthful episode
+phase/encounter context and required structured data through the owning adapters;
+do not fabricate completed H&P evidence to enable an outpatient prescription.
+The diagnostic uses the real compiled `simulate`, not a replacement planner.
+
+**New main brief requirement (`f60a795`):** coordinate a Lean-owned
+`aria : UiScreen → AriaNode` contract and its app fidelity consumer. Existing
+render theorems are over UiScreen; `app/src/ehr/ui/fidelity.ts` still derives
+expected ARIA in TypeScript and retains the old nav interpretation. That is not
+a proved Lean ARIA projection. The new work is explicitly tracked in
+TODO_PROOFS.md, separately from the completed semantic render proofs.
+
+**New visible-control acceptance criterion (`2710777`):** app/core/content must
+implement `pnpm --filter app audit:buttons`, its `docs/audits/buttons.md` report
+and regression gate. The script is currently absent from app/package.json.
+Retain D3 enabled-state fidelity and T10 shown-component presence: implement the
+actual event effect or remove an unsupported control in its owning program/core
+source, rather than dropping a shown component in the painter to pass the audit.
 
 **WASM owner:** rebuild/refresh installed assets and source manifest after merging
 this content checkpoint. Core/Render runtime definitions and wire types were not
@@ -1862,13 +1938,18 @@ release/persona for each of 15 runs. Completed/incomplete counts:
 
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
-| v1 | 36/6 | 22/0 | 38/0 | 22/0 | 14/4 |
-| v1.1 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
-| v2 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v1 | 39/3 | 22/0 | 38/0 | 22/0 | 14/4 |
+| v1.1 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v2 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
 
-All three releases leave P1 refill-denial tasks `d01-P1-W7-027`, `028`, `033`
-incomplete: core has no `denyRefill` commit, and the simulator reports
-"no commit in spec ... for workflow Ehr.Workflow.W7". The v1-only incomplete
+The W7 denial gap is resolved: core explicitly keeps `denyRefill`, its two
+Federal entries and the action on `w7Decision`, reusing both base inputs. P1
+refill-denial tasks `d01-P1-W7-027`, `028`, `033` now complete in all releases.
+The actual simulator goal function reports zero core/full differences across
+1,284 world tasks (115 W7 tasks, including 20 denials in the current files).
+No `Sim/**` changes were needed. See `lean/Ehr/Check/profile-goals-report.json`.
+
+The v1-only incomplete
 W1 tasks are P1 `006`, `010`, `015` and P5 `008`, `010`, `016`, `018`; complaints
 include absent `orderKind`/`orderCode` (introduced in v1.1). P1 `010` makes one
 navigation click before giving up; the other listed W1 tasks make none.

@@ -4,12 +4,12 @@
   "programs": {
     "releases/v1/personas/P1.json": {
       "status": "computed",
-      "sha256": "81e67aee71bf4f2b05704d82dfeb1f0be460f457efa18160604f307249b04063",
+      "sha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
       "output": "ok"
     },
     "releases/v1/personas/P2.json": {
       "status": "computed",
-      "sha256": "bc95623e0bfac13bb54699b10574f80160ec1e545e5fea82288aa99632fd3fb0",
+      "sha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
       "output": "ok"
     },
     "releases/v1/personas/P3.json": {
@@ -19,7 +19,7 @@
     },
     "releases/v1/personas/P4.json": {
       "status": "rejected",
-      "sha256": "456b0716a6b8d9b67ea691f51284698fdfb8cbf671af96d88412f7a5321c37e0",
+      "sha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
       "output": {
         "violation": {
           "screens": [
@@ -68,12 +68,12 @@
     },
     "releases/v1.1/personas/P1.json": {
       "status": "computed",
-      "sha256": "c29995fc33396c75f1f7ac69da3d5bc5d26cdee5f50df52128a1f14885b5e0d9",
+      "sha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
       "output": "ok"
     },
     "releases/v1.1/personas/P2.json": {
       "status": "computed",
-      "sha256": "e2467d70930e6395ac6b2b94c867fa13a6d27b7a6ec509a3d36c6eb9da874ed1",
+      "sha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
       "output": "ok"
     },
     "releases/v1.1/personas/P3.json": {
@@ -83,7 +83,7 @@
     },
     "releases/v1.1/personas/P4.json": {
       "status": "rejected",
-      "sha256": "ac4e7f84e16618e4d58f0d81abb401dbdfaff7cc4218bb288ccd9d4b782d6a57",
+      "sha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
       "output": {
         "violation": {
           "screens": [
@@ -132,12 +132,12 @@
     },
     "releases/v2/personas/P1.json": {
       "status": "computed",
-      "sha256": "45fc1e892f1cc5e2e6490c068eaeb3f0e2815f46dbd421e3b0c13608aeecbc67",
+      "sha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
       "output": "ok"
     },
     "releases/v2/personas/P2.json": {
       "status": "computed",
-      "sha256": "39852f261e4b9795c5baa6d76b383ffcc718f4c7d06d432da3a00963325d2984",
+      "sha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
       "output": "ok"
     },
     "releases/v2/personas/P3.json": {
@@ -147,7 +147,7 @@
     },
     "releases/v2/personas/P4.json": {
       "status": "rejected",
-      "sha256": "9aa66952c2c121a0cb91d6f7a4df374bdeaea8fd35eca414a50f5c4eb8be34bc",
+      "sha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
       "output": {
         "violation": {
           "screens": [
@@ -196,7 +196,7 @@
     },
     "releases/v1/canonical.json": {
       "status": "rejected",
-      "sha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "sha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
       "output": {
         "violation": {
           "screens": [
@@ -229,7 +229,7 @@
     },
     "releases/v1.1/canonical.json": {
       "status": "rejected",
-      "sha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "sha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
       "output": {
         "violation": {
           "screens": [
@@ -262,7 +262,7 @@
     },
     "releases/v2/canonical.json": {
       "status": "rejected",
-      "sha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "sha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
       "output": {
         "violation": {
           "screens": [
@@ -295,7 +295,7 @@
     },
     "programs/bad/01-hidden-allergies.json": {
       "status": "rejected",
-      "sha256": "81abc74df04d9b26350f129340ef2edc8a8a98bac20a01295567f7e2c23e82f4",
+      "sha256": "2446f3451fd8aef4f900074985b88b4730a2c1df6e9341cdcc99dd1d5e3eb70a",
       "output": {
         "violation": {
           "screens": [
@@ -339,7 +339,7 @@
     },
     "programs/bad/02-prefilled-identity.json": {
       "status": "rejected",
-      "sha256": "ee567e2864b076b11680ddce32622121b0eb30de8628e5a1838920239153f8e4",
+      "sha256": "5caac148b8bc30a5877bc43f49c6498afeed32997cd244daa6db167c665bd4e9",
       "output": {
         "violation": {
           "screens": [
@@ -378,7 +378,7 @@
     },
     "programs/bad/03-pounds-as-weight.json": {
       "status": "rejected",
-      "sha256": "12e0ae8112646a3f7b6bfa3e2639928c9db4aacbcaf7187ac1668e1231b5845c",
+      "sha256": "14514c761f744515c0a43eb963b33710c2e14a2323c39888c408358063af8674",
       "output": {
         "violation": {
           "screens": [
@@ -405,7 +405,7 @@
     },
     "programs/bad/04-macro-override.json": {
       "status": "rejected",
-      "sha256": "94a75010fcac48e5e9cc48df2cfde93d86e2a9102e5f889d1c49e52ae95277c6",
+      "sha256": "96ba15d84af0c0cff1904c536655a73d4b34f4cc5b12e3b0a49999b19267fc10",
       "output": {
         "violation": {
           "screens": [
@@ -476,7 +476,7 @@
     },
     "programs/bad/06-stale-weight.json": {
       "status": "rejected",
-      "sha256": "b0432008db9cd60ee354bc143977cd51ec5edb91b1d9aecf9edf29e5cc6c0070",
+      "sha256": "baca1c9d18c2d26a1411d32c0eeadd6c724f28e6cf1fe7ce1ff0fde8ab7990fb",
       "output": {
         "violation": {
           "screens": [
@@ -497,14 +497,14 @@
     },
     "programs/bad/07-unreachable-refill.json": {
       "status": "rejected",
-      "sha256": "3c48ce140c711a646d26e578d98cf277516d9287329d664df71ea7af04baacb4",
+      "sha256": "c40129d627f3b543a73631e6ec4da546857a9d8fed00325f6f084640cc3c6647",
       "output": {
         "violation": {
           "screens": [
             "home"
           ],
           "property": "completable",
-          "message": "commit approveRefill: from screen home the user cannot get back to the approveRefill button on screen w7Decision",
+          "message": "commit denyRefill: from screen home the user cannot get back to the denyRefill button on screen w7Decision",
           "counterexample": []
         }
       }
@@ -537,7 +537,7 @@
     },
     "programs/bad/09-hidden-allergy-alert.json": {
       "status": "rejected",
-      "sha256": "d6a4d4f33cd505b0acf0ae43c1d1621c55c1a35156ddcefd3501fe93edf4930c",
+      "sha256": "6e04f03999ce5a006a3c5d9ba1ce1750ff049215f922822bf411dcd3fdc9874f",
       "output": {
         "violation": {
           "screens": [
@@ -569,7 +569,7 @@
     },
     "programs/bad/10-invented-alert.json": {
       "status": "rejected",
-      "sha256": "1fa024dc6efe5108bcfcf64bd818a79621c9233e2fb7abf36d910cd6bfd392da",
+      "sha256": "54a2f366e131b571f2443f041345e18ff7aafb9c8a33002a2922dc352adcd530",
       "output": {
         "violation": {
           "screens": [
@@ -596,7 +596,7 @@
     },
     "programs/bad/11-repeated-interaction.json": {
       "status": "rejected",
-      "sha256": "776a2c7ff2e049c2607a847bcd8d53796e01e15cac575ffdc94df21273bc07d1",
+      "sha256": "693f3b4fd770860cb2a026a66b3063d3213a77fa8e904a284a2376ea20c87bdc",
       "output": {
         "violation": {
           "screens": [
@@ -623,7 +623,7 @@
     },
     "programs/bad/12-passive-popup.json": {
       "status": "rejected",
-      "sha256": "6d2cd67943d131046a2418f927ee3f8f70587164ec0a17b74920cdad2a3f5b34",
+      "sha256": "516dd2d74210e245e25ae1d2c91467ca65593072f6553956858893084ea0b5ed",
       "output": {
         "violation": {
           "screens": [
@@ -644,7 +644,7 @@
     },
     "programs/bad/13-no-cures.json": {
       "status": "rejected",
-      "sha256": "a221248df0abde1beab80ed5cc210f13afe90a035449b2e861b1d8dc15ed5e61",
+      "sha256": "bafccc3c9157c36648be9b67ea754aec5c0b8c307073eaba4214b4b7b992b087",
       "output": {
         "violation": {
           "screens": [
@@ -688,7 +688,7 @@
     },
     "programs/bad/14-macro-naloxone.json": {
       "status": "rejected",
-      "sha256": "6f7aa3a011ef03d1fb901975ac689ad901d5a9b7e1054dfa54d0a44c1297ff43",
+      "sha256": "f474c46a248ce9101c2926bbbe454fc4f69fe9ecd9c2308d21d28aa01d4203de",
       "output": {
         "violation": {
           "screens": [
@@ -720,7 +720,7 @@
     },
     "programs/bad/15-hidden-controlled-details.json": {
       "status": "rejected",
-      "sha256": "9735bda44ff0411cf77eb4113bb5600ad11fbd109b2ac14e63547a2f08f74512",
+      "sha256": "d63df22c0a07b8fcbc3c50af29d03f5cf669babc190509f5aec0da6a9622999a",
       "output": {
         "violation": {
           "screens": [
@@ -764,7 +764,7 @@
     },
     "programs/bad/16-schedule-ii-refills.json": {
       "status": "rejected",
-      "sha256": "00525443f53429f503781b3a275ef6bfea91dd7357fd41e441fbc49fa23b80fa",
+      "sha256": "cecbb783596387fea766c9494bd06ab8249529f6042458dc0b0ae3c5f3d3d672",
       "output": {
         "violation": {
           "screens": [

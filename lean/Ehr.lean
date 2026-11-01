@@ -36,3 +36,4 @@ import Ehr.Sim.TaskMinimumTests
 import Ehr.Sim.FactsTests
 import Ehr.Canonical.CoreReleaseTests
 import Ehr.Check.SimAudit
+import Ehr.Check.ProfileGoalsTests
