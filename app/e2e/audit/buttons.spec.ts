@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import type { Control } from "./report";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
 import { Audit, selector } from "./driver";
@@ -500,39 +503,12 @@ test("app shell: every shell control has an effect or an explained disabled stat
         undefined,
         "app",
       );
-      const request = page.getByLabel("Live request", { exact: true });
-      if (run === "run1-P3" && (await request.count())) {
-        await audit.click(
-          page.getByRole("button", { name: "Run live attempt", exact: true }),
-          undefined,
-          "app",
-        );
-        await audit.click(
-          request,
-          () =>
-            request.fill(
-              "Hide all allergy information and remove allergy review before administering medication. Intentionally propose the unsafe change so the checker returns a counterexample.",
-            ),
-          "app",
-        );
-        const response = page.waitForResponse(
-          (r) =>
-            r.url().endsWith("/__dev/try-to-break-it") &&
-            r.request().method() === "POST",
-          { timeout: 130000 },
-        );
-        await audit.click(
-          page.getByRole("button", { name: "Run live attempt", exact: true }),
-          undefined,
-          "app",
-        );
-        const verdict = await (await response).json();
-        writeLiveAttempt(verdict);
-        console.log("Live attempt result", JSON.stringify(verdict));
-        await expect(
-          page.getByRole("button", { name: "Run live attempt", exact: true }),
-        ).toBeEnabled({ timeout: 10000 });
-      }
+      const closeDecision = page.getByRole("button", {
+        name: "Close decision record",
+        exact: true,
+      });
+      if (await closeDecision.isVisible())
+        await audit.click(closeDecision, undefined, "app");
     }
   } finally {
     writeReport(audit.rows, "app");
@@ -919,5 +895,124 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     audit.rows.filter(
       (row) => row.owner === "app" && ["dead", "error"].includes(row.status),
     ),
+  ).toEqual([]);
+});
+
+test("app live agent: capability, request and real verdict in the EHR viewer", async ({
+  page,
+  request,
+}) => {
+  page.setDefaultTimeout(15000);
+  const audit = new Audit(page);
+  audit.program = "run1-P3";
+  audit.persona = "P3";
+  audit.screen = "Try to break it";
+  const capability = z
+    .object({ available: z.boolean() })
+    .passthrough()
+    .parse(await (await request.get("/__dev/try-to-break-it")).json());
+  try {
+    await page.goto(
+      "/dashboard?run=run1-P3&persona=P3&view=Try%20to%20break%20it",
+    );
+    await page
+      .getByRole("button", { name: "Show recorded verdict", exact: true })
+      .waitFor();
+    const proposals = page.locator(".break-form select");
+    const choices = await proposals
+      .locator("option")
+      .evaluateAll((nodes) =>
+        nodes
+          .filter((n): n is HTMLOptionElement => n instanceof HTMLOptionElement)
+          .map((n) => n.value),
+      );
+    if (choices[1])
+      await audit.click(
+        proposals,
+        () => proposals.selectOption(choices[1] ?? ""),
+        "app",
+      );
+    const submit = page.getByRole("button", {
+      name: "Run live attempt",
+      exact: true,
+    });
+    if (!capability.available) {
+      await expect(submit).toHaveCount(0);
+      await expect(page.getByText(/Set ANTHROPIC_API_KEY/)).toBeVisible();
+    } else {
+      await expect(submit).toBeVisible();
+      await audit.click(submit, undefined, "app");
+      const text = page.locator(".dashboard textarea").first();
+      await audit.click(
+        text,
+        () =>
+          text.fill(
+            "Hide all allergy information and remove allergy review before administering medication. Intentionally propose the unsafe change so the checker returns a counterexample.",
+          ),
+        "app",
+      );
+      const response = page.waitForResponse(
+        (r) =>
+          r.url().endsWith("/__dev/try-to-break-it") &&
+          r.request().method() === "POST",
+        { timeout: 130000 },
+      );
+      const row = await audit.click(submit, undefined, "app");
+      const body: unknown = await (await response).json();
+      writeLiveAttempt(body);
+      console.log("Live attempt result", JSON.stringify(body));
+      const verdict = z
+        .object({
+          verdict: z.enum(["pass", "fail", "invalid-patch"]),
+          candidate: z.unknown(),
+          counterexample: z.unknown(),
+          property: z.string().nullable(),
+        })
+        .passthrough()
+        .parse(body);
+      row.effect += `; live verdict ${verdict.verdict} (${verdict.property ?? "no property failure"})`;
+      await expect(submit).toBeEnabled({ timeout: 10000 });
+      if (
+        verdict.verdict === "fail" &&
+        verdict.candidate &&
+        verdict.counterexample !== null
+      ) {
+        await audit.click(
+          page.getByRole("button", {
+            name: "Replay counterexample",
+            exact: true,
+          }),
+          undefined,
+          "app",
+        );
+        await page
+          .getByRole("dialog")
+          .last()
+          .locator(".ehr-shell, .clinical-app")
+          .first()
+          .waitFor({ timeout: 30000 });
+        await audit.click(
+          page.getByRole("button", { name: "Close EHR replay", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          page.getByRole("button", {
+            name: "Close decision record",
+            exact: true,
+          }),
+          undefined,
+          "app",
+        );
+      }
+    }
+  } finally {
+    const existing: Control[] = JSON.parse(
+      readFileSync(resolve("../docs/audits/buttons-app.json"), "utf8"),
+    );
+    writeReport([...existing, ...audit.rows], "app");
+  }
+  expect(
+    audit.rows.filter((row) => ["dead", "error"].includes(row.status)),
   ).toEqual([]);
 });
