@@ -1,4 +1,9 @@
 import Ehr.Core.Types
+import Ehr.Specs.Rules.Cms
+import Ehr.Specs.Rules.Title22
+import Ehr.Specs.Rules.CaStatutes
+import Ehr.Specs.Rules.Federal
+import Ehr.Specs.Rules.Entrenched
 
 /-!
 # Hospital spec, version "v1"
@@ -2260,18 +2265,77 @@ def design : DesignRules where
   landmarks := [patientBanner.id]
   catalog := catalog
 
+/-- Hospital policy (not law). Specialist prescription/medication authorizations
+inherit the ordinary signing contract, including pre-op safety and alerts.
+The artifact is one order episode, not proof of every required physical event. -/
+def issuanceCommits : List CommitId :=
+  ["signScheduleIISeries", "signEmergencyRxFollowup", "authorizeDirectDispensing",
+   "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication"]
+
+/-- Hospital policy (not law). These specialist note/order actions retain a
+human patient identity check and the ordinary allergy/medication review. -/
+def specialtyCommits : List CommitId :=
+  ["signRestraintOrder", "signTreatmentOrder", "signDietOrder", "signStandingOrder",
+   "signNewbornOxygenOrder", "signAnesthesiaRecord", "signPostAnesthesiaNote",
+   "signProgressNote", "signSuicideRiskAssessment"]
+
+/-- Product design property. New artifact paths cannot bypass ordinary signing. -/
+def inheritedEntries : List EntryReq :=
+  issuanceCommits.flatMap (fun c =>
+    (orderSigningEntries { id := c, label := c, roles := prescribers }) ++
+    preOpExtraEntries.map (fun r => { r with commit := c }) ++
+    [{ commit := c, element := "drug" }]) ++
+  specialtyCommits.map (fun c => { commit := c, element := "patientIdReentry" }) ++
+  [{ commit := "signProgressNote", element := "progressNote" }]
+
+/-- Product design property. Inherited reviews keep their exact modes and waivers. -/
+def inheritedReviews : List ReviewReq :=
+  issuanceCommits.flatMap (fun c =>
+    (orderSigningReviews { id := c, label := c, roles := prescribers }) ++
+    preOpExtraReviews.map (fun r => { r with commit := c })) ++
+  specialtyCommits.flatMap (fun c =>
+    [ { commit := c, info := "allergyList", mode := .shownOnCommit },
+      { commit := c, info := "currentMeds", mode := .shownOnCommit }])
+
+/-- Product design property. All issuance variants retain each signing alert;
+only ids and commit bindings differ. Triggers and tiers remain unchanged. -/
+def inheritedAlerts : List AlertSpec :=
+  issuanceCommits.flatMap fun c => (alerts.filter (·.commit == "signOrders")).map fun a =>
+    { a with id := a.id ++ "." ++ c, commit := c }
+
+/-- Product design property. All catalog additions, grouped by legal source. -/
+def ruleEntries : List EntryReq :=
+  Rules.Cms.entries ++ Rules.Title22.entries ++ Rules.CaStatutes.entries ++
+  Rules.Federal.entries ++ Rules.Entrenched.entries
+
+/-- Product design property. All catalog panels have shown-on-commit guards. -/
+def ruleReviews : List ReviewReq :=
+  Rules.Cms.reviews ++ Rules.Title22.reviews ++ Rules.CaStatutes.reviews ++
+  Rules.Federal.reviews ++ Rules.Entrenched.reviews
+
+/-- Product design property. Specialist issuance also inherits every new
+prescription-content gate and every controlled-prescription display rule. -/
+def inheritedRuleEntries : List EntryReq :=
+  issuanceCommits.flatMap fun c => (ruleEntries.filter (·.commit == "signOrders")).map fun r =>
+    { r with commit := c }
+
+/-- Product design property. No specialist signing action bypasses controlled details. -/
+def inheritedRuleReviews : List ReviewReq :=
+  issuanceCommits.flatMap fun c => (ruleReviews.filter (·.commit == "signOrders")).map fun r =>
+    { r with commit := c }
+
 /-! ## The spec -/
 
 /-- Product design property.
 The hospital spec, version "v1". -/
 def specV1 : Spec where
   version := "v1"
-  elements := elements
-  infos := infos
-  commits := commits
-  entries := entries
-  reviews := reviews
-  alerts := alerts
+  elements := elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements
+  infos := infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos
+  commits := commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits
+  entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries
+  reviews := reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews
+  alerts := alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts
   design := design
 
 /-! ## Self-checks

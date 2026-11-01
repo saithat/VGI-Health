@@ -58,7 +58,9 @@ def specV1_1 : Spec :=
     design := { specV1.design with catalog := specV1.design.catalog ++ ["priorAuth"] } }
 
 -- This finite prefix check traverses the full hospital declaration list.
-set_option maxRecDepth 2048 in
+-- The complete catalog adds inherited artifact contracts to this finite check.
+set_option maxRecDepth 16384 in
+set_option maxHeartbeats 2000000 in
 /-- Product design property.
 Every v1 rule is preserved by the optional-feature release. -/
 theorem specV1_1_extends_specV1 : specV1_1.Extends specV1 := by decide

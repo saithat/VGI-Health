@@ -474,3 +474,72 @@ Content's Schedule II rule is implemented and regenerated in all three release s
 **Check/app/WASM:** certify matching persona canonicals from `releases/<version>/personas/`, reject all sixteen permanent seeds with replayable counterexamples, and rebuild/test WASM against the allowed-value guard. Seed 16 confirms a default of three and strands that value on a sign screen with no navigation or correction field. Tests verify there are no outgoing navigation edges and attempts to edit the hidden composer field are ignored. Restoring canonical navigation allows human correction to zero; the guard is never relaxed. No checker implementation exists in this merged worktree, so content does not claim a `¬ Satisfies` theorem or production certificate.
 
 **W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.
+
+## CR-15: full catalog content adoption (content → render/app/world/sim/check/wasm)
+
+All 124 `fit: spec-data` rows are now v1 data, inherited by v1.1/v2. See
+`lean/Ehr/Specs/Rules/{Cms,Title22,CaStatutes,Federal,Entrenched}.lean`, the
+catalog `encodedIn` mappings and `Canonical/RulePlacements.lean`. Content did
+not edit other lanes. This request supersedes the earlier sixteen-seed counts.
+There are now 24 permanent mutations; content walks test all artifact actions.
+
+**Render:** add actual `infoContent` bindings for `resultAbnormalFlags` and all
+13 `controlledSigning*` ids. Their precise contracts are in catalog
+`displayContent`, the InfoSpec docstrings, and encoding-plan.md. Iterate every
+selected prescription line; bind name/address/strength/form/directions/DEA to
+that artifact's captures and actual issue date to trusted artifact metadata.
+The earliest-fill value belongs to a later series member, never issue date.
+Render the exact §1311.140(a)(3) attestation immediately above Sign. Every
+result component needs value/range and explicit normal/abnormal status. Keep
+these panels expanded through signing. `Render.Page.infoContent` currently
+falls back to an empty message for these ids (as it still does for
+`orderSummary`, CR-14). Content pins every identifier, but does not claim that
+its abstract visibility proves payload fidelity. Test actual values and
+multiple rows in native/WASM output, including bad seed 22.
+
+**Core/world reference-data owners:** the finite formulary currently has no
+`controlled-V` or `ghb` products. Add correct tags only to actual supported
+products, with world's reference data synchronized; don't tag an unrelated
+demo drug to activate a condition. The new rules for those classes are
+encoded but dormant for today's finite formulary. All supported Schedule II
+and IV examples continue using their existing tags.
+
+**App/world/sim adapters:** implement exclusive artifact effects for the new
+CommitSpec ids. A signScheduleIISeries/signEmergencyRxFollowup or direct/bedside/
+self-administration authorization cannot bypass ordinary signing: content
+inherits all original entries, pre-op conditions, reviews and signing alerts,
+plus new prescription content and v2 antibiotic indication. Map each field's
+FHIR target as documented; never persist an artifact through an unguarded
+button. New scoped documents attest one artifact only. Fresh episodes/reset
+are needed between physical events; retained captures do not certify repeated
+restraints, shifts, doses, consent events or actual deadlines. Dates here are
+nonempty ISO-labeled strings; date validity, elapsed time, expiry and lawful
+eligibility remain the catalog's core-feature work.
+
+W7 now captures `drug` and human `refillScheduleEligibility` before approval,
+with an allowed `notScheduleII` value, and has a distinct denyRefill action
+requiring decision=deny and a reason. A new prescription routes through
+w7Orders → w7Sign/signOrders. Preserve the distinct backend effects; don't
+interpret a denial as prescription issuance. This is a human eligibility
+attestation, not a new automatic request-drug predicate.
+
+**Core/check:** `currentLineComplete` currently checks every per-line entry
+across all commits. Consequently series earliest-fill and controlled readiness
+must be available on ordinary composers too. Content exposes them rather than
+relaxing the stop. If artifact scoping is added, retain all active-commit
+requirements and prove/test both line advancement and signing. The checker
+must handle 24 bad programs, all new commits, allowed values, inherited alerts,
+and pinned no-receipt panels without changing any property. Certification,
+semantic rejection lemmas and replayable checker counterexamples remain check
+work; content's executable regression oracles are not a soundness theorem.
+
+**Agent/WASM:** adopt the actual generated releases and persona programs,
+preserve every `allowed` value and condition, rebuild WASM and repeat
+native/WASM equivalence and rendered hard-stop checks. The existing schema
+round-trip requests CR-12/14 still apply.
+
+**Stricter rule retained:** the plan suggested replacing the old required
+`naloxoneEducation` flag with alternative outcomes. The owner explicitly
+forbids weakening an existing rule. Content retains that flag and human
+naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
+education outcome alone therefore does not bypass the older stricter flag.
