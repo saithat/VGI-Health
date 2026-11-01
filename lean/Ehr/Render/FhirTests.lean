@@ -82,4 +82,6 @@ def surgery : Json := json r#"{"resourceType":"Procedure","code":{"text":"Append
 #guard roundTrips (medicationStatementHistoryRow homeMed)
 #guard factVersion { parsed.facts with notesVersion := 42, historyVersion := 7 } "notesVersion" == some 42
 
+#guard (Lean.fromJson? (json r#"{"patientId":"old","identity":{"initials":"AB","sex":"F","ageYears":40},"allergyVersion":0,"allergyClasses":[],"medsVersion":0,"currentMedClasses":[],"careGaps":[],"abnormalResult":false,"now":0,"receipts":[],"record":[]}"#) : Except String Facts).toOption.any (fun f => f.notesVersion == 0 && f.historyVersion == 0)
+#guard (Lean.fromJson? ((Lean.toJson parsed.facts).setObjVal! "notesVersion" (.str "bad")) : Except String Facts).isOk == false
 end Ehr.Render.Tests

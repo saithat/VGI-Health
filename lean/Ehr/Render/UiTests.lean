@@ -259,4 +259,19 @@ example : ∃ comp label display, UiWorkspacePresent uiShellScreen
 #print axioms D2_workspace_required
 #print axioms uiNav_mem
 
+-- Both current and recorded Notes routes use the same complete display rows.
+def uiNotesCtx : Ctx :=
+  { uiRoomCtx with
+    disp := { uiRoomCtx.disp with
+      notes := [Fhir.noteRow Tests.note]
+      history := Fhir.historyRows [Tests.homeMed, Tests.family, Tests.social, Tests.surgery] } }
+#guard uiRows uiNotesCtx "encounterNotes" == [noteCells (Fhir.noteRow Tests.note)]
+#guard uiRows uiNotesCtx "priorNotes" == uiRows uiNotesCtx "encounterNotes"
+#guard (uiRows uiNotesCtx "importedHistory").length == 5
+#guard (uiRows uiNotesCtx "familyHistory").length == 2
+#guard (uiRows uiNotesCtx "socialHistory").length == 1
+#guard (uiRows uiNotesCtx "surgicalHistory").length == 1
+#guard uiRows uiNotesCtx "currentMeds" == uiRows uiRoomCtx "currentMeds"
+#guard uiNotesCtx.facts.receipts == uiRoomCtx.facts.receipts
+
 end Ehr.Render

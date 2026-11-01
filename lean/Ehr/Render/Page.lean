@@ -58,7 +58,7 @@ def displayDate (s : String) : String := if s == "" then "Unknown" else s
 
 def noteTr (r : NoteRow) : Ro :=
   .el .tr [] [] ([displayDate r.date, r.noteType, r.author, r.encounter, r.title].map cell ++
-    [.el .td [] [] ((r.text.splitOn "\n").map fun line => .el .div [] [] [.text line])] ++
+    [.el .td [] [] ((r.text.splitOn "\n").map fun line => .el .div [] [] [.text (if line == "" then " " else line)])] ++
     [r.status, displayDate r.sourceDate, displayDate r.shiftDays].map cell)
 def historyTr (r : HistoryRow) : Ro := row [r.kind, r.item, r.detail, r.status, r.source]
 def bannerContent (d : Display) : Ro :=
@@ -112,14 +112,14 @@ def infoContent (cx : Ctx) (i : InfoId) : Ro :=
           ([r.name, r.value, r.unit, r.refRange, r.date].map cell)) "No laboratory results on file",
        .el .div [] [] (d.labs.map fun r => .el .div [] [] [txt .panelTitle r.name, sparkline r.trend])]
   | "problemList" => table ["Problem", "Code", "Onset", "Abatement", "Status"]
-      (d.problems.map fun r => row [r.name, r.code, r.onset, r.abatement, r.status]) "No problems on file"
+      (d.problems.map fun r => row [r.name, r.code, displayDate r.onset, displayDate r.abatement, r.status]) "No problems on file"
   | "immunizations" | "immunizationHistory" => table ["Vaccine", "CVX", "Date", "Status"]
       (d.immunizations.map fun r => row [r.vaccine, r.cvx, r.date, r.status]) "No immunizations on file"
   | "encounters" | "encounterHistory" => table ["Encounter", "Class", "Start", "End", "Reason", "Provider", "Location"]
       (d.encounters.map fun r => row [r.encType, r.encClass, r.start, r.stop, r.reason, r.provider, r.location])
       "No encounters on file"
   | "procedures" => table ["Procedure", "Code", "Date", "Status"]
-      (d.procedures.map fun r => row [r.name, r.code, r.date, r.status]) "No procedures on file"
+      (d.procedures.map fun r => row [r.name, r.code, displayDate r.date, r.status]) "No procedures on file"
   | "growthChart" => .el .div [] []
       [table ["Date", "Age (months)", "Weight (kg)", "Height (cm)"]
         (d.growth.map fun r => row [r.date, toString r.ageMonths,

@@ -22,8 +22,9 @@ const native = (command, input) => JSON.parse(execFileSync(nativeExecutable, [co
 }));
 const context = data('context');
 let bundleCount = 0;
-for (const file of readdirSync('fixtures/synthea').filter((f) => f.endsWith('.json') && f !== 'index.json')) {
-  const bundle = read(resolve('fixtures/synthea', file));
+for (const file of ['fixtures/synthea', 'fixtures/synthetic-hospital'].flatMap((dir) =>
+  readdirSync(dir).filter((f) => f.endsWith('.json') && f !== 'index.json').map((file) => resolve(dir, file)))) {
+  const bundle = read(file);
   const input = { bundle, context };
   const actual = JSON.parse(ehr.facts(JSON.stringify(input)));
   assert.deepEqual(actual, native('facts', input), file);
@@ -32,6 +33,9 @@ for (const file of readdirSync('fixtures/synthea').filter((f) => f.endsWith('.js
   assert.equal(actual.facts.patientId, identifier ? `${identifier.system}|${identifier.value}` : patient.resource.id ?? patient.fullUrl);
   assert.ok(actual.display.allergies.every((r) => r.id.length));
   assert.ok(actual.display.meds.every((r) => r.id.length));
+  const resources = bundle.entry.map((e) => e.resource);
+  assert.equal(actual.display.notes.length, resources.filter((r) => r.resourceType === 'DocumentReference' && r.status !== 'entered-in-error' && r.docStatus !== 'entered-in-error').length);
+  assert.equal(actual.display.history.filter((r) => r.kind === 'Home medications (reported)').length, resources.filter((r) => r.resourceType === 'MedicationStatement' && r.status !== 'entered-in-error').length);
   bundleCount++;
 }
 const { facts, display } = native('facts', { bundle: read(fixture), context });
@@ -106,7 +110,7 @@ function checkUi(ui, view, program, display, name) {
   assert.ok(!walk(ui.workspace).some((n) => n.info?.infoId === 'patientBanner'), `${name}: one shell banner`);
   if (ui.modal) assert.ok(walk([ui.modal]).some((n) => n.button?.role === 'ack' && n.button.enabled));
 }
-console.log(`Native/WASM facts match for all ${bundleCount} Synthea bundles.`);
+console.log(`Native/WASM facts match for all ${bundleCount} Synthea + Synthetic Hospital bundles.`);
 const shardCount = Number(process.env.EHR_RENDER_SHARD_COUNT ?? 1);
 const shardIndex = Number(process.env.EHR_RENDER_SHARD_INDEX ?? 0);
 assert.ok(Number.isInteger(shardCount) && shardCount >= 1 && shardCount <= 8);
@@ -199,4 +203,4 @@ if (process.env.EHR_RENDER_SHARD_REPORT) {
   const nativeSha256 = createHash('sha256').update(readFileSync(nativeExecutable)).digest('hex');
   writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total, wasmSha256, nativeSha256}));
 }
-console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);
+console.log(`Native/WASM equivalence: ${bundleCount} Synthea + Synthetic Hospital bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);
