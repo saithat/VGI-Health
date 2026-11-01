@@ -1,12 +1,35 @@
 import type { ClinicalTone } from "./theme";
 import { formatClinicalRecord } from "./clinical-display";
+import {
+  clinicalName,
+  clinicalUnit,
+  clinicalStatus,
+  clinicalDuration,
+  clinicalTimestamp,
+  compactVitalRecord,
+  ageSex,
+  encounterClass,
+} from "./clinical-formatters";
 
 const iso =
   /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
 /** Presentation fallback only: never changes captured field values or ordering. */
 export function formatDisplayValue(value: string): string {
+  const vital = compactVitalRecord(value);
+  if (vital) return vital;
   const match = iso.exec(value);
-  if (!match) return formatClinicalRecord(value);
+  if (!match)
+    return clinicalTimestamp(
+      clinicalDuration(
+        ageSex(
+          encounterClass(
+            clinicalStatus(
+              clinicalUnit(clinicalName(formatClinicalRecord(value))),
+            ),
+          ),
+        ),
+      ),
+    );
   const [, year, month, day, hour, minute, second] = match;
   const calendar = new Date(`${year}-${month}-${day}T12:00:00Z`);
   // Reject impossible calendar dates instead of silently normalizing them.
@@ -20,16 +43,14 @@ export function formatDisplayValue(value: string): string {
     return value;
   const date = hour === undefined ? calendar : new Date(value);
   if (!Number.isFinite(date.getTime())) return value;
-  const label = new Intl.DateTimeFormat("en-GB", {
+  if (hour !== undefined) return clinicalTimestamp(value);
+  return new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     // A date-only DOB must not move to the previous day in a western timezone.
     timeZone: "UTC",
   }).format(calendar);
-  // Keep the supplied clock, precision and offset rather than converting zones
-  // or discarding the recorded time when a payload contains an ISO timestamp.
-  return hour === undefined ? label : `${label} ${value.slice(11)}`;
 }
 export function DisplayValue({ value }: { value: string }) {
   const formatted = formatDisplayValue(value);
@@ -50,10 +71,14 @@ export function DisplayValue({ value }: { value: string }) {
 export function statusTone(value: string): ClinicalTone | undefined {
   const status = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
   if (/^(l|low)$/.test(status)) return "blue";
-  if (/^(h|high)$/.test(status)) return "yellow";
+  if (/^(h|high)$/.test(status)) return "red";
   if (/^(hh|ll|a|abnormal)$/.test(status)) return "red";
   if (/^(critical|urgent|stat|overdue)(?:$|\s)/.test(status)) return "red";
-  if (/^(signed|reviewed|complete|completed|given|done)(?:$|\s)/.test(status))
+  if (
+    /^(signed|reviewed|complete|completed|given|done|results? available|report available)(?:$|\s)/.test(
+      status,
+    )
+  )
     return "green";
   if (
     /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on-hold|roomed|arrived)(?:$|\s)/.test(
