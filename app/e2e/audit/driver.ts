@@ -142,7 +142,6 @@ export class Audit {
       return row;
     }
     const preparationMs = Date.now() - preparingAt;
-
     const before = await this.fingerprint();
     await this.page.evaluate(
       ({ dom, state }) => {

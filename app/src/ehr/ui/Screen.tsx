@@ -33,11 +33,15 @@ export function activityIcon(
 ): Parameters<typeof ClinicalIcon>[0]["name"] {
   if (/lookup|search/i.test(label)) return "search";
   if (/\bmar\b|medication|orders/i.test(label)) return "pill";
-  if (/flowsheet|result|growth|vital/i.test(label)) return "trend";
-  if (/schedule|track board|census|worklist/i.test(label)) return "clock";
-  if (/basket|message|note/i.test(label)) return "message";
-  if (/chart review|patient/i.test(label)) return "user";
-  return "info";
+  if (/flowsheet|summary|index/i.test(label)) return "grid";
+  if (/result|lab/i.test(label)) return "flask";
+  if (/growth|vital/i.test(label)) return "trend";
+  if (/schedule/i.test(label)) return "calendar";
+  if (/track board|census/i.test(label)) return "bed";
+  if (/worklist|sign|assessment|plan/i.test(label)) return "checklist";
+  if (/basket|message/i.test(label)) return "message";
+  if (/chart review|note|history/i.test(label)) return "document";
+  return "user";
 }
 function modalTitle(node: UiNode): string | undefined {
   if ("section" in node) return node.section.title;

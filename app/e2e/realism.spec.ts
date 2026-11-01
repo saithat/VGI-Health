@@ -1,4 +1,7 @@
-import { enterPatientChart } from "./clinical-navigation";
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { catalogSchema } from "../src/browser/data";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
@@ -23,7 +26,9 @@ function infoNodes(nodes: UiNode[]): NodeOf<"info">[] {
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
   test.setTimeout(120000);
-  const folder = process.env.REALISM_OUTPUT_DIR ?? `shots/realism/shell/${process.env.REALISM_SHOTS}`;
+  const folder =
+    process.env.REALISM_OUTPUT_DIR ??
+    `shots/realism/shell/${process.env.REALISM_SHOTS}`;
   mkdirSync(folder, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const [name, route] of [
@@ -69,13 +74,7 @@ test("shared shell and browser visual review", async ({ page }) => {
 
       await expect(navigator).not.toHaveClass(/empty-navigator/);
     }
-    const destination = page.locator(
-      `button[data-comp-id$=".nav.${screen}"][data-event]`,
-    );
-    const state = await page.evaluate(
-      () => window.__buttonAuditSession?.snapshot().state.screen,
-    );
-    if (state !== screen) await destination.click();
+    await navigateClinicalScreen(page, screen);
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
@@ -96,7 +95,7 @@ test("shared shell and browser visual review", async ({ page }) => {
   }
   if (process.env.REALISM_SHOTS !== "before") {
     await page.goto(
-      "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
+      "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1",
     );
     const catalog = catalogSchema.parse(
       await (await page.request.get("/catalog.json")).json(),
@@ -109,6 +108,14 @@ test("shared shell and browser visual review", async ({ page }) => {
       await page
         .locator('[data-comp-id="home.work.w1Rooming"][data-event]')
         .click();
+    if (
+      await page.evaluate(
+        () =>
+          window.__buttonAuditSession?.snapshot().state.screen ===
+          "chartSummary",
+      )
+    )
+      await navigateClinicalScreen(page, "chartReview");
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     const note = page
       .locator(
@@ -146,6 +153,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
+    await page.getByRole("tab", { name: "Medications", exact: true }).click();
     await page
       .locator(".clinical-home-meds, [data-info-id=currentMeds]")
       .first()

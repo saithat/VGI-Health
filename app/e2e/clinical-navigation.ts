@@ -29,3 +29,78 @@ export async function enterPatientChart(
   ).toBeVisible({ timeout: 30000 });
   return true;
 }
+
+/** Follow real declared goto edges, including a Summary before the navigator. */
+export async function navigateClinicalScreen(
+  page: Page,
+  destination: string,
+): Promise<void> {
+  const { z } = await import("zod");
+  const programSchema = z.object({
+    screens: z.array(
+      z.object({
+        id: z.string(),
+        components: z.array(z.object({ id: z.string(), kind: z.unknown() })),
+      }),
+    ),
+  });
+  const goto = z.object({
+    button: z.object({
+      action: z.object({ goto: z.object({ screen: z.string() }) }),
+    }),
+  });
+  const program = programSchema.parse(
+    await page.evaluate(() => window.__buttonAuditSession?.program),
+  );
+  const edges = program.screens.flatMap((screen) =>
+    screen.components.flatMap((component) => {
+      const action = goto.safeParse(component.kind);
+      return action.success
+        ? [
+            {
+              from: screen.id,
+              to: action.data.button.action.goto.screen,
+              comp: component.id,
+            },
+          ]
+        : [];
+    }),
+  );
+  for (let step = 0; step < program.screens.length; step++) {
+    const current = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.screen,
+    );
+    if (current === destination) return;
+    const available = [];
+    for (const edge of edges.filter((edge) => edge.from === current)) {
+      const control = page.locator(
+        `button[data-comp-id=${JSON.stringify(edge.comp)}]`,
+      );
+      if ((await control.isVisible()) && (await control.isEnabled()))
+        available.push(edge);
+    }
+    const queue = available.map((edge) => ({ at: edge.to, first: edge.comp })),
+      seen = new Set([current]);
+    let next: string | undefined;
+    while (queue.length) {
+      const item = queue.shift();
+      if (!item || seen.has(item.at)) continue;
+      if (item.at === destination) {
+        next = item.first;
+        break;
+      }
+      seen.add(item.at);
+      queue.push(
+        ...edges
+          .filter((edge) => edge.from === item.at)
+          .map((edge) => ({ at: edge.to, first: item.first })),
+      );
+    }
+    if (!next)
+      throw new Error(
+        `No visible source goto path from ${current} to ${destination}`,
+      );
+    await page.locator(`button[data-comp-id=${JSON.stringify(next)}]`).click();
+  }
+  throw new Error(`Source navigation did not reach ${destination}`);
+}

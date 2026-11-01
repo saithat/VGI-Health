@@ -1,5 +1,38 @@
 /** Original generic line icons; decorative only, always accompanied by text. */
 const paths = {
+  grid: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18M9 3v18M3 15h18" />
+    </>
+  ),
+  calendar: (
+    <>
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M7 3v4m10-4v4M3 10h18m-13 4h2m4 0h2m-8 4h2" />
+    </>
+  ),
+  document: (
+    <>
+      <path d="M5 3h10l4 4v14H5V3Zm10 0v5h4M8 12h8m-8 4h8" />
+    </>
+  ),
+  bed: (
+    <>
+      <path d="M3 5v16m18-10v10M3 17h18M3 11h18v6M7 8h5v3H7V8Z" />
+    </>
+  ),
+  flask: (
+    <>
+      <path d="M9 3h6m-5 0v6l-6 10a1 1 0 0 0 1 2h14a1 1 0 0 0 1-2L14 9V3M7 15h10" />
+    </>
+  ),
+  checklist: (
+    <>
+      <rect x="5" y="4" width="15" height="17" rx="2" />
+      <path d="M9 3h6v3H9V3Zm0 9 1 1 2-3m2 2h3m-8 5h2m3 0h3" />
+    </>
+  ),
   user: (
     <>
       <circle cx="12" cy="8" r="4" />

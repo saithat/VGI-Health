@@ -1,0 +1,363 @@
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|unitCensus",
+          "Unit Census"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:shiftWorklist",
+  "side": [],
+  "title": "My Patients / MAR",
+  "viewer": "Registered nurse",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "shiftWorklist",
+              "label": "My Patients / MAR",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "4W-01-A"
+                  ],
+                  [
+                    "Patient",
+                    "Leanne Harber"
+                  ],
+                  [
+                    "Age/sex",
+                    "53 / F"
+                  ],
+                  [
+                    "Diagnosis",
+                    "hyperglycemia, type 2 diabetes"
+                  ],
+                  [
+                    "Admitted",
+                    "2026-10-29T21:50:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Rosa Delgado, RN"
+                  ],
+                  [
+                    "Attending",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Assignment",
+                    "Assigned to Rosa Delgado, RN"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "4W-02-A"
+                  ],
+                  [
+                    "Patient",
+                    "Erich Vernon Bogisich"
+                  ],
+                  [
+                    "Age/sex",
+                    "48 / M"
+                  ],
+                  [
+                    "Diagnosis",
+                    "pyelonephritis"
+                  ],
+                  [
+                    "Admitted",
+                    "2026-10-30T14:02:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Rosa Delgado, RN"
+                  ],
+                  [
+                    "Attending",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Assignment",
+                    "Assigned to Rosa Delgado, RN"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "4W-03-A"
+                  ],
+                  [
+                    "Patient",
+                    "Chase Ramiro Reynolds"
+                  ],
+                  [
+                    "Age/sex",
+                    "68 / M"
+                  ],
+                  [
+                    "Diagnosis",
+                    "community-acquired pneumonia"
+                  ],
+                  [
+                    "Admitted",
+                    "2026-10-29T17:35:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Rosa Delgado, RN"
+                  ],
+                  [
+                    "Attending",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Assignment",
+                    "Assigned to Rosa Delgado, RN"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "4W-04-A"
+                  ],
+                  [
+                    "Patient",
+                    "Aaron Bruno Ankunding"
+                  ],
+                  [
+                    "Age/sex",
+                    "58 / M"
+                  ],
+                  [
+                    "Diagnosis",
+                    "COPD exacerbation"
+                  ],
+                  [
+                    "Admitted",
+                    "2026-10-29T17:34:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Rosa Delgado, RN"
+                  ],
+                  [
+                    "Attending",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Assignment",
+                    "Assigned to Rosa Delgado, RN"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "4W-05-A"
+                  ],
+                  [
+                    "Patient",
+                    "Andre Mathew Parisian"
+                  ],
+                  [
+                    "Age/sex",
+                    "54 / M"
+                  ],
+                  [
+                    "Diagnosis",
+                    "asthma exacerbation"
+                  ],
+                  [
+                    "Admitted",
+                    "2026-10-29T19:44:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Rosa Delgado, RN"
+                  ],
+                  [
+                    "Attending",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Assignment",
+                    "Assigned to Rosa Delgado, RN"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|c61efda8-512e-c6b3-4fba-676206c5894f|0|shiftWorklist",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Harber, Leanne (MRN 28255014)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|732cdc7f-9ce5-c808-8fff-1777f491e16e|1|shiftWorklist",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Bogisich, Erich Vernon (MRN 75354821)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|e458dd47-cfac-0c89-3206-150c3cfed809|2|shiftWorklist",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Reynolds, Chase Ramiro (MRN 72289834)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|4966bd28-61bc-8f51-3aab-1328a32ea2e7|3|shiftWorklist",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Ankunding, Aaron Bruno (MRN 47839287)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|93c8f2c5-d51c-61e1-ecb2-5544d4d987ae|4|shiftWorklist",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Parisian, Andre Mathew (MRN 31890844)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "worklist"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Application activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

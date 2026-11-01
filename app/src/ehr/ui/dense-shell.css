@@ -545,3 +545,76 @@
 .clinical-app .banner-detail .banner-label {
   flex: 0 0 auto;
 }
+.clinical-app .workflow-links button .clinical-icon {
+  color: var(--section-accent, var(--clinical-primary));
+  flex-shrink: 0;
+}
+/* Native activity groups share one wrapping chart-tab row after the shortcuts. */
+.clinical-app .clinical-navbar .workflow-groups {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: start;
+  column-gap: 6px;
+}
+.clinical-app .workflow-group {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.clinical-app .workflow-group[data-nav-kind="application"] {
+  flex-basis: 100%;
+}
+/* Index cards keep small desktop tables tabular; repeated mobile labels are
+   decorative CSS content, while all actual column headers and values remain. */
+@media (min-width: 900px) {
+  .clinical-app .clinical-card-grid .presentation-table:not(.presentation-mar) {
+    display: table;
+    table-layout: fixed;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    thead {
+    display: table-header-group;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    tbody {
+    display: table-row-group;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    tr {
+    display: table-row;
+    padding: 0;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    :is(th, td) {
+    display: table-cell;
+    padding: 2px 3px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--clinical-border);
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    td::before {
+    content: none;
+  }
+  .clinical-app .clinical-card-grid .clinical-presentation {
+    border: 0;
+  }
+  .clinical-app .clinical-card-grid .presentation-heading {
+    background: transparent;
+    border: 0;
+    padding: 0 1px 2px;
+    font-weight: 400;
+    color: var(--clinical-muted);
+  }
+  .clinical-app .clinical-card-grid .presentation-chart svg text {
+    font-size: 23px;
+  }
+}

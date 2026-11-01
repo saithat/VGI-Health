@@ -1757,6 +1757,41 @@ into this branch to bypass its publication gates.
 
 Reference reviewed directly: the owner-provided Epic Hyperspace inpatient image and its notes in `lane-logs/epic-reference.md`, sourced from Ink & Switch's [Malleable Software](https://www.inkandswitch.com/essay/malleable-software/). Its useful patterns are the separate application shortcut row and chart tabs, narrow stacked storyboard labels, and a three-column Index with compact card titles. The reference itself is not copied into the repository.
 
-The before set in `app/shots/final/before/` records the actual v3 canonical program before this shell pass. P1 Orders initially cuts off around pharmacy; the compact shell exposes pharmacy/diagnosis and controlled-substance fields within 900 px while retaining 12 px type. The op-note view keeps its diagnoses, anesthesia, blood-loss and operative narrative fields closer together. Track Board / OR rows use 22 px base cells, preserving wrap for real clinical text. MAR and growth retain their structured source widgets. The new Summary/Index, expanded storyboard and context projections remain the content lane's semantic work; final captures will be regenerated after that merges.
+The before set in `app/shots/final/before/` records the actual v3 canonical program before this shell pass. P1 Orders initially cuts off around pharmacy; the compact shell exposes pharmacy/diagnosis and controlled-substance fields within 900 px while retaining 12 px type. The op-note view keeps its diagnoses, anesthesia, blood-loss and operative narrative fields closer together. Track Board / OR rows use 22 px base cells, preserving wrap for real clinical text. MAR and growth retain their structured source widgets. The content lane's committed Summary/Index, expanded storyboard and context projections are now integrated; the curated after set was regenerated from that source snapshot.
 
 The shell adds source-bound icons, small rounded activity tabs, a 160 px storyboard treatment, and a status bar whose measured height is reserved so no clinical control sits beneath it. Structural read-only cards may use a masonry-like column flow; forms, alerts and signing actions retain ordinary layouts. Every source control and accessible name remains present. Twelve pixels is retained as the existing legibility gate's floor.
+
+
+Final source integration: `15896ac3` (content lane), merged into shell `ec54cd4b`.
+`app/shots/final/manifest.json` binds all 1440×900 after images to the actual
+screen and program hashes; adjacent `.ui.json` files retain the complete rendered
+semantic screen. The strict screenshot test requires the real `chartSummary`
+landing and three Index columns, then compares the full accessibility tree.
+
+| Requested view | Before → final self-review |
+| --- | --- |
+| P1 Summary | `before/P1-summary.png` → `P1-chart.png`. The earlier chart opened Rooming; the new source-backed Summary now has three closely packed Index columns. Stacked storyboard labels, compact title chips and zebra tables match the reference's hierarchy. The Summary is a newly added source screen, not a CSS transformation of Rooming. |
+| P1 Orders | `before/P1-orders.png` → `P1-orders.png`. Four-column clinical fields, smaller section bars and compact app shortcuts expose more of the order form. Required inputs and pharmacy/diagnosis controls remain in source order. |
+| P2 Track Board | `before/P2-track-board.png` → `P2-landing.png`. Dense row spacing retains room, patient, acuity and status text; numbered ESI chips retain meaningful color. Opening a row remains an actual source action. |
+| P2 Chart | `before/P2-chart.png` → `P2-chart.png`. The 160 px storyboard creates room for triage fields and contextual chart review. Red allergies and orange precautions remain distinct from ordinary blue chrome. |
+| P3 MAR | `before/P3-MAR.png` → `P3-chart.png`. The compact toolbar/storyboard reveals more encounter history under the MAR. This selected patient's source has no medication-task rows; the honest empty state remains. No medication administrations are invented to fill the screen. |
+| P4 Growth | `before/P4-growth.png` → `P4-chart.png`. Both growth curves and roughly eleven measurement rows fit the viewport. CDC/WHO reference labels remain readable and separate; the long red allergy list wraps in full. |
+| P5 OR | `before/P5-OR.png` → `P5-landing.png`. Application shortcuts and compact case rows preserve procedure, room, time and status. Row highlights and the patient-open action stay visible. |
+| P5 Op Note | `before/P5-op-note.png` → `P5-chart.png`. Four-column diagnoses/procedure fields and compact operative sections expose findings, specimens, drains and implants in one viewport. Narrative fields retain a readable three-line minimum and grow with content. |
+
+Compared with the supplied Epic reference, the final shell now has the same broad
+hierarchy: application shortcuts, chart activity tabs, narrow stacked storyboard,
+compact Index and a slim clinical-context status bar. It remains a VGI rendering
+with original icons. The review caught the host session controls covering a low
+clinical button; they now dock in the measured status bar instead. Source fields,
+notes, alerts and actions are never removed to achieve density. Read-only Index
+cards flow 3/2/1 columns at 1440/1024/720 px; interactive forms retain normal order.
+
+Final gates: app build/lint, 301 app tests, 95 agent tests, all nine live
+patient-opening paths, source/ARIA checks and 102 sampled controls passed. The
+audit covers two configurations per persona (ten total), with zero dead controls
+or errors. Native build completed 370 jobs; WASM source freshness passed. The
+archived run1-P3 verification retains zero mismatches across 424 tasks / 14,658
+events plus three baselines / 137 events. Exact evidence is recorded in
+`docs/audits/dense-shell-final.json`.
+The shared realism rerun passed in 24.1 seconds after opening the new source-defined Medications tab; the combined browser evidence is 44 passing checks plus one opt-in screenshot skipped.

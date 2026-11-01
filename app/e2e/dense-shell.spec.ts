@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { enterPatientChart } from "./clinical-navigation";
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/core/buttonAudit";
 import type { UiNode, UiScreen } from "../src/ehr/ui/types";
@@ -15,11 +18,13 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
   const folder = stage === "before" ? "shots/final/before" : "shots/final";
   mkdirSync(folder, { recursive: true });
   const captures: {
+    name: string;
     file: string;
     screen: string | undefined;
     sha256: string;
+    programSha256: string;
   }[] = [];
-  for (const [persona, name, target] of [
+  const views = [
     ["P1", "P1-summary", "summary"],
     ["P1", "P1-orders", "w1Orders"],
     ["P2", "P2-track-board", "landing"],
@@ -28,7 +33,24 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
     ["P4", "P4-growth", "w5Growth"],
     ["P5", "P5-OR", "landing"],
     ["P5", "P5-op-note", "w6OpNote"],
-  ] as const) {
+    ...(stage === "after"
+      ? ([
+          ["P1", "P1-landing", "landing"],
+          ["P3", "P3-landing", "landing"],
+          ["P4", "P4-landing", "landing"],
+        ] as const)
+      : []),
+  ] as const;
+  const finalNames: Record<string, string> = {
+    "P1-summary": "P1-chart",
+    "P2-track-board": "P2-landing",
+    "P3-MAR": "P3-chart",
+    "P4-growth": "P4-chart",
+    "P5-OR": "P5-landing",
+    "P5-op-note": "P5-chart",
+  };
+  for (const [persona, name, target] of views) {
+    const file = stage === "before" ? name : (finalNames[name] ?? name);
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
     );
@@ -38,29 +60,35 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
     if (target !== "landing") {
       await enterPatientChart(page);
       if (target === "summary") {
-        const current = await page.evaluate(() => window.__buttonAuditSession?.snapshot().state.screen);
+        const current = await page.evaluate(
+          () => window.__buttonAuditSession?.snapshot().state.screen,
+        );
         const summary = page
           .getByRole("button", {
             name: /^(Summary|Chart Summary|Patient Summary|Index)$/i,
           })
           .first();
-        if (current === "chartSummary") await expect(page.getByRole("heading", { name: "Chart Summary", exact: true })).toBeVisible();
-        else if (await summary.count()) await summary.click();
-        else if (process.env.DENSE_SHOTS === "after")
+        if (current !== "chartSummary" && (await summary.count()))
+          await summary.click();
+        else if (
+          current !== "chartSummary" &&
+          process.env.DENSE_SHOTS === "after"
+        )
           throw new Error("The semantic chart Summary has not landed");
-      } else {
-        if (await page.getByRole("heading", { name: "Chart Summary", exact: true }).count()) {
-          const navigator = { P1: "Visit Navigator", P2: "ED Navigator", P3: "MAR", P4: "Child Health Navigator", P5: "Surgical Navigator" }[persona];
-          await page.getByRole("button", { name: navigator, exact: true }).first().click();
+        if (process.env.DENSE_SHOTS === "after") {
+          await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+            "Chart Summary",
+          );
+          const grid = page.locator(".clinical-card-grid").first();
+          await expect(grid).toBeVisible();
+          expect(
+            await grid.evaluate(
+              (element) => getComputedStyle(element).columnCount,
+            ),
+          ).toBe("3");
         }
-        const current = await page.evaluate(
-          () => window.__buttonAuditSession?.snapshot().state.screen,
-        );
-        if (current !== target)
-          await page
-            .locator(`button[data-comp-id$=".nav.${target}"]`)
-            .first()
-            .click();
+      } else {
+        await navigateClinicalScreen(page, target);
       }
     }
     const model = await page.evaluate(
@@ -72,18 +100,22 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
     ).toEqual(expectedAria(model));
     await page.mouse.move(1, 1);
     await page.screenshot({
-      path: `${folder}/${name}.png`,
+      path: `${folder}/${file}.png`,
       animations: "disabled",
     });
     captures.push({
-      file: `${name}.png`,
+      name,
+      file: `${file}.png`,
       screen: model.screen,
       sha256: createHash("sha256")
-        .update(readFileSync(`${folder}/${name}.png`))
+        .update(readFileSync(`${folder}/${file}.png`))
+        .digest("hex"),
+      programSha256: createHash("sha256")
+        .update(readFileSync(`../releases/v3/personas/${persona}.json`))
         .digest("hex"),
     });
     writeFileSync(
-      `${folder}/${name}.ui.json`,
+      `${folder}/${file}.ui.json`,
       JSON.stringify(model, null, 2) + "\n",
     );
   }
@@ -134,7 +166,7 @@ for (const [width, columns] of [
                       comp: `card-${index}.data`,
                       label: title,
                       infoId: `fixture-${index}`,
-                      display: "summary",
+                      display: "table",
                       rows: [[["Recorded value", `Source ${index + 1}`]]],
                     },
                   },
@@ -167,6 +199,12 @@ for (const [width, columns] of [
     expect(
       await grid.evaluate((element) => getComputedStyle(element).columnCount),
     ).toBe(columns);
+    expect(
+      await grid
+        .locator("td")
+        .first()
+        .evaluate((element) => getComputedStyle(element).display),
+    ).toBe(width >= 900 ? "table-cell" : "grid");
     expect(
       observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
     ).toEqual(expectedAria(screen));
