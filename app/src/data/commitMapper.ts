@@ -852,7 +852,17 @@ export function mapCommit(input: CommitInput): Bundle {
       });
       break;
     }
-    case "recordImmunization":
+    case "recordImmunization": {
+      const vis = field("visGiven")?.value;
+      // The spec captures an attestation, not a timestamp. Preserve date
+      // precision for that attestation instead of serializing boolean "true"
+      // into a FHIR dateTime. Explicit legacy dates remain supported.
+      const presentationDate =
+        vis && "flag" in vis
+          ? vis.flag.b
+            ? (text("vaccineAdministrationDate") || now).slice(0, 10)
+            : ""
+          : text("visGiven");
       add({
         resourceType: "Immunization",
         status: "completed",
@@ -875,7 +885,7 @@ export function mapCommit(input: CommitInput): Bundle {
           {
             documentType: "VIS",
             presentationDate: required(
-              text("visGiven"),
+              presentationDate,
               "VIS presentation date",
             ),
             publicationDate: required(
@@ -886,6 +896,7 @@ export function mapCommit(input: CommitInput): Bundle {
         ],
       });
       break;
+    }
     case "ackResult":
       finishTask();
       message();

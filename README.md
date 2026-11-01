@@ -58,6 +58,7 @@ For live clinical work, start the local backend once:
 make infra-up
 make setup
 make load
+make seed
 make run
 ```
 
@@ -75,6 +76,11 @@ encounter and optional Task/MAR order/available admission bed, then **Open canon
 EHR**. **Start new encounter** creates a real encounter for the selected patient.
 LIVE uses the canonical v2 persona projection. The Lean WASM interpreter owns every
 clinical screen, guard and alert.
+
+The worklist date defaults to the local calendar date. For the seeded simulation,
+choose **2026-11-02** (world day 1) in **Worklist date**; later days use the dates
+in the world's manifest. Open Tasks and active ED/ward encounters remain visible
+until completed. OR cases retain their actual scheduled dates.
 
 Authorized commits are mapped to an atomic FHIR transaction in
 `app/src/data/commitMapper.ts`; only `app/src/data/medplum.ts` calls Medplum. Notes,

@@ -113,7 +113,24 @@ export function fhirDisplayContext(
       encounter.serviceType.coding[0].code,
     );
   }
-  for (const r of resources) {
+  // Assessments are episode-specific. A negative from yesterday's visit must
+  // never become evidence for the selected encounter, or shadow a newer one.
+  const assessments = resources
+    .filter(
+      (r) =>
+        r.resourceType === "Observation" &&
+        r.encounter?.reference === `Encounter/${encounterId}`,
+    )
+    .sort((a, b) =>
+      (b.resourceType === "Observation"
+        ? (b.effectiveDateTime ?? "")
+        : ""
+      ).localeCompare(
+        a.resourceType === "Observation" ? (a.effectiveDateTime ?? "") : "",
+      ),
+    );
+  const seenRisks = new Set<string>();
+  for (const r of assessments) {
     if (
       r.resourceType !== "Observation" ||
       !r.meta?.versionId ||
@@ -125,8 +142,10 @@ export function fhirDisplayContext(
         c.system === "https://vgi-health.example/fhir/CodeSystem/clinical-risk",
     )?.code;
     const code = r.valueCodeableConcept?.coding?.[0]?.code;
-    if (risk && code)
+    if (risk && code && !seenRisks.has(risk)) {
       clinical.risks.push([risk, clinicalSource(r, `live:risk:${risk}`, code)]);
+      seenRisks.add(risk);
+    }
   }
   if (!patient?.meta?.versionId)
     return { artifactBindings, infoPayloads, clinical };
@@ -189,6 +208,7 @@ export function fhirDisplayContext(
     .filter(
       (r) =>
         r.resourceType === "Observation" &&
+        !["entered-in-error", "cancelled"].includes(r.status) &&
         r.code.coding?.some((c) =>
           ["29463-7", "3141-9"].includes(c.code ?? ""),
         ),

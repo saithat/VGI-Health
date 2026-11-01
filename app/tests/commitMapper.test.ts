@@ -253,6 +253,29 @@ describe("pure Lean commit → FHIR transaction", () => {
         { presentationDate: "2026-10-31", publicationDate: "2025-01-31" },
       ],
     });
+    const fields = [
+      captured("vaccine", "140"),
+      captured("vaccineLot", "LOT-42"),
+      captured("vaccineManufacturer", "Acme"),
+      captured("vaccineSite", "left arm"),
+      captured("visEditionDate", "2025-01-31"),
+      captured("vaccineAdministrationDate", "2026-10-30"),
+    ];
+    expect(
+      resources({
+        commitId: "recordImmunization",
+        captured: [...fields, captured("visGiven", { flag: { b: true } })],
+      })[0],
+    ).toMatchObject({
+      occurrenceDateTime: "2026-10-30",
+      education: [{ presentationDate: "2026-10-30" }],
+    });
+    expect(() =>
+      resources({
+        commitId: "recordImmunization",
+        captured: [...fields, captured("visGiven", { flag: { b: false } })],
+      }),
+    ).toThrow("VIS presentation date");
   });
   it("completes results tasks, communicates with the patient and links renewal prescriptions", () => {
     const task = {

@@ -48,8 +48,8 @@ describe("temporary JSON interpreter seam", () => {
     });
     expect(session.getSnapshot().page).toEqual(page);
     session.dispatch({ click: { comp: "rooming-next" } });
-    expect(JSON.parse(seen[1]?.[2] ?? "null")).toEqual(bundle);
     expect(session.getSnapshot().page).toEqual(page);
+    expect(JSON.parse(seen[1]?.[2] ?? "null")).toEqual(bundle);
   });
   it("navigates forward/back and retains entered values", () => {
     const { interp, state } = setup();

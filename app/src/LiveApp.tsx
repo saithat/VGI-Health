@@ -448,9 +448,12 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
+  const [workDate, setWorkDate] = useState(() =>
+    new Date().toLocaleDateString("en-CA"),
+  );
   useEffect(() => {
     let active = true;
-    void loadWorklist(user)
+    void loadWorklist(user, workDate)
       .then(async (worklist) => {
         if (!active) return;
         setWorklist(worklist);
@@ -480,7 +483,7 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
     return () => {
       active = false;
     };
-  }, [user, revision]);
+  }, [user, revision, workDate]);
   async function select(patientId: string) {
     setPending(true);
     setError("");
@@ -573,16 +576,30 @@ function Home({ user, onLogout }: { user: LiveUser; onLogout: () => void }) {
             ...(user.practitioner.name?.[0]?.given ?? []),
             user.practitioner.name?.[0]?.family,
           ].join(" ")}{" "}
-        · {new Date().toLocaleDateString()}
+        · Worklist date {workDate}
       </Text>
       {error && (
         <Alert role="alert" color="red" mt="md">
           {error}
         </Alert>
       )}
-      <Button mt="md" variant="light" onClick={() => setRevision((r) => r + 1)}>
-        Refresh worklist
-      </Button>
+      <Group mt="md" align="end">
+        <TextInput
+          type="date"
+          label="Worklist date"
+          description="Seeded world day 1 is November 2, 2026."
+          value={workDate}
+          onChange={(event) => {
+            if (event.currentTarget.value) {
+              setWorkDate(event.currentTarget.value);
+              setWorklist(undefined);
+            }
+          }}
+        />
+        <Button variant="light" onClick={() => setRevision((r) => r + 1)}>
+          Refresh worklist
+        </Button>
+      </Group>
       {!worklist ? (
         <p>Loading Medplum worklist…</p>
       ) : (

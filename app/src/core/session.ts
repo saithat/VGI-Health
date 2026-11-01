@@ -26,14 +26,33 @@ export function createSession(
     JSON.stringify(user),
   ] as const;
   let stateJson = interp.init(...args);
-  const readPage = (): Html => JSON.parse(interp.render(...args, stateJson));
   function readSnapshot(result: StepOutput["result"] | null = null) {
+    const snapshotArgs = args;
+    const snapshotState = stateJson;
     const state: State = JSON.parse(stateJson);
-    const view: ScreenView = JSON.parse(interp.view(...args, stateJson));
+    let page: Html | undefined;
+    let view: ScreenView | undefined;
     const ui: UiScreen | undefined = interp.renderUi
       ? JSON.parse(interp.renderUi(...args, stateJson))
       : undefined;
-    return { page: readPage(), ui, state, view, result };
+    // The semantic painter uses `ui`. Generate legacy HTML and the inspector's
+    // detailed view only when a consumer asks for them. Capture this snapshot's
+    // inputs so reading an old snapshot after a click still returns its tree.
+    return {
+      get page(): Html {
+        return (page ??= JSON.parse(
+          interp.render(...snapshotArgs, snapshotState),
+        ));
+      },
+      get view(): ScreenView {
+        return (view ??= JSON.parse(
+          interp.view(...snapshotArgs, snapshotState),
+        ));
+      },
+      ui,
+      state,
+      result,
+    };
   }
   let snapshot = readSnapshot();
   const listeners = new Set<() => void>();

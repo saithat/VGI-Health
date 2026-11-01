@@ -59,6 +59,55 @@ const bundle: Bundle = {
   ],
 };
 describe("version-bound FHIR display context", () => {
+  it("uses only the newest recorded risk assessment for the selected encounter", () => {
+    const assessment = (
+      id: string,
+      encounter: string,
+      date: string,
+      code: string,
+    ) =>
+      ({
+        resource: {
+          resourceType: "Observation",
+          id,
+          status: "final",
+          meta: { versionId: id },
+          encounter: { reference: `Encounter/${encounter}` },
+          effectiveDateTime: date,
+          code: {
+            coding: [
+              {
+                system:
+                  "https://vgi-health.example/fhir/CodeSystem/clinical-risk",
+                code: "section741IncreasedOverdoseRisk",
+              },
+            ],
+          },
+          valueCodeableConcept: { coding: [{ code }] },
+        },
+      }) as const;
+    const chart: Bundle = {
+      ...bundle,
+      entry: [
+        ...(bundle.entry ?? []),
+        assessment("old-visit", "previous", "2026-10-31T10:00:00Z", "no"),
+        assessment("older", "visit", "2026-10-31T08:00:00Z", "no"),
+        assessment("newer", "visit", "2026-10-31T09:00:00Z", "yes"),
+      ],
+    };
+    expect(
+      fhirDisplayContext(chart, "server-id", "server-id", "visit").clinical
+        .risks,
+    ).toEqual([
+      [
+        "section741IncreasedOverdoseRisk",
+        expect.objectContaining({
+          code: "yes",
+          artifact: "Observation/newer/_history/newer",
+        }),
+      ],
+    ]);
+  });
   it("preserves Lean's stable patient identity and never invents missing clinical negatives", () => {
     const context = fhirDisplayContext(
       bundle,
