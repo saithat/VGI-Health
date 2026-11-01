@@ -30,6 +30,10 @@ try {
     await page.getByRole('button', { name: 'Open EHR', exact: true }).click();
     await expect(page.locator('.clinical-banner')).toBeVisible();
     await expect(page.locator('.clinical-banner')).toContainText(patient.name.split(' ').reverse().join(', '));
+    if (persona === 'P1') {
+      await mkdir(resolve(root, 'app/shots'), { recursive: true });
+      await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-chart.png'), fullPage: true });
+    }
     const bundle = JSON.parse(await readFile(resolve(root, patient.bundlePath ?? `fixtures/synthetic-hospital/${patient.file}`), 'utf8'));
     const resources = bundle.entry.map((entry) => entry.resource);
     const notes = resources.filter((r) => r.resourceType === 'DocumentReference' && r.status !== 'entered-in-error');
@@ -47,11 +51,7 @@ try {
         for (const med of homeMeds) await expect(reported).toContainText(med.medicationCodeableConcept.text ?? med.medicationCodeableConcept.coding[0].display);
       }
     }
-    if (persona === 'P1') {
-      await mkdir(resolve(root, 'app/shots'), { recursive: true });
-      await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-chart.png'), fullPage: true });
-    }
-    if (persona === 'P1') await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-notes.png'), fullPage: true });
+    if (persona === 'P1') await page.screenshot({ path: resolve(root, 'app/shots/synthetic-hospital-notes.png'), fullPage: false });
     verified.push({ notes: notes.length, homeMedications: homeMeds.length, persona, sourceId: patient.sourceId, name: patient.name, birthDate: patient.birthDate });
     await page.getByRole('button', { name: 'Live encounter', exact: true }).click();
     await page.getByRole('button', { name: 'Back to worklist / refresh chart', exact: true }).click();
@@ -68,7 +68,7 @@ try {
   await expect(page.locator('.clinical-banner')).toContainText(replayPatient.name.split(' ').reverse().join(', '));
   if (errors.length) throw new Error(`Browser errors: ${errors.join('; ')}`);
   await writeFile(resolve(root, 'app/shots/synthetic-hospital-verification.json'), JSON.stringify({ source: index.source.commit, verified, errors }, null, 2) + '\n');
-  console.log(JSON.stringify({ verified, errors, screenshot: 'app/shots/synthetic-hospital-chart.png' }, null, 2));
+  console.log(JSON.stringify({ verified, errors, screenshot: 'app/shots/synthetic-hospital-notes.png' }, null, 2));
 } finally {
   await browser.close();
 }

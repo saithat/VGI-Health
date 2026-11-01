@@ -8,7 +8,7 @@ const read = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const native = (command, input) => JSON.parse(execFileSync('lean/.lake/build/bin/ehr', [command], { input: JSON.stringify(input), maxBuffer: 64 * 1024 * 1024 }));
 const wasm = await loadEhrInterp();
 const index = read('fixtures/synthetic-hospital/index.json');
-const context = { today: '2026-10-31' };
+const context = { today: '2026-10-31', now: 0, receipts: [], record: [] };
 const walk = (nodes) => nodes.flatMap((n) => [n, ...walk(n.section?.children ?? n.columns?.children ?? n.tabs?.body ?? [])]);
 mkdirSync('/tmp/data-phase2-screens', { recursive: true });
 for (const persona of ['P1', 'P4']) {
