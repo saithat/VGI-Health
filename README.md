@@ -9,6 +9,9 @@ rules. The same Lean interpreter runs natively and in the browser as WebAssembly
 Start with these files, in order:
 
 1. [Statements.lean](lean/Statements.lean): the main theorem statements and trusted definitions.
+   Its `sorry` bodies are deliberate: it is the Comparator challenge file. `lake comparator` checks that
+   [Solution.lean](lean/Solution.lean), which imports the proofs in `Ehr/Proofs/`, proves exactly these
+   statements ([comparator.json](lean/comparator.json)) using only `propext`, `Quot.sound` and `Classical.choice`.
 2. [Props/Properties.lean](lean/Ehr/Props/Properties.lean): the thirteen UI requirements.
 3. [Specs/V1.lean](lean/Ehr/Specs/V1.lean): hospital rules, with law and policy labels.
 4. [Core/Interp.lean](lean/Ehr/Core/Interp.lean): the interpreter the app runs.
