@@ -36,7 +36,7 @@ def chart : List Block :=
 /-- The shell for a W3 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then { c with label := "ED Navigator" }
+    if c.id == cid s "nav" then activityNavigator { c with label := "ED Navigator" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
     else c

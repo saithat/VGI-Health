@@ -1734,6 +1734,8 @@ def coagLabs : InfoSpec := { id := "coagLabs", label := "Coagulation labs", vers
 /-- Product design property.
 The nurse's shift worklist: due and overdue meds and tasks. -/
 def shiftWorklist : InfoSpec := { id := "shiftWorklist", label := "Shift worklist", version := "" }
+/-- Display catalog: the selected unit patient and their supplied assignment/task summary. -/
+def unitCensus : InfoSpec := { id := "unitCensus", label := "Patient list", version := "" }
 /-- Product design property.
 Orders placed since the last shift. -/
 def newOrders : InfoSpec := { id := "newOrders", label := "New orders since last shift", version := "" }
@@ -1806,7 +1808,7 @@ def infos : List InfoSpec := [
   patientBanner, allergyList, currentMeds, anticoagulantList, doseCheck, orderSummary,
   resultDetail, resultTrend, vitals, growthChart, lastVisit, relevantLabs, adherence,
   imaging, labResults, overnightEvents, problemList, immunizationHistory, marSchedule,
-  marDoseDetails, glucoseTrend, coagLabs, shiftWorklist, newOrders, handoffSummary,
+  marDoseDetails, glucoseTrend, coagLabs, shiftWorklist, unitCensus, newOrders, handoffSummary,
   intraopRecord, priorNotes, encounterHistory, upcomingAppointments, openOrders,
   refillRequest, inbasketItems, triageSummary, consultRequest, consentDocument,
   socialHistory, familyHistory, surgicalHistory, coverage, prnHistory, pendingResults,

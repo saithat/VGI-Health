@@ -2,6 +2,11 @@ import Ehr.Render.Ui
 
 namespace Ehr.Render
 
+/-- Read-only additions are clinical info or the visit-progress overview. -/
+def UiReadOnly : UiNode → Prop
+  | .info "" _ _ _ _ | .stepper _ _ => True
+  | _ => False
+
 mutual
 /-- Walk a semantic tree, retaining each container's identity with an empty
 body. Leaf nodes are unchanged. This observes presence, never browser styling. -/

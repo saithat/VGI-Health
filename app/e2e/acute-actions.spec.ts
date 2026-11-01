@@ -57,7 +57,7 @@ for (const [
     "Selected encounter",
     "w3Triage",
   ],
-  ["P3", "w4Worklist", "w4Worklist.toMar", "table", "Shift worklist", "w4Mar"],
+  ["P3", "w4Worklist", "w4Worklist.toMar", "table", "Patient list", "w4Mar"],
   [
     "P3",
     "w4Mar",

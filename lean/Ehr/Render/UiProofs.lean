@@ -162,10 +162,15 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
     simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append, List.mem_append, List.mem_singleton]
     exact Or.inl (Or.inl (Or.inl (Or.inr (Or.inl h))))
 
-/-- Read-only additions are clinical info or the visit-progress overview. -/
-def UiReadOnly : UiNode → Prop
-  | .info "" _ _ _ _ | .stepper _ _ => True
-  | _ => False
+/-- The optional progress strip contributes no addressable control or evidence. -/
+theorem uiProgress_readOnly (cx : Ctx) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiProgress cx)) : UiReadOnly n := by
+  dsimp only [uiProgress] at hn
+  split at hn
+  · simp [uiAtomsList] at hn
+  · simp [uiAtomsList, uiAtoms] at hn
+    subst n
+    trivial
 
 /-- Missing-review additions have no component event id. -/
 theorem uiMissing_readOnly (cx : Ctx) (n : UiNode)
@@ -214,8 +219,8 @@ theorem uiPresent_source (cx : Ctx) (n : UiNode)
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
   simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append,
     List.mem_append, List.mem_singleton] at hn
-  rcases hn with ((((rfl | (hn | hn)) | hn) | hn) | hn)
-  · right; trivial
+  rcases hn with ((((hp | (hn | hn)) | hn) | hn) | hn)
+  · exact Or.inr (uiProgress_readOnly cx n hp)
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
   · exact Or.inr (uiMissing_readOnly cx n hn)

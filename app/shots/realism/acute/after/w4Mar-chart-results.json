@@ -81,33 +81,6 @@
   "title": "MAR",
   "workspace": [
     {
-      "stepper": {
-        "current": 1,
-        "steps": [
-          [
-            "w4Worklist",
-            "Unit Census & MAR"
-          ],
-          [
-            "w4Mar",
-            "MAR"
-          ],
-          [
-            "w4Admin",
-            "Medication administration"
-          ],
-          [
-            "w4Flowsheet",
-            "Flowsheets"
-          ],
-          [
-            "w4Handoff",
-            "Handoff / SBAR"
-          ]
-        ]
-      }
-    },
-    {
       "field": {
         "comp": "w4Mar.chartSearch",
         "humanOnly": false,
@@ -253,7 +226,7 @@
                   ],
                   [
                     "2026-11-02 08:00 -08:00",
-                    "Overdue · 08:00 · Record status: requested"
+                    "Overdue · 08:00"
                   ],
                   [
                     "2026-11-02 09:00 -08:00",

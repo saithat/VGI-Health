@@ -1,41 +1,6 @@
 {
   "workspace": [
     {
-      "stepper": {
-        "steps": [
-          [
-            "w3TrackBoard",
-            "ED Track Board"
-          ],
-          [
-            "w3Triage",
-            "Triage summary"
-          ],
-          [
-            "w3Provider",
-            "ED Provider Note"
-          ],
-          [
-            "w3Orders",
-            "Orders"
-          ],
-          [
-            "w3OrderSets",
-            "ED order sets"
-          ],
-          [
-            "w3Sign",
-            "Sign orders"
-          ],
-          [
-            "w3Disposition",
-            "Disposition"
-          ]
-        ],
-        "current": 2
-      }
-    },
-    {
       "field": {
         "value": null,
         "unit": null,

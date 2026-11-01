@@ -25,7 +25,7 @@ def add(kind, **fields):
 def cc(text): return dict(text=text)
 def ref(kind, id, display=None):
     return dict(reference=f'{kind}/{id}', **(dict(display=display) if display else {}))
-def qty(value, unit): return dict(value=value, unit={'Cel':'°C','{score}':'score','mm[Hg]':'mmHg'}.get(unit,unit), code=unit, system='http://unitsofmeasure.org')
+def qty(value, unit): return dict(value=value, unit={'Cel':'°C','{score}':'score'}.get(unit,unit), code={'mmHg':'mm[Hg]'}.get(unit,unit), system='http://unitsofmeasure.org')
 
 people = [('Morgan', 'Alex', '2017-05-01', 'female'), ('Chen', 'David', '1974-03-22', 'male'),
           ('Patel', 'Anika', '1988-06-18', 'female'), ('Williams', 'James', '1961-12-06', 'male'),
@@ -55,8 +55,8 @@ for code, name, unit, values in [('8867-4','Heart rate','/min',[82,79,76]),('927
         add('Observation', id=f'{code}-{i}', status='final', category=[dict(coding=[dict(code='exam' if code in ['9000-1','9187-6'] else 'vital-signs')])], code=dict(text=name,coding=[dict(code=code)]),
             valueQuantity=qty(v,unit), effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00')
 for i,(systolic,diastolic) in enumerate([(128,76),(126,74),(124,72)]):
-    add('Observation',id=f'bp-{i}',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Blood pressure',coding=[dict(code='85354-9')]),
-        effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00',component=[dict(code=dict(text='Systolic',coding=[dict(code='8480-6')]),valueQuantity=qty(systolic,'mm[Hg]')),dict(code=dict(text='Diastolic',coding=[dict(code='8462-4')]),valueQuantity=qty(diastolic,'mm[Hg]'))])
+    add('Observation',id=f'bp-{i}',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Blood pressure',coding=[dict(system='http://loinc.org',code='85354-9')]),
+        effectiveDateTime=f'2026-11-01T{6+i*2:02}:00:00',component=[dict(code=dict(text='Systolic',coding=[dict(system='http://loinc.org',code='8480-6')]),valueQuantity=qty(systolic,'mmHg')),dict(code=dict(text='Diastolic',coding=[dict(system='http://loinc.org',code='8462-4')]),valueQuantity=qty(diastolic,'mmHg'))])
 add('Observation',id='adult-weight',status='final',category=[dict(coding=[dict(code='vital-signs')])],code=dict(text='Body weight',coding=[dict(code='29463-7')]),valueQuantity=qty(82.4,'kg'),effectiveDateTime='2026-11-01T06:00:00')
 for i, (date,w,h) in enumerate([('2024-05-01',22.2,120.4),('2024-11-01',23.1,123.2),('2025-05-01',24.7,126.4),('2025-11-01',26.2,129.5),('2026-05-01',28.1,132.7),('2026-11-01',30.4,135.6)]):
     for code, name, value, unit in [('29463-7','Body weight',w,'kg'),('8302-2','Body height',h,'cm')]:

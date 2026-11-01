@@ -36,7 +36,7 @@ def chart : List Block :=
 /-- The shell for a W4 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then { c with label := "Nursing Navigator" }
+    if c.id == cid s "nav" then activityNavigator { c with label := "Nursing Navigator" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
     else c
@@ -47,11 +47,12 @@ def worklist : Screen :=
   let s := "w4Worklist"
   { id := s, title := "Unit Census & MAR", workflow := "W4"
     components := frame s ++ [
-      presentation "worklist" (group s "workActivity" "My patients — shift tasks" (collapsible := false)),
-      presentation "worklist" (wideWorkspace (table s "work" "shiftWorklist" "Shift worklist"
+      presentation "table" (group s "workActivity" "My patients" (collapsible := false)),
+      presentation "table" (wideWorkspace (table s "patients" "unitCensus" "Patient list"
         (parent := some "workActivity"))),
-      rowAction (cid s "work") 0 (goto s "toMar" "w4Mar" "Open selected patient's MAR"
+      rowAction (cid s "patients") 0 (goto s "toMar" "w4Mar" "Open selected patient's MAR"
         (parent := some "workActivity")),
+      presentation "worklist" (table s "work" "shiftWorklist" "Selected patient — shift worklist"),
       presentation "table" (table s "newOrders" "newOrders" "Orders requiring review"),
       panel s "handoff" "handoffSummary" "Selected patient — handoff report",
       group s "allergyGroup" "Shift allergy review" (collapsible := false),

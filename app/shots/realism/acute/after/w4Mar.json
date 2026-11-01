@@ -1,33 +1,6 @@
 {
   "workspace": [
     {
-      "stepper": {
-        "steps": [
-          [
-            "w4Worklist",
-            "Unit Census & MAR"
-          ],
-          [
-            "w4Mar",
-            "MAR"
-          ],
-          [
-            "w4Admin",
-            "Medication administration"
-          ],
-          [
-            "w4Flowsheet",
-            "Flowsheets"
-          ],
-          [
-            "w4Handoff",
-            "Handoff / SBAR"
-          ]
-        ],
-        "current": 1
-      }
-    },
-    {
       "field": {
         "value": null,
         "unit": null,
@@ -170,7 +143,7 @@
                   ],
                   [
                     "2026-11-02 08:00 -08:00",
-                    "Overdue · 08:00 · Record status: requested"
+                    "Overdue · 08:00"
                   ],
                   [
                     "2026-11-02 09:00 -08:00",

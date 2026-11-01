@@ -69,6 +69,15 @@ def presentation (kind : String) (c : Component) : Component :=
 /-- A multiline narrative keeps the ordinary text entry and its provenance. -/
 def narrative (c : Component) : Component := { c with tag := c.tag ++ ".narrative" }
 
+/-- Use actual navigator sections in place of an additional numbered progress strip. -/
+def activityNavigator (c : Component) : Component :=
+  { c with tag := c.tag ++ ".layout.activities.nav" }
+
+/-- The layout hint retains the authored navigator and its identifier. -/
+def activityNavigatorExample := activityNavigator (mk "example" "nav" (.group false false) "Navigator")
+#guard activityNavigatorExample.id == "example.nav"
+#guard activityNavigatorExample.kind == .group false false
+
 /-- Keep a selected work item's real navigation action beside its clinical context. -/
 def primaryNavigation (c : Component) : Component :=
   { c with tag := c.tag ++ ".primaryNavigation" }

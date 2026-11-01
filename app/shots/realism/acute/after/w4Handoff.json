@@ -1,33 +1,6 @@
 {
   "workspace": [
     {
-      "stepper": {
-        "steps": [
-          [
-            "w4Worklist",
-            "Unit Census & MAR"
-          ],
-          [
-            "w4Mar",
-            "MAR"
-          ],
-          [
-            "w4Admin",
-            "Medication administration"
-          ],
-          [
-            "w4Flowsheet",
-            "Flowsheets"
-          ],
-          [
-            "w4Handoff",
-            "Handoff / SBAR"
-          ]
-        ],
-        "current": 4
-      }
-    },
-    {
       "field": {
         "value": null,
         "unit": null,

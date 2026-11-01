@@ -63,9 +63,19 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const screen = program.screens.find((sc) => sc.id === view.screen);
-  // navigatorNames supplies clinical labels; screen IDs and order remain authoritative.
-  assert.deepEqual(ui.workspace[0].stepper.steps.map(([id]) => id), program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => sc.id));
-  assert.ok(ui.workspace[0].stepper.steps.every(([, label]) => label.length > 0));
+  // Only an explicit activity layout with a usable source navigator omits the
+  // generated progress strip. Source controls are still checked exactly once.
+  const activityLayout = view.items.some((item) => {
+    if (!item.shown || item.comp.kind?.group?.collapsible !== false || !/(^|\.)(nav|navigator)$/.test(item.comp.tag)) return false;
+    const parts = item.comp.tag.split('.');
+    return parts.some((part, i) => part === 'layout' && parts[i + 1] === 'activities');
+  }) && ui.nav.some(([, entries]) => entries.length);
+  if (activityLayout) {
+    assert.ok(!ui.workspace.some((node) => node.stepper), `${name}: activity layout uses its source navigator`);
+  } else {
+    assert.deepEqual(ui.workspace[0].stepper.steps.map(([id]) => id), program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => sc.id));
+    assert.ok(ui.workspace[0].stepper.steps.every(([, label]) => label.length > 0));
+  }
   const nodes = walk([...ui.workspace, ...ui.side]);
   const sourceKind = (kind) => {
     if (kind === 'banner') return 'info';

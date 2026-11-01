@@ -1,33 +1,6 @@
 {
   "workspace": [
     {
-      "stepper": {
-        "steps": [
-          [
-            "w4Worklist",
-            "Unit Census & MAR"
-          ],
-          [
-            "w4Mar",
-            "MAR"
-          ],
-          [
-            "w4Admin",
-            "Medication administration"
-          ],
-          [
-            "w4Flowsheet",
-            "Flowsheets"
-          ],
-          [
-            "w4Handoff",
-            "Handoff / SBAR"
-          ]
-        ],
-        "current": 0
-      }
-    },
-    {
       "field": {
         "value": null,
         "unit": null,
@@ -42,107 +15,55 @@
     },
     {
       "presentation": {
-        "kind": "worklist",
+        "kind": "table",
         "children": [
           {
             "section": {
-              "title": "My patients — shift tasks",
+              "title": "My patients",
               "id": "w4Worklist.workActivity",
               "children": [
                 {
                   "presentation": {
-                    "kind": "worklist",
+                    "kind": "table",
                     "children": [
                       {
                         "info": {
                           "rows": [
                             [
                               [
-                                "Due",
-                                "Nov 2, 2026 08:00"
+                                "Room",
+                                "5 West · 512 A"
                               ],
                               [
                                 "Patient",
                                 "Ankunding, Aaron Bruno"
                               ],
                               [
-                                "Task",
-                                "08:00 medication pass"
+                                "Age/sex",
+                                "58 / M"
                               ],
                               [
-                                "Priority",
-                                "routine"
-                              ],
-                              [
-                                "Status",
-                                "requested"
-                              ],
-                              [
-                                "Owner",
+                                "RN",
                                 "Jordan Lee, RN"
                               ],
                               [
-                                "Task status",
-                                "Overdue"
-                              ]
-                            ],
-                            [
-                              [
-                                "Due",
-                                "Nov 2, 2026 08:00"
+                                "Attending",
+                                "Morgan Patel, MD"
                               ],
                               [
-                                "Patient",
-                                "Ankunding, Aaron Bruno"
+                                "Reason for visit",
+                                "Pneumonia; receiving antibiotics"
                               ],
                               [
-                                "Task",
-                                "Shift assessment and vital signs"
-                              ],
-                              [
-                                "Priority",
-                                "routine"
-                              ],
-                              [
-                                "Status",
-                                "requested"
-                              ],
-                              [
-                                "Owner",
-                                "Jordan Lee, RN"
-                              ]
-                            ],
-                            [
-                              [
-                                "Due",
-                                "Nov 2, 2026 08:30"
-                              ],
-                              [
-                                "Patient",
-                                "Ankunding, Aaron Bruno"
-                              ],
-                              [
-                                "Task",
-                                "Pain reassessment after PRN medication"
-                              ],
-                              [
-                                "Priority",
-                                "routine"
-                              ],
-                              [
-                                "Status",
-                                "requested"
-                              ],
-                              [
-                                "Owner",
-                                "Jordan Lee, RN"
+                                "Open tasks",
+                                "3"
                               ]
                             ]
                           ],
-                          "label": "Shift worklist",
-                          "infoId": "shiftWorklist",
+                          "label": "Patient list",
+                          "infoId": "unitCensus",
                           "display": "table",
-                          "comp": "w4Worklist.work"
+                          "comp": "w4Worklist.patients"
                         }
                       }
                     ]
@@ -150,7 +71,7 @@
                 },
                 {
                   "rowAction": {
-                    "target": "w4Worklist.work",
+                    "target": "w4Worklist.patients",
                     "row": 0,
                     "children": [
                       {
@@ -167,6 +88,105 @@
                   }
                 }
               ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "presentation": {
+        "kind": "worklist",
+        "children": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "08:00 medication pass"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ],
+                  [
+                    "Task status",
+                    "Overdue"
+                  ]
+                ],
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "Shift assessment and vital signs"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ]
+                ],
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:30"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "Pain reassessment after PRN medication"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ]
+                ]
+              ],
+              "label": "Selected patient — shift worklist",
+              "infoId": "shiftWorklist",
+              "display": "table",
+              "comp": "w4Worklist.work"
             }
           }
         ]

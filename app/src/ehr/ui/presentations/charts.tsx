@@ -128,7 +128,16 @@ function seriesFor(node: Info, kind: "trend" | "growth"): Series[] {
   });
   return [...groups.values()].map((series) =>
     series.timeBased
-      ? series
+      ? {
+          ...series,
+          points: [...series.points].sort((a, b) => a.x - b.x),
+          references: new Map(
+            [...series.references].map(([name, points]) => [
+              name,
+              [...points].sort((a, b) => a.x - b.x),
+            ]),
+          ),
+        }
       : {
           ...series,
           points: series.points.map((point, index) => ({ ...point, x: index })),

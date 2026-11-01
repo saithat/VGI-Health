@@ -2164,6 +2164,10 @@ export interface ObservationRow {
   unit: string;
   time: string;
   status: string;
+  /**
+   * Source categories select the clinical collection; older rows have none.
+   */
+  categories: string[];
 }
 
 /**

@@ -236,6 +236,27 @@ def uiNavSavedCollapsedCtx : Ctx :=
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 
+/-- An explicit activity navigator removes only the generated progress strip. -/
+def uiActivityNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.map fun c =>
+      if c.id == "shell.nav" then { c with tag := "shell.layout.activities.navigator" } else c } } }
+
+/-- Render the actual source navigator with all its original controls. -/
+def uiActivityNavScreen := renderUi uiActivityNavCtx.sp uiActivityNavCtx.prog uiActivityNavCtx.facts
+  uiActivityNavCtx.disp uiActivityNavCtx.user uiActivityNavCtx.s
+
+#guard uiActivityNavScreen.nav == uiShellScreen.nav
+#guard Lean.toJson (uiAtomsList uiActivityNavScreen.workspace) ==
+  Lean.toJson ((uiAtomsList uiShellScreen.workspace).filter
+    (fun node => match node with | .stepper _ _ => false | _ => true))
+
+/-- A layout hint without a usable navigation control keeps the original overview. -/
+def uiActivityEmptyNavCtx : Ctx :=
+  { uiActivityNavCtx with viewCache := ⟨_, rfl⟩, prog := { uiActivityNavCtx.prog with screens := uiActivityNavCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.filter (·.id != "shell.nav.next") } } }
+#guard !(uiProgress uiActivityEmptyNavCtx).isEmpty
+
 /-- Flat canonical navigation tags keep their existing event and move to the shell. -/
 def uiFlatNavCtx : Ctx :=
   { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>

@@ -6,6 +6,8 @@ Tables preserve every column, duplicate cell and record. The MAR groups order me
 
 New FHIR lab views use the complete per-observation `Display.labResults` projection, preserving each value's own unit and metadata. Legacy Display inputs remain readable. Censored and qualitative values remain in the table and are not turned into numeric points. Panel components retain their own rows; no raw FHIR identifiers are shown.
 
+The flowsheet example supplies the whole patient chart. Lean uses source observation categories to select nursing rows, retaining labs in Results and all components in Display. JSON rows from before the category addition remain readable. Note cards retain supplied import metadata but do not add empty optional metadata fields. Time-series point ordering changes only chart geometry; source table order remains intact.
+
 The composed In Basket fixture uses a source group tagged `layout.columns`, with separate folder/list info children. Lean emits the columns; the painter gives that existing container a narrow folder rail and wide message pane. A regular group can also carry `present.<kind>` when a view needs both info and ordinary semantic controls.
 
 For row actions, a regular source button uses `present.row|<info component ID>|<row index>` under a presentation group. Lean wraps that unchanged control in a semantic `rowAction`. The painter binds explicit targets to existing rows and leaves unmatched controls inline. The independent fidelity projection checks the resulting button ancestry and enabled state. `presentation-actions.spec.ts` clicks every example row action and return button through the real native interpreter; `check-wasm.mjs` checks those transitions against WASM.

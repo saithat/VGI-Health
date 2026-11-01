@@ -279,6 +279,17 @@ def medicationTask (status business encounterId orderId due : String) : Json := 
 /-- The current selected order is supplied to the read-only MAR task projection. -/
 def selectedMedication := medication "rx-2" "Encounter/ed-1" 4
 
+/-- The patient row is independent of task order, and counts only supplied open tasks. -/
+def censusTaskSources := resources ++
+  [medicationTask "completed" "" "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02T07:00",
+   medicationTask "requested" "Overdue" "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02T08:00",
+   medicationTask "requested" "" "Encounter/prior" "MedicationRequest/rx-2" "2026-11-02T08:00"]
+
+#guard (acuteCensusRows context censusTaskSources patient).length == 1
+#guard (acuteCensusRows context censusTaskSources patient).head!.lookup "Open tasks" == some "1"
+#guard acuteCensusRows context censusTaskSources patient == acuteCensusRows context censusTaskSources.reverse patient
+#guard (acuteCensusRows { context with record := [("selectedEncounterId", "missing")] } censusTaskSources patient).isEmpty
+
 #guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Overdue"
   "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02T08:00:00-08:00"]) selectedMedication).head!.2.startsWith "Overdue"
 #guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Overdue"

@@ -2213,3 +2213,6 @@ A generic Letter (51852-2) is not an SBAR handoff. The acute handoff now uses an
 explicit local code and encounter reference. No frozen world or trajectory data
 was changed. Desktop patient context is sticky; narrow layouts retain document
 flow. Research links and source regressions are in the acute research section.
+# Acute patient-list integration (2026-11-01, second layout pass)
+
+The acute lane adds the bound `unitCensus` projection and its read-only display-catalog entry. It shows the selected patient's encounter/assignment and supplied open-task count, while `shiftWorklist` keeps the complete current-encounter Task rows. The existing MAR action targets the patient row; no patient change is inferred from task order. The source is still a patient chart, not a department feed. W3/W4 additionally opt into `layout.activities.nav` to use their actual navigator without a redundant generated progress strip. Missing/empty navigation retains progress. No clinical rule, required review, human-only constraint or D-rule changes.

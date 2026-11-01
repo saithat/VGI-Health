@@ -61,8 +61,9 @@ def medCells (r : MedRow) : List (String × String) :=
    ("Authored", uiDate r.authored), ("Prescriber", r.prescriber)]
 def noteCells (r : NoteRow) : List (String × String) :=
   [("Date", uiDate r.date), ("Type", r.noteType), ("Author", r.author),
-   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status),
-   ("Source date", uiDate r.sourceDate), ("Shift days", uiLabel r.shiftDays "Unknown")]
+   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status)] ++
+   (if r.sourceDate == "" then [] else [("Source date", uiDate r.sourceDate)]) ++
+   (if r.shiftDays == "" then [] else [("Shift days", r.shiftDays)])
 def historyCells (r : HistoryRow) : List (String × String) :=
   [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
@@ -432,9 +433,18 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
   ((uiRequiredReviews cx).filter fun r => !uiFullInfoShown cx r.info).map fun r =>
     uiInfo cx "" (infoLabel cx r.info) r.info "list"
 
-def uiWorkspace (cx : Ctx) : List UiNode :=
+/-- An explicit activity layout can use its real navigator without a second,
+numbered sequence. Empty or unavailable navigators retain the progress strip. -/
+def uiProgress (cx : Ctx) : List UiNode :=
+  let requested := cx.v.items.any fun it =>
+    it.shown && uiNavGroup it &&
+      ((it.comp.tag.splitOn ".").zip ((it.comp.tag.splitOn ".").drop 1)).contains ("layout", "activities")
   let steps := uiSteps cx
-  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  if requested && (uiNav cx).any (fun (_, entries) => !entries.isEmpty) then [] else
+    [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)]
+
+def uiWorkspace (cx : Ctx) : List UiNode :=
+  uiProgress cx ++ (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/

@@ -209,6 +209,7 @@
   {"version": "", "label": "Blood glucose", "id": "glucoseTrend"},
   {"version": "", "label": "Coagulation labs", "id": "coagLabs"},
   {"version": "", "label": "Shift worklist", "id": "shiftWorklist"},
+  {"version": "", "label": "Patient list", "id": "unitCensus"},
   {"version": "", "label": "New orders since last shift", "id": "newOrders"},
   {"version": "", "label": "Handoff summary", "id": "handoffSummary"},
   {"version": "", "label": "Intra-op record", "id": "intraopRecord"},

@@ -481,6 +481,40 @@ describe("structured clinical data boundary", () => {
     expect(suppliedTone("6.5")).toBeUndefined();
     expect(suppliedTone("No high alert")).toBeUndefined();
   });
+  it("draws a time series chronologically while retaining the supplied table order", () => {
+    const dates = ["Nov 1, 2026", "Nov 3, 2026", "Nov 2, 2026"];
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "unordered",
+                label: "Recorded history",
+                infoId: "history",
+                display: "trend",
+                rows: dates.map((date, i) => [
+                  ["Test", "Example"],
+                  ["Value", String(i + 1)],
+                  ["Recorded", date],
+                ]),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const points = [...screen.getByRole("img").querySelectorAll("circle")].map(
+      (point) => Number(point.getAttribute("cx")),
+    );
+    expect(points).toEqual([...points].sort((a, b) => a - b));
+    expect(points).toHaveLength(3);
+    const rows = [
+      ...screen.getByRole("table").querySelectorAll("tbody tr"),
+    ].map((row) => row.textContent);
+    dates.forEach((date, i) => expect(rows[i]).toContain(date));
+  });
   it("validates the new semantic wrapper and rejects an unknown wire kind", () => {
     expect(
       uiNodeSchema.safeParse({
