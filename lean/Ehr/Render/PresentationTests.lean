@@ -60,6 +60,13 @@ theorem column_presence_example (children : List UiNode) :
 def unchangedLayout := uiColumnChildren "rooming" [.text "Chief complaint"]
 #guard match unchangedLayout with | [.text s] => s == "Chief complaint" | _ => false
 
+/-- Overview can compose with a presentation or columns tag without partial matches. -/
+def overviewTagExample := uiOverviewTag "department.layout.overview.present.trackBoard"
+#guard overviewTagExample
+#guard uiOverviewTag "layout.overview.layout.columns"
+#guard !(uiOverviewTag "layout.overviewer.present.trackBoard")
+#guard !(uiOverviewTag "overview")
+
 /-- Only a complete, explicit nonnegative row target selects row placement. -/
 def firstRowTarget := uiRowTarget? "ward.present.row|worklist-records|0"
 #guard firstRowTarget == some ("worklist-records", 0)

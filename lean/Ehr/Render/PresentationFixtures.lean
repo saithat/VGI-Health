@@ -22,7 +22,8 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
     id := "presentation-example", start := "example", screens :=
       [{ id := "example", title, workflow := "W1", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "records", kind := .table info, label := title, tag := "present." ++ kind.tag }] }] }
+         { id := "records", kind := .table info, label := title,
+           tag := (if [.schedule, .trackBoard, .orSchedule, .messages].contains kind then "layout.overview." else "") ++ "present." ++ kind.tag }] }] }
 
 /-- A normal source group supplies both panes of an In Basket screen. -/
 def inBasketProgram : Program :=
@@ -30,7 +31,7 @@ def inBasketProgram : Program :=
     id := "in-basket-example", start := "example", screens :=
       [{ id := "example", title := "In Basket", workflow := "W2", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.columns" },
+         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.overview.layout.columns" },
          { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
          { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
 

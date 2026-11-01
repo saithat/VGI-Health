@@ -43,6 +43,11 @@ def uiWrapInfo (kind : Option UiPresentationKind) (node : UiNode) : UiNode :=
 def uiColumnTag (tag : String) : Bool :=
   tag == "layout.columns" || tag.endsWith ".layout.columns"
 
+/-- An explicit overview hint omits only automatic chart-side summaries. -/
+def uiOverviewTag (tag : String) : Bool :=
+  let parts := tag.splitOn "."
+  (parts.zip parts.tail).any (fun (a, b) => a == "layout" && b == "overview")
+
 /-- Columns change layout only; every child remains present in source order. -/
 def uiColumnChildren (tag : String) (children : List UiNode) : List UiNode :=
   if uiColumnTag tag then [.columns children] else children

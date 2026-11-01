@@ -295,17 +295,23 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
   it.comp.kind != .banner && !uiNavButton cx it && !uiSideAt cx it.comp.id
 
 
+/-- Only a shown source component can request an overview workspace. -/
+def uiOverview (cx : Ctx) : Bool :=
+  cx.v.items.any (fun it => it.shown && uiOverviewTag it.comp.tag)
+
 /-- Fallback summaries are read-only and are emitted only for information not
-already present in the program's side column. -/
+already present in the program's side column. Overview screens omit these
+automatic supplements; every explicit source component remains present. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
-    (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+    (if uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
+    (if uiOverview cx then [] else
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)
-      then none else some (.info "" label i "list" (uiSummaryRows cx i))
+      then none else some (.info "" label i "list" (uiSummaryRows cx i)))
 
 /-- Passive/unknown alerts cannot become modals, even in a malformed state.
 Only the matching Event.ack is accepted by the interpreter while a popup is open. -/

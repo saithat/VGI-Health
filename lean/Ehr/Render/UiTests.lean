@@ -111,6 +111,25 @@ example : ∃ comp label display, UiPresent
     (.info comp label uiReview.info display (uiRows uiMissingCtx uiReview.info)) :=
   D2_required_info uiMissingCtx uiReview (by decide)
 
+/-- Overview omits automatic summaries but keeps explicit side info and controls. -/
+def uiOverviewCtx : Ctx :=
+  { uiMissingCtx with viewCache := ⟨_, rfl⟩, prog := { uiMissingCtx.prog with screens :=
+    [{ id := "sign", title := "Sign", workflow := "W1", components :=
+      [uiSignItem.comp,
+       { id := "overview", kind := .table "labResults", label := "Results", tag := "layout.overview.present.results" },
+       { id := "explicit-allergies", kind := .panel "allergyList", label := "Allergies", tag := "sidebar" },
+       { id := "explicit-action", kind := .button (.goto "sign"), label := "Return", tag := "sidebar" }] }] } }
+#guard uiOverview uiOverviewCtx
+#guard (uiSide uiOverviewCtx).length == 2
+#guard (uiAtomsList (uiSide uiOverviewCtx)).any (fun n => uiComp n == some "explicit-action")
+#guard (uiAtomsList (uiSide uiOverviewCtx)).any (fun n => uiComp n == some "explicit-allergies")
+
+/-- Required commit reviews remain visible on a source-selected overview screen. -/
+theorem overview_commit_review_example : ∃ comp label display, UiPresent
+    (renderUi uiOverviewCtx.sp uiOverviewCtx.prog uiOverviewCtx.facts uiOverviewCtx.disp uiOverviewCtx.user uiOverviewCtx.s)
+    (.info comp label uiReview.info display (uiRows uiOverviewCtx uiReview.info)) :=
+  D2_required_info uiOverviewCtx uiReview (by decide)
+
 -- Passive alert presentation uses a satisfiable firing interpreter view.
 def uiPassiveCtx : Ctx :=
   { tinyCtx with viewCache := ⟨_, rfl⟩, s := { tinyCtx.s with screen := "order" } }
