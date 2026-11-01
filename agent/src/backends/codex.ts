@@ -1,3 +1,4 @@
+import { confinedArgs, auditTranscript } from './isolation.js';
 /**
  * Codex backend: shells out to
  *   codex exec --output-schema <schema.json> --sandbox read-only --ephemeral -o <out.json> -
@@ -12,7 +13,7 @@
  */
 import { spawn } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { homedir, tmpdir } from 'node:os';
 import path from 'node:path';
 import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
@@ -47,15 +48,21 @@ export class CodexLlm implements JsonLlm {
   async complete(req: JsonRequest): Promise<JsonResponse> {
     const dir = await mkdtemp(path.join(tmpdir(), 'agent-codex-'));
     try {
+      const privateHome = path.join(dir, 'codex-home');
+      await mkdir(privateHome);
+      const auth = path.join(process.env['CODEX_HOME'] ?? path.join(homedir(), '.codex'), 'auth.json');
+      if (existsSync(auth)) await copyFile(auth, path.join(privateHome,'auth.json'));
       const schemaFile = path.join(dir, 'schema.json');
       const outFile = path.join(dir, 'out.json');
       await writeFile(schemaFile, JSON.stringify(req.schema));
       const args = [
-        'exec', '--json', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
+        'exec', '--json', '-c', 'features.shell_tool=false', '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
         '--skip-git-repo-check', '-C', dir, ...(this.explicitModel ? ['-m', this.explicitModel] : []), '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
       const transcript = await this.run(args, stdin, dir);
+      const audit = auditTranscript(transcript.stdout);
+      if (audit.status !== 'pass') throw Object.assign(new Error('Codex attempted forbidden tools; request rejected'), { transcript, audit });
       const text = await readFile(outFile, 'utf8');
       let json: unknown;
       try {
@@ -63,7 +70,7 @@ export class CodexLlm implements JsonLlm {
       } catch {
         throw new Error(`codex backend: last message for ${req.callId} is not JSON`);
       }
-      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier }, transcript };
+      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier, isolationAudit: audit }, transcript };
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
@@ -71,7 +78,7 @@ export class CodexLlm implements JsonLlm {
 
   private run(args: string[], stdin: string, cwd: string): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
-      const child = spawn(this.binary, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
+      const child = spawn('bwrap', confinedArgs(cwd, this.binary, args), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
       let stderr = '';
       let stdout = '';
       child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-2_000_000); });
@@ -81,7 +88,7 @@ export class CodexLlm implements JsonLlm {
       child.on('close', (code) => {
         clearTimeout(timer);
         if (code === 0) resolve({ stdout, stderr });
-        else reject(new Error(`codex backend: exit ${String(code)}: ${stderr}`));
+        else reject(Object.assign(new Error(`codex backend: exit ${String(code)}: ${stderr}`), { transcript: {stdout,stderr}, audit: auditTranscript(stdout) }));
       });
       child.stdin.end(stdin);
     });

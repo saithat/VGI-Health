@@ -39,7 +39,7 @@ function dropNulls<T extends z.ZodType>(keys: readonly string[], schema: T) {
 export const roleSchema: z.ZodType<L.Role> = z.enum(['physician', 'np', 'rn', 'surgeon']);
 export const unitKindSchema: z.ZodType<L.UnitKind> = z.enum(['kg', 'lb', 'g', 'mg', 'mcg', 'mL', 'mgPerKg', 'units', 'none']);
 const valueKindSchema: z.ZodType<L.ValueKind> = z.union([
-  z.enum(['text', 'flag', 'identity', 'cosign']),
+  z.enum(['text', 'flag', 'identity', 'cosign', 'medicationDose']),
   z.looseObject({ quantity: z.looseObject({ unit: unitKindSchema }) }),
   z.looseObject({ coded: z.looseObject({ valueSet: str }) }),
   z.looseObject({ scan: z.looseObject({ target: str }) }),
@@ -81,7 +81,7 @@ export const specSchema: z.ZodType<L.Spec> = z.looseObject({
 
 // ---------------------------------------------------------------- programs
 /**
- * MIRROR: a component kind added by a vendor release (e.g. v1.1
+ * MIRROR: a component kind added by a vendor release (e.g. v2
  * `priorAuthStatus`) before the generated union knows it. One constructor key.
  */
 export type FutureKind = { [ctor: string]: unknown };
@@ -107,6 +107,7 @@ const knownKindSchema: z.ZodType<L.Kind> = z.union([
   z.enum(['banner', 'tabs']),
   z.object({ field: z.object({ element: str, slot: slotSchema, prefill: prefillSchema }) }),
   z.object({ panel: z.object({ info: str }) }),
+  z.object({ priorAuth: z.object({ info: str }) }),
   z.object({ table: z.object({ info: str }) }),
   z.object({ trend: z.object({ info: str }) }),
   z.object({ alert: z.object({ alert: str, popup: z.boolean() }) }),
@@ -129,7 +130,7 @@ export const componentSchema: z.ZodType<Component> = dropNulls(['parent', 'hotke
   label: str.default(''),
   parent: str.exactOptional(),
   tab: nat.default(0),
-  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) })]).default('always'),
+  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) }), z.object({ encounter: z.object({ kind: str }) })]).default('always'),
   size: z.enum(['normal', 'compact', 'tiny']).default('normal'),
   hotkey: str.exactOptional(),
   tag: str.default(''),
@@ -201,7 +202,7 @@ export const personaParamsSchema: z.ZodType<L.PersonaParams> = z.object({
 });
 const taskMetricsSchema: z.ZodType<L.TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
-  klmDeciSec: nat, completed: z.boolean(),
+  klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
 export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   day: nat,

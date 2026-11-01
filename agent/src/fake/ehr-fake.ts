@@ -203,7 +203,7 @@ export function fakeCheck(i: CheckInput): Verdict {
     }
   }
 
-  // capturesAllOnce: v2 abx indication captured on every sign-orders workflow; no element asked twice on a workflow.
+  // capturesAllOnce: v3 abx indication captured on every sign-orders workflow; no element asked twice on a workflow.
   for (const e of spec.entries) {
     if (e.element !== 'abxIndication') continue;
     for (const s of p.screens) {

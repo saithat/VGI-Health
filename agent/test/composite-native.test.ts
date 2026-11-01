@@ -1,3 +1,4 @@
+import { nativeProgramHash } from '../src/certification.js';
 import { dryFixture } from '../src/dry-fixture.js';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
@@ -20,6 +21,9 @@ it.skipIf(!existsSync(DEFAULT_EHR_BIN))('real checker certifies the full expansi
   original.kind = { use: { name: 'review', args: [] } };
   const ehr = createEhr({ fake: false });
   expect(await ehr.check({ specVersion, program: source, prev: source, canonical: source })).toBe('ok');
+  const deployment = await ehr.deploy({ specVersion, program:source, prev:source, canonical:source, outDir:path.join(directory,'deploy') });
+  expect(deployment.deployed).toBe(true);
+  if (deployment.deployed) expect(nativeProgramHash(source)).toBe(deployment.certificate.programHash);
   const body = source.componentDefs[0]?.body[0];
   if (!body) throw new Error('body');
   body.size = 'tiny';

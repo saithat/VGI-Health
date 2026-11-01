@@ -309,8 +309,13 @@ export function mapCommit(input: CommitInput): Bundle {
     for (const slot of slots) {
       const drug = required(text("drug", slot), "drug");
       const dose = number("dose", slot);
-      const unit =
-        text("doseUnit", slot) || (field("dose", slot)?.value && "mg");
+      const doseValue = field("dose", slot)?.value;
+      const unit = doseValue && "qty" in doseValue ? doseValue.qty.unit : text("doseUnit", slot);
+      if (!unit || (text("doseUnit", slot) && text("doseUnit", slot) !== unit))
+        throw new Error("Dose and dose unit selector must agree");
+      const ucum = unit === "mcg" ? "ug" : unit === "units" ? "[iU]" : unit;
+      if (!["mg", "ug", "[iU]", "mL"].includes(ucum))
+        throw new Error(`Unsupported medication dose unit: ${unit}`);
       const frequency = text("freq", slot);
       const duration = text("duration", slot);
       const supplyDays = duration.match(
@@ -365,9 +370,9 @@ export function mapCommit(input: CommitInput): Bundle {
               {
                 doseQuantity: {
                   value: dose,
-                  unit: String(unit || "mg"),
+                  unit,
                   system: "http://unitsofmeasure.org",
-                  code: String(unit || "mg"),
+                  code: ucum,
                 },
               },
             ],

@@ -29,24 +29,24 @@ def home : Screen :=
       sidebar s clinicSidebar ++
       tabStrip s "chart" "Chart review"
         [(.table, "problemList", "Problem list"), (.table, "labResults", "Results"),
-         (.panel, "priorNotes", "Notes"), (.table, "currentMeds", "Medications"),
+         (.panel, "encounterNotes", "Notes"), (.table, "currentMeds", "Medications"),
          (.panel, "allergyList", "Allergies"), (.table, "encounterHistory", "Encounters"),
-         (.panel, "coverage", "Coverage")] ++
+         (.panel, "coverage", "Coverage"), (.table, "importedHistory", "History")] ++
       [table s "schedule" "scheduleTasks" "Today's work",
        table s "openOrders" "openOrders" "Open orders",
-       group s "work" "Workflows" (collapsible := false)] ++
-      ([("w1Rooming", "Clinic visit: start rooming"),
-        ("w2Inbasket", "In-basket: results"),
-        ("w7Queue", "In-basket: refill requests"),
-        ("w3TrackBoard", "Emergency department: track board"),
-        ("w4Worklist", "Ward: shift worklist and MAR"),
-        ("w5Rooming", "Pediatric clinic: start rooming"),
-        ("w6Consult", "Surgery: ED consult"),
-        ("w6PreOp", "Surgery: pre-op"),
-        ("w6OpNote", "Surgery: op note"),
-        ("w6PostOp", "Surgery: post-op orders"),
-        ("w6Rounding", "Surgery: rounding"),
-        ("w6Discharge", "Surgery: discharge")].map fun (t, l) =>
+       group s "work" "Activities" (collapsible := false)] ++
+      ([("w1Rooming", "Schedule"),
+        ("w2Inbasket", "In Basket: Results"),
+        ("w7Queue", "In Basket: Rx Requests"),
+        ("w3TrackBoard", "ED Track Board"),
+        ("w4Worklist", "Unit Census & MAR"),
+        ("w5Rooming", "Child Health"),
+        ("w6Consult", "Consults"),
+        ("w6PreOp", "OR Schedule"),
+        ("w6OpNote", "Op Note"),
+        ("w6PostOp", "Post-op"),
+        ("w6Rounding", "Rounding"),
+        ("w6Discharge", "Discharge")].map fun (t, l) =>
           goto s ("work." ++ t) t l (parent := some "work")) }
 
 /-- Workflow-scoped passive reminders remain inline on every targeted screen.

@@ -13,7 +13,7 @@ it('stages program, source and component bundle together; failed bundle publicat
   const store = new RunStore(directory, customRoot);
   const current = fakeCanonical(RELEASE_IDS.base);
   const certificate = { specVersion: RELEASE_IDS.base, specHash: 's', programHash: 'p', verdict: 'ok' as const, checkerVersion: 'stub', time: 'now' };
-  const build = { appSha256: 'a'.repeat(64), wasmSha256: 'b'.repeat(64), componentsSha256: '0'.repeat(64) };
+  const build = { ehrSha256: '0'.repeat(64), appSha256: 'a'.repeat(64), wasmSha256: 'b'.repeat(64), componentsSha256: '0'.repeat(64) };
   await store.deploy('P1', current, certificate, bindBuild(build, current, certificate));
   const pointerFile = path.join(directory, 'programs/P1/deployed.json');
   const previous = await readFile(pointerFile, 'utf8');

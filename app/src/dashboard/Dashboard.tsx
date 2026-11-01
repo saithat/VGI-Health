@@ -1,3 +1,4 @@
+import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { useEffect, useMemo, useState } from "react";
 import type {
   CheckResult,
@@ -76,7 +77,7 @@ interface Rejection {
 function getRejections(run: RunData): Rejection[] {
   return run.records.flatMap((record) => [
     ...record.candidates
-      .filter((c) => c.check.status !== "pass")
+      .filter((c) => c.check.status === "fail")
       .map((c) => ({
         id: `${record.mode}-${record.night}-${record.persona}-${c.candidate.id}`,
         label: `${record.persona} · Night ${record.night} · ${c.candidate.summary}`,
@@ -301,7 +302,7 @@ function Why({
         <h3>{record.hypothesis}</h3>
         <p className="dash-note">
           Backend: {record.backend.name} / {record.backend.model} ·{" "}
-          {record.mode} · spec {record.specVersion}
+          {record.mode} · spec {releaseLabel(record.specVersion, run.manifest.runId)}
         </p>
       </section>
       <section>
@@ -509,9 +510,9 @@ function Releases({
         </thead>
         <tbody>
           {personas.flatMap((p) =>
-            ["v1.1", "v2"].map((release) => {
+            ["v2", "v3"].map((release) => {
               const r = run.records.find(
-                (r) => r.persona === p.id && r.release?.id === release,
+                (r) => r.persona === p.id && r.release && releaseLabel(r.release.id, run.manifest.runId) === release,
               );
               return (
                 <tr
@@ -674,6 +675,7 @@ function VersionList({
   const records = run.records.filter(
     (r) => r.persona === persona && r.mode !== "try-to-break-it",
   );
+  const blindProtocol = !!run.manifest.measurementProtocol;
   const baseline = run.complexity?.personas.find((p) => p.persona === persona)
     ?.iterations[0];
   const exactAt = (version: number) =>
@@ -691,6 +693,7 @@ function VersionList({
     <section className="version-history" aria-label="Version history">
       <div className="section-heading">
         <h3>Versions and decisions</h3>
+        {blindProtocol && <p>One canonical EHR, with role permissions and preset views. The agent evolves each persona’s fork. Odd days calibrate; even days are blind measurements and never select changes. Savings compare the certified canonical for that day’s release on identical schedules and seeds; vendor release costs are separate.</p>}
         <span>Saving: positive = less effort · exact fixed workflow union</span>
       </div>
       <div className="version-column-head" aria-hidden="true">
@@ -736,7 +739,7 @@ function VersionList({
                 <strong>
                   {deployed ? `v${r.versionAfter}` : `Kept v${r.versionAfter}`}{" "}
                   · Night {r.night}
-                  {r.release ? ` · ${r.release.id}` : ""}
+                  {r.release ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}` : ""}
                 </strong>
                 <span>
                   {chosen ||
@@ -744,21 +747,21 @@ function VersionList({
                       ? r.release.surfaced === false
                         ? "Optional feature left out of nursing workflow"
                         : "Release migration"
-                      : "No change deployed")}
+                      : r.outcome === "llm-error" ? "LLM error — no design decision" : "No change deployed")}
                 </span>
               </span>
               <span>
                 <span className="mobile-label">vs previous: </span>
-                {deployed ? change(after, before) : "0 clicks / 0s KLM"}
+                {blindProtocol ? (r.release ? "Vendor release: separate cost" : r.measured.test ? "Blind measurement recorded" : r.outcome === "llm-error" ? "LLM error" : "Not independently measured") : deployed ? change(after, before) : "0 clicks / 0s KLM"}
               </span>
               <span>
                 <span className="mobile-label">vs baseline: </span>
-                {change(after, baseline)}
+                {blindProtocol ? (r.measured.test ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical` : "Unavailable") : change(after, baseline)}
               </span>
               {r.certificate ? (
                 <Badge tone="pass">
                   {r.ehr.mode === "fake" ? "MOCK" : "Certified"} ·{" "}
-                  {r.certificate.specVersion}
+                  {releaseLabel(r.certificate.specVersion, run.manifest.runId)}
                 </Badge>
               ) : (
                 <Badge>{r.certification.result}</Badge>

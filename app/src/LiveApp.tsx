@@ -16,7 +16,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import { loadCatalog, readArtifact, verifyRecordedBuild } from "./browser/data";
+import { loadCatalog, readArtifact, verifyRecordedBuild, programSpecPath } from "./browser/data";
 import {
   availableBeds,
   bundleResources,
@@ -97,8 +97,8 @@ exists yet, or the original canonical baseline. */
 async function liveProgram(persona: string, baseline: boolean): Promise<{ spec: unknown; program: unknown; presentations?: PresentationBundle | null }> {
   if (baseline)
     return {
-      spec: await readArtifact("/releases/v2/spec.json"),
-      program: await readArtifact("/releases/v2/canonical.json"),
+      spec: await readArtifact("/releases/v3/spec.json"),
+      program: await readArtifact("/releases/v3/canonical.json"),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
@@ -111,11 +111,11 @@ async function liveProgram(persona: string, baseline: boolean): Promise<{ spec: 
   if (deployed) {
     const program = await readArtifact(`/${deployed.path}`);
     const presentations = await verifyRecordedBuild(deployed.path, program);
-    return { presentations, spec: await readArtifact(`/releases/${deployed.release}/spec.json`), program };
+    return { presentations, spec: await readArtifact(programSpecPath(deployed)), program };
   }
   return {
-    spec: await readArtifact("/releases/v2/spec.json"),
-    program: await readArtifact(`/releases/v2/personas/${persona}.json`),
+    spec: await readArtifact("/releases/v3/spec.json"),
+    program: await readArtifact(`/releases/v3/personas/${persona}.json`),
   };
 }
 

@@ -1,3 +1,4 @@
+import { archivedReleaseId } from "../../../scripts/historical-releases.mjs";
 import { presentationBundleSchema, type PresentationBundle } from "../ehr/ui/presentation-types";
 import { assertBuildBinding, buildBindingSchema, contentHash } from "../core/buildBinding";
 import { z } from "zod";
@@ -20,6 +21,8 @@ const patientSchema = z.object({
   age: z.number(),
   sex: z.string(),
   file: z.string(),
+  bundlePath: z.string().regex(/^fixtures\/(?:synthea|synthetic-hospital)\/[\w.-]+\.json$/),
+  source: z.enum(["synthea", "synthetic-hospital"]),
   encounterClass: z.string(),
   flags: z.object({
     pediatric: z.boolean(),
@@ -106,6 +109,18 @@ export const verdictsSchema = z.object({
   ),
 });
 
+/** Rebind history is immutable; a rejected current pointer always refuses login. */
+export async function readRecordedBinding(file: string) {
+  const raw = await readArtifact(file);
+  const data = z.object({status:z.string().optional(),current:z.string().nullable().optional(),reason:z.string().optional()}).parse(raw);
+  if (data.status === "rejected") throw new Error(`Build rebind refused: ${data.reason}`);
+  if (data.status === "bound") {
+    if (!/^v\d+\.build\.\d+\.json$/.test(data.current ?? "")) throw new Error("Invalid build binding pointer");
+    return buildBindingSchema.parse(await readArtifact(file.replace(/[^/]+$/, z.string().parse(data.current))));
+  }
+  return buildBindingSchema.parse(raw);
+}
+
 /** New run certificates bind their complete program and installed build; old recordings retain historical provenance. */
 export async function verifyRecordedBuild(programPath: string, program: unknown): Promise<PresentationBundle | null> {
   const match = /^runs\/([\w-]+)\/programs\/(P[1-5])\/v(\d+)\.json$/.exec(programPath);
@@ -114,7 +129,7 @@ export async function verifyRecordedBuild(programPath: string, program: unknown)
   const manifest = z.object({ buildBindingRequired: z.boolean().optional() }).parse(await readArtifact(`/runs/${run}/manifest.json`));
   if (!manifest.buildBindingRequired) return null;
   const [binding, certificate, build, wasm] = await Promise.all([
-    readArtifact(`/runs/${run}/certs/${persona}/v${version}.build.json`).then((v) => buildBindingSchema.parse(v)),
+    readRecordedBinding(`/runs/${run}/certs/${persona}/v${version}.build.json`),
     readArtifact(`/runs/${run}/certs/${persona}/v${version}.json`),
     readArtifact("/build.json").then((v) => z.object({ appSha256: z.string() }).parse(v)),
     readArtifact("/ehr/manifest.json").then((v) => z.object({ assets: z.record(z.string(), z.string()) }).parse(v)),
@@ -131,4 +146,11 @@ export async function verifyRecordedBuild(programPath: string, program: unknown)
   }
   await assertBuildBinding(binding, { appSha256: build.appSha256, wasmSha256: wasm.assets["ehr-interp.wasm"] ?? "", componentsSha256: presentations ? await contentHash(presentations) : emptyHash }, program, certificate);
   return presentations;
+}
+
+/** Historical replay uses its frozen contract; aliases change display names only. */
+export function programSpecPath(program: ProgramEntry): string {
+  if (program.run === "run1-P3") return `/runs/run1-P3/trajectories/specs/${archivedReleaseId(program.release)}.json`;
+  if (program.path.startsWith("programs/benchmarks/releases/")) return `/${program.path.split("/").slice(0, 4).join("/")}/spec.json`;
+  return `/releases/${program.release}/spec.json`;
 }

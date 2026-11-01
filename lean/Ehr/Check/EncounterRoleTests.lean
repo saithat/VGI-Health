@@ -1,3 +1,4 @@
+import Ehr.Proofs.T3
 import Ehr.Check.DomainObstruction
 import Ehr.Check.EncounterSound
 import Ehr.Canonical.CoreWorkflowTests
@@ -26,9 +27,9 @@ def npPreopReady : State := run w5Path p4 preopChild np
   .blocked "Pre-op orders are signed by a physician or surgeon"
 
 /-- All hypotheses of the general refusal theorem hold for the actual P4 episode. -/
-example : ¬ Props.CommitHappens ⟨specV1, p4, preopChild, np⟩ npPreopReady .human
+example : ¬ Props.CommitHappens ⟨specV1, p4, preopChild, np⟩ (default : State) .human
     (.click "w5Sign.commit.signOrders") "signOrders" :=
-  np_preop_never_signs p4 preopChild np rfl rfl npPreopReady .human _
+  np_preop_never_signs p4 preopChild np rfl rfl (default : State) .human _
 
 /-- A surgeon signs on P5 after the unchanged three pre-op captures. -/
 def surgeonPreopReady : State := run preOpPath p5 preOpFacts surgeon

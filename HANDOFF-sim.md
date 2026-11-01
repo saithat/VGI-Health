@@ -92,7 +92,7 @@ optimality or missing-external-event scheduling claim. See `lean/Ehr/Sim/README.
 1. **The original 13 baseline service scenarios remain incomplete:** v1 still
    lacks orderKind/orderCode declarations and composers. Content/world must provide the applicable UI or
    align release timing while retaining all requested service work. Optional
-   declarations/composers exist in v1.1/v2; sim retains the unmet goals.
+   declarations/composers exist in v2/v3; sim retains the unmet goals.
 2. **CLI owner integration:** in `lean/Ehr/Cli/Sim.lean:minSchedule`, replace
    `let eps := episodes facts task.workflow task.choices` with
    `let eps := taskEpisodes facts task`. It is already imported through Policy.

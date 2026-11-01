@@ -1,9 +1,10 @@
+import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
 import { RELEASE_IDS, LEGACY_RELEASE_IDS } from './release-config.js';
 /**
  * Re-run ONE night of an existing run for one persona (live demos: "run this
  * night again with Claude"), without touching the original run. The night's
- * mode follows the run's calendar (surface-feature before the v1.1 day,
- * migrate before the v2 day, else nightly) unless overridden.
+ * mode follows the run's calendar (surface-feature before the v2 day,
+ * migrate before the v3 day, else nightly) unless overridden.
  *
  * State is rebuilt from the run directory: the program used on day N, the
  * DayResults of days <= N (train only), earlier decision records (outcome-only
@@ -37,7 +38,7 @@ const manifestSchema = z.object({
   days: z.number().int(),
   world: z.string(),
   releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
-  releaseDays: z.object({ v1_1: z.number().int(), v2: z.number().int() }),
+  releaseDays: z.object({ v2: z.number().int(), v3: z.number().int() }),
 });
 
 export async function rerunNight(args: {
@@ -59,12 +60,16 @@ export async function rerunNight(args: {
   }
   const train: TrainDay[] = [];
   for (let d = 1; d <= args.night; d++) {
-    const result = await readJson(source.dayPath(d, args.persona), dayResultSchema);
+    if (isMeasurementDay(d)) continue;
+    const trainingFile=path.join(args.runDir,'training',`day-${d}`,`${args.persona}.json`);
+    const result = await readJson(existsSync(trainingFile)?trainingFile:source.dayPath(d, args.persona), dayResultSchema);
     const schedule = await world.schedule(d, args.persona);
     if (!schedule) throw new Error(`world has no schedule for day ${d}`);
-    train.push({ result, schedule });
+    const subset=calibrationPartition(schedule,'train');
+    const ids=new Set(subset.tasks.map((t)=>t.id));
+    train.push({result:{...result,tasks:result.tasks.filter((t)=>ids.has(t.task)),trace:result.trace.filter((t)=>ids.has(t.task)),floor:result.floor.filter((t)=>ids.has(t.task))},schedule:subset});
   }
-  const usedOnDay = train[train.length - 1]?.result.programVersion;
+  const usedOnDay = (await readJson(source.dayPath(args.night,args.persona),dayResultSchema)).programVersion;
   const current = usedOnDay === undefined ? undefined : programs.get(usedOnDay);
   if (!current) throw new Error(`cannot find the program used on day ${args.night}`);
   const history: HistoryItem[] = [];
@@ -74,8 +79,8 @@ export async function rerunNight(args: {
 
   const rd = manifest.releaseDays;
   const ids = manifest.releaseIds ?? LEGACY_RELEASE_IDS;
-  const inForceId = args.night >= rd.v2 ? ids.migration : args.night >= rd.v1_1 ? ids.feature : ids.base;
-  const auto: Exclude<NightMode, 'auto'> = args.night + 1 === rd.v1_1 ? 'surface-feature' : args.night + 1 === rd.v2 ? 'migrate' : 'nightly';
+  const inForceId = args.night >= rd.v3 ? ids.migration : args.night >= rd.v2 ? ids.feature : ids.base;
+  const auto: Exclude<NightMode, 'auto'> = args.night + 1 === rd.v2 ? 'surface-feature' : args.night + 1 === rd.v3 ? 'migrate' : 'nightly';
   const mode = !args.mode || args.mode === 'auto' ? auto : args.mode;
   const release = await loadRelease(inForceId, args.ehr);
 
@@ -87,7 +92,7 @@ export async function rerunNight(args: {
   };
   const input = {
     night: args.night, persona, release, current, train, programs, history,
-    holdout: makeHoldout(deps, persona, await world.schedule(args.night + 1, args.persona)),
+    holdout: makeHoldout(deps, persona, await world.schedule(calibrationDay(args.night), args.persona)),
   };
   let result: NightResult;
   if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease(RELEASE_IDS.feature, args.ehr) });

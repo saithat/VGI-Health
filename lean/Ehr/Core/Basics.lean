@@ -28,13 +28,13 @@ The interpreter gives a fixed meaning to a few element and info IDs. -/
 /-- The element holding an order line's drug: a formulary name, as `Value.code`.
 Each slot with a captured drug is an order line. -/
 def drugElement : ElementId := "drug"
-/-- The element holding an order line's dose (a quantity, checked in mg). -/
+/-- The element holding an order line's dose (a quantity in its formulary unit). -/
 def doseElement : ElementId := "dose"
 /-- The element holding the patient's weight (required in kg). -/
 def weightElement : ElementId := "weight"
 /-- The element holding an order line's frequency, e.g. `"q6h"` or `"bid"`. -/
 def freqElement : ElementId := "freq"
-/-- The element a prior-authorization request writes (release v1.1). -/
+/-- The element a prior-authorization request writes (release v2). -/
 def priorAuthElement : ElementId := "priorAuthRequest"
 /-- The info the `banner` component shows. -/
 def bannerInfo : InfoId := "patientBanner"
@@ -54,7 +54,7 @@ def UnitKind.name : UnitKind → String
 
 /-- The catalog tag of a component kind. `DesignRules.catalog` lists the tags a
 program may use. A button that requests prior authorization has the tag
-`"priorAuth"`, so it needs the release v1.1 catalog too. -/
+`"priorAuth"`, so it needs the release v2 catalog too. -/
 def Kind.catalogTag : Kind → String
   | .banner => "banner"
   | .field .. => "field"
@@ -151,6 +151,7 @@ satisfies the guard). An identity must match the patient; a cosign must name a
 different user; a scan must match its target. -/
 def valueAccepted (facts : Facts) (user : User) : ValueKind → Value → Bool
   | .quantity _, .qty _ _ => true
+  | .medicationDose, .qty _ u => [.mg, .mcg, .units, .mL].contains u
   | .coded _, .code c => !c.isEmpty
   | .text, .text _ => true
   | .flag, .flag _ => true
@@ -195,6 +196,7 @@ an element's kind. Quantities take the kind's unit. -/
 def parseValue (k : ValueKind) (s : String) : Option Value :=
   match k with
   | .quantity u => (parseTenths s).map (Value.qty · u)
+  | .medicationDose => none
   | .coded _ => if s.isEmpty then none else some (.code s)
   | .text => some (.text s)
   | .flag => if s == "true" then some (.flag true)
@@ -225,6 +227,8 @@ def factVersion (facts : Facts) (name : String) : Option Nat :=
   if name == "" then some 0
   else if name == "allergyVersion" then some facts.allergyVersion
   else if name == "medsVersion" then some facts.medsVersion
+  else if name == "notesVersion" then some facts.notesVersion
+  else if name == "historyVersion" then some facts.historyVersion
   else none
 
 /-- The current data version of an info (none if the info is unknown). -/
@@ -504,9 +508,53 @@ def validationHolds (facts : Facts) (s : State) (slot : Nat) (v : Value) : Valid
     | _, _ => false
   | .and l r => validationHolds facts s slot v l && validationHolds facts s slot v r
 
+/-- The drug on this slot, including an unconfirmed preset awaiting review. -/
+def doseDrug? (s : State) (slot : Nat) : Option String :=
+  match s.captured.filter (fun x => x.slot == slot && x.element == drugElement) with
+  | [x] => match x.value with | .code d => some d | _ => none
+  | _ => none
+
+/-- The selected drug's allowed native dose units. -/
+def doseUnitsAt (s : State) (slot : Nat) : List DoseUnitRule :=
+  (doseDrug? s slot).map drugDoseUnits |>.getD []
+
+/-- A dose must have a formulary unit for the drug on its own line. -/
+def doseValueValid (s : State) (slot : Nat) (v : Value) : Bool :=
+  match v with
+  | .qty _ unit => (doseUnitsAt s slot).any (fun rule => rule.unit == unit) &&
+      (s.captured.filter (fun x => x.slot == slot && x.element == "doseUnit")).all (fun x =>
+        x.value == .code unit.name)
+  | _ => false
+
+/-- The separate unit selector must be a unit of the selected drug. -/
+def doseUnitValueValid (s : State) (slot : Nat) (v : Value) : Bool :=
+  match v with
+  | .code code => (doseUnitsAt s slot).any (fun rule => rule.unit.name == code)
+  | _ => false
+
+/-- Unit for a new numeric input: valid selector, else the formulary default. -/
+def doseInputUnit? (s : State) (slot : Nat) : Option UnitKind :=
+  let rules := doseUnitsAt s slot
+  let selected := s.captured.findSome? fun x =>
+    if x.slot == slot && x.element == "doseUnit" then match x.value with
+      | .code code => (rules.find? (fun rule => rule.unit.name == code)).map (·.unit)
+      | _ => none
+    else none
+  selected.or ((rules.head?).map (·.unit))
+
 /-- Optional constraints preserve the original element contract. -/
 def elementValueValid (facts : Facts) (s : State) (el : ElementSpec) (slot : Nat) (v : Value) : Bool :=
-  el.validation?.all (validationHolds facts s slot v)
+  (if el.kind == .medicationDose then doseValueValid s slot v
+   else if el.id == "doseUnit" && el.kind == .coded "dose-unit" then doseUnitValueValid s slot v
+   else true) && el.validation?.all (validationHolds facts s slot v)
+
+/-- Numeric presets use the selected drug's native unit, never an mg conversion. -/
+def parseElementValue (s : State) (el : ElementSpec) (slot : Nat) (raw : String) : Option Value :=
+  if el.kind == .medicationDose then do
+    let unit ← doseInputUnit? s slot
+    let amount ← parseTenths raw
+    pure (.qty amount unit)
+  else parseValue el.kind raw
 
 def validationsOk (sp : Spec) (facts : Facts) (s : State) : Bool :=
   sp.elements.all fun el => s.captured.all fun x =>
@@ -663,6 +711,7 @@ def ownVisible (sp : Spec) (facts : Facts) (s : State) (c : Component) : Bool :=
   c.size != .tiny &&
     match c.visibility with
     | .always => true
+    | .encounter kind => encounterMatches facts.encounterKind? kind
     | .unlessReceipt i => !hasValidReceipt sp facts s i
 
 /-- The parent lets the child through: an expanded (or non-collapsible) group,

@@ -57,7 +57,7 @@ export class RecordingLlm implements JsonLlm {
     try {
       res = await this.inner.complete(req);
     } catch (error) {
-      await writeJson(file.replace(/\.json$/, '.error.json'), { callId: req.callId, error: error instanceof Error ? error.message : String(error), time: new Date().toISOString() });
+      await writeJson(file.replace(/\.json$/, '.error.json'), { callId: req.callId, error: error instanceof Error ? error.message : String(error), time: new Date().toISOString(), ...((error && typeof error === 'object' && 'transcript' in error) ? { transcript: error.transcript } : {}) });
       throw error;
     }
     const record: LlmRecord = {

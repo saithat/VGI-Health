@@ -7,6 +7,7 @@ import {
   catalogSchema,
   currentProgram,
   defaultPatient,
+  programSpecPath,
 } from "../src/browser/data";
 import { createWasmInterp } from "../src/core/wasmInterp";
 import { createSession } from "../src/core/session";
@@ -14,7 +15,7 @@ import { createSession } from "../src/core/session";
 const catalog = catalogSchema.parse(await buildCatalog());
 describe("offline live UI catalog", () => {
   it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
-    for (const release of ["v1", "v1.1", "v2"]) {
+    for (const release of ["v1", "v2", "v3"]) {
       expect(
         catalog.programs.filter((program) =>
           program.path.startsWith(`releases/${release}/`),
@@ -27,7 +28,9 @@ describe("offline live UI catalog", () => {
     expect(
       catalog.programs.filter((program) => program.run === "mock").length,
     ).toBeGreaterThan(20);
-    expect(catalog.patients).toHaveLength(174);
+    expect(catalog.patients).toHaveLength(324);
+    expect(catalog.patients.filter((p) => p.source === "synthea")).toHaveLength(174);
+    expect(catalog.patients.filter((p) => p.source === "synthetic-hospital")).toHaveLength(150);
     expect(defaultPatient(catalog, "P2").encounterClass).toBe("EMER");
     expect(defaultPatient(catalog, "P3").encounterClass).toBe("IMP");
     expect(defaultPatient(catalog, "P4").flags.pediatric).toBe(true);
@@ -47,7 +50,7 @@ describe("offline live UI catalog", () => {
     };
     let projection: unknown;
     for (const patient of catalog.patients) {
-      const bundle = await readJson(`fixtures/synthea/${patient.file}`);
+      const bundle = await readJson(patient.bundlePath);
       const data = JSON.parse(
         interp.facts(JSON.stringify({ bundle, context })),
       );
@@ -57,7 +60,7 @@ describe("offline live UI catalog", () => {
     for (const program of catalog.programs) {
       const session = createSession(
         interp,
-        await readJson(`releases/${program.release}/spec.json`),
+        await readJson(programSpecPath(program).slice(1)),
         await readJson(program.path),
         projection,
         { id: program.persona, role: program.role },

@@ -71,15 +71,15 @@ def formulary : List DrugInfo := [
     classes := ["anticoagulant", "lowMolecularWeightHeparin"]
     minMgPerKgTenths := 5, maxMgPerKgTenths := 15, highAlert := true
     interactsWith := ["anticoagulant", "nsaid", "antiplatelet"] },
-  { name := "heparin", rxnorm := ["5224"]
+  { name := "heparin", doseUnits := [{ unit := .units }], rxnorm := ["5224"]
     classes := ["anticoagulant", "unfractionatedHeparin"]
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := ["anticoagulant", "nsaid", "antiplatelet"] },
-  { name := "insulin glargine", rxnorm := ["274783"]
+  { name := "insulin glargine", doseUnits := [{ unit := .units }], rxnorm := ["274783"]
     classes := ["basalInsulin", "insulin"]
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := [] },
-  { name := "insulin lispro", rxnorm := ["86009"]
+  { name := "insulin lispro", doseUnits := [{ unit := .units }], rxnorm := ["86009"]
     classes := ["bolusInsulin", "insulin"]
     minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
     interactsWith := [] },
@@ -123,7 +123,9 @@ def formulary : List DrugInfo := [
     classes := ["nsaid", "analgesic", "antipyretic"]
     minMgPerKgTenths := 50, maxMgPerKgTenths := 100, maxDoseMgTenths := 4000, highAlert := false
     interactsWith := ["anticoagulant", "aceInhibitor", "glycopeptide"] },
-  { name := "albuterol", rxnorm := ["435"]
+  -- Nebulized mg and inhaled mcg keep their own units. The existing 5 mg
+  -- absolute cap is also stated as 5000 mcg; no mg/kg rule applies to the inhaler.
+  { name := "albuterol", doseUnits := [{ unit := .mg }, { unit := .mcg, maxTenths := 50000 }], rxnorm := ["435"]
     classes := ["betaAgonist", "bronchodilator"]
     minMgPerKgTenths := 1, maxMgPerKgTenths := 2, maxDoseMgTenths := 50, highAlert := false
     interactsWith := ["betaBlocker"] }
@@ -132,6 +134,10 @@ def formulary : List DrugInfo := [
 /-- Look up a drug by its formulary name. -/
 def lookupDrug (name : String) : Option DrugInfo :=
   formulary.find? (·.name == name)
+
+/-- Allowed dose units come only from this formulary. Unknown drugs have none. -/
+def drugDoseUnits (name : String) : List DoseUnitRule :=
+  (lookupDrug name).map (·.doseUnits) |>.getD []
 
 /-- The classes of a drug (empty for drugs not in the formulary). -/
 def drugClasses (name : String) : List String :=

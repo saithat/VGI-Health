@@ -2,17 +2,20 @@
 .PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose -f infra/docker-compose.yml
+# Bound fresh Lean builds on shared development/judging machines.
+export LEAN_NUM_THREADS ?= 4
 APP_PORT ?= 5173
 LIVE_WORLD ?= runs/world/2
 LIVE_DAYS ?= 10
 LIVE_ARGS ?=
+SYNTHETIC_HOSPITAL ?= 0
 SEED_ARGS ?=
 
 # Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
 # setup (project, client, personas -> .env), fixture load, and world worklist seed. Safe to re-run.
 install:
 	cd lean && lake build
-	pnpm install
+	pnpm install --frozen-lockfile
 	$(MAKE) wasm-check
 	$(MAKE) infra-up
 	$(MAKE) setup
@@ -68,6 +71,21 @@ load:
 # Materialize a living-world day as real Medplum worklists (defaults to world 2, day 1).
 seed:
 	node infra/scripts/seed-world.mjs $(SEED_ARGS)
+ifeq ($(SYNTHETIC_HOSPITAL),1)
+	$(MAKE) load-synthetic-hospital
+endif
+
+# Opt-in historical charts, independent of simulation worlds; committed default cohort = 150.
+.PHONY: load-synthetic-hospital synthetic-hospital test-synthetic-hospital
+load-synthetic-hospital:
+	node infra/scripts/load-synthetic-hospital.mjs
+
+synthetic-hospital:
+	node scripts/synthetic-hospital/fetch.mjs
+	node scripts/synthetic-hospital/convert.mjs
+
+test-synthetic-hospital:
+	node --test scripts/synthetic-hospital/*.test.mjs
 
 # Regenerate the raw Synthea population (needs Java 17+, ~200 MB download, ~3 min) and re-trim it
 # into the committed fixtures/synthea/. Not part of install.
@@ -82,3 +100,7 @@ wasm:
 
 wasm-check:
 	node scripts/wasm-assets.mjs
+
+.PHONY: rebind
+rebind:
+	pnpm --filter agent rebind --run $(RUN)

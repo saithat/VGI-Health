@@ -3,11 +3,13 @@ import { z } from "zod";
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 export const buildBindingSchema = z.object({
   schemaVersion: z.literal(1),
+  ehrSha256: digest.optional(),
   wasmSha256: digest,
   appSha256: digest,
   componentsSha256: digest,
   programSha256: digest,
   certificateSha256: digest,
+  certificationInputsSha256: digest.optional(),
   sourceProgramSha256: digest.optional(),
 });
 export type BuildBinding = z.infer<typeof buildBindingSchema>;

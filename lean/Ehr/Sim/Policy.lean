@@ -263,7 +263,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
-      tasks := day.tasks ++ [metrics task.id r.trace complete]
+      tasks := day.tasks ++ [{ metrics task.id r.trace complete with
+        wallTimeMinutes? := some ((r.elapsedMs + 59999) / 60000) }]
       floor := day.floor ++ [floor]
       complaints := (day.complaints ++ r.complaints).eraseDups }
   return day

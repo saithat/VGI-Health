@@ -76,7 +76,7 @@ if (!initial.ok) throw new Error(`Initial deploy failed: ${initial.check.message
 const trainSchedule = fixtureSchedule(1);
 const train = await ehr.simulate({ specVersion, program: current, persona: persona.params, schedule: trainSchedule, worldDir: world.dir, seed: deps.worldSeed * 1000 + 1 });
 await store.writeDay(train);
-const result = await runNight(deps, { night: 1, persona, release: { id: specVersion, specVersion, spec: tinySpec, canonical: current, notes: 'FAKE fixture', leanSpecSource: null, fake: false }, current, train: [{ schedule: trainSchedule, result: train }], programs: new Map([[0, current]]), history: [], holdout: makeHoldout(deps, persona, fixtureSchedule(2)) });
+const result = await runNight(deps, { night: 1, persona, release: { id: specVersion, specVersion, spec: tinySpec, canonical: current, notes: 'FAKE fixture', leanSpecSource: null, fake: false }, current, train: [{ schedule: trainSchedule, result: train }], programs: new Map([[0, current]]), history: [], holdout: makeHoldout(deps, persona, fixtureSchedule(1)) });
 await writeJson(path.join(out, 'dry-result.json'), { outcome: result.record.outcome, directory: out, llmCost: 0, realEhr: true, sourceFieldCount: current.screens.flatMap((s) => s.components).filter((c) => fieldElement(c)).length });
 console.log(`FAKE dry run: ${result.record.outcome}; real check/deploy/screens/journals; LLM cost 0; ${out}`);
 if (!result.deployed) throw new Error(`Dry candidate did not deploy: ${result.record.validation.reason}; ${result.record.flags.join('; ')}`);

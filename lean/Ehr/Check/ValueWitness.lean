@@ -11,6 +11,7 @@ theorem value_witness (facts : Facts) (user : User) (kind : ValueKind)
     ∃ value, valueSatisfies facts user kind value = true := by
   cases kind with
   | quantity unit => exact ⟨.qty 0 unit, by simp [valueSatisfies, valueAccepted]⟩
+  | medicationDose => exact ⟨.qty 0 .mg, rfl⟩
   | coded _ => exact ⟨.code "entered", by simp [valueSatisfies, valueAccepted]⟩
   | text => exact ⟨.text "entered", rfl⟩
   | flag => exact ⟨.flag true, rfl⟩

@@ -1,3 +1,4 @@
+import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
 import type { PresentationBundle } from "../ehr/ui/presentation-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -396,7 +397,7 @@ export function Trajectories({
     let active = true;
     void readRunJson(`/runs/${runId}/trajectories/index.json`)
       .then((raw) => {
-        const data = trajectoryIndexSchema.parse(raw);
+        const data = trajectoryReleaseLabels(trajectoryIndexSchema.parse(raw));
         if (data.runId !== runId)
           throw new Error("Trajectory index belongs to another run");
         if (active) setIndex(data);

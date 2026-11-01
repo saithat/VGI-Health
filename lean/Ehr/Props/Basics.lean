@@ -1,4 +1,5 @@
 import Ehr.Core.View
+import Ehr.Core.Navigation
 
 /-!
 # Property basics: episodes, reachable states, and what "shown" means
@@ -94,7 +95,7 @@ def commitButtons (p : Program) : List CommitId :=
 button of the canonical program or of the program itself, that the spec
 lets the program's role perform. -/
 def requiredCommits (spec : Spec) (canonical prog : Program) : List CommitId :=
-  (commitButtons canonical ++ commitButtons prog).eraseDups.filter fun c =>
+  (commitButtons { canonical with screens := canonical.screens.filter (presetScreen prog.presetOwner) } ++ commitButtons prog).eraseDups.filter fun c =>
     match spec.commit? c with
     | some cs => cs.roles.contains prog.role
     | none => false

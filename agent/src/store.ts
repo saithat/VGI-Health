@@ -1,3 +1,4 @@
+import { readBinding } from './binding-pointer.js';
 import { presentationBundleSchema } from '../../app/src/ehr/ui/presentation-types.js';
 import { existsSync } from 'node:fs';
 import { expandProgram } from './composites.js';
@@ -37,7 +38,7 @@ export class RunStore {
   rel(p: string): string { return path.relative(this.dir, p); }
 
   /** Store a certified version and point login at it. */
-  async deploy(persona: string, program: Program, certificate: Certificate, build?: BuildBinding): Promise<{ version: number; program: string; certificate: string; build?: string; source?: string; components?: string }> {
+  async deploy(persona: string, program: Program, certificate: Certificate, build?: BuildBinding, night?: number): Promise<{ version: number; program: string; certificate: string; build?: string; source?: string; components?: string }> {
     const currentPointerFile = path.join(this.dir, 'programs', persona, 'deployed.json');
     if (existsSync(currentPointerFile)) {
       const current = await readJson(currentPointerFile, deployedPointerSchema);
@@ -70,23 +71,25 @@ export class RunStore {
     const buildFile = certFile.replace(/\.json$/, '.build.json');
     if (build) await writeJsonAtomic(buildFile, buildBindingSchema.parse(build));
     const pointer = { version: program.version, program: this.rel(programFile), certificate: this.rel(certFile), source: this.rel(sourceFile), ...(components ? { components: this.rel(componentsFile) } : {}), ...(build ? { build: this.rel(buildFile) } : {}) };
-    await writeJsonAtomic(path.join(this.dir, 'programs', persona, 'deployed.json'), pointer);
+    if (night === undefined) await writeJsonAtomic(path.join(this.dir, 'programs', persona, 'deployed.json'), pointer);
+    else await writeJsonAtomic(path.join(this.dir, 'pending', `${persona}.json`), { night, persona, pointer });
     return pointer;
   }
 
   /** Login: load the deployed program and its certificate. */
   async login(persona: string): Promise<{ program: Program; certificate: Certificate }> {
+    await this.recover(persona);
     const pointer = await readJson(path.join(this.dir, 'programs', persona, 'deployed.json'), deployedPointerSchema);
     const program = await readJson(path.join(this.dir, pointer.program), programSchema);
     const certificate = await readJson(path.join(this.dir, pointer.certificate), certificateSchema);
     if (pointer.build) {
-      const binding = await readJson(path.join(this.dir, pointer.build), buildBindingSchema);
+      const binding = await readBinding(path.join(this.dir, pointer.build));
       if (binding.programSha256 !== sha256(stableStringify(program)) || binding.certificateSha256 !== sha256(stableStringify(certificate)))
         throw new Error('Deployed program/certificate no longer match their build binding');
     }
     const source = pointer.source ? await readJson(path.join(this.dir, pointer.source), programSchema) : program;
     if (pointer.build) {
-      const binding = await readJson(path.join(this.dir, pointer.build), buildBindingSchema);
+      const binding = await readBinding(path.join(this.dir, pointer.build));
       if (binding.sourceProgramSha256 && binding.sourceProgramSha256 !== sha256(stableStringify(source))) throw new Error('Source program no longer matches its build binding');
       const components = pointer.components ? await readJson(path.join(this.dir, pointer.components), presentationBundleSchema) : [];
       if (binding.componentsSha256 !== sha256(stableStringify(components))) throw new Error('Components no longer match the build binding');
@@ -96,8 +99,24 @@ export class RunStore {
 
   async writeDecision(record: DecisionRecord): Promise<string> {
     const file = this.decisionPath(record.night, record.persona);
-    await writeJson(file, decisionRecordSchema.parse(record));
+    await writeJsonAtomic(file, decisionRecordSchema.parse(record));
+    await this.recover(record.persona);
     return file;
+  }
+
+  /** A durable decision precedes the only publication point. Safe after a process crash. */
+  async recover(persona: string): Promise<void> {
+    const pending = path.join(this.dir, 'pending', `${persona}.json`);
+    if (!existsSync(pending)) return;
+    const tx = z.object({night:z.number(),pointer:deployedPointerSchema}).parse(JSON.parse(await (await import('node:fs/promises')).readFile(pending, 'utf8')));
+    const file = this.decisionPath(tx.night, persona);
+    if (!existsSync(file)) return; // uncommitted staging; the interrupted night will retry
+    const record = await readJson(file, decisionRecordSchema);
+    if (!record.deployed || record.versionAfter !== tx.pointer.version) return;
+    const current = path.join(this.dir, 'programs', persona, 'deployed.json');
+    const old = existsSync(current) ? await readJson(current, deployedPointerSchema) : null;
+    if (!old || old.version < tx.pointer.version) await writeJsonAtomic(current, tx.pointer);
+    await (await import('node:fs/promises')).rm(pending);
   }
 
   readDecision(night: number, persona: string): Promise<DecisionRecord> {

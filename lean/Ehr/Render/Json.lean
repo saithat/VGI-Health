@@ -1,5 +1,5 @@
 import Lean.Data.Json
-import Ehr.Core.Json
+import Ehr.JsonCompat
 import Ehr.Render.Types
 
 /-!
@@ -22,7 +22,20 @@ deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode, UiNode
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
-  EncRow, ProcRow, GrowthPoint, Display
+  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, Display
+
+/-- Old render fixtures predate notes/history; only absent lists default to empty. -/
+private def readDisplay : Lean.Json → Except String Display := Lean.fromJson?
+
+instance (priority := 1100) : Lean.FromJson Display where
+  fromJson? j := do
+    let j := ["notes", "history"].foldl (fun j key =>
+      match j.getObjVal? key with
+      | .ok _ => j
+      | .error _ => match j with
+        | .obj _ => j.setObjVal! key (.arr #[])
+        | _ => j) j
+    readDisplay j
 
 deriving instance Lean.ToJson, Lean.FromJson for RenderInput, FactsContext, FactsOutput
 

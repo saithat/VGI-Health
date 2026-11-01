@@ -8,7 +8,7 @@ import { ScriptedLlm } from './scripted.js';
 it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
   const worldDir = await fakeWorld(3);
   const runsRoot = await tmp('resume-runs');
-  const common = { worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v1_1: 2, v2: 3 } };
+  const common = { worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v2: 2, v3: 3 } };
   const first = await runDays({ ...common, days: 2, llm: new ScriptedLlm() });
   const store = new RunStore(first.dir);
   const day1 = await readFile(store.dayPath(1, 'P3'), 'utf8');

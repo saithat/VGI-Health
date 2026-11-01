@@ -400,22 +400,25 @@ Sign adds `signOrders`. (Checked by the kernel with `decide`.) -/
 section Examples
 open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
-example : "signOrders" ∉ atSignTab.commits ∧
+/-- A concrete human Sign click adds a new commit. -/
+theorem tiny_sign_commit_occurs : "signOrders" ∉ atSignTab.commits ∧
     "signOrders" ∈ (step spec program facts user .human atSignTab (.click "signButton")).1.commits := by
   decide
 
-example : commitGuard spec program facts user atSignTab "signOrders" = true :=
+/-- T0 derives the true guard from that concrete new commit. -/
+theorem tiny_sign_guard_holds : commitGuard spec program facts user atSignTab "signOrders" = true :=
   T0_commit_needs_guard spec program facts user .human atSignTab (.click "signButton") "signOrders"
     (by decide) (by decide)
 
 /-- The guard rejects bad states: with the allergy tab closed, or with the
 weight in lb, the guard fails. -/
-example : commitGuard spec program facts user atSign "signOrders" = false := by decide
-example : commitGuard spec program facts user atSignLb "signOrders" = false := by decide
+theorem tiny_hidden_review_blocks : commitGuard spec program facts user atSign "signOrders" = false := by decide
+/-- A pounds capture cannot satisfy the kg requirement. -/
+theorem tiny_pounds_blocks : commitGuard spec program facts user atSignLb "signOrders" = false := by decide
 
 /-- `T3_cosign_distinct` hypotheses on the tiny example: a warfarin order
 (high-alert) needs the cosigner, and the commit goes through with user u2. -/
-example : let s := run atSignWarfarin [.enter "cosignField" (.user "u2")]
+theorem tiny_high_alert_cosign_commit : let s := run atSignWarfarin [.enter "cosignField" (.user "u2")]
     "signOrders" ∉ s.commits ∧
     "signOrders" ∈ (step spec program facts user .human s (.click "signButton")).1.commits ∧
     whenHolds facts s When.highAlertMed = true := by
@@ -423,7 +426,7 @@ example : let s := run atSignWarfarin [.enter "cosignField" (.user "u2")]
 
 /-- The extended per-line theorem has a real completing witness: a Schedule II
 order with zero refills commits, and its zero is on that order's own slot. -/
-example : ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" ∧ x.slot = 0 ∧
+theorem scheduleII_zero_refills_per_line : ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" ∧ x.slot = 0 ∧
     EntryCaptureValid CoreTests.ScheduleII.refills CoreTests.ScheduleII.zeroRefills x :=
   T0_entry_values_perLine CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram
     facts user .human CoreTests.ScheduleII.good (.click "sign") "signOrders"
@@ -431,7 +434,7 @@ example : ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" �
     0 "hydromorphone" (by decide) (by decide) CoreTests.ScheduleII.refills (by decide)
 
 /-- The whole-episode extension is also nonvacuous on the same public step. -/
-example : let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := false }
+theorem scheduleII_zero_refills_whole_episode : let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := false }
     ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" ∧
       EntryCaptureValid CoreTests.ScheduleII.refills rq x := by
   let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := false }
@@ -441,7 +444,7 @@ example : let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := fals
     (by decide) CoreTests.ScheduleII.refills (by decide)
 
 /-- A confirmed default of three remains blocked for a Schedule II line. -/
-example : commitGuard CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram
+theorem scheduleII_nonzero_refills_blocked : commitGuard CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram
     facts user CoreTests.ScheduleII.bad "signOrders" = false := by decide
 
 end Examples

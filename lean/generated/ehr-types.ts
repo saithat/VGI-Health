@@ -106,6 +106,8 @@ export const FrictionValues = ["safety", "compliance", "accidental"] as const;
 export type ValueKind =
   /** A number in the given unit (the unit is required). */
   | { quantity: { unit: UnitKind } }
+  /** A dose in a unit declared for the selected formulary drug, on this slot. */
+  | "medicationDose"
   /** A code from a value set. */
   | { coded: { valueSet: string } }
   /** Free text. */
@@ -753,7 +755,7 @@ export type Action =
   | { markReviewed: { info: InfoId } }
   /** Starts a new order line. */
   | "newOrderLine"
-  /** Requests prior authorization for the current order line (release v1.1). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
+  /** Requests prior authorization for the current order line (release v2). It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). */
   | "requestPriorAuth";
 
 /**
@@ -761,6 +763,7 @@ export type Action =
  * valid receipt for `i`.
  */
 export type Visibility =
+  | { encounter: { kind: string } }
   | "always"
   | { unlessReceipt: { info: InfoId } };
 
@@ -796,7 +799,7 @@ export type Kind =
   /** A button that runs a macro. */
   | { macro: { id: MacroId } }
   | { search: { scope: string } }
-  /** Prior-authorization status of the current order line (release v1.1; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
+  /** Prior-authorization status of the current order line (release v2; catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. */
   | { priorAuth: { info: InfoId } };
 
 /**
@@ -884,6 +887,15 @@ export interface Program {
 }
 
 /**
+ * Native-unit dose bounds. Zero means that no bound is specified.
+ */
+export interface DoseUnitRule {
+  unit: UnitKind;
+  minTenths: number;
+  maxTenths: number;
+}
+
+/**
  * A drug in the formulary. The formulary is keyed by `name`, the lowercase
  * generic name (e.g. `"amoxicillin"`).
  */
@@ -896,6 +908,10 @@ export interface DrugInfo {
    * RxNorm codes for this drug (may be empty).
    */
   rxnorm: string[];
+  /**
+   * Allowed dose units and their native-unit ranges; the first is the composer default.
+   */
+  doseUnits: DoseUnitRule[];
   /**
    * Drug classes. The first is the therapeutic class used for
    * duplicate-therapy checks; all are used for allergy and interaction matching.
@@ -957,6 +973,8 @@ export interface Facts {
   allergyVersion: number;
   allergyClasses: string[];
   medsVersion: number;
+  notesVersion: number;
+  historyVersion: number;
   currentMedClasses: string[];
   /**
    * Weight recorded today: tenths, and the unit as recorded.
@@ -1443,6 +1461,7 @@ export interface TaskMetrics {
   backtracks: number;
   klmDeciSec: number;
   completed: boolean;
+  wallTimeMinutes?: number;
 }
 
 /**
@@ -2021,6 +2040,36 @@ export interface GrowthPoint {
 }
 
 /**
+ * One visible DocumentReference, with all inline plain-text attachments.
+ */
+export interface NoteRow {
+  id: string;
+  date: string;
+  noteType: string;
+  author: string;
+  encounter: string;
+  title: string;
+  text: string;
+  status: string;
+  sourceDate: string;
+  shiftDays: string;
+  versionId: string;
+}
+
+/**
+ * Reported history; never an order or evidence of administration.
+ */
+export interface HistoryRow {
+  id: string;
+  kind: string;
+  item: string;
+  detail: string;
+  status: string;
+  source: string;
+  versionId: string;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
@@ -2054,6 +2103,8 @@ export interface Display {
   encounters: EncRow[];
   procedures: ProcRow[];
   growth: GrowthPoint[];
+  notes: NoteRow[];
+  history: HistoryRow[];
 }
 
 /**

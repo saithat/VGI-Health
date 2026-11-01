@@ -54,7 +54,7 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
         provenance? := some ("record:" ++ f) }
   | .default d =>
-    (parseValue el.kind d).map fun v =>
+    (parseElementValue s el n d).map fun v =>
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
         provenance? := some "default" }
   | .linked src =>
@@ -152,7 +152,7 @@ def priorAuthCaptured (s : State) : Bool :=
   s.captured.any fun x =>
     x.element == priorAuthElement && x.slot == s.currentSlot && x.confirmed
 
-/-- Request prior authorization for the current order line (release v1.1).
+/-- Request prior authorization for the current order line (release v2).
 It writes only the `"priorAuthRequest"` element, on the current slot, under the
 same rules as entering a value: the element must be in the spec and the role
 must be allowed; a macro may not do it if the element is human-only or
@@ -189,6 +189,8 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
 /-- The current drug line meets every applicable per-line requirement in the
 spec. Checks all signing commits, so moving forward cannot strand a line. -/
 def currentLineComplete (sp : Spec) (facts : Facts) (user : User) (s : State) : Bool :=
+  (s.captured.all fun x => x.slot != s.currentSlot ||
+    (sp.element? x.element).all (fun el => elementValueValid facts s el x.slot x.value)) &&
   (orderLines s).all fun p => p.1 != s.currentSlot ||
     sp.entries.all fun rq => !rq.perOrderLine || !lineMatches facts s rq.when p.1 p.2 ||
       match sp.element? rq.element with
@@ -236,6 +238,7 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
 /-- Why an entered value is refused, in words. -/
 def rejectReason (el : ElementSpec) (v : Value) : String :=
   match el.kind, v with
+  | .medicationDose, _ | .coded "dose-unit", _ => "dose unit must match the selected formulary drug"
   | .identity, .text _ => s!"identity mismatch: {el.id}"
   | .cosign, .user _ => s!"cosign must be a different user: {el.id}"
   | .scan t, .code _ => s!"scan does not match {t}: {el.id}"
@@ -368,9 +371,9 @@ def macroValue (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : C
   match shownComp? sp prog facts s cid with
   | some c =>
     match c.kind with
-    | .field e _ _ =>
+    | .field e slot _ =>
       match sp.element? e with
-      | some el => (parseValue el.kind str).getD (.text str)
+      | some el => (parseElementValue s el (resolveSlot s slot) str).getD (.text str)
       | none => .text str
     | _ => .text str
   | none => .text str

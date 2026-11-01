@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-// Frozen full-profile v2 spec (git 1123612:releases/v2/spec.json, before the
+// Frozen full-profile v3 spec (git 1123612:releases/v2/spec.json, before the
 // temporary core rule profile). The mapper must handle every catalog element,
 // so it stays tested while the release exports use core.
-import spec from "./fixtures/spec-v2-full.json";
+import spec from "./fixtures/spec-v3-full.json";
 import { mapCommit, systems, type CommitInput } from "../src/data/commitMapper";
 import type { Captured, Value } from "../../lean/generated/ehr-types";
 
@@ -421,4 +421,25 @@ describe("pure Lean commit → FHIR transaction", () => {
       }),
     ).toThrow("CPT");
   });
+});
+
+it.each([
+  ["heparin", 5000, "units", "[iU]"],
+  ["insulin lispro", 4, "units", "[iU]"],
+  ["albuterol", 180, "mcg", "ug"],
+  ["albuterol", 2.5, "mg", "mg"],
+] as const)("writes %s dose %s %s without unit conversion", (drug, dose, unit, code) => {
+  const medication = resources({ captured: order.map(c =>
+    c.element === "drug" ? captured("drug", drug) :
+    c.element === "dose" ? captured("dose", { qty: { tenths: dose * 10, unit } }) :
+    c.element === "doseUnit" ? captured("doseUnit", unit) : c),
+  }).find(r => r.resourceType === "MedicationRequest");
+  expect(medication).toMatchObject({ dosageInstruction: [{ doseAndRate: [{
+    doseQuantity: { value: dose, unit, code, system: "http://unitsofmeasure.org" },
+  }] }] });
+});
+it("refuses a dose whose separate selector disagrees", () => {
+  expect(() => resources({ captured: order.map(c =>
+    c.element === "doseUnit" ? captured("doseUnit", "units") : c),
+  })).toThrow("must agree");
 });

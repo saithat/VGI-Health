@@ -213,7 +213,11 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
   else if let some rule := encounterRoleFailure? sp facts user c then rule.reason
-  else if !validationsOk sp facts s then "value validation failed"
+  else if !validationsOk sp facts s then
+    if sp.elements.any (fun el => el.kind == .medicationDose && s.captured.any (fun x =>
+      x.element == el.id && !doseValueValid s x.slot x.value)) then
+      "dose unit must match the selected formulary drug and dose unit selector"
+    else "value validation failed"
   else if !defaultsOk sp prog then "required default missing or incorrect"
   else if !displaysOk sp prog facts s c then "structured display or action label required"
   else

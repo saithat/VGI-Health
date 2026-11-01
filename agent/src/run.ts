@@ -1,14 +1,18 @@
+import { assertCertified } from './certification.js';
+import { runFingerprints } from './fingerprints.js';
+import { calibrationDay, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
+import { auditRunTranscripts } from './backends/isolation.js';
 /**
  * Run orchestrator: N work-days x personas (BRIEF 8.1).
  *
  *   for each day d, for each persona:
  *     login (load the deployed program) -> simulate the shift -> logout
- *   then, unless d is the last day, the night: vendor release v1.1 before
- *   Day 4 (surface-feature), v2 before Day 7 (migrate), else the nightly loop.
+ *   then, unless d is the last day, the night: vendor release v2 before
+ *   Day 4 (surface-feature), v3 before Day 7 (migrate), else the nightly loop.
  *   Only certified versions are deployed; they take effect at the next login.
  *
- * After the last day, each deployed change gets its TEST measurement: day
- * night+2 (never used to select it) replayed on the old and new versions.
+ * After the last day, accepted versions get their recorded blind even-day test
+ * measurement versus the certified active-release canonical.
  */
 import { RELEASE_IDS, RELEASE_DAYS } from './release-config.js';
 import { mkdir, readFile, readdir } from 'node:fs/promises';
@@ -44,7 +48,7 @@ export interface RunOptions {
   personas?: string[];
   seedPolicy?: SeedPolicy;
   /** Day on which each release takes effect at login. */
-  releaseDays?: { v1_1: number; v2: number };
+  releaseDays?: { v2: number; v3: number };
   ehr?: EhrClient;
   /** Offline screen check (default: fake under EHR_FAKE=1, else render-screens + app screen-check). */
   screens?: ScreenChecker;
@@ -65,6 +69,8 @@ export interface RunSummary {
   timelines: PersonaTimeline[];
   rejections: { night: number; persona: string; candidate: string; seeded: boolean; property: string | null; message: string | null }[];
   seededRejectedKinds: string[];
+  invalidPatches: {persona:string;night:number;candidate:string}[];
+  infrastructureErrors: {persona:string;night:number;message:string}[];
   llmErrors: { persona: string; night: number; message: string }[];
 }
 
@@ -109,18 +115,21 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
   };
+  const fingerprints = await runFingerprints(ehr, world.dir);
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    fingerprints: z.unknown(),
     releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
     createdAt: z.string(), world: z.string(), backend: z.string(), personas: z.array(z.string()),
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
-    releaseDays: z.object({ v1_1: z.number(), v2: z.number() }), seedPolicy: z.string(),
+    releaseDays: z.object({ v2: z.number(), v3: z.number() }), seedPolicy: z.string(),
   });
   let previous: z.infer<typeof resumeManifestSchema> | null = null;
   if (!opts.resume && existsSync(manifestFile)) throw new Error('Run already exists; use --resume or a new run id');
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
     if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
@@ -129,7 +138,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    status: 'initializing',
+    status: 'initializing', fingerprints, measurementProtocol,
+    mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
@@ -202,18 +212,40 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     timelines.set(id, { persona: id, days: [], nights: [] });
   }
 
+  const failures = new Map<string, number>();
   await writeJson(manifestFile, { ...manifestData, status: 'running' });
+  try {
   for (let day = 1; day <= opts.days; day++) {
     // Login -> shift -> logout.
     for (const [id, view] of views) {
       const schedule = await world.schedule(day, id);
       if (!schedule) throw new Error(`world has no schedule for day ${day} / ${id}`);
-      const { program } = await store.login(id);
+      const { program, certificate } = await store.login(id);
       programs.get(id)?.set(program.version, program);
       const recorded = opts.resume && existsSync(store.dayPath(day, id));
+      if (!recorded) assertCertified(program, certificate, inForce.specVersion, ehr.mode);
       const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
       if (!recorded) await store.writeDay(result);
-      train.get(id)?.push({ result, schedule });
+      const resultProgram = await store.readProgram(id, result.programVersion);
+      const recordedCert = await readJson(store.certPath(id, result.programVersion), (await import('./schema.js')).certificateSchema);
+      assertCertified(resultProgram, recordedCert, inForce.specVersion, ehr.mode);
+      if (!isMeasurementDay(day)) {
+        const trainingSchedule = calibrationPartition(schedule, 'train');
+        const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
+        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
+        train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
+      }
+      const baselineFile = path.join(dir, 'baselines', `day-${String(day).padStart(2,'0')}`, `${id}.json`);
+      if (!existsSync(baselineFile)) {
+        const roleRelease = await releaseForPersona(inForce, id);
+        const canonical = personalize(roleRelease.canonical, view.params, view.userId);
+        const verdict = await ehr.check({ specVersion: inForce.specVersion, program: canonical, prev: canonical, canonical: roleRelease.canonical });
+        if (verdict !== 'ok') throw new Error(`Uncertified canonical baseline ${id}/${day}`);
+        const baseline = await ehr.simulate({ specVersion: inForce.specVersion, program: canonical, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        await writeJson(baselineFile, baseline);
+        await writeJson(baselineFile.replace('.json','.program.json'), canonical);
+      }
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
       timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s, klmSec: m.t / 10 });
       log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${(m.t / 10).toFixed(0)}s`);
@@ -221,13 +253,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (day === opts.days) break;
 
     // Night `day`: the release (if any) takes effect at the next login.
-    const nextRelease = day + 1 === releaseDays.v1_1 ? await release(RELEASE_IDS.feature) : day + 1 === releaseDays.v2 ? await release(RELEASE_IDS.migration) : null;
+    const nextRelease = day + 1 === releaseDays.v2 ? await release(RELEASE_IDS.feature) : day + 1 === releaseDays.v3 ? await release(RELEASE_IDS.migration) : null;
     for (const [id, view] of views) {
       const { program: current } = await store.login(id);
       const nightInput = {
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
         train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
-        holdout: makeHoldout(deps, view, await world.schedule(day + 1, id)),
+        holdout: makeHoldout(deps, view, await world.schedule(calibrationDay(day), id)),
       };
       let res: NightResult;
       const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;
@@ -244,30 +276,32 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       else res = await runNight(deps, nightInput);
       const r = res.record;
       records.push(r);
+      const streak = r.outcome === 'llm-error' ? (failures.get(id) ?? 0) + 1 : 0;
+      failures.set(id, streak);
+      if (streak >= 3) throw new Error(`ABORT ${id}: 3 consecutive LLM failures`);
       history.get(id)?.push(historyItem(r));
       if (res.deployed) programs.get(id)?.set(res.deployed.version, res.deployed);
       timelines.get(id)?.nights.push({
         night: day, mode: r.mode, outcome: r.outcome, versionBefore: r.versionBefore, versionAfter: r.versionAfter,
-        rejected: r.candidates.filter((e) => e.check.status !== 'pass').length, seeded: r.candidates.filter((e) => e.candidate.seeded).length,
+        rejected: r.candidates.filter((e) => e.check.status === 'fail').length, seeded: r.candidates.filter((e) => e.candidate.seeded).length,
       });
-      log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status !== 'pass').length} rejected`);
+      log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status === 'fail').length} rejected`);
     }
     if (nextRelease) inForce = nextRelease;
   }
 
-  // Test measurement: day night+2 replayed on the old and new versions (never used for selection).
+  // Blind tests use recorded actual even-day measurements and their active-release canonicals.
   for (const r of records) {
     if (!r.deployed || r.versionAfter === r.versionBefore) continue;
-    const testDay = r.night + 2;
-    const view = views.get(r.persona);
-    const schedule = testDay <= world.manifest.days ? await world.schedule(testDay, r.persona) : null;
-    const before = programs.get(r.persona)?.get(r.versionBefore);
-    const after = programs.get(r.persona)?.get(r.versionAfter);
-    if (!view || !schedule || !before || !after) continue;
-    const args = { specVersion: r.specVersion, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, testDay) };
-    const b = await ehr.simulate({ ...args, program: before });
-    const a = await ehr.simulate({ ...args, program: after });
-    r.measured.test = replayDay(testDay, schedule.load, b, a);
+    const testDay = r.night % 2 ? r.night + 1 : r.night + 2;
+    const file = store.dayPath(testDay, r.persona);
+    if (testDay <= opts.days && existsSync(file)) {
+      const actual = await readJson(file, dayResultSchema);
+      if (actual.programVersion === r.versionAfter) {
+        const baseline = await readJson(path.join(dir, 'baselines', `day-${String(testDay).padStart(2,'0')}`, `${r.persona}.json`), dayResultSchema);
+        r.measured.test = replayDay(testDay, 'blind-measurement', baseline, actual);
+      } else r.flags.push(`test-unmeasured: v${r.versionAfter} superseded before blind day ${testDay}`);
+    } else r.flags.push(`test-unmeasured: blind day ${testDay} outside this run`);
     await store.writeDecision(r);
   }
 
@@ -276,17 +310,23 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     dir,
     timelines: [...timelines.values()],
     rejections: records.flatMap((r) => [
-      ...r.candidates.filter((e) => e.check.status !== 'pass').map((e) => ({
+      ...r.candidates.filter((e) => e.check.status === 'fail').map((e) => ({
         night: r.night, persona: r.persona, candidate: e.candidate.id, seeded: e.candidate.seeded, property: e.check.property, message: e.check.message,
       })),
-      ...r.certification.attempts.filter((a) => a.source === 'screen-check').map((a) => ({
+      ...r.certification.attempts.filter((a) => a.source === 'screen-check' && a.check.status === 'fail').map((a) => ({
         night: r.night, persona: r.persona, candidate: a.candidateIds.join('+'), seeded: false, property: a.check.property, message: `${(a.check.screens ?? []).join(', ')}: ${a.check.message ?? ''}`,
       })),
     ]),
     seededRejectedKinds: [...seedState.rejected],
+    invalidPatches: records.flatMap((r)=>r.candidates.filter((c)=>c.check.status==='invalid-patch').map((c)=>({persona:r.persona,night:r.night,candidate:c.candidate.id}))),
+    infrastructureErrors: records.flatMap((r)=>r.screenCheck?.status==='error'?[{persona:r.persona,night:r.night,message:r.screenCheck.message}]:[]),
     llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
   await writeJson(path.join(dir, 'summary.json'), summary);
-  await writeJson(manifestFile, { ...manifestData, status: summary.llmErrors.length ? 'failed' : 'completed', llmErrors: summary.llmErrors });
+  await writeJson(manifestFile, { ...manifestData, status: summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   return summary;
+  } catch (error) {
+    await writeJson(manifestFile, { ...manifestData, status: 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
+    throw error;
+  }
 }

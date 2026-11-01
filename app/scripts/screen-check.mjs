@@ -1,6 +1,6 @@
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync, mkdtempSync, rmSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createServer } from "node:net";
 import { spawnSync } from "node:child_process";
@@ -48,13 +48,14 @@ const port = process.env.APP_TEST_PORT ?? await new Promise((resolve, reject) =>
   });
 });
 const output = mkdtempSync(resolve(tmpdir(), "ehr-visibility-"));
+const report = resolve(output, "playwright.json");
 const result = spawnSync(
   process.execPath,
   [
     resolve(appDir, "node_modules/@playwright/test/cli.js"),
     "test",
     ui ? "ui-check.spec.ts" : "screen-check.spec.ts",
-    "--output", output, "--max-failures=1", "--workers", "1",
+    "--reporter", "list,json", "--output", output, "--max-failures=1", "--workers", "1",
     "--config",
     resolve(appDir, "playwright.config.ts"),
   ],
@@ -62,11 +63,25 @@ const result = spawnSync(
     cwd: appDir,
     stdio: "inherit",
     env: {
-      ...process.env, APP_TEST_PORT: port, APP_TEST_PREVIEW: "1",
+      ...process.env, PLAYWRIGHT_JSON_OUTPUT_NAME: report, APP_TEST_PORT: port, APP_TEST_PREVIEW: "1",
       [ui ? "EHR_UI_FILES" : "EHR_SCREEN_FILES"]: JSON.stringify(checkedFiles),
     },
   },
 );
+let gateStatus = result.status === 0 ? "pass" : "error";
+if (result.status !== 0 && existsSync(report)) {
+  const json = JSON.parse(readFileSync(report, "utf8"));
+  const errors = [];
+  const walk = (s) => {
+    for (const spec of s.specs ?? []) for (const test of spec.tests ?? []) for (const r of test.results ?? []) errors.push(...(r.errors ?? []));
+    for (const child of s.suites ?? []) walk(child);
+  };
+  walk(json);
+  // Only structured assertion errors count as a failed safety gate. Startup,
+  // navigation and rendering infrastructure exceptions remain errors.
+  if (!(json.errors?.length) && errors.length && errors.every((e) => e.matcherResult || /(?:expect\(|expect\.)/.test(e.message ?? ""))) gateStatus = "fail";
+}
+if (process.env.EHR_SCREEN_RESULT) writeFileSync(process.env.EHR_SCREEN_RESULT, JSON.stringify({status:gateStatus}));
 if (cache) {
   const receipt = recordBatch(cache.directory, cache.context, cache.entries, cache.entries.filter((entry) => !entry.reused).map((entry) => entry.sha256), result.status === 0);
   process.stdout.write(`Whole-version coverage receipt: ${receipt}\n`);

@@ -1,19 +1,19 @@
 {
   "world": "runs/world/2",
   "seed": 7,
-  "binarySha256": "4274f2a2f3df0aea5db2038df777453e12573fb9734c0afc4c6a9e818359ac82",
+  "binarySha256": "b3241bbf2c40f227b0d165550465eb00835220a7a7ef741e3f5c3793d16460e6",
   "releaseDays": {
-    "v1_1": 4,
-    "v2": 7
+    "v2": 4,
+    "v3": 7
   },
   "schedules": [
     {
       "day": 1,
       "persona": "P1",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
+      "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
       "scheduleSha256": "401eaf83555f53c80c5515b625628883e243d9f7446238e6b2930902e86d16bd",
       "preopTasks": [],
       "incomplete": 0,
@@ -25,26 +25,18 @@
       "day": 1,
       "persona": "P2",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
+      "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
       "scheduleSha256": "3e9ee7cd3afc876f9bf99b4abb7c3baac0c18f2ef0a898c95e2d897209737b62",
       "preopTasks": [],
-      "incomplete": 3,
+      "incomplete": 0,
       "tasks": 22,
-      "completed": 19,
+      "completed": 22,
       "complaints": [
-        "d01-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 68000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-003: unrepresentable clinical choice; incomplete",
-        "d01-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-005: unrepresentable clinical choice; incomplete",
         "d01-P2-W3-006: naloxone response unspecified; modeling offered-declined",
         "d01-P2-W3-008: naloxone response unspecified; modeling offered-declined",
         "d01-P2-W3-014: naloxone response unspecified; modeling offered-declined",
-        "d01-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-016: unrepresentable clinical choice; incomplete",
         "d01-P2-W3-022: naloxone response unspecified; modeling offered-declined"
       ]
     },
@@ -52,9 +44,9 @@
       "day": 1,
       "persona": "P3",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
       "scheduleSha256": "27d04178e6d452ea01daba5bdb74e5c22d23dc2885e7e556845dc22daf952a3e",
       "preopTasks": [],
       "incomplete": 0,
@@ -66,9 +58,9 @@
       "day": 1,
       "persona": "P4",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
+      "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
       "scheduleSha256": "5c801b030231f21cbb6acc5d022dc6b9d08a436453734452f14c0aa8ad7eee40",
       "preopTasks": [],
       "incomplete": 0,
@@ -80,26 +72,23 @@
       "day": 1,
       "persona": "P5",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
       "scheduleSha256": "76985fb033591518433d22d0fd57675aa20d27e8846317044ce3cf4c1baeb9de",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 18,
-      "completed": 17,
-      "complaints": [
-        "d01-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P5-W6-001: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 18,
+      "complaints": []
     },
     {
       "day": 2,
       "persona": "P1",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
+      "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
       "scheduleSha256": "dc30962d5d4abb3c7568ed5a1398c73c6efe5ff00e87c082bf8171fcc0e12b77",
       "preopTasks": [],
       "incomplete": 0,
@@ -111,19 +100,17 @@
       "day": 2,
       "persona": "P2",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
+      "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
       "scheduleSha256": "2f9c514cdccae6b1e698f2ecfb3a90c5c733c664524ad1eb397ccf6165929dcc",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 18,
-      "completed": 17,
+      "completed": 18,
       "complaints": [
         "d02-P2-W3-005: naloxone response unspecified; modeling offered-declined",
         "d02-P2-W3-006: naloxone response unspecified; modeling offered-declined",
-        "d02-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d02-P2-W3-013: unrepresentable clinical choice; incomplete",
         "d02-P2-W3-014: naloxone response unspecified; modeling offered-declined"
       ]
     },
@@ -131,9 +118,9 @@
       "day": 2,
       "persona": "P3",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
       "scheduleSha256": "353741f5ee13f86a3b2e4e05a7157e5f70423f0fbde30d97bf2eb235a690b7e3",
       "preopTasks": [],
       "incomplete": 0,
@@ -145,9 +132,9 @@
       "day": 2,
       "persona": "P4",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
+      "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
       "scheduleSha256": "599ed0598ee1dd543b36d8793b69ec1f607dd238c72b7d094bbbfc89b522a785",
       "preopTasks": [],
       "incomplete": 0,
@@ -159,9 +146,9 @@
       "day": 2,
       "persona": "P5",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
       "scheduleSha256": "197708e111bf39afc7964b2771ce40dc2450b6f4bc894953e808191a42cae765",
       "preopTasks": [
         "d02-P5-W6-003",
@@ -169,62 +156,51 @@
         "d02-P5-W6-008",
         "d02-P5-W6-011"
       ],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 14,
-      "completed": 13,
+      "completed": 14,
       "complaints": [
-        "d02-P5-W6-004: naloxone response unspecified; modeling offered-declined",
-        "d02-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d02-P5-W6-001: unrepresentable clinical choice; incomplete"
+        "d02-P5-W6-004: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 3,
       "persona": "P1",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
+      "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
       "scheduleSha256": "6e9d458e11e47840994efd6d43c0f4a1fc5dd3530eba0af5fba30b2f1e5ce61f",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 35,
-      "completed": 34,
-      "complaints": [
-        "d03-P1-W1-019: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d03-P1-W1-019: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 35,
+      "complaints": []
     },
     {
       "day": 3,
       "persona": "P2",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
+      "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
       "scheduleSha256": "ee73587f76900d720193db4e7a6de677daebc8bd8c051a07173f972bae551ee9",
       "preopTasks": [],
-      "incomplete": 3,
+      "incomplete": 0,
       "tasks": 18,
-      "completed": 15,
+      "completed": 18,
       "complaints": [
         "d03-P2-W3-006: naloxone response unspecified; modeling offered-declined",
-        "d03-P2-W3-009: naloxone response unspecified; modeling offered-declined",
-        "d03-P2-W3-010: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-010: unrepresentable clinical choice; incomplete",
-        "d03-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-012: unrepresentable clinical choice; incomplete",
-        "d03-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-013: unrepresentable clinical choice; incomplete"
+        "d03-P2-W3-009: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 3,
       "persona": "P3",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
       "scheduleSha256": "3cfd75ba78ccce3c263148d105579c71292186dbd7e2d45036e84b3a2916ff46",
       "preopTasks": [],
       "incomplete": 0,
@@ -236,9 +212,9 @@
       "day": 3,
       "persona": "P4",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
+      "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
       "scheduleSha256": "1eb025a77eb8d11c1ccb4b002ea269673925baacebf4b3fa52dc437151361eb7",
       "preopTasks": [],
       "incomplete": 0,
@@ -250,9 +226,9 @@
       "day": 3,
       "persona": "P5",
       "release": "v1",
-      "specSha256": "fa71d579b1e834e371b46943e1b0df01fa50b7dcab54d9e6039cda72950ddf0a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
       "scheduleSha256": "7663d59996a2543efa8fd46efc2db1f3e5f48140649d329757454d7eacc0e377",
       "preopTasks": [
         "d03-P5-W6-004"
@@ -267,51 +243,42 @@
     {
       "day": 4,
       "persona": "P1",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
+      "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
       "scheduleSha256": "278df94f0d12028292f276f90073c561d86912319f174b97337e38c341304236",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 40,
-      "completed": 39,
-      "complaints": [
-        "d04-P1-W1-016: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d04-P1-W1-016: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 40,
+      "complaints": []
     },
     {
       "day": 4,
       "persona": "P2",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
+      "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
       "scheduleSha256": "d1b193f8fffe8bb4f52913d44289006dc5bbf920acb36aabfaf270612b535cc0",
       "preopTasks": [],
-      "incomplete": 2,
+      "incomplete": 0,
       "tasks": 13,
-      "completed": 11,
+      "completed": 13,
       "complaints": [
         "d04-P2-W3-001: naloxone response unspecified; modeling offered-declined",
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 90 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 180 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: unrepresentable clinical choice; incomplete",
         "d04-P2-W3-005: naloxone response unspecified; modeling offered-declined",
-        "d04-P2-W3-009: naloxone response unspecified; modeling offered-declined",
-        "d04-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d04-P2-W3-012: unrepresentable clinical choice; incomplete"
+        "d04-P2-W3-009: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 4,
       "persona": "P3",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
       "scheduleSha256": "2efe49e84799d5847654d01036b3e90045b8d0d5a119ffad57b07b518df6578c",
       "preopTasks": [],
       "incomplete": 0,
@@ -322,10 +289,10 @@
     {
       "day": 4,
       "persona": "P4",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
+      "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
       "scheduleSha256": "1d4c3e0ca486a4b9fcba23b67154c2ce8a4cfe8fcd0d0d816a41ce5810c77f9b",
       "preopTasks": [],
       "incomplete": 0,
@@ -336,74 +303,60 @@
     {
       "day": 4,
       "persona": "P5",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
       "scheduleSha256": "ef164eb66259b0c6bfd61d316ad0f18bc36eebf0e01f0f73dcc0488a1c18158c",
       "preopTasks": [
         "d04-P5-W6-002",
         "d04-P5-W6-004"
       ],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 11,
-      "completed": 10,
+      "completed": 11,
       "complaints": [
-        "d04-P5-W6-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P5-W6-002: unrepresentable clinical choice; incomplete",
         "d04-P5-W6-003: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 5,
       "persona": "P1",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
+      "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
       "scheduleSha256": "12ac7473eb4f8b958ba7d77a2a4249fedb291edf332f4a4c7918355c1c4f82cf",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 23,
-      "completed": 22,
-      "complaints": [
-        "d05-P1-W1-003: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d05-P1-W1-003: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 23,
+      "complaints": []
     },
     {
       "day": 5,
       "persona": "P2",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
+      "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
       "scheduleSha256": "f5d1a98c600e2d48b2ff6724724e24ccc0da66028e5a33df2bc42ea6ecedf676",
       "preopTasks": [],
-      "incomplete": 3,
+      "incomplete": 0,
       "tasks": 20,
-      "completed": 17,
+      "completed": 20,
       "complaints": [
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 100 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 190 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: unrepresentable clinical choice; incomplete",
         "d05-P2-W3-012: naloxone response unspecified; modeling offered-declined",
-        "d05-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-013: unrepresentable clinical choice; incomplete",
-        "d05-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-016: unrepresentable clinical choice; incomplete",
         "d05-P2-W3-019: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 5,
       "persona": "P3",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
       "scheduleSha256": "fb8bcd7cbe6a5decd9cd4e43a047d70246b5eadcb8706ce380f5fdeabae507b0",
       "preopTasks": [],
       "incomplete": 0,
@@ -414,10 +367,10 @@
     {
       "day": 5,
       "persona": "P4",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
+      "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
       "scheduleSha256": "b15e329373f5ac41b63ddd90b7eeb16188a03c5bba96cd2fd34fc2c167dd19c5",
       "preopTasks": [],
       "incomplete": 0,
@@ -428,10 +381,10 @@
     {
       "day": 5,
       "persona": "P5",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
       "scheduleSha256": "a80bd3ae9664fe8b792ca9be3131523e32eab0afebfea702f75023938913126c",
       "preopTasks": [],
       "incomplete": 0,
@@ -444,10 +397,10 @@
     {
       "day": 6,
       "persona": "P1",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
+      "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
       "scheduleSha256": "2d81e4a5540c72f8b30934d7fab4b25df255922449301fed8aad4e4cbb4ee83f",
       "preopTasks": [],
       "incomplete": 0,
@@ -458,30 +411,20 @@
     {
       "day": 6,
       "persona": "P2",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
+      "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
       "scheduleSha256": "5fe038cb43d392be3c34d2e3f17442dc90ae151ed7ce9885eea80308b55375a4",
       "preopTasks": [],
-      "incomplete": 4,
+      "incomplete": 0,
       "tasks": 21,
-      "completed": 17,
+      "completed": 21,
       "complaints": [
-        "d06-P2-W3-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-001: unrepresentable clinical choice; incomplete",
         "d06-P2-W3-002: naloxone response unspecified; modeling offered-declined",
-        "d06-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-002: unrepresentable clinical choice; incomplete",
         "d06-P2-W3-004: naloxone response unspecified; modeling offered-declined",
         "d06-P2-W3-005: naloxone response unspecified; modeling offered-declined",
         "d06-P2-W3-007: naloxone response unspecified; modeling offered-declined",
-        "d06-P2-W3-008: choice for dose does not fit the spec (Ehr.Value.qty 58000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-008: unrepresentable clinical choice; incomplete",
-        "d06-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-013: unrepresentable clinical choice; incomplete",
         "d06-P2-W3-015: naloxone response unspecified; modeling offered-declined",
         "d06-P2-W3-016: naloxone response unspecified; modeling offered-declined",
         "d06-P2-W3-020: naloxone response unspecified; modeling offered-declined"
@@ -490,10 +433,10 @@
     {
       "day": 6,
       "persona": "P3",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
       "scheduleSha256": "a63c329bd1079227124a1624b141a71c9cfcb3acd1bcdf8e4ab4a127d25bb627",
       "preopTasks": [],
       "incomplete": 0,
@@ -504,10 +447,10 @@
     {
       "day": 6,
       "persona": "P4",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
+      "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
       "scheduleSha256": "bebc14fbcbab67ca370dfe02b9137aed87e043876cb610f5ba0366a79bb9eba1",
       "preopTasks": [],
       "incomplete": 0,
@@ -518,10 +461,10 @@
     {
       "day": 6,
       "persona": "P5",
-      "release": "v1.1",
-      "specSha256": "98cfce32e6749ef4ae9ada1e0fbe40d606c48e66897471256142137746ce6bbb",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
       "scheduleSha256": "db14a0d2294a59164d160180695e54b8450371b89b58d6fe344d8a13b53b958d",
       "preopTasks": [
         "d06-P5-W6-001",
@@ -536,10 +479,10 @@
     {
       "day": 7,
       "persona": "P1",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
+      "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
       "scheduleSha256": "a1caefb8857c4a016229d8c4eea8c119c3ae714d902be65dc8645c76a14aac5e",
       "preopTasks": [],
       "incomplete": 0,
@@ -550,38 +493,31 @@
     {
       "day": 7,
       "persona": "P2",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
+      "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
       "scheduleSha256": "a78a338e9771b1e6ce19b90ff495f948703b80661cd8fa4c60e690381790ebc9",
       "preopTasks": [],
-      "incomplete": 3,
+      "incomplete": 0,
       "tasks": 18,
-      "completed": 15,
+      "completed": 18,
       "complaints": [
         "d07-P2-W3-001: naloxone response unspecified; modeling offered-declined",
-        "d07-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-002: unrepresentable clinical choice; incomplete",
         "d07-P2-W3-006: naloxone response unspecified; modeling offered-declined",
         "d07-P2-W3-007: naloxone response unspecified; modeling offered-declined",
-        "d07-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-007: unrepresentable clinical choice; incomplete",
         "d07-P2-W3-010: naloxone response unspecified; modeling offered-declined",
         "d07-P2-W3-011: naloxone response unspecified; modeling offered-declined",
-        "d07-P2-W3-012: naloxone response unspecified; modeling offered-declined",
-        "d07-P2-W3-014: choice for dose does not fit the spec (Ehr.Value.qty 56000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-014: unrepresentable clinical choice; incomplete"
+        "d07-P2-W3-012: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 7,
       "persona": "P3",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
       "scheduleSha256": "536b9e33e93c684312457c89b8dabafc0be0ce6e4986dec3d11a851f77292060",
       "preopTasks": [],
       "incomplete": 0,
@@ -592,10 +528,10 @@
     {
       "day": 7,
       "persona": "P4",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
       "scheduleSha256": "ecf85a4725f71cff77123ff3aa41bd764150604b2a5c488137527dbbb6e15455",
       "preopTasks": [],
       "incomplete": 0,
@@ -606,28 +542,24 @@
     {
       "day": 7,
       "persona": "P5",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
       "scheduleSha256": "bc0abd9230c3910dd23be1ef5e1d87033112804eff020f3a7f18d367fc8e4b93",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 14,
-      "completed": 13,
-      "complaints": [
-        "d07-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P5-W6-001: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 14,
+      "complaints": []
     },
     {
       "day": 8,
       "persona": "P1",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
+      "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
       "scheduleSha256": "7fd32616cdd540d7858aeca1e06d16f74ff70a37640188a778499fe878adee81",
       "preopTasks": [],
       "incomplete": 0,
@@ -638,44 +570,31 @@
     {
       "day": 8,
       "persona": "P2",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
+      "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
       "scheduleSha256": "bd3a8afbcd984282e94fd375143b7fd3e0f2f2655ef94dec85e963ff5cb372ee",
       "preopTasks": [],
-      "incomplete": 6,
+      "incomplete": 0,
       "tasks": 15,
-      "completed": 9,
+      "completed": 15,
       "complaints": [
-        "d08-P2-W3-001: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d08-P2-W3-001: unrepresentable clinical choice; incomplete",
         "d08-P2-W3-002: naloxone response unspecified; modeling offered-declined",
         "d08-P2-W3-003: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-003: unrepresentable clinical choice; incomplete",
         "d08-P2-W3-006: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-006: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-006: unrepresentable clinical choice; incomplete",
-        "d08-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-007: unrepresentable clinical choice; incomplete",
         "d08-P2-W3-008: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-008: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-008: unrepresentable clinical choice; incomplete",
         "d08-P2-W3-009: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 58000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-012: unrepresentable clinical choice; incomplete",
         "d08-P2-W3-015: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 8,
       "persona": "P3",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
       "scheduleSha256": "93bf0c4c69eb2df5ce2252e76613fa228a8db9135925f050eeb160bfe6fb0f81",
       "preopTasks": [],
       "incomplete": 0,
@@ -686,10 +605,10 @@
     {
       "day": 8,
       "persona": "P4",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
       "scheduleSha256": "d24d55daf1664513d405edfb4e1ee5ad950f9d8781b7928190115413fd4ecd7e",
       "preopTasks": [],
       "incomplete": 0,
@@ -700,32 +619,30 @@
     {
       "day": 8,
       "persona": "P5",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
       "scheduleSha256": "156d97c4f5c6a90e317eff0ee5fbbd109f890e6b230090ca3e96e9a063cfc21a",
       "preopTasks": [
         "d08-P5-W6-002",
         "d08-P5-W6-004",
         "d08-P5-W6-007"
       ],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 12,
-      "completed": 11,
+      "completed": 12,
       "complaints": [
-        "d08-P5-W6-003: naloxone response unspecified; modeling offered-declined",
-        "d08-P5-W6-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P5-W6-003: unrepresentable clinical choice; incomplete"
+        "d08-P5-W6-003: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 9,
       "persona": "P1",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
+      "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
       "scheduleSha256": "bc8c9f9d0792b07604ae3faea672564fc7b499a6faa4ae8fd80ce622f3d328ca",
       "preopTasks": [],
       "incomplete": 0,
@@ -736,35 +653,26 @@
     {
       "day": 9,
       "persona": "P2",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
+      "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
       "scheduleSha256": "a876ab8b467669f8f94002fe3f2774e4ce945dd0ebbdfd3de61d3bd32bb2e00a",
       "preopTasks": [],
-      "incomplete": 4,
+      "incomplete": 0,
       "tasks": 12,
-      "completed": 8,
+      "completed": 12,
       "complaints": [
-        "d09-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 61000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-003: unrepresentable clinical choice; incomplete",
-        "d09-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-005: unrepresentable clinical choice; incomplete",
-        "d09-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-007: unrepresentable clinical choice; incomplete",
-        "d09-P2-W3-011: choice for dose does not fit the spec (Ehr.Value.qty 75000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-011: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-011: unrepresentable clinical choice; incomplete",
         "d09-P2-W3-012: naloxone response unspecified; modeling offered-declined"
       ]
     },
     {
       "day": 9,
       "persona": "P3",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
       "scheduleSha256": "0618b27dbb64c4da59c739781229be33117fe10993ac86f7fcb7f508a9db2faa",
       "preopTasks": [],
       "incomplete": 0,
@@ -775,10 +683,10 @@
     {
       "day": 9,
       "persona": "P4",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
       "scheduleSha256": "1e211324e26676ab16b9601f923aeb65d7d1120296d22a2babda9ddd060713d8",
       "preopTasks": [],
       "incomplete": 0,
@@ -789,10 +697,10 @@
     {
       "day": 9,
       "persona": "P5",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
       "scheduleSha256": "4e2cdab31b5202b3b328ce1dc748bc14c3e64b755e13be03a15bdb55b11e9e17",
       "preopTasks": [],
       "incomplete": 0,
@@ -803,27 +711,24 @@
     {
       "day": 10,
       "persona": "P1",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
-      "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
+      "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
       "scheduleSha256": "5b3059995c3caa6564c5dc7d23369a598c9b5e841922395e572269012bc9c898",
       "preopTasks": [],
-      "incomplete": 1,
+      "incomplete": 0,
       "tasks": 39,
-      "completed": 38,
-      "complaints": [
-        "d10-P1-W1-016: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d10-P1-W1-016: unrepresentable clinical choice; incomplete"
-      ]
+      "completed": 39,
+      "complaints": []
     },
     {
       "day": 10,
       "persona": "P2",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
-      "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
+      "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
       "scheduleSha256": "877d899ba7e02e361aab33ea3a60abcac7a9e7c4ab3b5280bdf038e991620962",
       "preopTasks": [],
       "incomplete": 0,
@@ -836,10 +741,10 @@
     {
       "day": 10,
       "persona": "P3",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
-      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
       "scheduleSha256": "6a3c10431cf4249d45c4bc73c5dc96bde3444ccd78a074575c7f2e76d11c5ec2",
       "preopTasks": [],
       "incomplete": 0,
@@ -850,10 +755,10 @@
     {
       "day": 10,
       "persona": "P4",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
-      "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
       "scheduleSha256": "cc5840e509685a6fa44681216d031bdeae69e8ab25f5c294f73902f5d3f4dceb",
       "preopTasks": [],
       "incomplete": 0,
@@ -864,10 +769,10 @@
     {
       "day": 10,
       "persona": "P5",
-      "release": "v2",
-      "specSha256": "f0a6b3b085e48dba70d3ed5292f03222e20bcf9adb127ea0a1d7f3012ff846b2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
       "scheduleSha256": "19d11f2615bdd0e73f2b347371b38c4da3ff098e5d2b569032165c91a8e9fb2a",
       "preopTasks": [
         "d10-P5-W6-001",
@@ -879,2720 +784,14 @@
       "complaints": []
     }
   ],
-  "incomplete": [
-    {
-      "day": 1,
-      "persona": "P2",
-      "task": "d01-P2-W3-003",
-      "complaints": [
-        "d01-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 68000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 68000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 800,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 1,
-      "persona": "P2",
-      "task": "d01-P2-W3-005",
-      "complaints": [
-        "d01-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-005: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q8h",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "woundExam",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 1,
-      "persona": "P2",
-      "task": "d01-P2-W3-016",
-      "complaints": [
-        "d01-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P2-W3-016: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "metformin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "holdReason": "inpatient"
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 1,
-      "persona": "P5",
-      "task": "d01-P5-W6-001",
-      "complaints": [
-        "d01-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d01-P5-W6-001: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "consultNote",
-          "imagingReview",
-          "labReview",
-          "surgicalDecision"
-        ],
-        "disposition": "admit",
-        "w6Step": "consult"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 2,
-      "persona": "P2",
-      "task": "d02-P2-W3-013",
-      "complaints": [
-        "d02-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d02-P2-W3-013: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "respiratoryAssessment",
-          "dischargeInstructions"
-        ],
-        "disposition": "discharge"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 2,
-      "persona": "P5",
-      "task": "d02-P5-W6-001",
-      "complaints": [
-        "d02-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d02-P5-W6-001: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "consultNote",
-          "imagingReview",
-          "labReview",
-          "surgicalDecision"
-        ],
-        "disposition": "admit",
-        "w6Step": "consult"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 3,
-      "persona": "P1",
-      "task": "d03-P1-W1-019",
-      "complaints": [
-        "d03-P1-W1-019: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d03-P1-W1-019: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "hpi",
-          "ros",
-          "exam",
-          "assessmentPlan"
-        ]
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 3,
-      "persona": "P2",
-      "task": "d03-P2-W3-010",
-      "complaints": [
-        "d03-P2-W3-010: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-010: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "warfarin",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 3,
-      "persona": "P2",
-      "task": "d03-P2-W3-012",
-      "complaints": [
-        "d03-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-012: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q8h",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "woundExam",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 3,
-      "persona": "P2",
-      "task": "d03-P2-W3-013",
-      "complaints": [
-        "d03-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d03-P2-W3-013: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 200,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "warfarin",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "metformin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "holdReason": "inpatient"
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 4,
-      "persona": "P1",
-      "task": "d04-P1-W1-016",
-      "complaints": [
-        "d04-P1-W1-016: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d04-P1-W1-016: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "hpi",
-          "ros",
-          "exam",
-          "assessmentPlan"
-        ]
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 4,
-      "persona": "P2",
-      "task": "d04-P2-W3-003",
-      "complaints": [
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 90 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 180 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P2-W3-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 90,
-            "unit": "units",
-            "route": "SC",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "insulin glargine",
-            "doseTenths": 180,
-            "unit": "units",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 4,
-      "persona": "P2",
-      "task": "d04-P2-W3-012",
-      "complaints": [
-        "d04-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d04-P2-W3-012: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false,
-            "indication": "copd-exacerbation"
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "respiratoryAssessment",
-          "dischargeInstructions"
-        ],
-        "disposition": "discharge"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 4,
-      "persona": "P5",
-      "task": "d04-P5-W6-002",
-      "complaints": [
-        "d04-P5-W6-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d04-P5-W6-002: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "vancomycin",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "surgical-prophylaxis"
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "once",
-            "prn": false
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "hAndPUpdate",
-          "consentVerification",
-          "allergyReview",
-          "anticoagulantReview"
-        ],
-        "w6Step": "preop"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 5,
-      "persona": "P1",
-      "task": "d05-P1-W1-003",
-      "complaints": [
-        "d05-P1-W1-003: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d05-P1-W1-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "hpi",
-          "ros",
-          "exam",
-          "assessmentPlan",
-          "urgentCareTriage",
-          "pmh",
-          "medRec"
-        ]
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 5,
-      "persona": "P2",
-      "task": "d05-P2-W3-009",
-      "complaints": [
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 100 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 190 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-009: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 100,
-            "unit": "units",
-            "route": "SC",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "insulin glargine",
-            "doseTenths": 190,
-            "unit": "units",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 5,
-      "persona": "P2",
-      "task": "d05-P2-W3-013",
-      "complaints": [
-        "d05-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-013: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "lorazepam",
-            "doseTenths": 5,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q8h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 5,
-      "persona": "P2",
-      "task": "d05-P2-W3-016",
-      "complaints": [
-        "d05-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-016: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d05-P2-W3-016: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q8h",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "woundExam",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 6,
-      "persona": "P2",
-      "task": "d06-P2-W3-001",
-      "complaints": [
-        "d06-P2-W3-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-001: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "community-acquired-pneumonia"
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "lorazepam",
-            "doseTenths": 5,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q8h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 6,
-      "persona": "P2",
-      "task": "d06-P2-W3-002",
-      "complaints": [
-        "d06-P2-W3-002: naloxone response unspecified; modeling offered-declined",
-        "d06-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-002: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "morphine",
-            "doseTenths": 20,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 6,
-      "persona": "P2",
-      "task": "d06-P2-W3-008",
-      "complaints": [
-        "d06-P2-W3-008: choice for dose does not fit the spec (Ehr.Value.qty 58000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-008: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 58000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 800,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "lorazepam",
-            "doseTenths": 5,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q8h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 6,
-      "persona": "P2",
-      "task": "d06-P2-W3-013",
-      "complaints": [
-        "d06-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-013: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d06-P2-W3-013: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "pyelonephritis"
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ceftriaxone",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q24h",
-            "prn": false,
-            "indication": "pyelonephritis"
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 7,
-      "persona": "P2",
-      "task": "d07-P2-W3-002",
-      "complaints": [
-        "d07-P2-W3-002: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-002: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "ecgReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 7,
-      "persona": "P2",
-      "task": "d07-P2-W3-007",
-      "complaints": [
-        "d07-P2-W3-007: naloxone response unspecified; modeling offered-declined",
-        "d07-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-007: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 20,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "metformin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "holdReason": "inpatient"
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "ecgReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 7,
-      "persona": "P2",
-      "task": "d07-P2-W3-014",
-      "complaints": [
-        "d07-P2-W3-014: choice for dose does not fit the spec (Ehr.Value.qty 56000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P2-W3-014: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 56000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "apixaban",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "BID",
-            "prn": false
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "dischargeInstructions"
-        ],
-        "disposition": "discharge"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 7,
-      "persona": "P5",
-      "task": "d07-P5-W6-001",
-      "complaints": [
-        "d07-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P5-W6-001: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d07-P5-W6-001: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "consultNote",
-          "imagingReview",
-          "labReview",
-          "surgicalDecision"
-        ],
-        "disposition": "admit",
-        "w6Step": "consult"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-001",
-      "complaints": [
-        "d08-P2-W3-001: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d08-P2-W3-001: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "respiratoryAssessment",
-          "dischargeInstructions"
-        ],
-        "disposition": "discharge"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-003",
-      "complaints": [
-        "d08-P2-W3-003: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "hydromorphone",
-            "doseTenths": 10,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "hydrocodone-acetaminophen",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "morphine",
-            "doseTenths": 20,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "metformin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "holdReason": "inpatient"
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-006",
-      "complaints": [
-        "d08-P2-W3-006: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-006: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-006: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "morphine",
-            "doseTenths": 20,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "lorazepam",
-            "doseTenths": 5,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q8h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-007",
-      "complaints": [
-        "d08-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-007: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q8h",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "woundExam",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-008",
-      "complaints": [
-        "d08-P2-W3-008: naloxone response unspecified; modeling offered-declined",
-        "d08-P2-W3-008: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-008: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "morphine",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "hydrocodone-acetaminophen",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "morphine",
-            "doseTenths": 20,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "metformin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "holdReason": "inpatient"
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P2",
-      "task": "d08-P2-W3-012",
-      "complaints": [
-        "d08-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 58000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-012: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P2-W3-012: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 58000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 800,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 8,
-      "persona": "P5",
-      "task": "d08-P5-W6-003",
-      "complaints": [
-        "d08-P5-W6-003: naloxone response unspecified; modeling offered-declined",
-        "d08-P5-W6-003: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d08-P5-W6-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 10000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": false
-          },
-          {
-            "drug": "ibuprofen",
-            "doseTenths": 6000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          },
-          {
-            "drug": "hydromorphone",
-            "doseTenths": 5,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q3h",
-            "prn": true
-          },
-          {
-            "drug": "ondansetron",
-            "doseTenths": 40,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "briefOpNote",
-          "postOpOrders"
-        ],
-        "w6Step": "postop"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 9,
-      "persona": "P2",
-      "task": "d09-P2-W3-003",
-      "complaints": [
-        "d09-P2-W3-003: choice for dose does not fit the spec (Ehr.Value.qty 61000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-003: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 61000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 800,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 9,
-      "persona": "P2",
-      "task": "d09-P2-W3-005",
-      "complaints": [
-        "d09-P2-W3-005: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-005: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "once",
-            "prn": false,
-            "indication": "copd-exacerbation"
-          },
-          {
-            "drug": "albuterol",
-            "doseTenths": 25,
-            "unit": "mg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": false
-          },
-          {
-            "drug": "azithromycin",
-            "doseTenths": 5000,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false,
-            "indication": "copd-exacerbation"
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 400,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "respiratoryAssessment",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 9,
-      "persona": "P2",
-      "task": "d09-P2-W3-007",
-      "complaints": [
-        "d09-P2-W3-007: choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-007: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "once",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "cefazolin",
-            "doseTenths": 20000,
-            "unit": "mg",
-            "route": "IV",
-            "freq": "q8h",
-            "prn": false,
-            "indication": "cellulitis"
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "heparin",
-            "doseTenths": 50000,
-            "unit": "units",
-            "route": "SC",
-            "freq": "q8h",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "woundExam",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 9,
-      "persona": "P2",
-      "task": "d09-P2-W3-011",
-      "complaints": [
-        "d09-P2-W3-011: choice for dose does not fit the spec (Ehr.Value.qty 75000 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-011: choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); preserving chosen value",
-        "d09-P2-W3-011: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "heparin",
-            "doseTenths": 75000,
-            "unit": "units",
-            "route": "IV",
-            "freq": "once",
-            "prn": false
-          },
-          {
-            "drug": "enoxaparin",
-            "doseTenths": 1000,
-            "unit": "mg",
-            "route": "SC",
-            "freq": "q12h",
-            "prn": false
-          },
-          {
-            "drug": "lisinopril",
-            "doseTenths": 100,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "daily",
-            "prn": false
-          },
-          {
-            "drug": "insulin lispro",
-            "doseTenths": 40,
-            "unit": "units",
-            "route": "SC",
-            "freq": "TIDAC",
-            "prn": false
-          },
-          {
-            "drug": "acetaminophen",
-            "doseTenths": 6500,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q6h",
-            "prn": true
-          },
-          {
-            "drug": "oxycodone",
-            "doseTenths": 50,
-            "unit": "mg",
-            "route": "PO",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "triage",
-          "hpi",
-          "exam",
-          "mdm",
-          "disposition",
-          "imagingReview",
-          "admissionOrders"
-        ],
-        "disposition": "admit"
-      },
-      "lastEvents": []
-    },
-    {
-      "day": 10,
-      "persona": "P1",
-      "task": "d10-P1-W1-016",
-      "complaints": [
-        "d10-P1-W1-016: choice for dose does not fit the spec (Ehr.Value.qty 1800 (Ehr.UnitKind.mcg)); preserving chosen value",
-        "d10-P1-W1-016: unrepresentable clinical choice; incomplete"
-      ],
-      "choices": {
-        "orders": [
-          {
-            "drug": "albuterol",
-            "doseTenths": 1800,
-            "unit": "mcg",
-            "route": "INH",
-            "freq": "q4h",
-            "prn": true
-          }
-        ],
-        "administer": [],
-        "ackResult": false,
-        "immunizations": [],
-        "noteSections": [
-          "hpi",
-          "ros",
-          "exam",
-          "assessmentPlan"
-        ]
-      },
-      "lastEvents": []
-    }
-  ],
+  "incomplete": [],
   "floorViolations": [],
   "interruptionViolations": [],
   "determinism": true,
   "summary": {
     "schedules": 50,
     "tasks": 1284,
-    "completed": 1246,
-    "incomplete": 38
+    "completed": 1284,
+    "incomplete": 0
   }
 }

@@ -86,4 +86,14 @@ example : ∃ n, Within n (page { tinyFhirCtx with viewCache := ⟨_, rfl⟩, s 
 
 #print axioms T11_allergy_fhir_page
 #print axioms T11_med_fhir_page
+theorem T11_notes_rendered (cx : Ctx) (r : NoteRow) (hr : r ∈ cx.disp.notes)
+    (hi : infoShown cx.sp cx.prog cx.facts cx.s "encounterNotes" = true) :
+    ∃ n, Within n (page cx) ∧ (∃ id, n.HasCompId id) ∧ Within (noteTr r).toHtml n := by
+  obtain ⟨it, _, _, hw, hid, hc⟩ := T10_info cx "encounterNotes" hi
+  have h : Within (noteTr r).toHtml (infoContent cx "encounterNotes").toHtml :=
+    row_in_table _ _ _ _ (List.mem_map.mpr ⟨r, hr, rfl⟩)
+  exact ⟨_, hw, ⟨_, hid⟩, h.trans hc⟩
+
+#print axioms T11_notes_rendered
+
 end Ehr.Render

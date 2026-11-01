@@ -95,25 +95,25 @@ open Ehr Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
 /-- The hypotheses of `T3_macro_run` hold on the tiny example: on the order
 screen, the "Amoxicillin 500 mg" button runs a macro, and no popup is open. -/
-example : clickedMacro? spec program facts atOrder "quickAmox" = some amoxMacro ∧
+theorem tiny_macro_run_premises : clickedMacro? spec program facts atOrder "quickAmox" = some amoxMacro ∧
     atOrder.popup? = none := by
   decide
 
 /-- …and the run does something: it moves to the sign screen and fills the order. -/
-example : (step spec program facts user .human atOrder (.click "quickAmox")).1.screen = "sign" ∧
+theorem tiny_macro_changes_screen_and_captures : (step spec program facts user .human atOrder (.click "quickAmox")).1.screen = "sign" ∧
     (step spec program facts user .human atOrder (.click "quickAmox")).1.captured.length >
       atOrder.captured.length := by
   decide
 
 /-- `MacroSafe` rejects a bad step: a macro step that commits is not safe. -/
-example : ¬ MacroSafe spec s0 { s0 with commits := ["signOrders"] } := by
+theorem macro_commit_is_unsafe : ¬ MacroSafe spec s0 { s0 with commits := ["signOrders"] } := by
   intro h
   have := h.commits
   revert this
   decide
 
 /-- `MacroSafe` rejects a macro step that types the patient ID. -/
-example : ¬ MacroSafe spec atSign
+theorem macro_identity_capture_is_unsafe : ¬ MacroSafe spec atSign
     { atSign with captured := atSign.captured ++
         [{ element := "patientIdReentry", slot := 1, value := .text "JD/F/34"
            byHuman := false, confirmed := true }] } := by

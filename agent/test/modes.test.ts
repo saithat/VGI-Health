@@ -24,11 +24,11 @@ const rec = (night: number, persona: string): DecisionRecord =>
 
 beforeAll(async () => {
   const world = await fakeWorld(3);
-  // v1.1 takes effect on day 2 (night 1 = surface-feature), v2 on day 3 (night 2 = migrate).
-  run = await runDays({ days: 3, llm: new ScriptedLlm(), worldDir: world, runsRoot: await tmp('runs'), runId: 'releases', releaseDays: { v1_1: 2, v2: 3 } });
+  // v2 takes effect on day 2 (night 1 = surface-feature), v3 on day 3 (night 2 = migrate).
+  run = await runDays({ days: 3, llm: new ScriptedLlm(), worldDir: world, runsRoot: await tmp('runs'), runId: 'releases', releaseDays: { v2: 2, v3: 3 } });
 });
 
-describe('surface-feature (v1.1)', () => {
+describe('surface-feature (v2)', () => {
   it('decides per persona from its own traces and records why', () => {
     const p1 = rec(1, 'P1');
     expect(p1.mode).toBe('surface-feature');
@@ -45,7 +45,7 @@ describe('surface-feature (v1.1)', () => {
   });
 });
 
-describe('migrate (v2)', () => {
+describe('migrate (v3)', () => {
   it('every customized program fails the re-check against the new spec', () => {
     for (const p of ['P1', 'P2', 'P3', 'P4', 'P5']) expect(rec(2, p).release?.recheck.status).toBe('fail');
   });
@@ -64,7 +64,7 @@ describe('migrate (v2)', () => {
     expect(r.userResponse.response).toBe('not-offered');
   });
 
-  it('P5: failed migrations fall back to canonical v2 plus still-passing customizations, and flag the user', () => {
+  it('P5: failed migrations fall back to canonical v3 plus still-passing customizations, and flag the user', () => {
     const r = rec(2, 'P5');
     expect(r.outcome).toBe('migration-fallback');
     expect(r.release).toMatchObject({ fallback: true, flaggedUser: true });
@@ -112,7 +112,7 @@ describe('re-running one night of an existing run (night command)', () => {
 });
 
 
-it('measures pre-release minima under the old spec rather than an impossible new-spec workflow', async () => {
+it('compares release validation against its certified canonical', async () => {
   const ehr = createFakeEhr();
   const original = ehr.minClicks.bind(ehr);
   const calls = vi.spyOn(ehr, 'minClicks').mockImplementation(async (input) => {
@@ -121,8 +121,8 @@ it('measures pre-release minima under the old spec rather than an impossible new
   });
   const result = await runDays({ days: 3, personas: ['P3'], llm: new ScriptedLlm(), ehr,
     worldDir: await fakeWorld(3), runsRoot: await tmp('spec-minima'), runId: 'minima',
-    releaseDays: { v1_1: 2, v2: 3 } });
+    releaseDays: { v2: 2, v3: 3 } });
   expect(result.timelines[0]?.days).toHaveLength(3);
-  expect(calls.mock.calls.some(([input]) => input.specVersion === RELEASE_IDS.feature)).toBe(true);
-  expect(calls.mock.calls.some(([input]) => input.specVersion === RELEASE_IDS.migration)).toBe(true);
+  expect(calls.mock.calls.every(([input]) => input.specVersion === input.program.specVersion)).toBe(true);
+  expect(rec(2, 'P3').validation.accepted).toBe(true);
 });

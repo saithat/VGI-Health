@@ -15,6 +15,7 @@ export function sumMetrics(tasks: readonly TaskMetrics[]): Metrics {
   for (const t of tasks) {
     m.tasks++;
     if (t.completed) m.completed++;
+    else continue;
     m.clicks += t.clicks;
     m.keystrokes += t.keystrokes;
     m.scrolls += t.scrolls;
@@ -186,4 +187,12 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
     complaints: topN([...complaintCounts.entries()], 15, ([, n]) => n).map(([text, count]) => ({ text, count })),
     orderMix: topN([...orderCounts.entries()], 15, ([, n]) => n).map(([drug, count]) => ({ drug, count })),
   };
+}
+
+/** Costs used in a saving are restricted to identical tasks completed in BOTH arms. */
+export function pairedMetrics(before: DayResult, after: DayResult): { before: Metrics; after: Metrics } {
+  const common = new Set(before.tasks.filter((t) => t.completed && after.tasks.some((a) => a.task === t.task && a.completed)).map((t) => t.task));
+  const b = sumMetrics(before.tasks.filter((t) => common.has(t.task)));
+  const a = sumMetrics(after.tasks.filter((t) => common.has(t.task)));
+  return { before: { ...b, tasks: before.tasks.length, completed: before.tasks.filter((t) => t.completed).length }, after: { ...a, tasks: after.tasks.length, completed: after.tasks.filter((t) => t.completed).length } };
 }

@@ -77,7 +77,7 @@ describe("simulated realistic workload", () => {
       tasks: 3,
       completed: 2,
       unclassified: 1,
-      total: { clicks: 17, keystrokes: 11, klmSeconds: 40 },
+      total: { clicks: 12, keystrokes: 10, klmSeconds: 30 },
     });
   });
   it("loads exact data independently: realistic savings can change with a flat expert minimum", () => {

@@ -93,7 +93,7 @@ are accepted; spec-level alert IDs must remain unique.
 
 `requestPriorAuth` introduces two cases relevant to T1:
 
-1. With `priorAuthRequest.prefill = never` (as in Tiny v1.1), a human's
+1. With `priorAuthRequest.prefill = never` (as in Tiny v2), a human's
    request **click** creates a new captured value. `HumanStepsByHuman`
    currently requires new captures of never/human-only elements to arise
    from `Event.enter`, so this click violates that property. Please coordinate
@@ -235,7 +235,7 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
 ## Release integration requests (other lanes)
 
 - **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
-  v1.1 declares optional `orderKind` and `orderCode` fields. W1 service ordering
+  v2 declares optional `orderKind` and `orderCode` fields. W1 service ordering
   and W6 pre-op now request prior auth for imaging/procedure slots without a
   drug. A test requests imaging code 70551 and checks no drug alerts fire.
 - **CR-10 — antibiotic indication data rows (render/app/world).** Content now
@@ -253,7 +253,7 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
   and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
   Content's corrected shared CURES codes are generated at
   `releases/cures-exemptions.json` by `ehr cures-exemptions-export`; v1,
-  v1.1 and v2 all use them. `surgery-7-day` replaces `surgery-5-day` per
+  v2 and v3 all use them. `surgery-7-day` replaces `surgery-5-day` per
   H&S §11165.4(c)(4), matching `docs/rules/ca-statutes.json`. Membership
   alone is insufficient: waiver validation also needs the qualifying
   procedure/facility, directed supply of at most seven days and no refills.
@@ -265,12 +265,12 @@ claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
   separate ED buprenorphine remains unmodeled. Content guards exercise
   human documentation across releases, not these eligibility predicates.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
-  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  v2/v3 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
   `requestPriorAuth` action. The shared-composer and service request buttons fail at
   their `components[*].kind` action. Add the real constructor to the
   action schema (and the `priorAuth` kind to the known union if desired), then
-  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  parse all `releases/{v1,v2,v3}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.
 - **CR-13 — pre-op encounter context (world/app/sim).** Set
   `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
@@ -350,12 +350,12 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   For full terminology enforcement, provide a generic spec value-set mapping
   and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
 - **CR-12 — agent prior-auth action schema (agent).** The real exported
-  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  v2/v3 canonical programs fail `programSchema.parse`: `actionSchema` in
   `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
   `requestPriorAuth` action. The four request buttons fail at
   `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
   action schema (and the `priorAuth` kind to the known union if desired), then
-  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  parse all `releases/{v1,v2,v3}/{spec,canonical}.json` without dropping
   fields. This was found with actual exports; the existing 31 agent tests pass.
 - **CR-13 — pre-op encounter context (world/app/sim).** Set
   `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
@@ -474,7 +474,7 @@ do not raise their doses or weaken the rule to hide the mismatch.
 
 Confirmed priorAuthRequest captures on the current slot are preserved exactly
 by request clicks. For never/human-only elements a request click is blocked;
-only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
+only ordinary human Event.enter may create that capture. Tiny v2 adds that
 field and retains its never policy. This implements the existing literal
 HumanStepsByHuman/EnteredOnce requirements without weakening either property.
 Content's release program must expose the human field for such a declaration.
@@ -574,7 +574,7 @@ The simulator reports these incomplete tasks; it does not drop their goals.
   signNote to obtain a completion number. All 22 day-1 ED tasks expose this.
 - **World/content, service versioning:** day-1 P1 tasks W1-006, W1-010, W1-015
   and four P5 W1 tasks include typed imaging/procedure orders. Spec v1 has no
-  orderKind/orderCode; those are introduced by v1.1. World's handoff says service
+  orderKind/orderCode; those are introduced by v2. World's handoff says service
   orders occur after day 4, but the committed day-1 schedules contain them.
   Either align the scenario timing with the release, or obtain owner approval
   for baseline service-order support. Sim cannot invent medication orders or
@@ -627,7 +627,7 @@ configuration. Installed assets are retained for actual runtime verification.
 
 ## New BRIEF value-constraint request (content → core)
 
-**Resolved in core and content:** core `4a11bc8` implements generic `EntryReq.allowed?` and the `scheduleII` class. Content attaches `scheduleIIRefillsEntry signOrders` with `allowed? := some ["0"]`, preserving every prior rule. Canonical fields allow zero, all matching signing paths inherit the requirement, and seed 16 confirms its default of three and is blocked. Tests also cover mixed lines, the new-line stop, Schedule III/IV exclusions, correction to zero, and inheritance by v1.1/v2. No `controlled-II` alias is used: `scheduleII` is the authoritative core spelling. Downstream agent/world/WASM adoption remains below.
+**Resolved in core and content:** core `4a11bc8` implements generic `EntryReq.allowed?` and the `scheduleII` class. Content attaches `scheduleIIRefillsEntry signOrders` with `allowed? := some ["0"]`, preserving every prior rule. Canonical fields allow zero, all matching signing paths inherit the requirement, and seed 16 confirms its default of three and is blocked. Tests also cover mixed lines, the new-line stop, Schedule III/IV exclusions, correction to zero, and inheritance by v2/v3. No `controlled-II` alias is used: `scheduleII` is the authoritative core spelling. Downstream agent/world/WASM adoption remains below.
 
 **Checker CR-6 is now resolved in core (`c98cfaf`).** Content is exposing the
 never-policy human request field and preserving the policy. Tests check that
@@ -740,7 +740,7 @@ are supported generically.
 
 Content's Schedule II rule is implemented and regenerated in all three release specs. `lake build` passes the actual canonical/seed/release paths. This resolves the previous content blocker, not the production checker's certification obligations.
 
-**CR-14, render: controlled prescription details must contain actual data.** `controlledRxReview` requires `orderSummary` shown, with no receipt or waiver, for controlled-II-IV signing. `InfoSpec.orderSummary` now explicitly denotes patient, drug, dose, quantity, directions and refills. At merged main `bea74d0`, `Render/Page.lean:infoContent` has no `orderSummary` arm and falls back to an empty-content message. Please render the actual current captured prescription rows and patient identity; test all these values, multiple lines, and hidden/collapsed seed 15 in the native/WASM page. A heading alone satisfies only the interpreter's abstract info visibility, not the legal display duty. The same data-fidelity issue for v2 indications is CR-10. No content file can implement the render-owned arm.
+**CR-14, render: controlled prescription details must contain actual data.** `controlledRxReview` requires `orderSummary` shown, with no receipt or waiver, for controlled-II-IV signing. `InfoSpec.orderSummary` now explicitly denotes patient, drug, dose, quantity, directions and refills. At merged main `bea74d0`, `Render/Page.lean:infoContent` has no `orderSummary` arm and falls back to an empty-content message. Please render the actual current captured prescription rows and patient identity; test all these values, multiple lines, and hidden/collapsed seed 15 in the native/WASM page. A heading alone satisfies only the interpreter's abstract info visibility, not the legal display duty. The same data-fidelity issue for v3 indications is CR-10. No content file can implement the render-owned arm.
 
 **Agent compatibility remains required.** Actual release specs now contain `{ "drugClass": { "cls": "scheduleII" } }` and `allowed: ["0"]`; `agent/src/lean-types.ts` must accept and preserve both. Existing 31 agent tests pass but do not test these actual release-spec round trips. CR-12 (`requestPriorAuth` action) also remains; round-trip all release/persona programs and specs exactly.
 
@@ -870,7 +870,7 @@ are supported generically.
 Main's owner-authored prior-auth and app fixture changes resolve the historical
 build blockers above. Shared W2/W3 composers work through Home. The verified
 ten-day sweep before the latest merge completed 1271/1284 tasks, with all 13
-incomplete tasks being P1/P5 service orders requested before v1.1. The fresh sweep
+incomplete tasks being P1/P5 service orders requested before v2. The fresh sweep
 after the merge confirms the same counts, with zero floor/interruption violations;
 results are committed in lean/Ehr/Sim/validation.json. The service versioning and W7
 prescription-context requests remain open; no clinical goal or guard was removed.
@@ -882,7 +882,7 @@ pass results. Catalog W7 now declares drug capture, so reassess that request
 after integration instead of applying the obsolete workaround.
 ## CR-15: full catalog content adoption (content → render/app/world/sim/check/wasm)
 
-All 124 `fit: spec-data` rows are now v1 data, inherited by v1.1/v2. See
+All 124 `fit: spec-data` rows are now v1 data, inherited by v2/v3. See
 `lean/Ehr/Specs/Rules/{Cms,Title22,CaStatutes,Federal,Entrenched}.lean`, the
 catalog `encodedIn` mappings and `Canonical/RulePlacements.lean`. Content did
 not edit other lanes. This request supersedes the earlier sixteen-seed counts.
@@ -913,7 +913,7 @@ and IV examples continue using their existing tags.
 CommitSpec ids. A signScheduleIISeries/signEmergencyRxFollowup or direct/bedside/
 self-administration authorization cannot bypass ordinary signing: content
 inherits all original entries, pre-op conditions, reviews and signing alerts,
-plus new prescription content and v2 antibiotic indication. Map each field's
+plus new prescription content and v3 antibiotic indication. Map each field's
 FHIR target as documented; never persist an artifact through an unguarded
 button. New scoped documents attest one artifact only. Fresh episodes/reset
 are needed between physical events; retained captures do not certify repeated
@@ -989,7 +989,7 @@ All fifteen release/persona candidates reject in the real `ehr check` CLI. Keep 
 - P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
 - P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
 
-### v1.1
+### v2
 
 - P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
 - P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
@@ -1025,7 +1025,7 @@ All fifteen release/persona candidates reject in the real `ehr check` CLI. Keep 
 - P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
 - P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
 
-### v2
+### v3
 
 - P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
 - P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
@@ -1084,7 +1084,7 @@ requested prescription. Sim does not edit Cli under the explicit lane boundary.
 composers expose neither field. Thirteen day-1–3 P1/P5 tasks explicitly request
 imaging/procedure orders. Their captured services cannot satisfy sim's typed
 goals in v1. Please either introduce the optional service fields and composers
-in baseline v1 (preserving all entry/review/safety rules and the v1.1 prior-auth
+in baseline v1 (preserving all entry/review/safety rules and the v2 prior-auth
 feature), or align scenario release timing without dropping requested work.
 Moving these two optional declarations to v1 and regenerating the releases is
 sufficient for sim to replay the original tasks. The simulator retains all
@@ -1347,8 +1347,8 @@ T9 contracts retain their statements and axiom audits; no heartbeat increase.
 The three owning-lane requests under "Sim follow-up on merged catalog" are
 **still open on this main**:
 
-- **Content/world:** v1 still declares neither orderKind nor orderCode; v1.1
-  and v2 declare both. Retain every requested service task and provide its
+- **Content/world:** v1 still declares neither orderKind nor orderCode; v2
+  and v3 declare both. Retain every requested service task and provide its
   composer in the applicable release. Do not drop or replace those tasks.
 - **CLI:** `minSchedule` still calls `episodes facts task.workflow task.choices`.
   Apply the already requested one-line `taskEpisodes facts task` integration.
@@ -1466,7 +1466,7 @@ and duplicate-label checks are not relaxed.
 
 The requested T8 projection now covers the actual older entry/review rules and
 static human/unit/alert predicates, directly from `check = ok`. The concrete
-v1→v1.1→v2 transitions have no `Spec.displays` contracts. When content adopts
+v1→v2→v3 transitions have no `Spec.displays` contracts. When content adopts
 the new structured-display contracts, `Spec.Extends` also needs preservation of
 `(displays?.getD [])` as an old-obligations prefix: the existing relation does
 not constrain this new field. Do not claim that the current T8 projection is
@@ -1490,7 +1490,7 @@ seed's cross-workflow escape remains reproducible until the owning lane changes 
 ## CR-16 — content feature pass: adapters, output coverage, catalog gaps and app seed count
 
 Owner-requested second-pass rule data is in `Ehr.Specs.Rules.Features`, composed
-additively into v1 and inherited by v1.1/v2. `feature_data.py` is the reviewed
+additively into v1 and inherited by v2/v3. `feature_data.py` is the reviewed
 mapping; each generated item retains the exact catalog id and source label.
 `catalog.json` records every qualifying row, including precise remaining AST
 limitations rather than claiming unsupported rules are implemented.
@@ -1650,7 +1650,7 @@ and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
 # Live Medplum integration requests (lane/app, 2026-10-31)
 
 No files under `lean/` were changed for this integration. The app uses the
-canonical v2 projection, real `ehr_facts` and the actual WASM interpreter. The
+canonical v3 projection, real `ehr_facts` and the actual WASM interpreter. The
 following gaps need spec/render ownership; none is handled by weakening a guard.
 
 - Add an explicit rooming/vitals commit for P1/P4. There is currently no save
@@ -1851,7 +1851,7 @@ not an up-to-date WASM source manifest or deployment certificate.
 ## Live integration continuation after restart (lane/app, 2026-10-31)
 
 The saved WIP was reviewed and merged with main. P1's complete W1 and P2's
-admission now traverse the canonical v2 program in the real WASM interpreter and
+admission now traverse the canonical v3 program in the real WASM interpreter and
 persist/query actual Medplum transactions. All persona worklist searches use real
 persona logins. Seeded world day 1 is 2026-11-02; the home date selector exposes it
 without changing the clinical clock. The OR list displays the ServiceRequest's
@@ -1895,7 +1895,7 @@ UI logic remains there. No files under lean/ were edited for these changes.
 ## CHECK-2026-11-01: current baseline and evidence-domain obstruction
 
 This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for
-current main. The native CLI now rejects **all 15 personas** in v1/v1.1/v2 first
+current main. The native CLI now rejects **all 15 personas** in v1/v2/v3 first
 at `completable`, `recordCommunicationNeeds`: structured payload may be absent.
 The actual buttons are on `w1Rooming`, `w3Triage`, `w4Flowsheet`, `w5Rooming`,
 and `w6Consult` (role projections retain their authorized controls). The updated
@@ -1941,8 +1941,8 @@ single-role deployable baselines; only their persona projections are certified.
 World 1 has 15 pre-op tasks, all P5, and none on day 1. P4 has no pre-op tasks.
 The named P5 pre-op walkthrough signs after the three required human captures.
 
-Simulator smoke commands used the real native binary, `--spec v1` (also v1.1,
-v2), `--program releases/v1/personas/P1.json`,
+Simulator smoke commands used the real native binary, `--spec v1` (also v2,
+v3), `--program releases/v1/personas/P1.json`,
 `--persona runs/world/1/personas/P1.json`,
 `--schedule runs/world/1/day-1-P1.json --world runs/world/1 --seed 7`, replacing
 release/persona for each of 15 runs. Completed/incomplete counts:
@@ -1950,8 +1950,8 @@ release/persona for each of 15 runs. Completed/incomplete counts:
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
 | v1 | 39/3 | 22/0 | 38/0 | 22/0 | 14/4 |
-| v1.1 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
 | v2 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v3 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
 
 The W7 denial gap is resolved: core explicitly keeps `denyRefill`, its two
 Federal entries and the action on `w7Decision`, reusing both base inputs. P1
@@ -1962,9 +1962,9 @@ No `Sim/**` changes were needed. See `lean/Ehr/Check/profile-goals-report.json`.
 
 The v1-only incomplete
 W1 tasks are P1 `006`, `010`, `015` and P5 `008`, `010`, `016`, `018`; complaints
-include absent `orderKind`/`orderCode` (introduced in v1.1). P1 `010` makes one
+include absent `orderKind`/`orderCode` (introduced in v2). P1 `010` makes one
 navigation click before giving up; the other listed W1 tasks make none.
-v1.1/v2 complete those W1 tasks. The smoke report preserves exact task choices
+v2/v3 complete those W1 tasks. The smoke report preserves exact task choices
 and complaints; these observations are not a claim that every complaint caused
 a particular failure. P5 also reports an incompatible dose unit and fallback to
 an accepted value; clinical-choice fidelity needs review even when a task completes.
@@ -1978,6 +1978,8 @@ Native core-profile `ehr check --spec releases/v1/spec.json --program releases/v
 Composite prerequisite: main currently has `ComponentDef`/`Program.componentDefs`, but no `Kind.use` or `Program.expand` in Core. Please supply finite structural expansion, source certificate binding and checker/render/sim integration; the agent must not invent an unchecked semantic kind.
 
 ## SIM-WORLD2-DOSE-2026-10-31: incompatible medication units need core/content change
+
+**Resolved:** all 1,284 world-2 tasks now complete. The report below describes the original obstruction.
 
 World choices and formulary correctly use units for heparin and insulin, and
 mcg for inhaled albuterol. `Specs/V1.lean` declares `dose` as `quantity mg`
@@ -2002,7 +2004,14 @@ blocked task ID and its exact drug/dose/unit choices. The per-day table is in
 `docs/STATUS.md`. No service-order release mismatch remains.
 
 
+Resolved by the check lane: native-unit dose kind, per-slot formulary/selector
+validation, unit-aware composer and UCUM FHIR writes. The same 1,284 tasks now
+complete with zero incomplete; see `lean/Ehr/Sim/validation-world2.json` and
+`docs/STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
+
 ## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
+
+**Resolved:** all three active specs now round-trip through the agent schema exactly.
 
 Agent lane: `agent/src/lean-types.ts` `whenSchema` rejects
 `releases/v1/spec.json` `entries[16].when = {drugClass:{cls:"scheduleII"}}`.
@@ -2026,3 +2035,6 @@ never treats an attending co-signature as automatable. World 2 arrived in
 `181ceb3`. The world-1 blocked/diagnostic attempts are archived separately;
 `smoke-core` will be a fresh all-five, world-2 run. Composite expansion remains
 an open protected-core prerequisite.
+Resolved by the check lane: the generated-type boundary now accepts and preserves
+`drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
+All three active specs round-trip exactly; agent tests and typecheck pass.

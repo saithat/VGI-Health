@@ -216,7 +216,7 @@ export const trainSummarySchema = z.object({
 
 // ---------------------------------------------------------------- decision record (BRIEF section 10)
 export const checkResultSchema = z.object({
-  status: z.enum(['pass', 'fail', 'invalid-patch']),
+  status: z.enum(['pass', 'fail', 'invalid-patch', 'error']),
   property: str.nullable(),
   message: str.nullable(),
   counterexample: z.array(eventSchema).nullable(),
@@ -270,7 +270,7 @@ export const llmCallRefSchema = z.object({
 
 /** Offline per-version screen check (render-screens + app screen-check); see screencheck.ts. */
 export const screenCheckResultSchema = z.object({
-  status: z.enum(['pass', 'fail']),
+  status: z.enum(['pass', 'fail', 'error']),
   mode: z.enum(['real', 'fake']),
   bundles: z.array(str),
   pages: nat,
@@ -280,7 +280,7 @@ export const screenCheckResultSchema = z.object({
 });
 
 export const outcomeSchema = z.enum([
-  'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
+  'llm-error', 'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
   'user-reverted', 'migrated', 'migration-fallback', 'recertified', 'surfaced', 'not-surfaced',
   'break-attempt-rejected', 'break-attempt-passed',
 ]);

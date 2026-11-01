@@ -30,7 +30,7 @@ beforeAll(async () => {
   world = await fakeWorld(4);
   runsRoot = await tmp('runs');
   // Releases pushed out of the window so these nights are all nightly-mode.
-  const common = { days: 4, worldDir: world, runsRoot, releaseDays: { v1_1: 99, v2: 99 } };
+  const common = { days: 4, worldDir: world, runsRoot, releaseDays: { v2: 99, v3: 99 } };
   recorded = await runDays({ ...common, llm: new ScriptedLlm(), runId: 'recorded', ehr: markingEhr() });
   replayed = await runDays({ ...common, llm: new ReplayLlm(recorded.dir), runId: 'replayed', ehr: markingEhr() });
 });
@@ -51,8 +51,8 @@ describe('one full fake night per persona (replay backend)', () => {
       expect(r.certificate?.verdict).toBe('ok');
       expect(r.deployed && existsSync(path.join(replayed.dir, r.deployed.program))).toBe(true);
       expect(r.validation.accepted).toBe(true);
-      expect(r.measured.validation?.day).toBe(2);
-      expect(r.measured.test?.day).toBe(3);
+      expect(r.measured.validation?.day).toBe(1);
+      expect(r.measured.test?.day).toBe(2);
       expect(r.versionAfter).toBe(r.versionBefore + 1);
     } else {
       expect(r.versionAfter).toBe(r.versionBefore);
@@ -146,16 +146,16 @@ describe('evaluation integrity: no validation or test data in prompts', () => {
       const text = c.system + c.prompt;
       const days = [...text.matchAll(new RegExp(`${LEAK_MARKER}(\\d+)`, 'g'))].map((m) => Number(m[1]));
       // The marker channel works (train days do show up) ...
-      if (c.purpose === 'propose') expect(days).toContain(night);
+      if (c.purpose === 'propose') expect(days).toContain(night % 2 ? night : night - 1);
       // ... and nothing from the validation day (d+1) or test days (> d+1) ever does.
-      expect(days.filter((d) => d > night), `${c.callId} leaked days`).toEqual([]);
+      expect(days.filter((d) => d > night || d % 2 === 0), `${c.callId} leaked days`).toEqual([]);
       for (let later = night + 1; later <= 4; later++) expect(text).not.toContain(`d${String(later).padStart(2, '0')}-P`);
     }
   });
 
   it('validation and test replays did run (so there was something to leak)', () => {
     const r = record(replayed, 1, 'P1');
-    expect(r.measured.validation?.day).toBe(2);
+    expect(r.measured.validation?.day).toBe(1);
     expect(existsSync(new RunStore(replayed.dir).dayPath(4, 'P1'))).toBe(true);
   });
 });

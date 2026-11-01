@@ -15,6 +15,7 @@ const workflowSchema = z.object({
 });
 export const complexitySchema = z.object({
   schemaVersion: z.literal(1),
+  releaseNaming: z.string().optional(),
   runId: z.string(),
   suite: z.string(),
   search: z.string(),

@@ -72,6 +72,7 @@ def pinnedForReview (spec : Spec) (comps : List Component) (rq : ReviewReq) (c :
     match c.visibility with
     | .always => true
     | .unlessReceipt i => i == rq.info && receiptHideSafe spec rq
+    | .encounter _ => false
 
 /-- Every review requirement for commit `c` without a waiver has a pinned
 component on `scr`. -/
@@ -108,7 +109,7 @@ def passivePinned (spec : Spec) (prog : Program) : Bool :=
 def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
   spec.alerts.all fun al =>
     al.tier != .passive || canonical.screens.all fun scr =>
-      !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
+      !presetScreen prog.presetOwner scr || !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
 
 /-- Every record prefill names the source declared by that spec element. -/
 def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
@@ -214,6 +215,13 @@ def waiverHasNonemptyValue (spec : Spec) (e : ElementId) : Bool :=
     | .scan target => target != "wristband" && target != "medication"
     | _ => true
 
+/-- A required field is reachable when always visible or scoped to the encounter. -/
+def openEncounterField (prog : Program) (screens : List ScreenId) (e kind : String) : Bool :=
+  prog.screens.any fun scr => screens.contains scr.id && scr.components.any fun comp =>
+    (fieldOf? comp.kind).any (fun f => f.1 == e) &&
+      (revealable scr.components comp ||
+       (comp.visibility == .encounter kind && revealable scr.components { comp with visibility := .always }))
+
 /-- Why commit `c` might not stay reachable, or `none` if the program passes
 the completability rules for `c` with commit screen `s`:
 - every screen reaches `s` by buttons the user can always show;
@@ -229,7 +237,9 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
   | none =>
     let fromS := reach s
     let reqs := spec.entries.filter (fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq)
-    match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
+    match reqs.find? (fun rq => !rq.perOrderLine && !(match rq.when with
+        | .encounter kind => openEncounterField prog fromS rq.element kind
+        | _ => openFieldOn prog fromS rq.element (fun _ => true))) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
     | none =>
     let scrComps := prog.compsOf s

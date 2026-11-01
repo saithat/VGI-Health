@@ -1,0 +1,252 @@
+{
+  "world": "runs/world/2",
+  "seed": 7,
+  "binarySha256": "b3241bbf2c40f227b0d165550465eb00835220a7a7ef741e3f5c3793d16460e6",
+  "releaseDays": {
+    "v2": 4,
+    "v3": 7
+  },
+  "schedules": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "release": "v1",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
+      "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
+      "scheduleSha256": "401eaf83555f53c80c5515b625628883e243d9f7446238e6b2930902e86d16bd",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 42,
+      "completed": 42,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P2",
+      "release": "v1",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
+      "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
+      "scheduleSha256": "3e9ee7cd3afc876f9bf99b4abb7c3baac0c18f2ef0a898c95e2d897209737b62",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 22,
+      "completed": 22,
+      "complaints": [
+        "d01-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-008: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-014: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-022: naloxone response unspecified; modeling offered-declined"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P3",
+      "release": "v1",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
+      "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
+      "scheduleSha256": "27d04178e6d452ea01daba5bdb74e5c22d23dc2885e7e556845dc22daf952a3e",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 38,
+      "completed": 38,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P4",
+      "release": "v1",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
+      "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
+      "scheduleSha256": "5c801b030231f21cbb6acc5d022dc6b9d08a436453734452f14c0aa8ad7eee40",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 22,
+      "completed": 22,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "release": "v1",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
+      "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+      "scheduleSha256": "76985fb033591518433d22d0fd57675aa20d27e8846317044ce3cf4c1baeb9de",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 18,
+      "completed": 18,
+      "complaints": []
+    },
+    {
+      "day": 4,
+      "persona": "P1",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
+      "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
+      "scheduleSha256": "278df94f0d12028292f276f90073c561d86912319f174b97337e38c341304236",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 40,
+      "completed": 40,
+      "complaints": []
+    },
+    {
+      "day": 4,
+      "persona": "P2",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
+      "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
+      "scheduleSha256": "d1b193f8fffe8bb4f52913d44289006dc5bbf920acb36aabfaf270612b535cc0",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 13,
+      "completed": 13,
+      "complaints": [
+        "d04-P2-W3-001: naloxone response unspecified; modeling offered-declined",
+        "d04-P2-W3-005: naloxone response unspecified; modeling offered-declined",
+        "d04-P2-W3-009: naloxone response unspecified; modeling offered-declined"
+      ]
+    },
+    {
+      "day": 4,
+      "persona": "P3",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
+      "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
+      "scheduleSha256": "2efe49e84799d5847654d01036b3e90045b8d0d5a119ffad57b07b518df6578c",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 41,
+      "completed": 41,
+      "complaints": []
+    },
+    {
+      "day": 4,
+      "persona": "P4",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
+      "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
+      "scheduleSha256": "1d4c3e0ca486a4b9fcba23b67154c2ce8a4cfe8fcd0d0d816a41ce5810c77f9b",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 17,
+      "completed": 17,
+      "complaints": []
+    },
+    {
+      "day": 4,
+      "persona": "P5",
+      "release": "v2",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
+      "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+      "scheduleSha256": "ef164eb66259b0c6bfd61d316ad0f18bc36eebf0e01f0f73dcc0488a1c18158c",
+      "preopTasks": [
+        "d04-P5-W6-002",
+        "d04-P5-W6-004"
+      ],
+      "incomplete": 0,
+      "tasks": 11,
+      "completed": 11,
+      "complaints": [
+        "d04-P5-W6-003: naloxone response unspecified; modeling offered-declined"
+      ]
+    },
+    {
+      "day": 7,
+      "persona": "P1",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
+      "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
+      "scheduleSha256": "a1caefb8857c4a016229d8c4eea8c119c3ae714d902be65dc8645c76a14aac5e",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 40,
+      "completed": 40,
+      "complaints": []
+    },
+    {
+      "day": 7,
+      "persona": "P2",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
+      "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
+      "scheduleSha256": "a78a338e9771b1e6ce19b90ff495f948703b80661cd8fa4c60e690381790ebc9",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 18,
+      "completed": 18,
+      "complaints": [
+        "d07-P2-W3-001: naloxone response unspecified; modeling offered-declined",
+        "d07-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "d07-P2-W3-007: naloxone response unspecified; modeling offered-declined",
+        "d07-P2-W3-010: naloxone response unspecified; modeling offered-declined",
+        "d07-P2-W3-011: naloxone response unspecified; modeling offered-declined",
+        "d07-P2-W3-012: naloxone response unspecified; modeling offered-declined"
+      ]
+    },
+    {
+      "day": 7,
+      "persona": "P3",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
+      "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
+      "scheduleSha256": "536b9e33e93c684312457c89b8dabafc0be0ce6e4986dec3d11a851f77292060",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 54,
+      "completed": 54,
+      "complaints": []
+    },
+    {
+      "day": 7,
+      "persona": "P4",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
+      "scheduleSha256": "ecf85a4725f71cff77123ff3aa41bd764150604b2a5c488137527dbbb6e15455",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 17,
+      "completed": 17,
+      "complaints": []
+    },
+    {
+      "day": 7,
+      "persona": "P5",
+      "release": "v3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
+      "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+      "scheduleSha256": "bc0abd9230c3910dd23be1ef5e1d87033112804eff020f3a7f18d367fc8e4b93",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 14,
+      "completed": 14,
+      "complaints": []
+    }
+  ],
+  "incomplete": [],
+  "floorViolations": [],
+  "interruptionViolations": [],
+  "determinism": true,
+  "summary": {
+    "schedules": 15,
+    "tasks": 407,
+    "completed": 407,
+    "incomplete": 0
+  }
+}

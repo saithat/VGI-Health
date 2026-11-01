@@ -1,3 +1,4 @@
+import { complexityReleaseLabels } from '../historical-releases.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -13,7 +14,7 @@ test('fixed cases cover W1–W7 with concrete clinical choices and a single surg
 });
 
 test('P3 report includes all certified iterations, scoped minima, high-alert cosign and release markers', async () => {
-  const report = await load('runs/run1-P3/complexity.json');
+  const report = complexityReleaseLabels(await load('runs/run1-P3/complexity.json'));
   const person = report.personas[0];
   assert.equal(person.persona, 'P3');
   assert.deepEqual(person.iterations.map(i => i.version), [0, 1, 2, 3, 4, 5, 6, 7]);
@@ -30,7 +31,7 @@ test('P3 report includes all certified iterations, scoped minima, high-alert cos
     assert.ok(events.some(e => e.ack?.alert === 'highAlertAdmin'));
     assert.ok(i.total.clicks >= i.floor.clicks);
   }
-  assert.deepEqual(person.markers.filter(m => m.kind === 'release').map(m => [m.label, m.version]), [['v1.1', 2], ['v2', 5]]);
+  assert.deepEqual(person.markers.filter(m => m.kind === 'release').map(m => [m.label, m.version]), [['v2', 2], ['v3', 5]]);
   assert.ok(person.markers.some(m => m.properties.includes('humanOnlyKept')));
 });
 

@@ -284,27 +284,27 @@ def withReason (byHuman : Bool) (reason : String := "CURES unavailable") : State
 -- Without `waivedBy`, a reason does nothing.
 #guard !reviewMet spec program facts (withReason true) { waivableReview with waivedBy? := none }
 
-/-! ## Release v1.1: prior authorization (BRIEF 9b) -/
+/-! ## Release v2: prior authorization (BRIEF 9b) -/
 
--- Catalog: the v1 program fits spec v1; the v1.1 program does not, but fits v1.1.
+-- Catalog: the v1 program fits spec v1; the v2 program does not, but fits v2.
 #guard program.inCatalog spec
-#guard !programV1_1.inCatalog spec
-#guard programV1_1.inCatalog specV1_1
+#guard !programV2.inCatalog spec
+#guard programV2.inCatalog specV2
 #guard Kind.catalogTag (.button .requestPriorAuth) == "priorAuth"
 
-/-- On the v1.1 order screen with an order for amoxicillin. -/
+/-- On the v2 order screen with an order for amoxicillin. -/
 def atOrderPA : State :=
-  runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+  runAll specV2 programV2 facts user .human (init specV2 programV2 facts user)
     [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")]
 
 /-- A never-policy request is entered through its human field; the convenience
 click then preserves it exactly. -/
 def afterPA : State × StepResult :=
-  step specV1_1 programV1_1 facts user .human
-    (step specV1_1 programV1_1 facts user .human atOrderPA (.enter "paField" (.flag true))).1
+  step specV2 programV2 facts user .human
+    (step specV2 programV2 facts user .human atOrderPA (.enter "paField" (.flag true))).1
     (.click "paRequest")
 
-#guard (step specV1_1 programV1_1 facts user .human atOrderPA (.click "paRequest")).2 ==
+#guard (step specV2 programV2 facts user .human atOrderPA (.click "paRequest")).2 ==
   .blocked "human entry required: priorAuthRequest"
 #guard afterPA.2 == .ignored
 -- It writes only the request element, on the current order line.
@@ -312,24 +312,24 @@ def afterPA : State × StepResult :=
   [{ element := "priorAuthRequest", slot := 0, value := .flag true, byHuman := true, confirmed := true }]
 #guard afterPA.1.commits == atOrderPA.commits && afterPA.1.receipts == atOrderPA.receipts
 -- The status panel counts as showing its info, and shows the request.
-#guard infoShown specV1_1 programV1_1 facts atOrderPA "priorAuthStatus"
-#guard ((view specV1_1 programV1_1 facts user afterPA.1).items.find? (·.comp.id == "paStatus")).map
+#guard infoShown specV2 programV2 facts atOrderPA "priorAuthStatus"
+#guard ((view specV2 programV2 facts user afterPA.1).items.find? (·.comp.id == "paStatus")).map
   (fun i => (i.shown, i.value?)) == some (true, some (.flag true))
 -- Before any order on the line: ignored, and the view says why the button is blocked.
-#guard (step specV1_1 programV1_1 facts user .human
-          (runAll specV1_1 programV1_1 facts user .human (init specV1_1 programV1_1 facts user)
+#guard (step specV2 programV2 facts user .human
+          (runAll specV2 programV2 facts user .human (init specV2 programV2 facts user)
             [.click "toOrder"]) (.click "paRequest")).2 == .ignored
 -- Under spec v1 (no request element) the request is refused.
-#guard (step spec programV1_1 facts user .human
-          (runAll spec programV1_1 facts user .human (init spec programV1_1 facts user)
+#guard (step spec programV2 facts user .human
+          (runAll spec programV2 facts user .human (init spec programV2 facts user)
             [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "amoxicillin")])
           (.click "paRequest")).2 == .blocked "unknown element priorAuthRequest"
 -- A macro may not request it (the element is `never`-prefill: a human must).
-#guard (step specV1_1 programV1_1 facts user .«macro» atOrderPA (.click "paRequest")).2 ==
+#guard (step specV2 programV2 facts user .«macro» atOrderPA (.click "paRequest")).2 ==
   .blocked "human only: priorAuthRequest"
 -- Signing works the same as in v1 (prior auth is never required).
-#guard (step specV1_1 programV1_1 facts user .human
-          (runAll specV1_1 programV1_1 facts user .human afterPA.1
+#guard (step specV2 programV2 facts user .human
+          (runAll specV2 programV2 facts user .human afterPA.1
             [.enter "doseField" (.qty 5000 .mg), .click "toSign",
              .enter "patientIdField" (.text "JD/F/34"), .selectTab "signTabs" 1,
              .click "signButton", .ack "drugAllergy"])

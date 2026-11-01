@@ -11,14 +11,14 @@ it('publishes a complete bound version through one pointer and rejects changed a
   const store = new RunStore(dir);
   const program = fakeCanonical(RELEASE_IDS.base);
   const certificate = { specVersion: RELEASE_IDS.base, specHash: 's', programHash: 'p', verdict: 'ok' as const, checkerVersion: 'test', time: 'now' };
-  const build = { appSha256: 'a'.repeat(64), wasmSha256: 'b'.repeat(64), componentsSha256: 'c'.repeat(64) };
+  const build = { ehrSha256: '0'.repeat(64), appSha256: 'a'.repeat(64), wasmSha256: 'b'.repeat(64), componentsSha256: 'c'.repeat(64) };
   const pointer = await store.deploy('P1', program, certificate, bindBuild(build, program, certificate));
   expect(pointer.build).toBe('certs/P1/v0.build.json');
   expect((await store.login('P1')).program).toEqual(program);
   const previous = await readFile(path.join(dir, 'programs/P1/deployed.json'), 'utf8');
   const next = { ...program, version: 1 };
   const binding = bindBuild(build, next, certificate);
-  await expect(store.deploy('P1', next, certificate, { ...binding, appSha256: 'invalid' })).rejects.toThrow();
+  await expect(store.deploy('P1', next, certificate, { ...binding, ehrSha256: '0'.repeat(64), appSha256: 'invalid' })).rejects.toThrow();
   expect(await readFile(path.join(dir, 'programs/P1/deployed.json'), 'utf8')).toBe(previous);
   expect((await store.login('P1')).program.version).toBe(0);
   await writeFile(store.programPath('P1', 0), JSON.stringify({ ...program, owner: 'tampered' }));

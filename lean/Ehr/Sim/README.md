@@ -10,12 +10,12 @@ and checks both a replayable path and a lower-bound certificate.
 From the repository root, after `cd lean && lake build`:
 
 ```sh
-lean/.lake/build/bin/ehr simulate --spec v2 \
-  --program releases/v2/personas/P4.json --persona runs/world/2/personas/P4.json \
+lean/.lake/build/bin/ehr simulate --spec v3 \
+  --program releases/v3/personas/P4.json --persona runs/world/2/personas/P4.json \
   --schedule runs/world/2/day-10-P4.json --world runs/world/2 --seed 123
 
-lean/.lake/build/bin/ehr min-clicks --spec v2 \
-  --program releases/v2/personas/P4.json \
+lean/.lake/build/bin/ehr min-clicks --spec v3 \
+  --program releases/v3/personas/P4.json \
   --schedule runs/world/2/day-10-P4.json --world runs/world/2
 ```
 

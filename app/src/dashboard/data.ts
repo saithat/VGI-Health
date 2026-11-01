@@ -1,3 +1,4 @@
+import { complexityReleaseLabels, historicalRunIds } from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
@@ -23,6 +24,7 @@ export const manifestSchema = z.object({
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
   buildBindingRequired: z.boolean().optional(),
+  measurementProtocol: z.object({name:z.string()}).optional(),
   status: z.string().optional(),
   blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
@@ -67,6 +69,7 @@ export interface RunData {
   manifest: z.infer<typeof manifestSchema>;
   records: DecisionRecord[];
   days: DayResult[];
+  baselines?: DayResult[];
   programs: Map<string, Program>;
   sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
@@ -112,7 +115,7 @@ export async function loadRun(
   const run: RunData = {
     manifest,
     records: [],
-    days: [],
+    days: [], baselines: [],
     programs: new Map(),
     sources: new Map(),
     certs: new Map(),
@@ -128,6 +131,8 @@ export async function loadRun(
         run.records.push(record);
       } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
         run.days.push(dayResultSchema.parse(await get(file)));
+      else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
+        run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.source\.json$/.test(file))
@@ -135,7 +140,8 @@ export async function loadRun(
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
-        const complexity = complexitySchema.parse(await get(file));
+        const raw = complexitySchema.parse(await get(file));
+        const complexity = historicalRunIds.has(id) ? complexityReleaseLabels(raw) : raw;
         if (complexity.runId !== id)
           throw new Error("Complexity belongs to another run");
         run.complexity = complexity;

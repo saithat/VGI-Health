@@ -9,19 +9,23 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 |---|---|---|---|
 | Composite expansion | Source properties are the properties of successful expansion; non-use components are retained exactly | Candidate proofs compile with permitted axiom audits in `Core/composites-pending.patch`; not integrated into checker-owned `Satisfies`, full `lake check`, or Comparator. Blocked on constructor/render compatibility and owning-lane integration; no `sorry` or new axioms. | lean-core / check |
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`; stronger allowed-value equivalence `commitGuard_iff_values` and value corollaries `T0_entry_values_allowed`, `T0_entry_values_perLine`, with the constraint on the same confirmed capture) | `lean/Ehr/Proofs/T0.lean` |
-| T1 | If the checker accepts a program, it satisfies properties 1–12 | **in progress**: full soundness proved for properties 1–5 and 7–12, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and finite alert discharge; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
+| T1 | If the checker accepts a program, it satisfies properties 1–13 | **unrestricted statement refuted; positive fragments proved** (`Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`): general soundness proved for properties 1–5 and 7–13, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and joint entry repair; finite alert discharge is now proved by `human_finish_ready`; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
 | T2 | A review prompt is skipped only with a valid receipt | **proven** for the interpreter: an applicable review requirement whose info was not shown was covered by a valid receipt (same version, inside the window, allowed role) or a human-entered waiver (`T2_receipts_sound`); `shownOnCommit` without a waiver means shown (`T2_shownOnCommit_shown`) | `lean/Ehr/Proofs/T2.lean` |
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
 | T4 | `ehr deploy` publishes only programs with an ok verdict | **proven** (`T4_publish_only_if_ok`, `T4_rejected_not_published`, `T4_published_certificate`; axioms: propext, Classical.choice, Quot.sound) | `lean/Ehr/Proofs/CheckDeploy.lean` |
 | T5 | Abstraction facts match the FHIR data | **proven**: today’s weight has exact source/date/unit/value evidence; versions cover all source resources and are permutation invariant (digest collision freedom remains a stated assumption) | `lean/Ehr/Render/FhirProofs.lean` |
 | T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | **partial**: replay and a failed static rule are proven; every returned navigation/reveal event succeeds (cut paths included), with at most one final triggering click. The BRIEF's stronger assertion that every rejection demonstrates semantic falsity is **false for the present conservative rules** (`T7_semantic_rejection_false` gives a safe rejected program). A verdict/property contract decision is required; no safety rule or property was weakened. Conservative rules can reject without establishing `¬ Satisfies`; do not present these replay theorems as full T7. | `lean/Ehr/Check/ReplaySound.lean`, `RuleSound.lean` |
-| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v1_1` and `T8_v1_1_to_v2`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
-| T7 | Counterexamples are genuine | not started | A |
-| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, with no axioms: `specV1_1_extends_specV1` and `specV2_extends_specV1_1`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V1_1,V2}.lean` |
+| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v2` and `T8_v2_to_v3`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
 | T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
-| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, using only permitted `propext`: `specV1_1_extends_specV1` and `specV2_extends_specV1_1`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V1_1,V2}.lean` |
+| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v2` and `T8_v2_to_v3`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
+| T7 | Counterexamples are genuine | not started | A |
+| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, with no axioms: `specV2_extends_specV1` and `specV3_extends_specV2`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V2,V3}.lean` |
+| T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
+| T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, using only permitted `propext`: `specV2_extends_specV1` and `specV3_extends_specV2`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V2,V3}.lean` |
 | T9 | Minimum clicks is exact | not started | A |
+| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v1_1` and `T8_v1_1_to_v2`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
+| T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
 | T10 | The page shows what must be shown | **proven**: every shown item has its id/label; only shown ids occur; no tiny class; every guard-counted info tree appears in its component; event disabled iff absent from enabled; shown commit enabled iff no popup, not already committed, and base guard | `lean/Ehr/Render/Proofs.lean`, `CommitProofs.lean` |
 | T11 | Panels are complete | **proven** end to end for active FHIR allergies/medications, with no row limits; pending prefills show provenance and their confirm action | `lean/Ehr/Render/FhirProofs.lean`, `PanelProofs.lean`, `PrefillProofs.lean` |
 | A2 | An alert appears only when its condition holds | **proven** for the interpreter: view firing/shown (`A2_view_firing`, `A2_view_shown`), new popups (`A2_popup_holds`) | `lean/Ehr/Proofs/Alerts.lean` |
@@ -88,16 +92,15 @@ unfinished. Seed 13 now removes every CURES report/review/exemption route;
 The old `bad13_preop_not_satisfies` witness is stale after review pinning and
 must not be presented as a proof of the new seed's CURES defect.
 
-Owner decision 2026-10-31 resolves the NP/pre-op domain obstruction: only
-physicians and surgeons may perform `signOrders` in pre-op encounters.
-`np_preop_never_signs` replaces `np_preop_obstruction` with a general guard
-safety theorem. Consent, H&P and medication-hold requirements and their entry
-permissions are unchanged. Completion and depth obligations now exclude only
-role-forbidden encounter contexts; `entry_relevant_when_allowed` proves that an
-active entry remains required in every allowed context. Named persona walkthroughs
-are compiled #guards, avoiding whole-program kernel reduction in the default.
-`Statements.lean` changes only the role predicate in `commitGuard_iff` to
-`commitRoleOk sp facts user c`; the strengthened equivalence is kernel checked.
+Owner decision 2026-11-01 resolves the NP/pre-op domain obstruction with
+security-class order privileges: only physicians and surgeons sign pre-op
+orders. `np_preop_never_signs` has no state or attestation exception. The three
+entries retain their original permissions. The blocking attending route and
+its tests are removed; entry waivers are gone. `entry_relevant_when_allowed`
+connects the role restriction to completion obligations. `T0_entry_values`
+again has its original statement without a waiver hypothesis. Executable
+walkthroughs cover NP clinic completion, NP pre-op refusal with reason, and
+surgeon pre-op completion. All remaining high-alert cosign theorems stay active.
 General T1 completion remains the previously recorded unfinished construction.
 Render visual-review follow-up: shell/side/nav presence is covered by T10;
 semantic T11 distinguishes the requested full and compact record projections.
@@ -116,3 +119,160 @@ The app still computes expected ARIA in TypeScript. A follow-up must define the
 Lean projection, prove its design contracts, and have the app fidelity gate
 consume it, including real nav click entries. No unfinished theorem declaration
 or proof hole has been added to the completed render modules.
+
+Dose-unit follow-up: `committed_dose_native` is kernel checked and ensures that
+changing a drug or selector cannot bypass the dimensional guard. Small literal
+unit and cross-slot checks are in `Check/DoseTests.lean`. `human_entry_exists`
+is the scalar construction lemma; its explicit non-dose/non-selector premises
+reflect the new relational constraint. General constructive T1 for relational
+inputs remains part of the already unfinished completion construction. No safety
+theorem is parked by this change, and Statements has no additional dose diff.
+
+## T1 completion milestone: proved fragment and exact remaining obligation
+
+`Ehr.Check.Scalar.completable` proves all-records, all-reachable-states completion
+for the actual one-screen scalar clinical program, with one human-only entry,
+a pinned allergy review (either review mode), and one alert with **any condition
+and any tier**. Entry kinds include text, flag, code, every quantity unit,
+identity, cosign and targeted scans. Medication scans retain `RecordAllowsScans`.
+Medication-dose values are excluded: they need a selected formulary drug.
+There are no per-line requirements, allowed-value lists, encounter role restrictions,
+waiver-only reviews or additional temporal/relational contracts in this fragment.
+This is a structural family, not all programs accepted by the core profile.
+
+`satisfies_of_checked_scalar` derives all thirteen properties from checker
+acceptance without a completion premise. `scalar_identity_satisfies` discharges
+its premises on a nonempty clinical program; `scalar_identity_required` proves
+its required commit list is nonempty for every physician and patient record.
+`human_clear_popup`, `popupCandidates_ack` and `human_finish_ready` are reusable
+construction lemmas. The last supports all alert conditions and tiers, removes
+duplicated pending keys too, and terminates by pending-list length.
+
+The proof-hole form of the exact remaining lemma is recorded **only below**.
+The present checker makes this target false: `completion_acceptance_counterexample`
+supplies acceptance and `¬ Completable` for one program. No source theorem
+purports to prove unrestricted general T1. The opt-in library
+`CompletionObligations` defines `Ehr.Check.Obligations.AcceptedCompletion` as
+an unproved proposition; it supplies no proof and is absent from defaultTargets.
+Run `lake build CompletionObligations` to inspect that development target.
+
+```lean
+-- In namespace Ehr.Check; imports Ehr.Check.Sound.
+theorem accepted_completable (sp : Spec) (prev : Option Program) (can p : Program)
+    (h : check sp prev can p = .ok) : Completable sp can p := by
+  sorry
+```
+
+What is missing is extraction and composition of the checker's navigation/reveal
+paths, compatible captures for multiple requirements and allowed-value lists,
+per-line/archived-line repair, and encounter/waiver routes. The finite alert
+construction is finished, but its ready-guard and lookup-consistency premises
+still need to be supplied after that general repair construction. Neither
+`Completable` nor any checker rule has been weakened.
+
+Hypothesis witnesses: `Proofs/HypothesisExamples.lean` now directly instantiates
+cosign, receipt, shown-review, A2 shown-alert, A4 step, both D3 forms, D6 labels,
+and all three T4 theorems. Every premise is discharged on concrete Tiny clinical
+programs/states; the render witnesses use actual present nodes, and the
+certificate witness is an actual planned `currentCert` write. All are in the
+default import tree. The original render-owned files are untouched.
+
+## Fixed order-line completion extension
+
+`reachable_drugSlots` proves a general invariant for every program whose drug
+fields bind to declared fixed slots: all reachable drug captures stay within
+those slots. The proof includes arbitrary macros, prefills, navigation,
+new-order-line actions and elapsed time, without assuming checker acceptance.
+
+`FixedLine.completable` uses that invariant to repair a per-order-line human
+entry on both fixed slots 0 and 1, even after currentSlot advances. It retains
+either review mode and every alert condition/tier. `satisfies_of_checked_fixed_lines`
+assembles all thirteen properties from acceptance without a completion premise;
+`fixed_lines_satisfies` discharges acceptance and `fixed_lines_pending_nonempty`
+exhibits two real drug lines with unsatisfied per-line entries.
+
+This is still a structural family: one screen, two fixed drug slots, one
+unrestricted scalar requirement per line, pinned allergy review and one alert.
+Dynamic current-slot composers and their archived-line invariants, arbitrary
+multiple/allowed-value requirements, navigation/reveal and general review
+collection remain open. The general `accepted_completable` target above is
+unchanged. No attending route or entry attestation is used by the extension.
+
+Completed completion-fragment statements have a separate opt-in Comparator challenge,
+`Ehr/Check/completion-comparator.json`; its placeholder bodies are excluded
+from the default import tree, like the two existing challenge modules.
+
+## Kernel-proved obstruction to unrestricted T1
+
+`DoseCompletionObstruction.accepted` proves that the scalar program with a
+`medicationDose` assessment and no drug field passes `check`. Its required dose
+has no selected drug from which to obtain a valid native unit.
+`never_commits` proves that no reachable state can contain its required commit,
+using the generic empty drug-slot bound and `committed_dose_native`.
+`not_completable` discharges the role and scan-domain premises and proves
+`¬ Completable` for that same accepted program.
+`completion_acceptance_counterexample` packages both facts and is Comparator
+checked. `CompletionObligations.refuted` proves that the exact isolated general
+target is currently false. A dependency-aware completion rule is required;
+neither the checker nor Completable was weakened or edited by this lane.
+
+The exact theorem skeleton above is retained as a **checker-repair target**,
+not as a plausible unfinished proof for the current rules. Positive completion
+fragments continue independently; they exclude medication-dose inputs unless a
+selected-drug/native-unit construction is supplied.
+
+## Receipt-aware review completion extension
+
+`FixedLine.completable` now also covers a receipt-aware presentation mode.
+A shown-or-receipt review panel uses `unlessReceipt`; `pinnedForReview_sound`
+proves the review stays met whether a valid receipt hides it or expiry reveals
+it again. The construction handles every record, user and reachable clock.
+`satisfies_of_checked_receipt_lines` assembles all thirteen properties directly
+from acceptance. `receipt_lines_satisfies` discharges acceptance, and
+`receipt_review_transition` exhibits an actual current RN receipt hiding the
+review and its reappearance after 24 hours. The previous fixed-line theorem's
+default presentation and statement remain compatible.
+
+This supplies receipt-sensitive presentation, not an arbitrary multi-screen
+receipt-collection route. General navigation/reveal, arbitrary entry/allowed-value
+combinations and dynamic current-slot archival remain outside this family;
+the dose dependency counterexample to unrestricted T1 remains unchanged.
+
+## Arbitrary finite alert-family completion extension
+
+`alert_lookup_unique` and `alertsAcked_of_no_candidates` prove that the native
+unique-alert-ID condition supplies the lookup consistency needed for finite
+popup discharge. `human_finish_ready_unique` handles every alert condition and
+tier for any finite unique-ID rule list, through actual click/ack events.
+`FixedLine.completable_many_alerts` composes this with the line repair and
+receipt-aware review constructions. `satisfies_of_checked_many_alerts` obtains
+unique IDs from checker acceptance and supplies all thirteen properties without
+assuming completion. `many_alerts_satisfies` discharges acceptance, and
+`many_alerts_two_acknowledgments` runs a two-line clinical instance through two
+distinct required acknowledgments before a real commit.
+
+The alert-family cardinality restriction is closed for this structural family.
+General state/navigation and entry-dependency construction remain open, including
+the accepted dose-only counterexample; the general target has not been weakened.
+
+## Prefill and macro completion extension
+
+The fixed-line family now accepts a caller-supplied drug prefill and an optional
+real macro button with arbitrary finite macro steps. Its completion proof covers
+all reachable outcomes, including stopped macros and arbitrary new-line clicks,
+through `reachable_drugSlots`. The macro catalog entry is enabled explicitly for
+this new presentation; the old fragment defaults are unchanged.
+`satisfies_of_checked_automated_lines` composes line repair, receipt-aware review
+and arbitrary finite alert discharge directly from acceptance. Acceptance retains
+all existing source/reference/human-action restrictions on the supplied prefills
+and macro. `automated_lines_satisfies` discharges every premise, while
+`prefill_macro_human_completion` exhibits two pending prefills, an actual public
+macro run leaving two unconfirmed drug captures, human assessment entry on each
+line, two interruptive acknowledgments and a real commit.
+
+Remaining scope: arbitrary multi-screen navigation/reveal, dynamically archived
+current-slot composers, multiple interacting/allowed-value entry requirements,
+and native drug/dose dependency repair. Unrestricted acceptance-to-completion
+is still refuted by the unchanged dose-only counterexample, so a checker repair
+is required before the isolated general target can be proved. No property or
+checker rule was weakened; Specs/**, Canonical/** and Render/** were not edited.

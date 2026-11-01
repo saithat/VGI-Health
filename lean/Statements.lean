@@ -32,9 +32,10 @@ theorem T0_commit_needs_guard (sp : Spec) (prog : Program) (facts : Facts) (user
     commitGuard sp prog facts user s c = true := by
   sorry
 
-/-- The guard in plain logic: the role may commit; every applicable entry
-requirement is met; every applicable review requirement is met; and every
-interruptive alert for the commit is acknowledged for each key it fires for. -/
+/-- The guard in plain logic: ordinary role permission and encounter-specific
+restrictions hold; applicable entries and reviews are met; and every interruptive
+alert key for this commit is acknowledged. The additional guard also enforces
+temporal evidence, value validation, defaults, expiry, displays and action labels. -/
 theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔

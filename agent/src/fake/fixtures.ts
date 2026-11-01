@@ -94,7 +94,7 @@ export function fakeSpec(version: string): Spec {
   spec.design.catalog.push('priorAuthStatus');
   if (version === RELEASE_IDS.feature) return spec;
   if (version !== RELEASE_IDS.migration) throw new Error(`fake spec: unknown version ${version}`);
-  // v2: antibiotic indication required and shown to nurses.
+  // v3: antibiotic indication required and shown to nurses.
   spec.version = RELEASE_IDS.migration;
   spec.elements.push({ id: 'abxIndication', label: 'Antibiotic indication', kind: { coded: { valueSet: 'abx-indications' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.reasonCode' });
   spec.infos.push({ id: 'abxIndication', label: 'Antibiotic indication', version: '' });
@@ -284,8 +284,8 @@ export const FAKE_RELEASE_NOTES: Record<string, string> = {
     'R1.1-2: A "request prior auth" action writes only a ServiceRequest/Task.',
     'R1.1-3: Optional in the spec; no new entry or review requirements.',
   ].join('\n'),
-  v2: [
-    '# Release v2: Antibiotic indication required (FAKE fixture)',
+  v3: [
+    '# Release v3: Antibiotic indication required (FAKE fixture)',
     'R2-1: Order composer: a required Indication picker for antibiotic orders (hard stop "Indication required").',
     'R2-2: Sign-orders screen: an Indication column in the order summary.',
     'R2-3: MAR administration panel: an Indication row next to the dose for antibiotics (shown on commit; no receipt).',

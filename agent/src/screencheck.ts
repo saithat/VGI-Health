@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { compilePresentations } from './presentation-compiler.js';
 /**
  * Offline per-version SCREEN CHECK (owner principle: nothing is checked at
@@ -39,7 +40,7 @@ export interface ScreenChecker {
 /** A failed screen check, in the same shape as a checker rejection (for the record). */
 export function screenCheckRejection(r: ScreenCheckResult): CheckResult {
   return {
-    status: 'fail', property: 'ScreenCheck', message: r.message, counterexample: null,
+    status: r.status === 'error' ? 'error' : 'fail', property: 'ScreenCheck', message: r.message, counterexample: null,
     screens: r.failingScreens, verdict: null,
   };
 }
@@ -54,7 +55,16 @@ export function bundlesFromEnv(): string[] {
 
 export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string } = {}): ScreenChecker {
   const fake = opts.fake ?? ehr.mode === 'fake';
-  const bundles = opts.bundles ?? bundlesFromEnv();
+  const bundles = [...(opts.bundles ?? bundlesFromEnv())];
+  if (!fake) {
+    const catalog = z.object({patients:z.array(z.object({flags:z.object({pediatric:z.boolean(),surgical:z.boolean()}),file:z.string()}))}).parse(JSON.parse(readFileSync(path.join(REPO_ROOT,'fixtures/synthea/index.json'),'utf8')));
+    for (const flag of ['pediatric','surgical'] as const) {
+      const patient = catalog.patients.find((p) => p.flags[flag]);
+      if (!patient) throw new Error(`Missing mandatory ${flag} screen bundle`);
+      const file = path.join(REPO_ROOT,'fixtures/synthea',patient.file);
+      if (!bundles.includes(file)) bundles.push(file);
+    }
+  }
   return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir);
 }
 
@@ -87,7 +97,7 @@ class CliScreenChecker implements ScreenChecker {
   async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
     const base = { mode: this.mode, bundles: this.bundles };
     if (this.bundles.length === 0) {
-      return { ...base, status: 'fail', pages: 0, failingScreens: [], failingFiles: [], message: 'no sample FHIR bundle configured (--fhir or EHR_SAMPLE_FHIR); a version that was not screen-checked is never deployed' };
+      return { ...base, status: 'error', pages: 0, failingScreens: [], failingFiles: [], message: 'no sample FHIR bundle configured (--fhir or EHR_SAMPLE_FHIR); a version that was not screen-checked is never deployed' };
     }
     const dir = await mkdtemp(path.join(tmpdir(), 'screens-'));
     try {
@@ -99,10 +109,10 @@ class CliScreenChecker implements ScreenChecker {
         try {
           files.push(...await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: bundle, ui: true, outDir: path.join(dir, `b${i}`) }));
         } catch (e) {
-          return { ...base, status: 'fail', pages: files.length, failingScreens: [], failingFiles: [], message: `render-screens failed for ${bundle}: ${errorMessage(e)}` };
+          return { ...base, status: 'error', pages: files.length, failingScreens: [], failingFiles: [], message: `render-screens failed for ${bundle}: ${errorMessage(e)}` };
         }
       }
-      if (files.length === 0) return { ...base, status: 'fail', pages: 0, failingScreens: [], failingFiles: [], message: 'render-screens produced no page trees' };
+      if (files.length === 0) return { ...base, status: 'error', pages: 0, failingScreens: [], failingFiles: [], message: 'render-screens produced no page trees' };
       // Exactly equal semantic trees have exactly equal fidelity/visibility obligations.
       // Keep a coverage hash for every exported state, checking each distinct tree once.
       const representatives = new Map<string, string>();
@@ -120,13 +130,13 @@ class CliScreenChecker implements ScreenChecker {
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env, EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env, EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
       const failingFiles = failingFilesFromOutput(res.output, files);
       return {
-        ...base, status: 'fail', pages: files.length, failingFiles: failingFiles.map((f) => path.relative(dir, f)),
+        ...base, status: z.object({status:z.enum(['fail','error'])}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(() => '{"status":"error"}'))).status, pages: files.length, failingFiles: failingFiles.map((f) => path.relative(dir, f)),
         failingScreens: [...new Set(failingFiles.map(screenOfFile))],
         message: `screen-check exit ${res.code}: ${res.output.slice(-3000)}`,
       };

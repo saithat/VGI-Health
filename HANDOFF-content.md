@@ -39,7 +39,7 @@ Content's patch/walk helpers resolve old artifact IDs through the same ledger.
   and sidebar groups are removed. Real goto buttons remain until core supports
   shell navigation events. The safety landmark remains; renderer projection of
   its extra workspace card is CR-17, not a deleted safety component.
-- v2 antibiotic controls/defaults preserve distinct artifact composer bindings
+- v3 antibiotic controls/defaults preserve distinct artifact composer bindings
   after folding. Seed 7 now removes every route to refill decision, including
   relocated host links, preserving its original unreachable-decision failure.
   All **32** permanent seeds remain. Eight replay manifests use actual exported
@@ -53,13 +53,13 @@ No source rule is weakened, dropped or replaced by a substitute checkbox.
 ## Validation
 
 - Full `lake build`, all W1–W7 walkthroughs, every original/new artifact walk,
-  all bad-program regressions and v1.1/v2 paths pass.
+  all bad-program regressions and v2/v3 paths pass.
 - `lake check` and Comparator pass all 18 statements. Kernel axioms are only
   propext / Quot.sound / Classical.choice; both Extends `#print axioms` audits
   report only propext. No content proof has sorry, admit, new axioms or native_decide.
   Comparator's trusted Statements sorry warnings are expected, not content proofs.
 - The renderer's actual **NavSane** passes on **all 15 saved persona programs**
-  (P1–P5 for v1/v1.1/v2), not just a parallel navigation model. Source checks
+  (P1–P5 for v1/v2/v3), not just a parallel navigation model. Source checks
   also cover identity adjacency, retained clinical controls and pinned reviews.
 - All eight native and installed-WASM feature failures replay with the intended
   hard stop and no commits. This tests runtime behavior, not manifest freshness.

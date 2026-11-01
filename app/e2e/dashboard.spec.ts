@@ -24,7 +24,7 @@ async function checkLayout(page: Page) {
     );
   expect(tiny).toEqual([]);
 }
-test("real P3: three areas, version drawer, exact version EHR pair, and counterexample", async ({
+test("real P3: four areas, version drawer, exact version EHR pair, and counterexample", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
@@ -35,7 +35,7 @@ test("real P3: three areas, version drawer, exact version EHR pair, and countere
     page.getByRole("heading", { name: "Evolution", exact: true }),
   ).toBeVisible();
   const nav = page.getByRole("navigation", { name: "Dashboard areas" });
-  await expect(nav.getByRole("button")).toHaveCount(3);
+  await expect(nav.getByRole("button")).toHaveCount(4);
   await expect(
     page
       .getByRole("group", { name: "Persona", exact: true })
@@ -121,7 +121,7 @@ test("real P3: three areas, version drawer, exact version EHR pair, and countere
       fullPage: true,
     });
   await page
-    .getByRole("button", { name: "Inspect P3 v2 migration", exact: true })
+    .getByRole("button", { name: "Inspect P3 v3 migration", exact: true })
     .click();
   const migration = page.getByRole("dialog", {
     name: "Before / after on screen",

@@ -1,3 +1,4 @@
+import Ehr.Core.Navigation
 import Ehr.Render.UiData
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
@@ -26,22 +27,16 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
         (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
      ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded")]
 
-def workflowLabel : String → String
-  | "W1" => "Outpatient visit" | "W2" => "Results" | "W3" => "Emergency"
-  | "W4" => "Inpatient MAR" | "W5" => "Pediatric visit" | "W6" => "Surgical day"
-  | "W7" => "Refills" | "chart" | "shell" => "Chart review"
-  | s => uiLabel s "Chart review"
-
-/-- Group once by workflow, retaining every screen in declared program order. -/
+/-- Overview uses public activities and navigator sections, retaining every screen. -/
 def uiOverviewNav (prog : Program) : List (String × List (String × String)) :=
-  ((prog.screens.map (·.workflow)).eraseDups).map fun w =>
-    (workflowLabel w, (prog.screens.filter (·.workflow == w)).map fun sc =>
-      (sc.id, uiLabel sc.title "Untitled screen"))
+  ((prog.screens.map (fun sc => (navigatorNames sc).1)).eraseDups).map fun activity =>
+    (activity, (prog.screens.filter (fun sc => (navigatorNames sc).1 == activity)).map fun sc =>
+      (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen"))
 
 def uiSteps (cx : Ctx) : List (String × String) :=
   let workflow := ((cx.prog.screen? cx.s.screen).map (·.workflow)).getD ""
   (cx.prog.screens.filter (·.workflow == workflow)).map fun sc =>
-    (sc.id, uiLabel sc.title "Untitled screen")
+    (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen")
 
 /-- Fixed-point results retain their two decimal places (e.g. 4.05, not 4.5). -/
 def uiHundredths (n : Nat) : String :=
@@ -53,6 +48,12 @@ def allergyCells (r : AllergyRow) : List (String × String) :=
 def medCells (r : MedRow) : List (String × String) :=
   [("Medication", r.name), ("Instructions", r.sig), ("Status", r.status),
    ("Authored", uiDate r.authored), ("Prescriber", r.prescriber)]
+def noteCells (r : NoteRow) : List (String × String) :=
+  [("Date", uiDate r.date), ("Type", r.noteType), ("Author", r.author),
+   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status),
+   ("Source date", uiDate r.sourceDate), ("Shift days", uiLabel r.shiftDays "Unknown")]
+def historyCells (r : HistoryRow) : List (String × String) :=
+  [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
   [("Vital sign", r.name), ("Value", r.value), ("Unit", r.unit), ("Recorded", uiDate r.date)]
 def problemCells (r : ProblemRow) : List (String × String) :=
@@ -72,6 +73,11 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
   | "allergyList" => cx.disp.allergies.map allergyCells
   | "currentMeds" => cx.disp.meds.map medCells
+  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
+  | "importedHistory" => cx.disp.history.map historyCells
+  | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
+  | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
+  | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
   | "vitals" => cx.disp.vitals.map vitalCells
   | "problemList" => cx.disp.problems.map problemCells
   | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
@@ -120,7 +126,7 @@ def actionRole : Action → String
 /-- Preserve the control semantics and the existing formulary choices inside
 section 10's open kind string. The painter does not reconstruct value sets. -/
 def uiFieldKind : ValueKind → String
-  | .quantity _ => "qty"
+  | .quantity _ | .medicationDose => "qty"
   | .coded "formulary" => "code:" ++ "|".intercalate (formulary.map (·.name))
   | .coded _ => "code"
   | .text => "text" | .flag => "flag" | .identity => "identity"
@@ -135,9 +141,17 @@ def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String)
 
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
-  let (_, _, want) := fieldKind kind
-  let unit := match it.value? with | some (.qty _ u) => u | _ => want
-  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") (uiFieldKind kind) (it.value?.map valueText)
+  let (_, _, baseUnit) := fieldKind kind
+  let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
+  let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
+    "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else uiFieldKind kind
+  let unit := if kind == .medicationDose then want else
+    match it.value? with | some (.qty _ u) => u | _ => want
+  let value := if kind == .medicationDose &&
+    it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
+    then none else it.value?.map valueText
+  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)
@@ -201,6 +215,7 @@ def uiLatestVitals (d : Display) : List VitalRow :=
 
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
+  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
   | "allergyList" => cx.disp.allergies.map uiAllergySummary
   | "currentMeds" => cx.disp.meds.map uiMedSummary
   | "problemList" => (cx.disp.problems.filter (fun r => r.status != "resolved" && r.status != "inactive" && r.abatement == "")).map uiProblemSummary
@@ -275,6 +290,9 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
 already present in the program's side column. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
+    (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+      [.info "" "Home medications (reported)" "importedHistory" "list"
+        ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)

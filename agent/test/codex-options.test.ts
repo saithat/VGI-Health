@@ -1,16 +1,19 @@
+import { spawnSync } from 'node:child_process';
 import { chmod, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { CodexLlm } from '../src/backends/codex.js';
+import { confinedArgs, auditTranscript } from '../src/backends/isolation.js';
 import { tmp } from './helpers.js';
-it('passes fast service tier and high effort to a stub CLI without making an LLM request', async () => {
-  const directory = await tmp('codex-options');
-  const binary = path.join(directory, 'stub-codex');
-  const log = path.join(directory, 'argv');
-  await writeFile(binary, `#!/bin/sh\nprintf '%s\\n' "$@" > '${log}'\nwhile [ "$#" -gt 0 ]; do\n if [ "$1" = "-o" ]; then shift; printf '{"ok":true}' > "$1"; fi\n shift\ndone\ncat >/dev/null\nprintf '{"type":"FAKE_STUB"}\\n'\n`);
-  await chmod(binary, 0o755);
-  const backend = new CodexLlm({ binary, model: 'stub', serviceTier: 'fast', reasoningEffort: 'high' });
-  const response = await backend.complete({ callId: 'stub', purpose: 'test', system: 'FAKE', prompt: 'FAKE', schemaName: 'fake', schema: {} });
-  expect(await readFile(log, 'utf8')).toContain('service_tier="fast"');
-  expect(await readFile(log, 'utf8')).toContain('model_reasoning_effort="high"');
-  expect(response.usage).toEqual({ serviceTier: 'fast', reasoningEffort: 'high' });
+it('confines file reads to request/runtime directories, with no LLM call', async () => {
+  const directory = await tmp('codex-isolation');
+  const script = path.join(directory,'probe');
+  await writeFile(path.join(directory,'input'),'allowed');
+  await writeFile(script, `#!/bin/sh\ntest -f '${directory}/input' || exit 1\ntest ! -e '${process.cwd()}/package.json' || exit 2\ntest ! -e '/home/saithat/.codex/auth.json' || exit 3\nprintf '{"status":"pass"}' > '${directory}/result'\n`);
+  await chmod(script,0o755);
+  const result = spawnSync('bwrap',confinedArgs(directory,script,[]));
+  expect(result.stderr.toString()).toBe(''); expect(result.status).toBe(0);
+  expect(JSON.parse(await readFile(path.join(directory,'result'),'utf8'))).toEqual({status:'pass'});
+});
+it('rejects tool events including outside-temp file reads', () => {
+  expect(auditTranscript('{"type":"item.completed","item":{"type":"command_execution","command":"cat /home/world/day9"}}').status).toBe('fail');
+  expect(auditTranscript('{"type":"item.completed","item":{"type":"agent_message","text":"{}"}}').status).toBe('pass');
 });
