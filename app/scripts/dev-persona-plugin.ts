@@ -17,16 +17,19 @@ export function devPersonaPlugin(): Plugin {
     }
     const host = request.headers.host ?? "";
     const origin = request.headers.origin;
-    const local = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.test(host);
+    // Same-origin requests only (this app's own page), over http or https, so
+    // the persona buttons also work through Tailscale. The seeded password is
+    // never typed by anyone and never ships in built assets.
+    const sameOrigin =
+      host !== "" && (origin === `http://${host}` || origin === `https://${host}`);
     if (
-      !local ||
+      !sameOrigin ||
       request.method !== "POST" ||
       request.headers["content-type"] !== "application/json" ||
-      origin !== `http://${host}` ||
       !password
     ) {
       response.writeHead(403);
-      response.end("Dev login requires the loopback app server and local .env");
+      response.end("Persona login requires a same-origin request and the local .env");
       return;
     }
     response.writeHead(200, {
