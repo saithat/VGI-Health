@@ -153,7 +153,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
-    await page.getByRole("tab", { name: "Meds", exact: true }).click();
+    await page.getByRole("tab", { name: "Medications", exact: true }).click();
     await page
       .locator(".clinical-home-meds, [data-info-id=currentMeds]")
       .first()

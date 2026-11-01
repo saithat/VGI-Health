@@ -1786,3 +1786,12 @@ with original icons. The review caught the host session controls covering a low
 clinical button; they now dock in the measured status bar instead. Source fields,
 notes, alerts and actions are never removed to achieve density. Read-only Index
 cards flow 3/2/1 columns at 1440/1024/720 px; interactive forms retain normal order.
+
+Final gates: app build/lint, 301 app tests, 95 agent tests, all nine live
+patient-opening paths, source/ARIA checks and 102 sampled controls passed. The
+audit covers two configurations per persona (ten total), with zero dead controls
+or errors. Native build completed 370 jobs; WASM source freshness passed. The
+archived run1-P3 verification retains zero mismatches across 424 tasks / 14,658
+events plus three baselines / 137 events. Exact evidence is recorded in
+`docs/audits/dense-shell-final.json`.
+The shared realism rerun passed in 24.1 seconds after opening the new source-defined Medications tab; the combined browser evidence is 44 passing checks plus one opt-in screenshot skipped.
