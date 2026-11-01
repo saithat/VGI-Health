@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "598c7b2eb6eb54386a8f16b779d82e07885b26a2",
+  "sourceRevisionAtValidation": "1fbcd8de3acf207d159aab781b246eec3f826bad",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "5cf5b9accbb6ebf4c0e36a7c11f0d81972cbe174ef29af0cf7aa7d20ad1a01cd",
-  "nativeBinarySha256": "d4f763ed048f430f96ef5ecaf81cd214d6eed282d1d939042c8ef7502cd2e17d",
+  "leanSourceHash": "e1a312aa74968d5e9072ba8e9a94559e2787182063ed21e0b52609e9c5502882",
+  "nativeBinarySha256": "73636758ed5248d511475c366f4f637b43fd36d22106f782487a16f4a6c31f5b",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "8d4ec01bf502f552bb549bcd62591196827f734f62ef0abcc4109887317c7a6f"
+    "reportSha256": "2bdb20cf3520c489626a6575c6a992e1451780e9d3537a811835a00977f75e71"
   },
   "world2": {
     "world": "runs/world/2",
@@ -501,7 +501,11 @@
       "intentionalViewportSkips": 3
     },
     "diagnosisPickerViews": 2,
-    "scrolledContextViews": 3
+    "scrolledContextViews": 3,
+    "sharedShellReview": {
+      "skipped": 1,
+      "reason": "Optional shared-shell capture requires REALISM_SHOTS; AMB thirty-screen screenshots and fidelity passed."
+    }
   },
   "archived": {
     "run": "run1-P3",
@@ -531,7 +535,8 @@
     "renderTheoremsCompared": 51,
     "frozenStatementSha256": "126c87d43ea9be944d32b3aa8563720a74edb9831a7c5cd6afcba19ae0ecf00f",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 123
+    "originalHeadersUnchanged": 127,
+    "mainIntegration": "924425f"
   },
   "ambulatoryMetadata": {
     "nativeWasmScreens": 34,
@@ -545,7 +550,8 @@
     "additionalRoleProbes": [
       "P4/W2",
       "P4/W7"
-    ]
+    ],
+    "codedBloodPressureOrderRegression": true
   },
   "clinicalFrame": {
     "sourceProgressOptOut": true,
