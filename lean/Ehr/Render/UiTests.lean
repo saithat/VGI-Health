@@ -194,6 +194,7 @@ def uiShellCtx : Ctx :=
 
 def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.disp uiShellCtx.user uiShellCtx.s
 
+#guard uiNavGroup { uiSignItem with comp := { uiSignItem.comp with kind := .group false true, tag := "nav" } }
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 #guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with

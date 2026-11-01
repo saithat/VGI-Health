@@ -159,8 +159,9 @@ def uiSideAt (cx : Ctx) (id : CompId) : Bool :=
   go (cx.v.items.length + 1) id
 
 def uiNavGroup (it : ItemView) : Bool :=
-  it.comp.kind == .group false false &&
-    (uiTagIs it.comp.tag "nav" || uiTagIs it.comp.tag "navigator")
+  match it.comp.kind with
+  | .group false _ => uiTagIs it.comp.tag "nav" || uiTagIs it.comp.tag "navigator"
+  | _ => false
 
 /-- The pair-only nav wire format can represent enabled, ordinary click buttons.
 Controls with a hotkey or blocked reason stay in the workspace with all metadata. -/

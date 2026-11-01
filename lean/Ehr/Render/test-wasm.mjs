@@ -70,7 +70,7 @@ function checkUi(ui, view, program, display, name) {
     return [`${id}:${tag}`];
   });
   sourceKeys.push(...ui.nav.flatMap(([, entries]) => entries.map(([id]) => `${id}:button`)));
-  const shellGroup = (it) => it.comp.kind?.group?.collapsible === false && it.comp.kind?.group?.startCollapsed === false && /(^|\.)(nav|navigator)$/.test(it.comp.tag);
+  const shellGroup = (it) => it.comp.kind?.group?.collapsible === false && /(^|\.)(nav|navigator)$/.test(it.comp.tag);
   for (const item of view.items.filter((it) => it.shown && shellGroup(it))) {
     assert.ok(ui.nav.some(([title]) => title === (item.comp.label || 'Navigator')), `${name}: navigator group heading retained`);
   }

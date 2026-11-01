@@ -1130,7 +1130,10 @@ the source manifest has been refreshed and make wasm-check passes.
   not destination screen IDs. Paint entries as buttons dispatching `click` with
   that ID. The screen-wide modal inertness also applies to nav. Static overview
   entries must not be treated as invented interpreter events. Update fidelity
-  to check those real clickable entries. Render cannot edit the app painter.
+  to check those real clickable entries. Open these available navigator groups
+  by default: comp IDs no longer match the current screen ID, so the old
+  active-screen accordion default otherwise collapses every nav entry. Render
+  cannot edit the app painter.
 - **Checker/content:** retain D5 certification work from the earlier request;
   render will not truncate groups or invent navigation actions to pass D5.
 - **App/infra:** the earlier exact Facts.patientId wristband-token request remains.
