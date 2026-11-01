@@ -86,3 +86,15 @@ virtual-memory ceiling and six workers; builds precede browser gates.
   limitation. No presentation component can enter a deployed version; the
   empty component bundle is hashed explicitly. This is outstanding owner
   scope, not completed component support.
+
+Whole-version browser receipts now memoize **exact** rendered-tree inputs under
+one fingerprint of the emitted app build, Chromium executable, Playwright/Node,
+font minimum, viewport configuration and assertion/helper source bytes. Every
+version still exports and accounts for every state. Only completely passing
+batches at both widths mint receipts; known-bad detector controls run on every
+invocation, including fully reused batches. Coverage and receipts live under
+`runs/screen-check-cache/` and are referenced by per-version gate output. Any
+relevant input/build/assertion change invalidates reuse. This avoids repeatedly
+painting identical states across forks and unchanged screens without changing
+any safety or fidelity obligation. Cache invalidation/failure/viewport coverage
+has a regression test (app suite now 155 tests).
