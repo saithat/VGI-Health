@@ -130,5 +130,53 @@
     "patient-switch.chart-scoping": 23,
     "weight.linked-source-refresh": 12,
     "refill.denial-via-approval-action": 6
-  }
+  },
+  "validation": {
+    "afterMainMerge": "78ce2f6c36056fa7f722d4192b07da34ec3936c0",
+    "unchangedProgramAndSpecInputs": 23,
+    "positiveScenarioFailures": 0,
+    "suiteTests": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "command": "pnpm test:conformance"
+    },
+    "dashboardTests": {
+      "passed": 16,
+      "failed": 0,
+      "files": [
+        "data.test.ts",
+        "dashboard.test.tsx",
+        "rule-conformance.test.tsx"
+      ]
+    },
+    "typecheck": {
+      "agent": "pass",
+      "app": "pass"
+    },
+    "lint": {
+      "agentReport": "pass",
+      "modifiedDashboardTypeScript": "pass"
+    },
+    "servedDashboardEvidence": {
+      "runSummaryIncludesConformance": true,
+      "productionSchemaTargets": 23,
+      "deployedRevisionBadges": 8,
+      "failuresPerArchivedRevision": 1,
+      "temporaryPreviewStopped": true
+    },
+    "standaloneCurrentCLI": {
+      "program": "releases/v3/personas/P3.json",
+      "spec": "releases/v3/spec.json",
+      "summary": {
+        "targets": 1,
+        "scenarios": 195,
+        "passed": 41,
+        "failed": 1,
+        "notApplicable": 153
+      },
+      "matchesCombinedCanonicalResults": true
+    }
+  },
+  "validatedAt": "2026-11-01T16:45:56.927Z"
 }

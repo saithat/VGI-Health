@@ -48,7 +48,8 @@ CLI registers all 195 for subsequent single-command runs.
 Validation: 16 suite/integrity/isolation tests and 16 dashboard/data tests passed;
 agent/app TypeScript checks and the modified TypeScript lint checks passed. The
 real dashboard HTTP summary advertises `conformance.json`, and its production
-schema parses all 23 targets and all eight per-revision failure badges. No
+schema parses all 23 targets; the served data has one failure for each archived
+revision. A fresh standalone CLI run of P3 v3 matches all 195 combined outcomes. No
 browser was used for workflow evaluation. Patient-selection wiring, persistence
 and browser painting remain separate integration boundaries. Reporting is
 read-only and never gates deployment.
