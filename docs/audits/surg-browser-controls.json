@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-01T12:29:19.857Z",
-  "revision": "73192dee1100ef4bfdda2b0769feb5f3610f5c14",
+  "generatedAt": "2026-11-01T13:02:06.072Z",
+  "revision": "da228479eaf063f904a30daa02c7aee80ec0395e",
   "mainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
-  "builtAt": "2026-11-01T12:12:54.178Z",
-  "leanHash": "391896809e1f7b5b3974ba8eb0476e9cf2ef98c23eab5fd8d17b8bac2a6684bc",
+  "builtAt": "2026-11-01T12:45:51.634Z",
+  "leanHash": "82f2f766d410130c23576c997979c839c49a78b10d802ca5c5c51350753042a5",
   "counts": {
     "works": 2704,
     "disabled-with-reason": 113,
@@ -191,7 +191,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -359,7 +359,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -515,7 +515,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -815,7 +815,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -971,7 +971,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -33834,7 +33834,7 @@
   "sourceDirtyAtBuild": true,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "2461d2988646a932d54c004e4d673aeceee9f84ea424f62c22a5f7b07c3c4f7f"
+    "appSha256": "d4fc68d73c3e121ed9c2c69135b30a364ed7d09ad760474cae92a20e21d8ea41"
   },
   "scope": "App shell and Lean EHR; six roles, at most 48 configurations per role. Explicit inspect=1 for technical controls. Separate live-agent API attempt not included.",
   "configurationCoverage": [

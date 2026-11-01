@@ -29,7 +29,7 @@ try {
   await mkdir(out, { recursive: true });
   browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  for (const [screen, focus] of [
+  for (const [screen, focus] of process.env.EHR_REVIEW_ONLY_EXTRA ? [] : [
     ['home', null], ['w6Schedule', null], ['w6Consults', null],
     ['w1Rooming', 'w1Rooming.chiefComplaint'], ['w1MedRec', 'w1MedRec.decision0'],
     ['w1Hpi', 'w1Hpi.hpi'], ['w1Exam', 'w1Exam.exam'], ['w1Close', 'w1Close.patientInstructions'],
@@ -67,6 +67,17 @@ try {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({ path: '/tmp/surg-clinician-header-narrow.png', animations: 'disabled' });
     process.stdout.write('source clinician header: captured at desktop and narrow widths\n');
+  }
+  if (process.env.EHR_REVIEW_RESULT_UI) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const ui = JSON.parse(await readFile(process.env.EHR_REVIEW_RESULT_UI, 'utf8'));
+    await page.goto('http://127.0.0.1:4196/screen-check.html');
+    await page.waitForFunction(() => typeof window.renderUi === 'function');
+    await page.evaluate(screen => window.renderUi(screen), ui);
+    await page.evaluate(() => document.fonts.ready);
+    await page.locator('[data-info-id="labResults"]').first().evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await page.screenshot({ path: `${out}/lab-results-load.png`, animations: 'disabled' });
+    process.stdout.write('source laboratory results: captured\n');
   }
 } finally {
   if (browser) await browser.close();

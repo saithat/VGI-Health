@@ -34,6 +34,29 @@ def parsed := output clinical
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null
 
+/-- Standard names may be shortened without changing a locally qualified label. -/
+def creatinineConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"2160-0","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#
+def a1cConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"4548-4","display":"Hemoglobin A1c/Hemoglobin.total in Blood"}]}"#
+def hemoglobinConcept : Json := json r#"{"coding":[{"system":"http://loinc.org","code":"718-7","display":"Hemoglobin [Mass/volume] in Blood"}]}"#
+#guard labDisplayName creatinineConcept == "Creatinine"
+#guard labDisplayName a1cConcept == "Hemoglobin A1c"
+#guard labDisplayName hemoglobinConcept == "Hemoglobin"
+#guard labDisplayName (creatinineConcept.setObjVal! "text" (.str "Point-of-care creatinine")) == "Point-of-care creatinine"
+#guard labDisplayName (json r#"{"coding":[{"system":"http://loinc.org","code":"2160-0"}]}"#) == "Creatinine"
+#guard labDisplayName (json r#"{"coding":[{"system":"local","code":"2160-0","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#) == "Creatinine [Mass/volume] in Serum or Plasma"
+#guard labDisplayName (json r#"{"coding":[{"system":"http://loinc.org","code":"unknown","display":"Creatinine [Mass/volume] in Serum or Plasma"}]}"#) == "Creatinine [Mass/volume] in Serum or Plasma"
+
+/-- A short MDRD caption retains the reported value, indexed unit, time and flag. -/
+def mdrdDisplayObservation : Json := json r#"{"resourceType":"Observation","status":"final","code":{"coding":[{"system":"http://loinc.org","code":"33914-3","display":"Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M"}]},"effectiveDateTime":"2026-11-03T08:00:00Z","valueQuantity":{"value":58.2,"unit":"mL/min/{1.73_m2}"},"referenceRange":[{"low":{"value":60},"high":{"value":100}}],"interpretation":[{"coding":[{"code":"L"}]}]}"#
+#guard (labPoint mdrdDisplayObservation).name == "eGFR (MDRD)"
+#guard (labPoint mdrdDisplayObservation).code == "33914-3"
+#guard (labPoint mdrdDisplayObservation).value == "58.2"
+#guard (labPoint mdrdDisplayObservation).unit == "mL/min/{1.73_m2}"
+#guard (labPoint mdrdDisplayObservation).date == "2026-11-03T08:00:00Z"
+#guard (labPoint mdrdDisplayObservation).hundredths? == some 5820
+#guard (labPoint mdrdDisplayObservation).range? == some (6000, 10000)
+#guard (labPoint mdrdDisplayObservation).flagged
+
 /-- A profile may supply HumanName.text without separate given/family parts. -/
 def displayClinician : Json := json r#"{"resourceType":"Practitioner","id":"display-clinician","name":[{"use":"official","text":"Dr. Morgan Rivera"}]}"#
 /-- Resource identity alone never becomes a displayed clinician name. -/

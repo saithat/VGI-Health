@@ -112,6 +112,15 @@ an ordinary optional string, so the painter and archived screen format need no
 new clinical logic. Human patient-identity confirmation, permissions and clinical
 facts remain independent of this displayed name.
 
+
+SURG adds four conservative `labDisplayName` aliases in the existing typed FHIR
+lab reader: standard creatinine, hemoglobin A1c, hemoglobin and MDRD eGFR labels.
+The exact LOINC system/code and standard source wording (or a code-only label)
+are required. Custom qualified labels and unknown systems/codes keep their text.
+Only `LabPoint.name` changes; codes, values, units, time, ranges, flags and trends
+remain source data. Explicit supplied info payloads keep their own labels. No
+new UI kind, clinical rule, code migration or browser interpretation is added.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

@@ -7,6 +7,22 @@ Research and implementation review: 2026-11-01, SURG lane. This is the shared ve
 ### Evidence and target layouts
 
 
+Results summaries now use short department captions for four supplied standard
+labels, checked against the official definitions for
+[creatinine](https://loinc.org/2160-0),
+[hemoglobin A1c](https://loinc.org/4548-4),
+[hemoglobin](https://loinc.org/718-7), and
+[MDRD eGFR](https://loinc.org/33914-3). The MDRD method stays explicit. Lean
+requires the exact LOINC system/code and its standard supplied label, or a
+code-only label; custom local wording and unknown systems/codes retain their
+original text. Historical codes are not remapped, and no value or calculation
+is changed. Detailed explicit result payloads retain their supplied labels.
+The goal is a readable clinical test column beside the existing value, unit,
+reference range, date and flag, rather than a terminology description spanning
+several lines in each row.
+
+
+
 The signed-in clinician name is read from the authenticated FHIR
 [Practitioner profile](https://hl7.org/fhir/R4/practitioner.html), using its
 [HumanName](https://hl7.org/fhir/R4/datatypes.html#HumanName) text or official
@@ -101,7 +117,7 @@ Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load
 
 The integrated shared shell adds the indigo signed-in role bar, blue chart strips, explicit recorded weight/date and isolation status. On desktop, the banner and navigator remain visible while the workspace scrolls; opening a section returns that workspace to its heading. This fixes the earlier task-focused screenshots where patient identity scrolled away. The only current-section marker is on the actual Lean navigation button. The final 1440×900 review covers all surgical and clinic screens below, with the pre-op banner's planned context and the consult queue's Received column explicitly checked.
 
-The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 43 before and 48 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the clinician-header before image is the real landing capture from `73192de`. The extra named-clinician view is a native/WASM identity fixture; the ordinary workflow and live views use their supplied clinician profiles. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
+The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 44 before and 49 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the clinician-header before image is the real landing capture from `73192de`. The focused laboratory before image uses the pushed `da22847` painter and native screen. The extra named-clinician view is a native/WASM identity fixture; the ordinary workflow and live views use their supplied clinician profiles. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
 
 ### Screen-by-screen visual review
 
@@ -121,6 +137,7 @@ Compared with Salem's navigator and brief-note examples, the improvement is prim
 | Pounds signing review | A kg-labeled field showed/submitted the recorded pounds unit → separate recorded-value guidance and blank kg entries. The original alert and confirmation requirements remain. | [Pounds review](../../app/shots/realism/surg/after/w6Sign-pounds-task.png) |
 | Brief Op Note | One dense mixed grid with single-line findings → diagnoses/procedure/team, anesthesia/EBL, findings, specimens/devices and outcome sections. Narratives have room to document. Diagnosis/procedure fields now search Lean-supplied terms, retain raw codes, and show descriptions below aligned inputs. The first open-dropdown review exposed dark text on a dark highlight; the final painter inherits the option's contrasting foreground, with a browser contrast assertion. | [Brief Op Note](../../app/shots/realism/surg/after/w6OpNote-task.png), [code search](../../app/shots/realism/surg/after/w6OpNote-code-search.png), [explicit draft selections](../../app/shots/realism/surg/after/w6OpNote-code-selected.png) |
 | Postprocedure Orders | Generic numbered medication rows → diet/activity, VTE, monitoring, nursing, scheduled/PRN pain, prophylaxis and nausea groups. Draft set values still require their original confirmations. | [Postprocedure](../../app/shots/realism/surg/after/w6PostOp-task.png) |
+| Laboratory summary labels | Multi-line standard terminology names → short clinical captions for the four verified tests, with MDRD retained. Local qualified names remain intact. Values, units, reference ranges, dates, flags, codes and trend points stay identical to the previous real-WASM projections. | [Before](../../app/shots/realism/surg/before/lab-results-load.png), [after](../../app/shots/realism/surg/after/lab-results-load.png) |
 | Rounding | Single-line progress field below an unbounded historical lab report → SOAP narrative with adjacent active-order review and scrollable reports. The vitals label no longer claims a 24-hour restriction. | [Rounding](../../app/shots/realism/surg/after/w6Rounding-task.png) |
 | Discharge | Flat fields → medication reconciliation, diagnosis/disposition, and follow-up/AVS sections. Prescriptions, note/order signatures and discharge remain distinct. | [Discharge](../../app/shots/realism/surg/after/w6Discharge-task.png) |
 | Clinic rooming | Generic visit prompt → postoperative/surgical reason prompt and a stable Visit navigator. Existing vitals, screenings and allergy review remain. | [Rooming](../../app/shots/realism/surg/after/w1Rooming-task.png) |
@@ -239,6 +256,26 @@ viewer-caption assertion now checks Lean's exact supplied string; 46 states pass
 reuse. The 17 clinical/live/search/contrast tests pass, including actual saved
 Provenance binding and normal close-chart behavior. Click/KLM measurements are
 regenerated and unchanged. The refreshed six-role control audit and regression gate pass with 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; the report retains the bounded configuration coverage and remaining checkpoints. [Current artifact-bound validation](../audits/surg-realism-validation.json).
+
+
+The laboratory-caption increment keeps the results table and every row intact.
+The focused native before/after view shows standard test names on a single line,
+leaving more trend rows visible beside the original values, units, dates, ranges
+and flags. The live clinic's `eGFR (MDRD)` caption has a positive browser assertion.
+The 93-image set includes this focused comparison. The real-WASM projection
+comparison records four renamed tests in the case and one in the consult; all
+other facts and display fields are exactly equal to the previous green build.
+The supplied codes and MDRD method are preserved, including historical codes.
+
+Default build, kernel checking and the 18/21/43 Comparator suites pass; 15/15
+projections certify, 18/18 bad programs reject, 1,284/1,284 tasks complete, and
+archived replay has zero mismatches. App build/lint/226 tests and agent
+typecheck/lint/84 tests pass. The 46-state semantic gate passes 101 checks with
+three fixture-dependent skips, and the 17 clinical/live/search/contrast tests
+pass. The refreshed six-role control audit and regression pass: 2,704 working controls, 113 explained disabled states, no dead controls and no errors. Bounded coverage and remaining checkpoints are retained in the report. Regenerated min-click/KLM results are unchanged by this increment.
+[Current validation](../audits/surg-realism-validation.json) and
+[projection evidence](../audits/surg-controls.json) retain the source/artifact
+bindings and exact caption changes.
 
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 

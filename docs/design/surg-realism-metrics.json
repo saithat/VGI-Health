@@ -2,7 +2,7 @@
   "method": "Actual P5 presets, same native interpreter for both programs. Shared certified jointMinimum and KLM adapter. Clicks and keys are independently optimized within each reported space. KLM replays the minimum-click path at fixed clock; it is an estimate, not a KLM minimum. Directed spaces make no global-minimum claim. Native min-clicks is also recorded without benchmark fixedValues.",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "binarySha256": "651b147ade0892f4c72c953c555593d45ac23f48887fedd63e1ca0a16f5c5b44",
+  "binarySha256": "8b7e2380122f7d30988299f4df2035a3714c95951ee93c8a9225897a3b45b396",
   "stages": [
     {
       "stage": "before",

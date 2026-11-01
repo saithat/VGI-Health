@@ -84,3 +84,9 @@ source name beside the role. Lean requires a unique `Display.clinicians` identit
 match to its permission-bearing user; absent/ambiguous profiles retain the role
 alone. The painter displays that supplied string and never selects a clinician,
 infers permission or pre-enters patient identity from it.
+
+SURG's typed FHIR lab reader supplies short captions for four verified standard
+LOINC labels. Exact system/code and standard-label matching preserves custom
+qualified labels. Recorded codes, values, units, dates, ranges, flags and trends
+are unchanged. The existing results presentation paints those supplied captions;
+explicit info payloads retain their own labels.

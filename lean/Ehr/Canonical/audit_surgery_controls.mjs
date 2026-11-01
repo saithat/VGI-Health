@@ -47,6 +47,21 @@ function route(program, target) {
   throw new Error(`Unreachable screen ${target}`);
 }
 const report = { scope: 'P5, all releases; visible initial-state semantic buttons and every alternate tab; real WASM transitions', screens: [], failures: [] };
+async function compareLabEvidence(name, output) {
+  if (!process.env.EHR_SURG_LABEL_BASELINE) return;
+  const before = await read(`${process.env.EHR_SURG_LABEL_BASELINE}/${name}.json`);
+  const withoutLabNames = result => ({ ...result, display: { ...result.display,
+    labs: result.display.labs.map(row => ({ ...row, name: '' })) } });
+  assert.deepEqual(withoutLabNames(output), withoutLabNames(before), `${name}: lab captions must not change clinical evidence`);
+  const renamed = output.display.labs.flatMap(row => {
+    const old = before.display.labs.find(previous => previous.code === row.code);
+    return old.name === row.name ? [] : [{ code: row.code, before: old.name, after: row.name }];
+  });
+  if (name === 'case') assert.ok(renamed.length > 0);
+  report.labDisplayEvidence ??= [];
+  report.labDisplayEvidence.push({ fixture: name, unchangedExceptLabDisplayNames: true, renamed });
+}
+await compareLabEvidence('case', projection);
 // Exercise the selected-encounter wire path independently of role presets.
 {
   const patient = { resourceType: 'Patient', id: 'context-patient', name: [{ text: 'Context Example' }] };
@@ -201,6 +216,7 @@ for (const release of ['v1', 'v2', 'v3']) {
   const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
   assert.equal(projection.error, undefined);
   assert.deepEqual(projection, nativeFacts(bundle, context));
+  await compareLabEvidence('consult', projection);
   const request = projection.facts.infoPayloads?.find(p => p.info === 'consultRequest')?.rows[0]?.fields;
   assert.ok(request?.some(([key, value]) => key === 'Received' && value));
   assert.ok(!request?.some(([key]) => key === 'Due'));

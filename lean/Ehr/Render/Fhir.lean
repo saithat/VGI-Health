@@ -499,6 +499,25 @@ def fmtHundredths (n : Nat) : String :=
 /-- Interpretation codes that mean abnormal. -/
 def abnormalCodes : List String := ["H", "L", "HH", "LL", "A", "AA", "HU", "LU", "<", ">"]
 
+/-- Department display names for supplied standard LOINC labels. Recorded codes
+and calculation methods are preserved; custom local names remain authoritative. -/
+def labDisplayAliases : List (String × String × String) :=
+  [("2160-0", "Creatinine [Mass/volume] in Serum or Plasma", "Creatinine"),
+   ("4548-4", "Hemoglobin A1c/Hemoglobin.total in Blood", "Hemoglobin A1c"),
+   ("718-7", "Hemoglobin [Mass/volume] in Blood", "Hemoglobin"),
+   ("33914-3", "Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M", "eGFR (MDRD)")]
+
+/-- Only a known system/code and its standard label (or a code-only label)
+receive the department caption. Unknown codes and qualified names keep their text. -/
+def labDisplayName (concept : Json) : String :=
+  let source := ccText concept
+  let coding := (codings concept).headD .null
+  let code := str coding "code"
+  if str coding "system" != "http://loinc.org" then source else
+  ((labDisplayAliases.find? fun (knownCode, standardName, _) =>
+    code == knownCode && (source == standardName || source == code)).map
+      fun (_, _, label) => label).getD source
+
 /-- One lab result: code, name, value text, unit, time, value × 100,
 reference range (×100, if known), flagged abnormal by the source. -/
 structure LabPoint where
@@ -520,7 +539,7 @@ def labPoint (r : Json) : LabPoint :=
     | some lo, some hi => some (lo, hi)
     | _, _ => none
   let fromTable := (refRanges.find? (·.1 == code)).map (·.2)
-  { code, name := ccText (field r "code"), value := v, unit := u, date := obsWhen r
+  { code, name := labDisplayName (field r "code"), value := v, unit := u, date := obsWhen r
     hundredths? := h, range? := fromObs <|> fromTable
     flagged := (arr r "interpretation").any (fun cc => abnormalCodes.contains (firstCode cc)) }
 

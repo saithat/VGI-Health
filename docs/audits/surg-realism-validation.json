@@ -1,11 +1,11 @@
 {
-  "validatedAt": "2026-11-01T12:29:52.409700+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity and selected encounter context, readable live receipts and shared clinical-display integration",
+  "validatedAt": "2026-11-01T13:02:15.144600+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity, selected encounter context, conservative LOINC display aliases and readable live receipts",
   "baselineCommit": "add0d2e",
   "mainIntegratedThrough": "062a4ef",
   "presentationIntegratedThrough": "6062379",
-  "leanSourceHash": "391896809e1f7b5b3974ba8eb0476e9cf2ef98c23eab5fd8d17b8bac2a6684bc",
-  "binarySha256": "651b147ade0892f4c72c953c555593d45ac23f48887fedd63e1ca0a16f5c5b44",
+  "leanSourceHash": "82f2f766d410130c23576c997979c839c49a78b10d802ca5c5c51350753042a5",
+  "binarySha256": "8b7e2380122f7d30988299f4df2035a3714c95951ee93c8a9225897a3b45b396",
   "programs": {
     "v1": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
     "v2": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
@@ -170,38 +170,44 @@
       "height": 900
     },
     {
+      "file": "app/shots/realism/surg/after/lab-results-load.png",
+      "sha256": "9baff8ec8950ca11cb6e9b5e50878d9c9fca7b55550dabc4738673c4ac37e40e",
+      "width": 1440,
+      "height": 900
+    },
+    {
       "file": "app/shots/realism/surg/after/live-encounter-details.png",
-      "sha256": "f3ea75ee72b70fc6e85f6ba5a5732cf990559b3f39d57fa5223445df47594959",
+      "sha256": "200071b5e6e6c854371e12b9591788d7f814c97ad13b9f7ab50e9fd39cac800a",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-encounter-picker.png",
-      "sha256": "1c243db9f9019dfe60d4bc47bd7565767df4a351c392321a7efd893405c69ede",
+      "sha256": "ebb90122ed3b54abc6daa3917c6b0c2775e99765220314974d72069d300d8ab8",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-review-save-normal.png",
-      "sha256": "0c3cec41178879f1b649589b5d866d665ba4d52819eba516b36f7b1c8036f67e",
+      "sha256": "bea441f1f6ba03599f07bc900fb3643ee2e4b9ae188c90a19fb5720390d2140c",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-review-save.png",
-      "sha256": "97835c8b04af8741e886d84fb0d415dc8ff139517a2b44e6670a3a38dba991ea",
+      "sha256": "efbaf0e2e53e476e516d605b4113e86f3f779ab2581d691d3531d5f05d60306d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-load.png",
-      "sha256": "f6ebbb36dfe02c85a11751529b08a545ee520ed9daff44360b90a52013a19130",
+      "sha256": "1b77a2b1613b15c88f329bfd8c75ed16dec242edc569b0722f0865e3c7b6b0dd",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-task.png",
-      "sha256": "f6ebbb36dfe02c85a11751529b08a545ee520ed9daff44360b90a52013a19130",
+      "sha256": "1b77a2b1613b15c88f329bfd8c75ed16dec242edc569b0722f0865e3c7b6b0dd",
       "width": 1440,
       "height": 900
     },
@@ -219,25 +225,25 @@
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-load.png",
-      "sha256": "cd7fc819234c0a6889ab2928c8e5097c4b698ff35119e8e5a6e0fd5bf5654377",
+      "sha256": "c436a50ca23e96f078a1e78d154e8bd1a9d6e5dbfc7aab08b96f82cb85dcd410",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-task.png",
-      "sha256": "cd7fc819234c0a6889ab2928c8e5097c4b698ff35119e8e5a6e0fd5bf5654377",
+      "sha256": "c436a50ca23e96f078a1e78d154e8bd1a9d6e5dbfc7aab08b96f82cb85dcd410",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-load.png",
-      "sha256": "eb2da35e883920d00d606259c25182a3f8323efe94848a351cec955b1d3ad86a",
+      "sha256": "3da5b39eb76aa3ea601b3e2fd161a288cc1d058bd4d1029bb47ae4a2fd90fe41",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-task.png",
-      "sha256": "b1f7e91bb150a5cdeca63b83756055f9d43d850dbaeef3e01bdcf08a88e86d12",
+      "sha256": "7e362c7c721f8b8b846842ed549c6d09c31fe51c988d7ced4bb0bbea93fb97b3",
       "width": 1440,
       "height": 900
     },
@@ -285,19 +291,19 @@
     },
     {
       "file": "app/shots/realism/surg/after/w1Sign-task.png",
-      "sha256": "7c1f43bf1625ce97d1b3125f890558ee9b38f3178d987dc287ca358cebbac303",
+      "sha256": "7d6a0ba5fa2dfe378132fd2a8f21d3f8db79764eceed86a13e4d1b37faff44cc",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-load.png",
-      "sha256": "5e707995ecc40cd25c76a194b0a0ae5daabb84f046650a04fd26413b9bce2754",
+      "sha256": "d3752a644493293309653bbe1daf04334e36b5d948979f0f95f4c4de79382f85",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-task.png",
-      "sha256": "5e707995ecc40cd25c76a194b0a0ae5daabb84f046650a04fd26413b9bce2754",
+      "sha256": "d3752a644493293309653bbe1daf04334e36b5d948979f0f95f4c4de79382f85",
       "width": 1440,
       "height": 900
     },
@@ -405,13 +411,13 @@
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-load.png",
-      "sha256": "ff57f1397eba02ab95c73d27624876496d3354cf0faecf2d248caad850982663",
+      "sha256": "39252b355a716e0e66f6d2f4c9a786fa5ae1717815561c9f94e3f274438943e4",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-task.png",
-      "sha256": "a8812cb58290e42195e656073032fe513a7c11e321569f20eb646b70a0addeba",
+      "sha256": "04fcbb81d7b84394647f738f7347e68a37b3aae2fe00dfcb843665086d463a8d",
       "width": 1440,
       "height": 900
     },
@@ -454,6 +460,12 @@
     {
       "file": "app/shots/realism/surg/before/home-load.png",
       "sha256": "f3b441e35018497dfefd471e499a3b7d79f1f6c469b1a3aca2968c746d3b3991",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/lab-results-load.png",
+      "sha256": "a397a514a77b04fae345f174c441d8669840c7c2948139bc767f306f95295e40",
       "width": 1440,
       "height": 900
     },
@@ -713,7 +725,7 @@
   "nativeWasmSurgicalProjectionComparisons": 2,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "2461d2988646a932d54c004e4d673aeceee9f84ea424f62c22a5f7b07c3c4f7f"
+    "appSha256": "d4fc68d73c3e121ed9c2c69135b30a364ed7d09ad760474cae92a20e21d8ea41"
   },
   "metricsRerun": true,
   "shellIntegratedThrough": "062a4ef",
@@ -722,7 +734,47 @@
   "screenshotBaselines": {
     "workflowScreens": "add0d2e",
     "liveClinicScreens": "82f7c4d",
-    "clinicianHeader": "73192de"
+    "clinicianHeader": "73192de",
+    "laboratorySummary": "da22847"
   },
-  "nativeWasmClinicianIdentityComparisons": 3
+  "nativeWasmClinicianIdentityComparisons": 3,
+  "labDisplayEvidence": [
+    {
+      "fixture": "case",
+      "unchangedExceptLabDisplayNames": true,
+      "renamed": [
+        {
+          "code": "2160-0",
+          "before": "Creatinine [Mass/volume] in Serum or Plasma",
+          "after": "Creatinine"
+        },
+        {
+          "code": "4548-4",
+          "before": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "after": "Hemoglobin A1c"
+        },
+        {
+          "code": "718-7",
+          "before": "Hemoglobin [Mass/volume] in Blood",
+          "after": "Hemoglobin"
+        },
+        {
+          "code": "33914-3",
+          "before": "Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M",
+          "after": "eGFR (MDRD)"
+        }
+      ]
+    },
+    {
+      "fixture": "consult",
+      "unchangedExceptLabDisplayNames": true,
+      "renamed": [
+        {
+          "code": "718-7",
+          "before": "Hemoglobin [Mass/volume] in Blood",
+          "after": "Hemoglobin"
+        }
+      ]
+    }
+  ]
 }

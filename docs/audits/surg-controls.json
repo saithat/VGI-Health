@@ -651,6 +651,45 @@
     }
   ],
   "failures": [],
+  "labDisplayEvidence": [
+    {
+      "fixture": "case",
+      "unchangedExceptLabDisplayNames": true,
+      "renamed": [
+        {
+          "code": "2160-0",
+          "before": "Creatinine [Mass/volume] in Serum or Plasma",
+          "after": "Creatinine"
+        },
+        {
+          "code": "4548-4",
+          "before": "Hemoglobin A1c/Hemoglobin.total in Blood",
+          "after": "Hemoglobin A1c"
+        },
+        {
+          "code": "718-7",
+          "before": "Hemoglobin [Mass/volume] in Blood",
+          "after": "Hemoglobin"
+        },
+        {
+          "code": "33914-3",
+          "before": "Glomerular filtration rate [Volume Rate/Area] in Serum or Plasma by Creatinine-based formula (MDRD)/1.73 sq M",
+          "after": "eGFR (MDRD)"
+        }
+      ]
+    },
+    {
+      "fixture": "consult",
+      "unchangedExceptLabDisplayNames": true,
+      "renamed": [
+        {
+          "code": "718-7",
+          "before": "Hemoglobin [Mass/volume] in Blood",
+          "after": "Hemoglobin"
+        }
+      ]
+    }
+  ],
   "selectedEncounterProjectionComparisons": 3,
   "clinicianIdentityProjectionComparisons": 3,
   "poundsEntry": {
