@@ -9,6 +9,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -55,16 +56,26 @@ def replay(spec, program, events):
 def main():
     cases = [(f"releases/{release}/personas/P{i}.json", "persona")
              for release in ("v1", "v1.1", "v2") for i in range(1, 6)]
-    cases += [(str(path.relative_to(ROOT)), "bad")
-              for path in sorted((ROOT / "programs/bad").glob("*.json"))]
+    cases += [(f"releases/{release}/canonical.json", "baseline")
+              for release in ("v1", "v1.1", "v2")]
+    core, deferred = json.loads((ROOT / "lean/Ehr/Check/bad-program-profiles.json").read_text())
+    expected = {f"programs/bad/{name}.json": prop for name, prop in core}
+    cases += [(path, "bad") for path in expected]
+    if "--bad-only" in sys.argv[1:]:
+        cases = [(path, "bad") for path in expected]
     results = []
     for path, group in cases:
         program = json.loads((ROOT / path).read_text())
         release = program["specVersion"]
         sp = f"releases/{release}/spec.json"
         canonical = f"releases/{release}/canonical.json"
-        run = subprocess.run([str(BINARY), "check", "--spec", sp,
-                              "--program", path, "--canonical", canonical],
+        args = [str(BINARY), "check", "--spec", sp,
+                "--program", path, "--canonical", canonical]
+        previous = {"v1.1": "v1", "v2": "v1.1"}.get(release)
+        prev = path.replace(f"releases/{release}/", f"releases/{previous}/") if previous else None
+        if prev:
+            args += ["--prev", prev]
+        run = subprocess.run(args,
                              cwd=ROOT, capture_output=True, text=True, timeout=120)
         verdict = json.loads(run.stdout)
         if not ((run.returncode == 0 and verdict == "ok") or
@@ -73,7 +84,13 @@ def main():
         item = {"program": path, "group": group, "spec": sp,
                 "programSha256": digest(path), "specSha256": digest(sp),
                 "canonicalSha256": digest(canonical),
-                "exitCode": run.returncode, "verdict": verdict}
+                "previous": prev, "exitCode": run.returncode, "verdict": verdict}
+        if group == "bad":
+            item["expectedProperty"] = expected[path]
+            item["expectedPropertyRejected"] = (run.returncode == 1 and
+                verdict["violation"]["property"] == expected[path])
+            if not item["expectedPropertyRejected"]:
+                raise RuntimeError(f"bad fixture did not fail expected property {expected[path]}: {path}: {verdict}")
         if run.returncode == 1:
             item["replay"] = replay(json.loads((ROOT / sp).read_text()), program,
                                     verdict["violation"]["counterexample"])
@@ -81,12 +98,20 @@ def main():
                 raise RuntimeError(f"counterexample did not replay: {path}")
         results.append(item)
         print(f"{path}: {verdict if verdict == 'ok' else verdict['violation']['property']}", flush=True)
+    if "--bad-only" in sys.argv[1:]:
+        print(f"Core bad programs: {len(results)}/{len(expected)} rejected with expected properties and valid replays")
+        return 0
     personas = [x for x in results if x["group"] == "persona"]
     bad = [x for x in results if x["group"] == "bad"]
+    baselines = [x for x in results if x["group"] == "baseline"]
     report = {
         "sourceRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "sourceDirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "binarySha256": digest(BINARY),
+        "profile": "core",
+        "fullProfileOnly": deferred,
+        "baselineAccepted": sum(x["exitCode"] == 0 for x in baselines),
+        "baselineCount": len(baselines),
         "personaAccepted": sum(x["exitCode"] == 0 for x in personas),
         "personaCount": len(personas),
         "badRejected": sum(x["exitCode"] == 1 for x in bad), "badCount": len(bad),
@@ -95,8 +120,17 @@ def main():
     }
     output = ROOT / "lean/Ehr/Check/certification-report.json"
     output.write_text(json.dumps(report, indent=2) + "\n")
+    verdicts = {x["program"]: {"status": "computed" if x["exitCode"] == 0 else "rejected",
+                "sha256": x["programSha256"], "output": x["verdict"]} for x in results}
+    for name in deferred:
+        verdicts[f"programs/bad/{name}.json"] = {"status": "full-profile only"}
+    artifact = {"checker": "lean ehr check", "profile": "core", "programs": verdicts}
+    # The browser serves /verdicts.json from app/public; retain a root copy too.
+    for path in [ROOT / "verdicts.json", ROOT / "app/public/verdicts.json"]:
+        path.write_text(json.dumps(artifact, indent=2) + "\n")
+    print(f"Baselines {report['baselineAccepted']}/{len(baselines)}")
     print(f"Personas {report['personaAccepted']}/{len(personas)}; bad rejected {report['badRejected']}/{len(bad)}")
-    return 0 if all(x["exitCode"] == 0 for x in personas) and all(x["exitCode"] == 1 for x in bad) else 1
+    return 0 if all(x["exitCode"] == 0 for x in personas + baselines) and all(x["exitCode"] == 1 for x in bad) else 1
 
 
 if __name__ == "__main__":

@@ -1,110 +1,130 @@
 {
-  "sourceRevision": "c0d77ce2ea874a158d5c8826e32936d54d77ca05",
+  "sourceRevision": "4a281cb069786f2b8f36c247f8873a78beec1386",
   "sourceDirty": true,
-  "binarySha256": "3b4b78283e542941ac882d9dc5d05043dc9f77723654992f7708b1671135577f",
-  "personaAccepted": 0,
+  "binarySha256": "b4fc3b304f86f0b1a300180b187b90809785d8ce5354d40a7805be8e87bf0a2b",
+  "profile": "core",
+  "fullProfileOnly": [
+    "17-no-restraint-care-plan",
+    "18-no-op-technique",
+    "19-no-vaccine-provider-address",
+    "20-no-administration-time",
+    "21-no-controlled-strength",
+    "22-hidden-signing-notice",
+    "23-no-telehealth-consent",
+    "24-default-refill-eligibility",
+    "25-restart-restraint-clock",
+    "26-stale-preoperative-hp",
+    "27-expired-controlled-fill",
+    "28-underage-minor-consent",
+    "29-invalid-birth-date",
+    "30-daily-methotrexate-default",
+    "31-hidden-result-components",
+    "32-misleading-signing-label"
+  ],
+  "baselineAccepted": 0,
+  "baselineCount": 3,
+  "personaAccepted": 12,
   "personaCount": 15,
-  "badRejected": 32,
-  "badCount": 32,
+  "badRejected": 16,
+  "badCount": 16,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
       "program": "releases/v1/personas/P1.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "806db281d7ef91d994f3eb91b84954130c910c801a373a4279e75a7fd549d576",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "81e67aee71bf4f2b05704d82dfeb1f0be460f457efa18160604f307249b04063",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "5d5ee9cf415ce2584e848e8f331e4237780ca0bb4ce50d1995ee271ff121a942",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "bc95623e0bfac13bb54699b10574f80160ec1e545e5fea82288aa99632fd3fb0",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "80cfeab84f1f3e73af3198e80ad813059f3a5bc761252e2526a1b86b8eedb04c",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "00c0b9c1aa0f49115e6de6a2c81963c6650fefe303bf9afbbe104915bb2b833f",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "456b0716a6b8d9b67ea691f51284698fdfb8cbf671af96d88412f7a5321c37e0",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home"
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
           ],
           "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
         }
       },
       "replay": {
         "valid": true,
-        "eventCount": 0,
-        "results": [],
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },
@@ -112,124 +132,109 @@
       "program": "releases/v1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "67fb38e99b19d89739a630eea57761f2ba263266517bf368e1ec81bc6a59bde3",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1.1/personas/P1.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "81f4035187d24bfcc8451741d13c512e22a553efd3b49ef1fea60865983d7c89",
-      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
-      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "c29995fc33396c75f1f7ac69da3d5bc5d26cdee5f50df52128a1f14885b5e0d9",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P1.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1.1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "d83e6110feb709074c58d3a5135c1a6556df6125e640e4df649859cc1b4c0691",
-      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
-      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "e2467d70930e6395ac6b2b94c867fa13a6d27b7a6ec509a3d36c6eb9da874ed1",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P2.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1.1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "95afd4998392eae841748349140c8017b288040111eeda33bd332a408d875fc5",
-      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
-      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P3.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v1.1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "0e34d47f305383cf84577fab1c0bf8738705d9afd54ab193b75a3ca1e6d8d24a",
-      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
-      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
+      "programSha256": "ac4e7f84e16618e4d58f0d81abb401dbdfaff7cc4218bb288ccd9d4b782d6a57",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P4.json",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home"
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
           ],
           "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
         }
       },
       "replay": {
         "valid": true,
-        "eventCount": 0,
-        "results": [],
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },
@@ -237,124 +242,109 @@
       "program": "releases/v1.1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "f259fe7a57e3d27998f8ba493381b5e16bae4f115a8ccdba3db3a2d4b8ba36b0",
-      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
-      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/personas/P5.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v2/personas/P1.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "b1822efae5f1218e151daf50ec52f8515576985e47a1bbc65b29b88207accad3",
-      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
-      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "45fc1e892f1cc5e2e6490c068eaeb3f0e2815f46dbd421e3b0c13608aeecbc67",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P1.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v2/personas/P2.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "1e7332ca6dd998c246bf6615ddcbf8b1759c3f7f4bf23a883a0bc3c9f826c654",
-      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
-      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "39852f261e4b9795c5baa6d76b383ffcc718f4c7d06d432da3a00963325d2984",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P2.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v2/personas/P3.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "63816d0b22250f247a86c13d4697bce4c66db6010414fe70768e29e31c19a363",
-      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
-      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
+      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P3.json",
+      "exitCode": 0,
+      "verdict": "ok"
     },
     {
       "program": "releases/v2/personas/P4.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "e5e140592e247eec99e2d8fd7ca13523f98436610b4628336f599416bc040052",
-      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
-      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
+      "programSha256": "9aa66952c2c121a0cb91d6f7a4df374bdeaea8fd35eca414a50f5c4eb8be34bc",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P4.json",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home"
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
           ],
           "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
+          "message": "commit signOrders: no field the user can reach for required element consentVerified",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
         }
       },
       "replay": {
         "valid": true,
-        "eventCount": 0,
-        "results": [],
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },
@@ -362,24 +352,157 @@
       "program": "releases/v2/personas/P5.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "68a8af7489707fdea946978295ee5725ad139387e94f52d1b7066fd90494a8a1",
-      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
-      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
+      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/personas/P5.json",
+      "exitCode": 0,
+      "verdict": "ok"
+    },
+    {
+      "program": "releases/v1/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home"
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
           ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
         }
       },
       "replay": {
         "valid": true,
-        "eventCount": 0,
-        "results": [],
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v1.1/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v1.1/spec.json",
+      "programSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "specSha256": "e897b666d1b2046b1476b93c284e6b7979b5d488ad7d499c5622c9e0a0247ea6",
+      "canonicalSha256": "346205b4af9fcb721bb54a090257a4cedd636411feaf5040bd2f20eb97be930c",
+      "previous": "releases/v1/canonical.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "releases/v2/canonical.json",
+      "group": "baseline",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "specSha256": "9a8d847325f0a8df8165fafefb4309d7529c0c546bd775616b77a887c76e2581",
+      "canonicalSha256": "f6982ef28f73d3759e914138da034ad79c99716495349dbd0caada19e197d848",
+      "previous": "releases/v1.1/canonical.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w4Worklist",
+            "w4Mar",
+            "w4Admin"
+          ],
+          "property": "writesOnly",
+          "message": "field w4Admin.wristbandScan on screen w4Admin writes wristbandScan, which role physician may not enter",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w4Worklist"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          "ok"
+        ],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },
@@ -387,9 +510,10 @@
       "program": "programs/bad/01-hidden-allergies.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "0352a7544b8e28dff1afbe9a162d7666d53ba4b2d5cc58a026d343541b9f38d8",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "81abc74df04d9b26350f129340ef2edc8a8a98bac20a01295567f7e2c23e82f4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -431,6 +555,8 @@
           ]
         }
       },
+      "expectedProperty": "reviewsBeforeCommit",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 5,
@@ -441,7 +567,7 @@
           "ok",
           {
             "blocked": {
-              "reason": "structured display or action label required"
+              "reason": "entry required: patientIdReentry"
             }
           }
         ],
@@ -452,9 +578,10 @@
       "program": "programs/bad/02-prefilled-identity.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "ba86d09265a29008fa33580cdcaddfa7ca1ac83d86f42fb578a137194cfda263",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "ee567e2864b076b11680ddce32622121b0eb30de8628e5a1838920239153f8e4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -491,6 +618,8 @@
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 4,
@@ -507,9 +636,10 @@
       "program": "programs/bad/03-pounds-as-weight.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "800cde86d777450135c236363774e6328dc1687616a948bb74a1f963a8dc92df",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "12e0ae8112646a3f7b6bfa3e2639928c9db4aacbcaf7187ac1668e1231b5845c",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -534,6 +664,8 @@
           ]
         }
       },
+      "expectedProperty": "writesOnly",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 2,
@@ -548,9 +680,10 @@
       "program": "programs/bad/04-macro-override.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "84d574ba82922eba1b36200319df283efe11e0ad8cce1ed11fae0a0dd07ee9d2",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "94a75010fcac48e5e9cc48df2cfde93d86e2a9102e5f889d1c49e52ae95277c6",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -586,6 +719,8 @@
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 4,
@@ -606,15 +741,17 @@
       "program": "programs/bad/05-self-cosign.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "17b6b39bd910711cafa08c07717c457cace0c02bccbd2cf4972c9b29f36d7112",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "8b0f36223d3cab42a119e2abb936614c10c7af8ee0ca48af70a5f97fc36671e2",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
             "home",
-            "w3TrackBoard",
+            "w4Worklist",
+            "w4Mar",
             "w4Admin"
           ],
           "property": "humanOnlyKept",
@@ -622,21 +759,29 @@
           "counterexample": [
             {
               "click": {
-                "comp": "home.work.w3TrackBoard"
+                "comp": "home.work.w4Worklist"
               }
             },
             {
               "click": {
-                "comp": "w3TrackBoard.featureNav.recordPainResponse"
+                "comp": "w4Worklist.nav.w4Mar"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Mar.openDue"
               }
             }
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
-        "eventCount": 2,
+        "eventCount": 3,
         "results": [
+          "ok",
           "ok",
           "ok"
         ],
@@ -647,9 +792,10 @@
       "program": "programs/bad/06-stale-weight.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "dac560c5168dfd46173b2bd42f0d66e60c293abd0338b4f523121d2cfd6afa2b",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "b0432008db9cd60ee354bc143977cd51ec5edb91b1d9aecf9edf29e5cc6c0070",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -668,6 +814,8 @@
           ]
         }
       },
+      "expectedProperty": "units",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 1,
@@ -681,9 +829,10 @@
       "program": "programs/bad/07-unreachable-refill.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "5f43bd5fd5b3ebab413bb0743476eff7dc4f96dcb17254caedd13964d7d15d37",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "3c48ce140c711a646d26e578d98cf277516d9287329d664df71ea7af04baacb4",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -691,10 +840,12 @@
             "home"
           ],
           "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "message": "commit approveRefill: from screen home the user cannot get back to the approveRefill button on screen w7Decision",
           "counterexample": []
         }
       },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 0,
@@ -706,9 +857,10 @@
       "program": "programs/bad/08-forged-consent.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "6bdcce123a0a8086b616d2726922314cff85f5bb2c9c4b9b1fe03dd2e5027f9d",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "743558daabe8b2bdf04f31ebce21f6055b014a19a8be602b20524d563b7d075b",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -732,6 +884,8 @@
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 2,
@@ -750,9 +904,10 @@
       "program": "programs/bad/09-hidden-allergy-alert.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "9b2d458db72959051f9119519a234f0ffa186dd41d50cc659997859a3a7f4645",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "d6a4d4f33cd505b0acf0ae43c1d1621c55c1a35156ddcefd3501fe93edf4930c",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -782,6 +937,8 @@
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 3,
@@ -801,9 +958,10 @@
       "program": "programs/bad/10-invented-alert.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "79009859187a47d9f6cab66c5b283c4c176f49fcf29856c94fbcd7f48022ebb2",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "1fa024dc6efe5108bcfcf64bd818a79621c9233e2fb7abf36d910cd6bfd392da",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -828,6 +986,8 @@
           ]
         }
       },
+      "expectedProperty": "wellFormed",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 2,
@@ -842,9 +1002,10 @@
       "program": "programs/bad/11-repeated-interaction.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "56af7ca9989b557fece6124b6ce46bb65f4565cd4cc4453c484f9bb1e5c87ce9",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "776a2c7ff2e049c2607a847bcd8d53796e01e15cac575ffdc94df21273bc07d1",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -869,6 +1030,8 @@
           ]
         }
       },
+      "expectedProperty": "noRepeatInterruptions",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 2,
@@ -883,9 +1046,10 @@
       "program": "programs/bad/12-passive-popup.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "fcec8e67633fcac0217d2b502808995d0ba615d7802bd703c6cf6026ef254f39",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "6d2cd67943d131046a2418f927ee3f8f70587164ec0a17b74920cdad2a3f5b34",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -904,6 +1068,8 @@
           ]
         }
       },
+      "expectedProperty": "severityTiers",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 1,
@@ -917,24 +1083,67 @@
       "program": "programs/bad/13-no-cures.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "069199dd5e31af5ab22d2ee2d1bf56fca8a95b59af274e36297cb004e5591d3d",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "a221248df0abde1beab80ed5cc210f13afe90a035449b2e861b1d8dc15ed5e61",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home"
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
           ],
           "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
         }
       },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
-        "eventCount": 0,
-        "results": [],
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },
@@ -942,9 +1151,10 @@
       "program": "programs/bad/14-macro-naloxone.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "6e498eafb3015838032e5eea7e587bd9efb1a27359c7b569ad1c6024fdc2fdf1",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "6f7aa3a011ef03d1fb901975ac689ad901d5a9b7e1054dfa54d0a44c1297ff43",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -974,6 +1184,8 @@
           ]
         }
       },
+      "expectedProperty": "humanOnlyKept",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 3,
@@ -993,9 +1205,10 @@
       "program": "programs/bad/15-hidden-controlled-details.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "c9587ff0b6efaa34dd49eef3a168e471db65e8d71799da273a29273217ca051c",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "9735bda44ff0411cf77eb4113bb5600ad11fbd109b2ac14e63547a2f08f74512",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1037,6 +1250,8 @@
           ]
         }
       },
+      "expectedProperty": "reviewsBeforeCommit",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 5,
@@ -1047,7 +1262,7 @@
           "ok",
           {
             "blocked": {
-              "reason": "structured display or action label required"
+              "reason": "entry required: patientIdReentry"
             }
           }
         ],
@@ -1058,159 +1273,10 @@
       "program": "programs/bad/16-schedule-ii-refills.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "f5dda15b1b389e659b7e028f1b208b408269a0d42ccd0710dd274e68a3ce20d4",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/17-no-restraint-care-plan.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "755d3757077ba579de5608e42d6f74e59b3ebe541309aede6ba4e0d030877c5f",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/18-no-op-technique.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "a7cb9b6fd0414ce8766a7f2f12500fd95caff466b93b65b4e096c62760edd97f",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/19-no-vaccine-provider-address.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "d18c2a1d5f829bb3855d29fee98a1c1b1ffa769761fa39ee50d978d653a11201",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/20-no-administration-time.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "409cb206de0854af770b07a29b0e0275eae560934a7d3d28bd7d3042991e1d72",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/21-no-controlled-strength.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "d8449de831fccb324c29fcc4fa2d69e98d395baaa5d3bde58af4aa1995fd22be",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/22-hidden-signing-notice.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "cdf95c0426d36c8827c1df4e65808a18579f07c8c1095b4352ec49ebbd8dabba",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "programSha256": "00525443f53429f503781b3a275ef6bfea91dd7357fd41e441fbc49fa23b80fa",
+      "specSha256": "feeed2581e8fdb4424d90dcdc05a5f3cc4c060b3c46a02047b3b673b08ba4a4d",
+      "canonicalSha256": "b91c5336a5757ab0ade4ffcdf167dda6e4d4150bda9f194a8e869e051af0cade",
+      "previous": null,
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1221,8 +1287,8 @@
             "w1Verify",
             "w1Sign"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "controlledSigningLegalNotice is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "property": "completable",
+          "message": "commit signOrders: no field the user can reach for required element weight",
           "counterexample": [
             {
               "click": {
@@ -1252,6 +1318,8 @@
           ]
         }
       },
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
         "eventCount": 5,
@@ -1262,285 +1330,10 @@
           "ok",
           {
             "blocked": {
-              "reason": "structured display or action label required"
+              "reason": "entry required: patientIdReentry"
             }
           }
         ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/23-no-telehealth-consent.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "3b5875085c2e09c36a7a3114b6944279e018dca107ea80e545215aa32abf4798",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/24-default-refill-eligibility.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "79427f799a264100532a385a2a984dfea12764c4809a3c3504676fa3ffa9ddf1",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w7Queue",
-            "w7Decision"
-          ],
-          "property": "humanOnlyKept",
-          "message": "field w7Decision.legal.refillScheduleEligibility on screen w7Decision prefills refillScheduleEligibility, which a human must enter every time",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w7Queue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w7Queue.featureNav.dispenseScheduleIIItoV"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 2,
-        "results": [
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/25-restart-restraint-clock.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "d30b4a4b0cffe8485a0a7761e737f7cfde02abc159d2a590e30b16ecddd400eb",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/26-stale-preoperative-hp.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "c22b177657d74d7a2724f10c837e85a0e10b7e71d8ab7bb0eb529a03906f6d51",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/27-expired-controlled-fill.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "6cceab9cdd8e45dd2e1646ddf9f41dc75cbe47111b1d9843a55f8cfce156a988",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/28-underage-minor-consent.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "fa415a64cd69b7844422565164e90f362621e052ccd994295c99e92f06f4b124",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/29-invalid-birth-date.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "f55f5b349c649043d14a6d8f73afafdbbcfc7b33927884e402673bbaf54ff726",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming"
-          ],
-          "property": "humanOnlyKept",
-          "message": "field feature.updateDemographics.feature.birthDate on screen w1Rooming prefills birthDate, which a human must enter every time",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            }
-          ]
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 1,
-        "results": [
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/30-daily-methotrexate-default.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "f8c8e6b66839d1f4a59b366df51fb7e4318656eafe9d65af5c2147e3475dc3a8",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/31-hidden-result-components.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "43825523e18e43a67ce5b3dcafd71ae6770611b47d0d211cf88950a0f58610f8",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/32-misleading-signing-label.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "7eb3e7d0191cac2a0778b51931ac8151e391dfdf562459be8f17b4708809dd31",
-      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
-      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home"
-          ],
-          "property": "completable",
-          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
-          "counterexample": []
-        }
-      },
-      "replay": {
-        "valid": true,
-        "eventCount": 0,
-        "results": [],
         "scope": "navigation replay; not a semantic violation proof"
       }
     }
