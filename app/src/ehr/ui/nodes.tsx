@@ -511,6 +511,25 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
 }
 export function InfoNode({ node, onEvent }: Props<"info">) {
   const presentation = useContext(PresentationContext);
+  if (node.display === "status") {
+    return (
+      <div
+        role="status"
+        aria-label={node.label}
+        className="clinical-info info-status clinical-review-status"
+        data-comp-id={node.comp || undefined}
+        data-info-id={node.infoId}
+      >
+        <ClinicalIcon name="check" />
+        <span>{node.label}</span>
+        {node.rows.map((row, index) => (
+          <span key={index}>
+            {row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+          </span>
+        ))}
+      </div>
+    );
+  }
   if (presentation) {
     const slots = presentation.rows.get(node);
     const actions =

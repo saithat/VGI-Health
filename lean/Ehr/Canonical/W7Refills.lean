@@ -55,8 +55,8 @@ def review : Screen :=
         [(.panel, "lastVisit", "Last visit"), (.table, "relevantLabs", "Labs"),
          (.table, "adherence", "Fill history"), (.table, "currentMeds", "Medications"),
          (.panel, "priorNotes", "Last note")] ++ [
-      reviewBtn s "lastVisit" "Mark last visit reviewed" (parent := some "refillTabs") (tab := 0),
-      reviewBtn s "adherence" "Mark fill history reviewed" (parent := some "refillTabs") (tab := 2),
+      reviewBtn s "lastVisit" "Mark last visit reviewed" (parent := some "refillTabs") (tab := 0) (feedback := true),
+      reviewBtn s "adherence" "Mark fill history reviewed" (parent := some "refillTabs") (tab := 2) (feedback := true),
       goto s "decide" "w7Decision" "Respond to request"
     ] }
 

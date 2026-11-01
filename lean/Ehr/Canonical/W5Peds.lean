@@ -56,14 +56,14 @@ def rooming : Screen :=
       field s "respRate" "respRate" "Respirations (/min)" (parent := some "measures"),
       clinicalSection s "allergyGroup" "Allergies",
       table s "allergies" "allergyList" "Allergy review" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup"),
+      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup") (feedback := true),
       clinicalSection s "medRec" "Medication review",
       table s "meds" "currentMeds" "Medications" (parent := some "medRec"),
       field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
         (parent := some "medRec") (slot := .fixed 0),
       field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
         (parent := some "medRec") (slot := .fixed 1),
-      reviewBtn s "currentMeds" "Mark medications reviewed" (parent := some "medRec"),
+      reviewBtn s "currentMeds" "Mark medications reviewed" (parent := some "medRec") (feedback := true),
       goto s "next" "w5Growth" "Review growth"
     ] }
 

@@ -33,21 +33,30 @@ function numericAxis(min: number, max: number) {
   const end = Math.ceil((max + padding) / step);
   if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start)
     return { low: min, high: max, ticks: [...new Set([min, max])] };
+  const low = start * step,
+    high = end * step;
+  if (!Number.isFinite(low) || !Number.isFinite(high) || low === high)
+    return { low: min, high: max, ticks: [...new Set([min, max])] };
   const decimals = Math.max(0, 1 - Math.floor(Math.log10(step)));
   return {
-    low: start * step,
-    high: end * step,
-    ticks: Array.from({ length: end - start + 1 }, (_, i) =>
-      Number(
-        decimals > 100
-          ? ((start + i) * step).toPrecision(15)
-          : ((start + i) * step).toFixed(decimals),
+    low,
+    high,
+    ticks: [
+      ...new Set(
+        Array.from({ length: end - start + 1 }, (_, i) =>
+          Number(
+            decimals > 100
+              ? ((start + i) * step).toPrecision(15)
+              : ((start + i) * step).toFixed(decimals),
+          ),
+        ),
       ),
-    ),
+    ],
   };
 }
 function fraction(value: number, low: number, high: number) {
   if (low === high) return 0.5;
+  if (Number.isFinite(high - low)) return (value - low) / (high - low);
   const scale = Math.max(Math.abs(low), Math.abs(high)) || 1;
   return (value / scale - low / scale) / (high / scale - low / scale);
 }

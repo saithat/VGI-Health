@@ -965,3 +965,49 @@ it("keeps reference populations separate and retains every patient measurement",
     container.querySelector(".presentation-chart-source")?.textContent,
   ).toContain("CDC child reference · Boys");
 });
+
+it("paints Lean review feedback as read-only status and retains supplied detail", () => {
+  const event = vi.fn();
+  const { container } = paint(
+    [
+      {
+        info: {
+          comp: "",
+          label: "Review recorded: Allergies",
+          infoId: "reviewReceiptStatus",
+          display: "status",
+          rows: [[["Reviewed", "Current record"]]],
+        },
+      },
+    ],
+    event,
+  );
+  expect(
+    screen.getByRole("status", { name: "Review recorded: Allergies" })
+      .textContent,
+  ).toContain("Current record");
+  expect(container.querySelector("button,input")).toBeNull();
+  expect(event).not.toHaveBeenCalled();
+  expect(
+    expectedAria({
+      ...uiScreenSchema.parse(rooming),
+      workspace: [
+        {
+          info: {
+            comp: "",
+            label: "Review recorded: Allergies",
+            infoId: "reviewReceiptStatus",
+            display: "status",
+            rows: [],
+          },
+        },
+      ],
+      side: [],
+      nav: [],
+    }),
+  ).toContainEqual({
+    role: "status",
+    name: "Review recorded: Allergies",
+    ancestors: ['main ""'],
+  });
+});

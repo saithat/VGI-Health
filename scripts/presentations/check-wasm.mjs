@@ -18,7 +18,7 @@ for (const [kind, input] of corpus) {
   for (const row of legacyInput.display.observations) delete row.categories;
   assert.deepEqual(JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(legacyInput))), native('render-ui', legacyInput), `${kind}: legacy display defaults`);
   if (kind === 'results' || kind === 'trend') {
-    const rows = result.workspace[1].presentation.children[0].info.rows;
+    const rows = rootNode.presentation.children[0].info.rows;
     const has = (row, key, value) => row.some(([name, text]) => name === key && text === value);
     assert.equal(rows.length, input.display.labResults.length);
     assert.ok(rows.some(row => has(row, 'Value', '120') && has(row, 'Unit', 'g/L')));
@@ -28,16 +28,23 @@ for (const [kind, input] of corpus) {
   }
   if (kind === 'flowsheet') {
     assert.ok(input.display.observations.some(row => row.categories.includes('laboratory')));
-    const rows = result.workspace[1].presentation.children[0].info.rows;
+    const rows = rootNode.presentation.children[0].info.rows;
     assert.ok(!rows.some(row => row.some(([key, value]) => key === 'Measure' && value === 'Hemoglobin')));
     assert.ok(rows.some(row => row.some(([key, value]) => key === 'Measure' && value.includes('Systolic'))));
+  }
+  if (kind === 'growthUnits') {
+    const rows = rootNode.presentation.children[0].info.rows;
+    const has = (row, key, value) => row.some(([name, text]) => name === key && text === value);
+    assert.ok(rows.some(row => has(row, 'Date', 'May 1, 2024') && has(row, 'Weight (kg)', '22.2')));
+    assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2024') && has(row, 'Height (cm)', '123.2')));
+    assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2026') && has(row, 'Weight (kg)', '30.4')));
   }
   if (kind === 'inBasket') {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
     assert.ok(panes.every(node => node.presentation.children.some(child => child.info)));
   } else if (kind === 'rowActions') {
-    const children = result.workspace[1].presentation.children[0].section.children;
+    const children = rootNode.presentation.children[0].section.children;
     assert.equal(children[0].presentation.kind, 'worklist');
     assert.deepEqual(children.slice(1).map(node => [node.rowAction.target, node.rowAction.row]), [['records', 0], ['records', 1], ['records', 2]]);
     for (const [id, target] of [['open-mar', 'mar-detail'], ['open-pain', 'pain-detail'], ['open-vitals', 'vitals-detail']]) {
@@ -55,7 +62,7 @@ for (const [kind, input] of corpus) {
       assert.equal(original?.button.label, 'Open MAR');
     }
   } else {
-    assert.equal(rootNode.presentation.kind, kind);
+    assert.equal(rootNode.presentation.kind, kind === 'growthUnits' ? 'growth' : kind);
     assert.ok(rootNode.presentation.children.some(node => node.info), kind);
   }
 }

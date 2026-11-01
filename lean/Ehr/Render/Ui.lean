@@ -338,6 +338,17 @@ def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × Strin
     if (rows.drop 25).isEmpty then [] else
       [[("Record", "More results available"), ("Details", "Showing the first 25 matches. Refine your search to narrow the results.")]]
 
+/-- Opted-in review actions show a read-only receipt status only while the
+core accepts a receipt at the current data version, time and reviewer role. -/
+def uiReviewStatus (cx : Ctx) (it : ItemView) : List UiNode :=
+  match it.comp.kind with
+  | .button (.markReviewed info) =>
+      if (it.comp.tag.splitOn ".").contains "feedback" && hasValidReceipt cx.sp cx.facts cx.s info then
+        [.info "" ("Review recorded: " ++ uiLabel (((cx.sp.info? info).map (·.label)).getD "") "Chart section")
+          "reviewReceiptStatus" "status" []]
+      else []
+  | _ => []
+
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
@@ -350,7 +361,7 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .panel i | .priorAuth i => [uiItemInfo cx it i "list"]
   | .table i => [uiItemInfo cx it i "table"]
   | .trend i => [uiItemInfo cx it i "trend"]
-  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))]
+  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))] ++ uiReviewStatus cx it
   | .«macro» _ => [uiButton cx it "macro"]
   | .search scope =>
       let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""

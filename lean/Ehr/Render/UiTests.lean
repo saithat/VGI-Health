@@ -18,6 +18,37 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Receipt feedback reflects the same validity checks used by core visibility. -/
+def reviewFeedbackReceipt : Receipt :=
+  { info := "allergyList", dataVersion := (infoVersion uiRoomCtx.sp uiRoomCtx.facts "allergyList").getD 0,
+    time := 1000, role := .physician, user := "reviewer" }
+def reviewFeedbackCtx : Ctx :=
+  { uiRoomCtx with
+    sp := { uiRoomCtx.sp with reviews := [uiReview] }
+    facts := { uiRoomCtx.facts with now := 1000 }
+    s := { uiRoomCtx.s with clock := 0, receipts := [reviewFeedbackReceipt] }
+    viewCache := ⟨_, rfl⟩ }
+def reviewFeedbackItem : ItemView :=
+  itemView reviewFeedbackCtx.sp reviewFeedbackCtx.facts reviewFeedbackCtx.s []
+    { id := "reviewAllergies", kind := .button (.markReviewed "allergyList"),
+      label := "Mark allergies reviewed", tag := "feedback.review" }
+def reviewFeedbackWith (receipts : List Receipt) : Ctx :=
+  { reviewFeedbackCtx with
+    s := { reviewFeedbackCtx.s with receipts }
+    viewCache := ⟨_, rfl⟩ }
+#guard !(uiReviewStatus reviewFeedbackCtx reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith []) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with time := 0 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with time := 1001 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with
+  dataVersion := reviewFeedbackReceipt.dataVersion + 1 }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus (reviewFeedbackWith [{ reviewFeedbackReceipt with role := .surgeon }]) reviewFeedbackItem).isEmpty
+#guard (uiReviewStatus reviewFeedbackCtx { reviewFeedbackItem with
+  comp := { reviewFeedbackItem.comp with tag := "review" } }).isEmpty
+#guard match (uiItem reviewFeedbackCtx reviewFeedbackItem []).head? with
+  | some (.button id label ..) => id == "reviewAllergies" && label == "Mark allergies reviewed"
+  | _ => false
+
 /-- Focused documentation uses the program's reports instead of a duplicate
 generated rail. The ordinary field and commit-review proofs still apply. -/
 def focusedClinicProgram : Program :=

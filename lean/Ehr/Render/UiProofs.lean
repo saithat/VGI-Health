@@ -4,6 +4,29 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- Receipt feedback is tied to an opted-in review action and the core validity
+predicate; it cannot assert a review from a stale or missing receipt. -/
+theorem uiReviewStatus_sound (cx : Ctx) (it : ItemView) (n : UiNode)
+    (hn : n ∈ uiReviewStatus cx it) :
+    ∃ info, it.comp.kind = .button (.markReviewed info) ∧
+      (it.comp.tag.splitOn ".").contains "feedback" = true ∧
+      hasValidReceipt cx.sp cx.facts cx.s info = true := by
+  cases hk : it.comp.kind <;> simp [uiReviewStatus, hk] at hn
+  rename_i action
+  cases action <;> simp [uiReviewStatus, hk] at hn
+  exact ⟨_, rfl, by simpa using hn.1.1, hn.1.2⟩
+
+/-- Receipt feedback contributes only a read-only node with an empty control id. -/
+theorem uiReviewStatus_readOnly (cx : Ctx) (it : ItemView) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiReviewStatus cx it)) :
+    ∃ label, n = .info "" label "reviewReceiptStatus" "status" [] := by
+  cases hk : it.comp.kind <;> simp [uiReviewStatus, hk, uiAtomsList] at hn
+  rename_i action
+  cases action <;> simp [uiReviewStatus, hk, uiAtomsList] at hn
+  split at hn <;> simp [uiAtoms, uiAtomsList] at hn
+  subst n
+  exact ⟨_, rfl⟩
+
 /-- A response preview preserves every supplied clinical cell; only its explicit
 empty-entry marker may become the clinician's actual captured response. -/
 theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String × String)))
@@ -162,7 +185,7 @@ theorem uiNavButton_item (cx : Ctx) (it : ItemView) (h : uiNavButton cx it = tru
   cases hk : it.comp.kind <;> simp [uiNavButton, hk] at h
   rename_i a
   cases a <;> simp [uiNavButton, hk] at h
-  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2]
+  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2, uiReviewStatus]
 
 /-- T10: every semantic contribution of every shown item appears in UiScreen,
 whether its proper region is the shell, navigation, workspace, or side. -/
@@ -268,6 +291,12 @@ theorem uiItem_only_id (cx : Ctx) (it : ItemView) (n : UiNode)
     (hid : uiComp n = some id) : id = it.comp.id := by
   cases hk : it.comp.kind <;>
     simp [uiItem, hk, uiField, uiItemInfo, uiButton, uiAtoms] at hn
+  case button action =>
+    rcases hn with rfl | hn
+    · simpa [uiComp] using hid.symm
+    · obtain ⟨label, rfl⟩ := uiReviewStatus_readOnly cx it n hn
+      simp [uiComp] at hid
+      exact False.elim (hne hid)
   case group coll start =>
     by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
       by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
@@ -430,11 +459,13 @@ theorem uiItem_honest (cx : Ctx) (it : ItemView) (hm : it ∈ cx.v.items)
         exact ⟨by decide, uiBlocked_reason cx _, by simp⟩
       · simp at hn
   case button action =>
-    subst n
-    apply uiButton_honest
-    intro hp
-    cases action <;> simp [actionRole] at hp
-    exact ⟨it, hm, hs, rfl, _, hk⟩
+    rcases hn with rfl | hn
+    · apply uiButton_honest
+      intro hp
+      cases action <;> simp [actionRole] at hp
+      exact ⟨it, hm, hs, rfl, _, hk⟩
+    · obtain ⟨label, rfl⟩ := uiReviewStatus_readOnly cx it n hn
+      trivial
   case search scope =>
     rcases hn with rfl | hn
     · trivial
@@ -594,6 +625,8 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
       · obtain ⟨_, rfl, _⟩ := hi
         exact uiLabel_nonempty _ _ (by decide)
       · split at hi <;> simp [uiAtoms] at hi
+    · obtain ⟨_, heq⟩ := uiReviewStatus_readOnly cx it _ hi
+      cases heq
     · rename_i coll start
       by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
         by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>

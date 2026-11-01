@@ -172,6 +172,8 @@ export function expectedNodeAria(
       ];
     }
     case "info" in node:
+      if (node.info.display === "status")
+        return [entry("status", node.info.label)];
       if (presentation) {
         const controls = [...(placement?.rows.get(node.info) ?? [])]
           .sort(([left], [right]) => left - right)
@@ -190,7 +192,8 @@ export function expectedNodeAria(
           for (const row of node.info.rows) {
             const value = (key: string) =>
               row.find(([name]) => name === key)?.[1] ?? "";
-            const numeric = (s: string) => /^-?\d+(?:\.\d+)?$/.test(s.trim());
+            const numeric = (s: string) =>
+              /^-?\d+(?:\.\d+)?$/.test(s.trim()) && Number.isFinite(Number(s));
             if (presentation === "growth") {
               if (!numeric(value("Age (months)"))) continue;
               if (numeric(value("Weight (kg)")))
@@ -355,6 +358,7 @@ const roles = new Set([
   "button",
   "table",
   "alert",
+  "status",
   "list",
   "img",
   "tab",

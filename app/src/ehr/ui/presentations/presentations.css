@@ -1,5 +1,6 @@
 /* Clinical data surfaces. Global shell colors remain owned by the shell lane. */
 .clinical-presentation {
+  container: clinical-records / inline-size;
   --p-ink: var(--clinical-ink, #243341);
   --p-muted: var(--clinical-muted, #526171);
   --p-border: var(--clinical-border, #cbd5df);
@@ -12,6 +13,12 @@
   border-radius: 3px;
   font-size: 12px;
   line-height: 16px;
+}
+.presentation-trackBoard {
+  container-name: clinical-board;
+}
+.presentation-timeGrid {
+  container-name: clinical-mar;
 }
 .presentation-heading {
   margin: 0;
@@ -81,18 +88,30 @@
   width: 17%;
 }
 .table-trackBoard [data-column="Patient"] {
-  width: 13%;
+  width: 12.5%;
 }
 .table-trackBoard [data-column="Chief complaint"] {
-  width: 14%;
+  width: 13.5%;
 }
 .table-trackBoard [data-column="Room"] {
   width: 5.5%;
 }
-.table-trackBoard [data-column="Age/sex"],
 .table-trackBoard [data-column="Acuity"],
-.table-trackBoard [data-column="Arrival"] {
+.table-trackBoard [data-column="Arrival"],
+.table-trackBoard [data-column="LOS"] {
   width: 5.5%;
+}
+.table-trackBoard [data-column="RN"],
+.table-trackBoard [data-column="Provider"] {
+  width: 6.5%;
+}
+.table-trackBoard [data-column="Age/sex"] {
+  width: 6%;
+}
+.table-trackBoard [data-column="Labs"],
+.table-trackBoard [data-column="Imaging"],
+.table-trackBoard [data-column="Disposition"] {
+  width: 8%;
 }
 .table-trackBoard [data-column="Status"] {
   width: 9%;
@@ -391,6 +410,52 @@
   }
 }
 
+/* A patient sidebar can constrain a widget even in a wide browser window. */
+@container clinical-board (max-width: 1000px), clinical-mar (max-width: 800px), clinical-records (max-width: 650px) {
+  .presentation-table thead {
+    display: contents;
+  }
+  .presentation-table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table th {
+    flex: 1 1 100px;
+    width: auto !important;
+  }
+  .presentation-table tbody,
+  .presentation-table tbody tr {
+    display: block;
+  }
+  .presentation-table tbody tr {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table td {
+    display: grid;
+    grid-template-columns: minmax(90px, 34%) minmax(0, 1fr);
+    gap: 6px;
+    width: auto !important;
+    border: 0;
+    padding: 4px 8px;
+  }
+  .presentation-table td::before {
+    content: attr(data-column);
+    font-weight: 400;
+    color: var(--p-muted);
+  }
+  .presentation-table .presentation-cell-value + .presentation-cell-value {
+    grid-column: 2;
+  }
+}
+@container clinical-board (min-width: 650px) and (max-width: 1000px) {
+  .table-trackBoard tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .presentation-mar th:first-child {
   width: 30%;
 }
@@ -413,10 +478,10 @@
   font-size: 13px;
   line-height: 18px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 .mar-medication-name dt {
-  flex-basis: 100%;
+  flex-basis: auto;
   font-size: 12px;
 }
 .mar-medication-detail {

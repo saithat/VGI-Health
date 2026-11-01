@@ -90,8 +90,9 @@ def commitBtn (s : ScreenId) (commit : CommitId) (label : String)
 
 /-- A "mark as reviewed" button (creates a review receipt). -/
 def reviewBtn (s : ScreenId) (info : InfoId) (label : String)
-    (parent : Option String := none) (tab : Nat := 0) : Component :=
-  button s ("review." ++ info) (.markReviewed info) label parent (tab := tab)
+    (parent : Option String := none) (tab : Nat := 0) (feedback : Bool := false) : Component :=
+  let comp := button s ("review." ++ info) (.markReviewed info) label parent (tab := tab)
+  if feedback then { comp with tag := comp.tag ++ ".feedback.review" } else comp
 
 /-- A group. Collapsible and open by default. -/
 def group (s : ScreenId) (name : String) (label : String) (collapsible : Bool := true)

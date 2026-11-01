@@ -65,7 +65,7 @@ def rooming : Screen :=
       field s "painScore" "painScore" "Pain (0–10)" (parent := some "vitalsGroup"),
       clinicalSection s "allergyGroup" "Allergies",
       table s "allergies" "allergyList" "Allergy review" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup"),
+      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup") (feedback := true),
       clinicalSection s "intake" "Screenings and pharmacy",
       field s "tobaccoUse" "tobaccoUse" "Tobacco use" (parent := some "intake"),
       field s "fallRiskScreen" "fallRiskScreen" "Fall in the past year?" (parent := some "intake"),
@@ -89,7 +89,7 @@ def medRec : Screen :=
   { id := s, title := "Medication Review", workflow := "W1"
     components := frame s ++ [
       table s "meds" "currentMeds" "Medication list",
-      reviewBtn s "currentMeds" "Mark medications reviewed",
+      reviewBtn s "currentMeds" "Mark medications reviewed" (feedback := true),
       clinicalSection s "rows" "Reconcile medications"] ++
       ((List.range 4).map fun i =>
         field s ("decision" ++ toString i) "medRecDecision"

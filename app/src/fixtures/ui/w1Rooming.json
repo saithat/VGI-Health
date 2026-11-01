@@ -267,48 +267,6 @@
     "enabled": true,
     "comp": "w1Rooming.home",
     "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Med rec",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1MedRec",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "HPI / ROS",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1Hpi",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Exam / A&P",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1Exam",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Orders",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1Orders",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Labs",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1Labs",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Visit close",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Rooming.nav.w1Close",
-    "blockedReason": null}},
   {"tabs":
    {"selected": 0,
     "labels":
@@ -911,7 +869,14 @@
     "infoId": "vitals",
     "display": "list",
     "comp": ""}}],
- "nav": [],
+ "nav":
+ [["Navigator",
+   [["w1Rooming.nav.w1MedRec", "Med rec"],
+    ["w1Rooming.nav.w1Hpi", "HPI / ROS"],
+    ["w1Rooming.nav.w1Exam", "Exam / A&P"],
+    ["w1Rooming.nav.w1Orders", "Orders"],
+    ["w1Rooming.nav.w1Labs", "Labs"],
+    ["w1Rooming.nav.w1Close", "Visit close"]]]],
  "modal": null,
  "banner":
  [["Patient", "Ankunding, Aaron Bruno"],
@@ -925,4 +890,6 @@
   ["Attending", "Dr. Laurena Anderson"],
   ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
   ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"]]}
+  ["Code status", "Not recorded"],
+  ["Weight", "93.4 kg · Apr 22, 2026 13:28"],
+  ["Isolation", "Not recorded"]]}

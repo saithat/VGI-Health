@@ -63,6 +63,23 @@ for (const persona of ["P1", "P4"]) {
         ),
         animations: "disabled",
       });
+      if (name.includes("Reviewed")) {
+        const statuses = page.getByRole("status");
+        expect(await statuses.count()).toBeGreaterThan(0);
+        for (let index = 0; index < (await statuses.count()); index++) {
+          const status = statuses.nth(index);
+          await status.scrollIntoViewIfNeeded();
+          await expect(status).toBeInViewport();
+          await page.screenshot({
+            path: join(
+              output,
+              `${phase}-${persona}-${name.replace(".json", `-receipt-${index + 1}.png`)}`,
+            ),
+            animations: "disabled",
+          });
+        }
+        await page.evaluate(() => window.scrollTo(0, 0));
+      }
       if (phase === "after") {
         if (["w5Growth.json", "w7Decision.json"].includes(name)) {
           await page.evaluate(() => window.scrollTo(0, 650));

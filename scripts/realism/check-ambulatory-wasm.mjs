@@ -1,6 +1,6 @@
 // Current canonical paths, supplied patient records and semantic metadata on both runtimes.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { loadEhrInterp } from '../../app/public/ehr/interp-loader.mjs';
@@ -18,7 +18,7 @@ const descend = node => {
     if (node[key]) return [node, ...node[key].children.flatMap(descend)];
   return node.tabs ? [node, ...node.tabs.body.flatMap(descend)] : [node];
 };
-let screens = 0, references = 0, pickers = 0;
+let screens = 0, references = 0, pickers = 0, reviewClicks = 0, invalidReviewCases = 0;
 const reviewCases = read(`${review}/review-cases.json`);
 for (const { persona, workflow } of reviewCases.cases) {
   const spec = read(`${root}/releases/v1/spec.json`);
@@ -71,6 +71,58 @@ for (const { persona, workflow } of reviewCases.cases) {
       assert.ok(dose.some(([key, value]) => key === 'Entered response' && value === '20.0 mg'));
       assert.equal(entered.state.commits.length, state.commits.length, 'A preview cannot sign a refill');
     }
+    const reviewControls = screen.components.filter(component => component.kind?.button?.action?.markReviewed && component.tag.split('.').includes('feedback'));
+    if (reviewControls.length) {
+      let reviewed = state;
+      for (const control of reviewControls) {
+        if (control.parent && screen.components.find(component => component.id === control.parent)?.kind === 'tabs') {
+          const tabInput = { ...base, state: reviewed, event: { selectTab: { comp: control.parent, idx: control.tab } } };
+          const tabbed = native('step', tabInput);
+          assert.deepEqual(call('step', tabInput), tabbed);
+          assert.equal(tabbed.result, 'ok'); reviewed = tabbed.state;
+        }
+        const reviewInput = { ...base, state: reviewed, event: { click: { comp: control.id } } };
+        const result = native('step', reviewInput);
+        assert.deepEqual(call('step', reviewInput), result);
+        assert.equal(result.result, 'ok');
+        assert.equal(result.state.commits.length, reviewed.commits.length);
+        assert.deepEqual(result.state.captured, reviewed.captured);
+        reviewed = result.state;
+        const reviewedScreenInput = { ...input, state: reviewed };
+        const screenAfterReview = native('render-ui', reviewedScreenInput);
+        assert.deepEqual(call('render_ui', reviewedScreenInput), screenAfterReview);
+        assert.ok(screenAfterReview.workspace.flatMap(descend).some(node => node.info?.display === 'status'));
+        for (const receiptCase of ['missing', 'future', 'wrongVersion', 'wrongRole', 'expired']) {
+          const invalid = structuredClone(reviewedScreenInput);
+          const reviewInfo = control.kind.button.action.markReviewed.info;
+          const rejectedRole = ['physician', 'np', 'rn', 'surgeon'].find(role =>
+            !spec.reviews.some(review => review.info === reviewInfo && review.mode?.shownOrReceipt?.roles.includes(role)));
+          // Every modeled role can review allergies under some requirement.
+          // Only test a disallowed role when this source spec has one.
+          if (receiptCase === 'wrongRole' && !rejectedRole) continue;
+          invalid.state.receipts = invalid.state.receipts.filter(receipt => receipt.info === reviewInfo).map(receipt => ({ ...receipt,
+            ...(receiptCase === 'future' ? { time: 100000000 } : {}),
+            ...(receiptCase === 'wrongVersion' ? { dataVersion: receipt.dataVersion + 1 } : {}),
+            ...(receiptCase === 'wrongRole' ? { role: rejectedRole } : {}),
+          }));
+          if (receiptCase === 'missing') invalid.state.receipts = [];
+          if (receiptCase === 'expired') invalid.state.clock += 10081 * 600;
+          const invalidUi = native('render-ui', invalid);
+          assert.deepEqual(call('render_ui', invalid), invalidUi);
+          assert.ok(!invalidUi.workspace.flatMap(descend).some(node => node.info?.display === 'status'), receiptCase);
+          invalidReviewCases++;
+        }
+        reviewClicks++;
+      }
+      const reviewedInput = { ...input, state: reviewed };
+      const reviewedUi = native('render-ui', reviewedInput);
+      assert.deepEqual(call('render_ui', reviewedInput), reviewedUi);
+      const status = reviewedUi.workspace.flatMap(descend).filter(node => node.info?.display === 'status');
+      assert.ok(status.length, `${persona}/${screen.id}: successful review must show a receipt status`);
+      assert.ok(status.every(node => node.info.infoId === 'reviewReceiptStatus' && node.info.comp === ''));
+      mkdirSync(`${review}/feedback/${persona}`, { recursive: true });
+      writeFileSync(`${review}/feedback/${persona}/${screen.id}Reviewed.json`, JSON.stringify(reviewedUi));
+    }
     screens++;
   }
   if (workflow === 'W5') {
@@ -92,4 +144,4 @@ const bloodPressureInput = { bundle: bloodPressureBundle, context: { today: '202
 const bloodPressureOutput = native('facts', bloodPressureInput);
 assert.deepEqual(call('facts', bloodPressureInput), bloodPressureOutput);
 assert.equal(bloodPressureOutput.display.vitals.find(row => row.code === '85354-9').value, '128/82');
-console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves; actual navigation, source facts and all semantic output agree.`);
+console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves, ${reviewClicks} actual review clicks, ${invalidReviewCases} invalid-receipt probes; actual navigation, source facts and all semantic output agree.`);

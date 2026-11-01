@@ -754,12 +754,15 @@ def heightCmTenths (quantity : Json) : Option Nat :=
   | _ => none
 
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
-first. -/
+first. Each day uses the latest recorded reading, independent of bundle order. -/
 def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
+  let rs := oldestFirst obsWhen (rs.filter fun r => isBodyWeight r ||
+    (isObservation r && hasCode (field r "code") bodyHeightCode))
   let ws := (rs.filter isBodyWeight).filterMap fun r =>
     match weightReading r with
     | some (w, .kg) => some (dayOf (obsWhen r), w)
     | some (w, .lb) => some (dayOf (obsWhen r), w * 4536 / 10000)
+    | some (w, .g) => some (dayOf (obsWhen r), w / 1000)
     | _ => none
   let hs := (rs.filter fun r => isObservation r && hasCode (field r "code") bodyHeightCode).filterMap
     fun r => (heightCmTenths (field r "valueQuantity")).map (dayOf (obsWhen r), ·)
