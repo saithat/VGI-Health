@@ -1796,57 +1796,63 @@
  "expectedReason": "required default",
  "events":
  [{"click": {"comp": "home.work.w1Rooming"}},
-  {"click": {"comp": "w1Rooming.featureNav.signOralMethotrexate"}},
+  {"click": {"comp": "w1Rooming.nav.w1Orders"}},
+  {"enter":
+   {"value": {"qty": {"unit": "kg", "tenths": 700}},
+    "comp": "feature.signOralMethotrexate.weight"}},
+  {"enter":
+   {"value": {"qty": {"unit": "kg", "tenths": 700}},
+    "comp": "feature.signOralMethotrexate.dosingWeight"}},
   {"enter":
    {"value": {"code": {"c": "lisinopril"}},
     "comp": "feature.signOralMethotrexate.drug"}},
   {"enter":
-   {"value": {"code": {"c": "Robert Kendall"}},
+   {"value": {"text": {"s": "Robert Kendall"}},
     "comp": "feature.signOralMethotrexate.legal.prescriptionPatientName"}},
   {"enter":
-   {"value": {"code": {"c": "100 Synthetic Avenue, Sacramento CA 95814"}},
+   {"value": {"text": {"s": "100 Synthetic Avenue, Sacramento CA 95814"}},
     "comp": "feature.signOralMethotrexate.legal.prescriptionPatientAddress"}},
   {"enter":
-   {"value": {"code": {"c": "Physician and surgeon"}},
+   {"value": {"text": {"s": "Physician and surgeon"}},
     "comp":
     "feature.signOralMethotrexate.legal.prescriberLicenseClassification"}},
   {"enter":
    {"value":
-    {"code":
-     {"c":
+    {"text":
+     {"s":
       "Take the prescribed dose by the stated route at the stated interval for the stated duration."}},
     "comp": "feature.signOralMethotrexate.legal.prescriptionDirections"}},
   {"enter":
    {"value":
-    {"code":
-     {"c":
+    {"text":
+     {"s":
       "Short course for acute postoperative pain after assessment and medication review."}},
     "comp": "feature.signOralMethotrexate.legal.controlledMedicalPurpose"}},
   {"enter":
    {"value":
-    {"code": {"c": "Specialist-documented narcolepsy treatment indication."}},
+    {"text": {"s": "Specialist-documented narcolepsy treatment indication."}},
     "comp": "feature.signOralMethotrexate.legal.ghbMedicalNeed"}},
   {"enter":
-   {"value": {"code": {"c": "DEMO-REGISTRATION-NOT-VALID"}},
+   {"value": {"text": {"s": "DEMO-REGISTRATION-NOT-VALID"}},
     "comp":
     "feature.signOralMethotrexate.legal.prescriberFederalRegistration"}},
   {"enter":
-   {"value": {"code": {"c": "10 mg per tablet"}},
+   {"value": {"text": {"s": "10 mg per tablet"}},
     "comp": "feature.signOralMethotrexate.legal.controlledProductStrength"}},
   {"enter":
-   {"value": {"code": {"c": "tablet"}},
+   {"value": {"text": {"s": "tablet"}},
     "comp": "feature.signOralMethotrexate.legal.controlledDosageForm"}},
   {"enter":
-   {"value": {"code": {"c": "Morgan Example MD"}},
+   {"value": {"text": {"s": "Morgan Example MD"}},
     "comp": "feature.signOralMethotrexate.legal.controlledPrescriberName"}},
   {"enter":
-   {"value": {"code": {"c": "200 Synthetic Avenue, Sacramento CA 95814"}},
+   {"value": {"text": {"s": "200 Synthetic Avenue, Sacramento CA 95814"}},
     "comp": "feature.signOralMethotrexate.legal.controlledPrescriberAddress"}},
   {"enter":
    {"value": {"flag": {"b": true}},
     "comp": "feature.signOralMethotrexate.legal.controlledReadyToSign"}},
   {"enter":
-   {"value": {"code": {"c": "2026-11-30"}},
+   {"value": {"text": {"s": "2026-11-30"}},
     "comp": "feature.signOralMethotrexate.legal.earliestFillDate"}},
   {"enter":
    {"value": {"qty": {"unit": "mg", "tenths": 100}},
@@ -1891,15 +1897,6 @@
    {"value": {"flag": {"b": true}},
     "comp": "feature.signOralMethotrexate.naloxoneEducation"}},
   {"enter":
-   {"value": {"qty": {"unit": "kg", "tenths": 700}},
-    "comp": "feature.signOralMethotrexate.feature.weight"}},
-  {"enter":
-   {"value": {"text": {"s": "RK/M/58"}},
-    "comp": "feature.signOralMethotrexate.feature.patientIdReentry"}},
-  {"enter":
-   {"value": {"qty": {"unit": "kg", "tenths": 700}},
-    "comp": "feature.signOralMethotrexate.feature.dosingWeight"}},
-  {"enter":
    {"value": {"flag": {"b": true}},
     "comp": "feature.signOralMethotrexate.feature.consentVerified"}},
   {"enter":
@@ -1918,5 +1915,8 @@
   {"enter":
    {"value": {"code": {"c": "weekly"}},
     "comp": "feature.signOralMethotrexate.feature.oralMethotrexateFrequency"}},
+  {"enter":
+   {"value": {"text": {"s": "RK/M/58"}},
+    "comp": "feature.signOralMethotrexate.feature.patientIdReentry"}},
   {"click":
    {"comp": "feature.signOralMethotrexate.commit.signOralMethotrexate"}}]}

@@ -39,7 +39,7 @@ def signatureIdentityAdjacent (sp : Spec) (p : Program) : Bool :=
     | .button (.commit k) =>
       !(sp.entries.any fun r => r.commit == k && r.element == "patientIdReentry") ||
         ((sc.components.take n).getLast?).any fun previous => match previous.kind with
-          | .field "patientIdReentry" _ .none => previous.parent?.isNone
+          | .field "patientIdReentry" _ .none => previous.parent? == c.parent?
           | _ => false
     | _ => true
 #guard signatureIdentityAdjacent Specs.V1.specV1 canonicalV1

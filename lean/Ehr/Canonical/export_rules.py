@@ -118,7 +118,7 @@ for label, value in [('Screens', len(p['screens'])), ('Field prompts', len(field
                      ('Validated elements', sum(bool(e.get('validation')) for e in sp['elements'])),
                      ('Permanent bad programs', seed_count), ('Native feature replay inputs', replay_count)]:
     stats += f'| {label} | {value} |\n'
-stats += '\nThe owner requested every encodable catalog rule. The additional artifact screens exceed the BRIEF’s approximate 25–30 screen target; every original W1–W7 path remains. Counts include hidden optional fields, all fixed order-set rows, and repeated bindings across workflows.\n\n'
+stats += '\nThe canonical blueprint has 45 screens: home plus W1–W7 groups of 9, 3, 7, 5, 6, 9 and 5 steps. All 87 former artifact-only screens are clinical sections; every original field/action binding and W1–W7 path remains. Counts include hidden optional fields, all fixed order-set rows, and repeated bindings across workflows.\n\n'
 stats += '| Prompt friction | Instances |\n|---|---:|\n' + ''.join(f'| {k} | {friction[k]} |\n' for k in ('safety', 'compliance', 'accidental'))
 stats += '\n| Alert tier | Spec declarations | UI instances |\n|---|---:|---:|\n'
 alerts = {a['id']: a for a in sp['alerts']}

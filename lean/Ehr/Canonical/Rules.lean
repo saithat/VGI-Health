@@ -106,7 +106,7 @@ def augment (s : Screen) : Screen :=
 /-- Clinician-facing names never expose internal screen identifiers. -/
 def screenTitle (id : ScreenId) : String :=
   if id == "w7Orders" then "New prescription"
-  else if id == "w7Sign" then "Review and sign prescription"
+  else if id == "w7Sign" then "Sign prescription"
   else if id == "w3Restraint" || id == "w4Restraint" then "Restraint order and episode"
   else if id == "w4SelfAdministration" then "Patient-managed and bedside medications"
   else if id == "w6Anesthesia" then "Anesthesia record"

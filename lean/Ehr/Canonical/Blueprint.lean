@@ -128,7 +128,16 @@ def artifactSection (s : Screen) : List Component :=
     !(isShellCopy s c) && !(match c.kind with
       | .button (.goto _) | .button .back => true | _ => false) &&
     c.id != cid s.id "legalNav" && c.id != cid s.id "featureNavigation"
-  group s.id "section" s.title (collapsible := false) :: content.map route
+  -- Payload pinning currently requires root infos. Put those reviews before
+  -- the open documentation section; the actual fields/actions nest inside it.
+  let pinned := content.filter fun c => c.parent?.isNone && match c.kind with
+    | .panel _ | .table _ | .trend _ => true
+    | .alert a _ => (Ehr.Specs.V1.specV1.alert? a).any (·.tier == .passive)
+    | _ => false
+  let body := content.filter fun c => !pinned.any (·.id == c.id)
+  pinned.map route ++ [group s.id "section" s.title (collapsible := false)] ++
+    body.map fun c => route (if c.parent?.isNone then
+      { c with parent? := some (cid s.id "section") } else c)
 
 /-- Patient-ID re-entry stays human-only and immediately precedes its own
 commit. Reviews/payloads remain root components before this signature footer. -/
@@ -143,7 +152,8 @@ def signature (s : Screen) : Screen :=
         let identity := ids.head!
         let identity := if used then { identity with id := identity.id ++ "." ++ k } else identity
         (true, out ++ [group s.id ("signature." ++ k) "Signature" (collapsible := false),
-          { identity with parent? := none }, c])
+          { identity with parent? := some (cid s.id ("signature." ++ k)) },
+          { c with parent? := some (cid s.id ("signature." ++ k)) }])
       else (used, out ++ [c])
     | _ => (used, out ++ [c])) (false, [])
   { s with components := result }

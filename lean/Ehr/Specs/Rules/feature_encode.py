@@ -49,6 +49,7 @@ for n,e in enumerate(EXP):
 # Elements and entries: preserve existing declarations; append validators by conjunction.
 elements={}; entries=[]; alerts=[]; validations=[]
 def add_element(id,e,label,kind,sample,validation='.nonempty',default=None,target='Observation.valueString'):
+ if kind.startswith('.coded') and 'nonempty-narrative' in kind: kind = '.text'
  if e not in base_elements and e not in elements:
   name='element'+e[0].upper()+e[1:]
   body='{ id := '+q(e)+', label := '+q(human_label(e,label))+', kind := '+kind+', enteredBy := [.physician, .np, .rn, .surgeon], prefill := '+('.defaultConfirm' if default else '.never')+', humanOnly := '+boolstr(not default)+', friction := .compliance, fhirTarget := '+q(target)+', validation? := some ('+validation+'), defaultValue? := '+opt(q(default) if default else None)+' }'

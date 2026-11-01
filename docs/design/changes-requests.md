@@ -987,3 +987,39 @@ including unsigned service orders, MAR time cells and growth reference provenanc
 The canonical declares the actual tables/previews/checklists; adapters must populate
 those named views with coherent records. The current renderer's built-in dose/growth
 rows do not yet supply every schema column. Missing reference data must stay unknown.
+
+CR-17 section layout detail: the core's pinned payload check requires root
+components, so required infos remain root siblings immediately before each open
+artifact section. The section contains its original fields, alerts, identity and
+independent commit controls. Please support provably always-open section ancestors
+for pinning before nesting required payloads; do not relax their actual visibility.
+Content's tests retain the existing root-pinning requirement.
+
+**WASM owner:** rebuild/refresh installed assets and source manifest after merging
+this content checkpoint. Core/Render runtime definitions and wire types were not
+changed here, but the manifest hashes content sources and is now stale. Native and
+installed-WASM replay tests must still be run against the new external programs;
+content has not edited app/wasm-owned assets to disguise the stale build receipt.
+
+P1 screenshot review also confirms two owning-renderer/painter layout issues:
+`Kind.banner` still appears as a second patient-info card in the workspace in
+addition to the real banner, and `side` is painted on the right although the
+blueprint calls for the left clinical summary rail. Please project/place these
+through the shell without deleting the canonical landmark or hiding required
+workspace information. No content workaround changes clinical identity semantics.
+
+Nonempty narratives (directions, medical-purpose statements and documentation)
+now use text inputs with the exact nonempty validator; they were previously
+arbitrary-string coded fields. Enumerated choices and code-table membership
+remain coded. Patient/prescriber record-confirm fields retain their named sources,
+nonempty validation and human confirmation. No allowed value, predicate, entry,
+review, alert, temporal or expiry requirement was removed.
+
+P1 review inputs under `programs/canonical/review/P1/` use the real saved release
+and an adult Synthea patient. Empty summaries and blocked signatures are deliberate
+when the trusted adapter has not supplied a current payload/clinical fact; these
+screenshots are not permission to insert permissive fixture evidence into the app.
+`ReviewScreens.lean` and `review_screens.mjs` reproduce the JSON and desktop/narrow
+PNGs. The eight feature replay manifests have an additional installed-WASM runner
+at `Canonical/replay_features_wasm.mjs`; passing it is runtime behavior evidence,
+not an up-to-date WASM source manifest or deployment certificate.
