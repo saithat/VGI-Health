@@ -74,7 +74,7 @@ export function writeReport(rows: Control[], scope: string) {
           }).trim(),
         mainRevision:
           build?.mainRevision ??
-          execFileSync("git", ["rev-parse", "origin/main"], {
+          execFileSync("git", ["merge-base", "HEAD", "origin/main"], {
             encoding: "utf8",
           }).trim(),
         builtAt: build?.builtAt ?? null,

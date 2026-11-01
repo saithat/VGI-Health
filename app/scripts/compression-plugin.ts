@@ -29,9 +29,13 @@ export function compressionPlugin(): Plugin {
           revision: execFileSync("git", ["rev-parse", "HEAD"], {
             encoding: "utf8",
           }).trim(),
-          mainRevision: execFileSync("git", ["rev-parse", "origin/main"], {
-            encoding: "utf8",
-          }).trim(),
+          mainRevision: execFileSync(
+            "git",
+            ["merge-base", "HEAD", "origin/main"],
+            {
+              encoding: "utf8",
+            },
+          ).trim(),
           leanHash,
           builtAt: new Date().toISOString(),
         }),

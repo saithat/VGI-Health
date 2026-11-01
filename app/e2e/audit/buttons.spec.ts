@@ -573,6 +573,8 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       readFileSync(resolve("../docs/audits/buttons.json"), "utf8"),
     );
     const build = JSON.parse(readFileSync("dist/build-info.json", "utf8"));
+    expect(report.revision).toBe(build.revision);
+    expect(report.builtAt).toBe(build.builtAt);
     expect(report.leanHash).toBe(build.leanHash);
     expect(report.mainRevision).toBe(build.mainRevision);
     audit.rows = prior.filter((row) => !selectedPersonas.includes(row.persona));
