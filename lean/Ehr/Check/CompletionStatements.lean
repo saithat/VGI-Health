@@ -36,4 +36,16 @@ theorem satisfies_of_checked_many_alerts (k : ValueKind) (r : Role) (m : ReviewM
       (FixedLine.program r (if receiptAware then some m else none)) := by
   sorry
 
+theorem satisfies_of_checked_automated_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec) (receiptAware : Bool)
+    (preset : Prefill) (automation : Option (List MacroStep))
+    (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t moreAlerts automation.isSome) prev
+      (FixedLine.program r (if receiptAware then some m else none) preset automation)
+      (FixedLine.program r (if receiptAware then some m else none) preset automation) = .ok) :
+    Satisfies (FixedLine.spec k r m a t moreAlerts automation.isSome) prev
+      (FixedLine.program r (if receiptAware then some m else none) preset automation)
+      (FixedLine.program r (if receiptAware then some m else none) preset automation) := by
+  sorry
+
 end Ehr.Check

@@ -5,7 +5,8 @@
     "Ehr.Check.satisfies_of_checked_fixed_lines",
     "Ehr.Check.completion_acceptance_counterexample",
     "Ehr.Check.satisfies_of_checked_receipt_lines",
-    "Ehr.Check.satisfies_of_checked_many_alerts"
+    "Ehr.Check.satisfies_of_checked_many_alerts",
+    "Ehr.Check.satisfies_of_checked_automated_lines"
   ],
   "definition_names": [],
   "permitted_axioms": [

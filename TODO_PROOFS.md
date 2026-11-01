@@ -16,7 +16,7 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 | T5 | Abstraction facts match the FHIR data | **proven**: today’s weight has exact source/date/unit/value evidence; versions cover all source resources and are permutation invariant (digest collision freedom remains a stated assumption) | `lean/Ehr/Render/FhirProofs.lean` |
 | T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | **partial**: replay and a failed static rule are proven; every returned navigation/reveal event succeeds (cut paths included), with at most one final triggering click. The BRIEF's stronger assertion that every rejection demonstrates semantic falsity is **false for the present conservative rules** (`T7_semantic_rejection_false` gives a safe rejected program). A verdict/property contract decision is required; no safety rule or property was weakened. Conservative rules can reject without establishing `¬ Satisfies`; do not present these replay theorems as full T7. | `lean/Ehr/Check/ReplaySound.lean`, `RuleSound.lean` |
-| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v1_1` and `T8_v1_1_to_v2`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
+| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v2` and `T8_v2_to_v3`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
 | T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
 | T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v2` and `T8_v2_to_v3`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
 | T7 | Counterexamples are genuine | not started | A |
@@ -254,3 +254,25 @@ distinct required acknowledgments before a real commit.
 The alert-family cardinality restriction is closed for this structural family.
 General state/navigation and entry-dependency construction remain open, including
 the accepted dose-only counterexample; the general target has not been weakened.
+
+## Prefill and macro completion extension
+
+The fixed-line family now accepts a caller-supplied drug prefill and an optional
+real macro button with arbitrary finite macro steps. Its completion proof covers
+all reachable outcomes, including stopped macros and arbitrary new-line clicks,
+through `reachable_drugSlots`. The macro catalog entry is enabled explicitly for
+this new presentation; the old fragment defaults are unchanged.
+`satisfies_of_checked_automated_lines` composes line repair, receipt-aware review
+and arbitrary finite alert discharge directly from acceptance. Acceptance retains
+all existing source/reference/human-action restrictions on the supplied prefills
+and macro. `automated_lines_satisfies` discharges every premise, while
+`prefill_macro_human_completion` exhibits two pending prefills, an actual public
+macro run leaving two unconfirmed drug captures, human assessment entry on each
+line, two interruptive acknowledgments and a real commit.
+
+Remaining scope: arbitrary multi-screen navigation/reveal, dynamically archived
+current-slot composers, multiple interacting/allowed-value entry requirements,
+and native drug/dose dependency repair. Unrestricted acceptance-to-completion
+is still refuted by the unchanged dose-only counterexample, so a checker repair
+is required before the isolated general target can be proved. No property or
+checker rule was weakened; Specs/**, Canonical/** and Render/** were not edited.

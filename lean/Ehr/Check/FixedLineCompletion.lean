@@ -19,12 +19,12 @@ def entry : EntryReq :=
   { commit := "recordReview", element := "assessment", perOrderLine := true }
 
 /-- The scalar spec extended to a genuine per-order-line requirement. -/
-def spec (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec := []) : Spec :=
-  { Scalar.spec k r m a t with elements := [drug r, Scalar.element k r], entries := [entry], alerts := Scalar.alert a t :: moreAlerts }
+def spec (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec := []) (macroCatalog : Bool := false) : Spec :=
+  { Scalar.spec k r m a t with elements := [drug r, Scalar.element k r], entries := [entry], alerts := Scalar.alert a t :: moreAlerts, design := { (Scalar.spec k r m a t).design with catalog := (Scalar.spec k r m a t).design.catalog ++ (if macroCatalog then ["macro"] else []) } }
 
 /-- A shown drug field for one fixed order-line slot. -/
-def drugField (n : Nat) : Component :=
-  { id := "drug" ++ toString n, kind := .field "drug" (.fixed n) .none, label := "Drug" }
+def drugField (n : Nat) (preset : Prefill := .none) : Component :=
+  { id := "drug" ++ toString n, kind := .field "drug" (.fixed n) preset, label := "Drug" }
 
 /-- A shown assessment field for one fixed order-line slot. -/
 def assessmentField (n : Nat) : Component :=
@@ -35,44 +35,55 @@ def reviewVisibility : Option ReviewMode → Visibility
   | some (.shownOrReceipt _ _) => .unlessReceipt "allergyList"
   | _ => .always
 
+/-- An optional macro button runs the supplied order-fill steps. -/
+def macroButton : Component :=
+  { id := "fillOrdersButton", kind := .«macro» "fillOrders", label := "Fill orders" }
+
+/-- A caller-supplied macro; acceptance enforces its existing automation rules. -/
+def orderMacro (steps : List MacroStep) : Macro :=
+  { id := "fillOrders", label := "Fill orders", steps }
+
 /-- Both lines remain editable even after a new-line action advances currentSlot. -/
-def screen (mode : Option ReviewMode := none) : Screen :=
+def screen (mode : Option ReviewMode := none) (preset : Prefill := .none)
+    (withMacro : Bool := false) : Screen :=
   { Scalar.screen with components := [
-    { id := "banner", kind := .banner }, drugField 0, drugField 1,
+    { id := "banner", kind := .banner }, drugField 0 preset, drugField 1 preset,
     assessmentField 0, assessmentField 1,
     { id := "allergies", kind := .panel "allergyList", label := "Allergies", visibility := reviewVisibility mode }, Scalar.button,
     { id := "alert", kind := .alert "clinicalAlert" false, label := "Clinical alert" },
-    { id := "newLine", kind := .button .newOrderLine, label := "Next line" }] }
+    { id := "newLine", kind := .button .newOrderLine, label := "Next line" }] ++ (if withMacro then [macroButton] else []) }
 
 /-- The two-line composer, including its real new-order-line action. -/
-def program (r : Role) (mode : Option ReviewMode := none) : Program :=
-  { Scalar.program r with screens := [screen mode] }
+def program (r : Role) (mode : Option ReviewMode := none) (preset : Prefill := .none)
+    (automation : Option (List MacroStep) := none) : Program :=
+  { Scalar.program r with screens := [screen mode preset automation.isSome], macros := automation.toList.map orderMacro }
 
-private theorem on_screen (k r m a t f u s moreAlerts o)
-    (h : Reachable ⟨spec k r m a t moreAlerts, program r o, f, u⟩ s) : s.screen = "clinical" := by
-  have hn := (reachable_screenNames ⟨spec k r m a t moreAlerts, program r o, f, u⟩
+private theorem on_screen (k r m a t f u s moreAlerts catalog o preset automation)
+    (h : Reachable ⟨spec k r m a t moreAlerts catalog, program r o preset automation, f, u⟩ s) : s.screen = "clinical" := by
+  have hn := (reachable_screenNames ⟨spec k r m a t moreAlerts catalog, program r o preset automation, f, u⟩
     (by simp [program, Scalar.program, Program.screen?, screen, Scalar.screen]) s h).1
   exact (show "clinical" = s.screen by
     simpa [program, Scalar.program, Program.screen?, screen, Scalar.screen] using hn).symm
 
-private theorem fixed_slots (r : Role) (o : Option ReviewMode) : FixedDrugSlots (program r o) [0, 1] := by
+private theorem fixed_slots (r : Role) (o : Option ReviewMode) (preset : Prefill) (automation : Option (List MacroStep)) : FixedDrugSlots (program r o preset automation) [0, 1] := by
   intro sc hc slot pf hk
   simp only [allComps, program, Scalar.program, List.flatMap_cons, List.flatMap_nil,
     List.append_nil, List.mem_map] at hc
   obtain ⟨c, hc, rfl⟩ := hc
-  simp only [screen, List.mem_cons, List.not_mem_nil, or_false] at hc
-  rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;>
-    simp [drugField, assessmentField, Scalar.button, drugElement] at hk
-  all_goals obtain ⟨rfl, rfl⟩ := hk; simp
+  cases automation <;> simp [screen] at hc
+  all_goals
+    repeat' first | (rcases hc with hc | hc) | cases hc
+    all_goals simp [drugField, assessmentField, Scalar.button, macroButton, drugElement] at hk
+    all_goals obtain ⟨rfl, rfl⟩ := hk; simp
 
-private theorem shown_assessment (k r m a t f s n moreAlerts o) (hs : s.screen = "clinical") (hn : n = 0 ∨ n = 1) :
-    shownComp? (spec k r m a t moreAlerts) (program r o) f s (assessmentField n).id = some (assessmentField n) := by
+private theorem shown_assessment (k r m a t f s n moreAlerts catalog o preset automation) (hs : s.screen = "clinical") (hn : n = 0 ∨ n = 1) :
+    shownComp? (spec k r m a t moreAlerts catalog) (program r o preset automation) f s (assessmentField n).id = some (assessmentField n) := by
   rcases hn with rfl | rfl <;>
     simp [shownComp?, program, Scalar.program, Program.compsOf, Program.screen?, screen, Scalar.screen,
       hs, drugField, assessmentField, Scalar.button, compShown, layoutShown, layoutShownAux, ownVisible] <;> decide
 
-private theorem shown_button (k r m a t f s moreAlerts o) (hs : s.screen = "clinical") :
-    shownComp? (spec k r m a t moreAlerts) (program r o) f s Scalar.button.id = some Scalar.button := by
+private theorem shown_button (k r m a t f s moreAlerts catalog o preset automation) (hs : s.screen = "clinical") :
+    shownComp? (spec k r m a t moreAlerts catalog) (program r o preset automation) f s Scalar.button.id = some Scalar.button := by
   simp [shownComp?, program, Scalar.program, Program.compsOf, Program.screen?, screen, Scalar.screen,
     hs, drugField, assessmentField, Scalar.button, compShown, layoutShown, layoutShownAux, ownVisible] <;> decide
 
@@ -82,24 +93,25 @@ before the finite alert-discharge path. Medication doses remain excluded. -/
 theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) (t : Tier)
     (nonDose : k ≠ .medicationDose) (moreAlerts : List AlertSpec)
     (unique : ((spec k r m a t moreAlerts).alerts.map (·.id)).Nodup)
-    (receiptAware : Bool := false) :
-    Completable (spec k r m a t moreAlerts)
-      (program r (if receiptAware then some m else none))
-      (program r (if receiptAware then some m else none)) := by
+    (receiptAware : Bool := false) (preset : Prefill := .none)
+    (automation : Option (List MacroStep) := none) :
+    Completable (spec k r m a t moreAlerts automation.isSome)
+      (program r (if receiptAware then some m else none) preset automation)
+      (program r (if receiptAware then some m else none) preset automation) := by
   let o := if receiptAware then some m else none
-  change Completable (spec k r m a t moreAlerts) (program r o) (program r o)
+  change Completable (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) (program r o preset automation)
   intro f u role scans s reachable c required _
   change u.role = r at role
   have hc : c = "recordReview" := by
     have buttons := (List.mem_filter.mp (List.mem_filter.mp required).1).1
-    simpa [commitButtons, program, screen, drugField, assessmentField, Scalar.button, Scalar.program] using buttons
+    cases automation <;> simpa [commitButtons, program, screen, drugField, assessmentField, Scalar.button, Scalar.program, macroButton, presetScreen, Program.presetOwner] using buttons
   subst c
-  have hs := on_screen k r m a t f u s moreAlerts o reachable
-  have slots := reachable_drugSlots ⟨spec k r m a t moreAlerts, program r o, f, u⟩ [0, 1] (fixed_slots r o) s reachable
-  obtain ⟨clear, modal, sameScreen, sameCaptured⟩ := human_clear_popup (spec k r m a t moreAlerts) (program r o) f u s
-  let s₀ := runAll (spec k r m a t moreAlerts) (program r o) f u .human s clear
+  have hs := on_screen k r m a t f u s moreAlerts automation.isSome o preset automation reachable
+  have slots := reachable_drugSlots ⟨spec k r m a t moreAlerts automation.isSome, program r o preset automation, f, u⟩ [0, 1] (fixed_slots r o preset automation) s reachable
+  obtain ⟨clear, modal, sameScreen, sameCaptured⟩ := human_clear_popup (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u s
+  let s₀ := runAll (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s clear
   have hs₀ : s₀.screen = "clinical" := sameScreen.trans hs
-  obtain ⟨v, valid⟩ := declared_value_witness (spec k r m a t moreAlerts) f u scans (Scalar.element k r)
+  obtain ⟨v, valid⟩ := declared_value_witness (spec k r m a t moreAlerts automation.isSome) f u scans (Scalar.element k r)
     (by simp [spec])
   change valueSatisfies f u k v = true at valid
   have accepted : valueAccepted f u k v = true := by
@@ -108,25 +120,25 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
     { element := "assessment", slot := n, value := v, byHuman := true, confirmed := true, provenance? := none }
   let s₁ := { s₀ with captured := setCaptured s₀.captured (capture 0) }
   let s₂ := { s₁ with captured := setCaptured s₁.captured (capture 1) }
-  have enter0 : step (spec k r m a t moreAlerts) (program r o) f u .human s₀ (.enter (assessmentField 0).id v) = (s₁, .ok) :=
+  have enter0 : step (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s₀ (.enter (assessmentField 0).id v) = (s₁, .ok) :=
     human_enter _ _ _ _ _ _ "assessment" (.fixed 0) .none (Scalar.element k r) v modal
-      (shown_assessment k r m a t f s₀ 0 moreAlerts o hs₀ (Or.inl rfl)) rfl
+      (shown_assessment k r m a t f s₀ 0 moreAlerts automation.isSome o preset automation hs₀ (Or.inl rfl)) rfl
       (by simp [spec, Spec.element?, drug, Scalar.element]) (by simpa [Scalar.element] using role)
       accepted (by simp [elementValueValid, Scalar.element, nonDose])
-  have enter1 : step (spec k r m a t moreAlerts) (program r o) f u .human s₁ (.enter (assessmentField 1).id v) = (s₂, .ok) :=
+  have enter1 : step (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s₁ (.enter (assessmentField 1).id v) = (s₂, .ok) :=
     human_enter _ _ _ _ _ _ "assessment" (.fixed 1) .none (Scalar.element k r) v modal
-      (shown_assessment k r m a t f s₁ 1 moreAlerts o hs₀ (Or.inr rfl)) rfl
+      (shown_assessment k r m a t f s₁ 1 moreAlerts automation.isSome o preset automation hs₀ (Or.inr rfl)) rfl
       (by simp [spec, Spec.element?, drug, Scalar.element]) (by simpa [Scalar.element] using role)
       accepted (by simp [elementValueValid, Scalar.element, nonDose])
   have drug_slots : DrugSlotsWithin [0, 1] s₂ := by
-    have h0 := step_drugSlots (spec k r m a t moreAlerts) (program r o) f u .human s₀
-      (.enter (assessmentField 0).id v) [0, 1] (fixed_slots r o)
+    have h0 := step_drugSlots (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s₀
+      (.enter (assessmentField 0).id v) [0, 1] (fixed_slots r o preset automation)
       (by simpa only [DrugSlotsWithin, s₀, sameCaptured] using slots)
     rw [enter0] at h0
-    have h1 := step_drugSlots (spec k r m a t moreAlerts) (program r o) f u .human s₁
-      (.enter (assessmentField 1).id v) [0, 1] (fixed_slots r o) h0
+    have h1 := step_drugSlots (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s₁
+      (.enter (assessmentField 1).id v) [0, 1] (fixed_slots r o preset automation) h0
     rwa [enter1] at h1
-  have ready : ∀ ack, guardBase (spec k r m a t moreAlerts) (program r o) f u
+  have ready : ∀ ack, guardBase (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u
       { s₂ with acked := ack, popup? := none } "recordReview" = true := by
     intro ack
     have good (n : Nat) (hn : n = 0 ∨ n = 1) : hasGoodEntry f u
@@ -135,7 +147,7 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
       refine ⟨capture n, ?_, ?_⟩
       · rcases hn with rfl | rfl <;> simp [s₂, s₁, setCaptured, capture]
       · simp [capture, Scalar.element, capturedSatisfies, valid, entryValueAllowed]
-    have perLine : entryDirectMet (spec k r m a t moreAlerts) f u
+    have perLine : entryDirectMet (spec k r m a t moreAlerts automation.isSome) f u
         { s₂ with acked := ack, popup? := none } entry = true := by
       simp only [entryDirectMet, spec, Spec.element?, Scalar.element, drug, entry,
         List.find?_cons, beq_self_eq_true, ↓reduceIte]
@@ -145,14 +157,14 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
         change line ∈ orderLines s₂ at hl
         simpa using orderLines_slots [0, 1] s₂ drug_slots line hl
       simpa [lineMatches, Scalar.element] using good line.1 hn
-    have entries : entriesOk (spec k r m a t moreAlerts) f u { s₂ with acked := ack, popup? := none } "recordReview" = true := by
-      change (entryMet (spec k r m a t moreAlerts) f u _ entry && true) = true
+    have entries : entriesOk (spec k r m a t moreAlerts automation.isSome) f u { s₂ with acked := ack, popup? := none } "recordReview" = true := by
+      change (entryMet (spec k r m a t moreAlerts automation.isSome) f u _ entry && true) = true
       simp only [entryMet, perLine, Bool.or_true, Bool.true_and]
-    have reviews : reviewsOk (spec k r m a t moreAlerts) (program r o) f
+    have reviews : reviewsOk (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f
         { s₂ with acked := ack, popup? := none } "recordReview" = true := by
-      change (reviewMet (spec k r m a t moreAlerts) (program r o) f _ (Scalar.review m) && true) = true
+      change (reviewMet (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f _ (Scalar.review m) && true) = true
       apply Bool.and_eq_true_iff.mpr
-      refine ⟨(reviewMet_iff ⟨spec k r m a t moreAlerts, program r o, f, u⟩ _ (Scalar.review m)).mpr ?_, rfl⟩
+      refine ⟨(reviewMet_iff ⟨spec k r m a t moreAlerts automation.isSome, program r o preset automation, f, u⟩ _ (Scalar.review m)).mpr ?_, rfl⟩
       apply pinnedForReview_sound _ _ (Scalar.review m)
         { id := "allergies", kind := .panel "allergyList", label := "Allergies", visibility := reviewVisibility o }
       · simp [program, Scalar.program, Program.compsOf, Program.screen?, screen, Scalar.screen,
@@ -166,14 +178,14 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
       nonDose, defaultsOk, displaysOk, actionLabelOk]
     change (List.contains [r] u.role && true) = true
     simp [role]
-  obtain ⟨finish, done⟩ := human_finish_ready_unique (spec k r m a t moreAlerts) (program r o) f u s₂
+  obtain ⟨finish, done⟩ := human_finish_ready_unique (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u s₂
     "recordReview" Scalar.button rfl modal ready
-    (fun _ => shown_button k r m a t f _ moreAlerts o hs₀) unique
+    (fun _ => shown_button k r m a t f _ moreAlerts automation.isSome o preset automation hs₀) unique
   refine ⟨clear ++ [.enter (assessmentField 0).id v, .enter (assessmentField 1).id v] ++ finish, ?_⟩
   simp only [Episode.afterHuman, runAll, List.foldl_append, List.foldl_cons, List.foldl_nil]
-  change "recordReview" ∈ (runAll (spec k r m a t moreAlerts) (program r o) f u .human
-    (step (spec k r m a t moreAlerts) (program r o) f u .human
-      (step (spec k r m a t moreAlerts) (program r o) f u .human s₀ (.enter (assessmentField 0).id v)).1
+  change "recordReview" ∈ (runAll (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human
+    (step (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human
+      (step (spec k r m a t moreAlerts automation.isSome) (program r o preset automation) f u .human s₀ (.enter (assessmentField 0).id v)).1
       (.enter (assessmentField 1).id v)).1 finish).commits
   rw [enter0, enter1]
   exact done

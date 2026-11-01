@@ -2,7 +2,7 @@
 # Audit only Audit.SpecSurface's imports, serially; never build Ehr or EhrHeavy.
 set -euo pipefail
 cd "$(dirname "$0")/../lean"
-export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536
+export LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536
 mkdir -p .lake
 exec 9>.lake/audit-verification.lock
 flock -n 9 || { echo 'Another verification audit is running.' >&2; exit 1; }
@@ -41,7 +41,7 @@ def build(module):
     if module == 'Audit.SpecSurface' or not dest.exists() or not stamp.exists() or stamp.read_text() != signature:
         dest.parent.mkdir(parents=True, exist_ok=True)
         print('Audit compile: ' + module, flush=True)
-        run = subprocess.run(['lean', '-j6', '-o', str(dest), str(src)], text=True,
+        run = subprocess.run(['lean', '-j4', '-o', str(dest), str(src)], text=True,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         (cache / 'last-module.log').write_text(run.stdout)
         if run.returncode or re.search(r'\bwarning:.*(?:sorry|declaration uses)', run.stdout):

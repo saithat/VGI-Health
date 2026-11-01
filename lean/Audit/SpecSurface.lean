@@ -238,3 +238,10 @@ end VerificationAudit
 #audit_axioms Ehr.Check.many_alerts_satisfies
 #spec_surface Ehr.Check.many_alerts_two_acknowledgments
 #audit_axioms Ehr.Check.many_alerts_two_acknowledgments
+
+#spec_surface Ehr.Check.satisfies_of_checked_automated_lines
+#audit_axioms Ehr.Check.satisfies_of_checked_automated_lines
+#spec_surface Ehr.Check.automated_lines_satisfies
+#audit_axioms Ehr.Check.automated_lines_satisfies
+#spec_surface Ehr.Check.prefill_macro_human_completion
+#audit_axioms Ehr.Check.prefill_macro_human_completion
