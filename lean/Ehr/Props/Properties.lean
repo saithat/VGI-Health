@@ -1,7 +1,8 @@
 import Ehr.Props.Basics
+import Ehr.Props.Navigation
 
 /-!
-# The properties a certified UI program has (BRIEF 7.2, properties 1–12)
+# The properties a certified UI program has (BRIEF 7.2, properties 1–13)
 
 Each property is stated about the real interpreter. Most come in two kinds of
 parts:
@@ -19,7 +20,7 @@ never tries to type the patient ID"). The interpreter would refuse such a
 step anyway; the checker still rejects the program, so a bad design is never
 deployed even when it would be harmless.
 
-`Satisfies spec prev canonical prog` is the conjunction of all twelve. The
+`Satisfies spec prev canonical prog` is the conjunction of all thirteen. The
 semantic parts hold for every patient record and every user with the
 program's role.
 -/
@@ -412,9 +413,16 @@ def SeverityTiers (spec : Spec) (prog : Program) : Prop :=
   NoPassivePopupRequests spec prog ∧
   ∀ facts user, user.role = prog.role → PassiveNeverPopsUp ⟨spec, prog, facts, user⟩
 
+/-! ## 13. Sane navigation
+
+`NavigationSane` is the render lane's decidable `Render.NavSane` over the actual
+navigation tree. D1–D4 and D6 hold for every program by renderer theorems in
+`Ehr.Render.UiProofs`; they do not need additional checker rules.
+-/
+
 /-! ## All together -/
 
-/-- **A certified program.** `prog` satisfies properties 1–12 against `spec`,
+/-- **A certified program.** `prog` satisfies properties 1–13 against `spec`,
 given the previous deployed version `prev` (if any) and the vendor's
 `canonical` program. -/
 def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
@@ -429,6 +437,7 @@ def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) :
   AlertsFire spec prog ∧                  -- 9  (A1)
   NoFalseAlarms spec prog ∧               -- 10 (A2)
   NoRepeatInterruptions spec prog ∧       -- 11 (A3)
-  SeverityTiers spec prog                 -- 12 (A4)
+  SeverityTiers spec prog ∧               -- 12 (A4)
+  NavigationSane prog                    -- 13 (D5)
 
 end Ehr.Props

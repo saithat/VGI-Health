@@ -1,3 +1,4 @@
+import Ehr.Check.PatchWitness
 import Ehr.Check.ViolationWitness
 import Ehr.Check.MissingWitness
 import Ehr.Check.LocalBadProofs
@@ -8,6 +9,7 @@ import Ehr.Canonical.BadPrograms
 -- The canonical template has over 1,500 components; kernel reduction traverses them.
 set_option maxRecDepth 16384
 
+set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 
@@ -22,22 +24,38 @@ theorem reachable_afterHuman (ep : Episode) (es : List Event) (s : State)
 def refillKept : List ScreenId :=
   (unreachableRefill.screens.map (·.id)).filter (· != "w7Decision")
 
-private theorem refillScreenBound : 42 < unreachableRefill.screens.length := by decide +kernel
-private theorem refillCompBound : 38 < (unreachableRefill.screens[42]'refillScreenBound).components.length := by decide +kernel
-private def refillWitness : Screen × Component := indexedComp unreachableRefill 42 refillScreenBound 38 refillCompBound
-private theorem refillWitness_mem : refillWitness ∈ allComps unreachableRefill :=
-  indexedComp_mem unreachableRefill 42 refillScreenBound 38 refillCompBound
+private def refillScreen : Screen := unreachableRefill.screens[42]?.getD default
+private theorem refillScreenPresent : unreachableRefill.screens[42]?.isSome = true := by decide +kernel
+private theorem refillCompPresent : refillScreen.components[25]?.isSome = true := by decide +kernel
+@[irreducible] private def refillWitness : Screen × Component :=
+  (refillScreen, refillScreen.components[25]?.getD default)
+private theorem refillWitness_mem : refillWitness ∈ allComps unreachableRefill := by
+  unfold refillWitness
+  exact List.mem_flatMap.mpr ⟨refillScreen,
+    getD_mem unreachableRefill.screens 42 refillScreenPresent,
+    List.mem_map.mpr ⟨_, getD_mem refillScreen.components 25 refillCompPresent, rfl⟩⟩
 private theorem refillKind : refillWitness.2.kind = .button (.commit "approveRefill") := by decide +kernel
-private theorem refillLookup : specV1.commit? "approveRefill" = some approveRefill := by decide +kernel
-private theorem refillRole : unreachableRefill.role ∈ approveRefill.roles := by decide +kernel
+private def refillCommit := (specV1.commit? "approveRefill").getD default
+private theorem refillLookup : specV1.commit? "approveRefill" = some refillCommit := by decide +kernel
+private theorem refillRole : unreachableRefill.role ∈ refillCommit.roles := by decide +kernel
 private theorem refillRequired : "approveRefill" ∈ requiredCommits specV1 canonicalV1 unreachableRefill :=
   required_of_component specV1 canonicalV1 unreachableRefill refillWitness refillWitness_mem
-    "approveRefill" refillKind approveRefill refillLookup refillRole
+    "approveRefill" refillKind refillCommit refillLookup refillRole
 private theorem refillRequirement : requires approveRefill refillDecision ∈ specV1.entries := by decide +kernel
 private theorem refillFields : (allComps unreachableRefill).all (fun sc =>
     (fieldOf? sc.2.kind).all (fun f => f.1 != "refillDecision" || sc.1.id == "w7Decision")) = true := by decide +kernel
 private theorem refillNoIncoming : (allComps unreachableRefill).all (fun sc =>
-    (gotoOf? sc.2.kind).all (· != "w7Decision")) = true := by decide +kernel
+    (gotoOf? sc.2.kind).all (· != "w7Decision")) = true := by
+  apply List.all_eq_true.mpr
+  intro sc member
+  simp only [allComps, List.mem_flatMap, List.mem_map] at member
+  obtain ⟨scr, hs, c, hc, rfl⟩ := member
+  change scr ∈ (base 7).screens.map _ at hs
+  obtain ⟨original, _, rfl⟩ := List.mem_map.mp hs
+  have kept := (List.mem_filter.mp hc).2
+  cases kind : c.kind <;> simp_all [gotoOf?]
+  rename_i action
+  cases action <;> simp_all [gotoOf?]
 private theorem refillDifferentStart : unreachableRefill.start ≠ "w7Decision" := by decide +kernel
 
 theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRefill :=

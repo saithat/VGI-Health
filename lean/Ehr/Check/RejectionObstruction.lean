@@ -20,7 +20,7 @@ def unusedWorkflowCanonical : Program :=
          components := [{ id := "optional.banner", kind := .banner },
            { id := "optional.reminder", kind := .alert "optionalReminder" false }] }] }
 
-/-- With no tasks, the candidate genuinely satisfies all twelve properties.
+/-- With no tasks, the candidate genuinely satisfies all thirteen properties.
 The checker accepts it when compared with a reference having the same workflows. -/
 theorem unusedWorkflow_self_satisfies :
     Satisfies unusedWorkflowSpec none emptyProgram emptyProgram :=
@@ -32,10 +32,10 @@ theorem unusedWorkflow_self_satisfies :
 there are no required commits and no requested popups. -/
 theorem unusedWorkflow_satisfies :
     Satisfies unusedWorkflowSpec none unusedWorkflowCanonical emptyProgram := by
-  obtain ⟨wf, cap, writes, reviews, human, _, units, budget, alerts, falseAlarms, once, tiers⟩ :=
+  obtain ⟨wf, cap, writes, reviews, human, _, units, budget, alerts, falseAlarms, once, tiers, nav⟩ :=
     unusedWorkflow_self_satisfies
   refine ⟨⟨wf.1, wf.2.1, wf.2.2.1, wf.2.2.2.1, ?_, wf.2.2.2.2.2⟩,
-    cap, writes, reviews, human, ?_, units, ⟨?_, budget.2⟩, alerts, falseAlarms, once, tiers⟩
+    cap, writes, reviews, human, ?_, units, ⟨?_, budget.2⟩, alerts, falseAlarms, once, tiers, nav⟩
   · intro c hc
     simp [requiredCommits, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
   · intro facts user _ _ s _ c hc

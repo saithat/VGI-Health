@@ -13,9 +13,9 @@ def rejectedWithReplay (p : Program) : Bool :=
   | none => false
   | some finding => (counterexample specV1 p finding).2.2
 
--- The expanded legal screens currently have missing pinned reviews (see
--- CHECK-2026-10-31 in changes-requests.md). Keep the actual unsafe canonical
--- rejected; restore acceptance only after the owning content lane repairs it.
+-- The expanded baselines now pass review pinning and D5. Universal completion
+-- remains blocked by absent trusted payloads; CHECK-2026-11-01 documents the
+-- exact obligation and DisplayObstruction proves why panels alone cannot fix it.
 #guard rejectedWithReplay (forPersona specV1 canonicalV1 "P3" .rn)
 
 #guard Bad.programs.all (fun (_, p) => rejectedWithReplay p)

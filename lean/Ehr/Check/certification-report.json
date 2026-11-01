@@ -1,717 +1,395 @@
 {
-  "sourceRevision": "4816d532beabef11445d8e2a2470b9abb9927ad3",
+  "sourceRevision": "c0d77ce2ea874a158d5c8826e32936d54d77ca05",
+  "sourceDirty": true,
   "binarySha256": "3b4b78283e542941ac882d9dc5d05043dc9f77723654992f7708b1671135577f",
-  "generatedAt": "2026-11-01T02:26:10.052833+00:00",
   "personaAccepted": 0,
-  "badRejected": 24,
-  "replayValidation": "All 24 bad fixtures also pass Ehr.Check.Tests.rejectedWithReplay in the full Lake build; this is navigation replay, not full T7 semantic violation evidence.",
+  "personaCount": 15,
+  "badRejected": 32,
+  "badCount": 32,
+  "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
       "program": "releases/v1/personas/P1.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "8b3bb64138d0fdd818a85595064b83f42f38c19aac2f27e7528d88553f33bfec",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "806db281d7ef91d994f3eb91b84954130c910c801a373a4279e75a7fd549d576",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "42d2374e97e08746fc8fbf40e71250dcd96bd6a1eb3fa1d7a2be1339eed57bf2",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "5d5ee9cf415ce2584e848e8f331e4237780ca0bb4ce50d1995ee271ff121a942",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "a881d07f9630341d3f8bbd3f10ae80c80a839b864ae419bc3fb8f94007d5c617",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "80cfeab84f1f3e73af3198e80ad813059f3a5bc761252e2526a1b86b8eedb04c",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w3TrackBoard",
-            "w3SuicideAssessment"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w3TrackBoard"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "afbd409dd5a6ea4419794b0208e430625df70c5cef94aebfe6fc1dce8a06a867",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "00c0b9c1aa0f49115e6de6a2c81963c6650fefe303bf9afbbe104915bb2b833f",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "58faf8e3fa1e6de6babb19489bf2e9acccd4b443d24c986fbbd3b2ff8ddb3316",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "67fb38e99b19d89739a630eea57761f2ba263266517bf368e1ec81bc6a59bde3",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1.1/personas/P1.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "ec0a6630f79f0a69e355831a3902c5612d82c1c9c76823f435a4c19329c0b7ac",
-      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
-      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "programSha256": "81f4035187d24bfcc8451741d13c512e22a553efd3b49ef1fea60865983d7c89",
+      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
+      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1.1/personas/P2.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "c1b6f16762f18414f83c3e3dfa809d6d412ae1e46553d99346db78508a300e0d",
-      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
-      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "programSha256": "d83e6110feb709074c58d3a5135c1a6556df6125e640e4df649859cc1b4c0691",
+      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
+      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1.1/personas/P3.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "74df04e9e6e94dfb17c4aeec5c51d279fba5854ab194066aa45a6eeab3641f70",
-      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
-      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "programSha256": "95afd4998392eae841748349140c8017b288040111eeda33bd332a408d875fc5",
+      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
+      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w3TrackBoard",
-            "w3SuicideAssessment"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w3TrackBoard"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1.1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "6521c0511d9141149b5f4f142bc0e50242a4b48d7ac7f5a23b55878809d44990",
-      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
-      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "programSha256": "0e34d47f305383cf84577fab1c0bf8738705d9afd54ab193b75a3ca1e6d8d24a",
+      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
+      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v1.1/personas/P5.json",
       "group": "persona",
       "spec": "releases/v1.1/spec.json",
-      "programSha256": "3d682dc4e7cecc78d5e96b797df55fd060be27af9467c6d17f564a0a3557bfbb",
-      "specSha256": "f3c12741fedef726de44913ce90397b320cf8827398d21ee9317ba0c749e25f7",
-      "canonicalSha256": "8ac2cf2a23ad54f485b514d39746285e6480b44de279474b611586d6dc140f80",
+      "programSha256": "f259fe7a57e3d27998f8ba493381b5e16bae4f115a8ccdba3db3a2d4b8ba36b0",
+      "specSha256": "8e58042ddd4a8071d9963fa726d99280aa974007c871bdd46fc89c48dffcf6df",
+      "canonicalSha256": "f45f1180ddc13a11d6c3170389c78eb46eac377aa8ff04760436390483470af2",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v2/personas/P1.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "40ab7efc69cf9dbc3fd1288f580b58454f18cb5d51886c607d8c88d78e439475",
-      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
-      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "programSha256": "b1822efae5f1218e151daf50ec52f8515576985e47a1bbc65b29b88207accad3",
+      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
+      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v2/personas/P2.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "56f11c80ca990a4bda0df31f4a360c75cd5c76815ea495a920822484cac99ad0",
-      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
-      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "programSha256": "1e7332ca6dd998c246bf6615ddcbf8b1759c3f7f4bf23a883a0bc3c9f826c654",
+      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
+      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v2/personas/P3.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "c4599478b257d1b8e0132dc79d4ef3413c66a2cda7bba1a4636f5e1edcb2938b",
-      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
-      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "programSha256": "63816d0b22250f247a86c13d4697bce4c66db6010414fe70768e29e31c19a363",
+      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
+      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w3TrackBoard",
-            "w3SuicideAssessment"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w3TrackBoard"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v2/personas/P4.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "c968d5becf2cc088aa955e1cd1a666afd009f5adf1bea4bfb3510a974b0e5972",
-      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
-      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "programSha256": "e5e140592e247eec99e2d8fd7ca13523f98436610b4628336f599416bc040052",
+      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
+      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "releases/v2/personas/P5.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "2f346a7b87267a6cfa1caee2e776729ea34b820782e5ffed7084f35f5848a0da",
-      "specSha256": "72edb062e42ccba66eb8acf8974cecd73ea0de76f686e996c3c21847ce66e2eb",
-      "canonicalSha256": "abac7ed16bc7cb3ea31dac6ce834e35fddcb3ef50452ac61dabee5ab8b47462c",
+      "programSha256": "68a8af7489707fdea946978295ee5725ad139387e94f52d1b7066fd90494a8a1",
+      "specSha256": "8fb7923cef3d2801252da2f11248e7d4cb13bb34d9f4e364986510587415b484",
+      "canonicalSha256": "69f33d67847236c13fa7586ea034c02147470cd3a13b39d643ccfa9bac2ab2fa",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/01-hidden-allergies.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "198f6238f60d73770f02f09671f7a49f255f6092133697bdc27be16ce6d3a5b3",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "0352a7544b8e28dff1afbe9a162d7666d53ba4b2d5cc58a026d343541b9f38d8",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -752,15 +430,31 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "structured display or action label required"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/02-prefilled-identity.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "958b46b4f10f32d48a07ede2807f1f549f6a7c0de683b390a931bb83c5d7b19e",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "ba86d09265a29008fa33580cdcaddfa7ca1ac83d86f42fb578a137194cfda263",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -796,15 +490,26 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/03-pounds-as-weight.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "a5f499a2fc1aece7bd66121bc2fa7e3fcf04260cb3c1e21be5bb9e30ce745f19",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "800cde86d777450135c236363774e6328dc1687616a948bb74a1f963a8dc92df",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -828,15 +533,24 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/04-macro-override.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "2961c3015c2a9e1290a66af0c54050221a2182142dbb7c4e6dd12fd00c8c499e",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "84d574ba82922eba1b36200319df283efe11e0ad8cce1ed11fae0a0dd07ee9d2",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -871,22 +585,36 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 0: step did not apply"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/05-self-cosign.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "8f9f1d2f219402292b7dab0b7ba5666bb6a9c24af6ca1ca720b0c26a8b129f1c",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "17b6b39bd910711cafa08c07717c457cace0c02bccbd2cf4972c9b29f36d7112",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
             "home",
-            "w4Worklist",
-            "w4Mar",
+            "w3TrackBoard",
             "w4Admin"
           ],
           "property": "humanOnlyKept",
@@ -894,30 +622,34 @@
           "counterexample": [
             {
               "click": {
-                "comp": "home.work.w4Worklist"
+                "comp": "home.work.w3TrackBoard"
               }
             },
             {
               "click": {
-                "comp": "w4Worklist.nav.w4Mar"
-              }
-            },
-            {
-              "click": {
-                "comp": "w4Mar.openDue"
+                "comp": "w3TrackBoard.featureNav.recordPainResponse"
               }
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/06-stale-weight.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "b1cc0d12f9a20aa9e4ab1446f9a0077adf9908d80c436d3cfdd0cd40e7eb98c8",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "dac560c5168dfd46173b2bd42f0d66e60c293abd0338b4f523121d2cfd6afa2b",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -935,64 +667,48 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/07-unreachable-refill.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "d25a82ad73440ab8c34aa07b1839a798bc6a12d06d169789d34290ccbd71cba4",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "5f43bd5fd5b3ebab413bb0743476eff7dc4f96dcb17254caedd13964d7d15d37",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/08-forged-consent.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "ad0930c2d0dc658282eca4a7ad4d89460fbdda3a4f4c81fa680135fadbf24e56",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "6bdcce123a0a8086b616d2726922314cff85f5bb2c9c4b9b1fe03dd2e5027f9d",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1015,15 +731,28 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 1: human only: consentVerified"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/09-hidden-allergy-alert.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "286930433dc5ae7b0003697cf02d65debadc16d6923720dc9c19cd4cf805c7df",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "9b2d458db72959051f9119519a234f0ffa186dd41d50cc659997859a3a7f4645",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1052,15 +781,29 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 3: human only: commit"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/10-invented-alert.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "426fc34b2318b0a8ff3fd54c4016642eeb82de77cac1488b991a7b7e8d9364aa",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "79009859187a47d9f6cab66c5b283c4c176f49fcf29856c94fbcd7f48022ebb2",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1084,15 +827,24 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/11-repeated-interaction.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "4684f38a4ae57d5ba9605e7c53b8744ef21e9cb64ce0f463072a03252fe89b61",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "56af7ca9989b557fece6124b6ce46bb65f4565cd4cc4453c484f9bb1e5c87ce9",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1116,15 +868,24 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/12-passive-popup.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "4ce21fa1264f19ca4b2e82d8c05e46ed0be5b9015bd16ebf5848144e8ac66ab7",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "fcec8e67633fcac0217d2b502808995d0ba615d7802bd703c6cf6026ef254f39",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1142,64 +903,48 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/13-no-cures.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "38e6d61381359920061a4e751d7fbfaf15010862902cb28b0c9be3e24a5fbea2",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "069199dd5e31af5ab22d2ee2d1bf56fca8a95b59af274e36297cb004e5591d3d",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/14-macro-naloxone.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "120f441b37cc34bf3366b04c48b946daa4065ae9ce2ef55807d70fd0ec3c84ed",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "6e498eafb3015838032e5eea7e587bd9efb1a27359c7b569ad1c6024fdc2fdf1",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1228,15 +973,29 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 3,
+        "results": [
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "macro stopped at step 3: human only: naloxoneOffer"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/15-hidden-controlled-details.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "d729a763d9d4fa9cd1d02352b2f55f09122fa999499be5ff189fd4315f5bb831",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "c9587ff0b6efaa34dd49eef3a168e471db65e8d71799da273a29273217ca051c",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1277,297 +1036,181 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "structured display or action label required"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/16-schedule-ii-refills.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "fc6aae2bfaa922ec78afa05d28fdf048b45b5d8d411c02cbcc3c5e72e45fced4",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "f5dda15b1b389e659b7e028f1b208b408269a0d42ccd0710dd274e68a3ce20d4",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/17-no-restraint-care-plan.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "197642bd0a8015304385cdb970f86247f05d6fcf843ab0796b30c5948ae85174",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "755d3757077ba579de5608e42d6f74e59b3ebe541309aede6ba4e0d030877c5f",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/18-no-op-technique.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "f17af09df1a8a65fb29bcca3ce2bd28abe48ad9e1bd5c67cbacf89ee2d8d861c",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "a7cb9b6fd0414ce8766a7f2f12500fd95caff466b93b65b4e096c62760edd97f",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/19-no-vaccine-provider-address.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "755a61a4945b5ba33139bfb9e796a8a57feaafa95cd5d4ae18bacb5be4c37766",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "d18c2a1d5f829bb3855d29fee98a1c1b1ffa769761fa39ee50d978d653a11201",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/20-no-administration-time.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "be0d5a7a4fbd48cc2caa6bd2856d0d61a20d4f4f188aed6d17df493006695ad7",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "409cb206de0854af770b07a29b0e0275eae560934a7d3d28bd7d3042991e1d72",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w3TrackBoard",
-            "w3SuicideAssessment"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "currentMeds is not shown on screen w3SuicideAssessment when signSuicideRiskAssessment is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w3TrackBoard"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3TrackBoard.legalNav.w3SuicideAssessment"
-              }
-            },
-            {
-              "click": {
-                "comp": "w3SuicideAssessment.commit.signSuicideRiskAssessment"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/21-no-controlled-strength.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "8caa48cbc01862358c2f659b6744a8bda6cb68ff272bacb68115170cd4cc613a",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "d8449de831fccb324c29fcc4fa2d69e98d395baaa5d3bde58af4aa1995fd22be",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/22-hidden-signing-notice.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "1dbe27175f5a7eee06c3429bf3389162b42d2ed4f4972fe428977f321e204e50",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "cdf95c0426d36c8827c1df4e65808a18579f07c8c1095b4352ec49ebbd8dabba",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
@@ -1579,7 +1222,7 @@
             "w1Sign"
           ],
           "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "message": "controlledSigningLegalNotice is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
           "counterexample": [
             {
               "click": {
@@ -1608,71 +1251,62 @@
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "structured display or action label required"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/23-no-telehealth-consent.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "4892ddf6bd02f876dc626dd08abb3b2c22e6978ab1b9b158ee12add14b25610d",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "3b5875085c2e09c36a7a3114b6944279e018dca107ea80e545215aa32abf4798",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders",
-            "w1Verify",
-            "w1Sign"
+            "home"
           ],
-          "property": "reviewsBeforeCommit",
-          "message": "anticoagulantList is not shown on screen w1Sign when signOrders is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Orders.toSign"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Verify.continue"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Sign.commit.signOrders"
-              }
-            }
-          ]
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     },
     {
       "program": "programs/bad/24-default-refill-eligibility.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "934c3a22038ac44357ea98d39d39b54a7aef48f75d3925325b92fdeaff20c426",
-      "specSha256": "b519e5453702c63f46ca1eed56be629ac5901f037a2fbce78e23c54a74ca340d",
-      "canonicalSha256": "58de1b36e4dda653f6e487672217d4c8e2565c1d045602536e72bfed52b15e22",
+      "programSha256": "79427f799a264100532a385a2a984dfea12764c4809a3c3504676fa3ffa9ddf1",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
       "exitCode": 1,
       "verdict": {
         "violation": {
           "screens": [
             "home",
             "w7Queue",
-            "w7Review",
             "w7Decision"
           ],
           "property": "humanOnlyKept",
@@ -1685,16 +1319,229 @@
             },
             {
               "click": {
-                "comp": "w7Queue.nav.w7Review"
-              }
-            },
-            {
-              "click": {
-                "comp": "w7Review.decide"
+                "comp": "w7Queue.featureNav.dispenseScheduleIIItoV"
               }
             }
           ]
         }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/25-restart-restraint-clock.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "d30b4a4b0cffe8485a0a7761e737f7cfde02abc159d2a590e30b16ecddd400eb",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/26-stale-preoperative-hp.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "c22b177657d74d7a2724f10c837e85a0e10b7e71d8ab7bb0eb529a03906f6d51",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/27-expired-controlled-fill.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "6cceab9cdd8e45dd2e1646ddf9f41dc75cbe47111b1d9843a55f8cfce156a988",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/28-underage-minor-consent.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "fa415a64cd69b7844422565164e90f362621e052ccd994295c99e92f06f4b124",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/29-invalid-birth-date.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "f55f5b349c649043d14a6d8f73afafdbbcfc7b33927884e402673bbaf54ff726",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field feature.updateDemographics.feature.birthDate on screen w1Rooming prefills birthDate, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            }
+          ]
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/30-daily-methotrexate-default.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "f8c8e6b66839d1f4a59b366df51fb7e4318656eafe9d65af5c2147e3475dc3a8",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/31-hidden-result-components.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "43825523e18e43a67ce5b3dcafd71ae6770611b47d0d211cf88950a0f58610f8",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "programs/bad/32-misleading-signing-label.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "7eb3e7d0191cac2a0778b51931ac8151e391dfdf562459be8f17b4708809dd31",
+      "specSha256": "3c0ba689112c13e6d5aa8a99fa75d8af1233d33b96704359a373efebf76a90e9",
+      "canonicalSha256": "6743c6122ff3a9053ab3ffd48a47ee3e60e800b4b0428c23f2dfd26a71ca2c42",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "completable",
+          "message": "commit recordCommunicationNeeds: structured payload may be absent; universal payload collection/phase coverage is not established",
+          "counterexample": []
+        }
+      },
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
       }
     }
   ]

@@ -1782,3 +1782,36 @@ rendering about 1.4 seconds in a Node WASM measurement. The app now computes
 legacy HTML and the inspection view lazily, with immutable snapshot inputs.
 Please continue profiling semantic rendering/structured-payload checks in Lean;
 UI logic remains there. No files under lean/ were edited for these changes.
+## CHECK-2026-11-01: current baseline and evidence-domain obstruction
+
+This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for
+current main. The native CLI now rejects **all 15 personas** in v1/v1.1/v2 first
+at `completable`, `recordCommunicationNeeds`: structured payload may be absent.
+The actual buttons are on `w1Rooming`, `w3Triage`, `w4Flowsheet`, `w5Rooming`,
+and `w6Consult` (role projections retain their authorized controls). The updated
+matrix, input hashes and public-interpreter navigation replays are reproducible
+with `python3 lean/Ehr/Check/certify.py`; it deliberately exits 1 while any
+canonical fails. The corpus is now **32**, not 24; all 32 reject and all returned
+navigation prefixes replay successfully. Content's eight new trusted-fact replay
+manifests also block their intended commits with no successful commit.
+
+**Core/content/owner contract decision required.** The inherited structured
+rule `Features.display002` (catalog `federal-rx-170-315-dsi-source-citation`, info
+`dsiSources`, phase W1/decision-support) activates when Facts.phase is absent.
+`RecordAllowsScans` admits records with no phase or infoPayloads. On that record,
+`displayReqMet` is false on every screen of every program, and no UI event can
+change Facts. Therefore every commit is blocked: any nonempty required task
+family fails Completable, regardless of field/review placement. The check-owned
+`DisplayObstruction.lean` proves this obstruction for all three releases and all
+persona roles, with no canonical kernel evaluation. Adding panels alone cannot
+fix it. Other missing temporal evidence and expired original clocks create
+related obstructions. Preserve all guards and rules; explicitly settle a trusted
+evidence precondition, real evidence-collection events, or another lawful task
+contract before claiming the baseline universally completable. Completing a
+refusal action does not establish completion of the blocked original action.
+
+**CHECK-EXTENDS-DISPLAYS is resolved for per-commit inheritance.** Content now
+preserves `displays?` exactly in Spec.Extends. Check's OldObligations and T8 now
+include old temporal, validator/default, expiry, display and signing-label
+contracts. Continuous phase-wide display coverage is still separate from this
+per-commit guarantee. No old obligation or safety rule has been weakened.

@@ -15,7 +15,7 @@ theorem extends_entries {new old : Spec} (h : new.Extends old) :
 theorem extends_catalog {new old : Spec} (h : new.Extends old) :
     old.design.catalog ⊆ new.design.catalog := by
   intro kind hk
-  have ht := h.2.2.2.2.2.2.2.2.2.2
+  have ht := h.2.2.2.2.2.2.2.2.2.2.2
   exact List.mem_of_mem_take (ht ▸ hk)
 
 /-- A concrete vocabulary expansion, with no extra clinical obligations. -/

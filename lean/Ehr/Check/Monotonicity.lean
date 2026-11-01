@@ -62,6 +62,31 @@ theorem extends_static {new old : Spec} {p : Program} (he : new.Extends old)
   · simpa only [PopupRequestedOnce, Spec.alert?, he.2.2.2.2.2.1] using once
   · simpa only [NoPassivePopupRequests, Spec.alert?, he.2.2.2.2.2.1] using passive
 
+/-- Prefix preservation retains every old validator/default; exact commit and
+display preservation retains temporal, expiry, payload and action-label rules. -/
+theorem extends_contracts {old : Spec} (ep : Episode) (he : ep.spec.Extends old) :
+    OldCommitContracts old ep := by
+  intro s reach actor event c happened
+  obtain ⟨cs, lookup, temporal, valid, defaults, expiry, display⟩ :=
+    commitContracts ep s reach actor event c happened
+  have oldLookup : old.commit? c = some cs := by
+    simpa only [Spec.commit?, he.2.2.1] using lookup
+  have elements : old.elements ⊆ ep.spec.elements := by
+    intro el member
+    exact List.mem_of_mem_take (he.1 ▸ member)
+  refine ⟨cs, oldLookup, temporal, ?_, ?_, expiry, ?_, ?_⟩
+  · simp only [validationsOk, List.all_eq_true] at valid
+    intro el member x captured
+    exact valid el (elements member) x captured
+  · simp only [defaultsOk, List.all_eq_true] at defaults ⊢
+    intro el member
+    exact defaults el (elements member)
+  · simp only [displaysOk] at display
+    have all := (Bool.and_eq_true.mp display).1
+    intro rq member
+    exact List.all_eq_true.mp all rq (he.2.2.2.2.2.2.1 ▸ member)
+  · exact (Bool.and_eq_true.mp display).2
+
 /-- T8: a program satisfying the installed release meets every inherited entry,
 review, human-action, unit and alert obligation on every installed execution.
 The only vocabulary tested is the installed release's catalog. -/
@@ -77,11 +102,11 @@ theorem T8_old_obligations {new old : Spec} {prev : Option Program}
   obtain ⟨interrupt, passive⟩ := hs.2.2.2.2.2.2.2.2.1.2 facts user role
   refine ⟨he, extends_static he hs.2.2.2.2.1.1 hs.2.2.2.2.2.2.1.1
     hs.2.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.2.1.1
-    hs.2.2.2.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.2.2.2.1,
+    hs.2.2.2.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.2.2.2.1.1,
     ?_, ?_, ?_, human, clicks, cosign, ?_, ?_, ?_,
     hs.2.2.2.2.2.2.2.2.2.1.2 facts user role,
     hs.2.2.2.2.2.2.2.2.2.2.1.2 facts user role,
-    hs.2.2.2.2.2.2.2.2.2.2.2.2 facts user role⟩
+    hs.2.2.2.2.2.2.2.2.2.2.2.1.2 facts user role, extends_contracts _ he⟩
   · intro s reach actor event c happened rq mem same
     exact entry s reach actor event c happened rq (extends_entries he mem) same
   · intro s reach actor event c happened rq mem same
@@ -115,7 +140,7 @@ theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
     ?_, ?_, ?_, human, clicks, cosign, ?_, ?_, ?_,
     (accepted_noFalseAlarms new prev canonical p h).2 facts user role,
     (accepted_noRepeatInterruptions new prev canonical p h).2 facts user role,
-    (accepted_severityTiers new prev canonical p h).2 facts user role⟩
+    (accepted_severityTiers new prev canonical p h).2 facts user role, extends_contracts _ he⟩
   · intro s reach actor event c happened rq mem same
     exact entry s reach actor event c happened rq (extends_entries he mem) same
   · intro s reach actor event c happened rq mem same
@@ -154,6 +179,13 @@ example : ∀ facts user, user.role = vocabularyProgram.role →
   T8_checked_old_obligations vocabulary_extends
     (show check vocabularyRelease none emptyProgram vocabularyProgram = .ok from by decide)
 
+/-- A certificate with actual entry, review, unit and alert obligations also
+instantiates T8; this example is not an empty task-family implication. -/
+example : ∀ facts user, user.role = expandedProgram.role →
+    OldObligations Ehr.Examples.Tiny.spec ⟨expandedSpec, expandedProgram, facts, user⟩ :=
+  T8_checked_old_obligations expanded_extends expanded_accepted
+
+#print axioms extends_contracts
 #print axioms extends_element_lookup
 #print axioms extends_static
 #print axioms T8_checked_old_obligations

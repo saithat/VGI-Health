@@ -1,14 +1,21 @@
+import Ehr.Check.PatchWitness
 import Ehr.Check.MissingWitness
 
+set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private theorem seed21ScreenBound : 8 < noControlledStrength.screens.length := by decide +kernel
-private theorem seed21CompBound : 57 < (noControlledStrength.screens[8]'seed21ScreenBound).components.length := by decide +kernel
-private def seed21Witness : Screen × Component := indexedComp noControlledStrength 8 seed21ScreenBound 57 seed21CompBound
-private theorem seed21Member : seed21Witness ∈ allComps noControlledStrength :=
-  indexedComp_mem noControlledStrength 8 seed21ScreenBound 57 seed21CompBound
+private def seed21Screen : Screen := noControlledStrength.screens[8]?.getD default
+private theorem seed21ScreenPresent : noControlledStrength.screens[8]?.isSome = true := by decide +kernel
+private theorem seed21CompPresent : seed21Screen.components[52]?.isSome = true := by decide +kernel
+@[irreducible] private def seed21Witness : Screen × Component :=
+  (seed21Screen, seed21Screen.components[52]?.getD default)
+private theorem seed21Member : seed21Witness ∈ allComps noControlledStrength := by
+  unfold seed21Witness
+  exact List.mem_flatMap.mpr ⟨seed21Screen,
+    getD_mem noControlledStrength.screens 8 seed21ScreenPresent,
+    List.mem_map.mpr ⟨_, getD_mem seed21Screen.components 52 seed21CompPresent, rfl⟩⟩
 private theorem seed21Kind : seed21Witness.2.kind = .button (.commit "signOrders") := by decide +kernel
 private def seed21Commit := (specV1.commit? "signOrders").getD default
 private theorem seed21Lookup : specV1.commit? "signOrders" = some seed21Commit := by decide +kernel

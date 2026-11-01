@@ -1,5 +1,6 @@
 import Ehr.Check.AdditionalBadProofs
 
+set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384

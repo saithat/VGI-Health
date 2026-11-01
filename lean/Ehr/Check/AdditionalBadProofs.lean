@@ -1,6 +1,7 @@
 import Ehr.Check.BadProofs
 import Ehr.Check.DomainObstruction
 
+set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 

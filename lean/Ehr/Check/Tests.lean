@@ -13,6 +13,8 @@ import Ehr.Check.PartialSound
 import Ehr.Check.SeveritySound
 import Ehr.Check.BudgetSound
 import Ehr.Check.DomainObstruction
+import Ehr.Check.DisplayObstruction
+import Ehr.Check.CertificationTests
 import Ehr.Check.WritesSound
 import Ehr.Check.EnterOnceSound
 import Ehr.Check.HumanSound

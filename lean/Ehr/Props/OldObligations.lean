@@ -11,6 +11,22 @@ def OldStaticObligations (old : Spec) (p : Program) : Prop :=
   NoAlertSuppression p ∧ NoInterruptivePopupRequests old p ∧
   PopupRequestedOnce old p ∧ NoPassivePopupRequests old p
 
+/-- The five additional contract families of the older hospital, evaluated on
+installed-release executions. Old element declarations, commit declarations and
+display requirements are retained exactly by `Extends`. Display visibility uses
+the installed interpreter, just as old entry and review obligations do. -/
+def OldCommitContracts (old : Spec) (ep : Episode) : Prop :=
+  EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →
+    ∃ cs, old.commit? c = some cs ∧
+      (∀ rq ∈ cs.temporal?.getD [], temporalStatus ep.facts s rq = .met) ∧
+      (∀ el ∈ old.elements, ∀ x ∈ s.captured,
+        x.element != el.id || elementValueValid ep.facts s el x.slot x.value = true) ∧
+      defaultsOk old ep.prog = true ∧
+      (∀ rq ∈ cs.expiry?.getD [], expiryStatus ep.facts s rq = .met) ∧
+      (∀ rq ∈ old.displays?.getD [],
+        !displayActive ep.facts s (some c) rq || displayReqMet ep.spec ep.prog ep.facts s rq = true) ∧
+      actionLabelOk ep.spec ep.prog ep.facts s c = true
+
 /-- The older hospital's obligations, projected onto executions of the installed
 release. The interpreter remains the installed release's interpreter: upgrading
 does not run the old interpreter, discard new guards, or require old catalog
@@ -37,6 +53,7 @@ def OldObligations (old : Spec) (ep : Episode) : Prop :=
   (Always ep fun s => ∀ al ∈ old.alerts, al.tier = .passive →
     (ep.prog.screen? s.screen).any al.targetsScreen = true →
     alertHolds ep.spec ep.facts s al.id = true → AlertShownInline ep s al.id) ∧
-  AlertsOnlyWhenTrue ep ∧ InterruptsOnce ep ∧ PassiveNeverPopsUp ep
+  AlertsOnlyWhenTrue ep ∧ InterruptsOnce ep ∧ PassiveNeverPopsUp ep ∧
+  OldCommitContracts old ep
 
 end Ehr.Props

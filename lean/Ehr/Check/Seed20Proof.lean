@@ -1,14 +1,21 @@
+import Ehr.Check.PatchWitness
 import Ehr.Check.MissingWitness
 
+set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private theorem seed20ScreenBound : 22 < noAdministrationTime.screens.length := by decide +kernel
-private theorem seed20CompBound : 42 < (noAdministrationTime.screens[22]'seed20ScreenBound).components.length := by decide +kernel
-private def seed20Witness : Screen × Component := indexedComp noAdministrationTime 22 seed20ScreenBound 42 seed20CompBound
-private theorem seed20Member : seed20Witness ∈ allComps noAdministrationTime :=
-  indexedComp_mem noAdministrationTime 22 seed20ScreenBound 42 seed20CompBound
+private def seed20Screen : Screen := noAdministrationTime.screens[22]?.getD default
+private theorem seed20ScreenPresent : noAdministrationTime.screens[22]?.isSome = true := by decide +kernel
+private theorem seed20CompPresent : seed20Screen.components[25]?.isSome = true := by decide +kernel
+@[irreducible] private def seed20Witness : Screen × Component :=
+  (seed20Screen, seed20Screen.components[25]?.getD default)
+private theorem seed20Member : seed20Witness ∈ allComps noAdministrationTime := by
+  unfold seed20Witness
+  exact List.mem_flatMap.mpr ⟨seed20Screen,
+    getD_mem noAdministrationTime.screens 22 seed20ScreenPresent,
+    List.mem_map.mpr ⟨_, getD_mem seed20Screen.components 25 seed20CompPresent, rfl⟩⟩
 private theorem seed20Kind : seed20Witness.2.kind = .button (.commit "administerMed") := by decide +kernel
 private def seed20Commit := (specV1.commit? "administerMed").getD default
 private theorem seed20Lookup : specV1.commit? "administerMed" = some seed20Commit := by decide +kernel
