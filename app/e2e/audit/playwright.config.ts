@@ -24,7 +24,7 @@ export default defineConfig({
   },
   webServer: {
     cwd: resolve(import.meta.dirname, "../.."),
-    command: `__VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=vgi-audit.example.ts.net pnpm exec vite preview --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `TAILSCALE_SERVE=0 __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS=vgi-audit.example.ts.net pnpm exec vite preview --host 127.0.0.1 --port ${port} --strictPort`,
     url: `http://127.0.0.1:${port}`,
     reuseExistingServer: false,
   },
