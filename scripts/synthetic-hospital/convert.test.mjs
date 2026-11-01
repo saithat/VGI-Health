@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { convertPatient, diagnosisLookup, personaFits, readFormulary, selectCohort, SOURCE_TAG, SYSTEM } from './convert.mjs';
-import { root, sha256 } from './fetch.mjs';
+import { root, sha256, verifyCache } from './fetch.mjs';
 
 const profile = { sex: 'F', age_at_first_encounter: 40, allergies: ['Penicillin (rash)'],
   chronic_conditions: ['Hypertension', 'Unknown condition'], surgical_history: ['Appendectomy', 'None'],
@@ -16,6 +17,13 @@ const options = { referenceDate: '2026-10-31', formulary: { metformin: '6809' },
   lookup: diagnosisLookup({ diagnoses: [{ display_name: 'Hypertension', icd10_code: 'I10' }], patients: {} }) };
 const resources = (bundle, type) => bundle.entry.map((e) => e.resource).filter((r) => r.resourceType === type);
 
+test('cache verification fails closed on modified upstream data', async () => {
+  const directory = await mkdtemp(resolve(tmpdir(), 'vgi-sh-checksum-'));
+  try {
+    await writeFile(resolve(directory, 'patient_profiles.jsonl'), 'changed data');
+    await assert.rejects(verifyCache(directory), /Checksum mismatch/);
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
 test('deterministic R4 transaction, conditional patient identifier, provenance, and resolvable references', () => {
   const { bundle } = convertPatient(row, options);
   assert.deepEqual(convertPatient(row, options).bundle, bundle);
@@ -64,6 +72,15 @@ test('exact DB codes only, deduplicated diagnoses, missing codes explained', () 
   assert.equal(lookup(123, 'A extra'), undefined);
   assert.equal(lookup(123, 'B'), undefined);
 });
+test('punctuation in clinical names never becomes conditional-search operators', () => {
+  const p = { ...profile, chronic_conditions: ['A', 'A, B', 'A | B', 'A\\B'] };
+  const { bundle } = convertPatient({ ...row, profile: JSON.stringify(p), primary_diagnoses: '[]', comorbidities: '[]' }, options);
+  const entries = bundle.entry.filter((e) => e.resource.resourceType === 'Condition');
+  const keys = entries.map((e) => new URLSearchParams(e.request.ifNoneExist).get('identifier'));
+  assert.equal(new Set(keys).size, 4);
+  for (const key of keys) assert.match(key, /^urn:vgi:synthetic-hospital\|123:condition:[a-f0-9-]+$/);
+  assert.equal(entries[1].resource.code.text, 'A, B');
+});
 test('maps only exact formulary drugs; retains sig and text of unsupported drugs', () => {
   const meds = resources(convertPatient(row, options).bundle, 'MedicationStatement');
   assert.equal(meds[0].medicationCodeableConcept.coding[0].code, '6809');
@@ -77,7 +94,7 @@ test('preserves allergy, family and social statements; does not invent surgery f
   assert.equal(resources(bundle, 'FamilyMemberHistory')[0].condition[0].code.text, profile.family_history[0]);
   assert.equal(resources(bundle, 'Procedure').length, 1);
   assert.equal(resources(bundle, 'Observation').find((r) => r.code.coding?.[0]?.code === '72166-2').valueString, 'Never smoker');
-  assert.equal(resources(bundle, 'Observation').find((r) => r.code.coding?.[0]?.code === '74013-4').valueString, 'None');
+  assert.equal(resources(bundle, 'Observation').find((r) => r.code.coding?.[0]?.code === '11331-6').valueString, 'None');
 });
 test('selection is independent of source row order and validates size and identity', () => {
   const rows = Array.from({ length: 20 }, (_, i) => ({ ...row, patient_id: i, age: i % 2 ? 12 : 40 }));
@@ -93,6 +110,7 @@ test('committed cohort integrity, persona coverage and FHIR note/resource counts
   const formulary = readFormulary(await readFile(resolve(root, 'lean/Ehr/Formulary.lean'), 'utf8'));
   assert.equal(Object.keys(formulary).length, 25);
   assert.equal(index.patientCount, 150);
+  assert.deepEqual((await readdir(resolve(root, 'fixtures/synthetic-hospital'))).filter((f) => /^\d+\.json$/.test(f)).sort(), index.patients.map((p) => p.file).sort());
   assert.equal(index.sourcePediatricPatients, 248);
   assert.deepEqual(index.selectedForCounts, { P1: 30, P2: 30, P3: 30, P4: 30, P5: 30 });
   assert.ok(index.patients.reduce((n, p) => n + p.bytes, 0) < 10 * 1024 * 1024);
@@ -104,6 +122,7 @@ test('committed cohort integrity, persona coverage and FHIR note/resource counts
     for (const e of bundle.entry) counts[e.resource.resourceType] = (counts[e.resource.resourceType] ?? 0) + 1;
     assert.equal(resources(bundle, 'DocumentReference').length, patient.encounters);
     assert.equal(resources(bundle, 'Patient')[0].id, patient.id);
+    for (const encounter of resources(bundle, 'Encounter')) assert.ok(encounter.period.start >= patient.birthDate);
   }
   assert.deepEqual(counts, index.resourceCounts);
 });

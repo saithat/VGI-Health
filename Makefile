@@ -6,6 +6,7 @@ APP_PORT ?= 5173
 LIVE_WORLD ?= runs/world/live
 LIVE_DAYS ?= 10
 LIVE_ARGS ?=
+SYNTHETIC_HOSPITAL ?= 0
 SEED_ARGS ?=
 
 # Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
@@ -66,6 +67,21 @@ load:
 # Materialize a living-world day as real Medplum worklists (defaults to world 1, day 1).
 seed:
 	node infra/scripts/seed-world.mjs $(SEED_ARGS)
+ifeq ($(SYNTHETIC_HOSPITAL),1)
+	$(MAKE) load-synthetic-hospital
+endif
+
+# Opt-in historical charts, independent of simulation worlds; committed default cohort = 150.
+.PHONY: load-synthetic-hospital synthetic-hospital test-synthetic-hospital
+load-synthetic-hospital:
+	node infra/scripts/load-synthetic-hospital.mjs
+
+synthetic-hospital:
+	node scripts/synthetic-hospital/fetch.mjs
+	node scripts/synthetic-hospital/convert.mjs
+
+test-synthetic-hospital:
+	node --test scripts/synthetic-hospital/*.test.mjs
 
 # Regenerate the raw Synthea population (needs Java 17+, ~200 MB download, ~3 min) and re-trim it
 # into the committed fixtures/synthea/. Not part of install.

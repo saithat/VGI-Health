@@ -11,7 +11,7 @@
     "license": "MIT code; released data fully synthetic and redistributable"
   },
   "referenceDate": "2026-10-31",
-  "selection": "cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; primary selections disjoint, fits overlap",
+  "selection": "cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; exclude timelines before approximate DOB; primary selections disjoint, fits overlap",
   "sourcePatients": 1268,
   "sourcePediatricPatients": 248,
   "dbInspection": {
@@ -36,12 +36,12 @@
   "patientCount": 150,
   "resourceCounts": {
     "Patient": 150,
-    "Encounter": 638,
-    "DocumentReference": 638,
-    "Condition": 1069,
-    "AllergyIntolerance": 169,
-    "MedicationStatement": 385,
-    "Procedure": 147,
+    "Encounter": 637,
+    "DocumentReference": 637,
+    "Condition": 1074,
+    "AllergyIntolerance": 170,
+    "MedicationStatement": 383,
+    "Procedure": 151,
     "FamilyMemberHistory": 431,
     "Observation": 450,
     "Coverage": 150,
@@ -55,11 +55,11 @@
     "P5": 30
   },
   "personaFitCounts": {
-    "P1": 90,
+    "P1": 95,
     "P2": 120,
-    "P3": 50,
-    "P4": 41,
-    "P5": 88
+    "P3": 51,
+    "P4": 34,
+    "P5": 90
   },
   "patients": [
     {
@@ -91,10 +91,10 @@
       "encounters": 3,
       "codedConditions": 4,
       "textOnlyConditions": 2,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1675.json",
-      "bytes": 37693,
-      "sha256": "79aa81f003c7c2f78ceb13299be4f79029cfd464d95f1d38e8586c366a550def"
+      "bytes": 37718,
+      "sha256": "4be93b5905d1dc90a1f3b1171521bba95328513c0fd814f6e09354fedf4662cf"
     },
     {
       "id": "sh-b0b0781c-d27a-5683-a64d-831e6e212985",
@@ -125,10 +125,10 @@
       "encounters": 8,
       "codedConditions": 8,
       "textOnlyConditions": 0,
-      "selectedFor": "P3",
+      "selectedFor": "P1",
       "file": "1683.json",
-      "bytes": 59528,
-      "sha256": "ecc89dabeadd5e74aa63eb88a50e8dc59f460d31b67ead70ba374fa09ce08c4d"
+      "bytes": 59655,
+      "sha256": "329c68a75dc90584ff5d86d2d8aafdad209d8a0f63f147bb3207aa05d5225984"
     },
     {
       "id": "sh-583b081a-dfbb-53ef-ab6e-c40eaa8d2852",
@@ -161,8 +161,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P3",
       "file": "1689.json",
-      "bytes": 76566,
-      "sha256": "a6800add3f2c3d501bf5cde46b181dbbbb89cd93d652902dc4c5965ebefb0dc4"
+      "bytes": 76647,
+      "sha256": "c0df6610c277514555dabd03c8f2bf149e817c8f5de8b2205519574645ebb68a"
     },
     {
       "id": "sh-efeba4c5-43af-56c1-a5cc-cbb57561440d",
@@ -195,8 +195,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P2",
       "file": "1694.json",
-      "bytes": 31009,
-      "sha256": "f00267a26154427d42f976875be18370d19c6b440dacae3b31ec0bfa9bbe40aa"
+      "bytes": 31140,
+      "sha256": "31f323da1dab736c8b27f3934434a9d33b7a98afbaf728c347791d3f845ad3ff"
     },
     {
       "id": "sh-a03ee29e-e333-5e10-a6e8-2f0a8a03bc40",
@@ -227,10 +227,10 @@
       "encounters": 8,
       "codedConditions": 11,
       "textOnlyConditions": 1,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "1702.json",
-      "bytes": 73487,
-      "sha256": "15ce021e5edccc548fef64a5e0a99afde7d0aa07435b7e5aca6ed9ccadd6bba8"
+      "bytes": 73870,
+      "sha256": "fe059d215514bca462082878a1dcda842cb6efc46a09cbf7a463f810783619d1"
     },
     {
       "id": "sh-d364ed46-7157-54ed-a6be-6fcf4e4e0f96",
@@ -261,10 +261,10 @@
       "encounters": 8,
       "codedConditions": 14,
       "textOnlyConditions": 2,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1703.json",
-      "bytes": 76674,
-      "sha256": "ce14f2bebe99d082db2fc27ac2d12d8343dbb2a4df2efa7fc723e61d7d4162c4"
+      "bytes": 76777,
+      "sha256": "4025f359c5211fadf7cbf0c37c663e8348dae6983e7588897745b470357729a1"
     },
     {
       "id": "sh-eb853297-3c56-5e42-a686-ac1dab5cc1e5",
@@ -297,8 +297,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P3",
       "file": "1723.json",
-      "bytes": 35650,
-      "sha256": "44b09a94cbfb1d142a40023b79d0786a9dc392617e0b066b752bfc9828ec80b8"
+      "bytes": 35723,
+      "sha256": "f9fbfe1cbd978fa26db7e23e6af6f797325e26211ddf95d9fd3efd202d5baa2c"
     },
     {
       "id": "sh-db5ed5e4-b8bf-5e36-a154-17e5200dd279",
@@ -331,8 +331,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P5",
       "file": "1725.json",
-      "bytes": 74233,
-      "sha256": "6899bce5488fd7afce39b9c2388d959dc8585d2b089897da24a757cace76864f"
+      "bytes": 74428,
+      "sha256": "6b9238b768001d23aa5b66149a728c36b533eea5cbc953d26b2ef11ad2f89fec"
     },
     {
       "id": "sh-1faeea32-3215-5fc9-a7d9-da8b2a622275",
@@ -365,8 +365,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P1",
       "file": "1753.json",
-      "bytes": 55950,
-      "sha256": "58798a1015fcf83eb6c1296efef9284083e88fe07bc9ba53f8da1be11b57607d"
+      "bytes": 56067,
+      "sha256": "40bd9c50e61605a0d496c898e929dd57f58ccf8165a3364797ca6401eba2d663"
     },
     {
       "id": "sh-752dec66-7904-5e4c-a8e7-71c32bdbf697",
@@ -397,10 +397,10 @@
       "encounters": 7,
       "codedConditions": 6,
       "textOnlyConditions": 1,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1755.json",
-      "bytes": 48334,
-      "sha256": "f8a0f47b4cc7c26a49dd4158002dcab6022c634a8f3ed5c2adc03b88a87ce4bd"
+      "bytes": 48393,
+      "sha256": "f92e0c08bc2ae01c40004ff600115a3f48b22e1a9e5f3a2161e47569dd6dd4b2"
     },
     {
       "id": "sh-594f7cde-66ad-5ba6-a205-9ae0972bf094",
@@ -433,8 +433,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P1",
       "file": "1759.json",
-      "bytes": 40313,
-      "sha256": "022edabb8567b08c0f88ffa6eb5678582d10dbd805712662ccb7f3d497faaf97"
+      "bytes": 40520,
+      "sha256": "cb10bd6935a6b8824b8d32cc191291a59723ffac705b1f50ede6cff244c0663c"
     },
     {
       "id": "sh-52481547-8d5a-5693-a0a8-b7329f4db49c",
@@ -467,8 +467,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P3",
       "file": "1762.json",
-      "bytes": 70687,
-      "sha256": "8260689c66bb7eabfdb6eaced01c98eed9cdca4b215246ade26d688b14f895c4"
+      "bytes": 70636,
+      "sha256": "24b06b97d56cd225b93e04d1999ff3a610361b00c18d1b49874ad68c8ddd3c52"
     },
     {
       "id": "sh-5a26e0a7-cc7d-5e46-abb5-4b94e84d9ee0",
@@ -499,10 +499,10 @@
       "encounters": 8,
       "codedConditions": 8,
       "textOnlyConditions": 3,
-      "selectedFor": "P2",
+      "selectedFor": "P1",
       "file": "1765.json",
-      "bytes": 62837,
-      "sha256": "30a04ad655238f8912b56fd315bb4820403223e84c0b7b197660136da92f98a9"
+      "bytes": 63080,
+      "sha256": "ed06b884f6d95c53bfc664e3e608cc897e1a188b5b147ab50541e5bce07ccd7b"
     },
     {
       "id": "sh-03f7c808-5627-57a7-afd0-06fdee698946",
@@ -535,8 +535,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P1",
       "file": "1772.json",
-      "bytes": 62269,
-      "sha256": "afdf855a3e74c5f920575ec5a9f2e021fcc4184b14f2d110313bb2bb21402980"
+      "bytes": 62394,
+      "sha256": "d3cdb4154c41283be3a666c5f30424bb8783a6236b6e88f6a1c218e4bb6981bf"
     },
     {
       "id": "sh-fee9b5af-2db4-5d76-abf9-ee6ad9ff283b",
@@ -569,8 +569,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P3",
       "file": "1790.json",
-      "bytes": 74786,
-      "sha256": "2029010a00d711301f1bdaa6494dc92ef76915fcb7519c1f60af0dd47519dea1"
+      "bytes": 74595,
+      "sha256": "f9b448fb5edbe98613c131c81f9c5cf74d7d576feeb98a19c4c298296dc59bd1"
     },
     {
       "id": "sh-9c555c19-59c9-5397-a0d4-4bac7926853b",
@@ -601,10 +601,10 @@
       "encounters": 3,
       "codedConditions": 4,
       "textOnlyConditions": 3,
-      "selectedFor": "P5",
+      "selectedFor": "P2",
       "file": "1794.json",
-      "bytes": 38130,
-      "sha256": "c1fa639bd6d12569e56f4c83c5e1b1f24426d0b793b8ab7b152204b23c12e394"
+      "bytes": 38373,
+      "sha256": "43c872a7709c11a1526997ce248bdaef82832aa4b629267b5b2fab43d190f04e"
     },
     {
       "id": "sh-f95e7277-0156-5fa5-a81f-f508876f3748",
@@ -637,8 +637,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P1",
       "file": "1811.json",
-      "bytes": 27248,
-      "sha256": "f873d16343430b5b9736f1c7a11b7e012f4735966f2621201de9e88c12689ec1"
+      "bytes": 27263,
+      "sha256": "4dd89d45204f4a6720a02e836073899dfbe8a16c06cececf33b20c69ee80e175"
     },
     {
       "id": "sh-b33b0b3d-21d3-55f2-a0f2-5f416864adf8",
@@ -671,8 +671,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P1",
       "file": "1814.json",
-      "bytes": 27907,
-      "sha256": "46c984969d046907c428c5925de5f2c8d05c7dc39f8eae07e4c17f6cb3491ae0"
+      "bytes": 28060,
+      "sha256": "74aafef2175f4c9f51d92544d8d90c709d925a9b487ef1c6aa818d0ad53489ea"
     },
     {
       "id": "sh-290766ef-8654-5711-ae2d-d35c1dee0d30",
@@ -705,8 +705,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P3",
       "file": "1820.json",
-      "bytes": 44281,
-      "sha256": "f44bdf1c7c0e01b8daa9a59f4f2d1cda46c73a98bd6a7950881c1779d0be99f7"
+      "bytes": 44226,
+      "sha256": "d50c27b5673bf3293bf10908b87e04df863289d5a4bd72a64028d609a3b2902f"
     },
     {
       "id": "sh-c51f93af-c15c-5080-a108-efb60c54e21a",
@@ -737,10 +737,10 @@
       "encounters": 3,
       "codedConditions": 3,
       "textOnlyConditions": 4,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1825.json",
-      "bytes": 32868,
-      "sha256": "592cecf0c3ca3010f6df99018cd4594fd4de43cf7458465e4cbd6db4c55e30e7"
+      "bytes": 33035,
+      "sha256": "5a2f3645a082e8cc28e6c813c0064755f5b8ca795a7c6a77204bd3052ff7bd86"
     },
     {
       "id": "sh-a7bbb1ec-f489-5528-a6f3-179e8c3c73f8",
@@ -771,10 +771,10 @@
       "encounters": 4,
       "codedConditions": 3,
       "textOnlyConditions": 1,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1830.json",
-      "bytes": 36345,
-      "sha256": "ef182a7255b995c7739828ba03b24b90dbe1382d860aa04d0038b7b458c5b82a"
+      "bytes": 36432,
+      "sha256": "ebfcdc96413d44637d3999d7a267ac6b8f6e9f66f5429145ff803bd6bcc13a23"
     },
     {
       "id": "sh-a10c82dd-32ba-5052-a62e-4b4a576677fa",
@@ -807,8 +807,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P1",
       "file": "1843.json",
-      "bytes": 37439,
-      "sha256": "045015ef52dc2fb865bfe23cc49b9e1e679dc8fe232d9e4829dfa3d27e3fc0c1"
+      "bytes": 37520,
+      "sha256": "080c254461411441e4c244b8f0c76ff411de297703dac94c24c0a344970fdaa6"
     },
     {
       "id": "sh-8737701a-0406-5a2d-a78b-16f1c3891e93",
@@ -839,10 +839,10 @@
       "encounters": 4,
       "codedConditions": 6,
       "textOnlyConditions": 3,
-      "selectedFor": "P3",
+      "selectedFor": "P5",
       "file": "1857.json",
-      "bytes": 44984,
-      "sha256": "2b5f7ee61946e0c009ce65e460f549303f10a84f2a48e5834ab59a85490540fe"
+      "bytes": 45013,
+      "sha256": "561568b0c0a9c07ba8bdfffb3ef7c0cbaaecc2a8b4fea0e6e38acc21dd3c8353"
     },
     {
       "id": "sh-fae2fa73-cf9b-56fe-a8dd-102cee106669",
@@ -875,8 +875,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P3",
       "file": "1867.json",
-      "bytes": 32402,
-      "sha256": "8abef46486cce98af15191a278c29d0079b3b2bff4b0993e69afcee17472dd47"
+      "bytes": 32471,
+      "sha256": "68fe10def1d54d651dfd823b1cff45e321ec584bab2f1acd788b43f738986e24"
     },
     {
       "id": "sh-e701e21d-17a1-5da7-a1bc-04d970ba319f",
@@ -907,10 +907,10 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 0,
-      "selectedFor": "P3",
+      "selectedFor": "P1",
       "file": "1877.json",
-      "bytes": 22791,
-      "sha256": "623a9a901aff24f429b82af659dc6d6dedbdeec2bb7eb008ce39fff9c29b60a8"
+      "bytes": 22716,
+      "sha256": "23f15f902a54e095233d03868ea463f1b9b57002a5a79a6e10dd892d66847c0e"
     },
     {
       "id": "sh-91d66688-03c2-5a74-a388-f2706bb2bf7c",
@@ -941,10 +941,10 @@
       "encounters": 3,
       "codedConditions": 2,
       "textOnlyConditions": 2,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1883.json",
-      "bytes": 34009,
-      "sha256": "076a4a044ccc5ceb824a78ffb3b9049ff4d41d2a3cbd056aca781e7cb35eb318"
+      "bytes": 34030,
+      "sha256": "a9a83d30334629234e35a49e28d6af22cd48764cc488f62d638b675a292d6c7e"
     },
     {
       "id": "sh-86aed8e6-e061-58b3-a843-f27f185b228c",
@@ -975,10 +975,10 @@
       "encounters": 4,
       "codedConditions": 5,
       "textOnlyConditions": 3,
-      "selectedFor": "P1",
+      "selectedFor": "P3",
       "file": "1885.json",
-      "bytes": 39700,
-      "sha256": "874e4fa4f2057f082e928d4c5eecc497404929f6afc8729d8fef020396fbcb87"
+      "bytes": 39809,
+      "sha256": "37cdff0c5ab6628e3c83d2f8dadbf140d1a0ed60ed89956547ce7fb923f3c0a2"
     },
     {
       "id": "sh-bc56ccf4-0e17-55be-aa49-30f3e1f4c992",
@@ -1009,10 +1009,10 @@
       "encounters": 6,
       "codedConditions": 4,
       "textOnlyConditions": 2,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "1893.json",
-      "bytes": 47717,
-      "sha256": "67e44a75ba347a40624e3984337710dbff7e4a3ac5c40969c85fd2b7565b0c80"
+      "bytes": 47770,
+      "sha256": "6c6eadad6779569f106d722157ca15cca41956794b03c5bc592a4b687baefd7c"
     },
     {
       "id": "sh-8a62e0fe-2b3c-5988-a155-60d78668bd61",
@@ -1043,10 +1043,10 @@
       "encounters": 3,
       "codedConditions": 4,
       "textOnlyConditions": 1,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "1899.json",
-      "bytes": 29390,
-      "sha256": "c13aa7b0cf6162347d981c452610af898205add208bad1fe04b96d8de74f5c19"
+      "bytes": 29539,
+      "sha256": "733a66a3a7dda74b82e4d9c4485fe4ab4b6958b7d9d9be38b6709862d832919c"
     },
     {
       "id": "sh-e2422608-3ce8-5a6d-a39a-eb9b06d35f02",
@@ -1077,10 +1077,10 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 0,
-      "selectedFor": "P1",
+      "selectedFor": "P5",
       "file": "1902.json",
-      "bytes": 24954,
-      "sha256": "87710b61967c31ae4e16422429767d7c274bcaaddacc75767a0d2c5f0730e5dc"
+      "bytes": 24981,
+      "sha256": "b32c7a68a4d52d49a43a6ffee925b37ac135129212a610749715fcbcfab855e0"
     },
     {
       "id": "sh-2b352e2b-a68d-5102-a13c-04e4277039ff",
@@ -1113,8 +1113,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P5",
       "file": "1906.json",
-      "bytes": 20280,
-      "sha256": "f64ef26ae3996a47b6bb8a465b58e17c7ac5f4776456b5320ec007a350d5adcf"
+      "bytes": 20339,
+      "sha256": "e19c78915aba2d29d62b73c06978db030389119e3e00dfa2fa484048768f88c9"
     },
     {
       "id": "sh-7e08eaa7-404d-5c8b-a72f-2afb6f112adf",
@@ -1145,10 +1145,44 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 2,
-      "selectedFor": "P1",
+      "selectedFor": "P5",
       "file": "1927.json",
-      "bytes": 29612,
-      "sha256": "42d97ff0d3c688b61364d12b78c175d617573d496ccce3ca0df6c0697542f79b"
+      "bytes": 29565,
+      "sha256": "1ba965ed911d4cffeceb454cff280875958f365a24e2346d024bc5889f22ac99"
+    },
+    {
+      "id": "sh-6720e4cc-88d0-523d-adb5-8d947fb42c26",
+      "sourceId": 1958,
+      "identifier": "urn:vgi:synthetic-hospital|1958",
+      "name": "Quinn Torres",
+      "birthDate": "1999-10-31",
+      "mrn": "SH00001958",
+      "age": 27,
+      "sex": "F",
+      "encounterClass": "AMB",
+      "flags": {
+        "pediatric": false,
+        "surgical": false,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": true,
+        "P2": false,
+        "P3": false,
+        "P4": false,
+        "P5": false
+      },
+      "shiftDays": 1944,
+      "sourceNewestDate": "2021-01-15",
+      "newestDate": "2026-05-13",
+      "encounters": 2,
+      "codedConditions": 1,
+      "textOnlyConditions": 0,
+      "selectedFor": "P1",
+      "file": "1958.json",
+      "bytes": 18947,
+      "sha256": "2f811a232c0f01ffe588a0fe9e054a679a7a143ddf9051a01019be388f68cf26"
     },
     {
       "id": "sh-ec86eaca-18fc-5736-a11b-5f568d55dfa8",
@@ -1179,10 +1213,10 @@
       "encounters": 2,
       "codedConditions": 1,
       "textOnlyConditions": 0,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "1962.json",
-      "bytes": 20295,
-      "sha256": "40557457fe981940ac86d4c228b714e0c10c52aae426d7a80d9339a8dcf51c2f"
+      "bytes": 20344,
+      "sha256": "b351106203a8325c10112edc0b8afd258f07424cc448666b53401b241144802c"
     },
     {
       "id": "sh-d91425f7-e6b9-514d-aa21-8ff2c82d8888",
@@ -1215,8 +1249,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P1",
       "file": "1965.json",
-      "bytes": 21577,
-      "sha256": "15bdab97a83a26cde70687a03141f624dc6abd19638dfe78c0ee14b0d31f89bc"
+      "bytes": 21548,
+      "sha256": "44c35479b4a7b6467095fb9c24864dd3bc3f92eef9cde9cca87d085c1a04f685"
     },
     {
       "id": "sh-00b1349d-893f-584b-aa4f-f39fe9a83a75",
@@ -1249,8 +1283,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P3",
       "file": "1972.json",
-      "bytes": 35241,
-      "sha256": "c88f451658e06778586d4983f09b89ec899eafa186747cc1677a0da28d7a0e5e"
+      "bytes": 35324,
+      "sha256": "7e00ca26c8145fbcf50dc7f44fe20f941bd15c818822b1c84f0d547c53a49ebd"
     },
     {
       "id": "sh-99a80ad8-f912-5675-a84e-0f5a5978daf1",
@@ -1283,8 +1317,42 @@
       "textOnlyConditions": 5,
       "selectedFor": "P3",
       "file": "1974.json",
-      "bytes": 78273,
-      "sha256": "3098de402b17a3fce996073bb8472a854383c5a9dd430ebb3c9c60bd962a8d87"
+      "bytes": 78448,
+      "sha256": "78a82c04759cb4c5bec65a89481e90e69abb3927afd3de28ec0f521186f8ff2a"
+    },
+    {
+      "id": "sh-a3efd7ae-09bf-5e1a-ae6f-f7ccc1723271",
+      "sourceId": 1984,
+      "identifier": "urn:vgi:synthetic-hospital|1984",
+      "name": "Sage Bennett",
+      "birthDate": "1979-10-31",
+      "mrn": "SH00001984",
+      "age": 47,
+      "sex": "M",
+      "encounterClass": "AMB",
+      "flags": {
+        "pediatric": false,
+        "surgical": true,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": true,
+        "P2": true,
+        "P3": false,
+        "P4": false,
+        "P5": true
+      },
+      "shiftDays": 640,
+      "sourceNewestDate": "2025-01-15",
+      "newestDate": "2026-10-17",
+      "encounters": 8,
+      "codedConditions": 12,
+      "textOnlyConditions": 2,
+      "selectedFor": "P5",
+      "file": "1984.json",
+      "bytes": 73887,
+      "sha256": "de2b1c664f2dc177084285d077f7bd0297ebbc70bbb5f9b9d8e4909ebba8083e"
     },
     {
       "id": "sh-8fad1b55-d151-50bc-a3a7-e1e2b4ec7c38",
@@ -1317,8 +1385,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P3",
       "file": "1997.json",
-      "bytes": 48012,
-      "sha256": "50c638f5e9e016adbbfcdbf7e5b7c5f4eff6d20e1cdbbb1eeb5945c4d027856c"
+      "bytes": 48231,
+      "sha256": "f060743a2c42b910bd1ae64dc578b4f6056cd970a6f234f26d7095f6b2d785ea"
     },
     {
       "id": "sh-cb500471-5759-5d01-a8ce-53416fd41df9",
@@ -1351,8 +1419,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P3",
       "file": "2007.json",
-      "bytes": 37917,
-      "sha256": "5e4bb6c2ec6b65d947e3a71afa33023d6ccf83f8bc83ebb7d38c5438cf89bb80"
+      "bytes": 38066,
+      "sha256": "e5a4591fe7a6ba151bbf898e052635e9aa230fe46666d0455ccb5ead110ce4fd"
     },
     {
       "id": "sh-295c54c0-d4ad-5415-a27f-d36234054bef",
@@ -1385,8 +1453,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P1",
       "file": "2008.json",
-      "bytes": 68787,
-      "sha256": "1e7b738f61701afde0c110b5184b76cf4061046166231690867098dc03f8bf50"
+      "bytes": 69038,
+      "sha256": "cf4cccf93befb20499941ee56d3293e56e2fbabc0b1e6d7001432897be49ddad"
     },
     {
       "id": "sh-395b8960-72f7-529a-a30d-f4f79644f439",
@@ -1419,8 +1487,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P1",
       "file": "2021.json",
-      "bytes": 68546,
-      "sha256": "c403ce006f331f1190efa1c03b9c8929441dbb47f7feb998ff90e9c2ea1c701b"
+      "bytes": 68817,
+      "sha256": "5edba28e7c3ae4171f90603e96b11e580598e9cc1a78c4ea6deadb9bb25378cf"
     },
     {
       "id": "sh-b8a5a9da-1b1c-5a8f-aa3d-2d5908b765e8",
@@ -1451,10 +1519,10 @@
       "encounters": 3,
       "codedConditions": 5,
       "textOnlyConditions": 3,
-      "selectedFor": "P2",
+      "selectedFor": "P3",
       "file": "2032.json",
-      "bytes": 36836,
-      "sha256": "8776e8b95050b29af879e21b84cd07af00adede666a3e20cd8657d05d9f39913"
+      "bytes": 37185,
+      "sha256": "325c948a5ba02ecca093dc72e8e7b03b21fdb471082361f0549f6d3edb5ab2af"
     },
     {
       "id": "sh-d46e58c2-a083-540c-ac5e-923ffd08d14c",
@@ -1487,8 +1555,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P5",
       "file": "2033.json",
-      "bytes": 70326,
-      "sha256": "ef535d0b9fc7855e13f2551a63a76dddc1426b5cc611ef2d9c313cf7dc21b8d7"
+      "bytes": 70495,
+      "sha256": "80e95fd57d3ed571cb0e139663a34ac45100a8184e840a459135111fb65eb370"
     },
     {
       "id": "sh-4f9648b8-9cbb-5f02-ae87-de1b317cfc0d",
@@ -1519,10 +1587,10 @@
       "encounters": 8,
       "codedConditions": 12,
       "textOnlyConditions": 5,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2034.json",
-      "bytes": 82822,
-      "sha256": "9b9116d5d826d2f9be087541d584389e42163a9b279ae2cf01a453efa6ec6c56"
+      "bytes": 82939,
+      "sha256": "079574f9bcab30c00e6814299e17312410fc49b26260d120f010324eaede542d"
     },
     {
       "id": "sh-243584ae-e2f5-5c75-a8f9-2e6dfd8c9a4a",
@@ -1555,8 +1623,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P3",
       "file": "2044.json",
-      "bytes": 42286,
-      "sha256": "cd9501f2b00a1185241350797fe53a130252b59dd2e604658cc7b94b56d5bed1"
+      "bytes": 42377,
+      "sha256": "36340af51fb8544c39ccc9b61a37099b0d1b34a993a245e8d0695723420d6ac3"
     },
     {
       "id": "sh-bfd6003e-58d2-5d30-afc7-640bd541ac54",
@@ -1589,8 +1657,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P1",
       "file": "2052.json",
-      "bytes": 64179,
-      "sha256": "bc6398e916dbed353034bbf29f34f713ce10f701e0fa77379850262c6597a264"
+      "bytes": 64448,
+      "sha256": "8aa337442f9014b3fd1ce0126f14e745022f6e91bc6df098f1b9d033614905b3"
     },
     {
       "id": "sh-4f3d71a7-a654-500a-a471-9b8dca0a7fdc",
@@ -1623,8 +1691,8 @@
       "textOnlyConditions": 6,
       "selectedFor": "P3",
       "file": "2053.json",
-      "bytes": 90451,
-      "sha256": "ea183655afa7bcc923c64b6a360a4e1cfdd200d966c864898bfe4499ea45deb2"
+      "bytes": 90546,
+      "sha256": "80688aa3c0f8d1391d8d0a835495f585f4202814600709ae575420c1e0e87096"
     },
     {
       "id": "sh-412b7553-b8ed-5094-af97-c85ea72b1d26",
@@ -1657,8 +1725,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P1",
       "file": "2054.json",
-      "bytes": 68848,
-      "sha256": "7492cf5eac3bb895a9820a1b8c0552c7bbf9a38bf15fbc75af4d32e53ee9dada"
+      "bytes": 69011,
+      "sha256": "c1e78c8be4286bea838a96c25712bb6e6e641b7651f58b7acfdea967668d4387"
     },
     {
       "id": "sh-f6382841-2c3e-5db1-ac9c-470be08105c2",
@@ -1691,8 +1759,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P2",
       "file": "2065.json",
-      "bytes": 33554,
-      "sha256": "3ba231b1c553d3df63311465608c5e1ef7b8d235d4500394394d5c0bd7cd377f"
+      "bytes": 33709,
+      "sha256": "eaa2800fcf0371ab69d9f20ab552cc135fdc313a6652e0db29b2f13d427cf234"
     },
     {
       "id": "sh-92aa7570-d323-5b2b-a964-4699f579cd7f",
@@ -1725,8 +1793,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P2",
       "file": "2075.json",
-      "bytes": 68699,
-      "sha256": "3aa7cc410d6e87ae38634663ea80ce158130db8e9d2dbaef8fb9c0d7f5061e0c"
+      "bytes": 68844,
+      "sha256": "69364a4905d34d534fa4fad9de21fcf33e9595a8cbb85a4c2b8ff1e48c85af8e"
     },
     {
       "id": "sh-c41ec525-526e-5bd9-a8a2-80c9911e1983",
@@ -1757,10 +1825,10 @@
       "encounters": 5,
       "codedConditions": 4,
       "textOnlyConditions": 2,
-      "selectedFor": "P2",
+      "selectedFor": "P1",
       "file": "2082.json",
-      "bytes": 43212,
-      "sha256": "eb51cb87396e9a08294ab60f15b3ef1de4a8cc2bb7cd24b79989263b83332321"
+      "bytes": 43125,
+      "sha256": "87ebc422f4908678d8128ada0350171d5c120c1089b390ab8660d0111a6dfd19"
     },
     {
       "id": "sh-b3217988-2d62-57d6-a15f-01c783c2f0fd",
@@ -1793,8 +1861,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P3",
       "file": "2087.json",
-      "bytes": 37642,
-      "sha256": "8a13543d8df8e47f5a6676232421ad140981114f28e3c835ec1c92fec3521056"
+      "bytes": 37505,
+      "sha256": "a12c7d44b81d38e02cbfd5ae0f4548a4ab8296dbeab12159e9b2742e5fab5894"
     },
     {
       "id": "sh-76df08cd-dfcb-56a6-a25f-5227c4317a2c",
@@ -1827,8 +1895,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P5",
       "file": "2095.json",
-      "bytes": 57190,
-      "sha256": "75c7086a6ab4da7c5059ef56ad6a5332f14410b29fbf42cba075aeeec753746e"
+      "bytes": 57317,
+      "sha256": "0896fd4a6c9f7eaf1e3cc9b06d26214feed6fa37555c80e597236ab8a567449c"
     },
     {
       "id": "sh-0773ccd7-6abb-5f42-af33-eee637ba48d1",
@@ -1859,10 +1927,10 @@
       "encounters": 8,
       "codedConditions": 5,
       "textOnlyConditions": 8,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "2110.json",
-      "bytes": 80557,
-      "sha256": "2a87af161ce3805720d8d279d210cb05d985b9290c48680c03fc28e4085f907c"
+      "bytes": 80492,
+      "sha256": "85f2faa3a0a9ba3f9891db57933ade1ec224669b492f6b7c14b07f63ec4fc48d"
     },
     {
       "id": "sh-1bbb8e98-3127-5a7d-a2df-73e2ac890b41",
@@ -1895,8 +1963,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P3",
       "file": "2113.json",
-      "bytes": 34291,
-      "sha256": "ab2fa75c1befef4dc05be904721b6c6e757fd203ab8feff20820d1f8d3f46d28"
+      "bytes": 34346,
+      "sha256": "a9a60d1cb70b280eab3fefb8d1d305741c5f5902dc7fb52525e7ae6937ac60e0"
     },
     {
       "id": "sh-289a9a16-ba12-5c37-a692-390a7238900a",
@@ -1929,8 +1997,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P2",
       "file": "2120.json",
-      "bytes": 27478,
-      "sha256": "1d3721cbe1d5986287e907cc89679ab63e8f617faaa6f0a1d92b9bb690d06eba"
+      "bytes": 27645,
+      "sha256": "9cb0d85abe01754dabefc593ffb43c4b5119083ec2841b6aac752eb8aab1cefa"
     },
     {
       "id": "sh-8d9488d1-493b-5215-a2cf-27a90013f780",
@@ -1961,10 +2029,10 @@
       "encounters": 2,
       "codedConditions": 2,
       "textOnlyConditions": 3,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "2138.json",
-      "bytes": 30957,
-      "sha256": "4e50407027524ecb317fc4a111810d0f1e051e537f11b95fef59265b36b19de7"
+      "bytes": 31002,
+      "sha256": "e404587263ef8ee0a293ac5f89f587d4174e4751940f286bb0ba95928dec8c3e"
     },
     {
       "id": "sh-1c8171af-01e6-5015-a640-2e1df203cb4c",
@@ -1997,8 +2065,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P5",
       "file": "2143.json",
-      "bytes": 24659,
-      "sha256": "b3c9c080128824e864b51c415676c7ebf058de45b56a434303b95a49ca74ee59"
+      "bytes": 24702,
+      "sha256": "acf1325a85c07586dc543ae194aa1dd3d8e0e357e76fc4917314cb41e08a50e9"
     },
     {
       "id": "sh-57277930-5f94-5a5c-ad56-6f7386872a7b",
@@ -2031,8 +2099,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P5",
       "file": "2154.json",
-      "bytes": 30375,
-      "sha256": "3d5b0e12f4c938ab392769bbca681301fc47bf0b58f6de5ed3a5a70ef4713193"
+      "bytes": 30502,
+      "sha256": "a6511d826f4e81f4e1ac2bf4a4a12489a46e171ec1feac01f662f82a11749d89"
     },
     {
       "id": "sh-eebdc416-a183-5193-a202-eacdf3429fbf",
@@ -2065,8 +2133,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P1",
       "file": "2164.json",
-      "bytes": 29559,
-      "sha256": "3e2e5927c57a86d0372c129d59dd841a99e5aa8dc17c183155ea8b50ec11f4d7"
+      "bytes": 29604,
+      "sha256": "150745e6020f9c778ca06687aa04ae0485d686fe4dd59813393e7532d568c7e9"
     },
     {
       "id": "sh-f01a69cd-cca9-5429-ac10-98fdf85d68b4",
@@ -2099,8 +2167,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P5",
       "file": "2171.json",
-      "bytes": 48518,
-      "sha256": "1d03c8a6e8ab9b2d8f6bbc855726939b14c172eca276f2a7556e60de49a6a159"
+      "bytes": 48317,
+      "sha256": "1655bf1d33bda0925e761265f506da06132573638f54e51400a9132326610842"
     },
     {
       "id": "sh-2262a27c-4640-54af-aff1-4bf101032997",
@@ -2131,10 +2199,44 @@
       "encounters": 2,
       "codedConditions": 1,
       "textOnlyConditions": 0,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "2181.json",
-      "bytes": 20763,
-      "sha256": "3620061118dcb7d22df27fb5af7c0136e3805c72b7b783f1a293447d26055ad8"
+      "bytes": 20820,
+      "sha256": "53bfa698ba7803564489f55b22210454f71391568c4e2353dd2e496141b12300"
+    },
+    {
+      "id": "sh-258ba842-d744-581c-a21d-55e54b67439d",
+      "sourceId": 2182,
+      "identifier": "urn:vgi:synthetic-hospital|2182",
+      "name": "Skyler Holloway",
+      "birthDate": "1990-10-31",
+      "mrn": "SH00002182",
+      "age": 36,
+      "sex": "M",
+      "encounterClass": "IMP",
+      "flags": {
+        "pediatric": false,
+        "surgical": true,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": false,
+        "P2": true,
+        "P3": true,
+        "P4": false,
+        "P5": true
+      },
+      "shiftDays": 1824,
+      "sourceNewestDate": "2021-07-15",
+      "newestDate": "2026-07-13",
+      "encounters": 2,
+      "codedConditions": 4,
+      "textOnlyConditions": 1,
+      "selectedFor": "P3",
+      "file": "2182.json",
+      "bytes": 29967,
+      "sha256": "4469df399b18040b31cfe2ba51ca58fc92bfdd90251a4fe94b78b4a5fd68fe7f"
     },
     {
       "id": "sh-658d875f-b05d-57b0-a82f-f9d1ecd63386",
@@ -2167,8 +2269,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P2",
       "file": "2203.json",
-      "bytes": 34051,
-      "sha256": "9f1d3bde17e5123f88c8783458b4b0665a0e1c8d5e717eb836bc2fdbdba08c22"
+      "bytes": 34236,
+      "sha256": "901ecf13fdd4306dd63f703e8b4b378a996d128e9d50b590c7f26bfa5fc6fbd5"
     },
     {
       "id": "sh-6849fb33-8fb1-5adf-a8d6-e6eab293170d",
@@ -2201,8 +2303,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P3",
       "file": "2206.json",
-      "bytes": 68209,
-      "sha256": "0b3eefb75723c9a199210c98b8a62f635b8639f2c5792067dd45222455c4ab80"
+      "bytes": 68418,
+      "sha256": "ad6eac7f4509d95070769e9d1ad6db5428400d07e82728d640802fe9583bb4a1"
     },
     {
       "id": "sh-0a67cfd1-1a6a-5650-a049-fad953a00fab",
@@ -2233,10 +2335,10 @@
       "encounters": 8,
       "codedConditions": 10,
       "textOnlyConditions": 6,
-      "selectedFor": "P2",
+      "selectedFor": "P3",
       "file": "2223.json",
-      "bytes": 80206,
-      "sha256": "1d1672007d5b082a15520a1c1a8c5a96cd9f42791220f178c4d84db3e754fd8b"
+      "bytes": 80447,
+      "sha256": "ddbfa012d528de93ab80e7f4e08f247649e3bf715aecd943cb3cf9f23a66b192"
     },
     {
       "id": "sh-fd63400a-6ed9-5a0e-a1de-07ad2041ce63",
@@ -2269,8 +2371,8 @@
       "textOnlyConditions": 6,
       "selectedFor": "P5",
       "file": "2229.json",
-      "bytes": 76612,
-      "sha256": "dcb79777820e113fd85760de8fda61ca2011778e56f3e2169f8fda6e1ef45a4f"
+      "bytes": 76745,
+      "sha256": "35c8a5f2ed2ee1fb6e802ba70894feb9dfec4ffbe01a0680ed52f35207e231ae"
     },
     {
       "id": "sh-59311b19-cd42-535b-a87e-c44021f63ca5",
@@ -2303,8 +2405,8 @@
       "textOnlyConditions": 6,
       "selectedFor": "P5",
       "file": "2232.json",
-      "bytes": 89751,
-      "sha256": "a6a6232f94db57d9faceb54e6c39400b2a76d35096059ce07f23b71e297ef9a5"
+      "bytes": 90208,
+      "sha256": "9bb903f88353eab01ca354bd8839795d8d0280e8e68e89d4d36ac41dd997afa3"
     },
     {
       "id": "sh-4d4df538-8363-5307-a137-7d6cd7b4ef64",
@@ -2337,8 +2439,8 @@
       "textOnlyConditions": 8,
       "selectedFor": "P5",
       "file": "2236.json",
-      "bytes": 84254,
-      "sha256": "1d38beb04552b90728b1538d143d02ba9877050a996b2587ac41fea8816aa08f"
+      "bytes": 84181,
+      "sha256": "c66d80b57943ae6e1e5c45375a1742ae25372aa6ed1cd0b761fbdbcb75cf871e"
     },
     {
       "id": "sh-953a3741-9c78-568d-a8b7-195d292d801f",
@@ -2369,10 +2471,10 @@
       "encounters": 3,
       "codedConditions": 3,
       "textOnlyConditions": 2,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2244.json",
-      "bytes": 32105,
-      "sha256": "4f53c22a4750df7ec9584ae4cf7c3669c031407b746c73f51640de5214436397"
+      "bytes": 32304,
+      "sha256": "041a0a6a727582c82035d05e63f3b717469fa5899249f89385abfee76f3d119c"
     },
     {
       "id": "sh-023e0bf9-37f6-57a9-a226-5dd942f8a920",
@@ -2405,8 +2507,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P3",
       "file": "2251.json",
-      "bytes": 38798,
-      "sha256": "bc79c28de5fd4c76b720c6f0f346543d5e16a45e76b5b65f9657694beba07336"
+      "bytes": 38933,
+      "sha256": "60172814c0dc81440877c0767e7d50489e579c2e06a85f45f9282b344f0cd1cb"
     },
     {
       "id": "sh-2ea3ec52-e75a-54fd-a58c-a93a492d79e5",
@@ -2437,10 +2539,10 @@
       "encounters": 5,
       "codedConditions": 7,
       "textOnlyConditions": 4,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "2271.json",
-      "bytes": 54743,
-      "sha256": "8260fbff92092040ef708b59eae438a644e3d29d0cc0aba4851a630dceba42dd"
+      "bytes": 54928,
+      "sha256": "d50ed5838d409f5d2f27bb30b26331a4590046eedff4d06332043c1b09ac9068"
     },
     {
       "id": "sh-9c0ae64b-b7d6-5d7b-a3d5-a7565c6e9359",
@@ -2473,8 +2575,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P5",
       "file": "2277.json",
-      "bytes": 39771,
-      "sha256": "e74b3c7996d32908a032976f8355227704ce2eb195780462d5942412817790f4"
+      "bytes": 39562,
+      "sha256": "904a01c7cf62326f8b893c97bd67b42a7f89dca1c1bead0772ebeb96476e501b"
     },
     {
       "id": "sh-e15d4897-d013-59c9-abff-bfce11ce21b6",
@@ -2505,44 +2607,10 @@
       "encounters": 4,
       "codedConditions": 7,
       "textOnlyConditions": 4,
-      "selectedFor": "P5",
+      "selectedFor": "P3",
       "file": "2314.json",
-      "bytes": 59675,
-      "sha256": "7333d9c263fedcd8b8f226456bdc2226208b037846a4a4bc83ae0c7faaf54f03"
-    },
-    {
-      "id": "sh-8981d526-8ebc-526a-a83f-4feb1c1aa3a7",
-      "sourceId": 2343,
-      "identifier": "urn:vgi:synthetic-hospital|2343",
-      "name": "Sage Bennett",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002343",
-      "age": 0,
-      "sex": "M",
-      "encounterClass": "AMB",
-      "flags": {
-        "pediatric": true,
-        "surgical": true,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": true,
-        "P3": false,
-        "P4": true,
-        "P5": true
-      },
-      "shiftDays": 1088,
-      "sourceNewestDate": "2023-01-15",
-      "newestDate": "2026-01-07",
-      "encounters": 8,
-      "codedConditions": 9,
-      "textOnlyConditions": 6,
-      "selectedFor": "P5",
-      "file": "2343.json",
-      "bytes": 85242,
-      "sha256": "1fc89cb754eaee66225ce0024b76562bc9cac36efac380abbf6770c98e4fb4a4"
+      "bytes": 59698,
+      "sha256": "ea61c1f026653d390f7ad61166ddeaab247f038225ac412a21083145d05bb934"
     },
     {
       "id": "sh-f6e1c6dd-f983-54e1-a927-18cb9cc0ca42",
@@ -2575,8 +2643,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P4",
       "file": "2346.json",
-      "bytes": 29455,
-      "sha256": "0211bece392a053e2a8ae015f3daab2e0f5ca59d76a4be66180a3acf6b9eefa0"
+      "bytes": 29576,
+      "sha256": "259967c8eb663c2366f3839461c0cd2f1e8e907a0695e059f1eebb90b96ee13e"
     },
     {
       "id": "sh-75e4ad1c-5f7e-5a2f-a576-9f57f103ec52",
@@ -2609,8 +2677,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P4",
       "file": "2354.json",
-      "bytes": 86910,
-      "sha256": "78c199b3941dc7e98358148d82e38d8423f957eee2190e5534c22bb3a20c90f2"
+      "bytes": 87287,
+      "sha256": "ef67b36ff22d7af32f753a339146eeb5c291aa197fa9c7943c584fd796f83a75"
     },
     {
       "id": "sh-f21449ed-2d4a-5335-a226-546d7a40a4b6",
@@ -2641,44 +2709,10 @@
       "encounters": 5,
       "codedConditions": 5,
       "textOnlyConditions": 2,
-      "selectedFor": "P5",
-      "file": "2371.json",
-      "bytes": 43073,
-      "sha256": "82d6beebf65385bc2fb4d625ed166353e7a16b61ab5900d2b23101d5aa7e95f6"
-    },
-    {
-      "id": "sh-f8a0c62b-3268-5695-aaa8-5013e84bb9f6",
-      "sourceId": 2377,
-      "identifier": "urn:vgi:synthetic-hospital|2377",
-      "name": "Robin Ellis",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002377",
-      "age": 0,
-      "sex": "M",
-      "encounterClass": "AMB",
-      "flags": {
-        "pediatric": true,
-        "surgical": false,
-        "allergic": true,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": false,
-        "P3": false,
-        "P4": true,
-        "P5": false
-      },
-      "shiftDays": 2213,
-      "sourceNewestDate": "2020-07-15",
-      "newestDate": "2026-08-06",
-      "encounters": 4,
-      "codedConditions": 4,
-      "textOnlyConditions": 3,
       "selectedFor": "P4",
-      "file": "2377.json",
-      "bytes": 42258,
-      "sha256": "aef6a45674eb19c9565a2ca71808ca0a076793a8392f7c84f8e2b10c724fdcbb"
+      "file": "2371.json",
+      "bytes": 43174,
+      "sha256": "cff5efee94d0a82a711484706ef85af01d91a068c94b8ac477d4760a81c9cd8f"
     },
     {
       "id": "sh-f30be38d-6084-594f-ab02-60e2af31bc2f",
@@ -2711,8 +2745,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2388.json",
-      "bytes": 41089,
-      "sha256": "ca1db8b6316e4d00229b05b5ae773bcae2419afa041a834a71716fee21c72b51"
+      "bytes": 41226,
+      "sha256": "05d4f86d2061d7e9275d8b088f32f4f5763802b9bc79dcffc772cf217313dbaa"
     },
     {
       "id": "sh-5b38da76-ae53-58d2-a332-6505a3f04e6e",
@@ -2745,8 +2779,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2393.json",
-      "bytes": 48537,
-      "sha256": "0ff54c60d5c9bfd32162851c162f56b402418b563860e67133abb3bfb93d2f13"
+      "bytes": 48588,
+      "sha256": "22d5f1cd9e7f58aea591e877c2c7a40438ce7505adb1a030a59a19663089322e"
     },
     {
       "id": "sh-141b5b56-558c-5a17-a1ec-edeb8a0b614a",
@@ -2779,8 +2813,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2411.json",
-      "bytes": 33813,
-      "sha256": "43c2fb1a689673d065d6a928aa9e8dd90efb1c6be7048ee4ff18d09485b2a3b7"
+      "bytes": 33890,
+      "sha256": "d6d18a6fdb10d4545102c7eabb8dd710622f7b118c5a65d750682bf802f99df0"
     },
     {
       "id": "sh-f39db33f-a372-5992-a024-39560e2ea208",
@@ -2813,8 +2847,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P2",
       "file": "2412.json",
-      "bytes": 35720,
-      "sha256": "355404abfa658f65c7566041d2a2eea1f5f1acd798bb0c206efdb1ccb2c63c08"
+      "bytes": 35891,
+      "sha256": "afb4e0c341e134f68c6f2345efe0097614bcd9b2abfd02709f92e2a5a4ba32bd"
     },
     {
       "id": "sh-994643dc-3c7f-59aa-acae-b78354428711",
@@ -2847,42 +2881,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P4",
       "file": "2415.json",
-      "bytes": 33123,
-      "sha256": "bc0a2f08ef2f8bc09c97907904d36ce9b3871d47b3980612b38ce46be038bf6c"
-    },
-    {
-      "id": "sh-b5854c18-cd4f-5a92-a428-7a92a27dcc6e",
-      "sourceId": 2425,
-      "identifier": "urn:vgi:synthetic-hospital|2425",
-      "name": "Jamie Sullivan",
-      "birthDate": "2023-10-31",
-      "mrn": "SH00002425",
-      "age": 3,
-      "sex": "M",
-      "encounterClass": "EMER",
-      "flags": {
-        "pediatric": true,
-        "surgical": false,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": true,
-        "P3": false,
-        "P4": true,
-        "P5": false
-      },
-      "shiftDays": 1257,
-      "sourceNewestDate": "2023-01-15",
-      "newestDate": "2026-06-25",
-      "encounters": 4,
-      "codedConditions": 5,
-      "textOnlyConditions": 1,
-      "selectedFor": "P4",
-      "file": "2425.json",
-      "bytes": 42513,
-      "sha256": "bd400b10983a4413b820faa6316f7f0d942fc329133a8bbeb1762fbe974e7694"
+      "bytes": 33240,
+      "sha256": "147b9f97bb98825f66f625c102a42140ab00991022d2a2cba7cc9eb7137e5ddd"
     },
     {
       "id": "sh-f6e39206-2893-58d3-ad38-1367375d53b8",
@@ -2915,8 +2915,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P4",
       "file": "2426.json",
-      "bytes": 35659,
-      "sha256": "39bdb4e32bccd294df031c5ddc106c27f88c23d3ccb3e820f5220da19a24bfbe"
+      "bytes": 35730,
+      "sha256": "2a38ca95168082da1b9d645724844e574b06569ca5a372a3d2bd624355c5cc55"
     },
     {
       "id": "sh-3b50cbad-94be-5560-afb5-9a17b1e970c5",
@@ -2949,8 +2949,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P4",
       "file": "2437.json",
-      "bytes": 41530,
-      "sha256": "92287c4f56969e186eccfcaab49ed6be36aed62349febd3233efbbf84b4bb035"
+      "bytes": 41569,
+      "sha256": "346cc29d8d17e17c2c617539d81a8e65717b41b63ab818880610a12ddf565ea5"
     },
     {
       "id": "sh-3f1edc7d-97c7-5589-aa1f-8797b6dccf35",
@@ -2981,10 +2981,10 @@
       "encounters": 3,
       "codedConditions": 1,
       "textOnlyConditions": 0,
-      "selectedFor": "P2",
+      "selectedFor": "P3",
       "file": "2441.json",
-      "bytes": 24790,
-      "sha256": "83e20d4f7453a0f3c1af723c684043c959325903ceabd1c0547911e7325f8c68"
+      "bytes": 24817,
+      "sha256": "761011a30a8f9d374e70fad0a80cd6fd282680e4394801f0bc50583f66517ebd"
     },
     {
       "id": "sh-f8d54567-cbc9-5063-a56f-663036279265",
@@ -3017,8 +3017,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2444.json",
-      "bytes": 31412,
-      "sha256": "81079d4192221642ad1bf04a132f1cfaf4b147838c8ec4b4b506659e460052bc"
+      "bytes": 31505,
+      "sha256": "92f1ad4a5925646811da35fbc39ffb0612c683e127c2a413b75fc0588b7f95f2"
     },
     {
       "id": "sh-9ac02b3a-b6bf-5277-a030-396dc334023b",
@@ -3051,17 +3051,17 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2450.json",
-      "bytes": 18685,
-      "sha256": "a43aeb023e8997906477e1aff4a284887952bd6a12395d030376f72e87a029aa"
+      "bytes": 18734,
+      "sha256": "b655111f7a602a4666068ffb5d614f27ea46e5fb61883b304e5df1c0c990c25e"
     },
     {
-      "id": "sh-4c7efe08-312a-5d13-abbe-e2184dfa5ab1",
-      "sourceId": 2456,
-      "identifier": "urn:vgi:synthetic-hospital|2456",
-      "name": "Quinn Holloway",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002456",
-      "age": 0,
+      "id": "sh-a810e429-4fa1-596a-a3f4-329d82173871",
+      "sourceId": 2459,
+      "identifier": "urn:vgi:synthetic-hospital|2459",
+      "name": "Alex Bennett",
+      "birthDate": "2024-10-31",
+      "mrn": "SH00002459",
+      "age": 2,
       "sex": "M",
       "encounterClass": "EMER",
       "flags": {
@@ -3073,20 +3073,20 @@
       "personaFits": {
         "P1": false,
         "P2": true,
-        "P3": true,
+        "P3": false,
         "P4": true,
         "P5": false
       },
-      "shiftDays": 2329,
-      "sourceNewestDate": "2020-02-15",
-      "newestDate": "2026-07-02",
+      "shiftDays": 2261,
+      "sourceNewestDate": "2020-07-15",
+      "newestDate": "2026-09-23",
       "encounters": 2,
       "codedConditions": 1,
       "textOnlyConditions": 0,
-      "selectedFor": "P3",
-      "file": "2456.json",
-      "bytes": 19174,
-      "sha256": "ac22ba85564e9575249be0de47616caf9cb87baab196a801ef62e93bf16866e6"
+      "selectedFor": "P4",
+      "file": "2459.json",
+      "bytes": 19165,
+      "sha256": "98db5b9e0202e892045ab94e15c67d66a3a7e8e99ca0cfc2be0dace1fe6bbe47"
     },
     {
       "id": "sh-cc89093d-aa81-54f0-ace1-2074be59b29e",
@@ -3117,10 +3117,10 @@
       "encounters": 3,
       "codedConditions": 3,
       "textOnlyConditions": 3,
-      "selectedFor": "P2",
+      "selectedFor": "P4",
       "file": "2467.json",
-      "bytes": 31760,
-      "sha256": "280d04b52a28a80d4a1791a99d70e215d9f56bc8fe94b091cdbd595466c58013"
+      "bytes": 31721,
+      "sha256": "d1fcc9944e43fc408414d602e8d2221ba5fbcb7e63f8e3422a200c358db3d4e3"
     },
     {
       "id": "sh-267c2038-902b-5566-aed9-c3fc3b8d52f2",
@@ -3153,42 +3153,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P3",
       "file": "2472.json",
-      "bytes": 19684,
-      "sha256": "bd06d1871f68f5e5fb47b06c3cc7e65dbac318ce31a41dad717dab16db93c77c"
-    },
-    {
-      "id": "sh-89368148-f2e0-5ad7-a7c9-6ca01c09476e",
-      "sourceId": 2474,
-      "identifier": "urn:vgi:synthetic-hospital|2474",
-      "name": "Reese Chen",
-      "birthDate": "2025-10-31",
-      "mrn": "SH00002474",
-      "age": 1,
-      "sex": "M",
-      "encounterClass": "EMER",
-      "flags": {
-        "pediatric": true,
-        "surgical": false,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": true,
-        "P3": false,
-        "P4": true,
-        "P5": false
-      },
-      "shiftDays": 1834,
-      "sourceNewestDate": "2021-01-15",
-      "newestDate": "2026-01-23",
-      "encounters": 3,
-      "codedConditions": 1,
-      "textOnlyConditions": 0,
-      "selectedFor": "P2",
-      "file": "2474.json",
-      "bytes": 24328,
-      "sha256": "d59d669a3881fd033bcd40824e9a0fe7385df1fe1b8cce03d6db9b59a3ef6d64"
+      "bytes": 19719,
+      "sha256": "fb0d6a2b759271cadc8f0e795812cc42db51604a1c7e122cdbae5318765e9693"
     },
     {
       "id": "sh-b4b936b2-0e02-580a-abeb-bef1d60b3af7",
@@ -3221,8 +3187,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2486.json",
-      "bytes": 29093,
-      "sha256": "031179698dd25fc04b0612f412076b75bb4b6dc7112e7b04ca265ff7253e1685"
+      "bytes": 29130,
+      "sha256": "f323e7ee2bbdd175d48d6e3f81e4a88e6aaad65cef95a89282f00c6842e1ff4e"
     },
     {
       "id": "sh-2361c9b5-ca1b-5e82-a228-2b61d63d57b4",
@@ -3255,8 +3221,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2495.json",
-      "bytes": 17455,
-      "sha256": "a7d84d54119c2b6781bb9845f7f73beb1ad0a56083455a228c7aab6290a10c81"
+      "bytes": 17496,
+      "sha256": "73e8b5f7b66e3747af65914355c5b4a01f26843556ac658bede0c3505dd934a9"
     },
     {
       "id": "sh-812b4f68-516a-5951-a852-ca4fe100a5c3",
@@ -3289,8 +3255,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2500.json",
-      "bytes": 18769,
-      "sha256": "80f3e85905092d76a3fa67c363a27ed67f5de59d8be5ee2bcf89dea4b97e7e54"
+      "bytes": 18804,
+      "sha256": "57cf114c62d134c304cd6367d60010e9c336ae2b9d0e204a370bcee9063995df"
     },
     {
       "id": "sh-539c51ba-b694-511c-a8e1-f64c3e47e3f0",
@@ -3323,22 +3289,22 @@
       "textOnlyConditions": 0,
       "selectedFor": "P3",
       "file": "2503.json",
-      "bytes": 23377,
-      "sha256": "18b06f145421deeb93053d5c0de5d196ccd9619035cecf261b33a940658d64dd"
+      "bytes": 23390,
+      "sha256": "023e7fa91fe098a8731a316fb618287e9e2cd67eef9e4166e4ac289dc5bc6f38"
     },
     {
-      "id": "sh-8353971a-0fed-538d-a80c-1fb058efd34d",
-      "sourceId": 2505,
-      "identifier": "urn:vgi:synthetic-hospital|2505",
-      "name": "Alex Grant",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002505",
-      "age": 0,
+      "id": "sh-71ae0104-48f2-5208-a02d-d447cee6a71c",
+      "sourceId": 2512,
+      "identifier": "urn:vgi:synthetic-hospital|2512",
+      "name": "Robin Foster",
+      "birthDate": "2016-10-31",
+      "mrn": "SH00002512",
+      "age": 10,
       "sex": "M",
-      "encounterClass": "AMB",
+      "encounterClass": "EMER",
       "flags": {
         "pediatric": true,
-        "surgical": true,
+        "surgical": false,
         "allergic": false,
         "anticoagulated": false
       },
@@ -3347,18 +3313,18 @@
         "P2": true,
         "P3": false,
         "P4": true,
-        "P5": true
+        "P5": false
       },
-      "shiftDays": 1945,
-      "sourceNewestDate": "2021-01-15",
-      "newestDate": "2026-05-14",
+      "shiftDays": 2205,
+      "sourceNewestDate": "2020-07-15",
+      "newestDate": "2026-07-29",
       "encounters": 2,
-      "codedConditions": 7,
-      "textOnlyConditions": 3,
+      "codedConditions": 3,
+      "textOnlyConditions": 1,
       "selectedFor": "P4",
-      "file": "2505.json",
-      "bytes": 38091,
-      "sha256": "1f87928b56d6715df0de51181fdae08a778676465ffa2e14a54ce83c7f9baf88"
+      "file": "2512.json",
+      "bytes": 23116,
+      "sha256": "80a2b6473eba4b841d445e453eee1f4acf69de2c28ffa526b684364900b6a6c1"
     },
     {
       "id": "sh-f3a3fba7-a439-5187-abfa-a3cd01af4aea",
@@ -3389,44 +3355,10 @@
       "encounters": 2,
       "codedConditions": 1,
       "textOnlyConditions": 1,
-      "selectedFor": "P2",
-      "file": "2515.json",
-      "bytes": 23249,
-      "sha256": "d9f069b57a13a43061581aacd6f71bc29ee8da301faf9f400b277241a0e7dae9"
-    },
-    {
-      "id": "sh-c8d7869a-51a7-57c9-a212-75ceac4007b1",
-      "sourceId": 2517,
-      "identifier": "urn:vgi:synthetic-hospital|2517",
-      "name": "Skyler Brooks",
-      "birthDate": "2024-10-31",
-      "mrn": "SH00002517",
-      "age": 2,
-      "sex": "M",
-      "encounterClass": "AMB",
-      "flags": {
-        "pediatric": true,
-        "surgical": true,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": false,
-        "P3": false,
-        "P4": true,
-        "P5": true
-      },
-      "shiftDays": 1444,
-      "sourceNewestDate": "2022-01-15",
-      "newestDate": "2025-12-29",
-      "encounters": 2,
-      "codedConditions": 1,
-      "textOnlyConditions": 3,
       "selectedFor": "P4",
-      "file": "2517.json",
-      "bytes": 22630,
-      "sha256": "de9950fb4dd1dbeed505c37be767e3cda2666151146f14d155a66fc653027a77"
+      "file": "2515.json",
+      "bytes": 23284,
+      "sha256": "0425556ed36de46402bfdd43f68208c21d07bca7e21ee5d10f7d98d86aeb0ad4"
     },
     {
       "id": "sh-ea6fc2bb-4c80-546d-a921-8124f6642ddb",
@@ -3459,8 +3391,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P4",
       "file": "2521.json",
-      "bytes": 32536,
-      "sha256": "97dff8e7ec55ccc39cc3c1fc9611920e260dfcea0b1832ae0d166af9ac9dbf6d"
+      "bytes": 32629,
+      "sha256": "5407c706d3437ad8ee83133cf5efdaa818a13baa2a71825b214615c43aa0087a"
     },
     {
       "id": "sh-f2f04bf6-b517-5c48-ae29-444ce1081dd7",
@@ -3493,8 +3425,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P3",
       "file": "2540.json",
-      "bytes": 35295,
-      "sha256": "c07c25a4cab9e9e3b94f0a17abb7086e8d7e3421f389bed1ce5c596ae9a49bb6"
+      "bytes": 35344,
+      "sha256": "c92eca04054e1f6b02c963257d30ea01fdfa510ed71b3887f13de0a539b80c1f"
     },
     {
       "id": "sh-830d4232-bb65-5d49-a9dc-ab2a41484e77",
@@ -3527,8 +3459,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P2",
       "file": "2543.json",
-      "bytes": 30251,
-      "sha256": "a557e459b0360782f97f57b2274315e79221eadf639a1b4ababd36f8c6ecb7c1"
+      "bytes": 30320,
+      "sha256": "5ace08804b8fa80eec0b71659ff3e79b5a798c915ec6e88f26c4c4d3cd372883"
     },
     {
       "id": "sh-551e99d1-3ec0-5ec0-a3f1-54489758df3b",
@@ -3561,8 +3493,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P2",
       "file": "2546.json",
-      "bytes": 54375,
-      "sha256": "bb1b7e8e4fa5a7babfbbec5acf4356af9ca12c39418f752ffe3b18b3120c09ac"
+      "bytes": 54500,
+      "sha256": "864c63e0cb17b6936bf16f46edd19307db22390c39cc14aaaf5909d0cd430951"
     },
     {
       "id": "sh-a21e0a4f-adf9-522e-a0ee-543c828d418a",
@@ -3595,8 +3527,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P3",
       "file": "2549.json",
-      "bytes": 27302,
-      "sha256": "d7ef27502e7b338a17753b34dd52a193df846b672ec449ae10ad30c86655f7ab"
+      "bytes": 27337,
+      "sha256": "aa1f061b4d8e4315b6edf6594b023dfd98d0e1cb7786939f831262002a75d5aa"
     },
     {
       "id": "sh-a7dbb13f-9f8c-58db-a51a-7a3e169eaee2",
@@ -3629,8 +3561,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P2",
       "file": "2565.json",
-      "bytes": 37833,
-      "sha256": "62cd95e753518ea3b1e8ec1844f2c858d585cfe5b1226d6c459633acc5db1ccf"
+      "bytes": 37958,
+      "sha256": "6c00085a7379aae746f75a900191014b20cdcc8a104c24efbb2bfc009be5af35"
     },
     {
       "id": "sh-02f2edbf-05a5-5e58-a0c2-3b20a62fa495",
@@ -3663,8 +3595,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P5",
       "file": "2579.json",
-      "bytes": 31791,
-      "sha256": "c4881d7373d68a66b148a0e944d8f7b46198bbd051202c8f1cb5a4034bd9655f"
+      "bytes": 31838,
+      "sha256": "89d14e8d1286aa59f103e07a4576f8dc41a5925eb31001d43cef9e25a5863566"
     },
     {
       "id": "sh-c9513612-3278-5c96-a551-567a69fa4564",
@@ -3697,8 +3629,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P2",
       "file": "2582.json",
-      "bytes": 24236,
-      "sha256": "b219e898231c90f954024d283d3538d79a30a0f9045929e87e216ef2146aca8f"
+      "bytes": 24263,
+      "sha256": "3885ad8063e5030e0c14967322e67cfd164bd1fbe98a6adf6936acc8db5e11f4"
     },
     {
       "id": "sh-c7a30b13-fdc8-5c1a-ae04-cb72a7b34dca",
@@ -3731,8 +3663,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P2",
       "file": "2585.json",
-      "bytes": 22865,
-      "sha256": "adc77b132809218ac6f432edb67912b738c540dc1add6636db9f3cfe04bea7fa"
+      "bytes": 22942,
+      "sha256": "efda7e7b313fdf2caa7419751c2d75d7ad8fb15b1f22fe5ad27341e0af54018f"
     },
     {
       "id": "sh-d0801ad4-0096-5cf5-a3c7-f799a971c187",
@@ -3765,8 +3697,8 @@
       "textOnlyConditions": 7,
       "selectedFor": "P2",
       "file": "2606.json",
-      "bytes": 61098,
-      "sha256": "9981014d94ecaff1ee9582b5d6d395f46376fa8af950bd40425fb2898581ef17"
+      "bytes": 61049,
+      "sha256": "36fe2220df96b709c511fc9e25a30858bafd0ff656b2d1de49b308936d6bd4c0"
     },
     {
       "id": "sh-3c61e3f5-e5c0-527e-a53f-e42de578de2c",
@@ -3799,8 +3731,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P1",
       "file": "2623.json",
-      "bytes": 30725,
-      "sha256": "6740836ec5f8dc156a5a24a31492f37b86f1049d5d994bb3c4ac42395f1021d7"
+      "bytes": 30770,
+      "sha256": "cb807e419a97fa1a2708ddd3579d6e22ae8f58aa33395932449daa4fc5114bd0"
     },
     {
       "id": "sh-41940c16-2f6c-5b39-a678-315889757972",
@@ -3833,8 +3765,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P1",
       "file": "2624.json",
-      "bytes": 39881,
-      "sha256": "694bc1fac833183cd12a9c5d0338a5f4ee537a29d79993dbe040964ee235c84a"
+      "bytes": 40050,
+      "sha256": "4b9199ba2d4e2ec1bd1546151e7c8861e44f9fac17ab943abc76f62df0bc9f83"
     },
     {
       "id": "sh-d6136fa3-2409-5763-a665-259a8187ac0b",
@@ -3867,8 +3799,8 @@
       "textOnlyConditions": 6,
       "selectedFor": "P2",
       "file": "2639.json",
-      "bytes": 41068,
-      "sha256": "424fa27e2398d650ad8f5d60ec252b2ff8204227e94bc7a467feb07eb31bb49d"
+      "bytes": 41149,
+      "sha256": "4168b257e10f7ed0843a74e405dc645773074eed258eb217153a9be7c345e62f"
     },
     {
       "id": "sh-b1d3ba96-d7f6-5a71-abcc-841e794a33a0",
@@ -3899,10 +3831,10 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 2,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2641.json",
-      "bytes": 27522,
-      "sha256": "d125add011f055712d710c7994dd6793dbc6829b25608c8d3aa6574759296ace"
+      "bytes": 27601,
+      "sha256": "d3f944cfcfe1f11e8723922dae8e660e7c01f27fa39f35aa4edcdf3f73319786"
     },
     {
       "id": "sh-7c337363-3618-5bef-ae30-55163a44ac3c",
@@ -3935,8 +3867,42 @@
       "textOnlyConditions": 0,
       "selectedFor": "P2",
       "file": "2643.json",
-      "bytes": 20581,
-      "sha256": "faf5a4a69c6141ddac4cfebfd2d640df2a7f94ab830735ff149be6378e8a8856"
+      "bytes": 20612,
+      "sha256": "e48d97d34cf26d949dc4d1aba39c46e5e35a5b8fedfcca27a41efb4cce03172f"
+    },
+    {
+      "id": "sh-e65a8c1d-3d8d-5cc6-a58a-17adff896f17",
+      "sourceId": 2668,
+      "identifier": "urn:vgi:synthetic-hospital|2668",
+      "name": "Skyler Ellis",
+      "birthDate": "1994-10-31",
+      "mrn": "SH00002668",
+      "age": 32,
+      "sex": "M",
+      "encounterClass": "EMER",
+      "flags": {
+        "pediatric": false,
+        "surgical": false,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": true,
+        "P2": true,
+        "P3": false,
+        "P4": false,
+        "P5": false
+      },
+      "shiftDays": 1994,
+      "sourceNewestDate": "2021-01-15",
+      "newestDate": "2026-07-02",
+      "encounters": 3,
+      "codedConditions": 1,
+      "textOnlyConditions": 0,
+      "selectedFor": "P2",
+      "file": "2668.json",
+      "bytes": 23626,
+      "sha256": "3287f8dad0bb40091e9b3c241de31f87e42e91836daba57455072b03dc11c38e"
     },
     {
       "id": "sh-ba0f6f68-9b5f-5c03-afb8-470fcd679033",
@@ -3967,10 +3933,10 @@
       "encounters": 3,
       "codedConditions": 1,
       "textOnlyConditions": 1,
-      "selectedFor": "P1",
+      "selectedFor": "P5",
       "file": "2675.json",
-      "bytes": 26773,
-      "sha256": "ae6937315607b8367b1c61dea3a68da7374a5e8a4b89427f5eab737912a3d86b"
+      "bytes": 26712,
+      "sha256": "1b5335d37d3ba447a38a8fa7c84a0d29d332dd8dc3ec02e8086064db9894f77b"
     },
     {
       "id": "sh-a585e98e-6059-5d39-aa7c-645a72af709a",
@@ -4001,10 +3967,10 @@
       "encounters": 2,
       "codedConditions": 4,
       "textOnlyConditions": 2,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "2676.json",
-      "bytes": 39934,
-      "sha256": "da65624d6d920fb4299172eecf167bcd74b7482197266c1cf3ab7456059ff8fa"
+      "bytes": 40131,
+      "sha256": "001921b10c588bfa3be0c97dd1aee18506572722f9bfdead4bcc62fa7c722d41"
     },
     {
       "id": "sh-81993366-3d28-5ae6-ad96-ceb61a642650",
@@ -4037,8 +4003,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P2",
       "file": "2681.json",
-      "bytes": 19510,
-      "sha256": "c0cce71cc6bd7f3e4866a232b7f89faa178a84ea846cd4e02b69a3ce8a2ead39"
+      "bytes": 19543,
+      "sha256": "107281ca9d8106392f2be8e88e279391fe34bf2eb8e393fa2d44b33ab7d0df49"
     },
     {
       "id": "sh-c0e694ed-f297-5220-a005-045ab6745ce3",
@@ -4069,10 +4035,10 @@
       "encounters": 2,
       "codedConditions": 1,
       "textOnlyConditions": 0,
-      "selectedFor": "P3",
+      "selectedFor": "P2",
       "file": "2687.json",
-      "bytes": 20305,
-      "sha256": "834affd36f591111c0798e6f55a922d1a9692c5d59806226acd8048e425891e9"
+      "bytes": 20338,
+      "sha256": "82a48dd847a268f15a71451997c02bc15bf2e58a83de62de355f5ba4b57be22f"
     },
     {
       "id": "sh-2e73ee92-6008-533a-a14a-46b45cdca19d",
@@ -4105,8 +4071,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P5",
       "file": "2691.json",
-      "bytes": 32316,
-      "sha256": "faf10346932dfbb2a79b9d5a541e7bfd0225ba6076dfdf76dd5d55350d4405bb"
+      "bytes": 32415,
+      "sha256": "eeb6602fa57952c9e98b694f66225fc5113823fa913d9320fb7e881f241a7c0f"
     },
     {
       "id": "sh-9b0f8d3c-948c-52c5-ac7a-91c2304e5799",
@@ -4139,8 +4105,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P3",
       "file": "2716.json",
-      "bytes": 67709,
-      "sha256": "6cc77378a6905410c88bedd0785c948e0aa9b428b0216ae5f99a137d787e93b6"
+      "bytes": 67822,
+      "sha256": "5505ce76a5c7d562e582c76e971beec551edf611072ab81a76dab0cac8dc5a3b"
     },
     {
       "id": "sh-6cc07cf1-b19d-5775-a293-60b520d7d730",
@@ -4171,10 +4137,44 @@
       "encounters": 3,
       "codedConditions": 3,
       "textOnlyConditions": 1,
-      "selectedFor": "P1",
+      "selectedFor": "P2",
       "file": "2717.json",
-      "bytes": 34711,
-      "sha256": "5f642973297093b80992f8ab36b57f1eff3918a099fccca5d577b53ccebf6b03"
+      "bytes": 34696,
+      "sha256": "9c395645371f42fe211972a74af3b910b2e64716f5fd377a1d73179fac295c4b"
+    },
+    {
+      "id": "sh-7441ec55-6314-5212-a4c9-d67c78688128",
+      "sourceId": 2735,
+      "identifier": "urn:vgi:synthetic-hospital|2735",
+      "name": "Rowan Shaw",
+      "birthDate": "1971-10-31",
+      "mrn": "SH00002735",
+      "age": 55,
+      "sex": "F",
+      "encounterClass": "IMP",
+      "flags": {
+        "pediatric": false,
+        "surgical": true,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": false,
+        "P2": true,
+        "P3": true,
+        "P4": false,
+        "P5": true
+      },
+      "shiftDays": 2074,
+      "sourceNewestDate": "2020-04-15",
+      "newestDate": "2025-12-19",
+      "encounters": 3,
+      "codedConditions": 4,
+      "textOnlyConditions": 5,
+      "selectedFor": "P3",
+      "file": "2735.json",
+      "bytes": 42288,
+      "sha256": "5ae81c118b3f810d16ebdd5d3943579ce7da0839b6c4d082a4cff3e44199f098"
     },
     {
       "id": "sh-1162a961-6708-5d9a-aeb8-b8b9e543ab40",
@@ -4207,8 +4207,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P5",
       "file": "2755.json",
-      "bytes": 63952,
-      "sha256": "8a41ec3c1201690b56a52a5203c37567abc14ebbb9ce78e6fa751acadd3acdb7"
+      "bytes": 64049,
+      "sha256": "08ca6e773fff269c9d2b290e8268e1dd72b920b3dbaa6b7ac4333c632bb46986"
     },
     {
       "id": "sh-4598ab0f-9d3a-5982-a94b-6856ebedb9fe",
@@ -4241,8 +4241,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P5",
       "file": "2771.json",
-      "bytes": 21508,
-      "sha256": "59beefc4c21d215a2465aa85e213cf5986b57c313ee5df35c139e0f27165e728"
+      "bytes": 21533,
+      "sha256": "cefb429ad4675a63c0bc013fcf1ba9ed14f5db71792da61483ceacc6434157ca"
     },
     {
       "id": "sh-f7d5cad5-0f81-5f89-a906-87f357453096",
@@ -4273,10 +4273,10 @@
       "encounters": 3,
       "codedConditions": 4,
       "textOnlyConditions": 0,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2790.json",
-      "bytes": 34280,
-      "sha256": "a25b72bda39b02eb986af7d0e3cfe44d701c3c7808cdd42fd7c79102ff8431aa"
+      "bytes": 34295,
+      "sha256": "33adf02952fed4a8c92578790b321a68a01a5b0e12ed9b89395d7c0ac2fc309d"
     },
     {
       "id": "sh-9f1d7006-21d6-5d94-aa63-e1b294dfe378",
@@ -4307,10 +4307,10 @@
       "encounters": 4,
       "codedConditions": 3,
       "textOnlyConditions": 1,
-      "selectedFor": "P3",
+      "selectedFor": "P2",
       "file": "2794.json",
-      "bytes": 33468,
-      "sha256": "ea1647f3b52c4067274a9957c164482803a2d419a66420263ee42c919bf62a5d"
+      "bytes": 33513,
+      "sha256": "e5a17f503e10ec71c368db9088348550524c85889b162569d8b298d669b4fa7a"
     },
     {
       "id": "sh-def0a77c-ca26-5761-a973-73e4c8d8fe85",
@@ -4341,10 +4341,44 @@
       "encounters": 2,
       "codedConditions": 4,
       "textOnlyConditions": 4,
-      "selectedFor": "P2",
+      "selectedFor": "P5",
       "file": "2795.json",
-      "bytes": 36796,
-      "sha256": "8b6c798f1a2c30103c1559a339b9029e89a4035faf91c41ef0786d8b482f9b73"
+      "bytes": 37071,
+      "sha256": "503e333813be779c655658275d3bb9b79c5bc737858a474afc6237c9dda1d4de"
+    },
+    {
+      "id": "sh-8e04f500-0067-5a56-ae02-23f1ca038557",
+      "sourceId": 2820,
+      "identifier": "urn:vgi:synthetic-hospital|2820",
+      "name": "Jamie Brooks",
+      "birthDate": "1985-10-31",
+      "mrn": "SH00002820",
+      "age": 41,
+      "sex": "F",
+      "encounterClass": "AMB",
+      "flags": {
+        "pediatric": false,
+        "surgical": true,
+        "allergic": true,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": true,
+        "P2": false,
+        "P3": false,
+        "P4": false,
+        "P5": true
+      },
+      "shiftDays": 1640,
+      "sourceNewestDate": "2021-07-15",
+      "newestDate": "2026-01-10",
+      "encounters": 2,
+      "codedConditions": 3,
+      "textOnlyConditions": 0,
+      "selectedFor": "P5",
+      "file": "2820.json",
+      "bytes": 28570,
+      "sha256": "5a0bbc9f5f0b72411484e778f9fe8f96a8c71e1417cc7a3d32f957b673e3ee0d"
     },
     {
       "id": "sh-23b63fbd-84ba-5bbc-a534-79dbc58b98e6",
@@ -4375,10 +4409,10 @@
       "encounters": 8,
       "codedConditions": 11,
       "textOnlyConditions": 5,
-      "selectedFor": "P3",
+      "selectedFor": "P1",
       "file": "2823.json",
-      "bytes": 91233,
-      "sha256": "ed1ebff06b2298d7c997e6e49edfea27c666d975b6ded8cf6451a3773b0906e9"
+      "bytes": 91408,
+      "sha256": "9d924e56dfeb4f29fcd2c90b25a42507e68b1926d33dcd858dba69c8d2f97ad2"
     },
     {
       "id": "sh-bfae65c6-66de-51ac-a21d-4d7191b25cd2",
@@ -4411,8 +4445,8 @@
       "textOnlyConditions": 7,
       "selectedFor": "P3",
       "file": "2825.json",
-      "bytes": 83575,
-      "sha256": "d1f01f876b82cb10401b0eae1b2ec0787da1e654b426f5eb61f87d19e37cef20"
+      "bytes": 83792,
+      "sha256": "dc60a8a1db0b8e6efe5fc9dcd50c514ed37693dac4faab137c4eaabb1ef7aca9"
     },
     {
       "id": "sh-aa4d92d4-8b69-52c6-a11c-a7ad51c6b3f7",
@@ -4445,8 +4479,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P1",
       "file": "2835.json",
-      "bytes": 75813,
-      "sha256": "b3eda47dfc6a6109e859b30347edc8344ae19f4df78f22c936fb63e6374b693d"
+      "bytes": 76164,
+      "sha256": "e7556a29ff498784af521692233d1ccdb768b72547d3aa4dbe5ccaee3c554ab1"
     },
     {
       "id": "sh-1f482dd0-6893-55a6-a52a-be2166b3eed4",
@@ -4479,8 +4513,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P1",
       "file": "2838.json",
-      "bytes": 44149,
-      "sha256": "53b2b03bdf81e191ab97cc67ba4c35569ca19e9445f669c93c171c3cfbf5e7b4"
+      "bytes": 44334,
+      "sha256": "9f3b9ea6fc2524e7c49ba158568117665f0886e37e381dce3decb94eac1687e4"
     },
     {
       "id": "sh-e65efe5f-81ec-5b91-a32f-d4ec63dc47c8",
@@ -4513,8 +4547,42 @@
       "textOnlyConditions": 7,
       "selectedFor": "P3",
       "file": "2841.json",
-      "bytes": 84138,
-      "sha256": "0280405d2d31979a5330122f2fdb358f5002ccf9797c4e38ad95235d662edc39"
+      "bytes": 84367,
+      "sha256": "e574aa19aaa40dc6d06a644916c21ee2f356c7f17d1e4d17afcdcab3489a4ccd"
+    },
+    {
+      "id": "sh-4d29dd2f-5cb1-5c2f-a34f-38ffd8f294c8",
+      "sourceId": 2853,
+      "identifier": "urn:vgi:synthetic-hospital|2853",
+      "name": "Morgan Hayes",
+      "birthDate": "1962-10-31",
+      "mrn": "SH00002853",
+      "age": 64,
+      "sex": "F",
+      "encounterClass": "EMER",
+      "flags": {
+        "pediatric": false,
+        "surgical": true,
+        "allergic": false,
+        "anticoagulated": false
+      },
+      "personaFits": {
+        "P1": true,
+        "P2": true,
+        "P3": false,
+        "P4": false,
+        "P5": true
+      },
+      "shiftDays": 523,
+      "sourceNewestDate": "2025-01-15",
+      "newestDate": "2026-06-22",
+      "encounters": 5,
+      "codedConditions": 6,
+      "textOnlyConditions": 7,
+      "selectedFor": "P2",
+      "file": "2853.json",
+      "bytes": 58070,
+      "sha256": "723998b781dbb1402128f0cccfef9519b4584b0a24c122248140aa57f58ce2ba"
     },
     {
       "id": "sh-59aab87b-91a5-5795-aa2e-49cc3cf522b6",
@@ -4545,10 +4613,10 @@
       "encounters": 8,
       "codedConditions": 7,
       "textOnlyConditions": 7,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2856.json",
-      "bytes": 88934,
-      "sha256": "20493a774bfbd576a0d98bac12750332d98e38fb446dd94d440754678d68c722"
+      "bytes": 88655,
+      "sha256": "622687ec56a07bdd8885a65eece147fe930a626c9b23e323c42ca770c9fff136"
     },
     {
       "id": "sh-d7d3fd67-0a07-5a45-a73c-62e70f79e61c",
@@ -4579,10 +4647,10 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 1,
-      "selectedFor": "P1",
+      "selectedFor": "P5",
       "file": "2863.json",
-      "bytes": 27463,
-      "sha256": "4baf7af446574440c3692fa5a6c2a1c1cd57ee1035effa2d2c4d676121ea56c4"
+      "bytes": 27608,
+      "sha256": "79515303a4656e4e3d607467abb6b92c693905929ef952ecd3ea38a35ba36d56"
     },
     {
       "id": "sh-9bf1c1cc-7758-5515-a514-08a95a30b60c",
@@ -4613,10 +4681,10 @@
       "encounters": 3,
       "codedConditions": 4,
       "textOnlyConditions": 5,
-      "selectedFor": "P5",
+      "selectedFor": "P2",
       "file": "2864.json",
-      "bytes": 45132,
-      "sha256": "be76cf81a48b8a6b1004ee9b660f3a544867e37a4a7d3770c3a85495fed35c7e"
+      "bytes": 45301,
+      "sha256": "04933c4d754210ebf463180cf7fc9db9dc52c492578dc56fd2a1947ca93527fc"
     },
     {
       "id": "sh-52dadc68-730c-5ffb-a267-30c29e949cda",
@@ -4649,8 +4717,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P5",
       "file": "2867.json",
-      "bytes": 38337,
-      "sha256": "a094496a7a7bed983bc849f7c0057ab1bd3db3e5ece61f7ad37d35b1f2cef715"
+      "bytes": 38102,
+      "sha256": "5d0e946c5dbd039dc75c22f30fce312d28dfc326c9b3287d9064091bb0ab67d2"
     },
     {
       "id": "sh-31067e75-6993-537d-a036-b2e16c5a4ed3",
@@ -4683,8 +4751,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P5",
       "file": "2869.json",
-      "bytes": 41495,
-      "sha256": "8f86f00b6e03d35fc17b7d8d3b4ecf0007209349015c03861ca0065790303b55"
+      "bytes": 41580,
+      "sha256": "a09ceacf8f759a434e77693087a8b554dcc48cac48d23c1261654af94a91ddc1"
     },
     {
       "id": "sh-ca68414a-0aeb-5b44-accb-811e97c080cd",
@@ -4715,10 +4783,10 @@
       "encounters": 2,
       "codedConditions": 3,
       "textOnlyConditions": 1,
-      "selectedFor": "P5",
+      "selectedFor": "P1",
       "file": "2872.json",
-      "bytes": 22677,
-      "sha256": "b80d76f6c694ec64e2b0923be5541e85f6f1785d31422718276d418a5049168f"
+      "bytes": 22832,
+      "sha256": "abc874a0a96c3b048d047449c36864991db9160254218e3f8b6e63cdbec28a7f"
     },
     {
       "id": "sh-2dea1cc5-dfd1-5902-a8a0-c65e8fc05ee8",
@@ -4751,8 +4819,8 @@
       "textOnlyConditions": 2,
       "selectedFor": "P4",
       "file": "2877.json",
-      "bytes": 36243,
-      "sha256": "b400d8903eadede3372a5dc85ced6b955e1f3f7e9e63ddd200f68deb9b54575e"
+      "bytes": 36356,
+      "sha256": "5f0a6642a64103e0f378df305fccd451e3fbe3904eb21fd330d92ddc24b95a30"
     },
     {
       "id": "sh-832d3d5a-498e-5557-a92e-db09faed2d1a",
@@ -4785,8 +4853,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2878.json",
-      "bytes": 69342,
-      "sha256": "360288931f931a000af48bd2f327a134981bf8e5a09a60e2605bff2d20d8104c"
+      "bytes": 69457,
+      "sha256": "ce488b6f8ac5bd22095f2e5f9735837651c8267e836d1e7b08910709e8e9a161"
     },
     {
       "id": "sh-2df8ec6c-0538-50e8-a159-d0e578495bd4",
@@ -4819,8 +4887,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2880.json",
-      "bytes": 64863,
-      "sha256": "596135c4d809f32c97c89e8f4ec0eb3e47ccc405ca638432be883d3d43fa141a"
+      "bytes": 64966,
+      "sha256": "0e6ba29e6aa187a17c636565a6f6abac388d15c642396e7f50d04e1b53167122"
     },
     {
       "id": "sh-fa2ca1e3-0108-5298-a00c-8f1d629634aa",
@@ -4853,8 +4921,8 @@
       "textOnlyConditions": 3,
       "selectedFor": "P4",
       "file": "2885.json",
-      "bytes": 48699,
-      "sha256": "f823bcf21ff7d867d558dc1835e09d4be365aedff6bda5e6ff3c8168c7b66882"
+      "bytes": 48862,
+      "sha256": "d5479ec53ad68fbfa7a234e0461669aab88da071c293deed6c051bf8839803fb"
     },
     {
       "id": "sh-cfb33ac5-fa30-54b3-a6c1-9eeb695a5776",
@@ -4887,8 +4955,8 @@
       "textOnlyConditions": 6,
       "selectedFor": "P4",
       "file": "2893.json",
-      "bytes": 57003,
-      "sha256": "638a3dd33d99732d8dc30ad89cb924df73c371002a241075e5621f32a55ced84"
+      "bytes": 57120,
+      "sha256": "910d01bd110afd87a3dc2542ab4604004c0ad244c0e731bbd77c1b807b693eff"
     },
     {
       "id": "sh-7fc31f6e-e2f8-5175-afda-95f29c43f9ef",
@@ -4921,8 +4989,8 @@
       "textOnlyConditions": 4,
       "selectedFor": "P4",
       "file": "2904.json",
-      "bytes": 41262,
-      "sha256": "54cd6fc0a8ae1a9021f50d093acf2b8623acee4478955489572349f4d47b53a3"
+      "bytes": 41081,
+      "sha256": "4b9b89bdf5d682a06cbe7d070a280f7cb2bc4ca7023e73ecc62f18520b7048ee"
     },
     {
       "id": "sh-c1f9387d-172c-5a40-aff7-2ea0fc2847f8",
@@ -4955,76 +5023,8 @@
       "textOnlyConditions": 5,
       "selectedFor": "P4",
       "file": "2912.json",
-      "bytes": 40968,
-      "sha256": "c9ef085d0a3359f5a2fbc30aa5fef10fdf52dfbca0aee17435444fd4b9750eec"
-    },
-    {
-      "id": "sh-dfbeb1cc-0b4c-5eab-a43f-c6254ecee98d",
-      "sourceId": 2915,
-      "identifier": "urn:vgi:synthetic-hospital|2915",
-      "name": "Alex Chen",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002915",
-      "age": 0,
-      "sex": "F",
-      "encounterClass": "AMB",
-      "flags": {
-        "pediatric": true,
-        "surgical": false,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": true,
-        "P3": false,
-        "P4": true,
-        "P5": false
-      },
-      "shiftDays": 2179,
-      "sourceNewestDate": "2020-07-15",
-      "newestDate": "2026-07-03",
-      "encounters": 3,
-      "codedConditions": 1,
-      "textOnlyConditions": 0,
-      "selectedFor": "P4",
-      "file": "2915.json",
-      "bytes": 24017,
-      "sha256": "436a5ffb621a0dc3cd5feadcb771787b82859db8d0751b6dde15c2e39a591c34"
-    },
-    {
-      "id": "sh-22ac0fa0-9817-5563-aa7e-436b385b6b45",
-      "sourceId": 2917,
-      "identifier": "urn:vgi:synthetic-hospital|2917",
-      "name": "Jamie Hayes",
-      "birthDate": "2026-10-31",
-      "mrn": "SH00002917",
-      "age": 0,
-      "sex": "F",
-      "encounterClass": "EMER",
-      "flags": {
-        "pediatric": true,
-        "surgical": false,
-        "allergic": false,
-        "anticoagulated": false
-      },
-      "personaFits": {
-        "P1": false,
-        "P2": true,
-        "P3": false,
-        "P4": true,
-        "P5": false
-      },
-      "shiftDays": 2158,
-      "sourceNewestDate": "2020-01-15",
-      "newestDate": "2025-12-12",
-      "encounters": 2,
-      "codedConditions": 1,
-      "textOnlyConditions": 0,
-      "selectedFor": "P2",
-      "file": "2917.json",
-      "bytes": 18990,
-      "sha256": "bee3ba324fb30c6fc4deb9a2bad7f45643fd2a96aee05cba0dcdaf3b3cfe96d2"
+      "bytes": 40599,
+      "sha256": "61a622356a11f66d6b0a7f47e65eea6e85374a16e0c9a3637fef23a3d7277ad4"
     },
     {
       "id": "sh-ba4e0da0-1306-587e-a7c4-1e1f92641c67",
@@ -5057,8 +5057,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2926.json",
-      "bytes": 23678,
-      "sha256": "89734f41c495688a92b0daa65e105f5974de13bdd019ca56a010d176e3a22950"
+      "bytes": 23781,
+      "sha256": "4ced729c7a6b8f92ba28a644328ae23ef6a0420134ea5c12cc59d975b1961833"
     },
     {
       "id": "sh-2a319b31-3d33-5021-aab2-fcbca3063b08",
@@ -5091,8 +5091,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2930.json",
-      "bytes": 22223,
-      "sha256": "1f9810f3cd27d182b54234fd69cd627090b11d8a3cfaf392a5e48eb7fd279cac"
+      "bytes": 22314,
+      "sha256": "c11719a1bdb017fc75712045951f87446f2e04c38ba90a343ad2ddd22334dc00"
     },
     {
       "id": "sh-ffd0dcd9-f3ac-5d3d-addf-0875a9a9b4a8",
@@ -5125,8 +5125,8 @@
       "textOnlyConditions": 1,
       "selectedFor": "P4",
       "file": "2933.json",
-      "bytes": 21093,
-      "sha256": "bf793e8a425d4b767463210c91cd00d7010f088affd95260ba84136836e483ba"
+      "bytes": 21196,
+      "sha256": "6b9c0fb95a5b560d2ba4457098b4d1ba2ad6088c44d6416b8af76b8d43a7217a"
     },
     {
       "id": "sh-65498bdb-bc60-5b6a-adbe-5e904228982c",
@@ -5159,8 +5159,8 @@
       "textOnlyConditions": 0,
       "selectedFor": "P4",
       "file": "2939.json",
-      "bytes": 19418,
-      "sha256": "2e3d4d78babec0e0cee9e1fdeb2b65999d69248248881ca3640ab57d49273c79"
+      "bytes": 19455,
+      "sha256": "668c3ae33b1477193ac93e060fc468f56471c8ab58b01e8fcf4df1788b29c8a1"
     }
   ]
 }

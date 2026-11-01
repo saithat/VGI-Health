@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFile, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, mkdir, writeFile, readdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -35,10 +35,21 @@ export function personaFits(row) {
     P2: types.includes('ed'), P3: types.some((t) => ['inpatient', 'icu'].includes(t)),
     P4: row.age < 18, P5: surgical };
 }
-export function selectCohort(rows, count = 150) {
+export function selectCohort(rows, count = 150, referenceDate) {
   if (!Number.isInteger(count) || count < 1 || count > rows.length) throw new Error('Count must be an integer within the source population');
   if (new Set(rows.map((r) => r.patient_id)).size !== rows.length) throw new Error('Duplicate source patient id');
-  const sorted = [...rows].sort((a, b) => sha256(`cohort-v1:${a.patient_id}`).localeCompare(sha256(`cohort-v1:${b.patient_id}`)));
+  // Age is the only available DOB precision. Exclude source timelines that would
+  // precede the approximated DOB rather than manufacturing infant birth dates.
+  const plausible = (r) => {
+    if (!referenceDate) return true;
+    const times = r.encounters.map((e) => dateOf(e.encounter_date));
+    const anchor = dateOf(referenceDate) - (1 + intHash(`anchor:${r.patient_id}`) % 365) * DAY;
+    const dob = `${Number(referenceDate.slice(0, 4)) - r.age}${referenceDate.slice(4)}`;
+    return Math.min(...times) + anchor - Math.max(...times) >= dateOf(dob);
+  };
+  const candidates = rows.filter(plausible);
+  if (count > candidates.length) throw new Error('Not enough patients with a timeline after the approximate DOB');
+  const sorted = [...candidates].sort((a, b) => sha256(`cohort-v1:${a.patient_id}`).localeCompare(sha256(`cohort-v1:${b.patient_id}`)));
   const selected = new Map();
   const assigned = {};
   const personas = ['P1', 'P2', 'P3', 'P4', 'P5'];
@@ -92,13 +103,16 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
     const value = `${row.patient_id}:${key}`;
     const id = `sh-${uuid(value)}`;
     const fullUrl = `urn:uuid:${uuid(value)}`;
+    // Token search treats commas/pipes as operators even after URL encoding.
+    // Hash condition keys so clinical punctuation can never broaden the search.
+    const identifierValue = resource.resourceType === 'Condition' ? `${row.patient_id}:condition:${uuid(key)}` : value;
     const provenance = resource.resourceType === 'Provenance';
     entries.push({ fullUrl, resource: { ...resource, id,
-      ...(!provenance ? { identifier: [...(resource.identifier ?? []), { system: SYSTEM, value }] } : {}),
+      ...(!provenance ? { identifier: [...(resource.identifier ?? []), { system: SYSTEM, value: identifierValue }] } : {}),
       meta: { tag: [SOURCE_TAG, { system: RECORD_TAG, code: value }] } },
       request: { method: 'POST', url: resource.resourceType,
         ifNoneExist: new URLSearchParams(provenance ? { _tag: `${RECORD_TAG}|${value}` } :
-          { identifier: `${SYSTEM}|${resource.resourceType === 'Patient' ? row.patient_id : value}` }).toString() } });
+          { identifier: `${SYSTEM}|${resource.resourceType === 'Patient' ? row.patient_id : identifierValue}` }).toString() } });
     return ref(fullUrl);
   };
   const given = ['Avery', 'Morgan', 'Jordan', 'Cameron', 'Riley', 'Taylor', 'Alex', 'Casey', 'Quinn', 'Jamie', 'Reese', 'Robin', 'Sage', 'Rowan', 'Drew', 'Skyler'][intHash(row.patient_id) % 16];
@@ -181,7 +195,7 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
       relationship: text('Family member (see source statement)'), condition: [{ code: text(history) }],
       note: [{ text: history }] });
   }
-  for (const [key, code, label] of [['smoking_status', '72166-2', 'Tobacco smoking status'], ['alcohol_use', '74013-4', 'Alcohol use']]) {
+  for (const [key, code, label] of [['smoking_status', '72166-2', 'Tobacco smoking status'], ['alcohol_use', '11331-6', 'History of Alcohol use']]) {
     if (p[key]) add(`social:${key}`, { resourceType: 'Observation', status: 'final', subject: patient,
       category: [cc('http://terminology.hl7.org/CodeSystem/observation-category', 'social-history')],
       code: cc('http://loinc.org', code, label), valueString: p[key],
@@ -216,7 +230,7 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
   await mkdir(output, { recursive: true });
   const patients = [];
   const resourceCounts = {};
-  for (const { row, selectedFor } of selectCohort(rows, count)) {
+  for (const { row, selectedFor } of selectCohort(rows, count, referenceDate)) {
     const { bundle, patient } = convertPatient(row, { referenceDate, formulary, lookup: diagnosisLookup(db) });
     const file = `${row.patient_id}.json`;
     const data = JSON.stringify(bundle) + '\n';
@@ -224,7 +238,7 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
     patients.push({ ...patient, selectedFor, file, bytes: Buffer.byteLength(data), sha256: sha256(data) });
     for (const e of bundle.entry) resourceCounts[e.resource.resourceType] = (resourceCounts[e.resource.resourceType] ?? 0) + 1;
   }
-  const index = { source, referenceDate, selection: 'cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; primary selections disjoint, fits overlap',
+  const index = { source, referenceDate, selection: 'cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; exclude timelines before approximate DOB; primary selections disjoint, fits overlap',
     sourcePatients: rows.length, sourcePediatricPatients: rows.filter((r) => r.age < 18).length,
     dbInspection: { tableCounts: db.tableCounts, diagnosisRowsWithIcd10: db.diagnoses.filter((d) => d.icd10_code).length,
       terminologyTables: Object.keys(db.tableCounts).filter((k) => /terminolog/i.test(k)) },
@@ -232,6 +246,10 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
     selectedForCounts: Object.fromEntries(['P1', 'P2', 'P3', 'P4', 'P5'].map((p) => [p, patients.filter((r) => r.selectedFor === p).length])),
     personaFitCounts: Object.fromEntries(['P1', 'P2', 'P3', 'P4', 'P5'].map((p) => [p, patients.filter((r) => r.personaFits[p]).length])), patients };
   await writeFile(resolve(output, 'index.json'), JSON.stringify(index, null, 2) + '\n');
+  const exported = new Set(patients.map((p) => p.file));
+  for (const file of await readdir(output)) {
+    if (/^\d+\.json$/.test(file) && !exported.has(file)) await rm(resolve(output, file));
+  }
   console.log(JSON.stringify({ patients: patients.length, resourceCounts, selectedFor: index.selectedForCounts, fits: index.personaFitCounts, bytes: patients.reduce((n, p) => n + p.bytes, 0) }, null, 2));
   return index;
 }
