@@ -12,6 +12,74 @@ Composite source templates are planned through componentDefs and kind.use. This 
 
 Presentation components may draw an existing UiNode subtree differently, with events only through its mapped callback. They require a sandbox manifest, component bundle hash, type/lint checks and whole-version ARIA/visibility checks before deployment. If that pipeline is unavailable, presentation proposals cannot deploy.
 
+## Exact generated UI-program vocabulary
+
+```typescript
+export type Slot =
+  | { fixed: { n: number } }
+  | "current";
+
+
+export type Prefill =
+  | "none"
+  
+export type Action =
+  | { goto: { screen: ScreenId } }
+  | "back"
+  | { commit: { commit: CommitId } }
+  
+export type Visibility =
+  | "always"
+  | { unlessReceipt: { info: InfoId } };
+
+
+export type Size =
+  | "normal"
+  | "compact"
+  | "tiny";
+
+export type Kind =
+  
+export interface Component {
+  id: CompId;
+  kind: Kind;
+  label: string;
+  
+export interface ComponentDef {
+  name: string;
+  params: string[];
+  body: Component[];
+}
+
+
+export interface Screen {
+  id: ScreenId;
+  title: string;
+  
+export type MacroStep =
+  
+export interface Macro {
+  id: MacroId;
+  label: string;
+  steps: MacroStep[];
+}
+
+
+export interface Program {
+  id: string;
+  version: number;
+  owner: UserId;
+  role: Role;
+  specVersion: string;
+  start: ScreenId;
+  screens: Screen[];
+  macros: Macro[];
+  componentDefs?: ComponentDef[];
+}
+
+
+```
+
 ## What you cannot change
 
 Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.

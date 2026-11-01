@@ -48,6 +48,17 @@ export function formalRuleContext(spec: Spec, program: Program): string {
     'The active encounter-role policy permits only physicians/surgeons to sign pre-op orders; an NP cannot bypass it. Any attending co-signature is human-only; a simulated attending may supply one in replay only when the formal policy permits, never through designer automation.'].join('\n\n');
 }
 
+function programVocabulary(): string {
+  const types = read('lean/generated/ehr-types.ts');
+  return ['Slot', 'Prefill', 'Action', 'Visibility', 'Size', 'Kind', 'Component', 'ComponentDef', 'Screen', 'MacroStep', 'Macro', 'Program'].map((name) => {
+    const start = types.search(new RegExp(`export (?:type|interface) ${name}\\b`));
+    if (start < 0) throw new Error(`Missing generated program construct ${name}`);
+    const remaining = types.slice(start);
+    const next = remaining.slice(7).search(/\nexport (?:type|interface|const) /);
+    return next < 0 ? remaining : remaining.slice(0, next + 7).replace(/\/\*\*[\s\S]*?\*\/\s*$/, '');
+  }).join('\n');
+}
+
 export function capabilitiesManual(): string {
   const examples: string[] = [];
   const dir = path.join(REPO_ROOT, 'runs/run1-P3/decisions');
@@ -66,7 +77,7 @@ Rule profile: ${ruleProfile()}. ${profileLine()}\n
 Program screens, start navigation, components, labels, grouping, tabs, visibility, density, shortcuts, copies, provenance prefills, receipts, defaults with confirmation, and guarded macros. Use the generated Program/Kind/Macro types as the exact vocabulary (lean/generated/ehr-types.ts). JSON Patch examples: add a copied button with copyOf; change a panel from normal to compact; link an autoLinked field to its source.\n
 Composite source templates are planned through componentDefs and kind.use. This checkout declares componentDefs but has no Kind.use/Program.expand yet, so composite proposals cannot deploy until that formal support lands. Example: componentDefs [{name:"summary",params:["info"],body:[{id:"panel",kind:{panel:{info:"{{info}}"}},label:"Summary",tab:0,visibility:"always",size:"normal",tag:"summary"}]}], then kind {use:{name:"summary",args:[["info","currentMeds"]]}}. The use component id namespaces expanded ids. No nested use in template bodies.\n
 Presentation components may draw an existing UiNode subtree differently, with events only through its mapped callback. They require a sandbox manifest, component bundle hash, type/lint checks and whole-version ARIA/visibility checks before deployment. If that pipeline is unavailable, presentation proposals cannot deploy.\n
-## What you cannot change\n
+## Exact generated UI-program vocabulary\n\n\`\`\`typescript\n${programVocabulary()}\n\`\`\`\n\n## What you cannot change\n
 Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.\n
 ## Enforced properties 1–13, A1–A4\n
 ${properties()}\n
