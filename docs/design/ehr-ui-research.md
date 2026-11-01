@@ -374,6 +374,14 @@ The fictional resource generator now declares America/Los_Angeles as its source 
 
 The final source also passes the separate checker Comparator challenge (**21** statements) and completion-fragment challenge (**5** statements), in addition to the root (**18**) and renderer (**50**) challenges. Only the three permitted axioms are accepted. These checks do not expand the proved scope of general completion described in `docs/VERIFICATION.md`. A final artifact check confirms the app/native build identities, all fifteen current program hashes, exact generated button counts/report hash and all thirty-four screenshot dimensions/source hashes agree; subsequent commits contain documentation and audit records only.
 
+### Final external review of information distinctions
+
+The [SAFER Test Results Reporting and Follow-Up guide, practices 2.6–2.7, pp.17–18](https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-8.-Test-Results-Reporting-Final.pdf) recommends redundant abnormal-result cues, distinguishes missing flags from normality, and favors recent results first with enough room to read their details. The reviewed Results view retains explicit H/L/N values, leaves unflagged results as a dash, and preserves each record's unit, range, clock and qualitative/censored text. Its complete history is newest first. This is a review against published guidance; the browser checks are not a clinician usability study.
+
+[UTHealth's NCCD visibility guidance](https://sbmi.uth.edu/nccd/ehrusability/design/guidelines/Principles/visibility.htm) distinguishes actionable elements from ordinary text and calls for readable chart axes and clear medication-event timing/status. We checked these against the actual row-action buttons, ordinary read-only rows, growth/trend axes and separate Scheduled/Given/Held MAR text. Complete administration details remain below the grid.
+
+[MEDITECH's Expanse Point of Care support page](https://ehr.meditech.com/support/expanse-poc) separately identifies patient lists, MAR data, scanning, review, administration and co-signing. This supports retaining the existing Lean-owned nursing controls beside the data surfaces; a colored administration cell does not acquire an action. These additional references change no schema, clinical rule or application source, and no vendor assets were copied.
+
 ## Shared shell, visual system and UI browser
 
 Lane: `lane/app`, 1 Nov 2026. The shared painter remains a projection of Lean's `UiScreen`. The new indigo application bar, blue activity strips, tinted patient banner, role colors and green signing actions are original VGI choices; no source assets are included.
