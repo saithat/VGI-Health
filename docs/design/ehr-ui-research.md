@@ -138,6 +138,21 @@ passes again without cache reuse (99 pass, three fixture-dependent skips).
 The 82-image set includes the two additional draft code-choice views. Min-click
 and KLM measurements are regenerated and unchanged by this increment.
 
+Main integration through `924425f` retains the surgeon's active-section IDs,
+field choices and persistent desktop banner while adopting the shared semantic
+navigation regions. Existing enabled navigation-tagged gotos move into the shell
+with their original component IDs and events; hotkey/blocked controls retain
+their metadata in the workspace. Archived run1-P3 still has zero mismatches.
+All proof/certification/simulation gates pass. The shared visual/search/contrast
+walk passes 13 tests across the role palettes, and the 45-state desktop/narrow
+gate passes 99 tests with three fixture-dependent skips. Surgical screenshots
+are refreshed. The broader [app/EHR control audit](../audits/surg-browser-controls.json)
+records 2,704 working controls, 113 explained disabled states, and no dead/error
+controls across six roles. This is bounded configuration coverage (up to 48 per
+role), supplemented by complete world-2 task replay and the 72-screen P5 probe.
+Its report and regression gate support an isolated output directory, preserving
+the shared lane's separate live-agent evidence.
+
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
 ## Evidence and reuse boundary
@@ -470,3 +485,27 @@ Final visual check at 1440×900 covers ambulatory orders, ED triage, nursing MAR
 After the latest run integration: 188 app unit tests, 84 agent tests, six live mapper tests, 31 desktop and 16 narrow browser checks pass. Lazy summaries retain paired canonical/control metrics without day traces; opening a persona hydrates that persona's original source program as well as its compiled version. The recorded run still has zero state mismatches. The final control/performance results are recorded separately in `docs/audits/`.
 
 Large-chart regression: a live search on the larger Terrance Abshire fixture raised a WASM rendering exception while the smaller Aaron fixture worked. Search now uses direct lab summary rows rather than repeating historical trend series, string slices for excerpts, and a first-25 result list with an explicit refine-search message. Matching ignores converter fields and opaque encounter references. Full source panels and mandatory reviews remain unchanged. A real-WASM regression runs a nonempty search against all 324 committed patient bundles; both small and larger live charts also have browser coverage, including observed-checkpoint restoration. The audit now selects the intended representative patient instead of querying a name prefix such as “Mr.”, and treats unexpected WASM/runtime errors as errors.
+
+Frozen shared-shell milestone (`a462b19`, main `251d9a0`, Lean hash `afec57a5…`): 189 app unit tests, 84 agent tests, six live mapper tests, 33 desktop checks and 18 narrow checks pass. Certification accepts 15/15 persona projections and rejects 18/18 core bad programs. The default Lean build, kernel replay, three Comparator configurations, D1–D6, WASM freshness, 1,284/1,284 world-2 tasks and archived run1-P3 replay are green. `docs/audits/shell-verification.json` records this build identity and the exact scopes. The full bounded button audit records 2,746 working interactions and 115 disabled controls with reasons, with zero dead controls or errors across app surfaces and six clinical personas. It also exercised a real agent request to remove allergy review, which the checker rejected; its counterexample replay worked.
+
+Preview performance now transfers 266–291 KB for a cold dashboard versus about 3.16 MB before; round trips preserve the document and issue no WASM requests. These are loopback measurements with localhost and a synthetic non-localhost Host, not slow-link results. The local audit server disables Tailscale service setup, avoiding interference between its synthetic hostname and the production exact-host allowlist. The product allowlist is unchanged. Current screenshots include all five clinical roles, chart search/history, browser and dashboard.
+
+Navigator follow-up: current role baselines mark their flat goto components with a `nav` segment in the semantic tag, without a parent navigator group. Lean now recognizes that existing placement metadata as well as explicit groups. The exact same shown, enabled, ordinary-click controls move into `UiScreen.nav`; commits, controls with hotkeys and disabled controls retain their complete workspace representation. The public IDs, labels, goto targets and interpreter actions are unchanged. Named native examples check relocation without duplication and the original event's destination; all existing D-rule proofs compile unchanged. This restores a real section sidebar for all five canonical role presets rather than adding painter-only shortcuts.
+
+The navigator self-review also removed an inherited React accordion that could hide supplied navigation links without a Lean event. Group labels are now static headings in labeled regions, with the same decorative icons and all supplied links present. The independent ARIA projection no longer expects that unsupported group button; its exact extra/missing-control comparison remains in place. The real five-role capture test now compares each canonical screen's browser accessibility tree directly with its live Lean `UiScreen`, in addition to checking the fixture gallery. The interrupted intermediate audit is not presented as a completed gate; a fresh pass follows this correction.
+
+Final navigator milestone, frozen source `5559068` (main `251d9a0`, Lean hash `412471a4…`): app build/lint/typecheck and 189 unit tests; agent lint/typecheck and 84 tests; six live mapper tests; 35 desktop and 20 narrow checks all pass. Five live canonical role screens now have direct accessibility-tree equality checks against their Lean `UiScreen`. All seven main surfaces pass rendered-text contrast at both tested widths. The full bounded control audit records 2,666 working interactions, 114 explained disabled states, zero dead controls and zero errors. Its six persona samples cover 197 configurations, with eight queued checkpoints outside the 48-configuration budget for each of P3 and RN2. A real Claude attempt to remove allergy review was rejected for `reviewsBeforeCommit`, and its counterexample replay worked. The fast regression and performance gates also pass. Exact build identity, scope, counts and screenshot hashes are in `docs/audits/shell-verification.json`.
+
+Native validation remains green: default Lean build, kernel replay and all three Comparator configurations; D1–D6; fresh WASM; 15/15 persona certifications and 18/18 core rejections; 1,284/1,284 world-2 tasks. The archived run1-P3 still verifies 14,658 recorded events plus 137 baseline events with zero mismatches. The painter changes replay appearance, while the frozen programs, events, state sequence and effort measurements remain unchanged. A fresh complexity run confirms that all 21 workflow metric payloads and every fixed task payload equal the pre-redesign baseline.
+
+Final before/after additions were captured from the actual pre-redesign `75282d1` checkout, not by recoloring the new renderer. All clinical images are 1440×900; browser narrow images are 390×844. The temporary checkout, browser and preview were stopped and removed after capture.
+
+| Screen | Before → after | Final review |
+| --- | --- | --- |
+| Pediatric growth review | Gray application frame and empty navigator → indigo role bar, dated weight/isolation context, real section links and tinted progress/table framing. | The full source growth series and point table remain readable; the shell does not calculate percentiles. |
+| Surgical pre-op | Gray frame and empty navigator → shared role/patient frame, visible perioperative destinations and consistent field/section accents. | Consent, medication hold and H&P entry retain their semantic required/human-only states. |
+| Chart search | Input with no returned result → semantic results with concise metadata and bounded matching excerpts. | Original chart panels remain complete. Missing MRN stays explicit rather than displaying a resource UUID. |
+
+The final orders, ED, nursing, pediatric and surgical captures use static navigator group headings; every supplied goto stays visible. No clinical records were added to make an empty panel look populated. Per-note disclosure remains a semantic-content handoff: full readable note bodies and the existing semantic section controls are retained.
+
+The interruptive alert now also has a matched pre-redesign capture using the unchanged semantic fixture. Its old neutral modal frame becomes the explicit red blocking frame, with the same acknowledgment event and retained patient context. The final set contains 12 before and 12 after images with dimensions and hashes recorded in the verification report.

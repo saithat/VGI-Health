@@ -658,5 +658,6 @@
     "recordedPoundsRetainedInHint": true,
     "humanEntryAccepted": true,
     "automaticConversion": false
-  }
+  },
+  "nativeWasmProjectionComparisons": 2
 }

@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "Remove allergy panel, allergy review button and drug-allergy alert from the medication administration path (expected to be rejected by the checker).",
+    "summary": "Remove all allergy display and the allergy-review button from the W4 medication-administration path (unsafe; expected rejection).",
     "patch": [
       {
         "op": "remove",
@@ -35,15 +35,11 @@
       },
       {
         "op": "remove",
-        "path": "/screens/[id=w4Admin]/components/[id=w4Admin.alert.drugAllergy]"
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergies]"
       },
       {
         "op": "remove",
         "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.review.allergyList]"
-      },
-      {
-        "op": "remove",
-        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergies]"
       },
       {
         "op": "remove",

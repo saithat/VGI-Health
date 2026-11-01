@@ -76,6 +76,12 @@ value, picks a diagnosis, changes confirmation, or replaces clinical validation.
 Manual codes remain available. This is a small department preference list,
 not a terminology service. Archived screens omit this additive metadata.
 
+The shared browser control audit now traverses `presentation` and `rowAction`
+containers when deriving control shapes and coverage keys, matching the existing
+Lean observers and DOM controls. The surgical audit also compares both actual
+case/consult FHIR projections between native Lean and WASM before exercising
+buttons and fields. These are verification changes, without clinical behavior.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

@@ -1,11 +1,11 @@
 {
-  "validatedAt": "2026-11-01T10:26:18.557531+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; source-backed shell/context and Lean-supplied surgical code quick picks",
+  "validatedAt": "2026-11-01T10:58:28.898443+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; integrated semantic navigation and shared app/EHR control verification",
   "baselineCommit": "add0d2e",
-  "mainIntegratedThrough": "251d9a0",
+  "mainIntegratedThrough": "924425f",
   "presentationIntegratedThrough": "6062379",
-  "leanSourceHash": "a951c8ac2837389ccc02862c1e02fec0af9e0bc6ccc8deb0c878775be71274af",
-  "binarySha256": "e2939f54c2025a2fc7134905ca19ef86e43d398a88c966428325f88a423fdbd3",
+  "leanSourceHash": "53ccb4e82dd53aa260a92acb5f33dbd71dc805ddaff0e7733e695d6605fbb255",
+  "binarySha256": "1b155642039204219d98823afcdb35774d25d7cce8b440f892f29e50b0f00633",
   "programs": {
     "v1": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
     "v2": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
@@ -57,6 +57,18 @@
       "manualCode": true,
       "persistence": true,
       "keyboardHighlightContrastAtLeast": 4.5
+    },
+    "sharedVisualSearchContrastTests": 13,
+    "sharedControlAudit": {
+      "report": "docs/audits/surg-browser-controls.json",
+      "working": 2704,
+      "explainedDisabled": 113,
+      "dead": 0,
+      "errors": 0,
+      "roles": 6,
+      "maxConfigurationsPerRole": 48,
+      "regressionPassed": true,
+      "scope": "App shell and Lean EHR; separate live-agent API attempt not included"
     }
   },
   "controls": {
@@ -101,259 +113,259 @@
   "screenshots": [
     {
       "file": "app/shots/realism/surg/after/home-load.png",
-      "sha256": "3428357e32279910552400a5a35290f3de32ca69a8dae292fcea341d87038486",
+      "sha256": "ecb8225f04db9c93951ee938afe91e7673a686d0793f602f8ae0c8cc4d777eff",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-load.png",
-      "sha256": "49b1a2c1b8cf4f7ef71befdf458c340fb97bd0485e5fa61487e66f40808e9bea",
+      "sha256": "73ca6327115f798605403409bbc86afa806589757166d513de7f721c17411c53",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Close-task.png",
-      "sha256": "89f6931d217cc4e2001df53d7d8077d43e09fe485e9feea5a6b7969809dec3ff",
+      "sha256": "a2bc5eaf492eba845e15e9e7fe90aa1ebd2d05ec2191d6d0db4829c2363b8db9",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Exam-load.png",
-      "sha256": "266965d129c717d9700d9a3d75d4f19accb5d236b7a9f2137a424b201ef05dd9",
+      "sha256": "807c23c2a242ca410fc1a5efcc966e3b0aa413f7b6a681b70840507c13723525",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Exam-task.png",
-      "sha256": "266965d129c717d9700d9a3d75d4f19accb5d236b7a9f2137a424b201ef05dd9",
+      "sha256": "807c23c2a242ca410fc1a5efcc966e3b0aa413f7b6a681b70840507c13723525",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-load.png",
-      "sha256": "86ae5f651882d7f89c28f40266cb213a19c35b0c6afcd925173307f3fdf5aca3",
+      "sha256": "097b66c4eae36b021630cb44ceb08d50dbba0b4bc28f51c5b896d14eb8f284e0",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Hpi-task.png",
-      "sha256": "86ae5f651882d7f89c28f40266cb213a19c35b0c6afcd925173307f3fdf5aca3",
+      "sha256": "097b66c4eae36b021630cb44ceb08d50dbba0b4bc28f51c5b896d14eb8f284e0",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-load.png",
-      "sha256": "7366ec4cf88aad89a0613b2e533fbf8045ee63132b4057efe16dd1a45a22b136",
+      "sha256": "01f0f6e6a1b206607c474b21f1181d46a8fbeda44f38416cb7b450d1290882e3",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Labs-task.png",
-      "sha256": "7366ec4cf88aad89a0613b2e533fbf8045ee63132b4057efe16dd1a45a22b136",
+      "sha256": "01f0f6e6a1b206607c474b21f1181d46a8fbeda44f38416cb7b450d1290882e3",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1MedRec-load.png",
-      "sha256": "b9d1e7eaed153844c0999eda8c9ed37f05526b1f71f13930ef108dc5694dc858",
+      "sha256": "e78f5047c2d404001614b15503f31c7e197d20f013d3c1054f961bf7bfa37e10",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1MedRec-task.png",
-      "sha256": "5c01d6c64115e0d54f58d6837684181467f10e0bc7a16f1bd2f39070295f3612",
+      "sha256": "bbc976f6054dfa1646fcaeeddf479aea866f24f12b8e861a9ff89c2ec7614a6b",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Orders-load.png",
-      "sha256": "3f55bff202cde3d1c522156d2f9586be78c71e2acdca1f814e32f888e1e0a114",
+      "sha256": "9ccebcdf8663d55623b2c012e115cb7fdf08acae9ae5df3dcc3ec043ea81bbbb",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Orders-task.png",
-      "sha256": "1a826df87ae9be19bc1fbb6da900570cc631a31071cf4fdb794789bc610668b2",
+      "sha256": "dfb33eb272d7a241197c7dfbcb795fb67d34c6ab2785dd59bff6265aa5f0efbf",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Rooming-load.png",
-      "sha256": "a54f8d48ab5c94f5c4574113c246abe923337c1cdcc2fedbe9b0dc972ae39221",
+      "sha256": "64a04765003986ff344ed8e64c42110a4e3694fe534b3e5e1bb0e3ec7605047d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Rooming-task.png",
-      "sha256": "c9ee4c9d078abb9238907ba03312f4eb5dd739a5c59ff9b12c4e53d1721dba22",
+      "sha256": "06aaf4842a61dd137d7c04f5357b5502f3e2b9a3baafa4171ae7fa49d5c73a44",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Sign-load.png",
-      "sha256": "24625f8de901fe52589cccd62c1f1f64212cb0bf89adf7a632e9327df5a6862a",
+      "sha256": "e1a0d5cfa495b7c26d9d62de4939efc647e04c483007f9756c596977ed0095a3",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Sign-task.png",
-      "sha256": "a0dab11b52b5c76a70f1837cc03be94a192f7fe181c77dcd21e4e5afe343d57a",
+      "sha256": "6bbbab3d5d49c4d8e2ecefcc906e08811f5a578b8219b42bfbf5d75252cbcdcf",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-load.png",
-      "sha256": "980df2c69bf00136b827c63bc05c38125772b57d9ee534dd12a6be423f9df1ea",
+      "sha256": "b6931d390aea8d715a4e42ad9f671b28e16f9dd251998b757571eed65d3c2320",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w1Verify-task.png",
-      "sha256": "980df2c69bf00136b827c63bc05c38125772b57d9ee534dd12a6be423f9df1ea",
+      "sha256": "b6931d390aea8d715a4e42ad9f671b28e16f9dd251998b757571eed65d3c2320",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-load.png",
-      "sha256": "356e85ab86150d09deb1a9abedd95dfa88b689592bebc895d8f91c714dc6c0af",
+      "sha256": "dbe304be0bab62548fa816a919d2aa21352de8a7626c992ad34fbe5b9696e005",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-task.png",
-      "sha256": "0a42e237e17aee7d96e75e06915e2f40151f5ce275a43a632ed1248da7658d18",
+      "sha256": "b02e637e76a6a06b47f0e807ee79679b244d00cda5962fe586125d4f0b0f1d21",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-load.png",
-      "sha256": "6c18d8af3f45783164158beae6954ec2a46b1976b0b196acc4b1a5da3c0979d5",
+      "sha256": "b876cb109c136327fd823821048c15324e1dcbcff4d9c4abd6306abe1153622d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-task.png",
-      "sha256": "6c18d8af3f45783164158beae6954ec2a46b1976b0b196acc4b1a5da3c0979d5",
+      "sha256": "b876cb109c136327fd823821048c15324e1dcbcff4d9c4abd6306abe1153622d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consults-load.png",
-      "sha256": "fb5042c7a13a72c739945e8593f5b185a03a589eaa5d725c476e91c6f85a3639",
+      "sha256": "405246c562af8c69c0087c8c54361bbd617fe9ccce5b53b52c52b5c4e1e1c23f",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-load.png",
-      "sha256": "b44cd0e8b9796426edb87786721030cf9c03f6dbdbaa33cefd006f78a0cd1840",
+      "sha256": "f93a27137a8660af2a59b5f5532491e5189f27e72fcca2d8edd3c35d0a42f20d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-task.png",
-      "sha256": "54453cbfce1ea07f77c9cdb0cb73b69e0144a4257dc93a7a181bb19c908adef6",
+      "sha256": "a268ee65de3c1457e8caf4aad0b4dfd7cedf44a00a43f275a91130cb7d31aae2",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-code-search.png",
-      "sha256": "14000732b97ffd5168b0309ec1d3dc60eb15b3325b5945ae1dd3f951f8b1c0f7",
+      "sha256": "2f6c764fc01e01f35911f73884d80812a8e908e76e0a73e0ba0a495ab2467dc9",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-code-selected.png",
-      "sha256": "81258259b908e9556e4c4c934e5dd3de5e6589ff44d275671c1023366d296118",
+      "sha256": "1f794cb9271a319aa908ebe704f1c0f52721df43544ffe8a634eb64c413a2ab0",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-load.png",
-      "sha256": "5cd7fb3799db0b9f1a50199f19eef8324be80dbd060ffea3eb6b20d1d08c0328",
+      "sha256": "5196d18e32b444e43ea3f481d4ace3e19acaeb0e483aac806e8b5aafb91bdf4c",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-task.png",
-      "sha256": "a54d9616387ad2e5f85b90341f3aeb5125afda8ea69abc3e271923680b3ec297",
+      "sha256": "4b60bde0a7f01b2ae4541736c65e6a8d4c902299d264ecd30428f0950b849eb8",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-load.png",
-      "sha256": "b47ba3fb43cfb1845d6d2bd250f6a545783306beb29501b4377f17229c5e4e41",
+      "sha256": "1238bb3896c61a9eef8dd0b47526e40db6a574def71cd54ca1da21bf4fa84430",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-task.png",
-      "sha256": "b368109442b9a37bff6a52178e7bf5a8bf9639e5c6fbc07417a7df3b51a6428a",
+      "sha256": "292efc29fc1ed42bd51120079ba6979b791e8eff69be8b3718bf66c5ec0677f2",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-load.png",
-      "sha256": "9cdb5660df1f088e0f039a2948844bf492dc6ec602285d958cbf8fdc16b02f4a",
+      "sha256": "ae33c526045f6e667edbbaabcb4a81970b9b0adf4068874fb15ce806924129e7",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-task.png",
-      "sha256": "9cdb5660df1f088e0f039a2948844bf492dc6ec602285d958cbf8fdc16b02f4a",
+      "sha256": "ae33c526045f6e667edbbaabcb4a81970b9b0adf4068874fb15ce806924129e7",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-load.png",
-      "sha256": "63b01e542382942605d7786bf2f4393f42aac85e13c45228728502d3b4bc7a37",
+      "sha256": "300fe4636a304db6f46e9d98569751c24e9c35499164cb0eeb889afe0f5af65e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-task.png",
-      "sha256": "63b01e542382942605d7786bf2f4393f42aac85e13c45228728502d3b4bc7a37",
+      "sha256": "300fe4636a304db6f46e9d98569751c24e9c35499164cb0eeb889afe0f5af65e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-load.png",
-      "sha256": "67beddad7834b54cee492439575b1b59fb1e5b4fca5f72993ae1297f910007e3",
+      "sha256": "ff2d2d023957d3168c33bf6b3023581cbd356b57cdd68f7cb3432eb11fb0579b",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-task.png",
-      "sha256": "1af486a427527a99dc87c140f256e9b51ead4f2ee3f20e20982927b7aa594f5e",
+      "sha256": "eb93357b3d2f82feaac4686fa92f91e8a5f388b86abbe5ce5167a7e2ffa2470e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Schedule-load.png",
-      "sha256": "fdbbc77fe9fa4aa4fb1575c5972c84b3c828d0a62693a47341234e9539cc417d",
+      "sha256": "291fac8ea2811f375a6f232cf85c29a1ee6956f1ae1d06572a10c5fe373620e3",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-load.png",
-      "sha256": "f63a00a1a2f42cc10a908a21299f52b9f6953d99a512d4135d422354228e756b",
+      "sha256": "f8cbb3394b5b6e55c2e918338d70ce8d21a23d84ab4e729c03d6984223520481",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-pounds-load.png",
-      "sha256": "16912e18bedac9ca1ed10c0df8cdb8d4fd0e733cdf1427a923f3bf21277dc722",
+      "sha256": "6454c3c524de9c34b4d0391836ae7a6fd81a152ac2d2f75bcc406b85a87fb21e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-pounds-task.png",
-      "sha256": "6bfcb28221e64ee35e856a702a8ccc6122021fd8980594d990044fd3142c72e3",
+      "sha256": "4dacecd3e8f1131c61400e3236a272af415217849655d62360ba81dc813df71d",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-task.png",
-      "sha256": "4bc1e4b01e66577e56c606c282c7293d29ecc4193474bcba3e4a62e6b6000ad8",
+      "sha256": "2dc1fae49f2428bd07014592fb0e11881875bcc68defedf84eb7b52c074ae004",
       "width": 1440,
       "height": 900
     },
@@ -601,8 +613,8 @@
   "nativeWasmSurgicalProjectionComparisons": 2,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "7d6775753efee27ebc80524e721ffdc5ea6349cdb5ea33ace6e092eaf8d37a84"
+    "appSha256": "2922e45c98cbdf096a7dc91ca715fda18af1a4de9704e61c838ee98084a3ec38"
   },
   "metricsRerun": true,
-  "shellIntegratedThrough": "a462b19"
+  "shellIntegratedThrough": "b820eb9"
 }

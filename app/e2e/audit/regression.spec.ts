@@ -13,7 +13,12 @@ test("fast app regression: report gate and dashboard control effects", async ({
       label: string;
       persona: string;
     }[];
-  } = JSON.parse(readFileSync(resolve("../docs/audits/buttons.json"), "utf8"));
+  } = JSON.parse(
+    readFileSync(
+      resolve(process.env.EHR_AUDIT_DIR ?? "../docs/audits", "buttons.json"),
+      "utf8",
+    ),
+  );
   expect(
     report.controls.filter((r) => ["dead", "error"].includes(r.status)),
   ).toEqual([]);

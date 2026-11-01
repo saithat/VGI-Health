@@ -265,12 +265,15 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
         .filter(([, items]) => items.length > 0)
         .flatMap(([group, items]) =>
           nest(
-            entry("list", `${group} screens`),
-            items.map(([, name]) => ({
-              role: "button",
-              name,
-              disabled: false,
-            })),
+            entry("region", group),
+            nest(
+              entry("list", `${group} screens`),
+              items.map(([, label]) => ({
+                role: "button",
+                name: label,
+                disabled: false,
+              })),
+            ),
           ),
         ),
     ),

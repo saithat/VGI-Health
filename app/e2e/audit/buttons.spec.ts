@@ -51,6 +51,8 @@ function controlShape(nodes: UiNode[]): unknown[] {
       ];
     if ("section" in node) return controlShape(node.section.children);
     if ("columns" in node) return controlShape(node.columns.children);
+    if ("presentation" in node) return controlShape(node.presentation.children);
+    if ("rowAction" in node) return controlShape(node.rowAction.children);
     return [];
   });
 }
@@ -76,6 +78,8 @@ function controlKeys(nodes: UiNode[]): string[] {
       ];
     if ("section" in node) return controlKeys(node.section.children);
     if ("columns" in node) return controlKeys(node.columns.children);
+    if ("presentation" in node) return controlKeys(node.presentation.children);
+    if ("rowAction" in node) return controlKeys(node.rowAction.children);
     return [];
   });
 }

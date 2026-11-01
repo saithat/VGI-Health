@@ -5,17 +5,24 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { loadEhrInterp } from '../../../app/public/ehr/interp-loader.mjs';
 const root = new URL('../../../', import.meta.url);
 const source = process.argv[2] ?? '/tmp/surg-review';
 const destination = process.argv[3] ?? '/tmp/surg-button-audit.json';
 const read = async path => JSON.parse(await readFile(path, 'utf8'));
 const wasm = await loadEhrInterp();
+const nativeFacts = (bundle, context) => JSON.parse(execFileSync(
+  fileURLToPath(new URL('lean/.lake/build/bin/ehr', root)), ['facts'],
+  { input: JSON.stringify({ bundle, context }), encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 },
+));
 const bundle = await read(`${source}/case-bundle.json`);
 const context = await read(`${source}/case-context.json`);
 const user = await read(`${source}/user.json`);
 const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
 assert.equal(projection.error, undefined);
+assert.deepEqual(projection, nativeFacts(bundle, context));
 function nodes(node) {
   if (node.section) return [node, ...node.section.children.flatMap(nodes)];
   if (node.columns) return [node, ...node.columns.children.flatMap(nodes)];
@@ -133,6 +140,7 @@ for (const release of ['v1', 'v2', 'v3']) {
   const context = await read(`${source}/consult-context.json`);
   const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
   assert.equal(projection.error, undefined);
+  assert.deepEqual(projection, nativeFacts(bundle, context));
   const request = projection.facts.infoPayloads?.find(p => p.info === 'consultRequest')?.rows[0]?.fields;
   assert.ok(request?.some(([key, value]) => key === 'Received' && value));
   assert.ok(!request?.some(([key]) => key === 'Due'));
@@ -164,6 +172,7 @@ for (const release of ['v1', 'v2', 'v3']) {
   report.poundsEntry = { target: 'w6Sign.weight', inputUnit: 'kg', initiallyBlank: true,
     recordedPoundsRetainedInHint: true, humanEntryAccepted: true, automaticConversion: false };
 }
+report.nativeWasmProjectionComparisons = 2;
 await writeFile(destination, JSON.stringify(report, null, 2) + '\n');
 console.log(`${report.screens.length} P5 release/screens: ${report.screens.reduce((n, s) => n + s.enabled, 0)} enabled buttons, ${report.screens.reduce((n, s) => n + s.disabled, 0)} explained disabled buttons, ${report.screens.reduce((n, s) => n + s.tabChanges, 0)} alternate tabs; ${report.failures.length} failures`);
 assert.deepEqual(report.failures, []);

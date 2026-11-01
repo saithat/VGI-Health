@@ -145,25 +145,22 @@
   padding: 4px 8px;
   font-weight: 600;
 }
-.workflow-groups .mantine-Accordion-item {
-  border: 0;
+.workflow-group {
   margin-bottom: 4px;
 }
-.workflow-groups .mantine-Accordion-control {
-  padding: 4px 8px;
+.nav-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
   color: var(--clinical-ink);
   border-radius: 3px;
   background: var(--clinical-activity);
   border-left: 3px solid var(--clinical-primary);
-}
-.workflow-groups .mantine-Accordion-label {
-  padding: 4px 0;
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
-}
-.workflow-groups .mantine-Accordion-content {
-  padding: 0;
 }
 .workflow-links {
   list-style: none;
