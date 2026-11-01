@@ -149,7 +149,9 @@ Core's unknown policy: unknown applies; a missing fact is never inferred from
 an unrelated identity or encounter label. Scenario-chosen captured-code inputs
 used by conditions become real field goals, including inputs used only by a
 temporal, expiry, display or alert contract. Only their actual UI captures can
-make the commit guard's condition false.
+make the commit guard's condition false. An exact-slot condition goal also
+satisfies a matching any-slot entry; it is never replaced by an arbitrary-slot
+goal that could bind to a different visible field.
 
 For unspecified constrained fields, candidate values come from allowed lists,
 specified defaults, declared record sources, and constructive code/range or

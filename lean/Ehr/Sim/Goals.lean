@@ -294,6 +294,15 @@ def clinicalChoiceGoals (sp : Spec) (facts : Facts) (user : User)
       let .code _ := value | none
       pure { element := e, slot? := some slot, value? := some value, commit := cm }
 
+/-- A condition's exact-slot capture can also satisfy an any-slot entry.
+Keep the exact binding, so an earlier field on another slot cannot satisfy the
+planner's goal while leaving the clinical predicate unknown. -/
+def mergeClinicalGoals (base clinical : List ValueGoal) : List ValueGoal :=
+  if clinical.isEmpty then base else
+  let base := base.filter fun b => !(b.slot?.isNone && clinical.any (fun g =>
+    g.element == b.element && (b.value?.isNone || b.value? == g.value?)))
+  dedupGoals (clinical ++ base)
+
 /-- Construct candidates only for unspecified values. Every candidate is checked
 by Core's validator below; this is not a second implementation of validation. -/
 def validationCandidates (facts : Facts) (hyp : State) (slot : Nat) : Validation → List Value
@@ -399,9 +408,7 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
     ["orderKind", "orderCode"].map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
   let base := dedupGoals (raw ++ advance ++ explicitChoices ++ services)
-  let clinical := clinical.filter fun g => !base.any (fun b => b.element == g.element &&
-    (b.slot?.isNone || b.slot? == g.slot?))
-  let fitted := (base ++ clinical).map (checkFit sp facts user)
+  let fitted := (mergeClinicalGoals base clinical).map (checkFit sp facts user)
   let hypValues := hypothetical orders (dedupGoals (orderGoals ++ fitted.map (·.1)))
   let checked := fitted.map fun (g, problems) =>
     let (g, constraints) := constrainGoal sp facts user hypValues g

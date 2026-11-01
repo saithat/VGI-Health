@@ -80,6 +80,20 @@ def dischargeChoices : TaskChoices := { choices with disposition? := some "disch
 #guard withinFloor (replay conditionalSpec conditionalProgram facts dischargeChoices)
 #guard !completed (replay conditionalSpec (fixtureProgram [input "minorConsent"]) facts dischargeChoices)
 
+-- An any-slot entry must not erase the predicate's exact-slot obligation.
+-- The earlier slot-zero field is deliberately visible before slot one.
+def exactSlotSpec : Spec := { conditionalSpec with entries := [
+  { commit := "ackResult", element := "dispositionChoice" },
+  { commit := "ackResult", element := "minorConsent",
+    when := .clinical (.capturedCode "dispositionChoice" 1 "admit") }] }
+def exactSlotProgram := fixtureProgram [input "dispositionChoice",
+  { id := "choiceOne", kind := .field "dispositionChoice" (.fixed 1) .none }, input "minorConsent"]
+#guard (goals exactSlotSpec facts dischargeChoices).values.map (·.slot?) == [some 1]
+#guard completed (replay exactSlotSpec exactSlotProgram facts dischargeChoices)
+#guard withinFloor (replay exactSlotSpec exactSlotProgram facts dischargeChoices)
+#guard (replay exactSlotSpec exactSlotProgram facts dischargeChoices).trace.any
+  (·.event == .enter "choiceOne" (.code "discharge"))
+
 -- Temporal evidence is trusted external input, with current artifact identity.
 def event (id : String) (time : Int) : EventEvidence :=
   { event := id, patient := facts.patientId, episode := "episode-1",
