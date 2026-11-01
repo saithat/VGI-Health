@@ -8,7 +8,7 @@ named **vgi-medplum** stack and its data, and never calls a reset/down target.
 
 ## Current attempt — 2026-11-01
 
-The corrected harness is being run against commit `2452e68`. It explicitly requests `inspect=1` and opens the first **Open chart:** row before asserting a patient banner. This fresh attempt is not yet a pass; logs: `/tmp/honesty-clean.log`, clone/build logs: `/tmp/vgi-clean-clone.QfKZUw`. The result below is historical and does not validate the current landing-list integration.
+The corrected harness is being run against commit `2452e68`. It explicitly requests `inspect=1` and opens the first **Open chart:** row before asserting a patient banner. This fresh attempt passed `make install` but was still completing Chromium setup at the 11:30 PDT hard stop; it is not yet a full pass; logs: `/tmp/honesty-clean.log`, clone/build logs: `/tmp/vgi-clean-clone.QfKZUw`. The result below is historical and does not validate the current landing-list integration.
 
 ## Historical recorded result
 

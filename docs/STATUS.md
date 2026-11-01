@@ -2,7 +2,7 @@
 
 ## DEMO-HONESTY verification — 2026-11-01, 11:29 PDT
 
-Merged origin/main. Corrected the clean-clone Inspector URL and chart-opening sequence; current clean-clone attempt at `2452e68` is still running, not a pass. The previous Inspector failure is historical. App build and lint passed. Full unit and browse/dashboard browser gates are running with `EHR_BIN` pointing to the built native checker in the main worktree; the first unit attempt failed because this fresh worktree has no native binary. Current logs: `/tmp/honesty-{build,lint,tests2,e2e2,clean}.log`.
+Merged origin/main. Corrected the clean-clone Inspector URL and chart-opening sequence; current clean-clone attempt at `2452e68` passed make install and is still completing browser setup, not a full pass. The previous Inspector failure is historical. App build and lint passed. Browse/dashboard smoke passed: 10 passed, 2 screenshot checks skipped. Full unit gate remains pending at the hard stop, running with `EHR_BIN` pointing to the built native checker in the main worktree; the first unit attempt failed because this fresh worktree has no native binary. Current logs: `/tmp/honesty-{build,lint,tests2,e2e2,clean}.log`.
 
 Raw archived chart-code display remains an owning-painter request in docs/design/changes-requests.md; no all-green claim is made.
 
