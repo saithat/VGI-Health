@@ -93,7 +93,7 @@ No state is communicated by red/green alone. A care-gap count does not become a 
 
 ## Alert presentation and color code
 
-Interruption **tier** and clinical **severity** are independent. The tree supplies both; the painter must not infer tier from red, or severity from modal placement.
+Interruption **tier** and clinical **severity** are independent. The painter must not infer either from color or placement. The current wire's `severity` field carries a legacy tier string on some alerts. Per the owner's shared-shell brief, explicit `interruptive` is framed red, `removable` amber and `passive` blue. That framing does not rename the alert as clinically severe or change acknowledgment, modality or enabled state. Explicit clinical severity strings use the table below.
 
 | Severity / condition | Treatment | Original VGI labeling pattern |
 | --- | --- | --- |
@@ -106,7 +106,7 @@ Interruption **tier** and clinical **severity** are independent. The tree suppli
 
 Use dialog/alertdialog semantics as appropriate, labeled heading and description, focus inside on open, a contained Tab sequence, and return focus to the triggering action after close. Standard Escape behavior can dismiss/cancel an attempted action **only if the interpreter exposes that event**; it never acknowledges or completes a commit. Until an explicit dismiss event exists, no X/Escape handler may bypass the open modal state. Do not focus an override/commit button by default or let Enter confirm a reason automatically. [W3C modal interaction pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
 
-Keep the baseline's removable popups conditional and distinct from severe warnings. Style their content according to actual severity. Do not upgrade care gaps to “critical” just to justify interruption. Hard-stop disabled actions have readable text such as `Enter patient ID to sign` or `Scan medication`; no tooltip-only explanation.
+Keep the baseline's removable popups conditional and distinct from severe warnings. Do not upgrade care gaps to “critical” just to justify interruption. Hard-stop disabled actions have readable text such as `Enter patient ID to sign` or `Scan medication`; no tooltip-only explanation.
 
 ## MAR statuses and scanning
 

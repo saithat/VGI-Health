@@ -1,5 +1,7 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
+import { uiScreenSchema } from "../src/ehr/ui/types";
+import type {} from "../src/ehr/offline";
 
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
@@ -14,7 +16,9 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     if (name === "dashboard")
-      await expect(page.getByRole("region", { name: "Version history" })).toBeVisible();
+      await expect(
+        page.getByRole("region", { name: "Version history" }),
+      ).toBeVisible();
     if (name === "browse" && process.env.REALISM_SHOTS !== "before")
       await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
     await page.screenshot({
@@ -64,11 +68,23 @@ test("shared shell and browser visual review", async ({ page }) => {
       path: `${folder}/home-medications.png`,
       animations: "disabled",
     });
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    const alert = uiScreenSchema.parse(
+      JSON.parse(readFileSync("src/fixtures/ui/p1-alert.json", "utf8")),
+    );
+    await page.evaluate((screen) => window.renderUi(screen), alert);
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.screenshot({
+      path: `${folder}/interruptive-alert.png`,
+      animations: "disabled",
+    });
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/browse");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  if (process.env.REALISM_SHOTS !== "before") await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
+  if (process.env.REALISM_SHOTS !== "before")
+    await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
   await page.screenshot({
     path: `${folder}/browse-narrow.png`,
     animations: "disabled",

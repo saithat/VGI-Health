@@ -15,9 +15,7 @@ test("fast app regression: report gate and dashboard control effects", async ({
     }[];
   } = JSON.parse(readFileSync(resolve("../docs/audits/buttons.json"), "utf8"));
   expect(
-    report.controls.filter(
-      (r) => r.owner === "app" && ["dead", "error"].includes(r.status),
-    ),
+    report.controls.filter((r) => ["dead", "error"].includes(r.status)),
   ).toEqual([]);
   expect(
     new Set(

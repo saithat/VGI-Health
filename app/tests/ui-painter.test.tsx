@@ -340,7 +340,7 @@ describe("semantic EHR painter", () => {
       expect(formatDisplayValue(value)).toBe(value);
     }
   });
-  it("styles only explicit medication statuses and never infers severity from interruption tier", () => {
+  it("styles supplied medication statuses and alert tiers without changing their text", () => {
     expect(
       [
         "Scheduled 12:00",
@@ -365,9 +365,9 @@ describe("semantic EHR painter", () => {
     expect(statusTone("unknown")).toBeUndefined();
     expect(statusTone("active")).toBeUndefined();
     expect(["interruptive", "passive", "removable"].map(severityTone)).toEqual([
+      "red",
       "blue",
-      "blue",
-      "blue",
+      "yellow",
     ]);
     expect(severityTone("severe")).toBe("red");
     expect(severityTone("warning")).toBe("yellow");

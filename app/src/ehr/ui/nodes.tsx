@@ -581,6 +581,7 @@ export function AlertNode({ node }: Props<"alert">) {
       variant="light"
       data-comp-id={node.comp}
       className="clinical-alert"
+      data-alert-tone={color}
       icon={
         <ClinicalIcon
           name={

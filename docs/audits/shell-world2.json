@@ -1,7 +1,7 @@
 {
   "world": "runs/world/2",
   "seed": 7,
-  "binarySha256": "61bc65be80d5f95cb354bca8cc4d16ad1d56369833f31a4d341e06c4b738e891",
+  "binarySha256": "df2428e619551db340e0c399a402cc31a64aca2dcd047320fb709f95d4a333f2",
   "releaseDays": {
     "v2": 4,
     "v3": 7

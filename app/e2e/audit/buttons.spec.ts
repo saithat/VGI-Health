@@ -257,7 +257,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       await page.getByRole("heading", { name: "Open a clinical UI" }).waitFor();
       await page.locator('[data-node-key="P3-5"]').waitFor();
     });
-    // Every catalog link, including canonical, bad programs, projections and run versions, was clicked by allShell.
+    // Sample catalog links across the vendor reference, projections and run versions.
     audit.screen = "replay inspector";
     await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
     await page.locator(".clinical-app").waitFor();
@@ -292,7 +292,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         .click();
       await page.locator(".patient-switcher summary").click();
     });
-    // Both real and authored runs: every persona, selector, version/release row and drawer action.
+    // Both real and authored runs: every persona, with sampled version/release rows.
     for (const run of ["run1-P3", "mock"]) {
       audit.program = run;
       audit.screen = "Evolution";

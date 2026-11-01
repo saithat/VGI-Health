@@ -878,3 +878,7 @@
   min-width: 28px;
   padding: 2px 5px;
 }
+.clinical-modal:has([data-alert-tone="red"]) .mantine-Modal-header {
+  background: var(--clinical-red-tint);
+  border-bottom: 1px solid var(--clinical-red-ink);
+}

@@ -1,14 +1,41 @@
 import { expect, test } from "@playwright/test";
 
-for (const route of ["/browse", "/dashboard?run=run1-P3"]) {
+for (const route of [
+  "/browse",
+  "/dashboard?run=run1-P3",
+  ...["P1", "P2", "P3"].map(
+    (persona) =>
+      `/ehr?mode=replay&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
+  ),
+]) {
   test(`visible text contrast: ${route}`, async ({ page }) => {
     await page.goto(route);
     if (route === "/browse")
       await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
-    else
+    else if (route.startsWith("/dashboard"))
       await expect(
         page.getByRole("region", { name: "Version history" }),
       ).toBeVisible();
+    else {
+      await expect(page.locator(".clinical-app")).toBeVisible();
+      const persona = new URL(route, "http://localhost").searchParams.get(
+        "persona",
+      );
+      const entry =
+        persona === "P1"
+          ? "w1Rooming"
+          : persona === "P2"
+            ? "w3TrackBoard"
+            : "w4Worklist";
+      const destination =
+        persona === "P1" ? "w1Orders" : persona === "P2" ? "w3Triage" : "w4Mar";
+      await page
+        .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
+        .click();
+      await page
+        .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
+        .click();
+    }
     const failures = await page.evaluate(() => {
       const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number);
       const luminance = (color: number[]) =>
