@@ -49,12 +49,12 @@ expiry and pinned displays, are encoded and compiled but switched off.
 
 | Release/profile | Elements | Commits | Entries | Reviews | Alerts |
 |---|---:|---:|---:|---:|---:|
-| v1 core | 123 | 11 | 82 | 21 | 15 |
-| v1 full | 283 | 95 | 870 | 486 | 77 |
-| v1.1 core | 126 | 11 | 82 | 21 | 15 |
-| v1.1 full | 286 | 95 | 870 | 486 | 77 |
-| v2 core | 127 | 11 | 93 | 22 | 15 |
-| v2 full | 287 | 95 | 881 | 487 | 77 |
+| v1 core | 124 | 11 | 82 | 21 | 15 |
+| v1 full | 284 | 95 | 870 | 486 | 77 |
+| v1.1 core | 127 | 11 | 82 | 21 | 15 |
+| v1.1 full | 287 | 95 | 870 | 486 | 77 |
+| v2 core | 128 | 11 | 93 | 22 | 15 |
+| v2 full | 288 | 95 | 881 | 487 | 77 |
 
 Restore by setting `ruleProfile := .full` in `lean/Ehr/Specs/Profile.lean`, then
 running `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake build EhrHeavy)`.
@@ -64,8 +64,8 @@ listed in [TODO_PROOFS.md](../TODO_PROOFS.md). General checker/interpreter/deplo
 renderer proofs and three Tiny kernel rejection proofs remain in the default.
 Full-profile persona/blueprint checks passed; the heavy proof suite is unfinished.
 
-Default rebuild after the encounter-role change and render-lane merge: **27.04 s**, peak
-process RSS **1.63 GiB**. The W7 denial proof covers every `TaskChoices` value
+Default rebuild after the native-unit dose spec/guard change: **37.24 s**, peak
+process RSS **1.63 GiB**; the final incremental follow-up build took **9.43 s**. The W7 denial proof covers every `TaskChoices` value
 whose refill choice is `deny`, with only `propext` in its axiom audit.
 `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake exe profile-goals)`
 compares the actual `taskCommits` results across core/full for all **1,284**
@@ -76,9 +76,9 @@ The generated evidence is `lean/Ehr/Check/profile-goals-report.json`.
 wrapper retains its sandbox and supplies the six workers and 64 MiB stacks that
 Comparator otherwise clears. `lake check` also passes with that wrapper.
 Generated TS types include `EncounterRoleRule` and optional `encounterRoles`.
-`make wasm` rebuilt the assets in **7.93 s** using the warm cache;
+`make wasm` rebuilt the assets in **7.10 s** using the warm cache;
 `make wasm-check` passes. The runtime includes the new guard and merged renderer.
-App tests pass **153/153**; agent tests pass **32/32**. The pnpm 11 automatic
+App tests pass **161/161**; agent tests pass **35/35**. The pnpm 11 automatic
 pre-run install was disabled with `pnpm_config_verify_deps_before_run=false`
 to use the existing dependencies. The real native/WASM refusal and semantic
 button reason match in all three releases; rerun
@@ -89,25 +89,42 @@ Certification is **15/15 persona baselines**, including D5. The three shared
 they mix clinician roles and are recorded as **reference**, not deployable
 single-role programs. Verdicts mark the persona projections **certified**.
 
-Hospital policy (not law), owner decision 2026-10-31: only physicians and
-surgeons sign pre-op orders. The optional `CommitSpec.encounterRoles` rule
-uses the same matcher as `When.encounter`; the guard reports
-"Pre-op orders are signed by a physician or surgeon". The three pre-op entry
-requirements and their entry permissions are unchanged. Completion and depth
-exclude only forbidden role/encounter contexts. `np_preop_never_signs` proves
-refusal for every program, state and event. Named executable P4 clinic,
-P4 pre-op refusal and P5 pre-op success witnesses run in the default build.
-`Statements.lean` changes only `commitGuard_iff`'s role conjunct from `roleOk`
-to `commitRoleOk sp facts user c`; the remaining statements are unchanged.
+Hospital policy (not law), owner decision 2026-10-31: physicians and surgeons
+sign pre-op orders directly. An NP's pending pre-op order needs a confirmed,
+human, distinct-user `attendingCosign`. The optional encounter rule declares
+that route. Only consentVerified, hpUpdate and medsToHold use `EntryReq.waivedBy`;
+their entry permissions stay unchanged. Physicians cannot enter the NP-only
+cosign field. The guard, checker and role views share the encounter matcher.
+`np_preop_without_cosign_never_signs` proves the general refusal; T3 proves
+macros and prefills cannot supply the attending response. Executable examples
+cover NP clinic, NP pre-op with/without response, physician refusal to enter the
+cosign, and surgeon direct signing. Attending responses add 1–5 seeded minutes
+to task wall-time, with no NP clicks or keys. See
+[cosignature research and modeling choices](design/ehr-ui-research.md#cosignature).
 
-All **17/17 core bad programs** fail their expected property with valid
-navigation replays, including the NP pre-op macro bypass attempt; 16 catalog
+One canonical EHR serves everyone. Each persona's v0 is the canonical with that
+role's permissions and pre-set view (`forPersona`). The overnight agent edits
+only that persona's fork. Vendor releases merge into every fork and are
+re-certified. “The canonical is certified” means every role's view passes.
+
+`Statements.lean` now supplies state to `commitRoleOk`; `T0_entry_values` adds
+an explicit no-attestation hypothesis because an authorized attending can
+replace those three scalar entries. Quantity, per-line and cosign requirements
+cannot be waived; their safety theorem statements are unchanged.
+
+All **18/18 core bad programs** fail their expected property with valid
+navigation replays, including the NP pre-op macro and attending-prefill attempts; 16 catalog
 seeds remain full-only. Run `python lean/Ehr/Check/certify.py --bad-only` for the
 fast differential regression. The full command records the 15 persona checks,
 previous-release comparisons and three master-reference records. Seed 13 still
 removes all CURES routes; the old W1-only mutation had a valid receipt escape.
 
-Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
+Current world-2 day-1 smoke: P1 **42/0**, P2 **22/0**, P3 **38/0**,
+P4 **22/0**, P5 **18/0** completed/incomplete. The named NP pre-op simulation
+also completes, records an attending response, and checks effort floors and seed
+reproducibility. See the ten-day table below.
+
+Earlier day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
@@ -116,8 +133,8 @@ Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 | v2 | 42 / 0 | 22 / 0 | 38 / 0 | 22 / 0 | 18 / 0 |
 
 World 1 contains **15 pre-op tasks, all P5**, and none on day 1; P4 has none.
-The remaining simulator problems are recorded in
-[changes-requests.md](design/changes-requests.md); `Sim/**` was not edited.
+The world-1 release mismatch and dose issues are recorded with their resolutions
+in [changes-requests.md](design/changes-requests.md).
 Details and hashes: `lean/Ehr/Check/{certification-report,sim-smoke-report}.json`.
 
 ## Simulator: world revision 2 (2026-10-31)
@@ -133,36 +150,57 @@ world if absent, so it does not overwrite the committed replay. Explicit world
 arguments still work. Recorded `run1-P3` and its trajectories continue
 to refer to world 1; no world-1 artifact was edited.
 
-Dose fidelity exposed a spec obstruction: `dose` only accepts tenths of mg;
-heparin/insulin choices use units, and albuterol 180 mcg needs more precision.
-The simulator now preserves incompatible choices instead of substituting an
-arbitrary accepted dose. Core/content changes are requested under
-`SIM-WORLD2-DOSE-2026-10-31` in [changes-requests.md](design/changes-requests.md).
-Active-release validation (seed **7** for simulator policy; completed / incomplete):
+Medication doses now retain their native unit with tenths precision.
+`ValueKind.medicationDose` checks the selected drug on the same order slot;
+`Ehr/Formulary.lean` supplies every allowed unit and native-unit range. Insulin
+and heparin accept units; albuterol accepts mg or mcg. Unknown drugs and wrong
+units are refused. The separate unit selector must agree with the captured dose.
+Changing drug or unit invalidates stale values and requires explicit re-entry;
+Add order also refuses to leave a line with a stale dose.
+No numeric value is converted to mg. Existing mg/kg ranges, kg-only weight,
+absolute mg caps, MME checks and the mg-based pediatric calculator are preserved.
+The albuterol inhaler has its existing absolute cap stated directly in mcg;
+its nebulizer's mg/kg range is not applied to the inhaler. No new clinical range
+is invented for insulin/heparin, whose existing formulary range is unspecified.
+
+The composer obtains its unit and unit choices from Lean's formulary. FHIR writes
+`doseQuantity` in mg, `ug` for mcg, or `[iU]` for insulin/heparin units; the number
+is unchanged. These are UCUM codes, not a mass conversion.
+[FHIR Dosage](https://www.hl7.org/fhir/R4/dosage.html),
+[FDA UCUM unit table](https://www.fda.gov/industry/structured-product-labeling-resources/units-measure).
+`node lean/Ehr/Check/check-dose-wasm.mjs` checks the real native/WASM guard,
+composer units and explicit re-entry in all three releases.
+`committed_dose_native` proves that commits recheck every captured medication
+dose, including after its drug/selector changes. General T0/T2/T3/T6, A1–A4,
+T4 and D1–D6 remain in the default build. This dose change adds no
+`Statements.lean` diff beyond the cosignature changes described above.
+
+Active-release validation (simulator seed **7**; completed / incomplete):
 
 | Day | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---|---:|---:|---:|---:|---:|
-| 1 | v1 | 42/0 | 19/3 | 38/0 | 22/0 | 17/1 |
-| 2 | v1 | 40/0 | 17/1 | 51/0 | 20/0 | 13/1 |
-| 3 | v1 | 34/1 | 15/3 | 44/0 | 19/0 | 19/0 |
-| 4 | v1.1 | 39/1 | 11/2 | 41/0 | 17/0 | 10/1 |
-| 5 | v1.1 | 22/1 | 17/3 | 37/0 | 19/0 | 17/0 |
-| 6 | v1.1 | 41/0 | 17/4 | 32/0 | 18/0 | 11/0 |
-| 7 | v2 | 40/0 | 15/3 | 54/0 | 17/0 | 13/1 |
-| 8 | v2 | 39/0 | 9/6 | 38/0 | 15/0 | 11/1 |
-| 9 | v2 | 39/0 | 8/4 | 44/0 | 12/0 | 11/0 |
-| 10 | v2 | 38/1 | 14/0 | 45/0 | 16/0 | 9/0 |
+| 1 | v1 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
+| 2 | v1 | 40/0 | 18/0 | 51/0 | 20/0 | 14/0 |
+| 3 | v1 | 35/0 | 18/0 | 44/0 | 19/0 | 19/0 |
+| 4 | v1.1 | 40/0 | 13/0 | 41/0 | 17/0 | 11/0 |
+| 5 | v1.1 | 23/0 | 20/0 | 37/0 | 19/0 | 17/0 |
+| 6 | v1.1 | 41/0 | 21/0 | 32/0 | 18/0 | 11/0 |
+| 7 | v2 | 40/0 | 18/0 | 54/0 | 17/0 | 14/0 |
+| 8 | v2 | 39/0 | 15/0 | 38/0 | 15/0 | 12/0 |
+| 9 | v2 | 39/0 | 12/0 | 44/0 | 12/0 | 11/0 |
+| 10 | v2 | 39/0 | 14/0 | 45/0 | 16/0 | 9/0 |
 
-**1,246 / 1,284 complete; 38 incomplete.** Every incomplete task retains an
-unrepresentable chosen dose: heparin/insulin in `units`, or albuterol **180 mcg**
-(which is **0.18 mg**, beyond the field's tenths-of-mg precision). This is a
-spec/input obstruction, not a navigation failure. All exact task IDs, orders,
-doses, complaints and input hashes are in
-[`validation-world2.json`](../lean/Ehr/Sim/validation-world2.json). These 38 tasks
-cannot complete faithfully until the requested core/content change lands.
-No task was dropped and no safety rule was changed. P4 has **zero pre-op tasks**;
-all 15 pre-op tasks belong to P5 (their IDs are included in the report). `.cosign`
-continues using the simulated second clinician; no NP permission workaround.
+**1,284 / 1,284 complete; zero incomplete**, across all **50 schedules**.
+No task was dropped or rewritten. Day-1 determinism, effort floors and interruption
+counts pass. P4 has zero pre-op tasks; all 15 pre-op tasks belong to P5 and
+complete with the three direct attestations. The separate NP pre-op test covers
+the simulated attending route. Exact task IDs, input/binary hashes and complaints
+are in [`validation-world2.json`](../lean/Ehr/Sim/validation-world2.json).
+
+The agent boundary uses the generated Lean types and preserves `drugClass`,
+`allowed`, encounter roles, cosign routes, entry waivers and medication-dose kinds.
+It round-trips every active release spec exactly, including payload contracts.
+App tests pass **161/161**, agent tests **35/35**, and both TypeScript checks pass.
 
 Simulator fixes also bind `refillDose` to the focused prescription instead of a
 placeholder, attribute goal complaints to task IDs, and report impossible

@@ -202,6 +202,12 @@ def npPreopMacro : Program := seed 33 <|
   |>.updateScreen "w6Sign" fun s => s.insertAfter "w6Sign.banner"
     [macroBtn s.id "npAutoSign" "badNpPreopSign" "Sign pre-op orders automatically"]
 
+/-- 34: A default tries to supply the human attending's signature. -/
+def prefilledAttending : Program := seed 34 <|
+  (forPersona Specs.V1.specV1 canonicalV1 "seed34" .np).updateScreen "w5Sign" fun s =>
+    s.updateComp "w5Sign.attendingCosign" fun c =>
+      { c with kind := .field "attendingCosign" (.fixed 0) (.default "attending") }
+
 /-- Stable filenames for the original sixteen seeds and eight legal regressions. -/
 
 def programs : List (String × Program) :=
@@ -221,7 +227,7 @@ def programs : List (String × Program) :=
    ("27-expired-controlled-fill", expiredControlledFill), ("28-underage-minor-consent", underageMinorConsent),
    ("29-invalid-birth-date", invalidBirthDate), ("30-daily-methotrexate-default", dailyMethotrexateDefault),
    ("31-hidden-result-components", hiddenResultComponents), ("32-misleading-signing-label", misleadingSigningLabel),
-   ("33-np-preop-macro", npPreopMacro)]
+   ("33-np-preop-macro", npPreopMacro), ("34-prefilled-attending", prefilledAttending)]
 /-- Catalog-only defects. Keep these seeds for full-profile runs. -/
 def fullProfileOnly : List String := ((programs.drop 16).take 16).map (·.1)
 
@@ -234,9 +240,9 @@ def coreExpectedProperties : List String :=
   ["reviewsBeforeCommit", "humanOnlyKept", "writesOnly", "humanOnlyKept",
    "humanOnlyKept", "units", "completable", "humanOnlyKept", "humanOnlyKept",
    "wellFormed", "noRepeatInterruptions", "severityTiers", "completable",
-   "humanOnlyKept", "reviewsBeforeCommit", "completable", "humanOnlyKept"]
+   "humanOnlyKept", "reviewsBeforeCommit", "completable", "humanOnlyKept", "humanOnlyKept"]
 
-#guard programs.length == 33
+#guard programs.length == 34
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
 #guard !(reachable unreachableRefill "home").contains "w7Decision"

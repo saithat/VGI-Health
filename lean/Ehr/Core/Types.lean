@@ -85,6 +85,8 @@ inductive Friction
 inductive ValueKind
   /-- A number in the given unit (the unit is required). -/
   | quantity (unit : UnitKind)
+  /-- A dose in a unit declared for the selected formulary drug, on this slot. -/
+  | medicationDose
   /-- A code from a value set. -/
   | coded (valueSet : String)
   /-- Free text. -/
@@ -440,6 +442,7 @@ structure EncounterRoleRule where
   encounter : String
   roles : List Role
   reason : String
+  cosign? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A commit and the roles allowed to perform it. -/
@@ -490,6 +493,8 @@ structure EntryReq where
   /-- Allowed values, parsed using the element's kind. None adds no constraint;
   some [] permits no value. For numeric refills, some ["0"] permits only zero. -/
   allowed? : Option (List String) := none
+  /-- A human attestation may replace a scalar text/flag entry; never a quantity or per-line entry. -/
+  waivedBy? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- How a review requirement can be met. -/
@@ -613,6 +618,7 @@ inductive Action
 /-- When a component is visible. `unlessReceipt i`: only when there is no
 valid receipt for `i`. -/
 inductive Visibility
+  | encounter (kind : String)
   | always
   | unlessReceipt (info : InfoId)
   deriving DecidableEq, Repr, Inhabited
@@ -714,6 +720,13 @@ structure Program where
 
 /-! ## Facts (the patient record, abstracted) -/
 
+/-- Native-unit dose bounds. Zero means that no bound is specified. -/
+structure DoseUnitRule where
+  unit : UnitKind
+  minTenths : Nat := 0
+  maxTenths : Nat := 0
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A drug in the formulary. The formulary is keyed by `name`, the lowercase
 generic name (e.g. `"amoxicillin"`). -/
 structure DrugInfo where
@@ -721,6 +734,8 @@ structure DrugInfo where
   name : String
   /-- RxNorm codes for this drug (may be empty). -/
   rxnorm : List String := []
+  /-- Allowed dose units and their native-unit ranges; the first is the composer default. -/
+  doseUnits : List DoseUnitRule := [{ unit := .mg }]
   /-- Drug classes. The first is the therapeutic class used for
   duplicate-therapy checks; all are used for allergy and interaction matching. -/
   classes : List String
@@ -1072,6 +1087,8 @@ structure TraceEvent where
   event : Event
   ops : List Op
   result : StepResult
+  actor? : Option String := none
+  responseDelayMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Effort counts for one task. -/
@@ -1086,6 +1103,7 @@ structure TaskMetrics where
   backtracks : Nat
   klmDeciSec : Nat
   completed : Bool
+  wallTimeMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- The result of simulating one day for one persona. -/

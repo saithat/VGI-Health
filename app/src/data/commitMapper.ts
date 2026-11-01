@@ -45,6 +45,7 @@ export const cptLabels: Readonly<Record<string, string>> = {
 
 // Explicit storage paths supported by this mapper; fail on spec drift.
 const supportedTargets: Readonly<Record<string, string>> = {
+  attendingCosign: "Provenance.agent[attester].who",
   hpi: "Composition.section[hpi].text",
   ros: "Composition.section[ros].text",
   exam: "Composition.section[exam].text",
@@ -309,8 +310,13 @@ export function mapCommit(input: CommitInput): Bundle {
     for (const slot of slots) {
       const drug = required(text("drug", slot), "drug");
       const dose = number("dose", slot);
-      const unit =
-        text("doseUnit", slot) || (field("dose", slot)?.value && "mg");
+      const doseValue = field("dose", slot)?.value;
+      const unit = doseValue && "qty" in doseValue ? doseValue.qty.unit : text("doseUnit", slot);
+      if (!unit || (text("doseUnit", slot) && text("doseUnit", slot) !== unit))
+        throw new Error("Dose and dose unit selector must agree");
+      const ucum = unit === "mcg" ? "ug" : unit === "units" ? "[iU]" : unit;
+      if (!["mg", "ug", "[iU]", "mL"].includes(ucum))
+        throw new Error(`Unsupported medication dose unit: ${unit}`);
       const frequency = text("freq", slot);
       const duration = text("duration", slot);
       const supplyDays = duration.match(
@@ -338,6 +344,7 @@ export function mapCommit(input: CommitInput): Bundle {
         },
         encounter: orderEncounter,
         requester: actor,
+        recorder: actor,
         authoredOn: now,
         medicationCodeableConcept: /^\d+$/.test(drug)
           ? cc(drug, systems.rxnorm)
@@ -365,9 +372,9 @@ export function mapCommit(input: CommitInput): Bundle {
               {
                 doseQuantity: {
                   value: dose,
-                  unit: String(unit || "mg"),
+                  unit,
                   system: "http://unitsofmeasure.org",
-                  code: String(unit || "mg"),
+                  code: ucum,
                 },
               },
             ],
@@ -416,6 +423,7 @@ export function mapCommit(input: CommitInput): Bundle {
           ? { note: [{ text: text("orderComment", slot) }] }
           : {}),
       });
+
     }
   };
   const serviceOrders = () => {
@@ -1050,6 +1058,22 @@ export function mapCommit(input: CommitInput): Bundle {
         throw new Error(
           `FHIR mapping is not available for commit ${input.commitId}`,
         );
+  }
+  const signature = field("attendingCosign");
+  if (signature) {
+    const id = text("attendingCosign").replace(/^Practitioner\//, "");
+    if (!signature.byHuman || !("user" in signature.value) || !id || id === user.id)
+      throw new Error("Attending co-signature must be a distinct human practitioner");
+    const target = entries.filter(entry =>
+      entry.resource?.resourceType === "MedicationRequest" || entry.resource?.resourceType === "ServiceRequest"
+    ).flatMap(entry => entry.fullUrl ? [{ reference: entry.fullUrl }] : []);
+    if (target.length) add({
+      resourceType: "Provenance", target, recorded: now,
+      agent: [{
+        type: cc("attester", "http://terminology.hl7.org/CodeSystem/provenance-participant-type"),
+        who: { reference: `Practitioner/${id}` },
+      }],
+    });
   }
   if (encounterChanged) update(changedEncounter);
   if (!entries.length)

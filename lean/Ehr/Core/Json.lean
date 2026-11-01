@@ -60,7 +60,7 @@ instance : Lean.FromJson Program where
       componentDefs := componentDefs }
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  DrugInfo, PatientIdentity, Receipt, Facts
+  DoseUnitRule, DrugInfo, PatientIdentity, Receipt, Facts
 
 deriving instance Lean.ToJson, Lean.FromJson for
   Value, Actor, Captured, User, State, Event, StepResult, ItemView, ScreenView

@@ -1,3 +1,4 @@
+import Ehr.Sim.Attending
 import Ehr.Sim.Goals
 
 /-!
@@ -84,7 +85,7 @@ def countBacktracks (trace : List TraceEvent) : Nat :=
 /-- Every effort metric is computed from the trace; completion is supplied by
 checking final goals against the actual interpreter state. -/
 def metrics (task : String) (trace : List TraceEvent) (completed : Bool) : TaskMetrics := Id.run do
-  let ts := trace.filter (·.task == task)
+  let ts := trace.filter (fun t => t.task == task && t.actor? != some "simulated-attending")
   let mut m := emptyMetrics task
   for t in ts do
     m := { m with
@@ -107,6 +108,7 @@ def floorMetrics (task : String) (sp : Spec) (facts : Facts) (user : User) (g : 
   let mut ms := 0
   for v in g.values do
     if let some el := sp.element? v.element then
+      if attendingElement sp facts user el.id then continue
       let scan := match el.kind with | .scan _ => true | _ => false
       let linked := el.prefill == .autoLinked && !needsHuman el
       let keys := if !scan && (needsHuman el || el.prefill == .never)

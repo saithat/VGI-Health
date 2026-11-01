@@ -80,11 +80,8 @@ def orderElements : List ElementId :=
 /-- The chosen value of an order element for one order (`none`: no chosen value). -/
 def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   if e == "drug" then some (.code o.drug)
-  else if e == "dose" then some (match o.unit with
-    | .g => .qty (o.doseTenths * 1000) .mg
-    | .mcg => (if o.doseTenths % 1000 == 0 then .qty (o.doseTenths / 1000) .mg else .qty o.doseTenths .mcg)
-    | _ => .qty o.doseTenths o.unit)
-  else if e == "doseUnit" || e == "unit" then some (.code (match o.unit with | .g => "mg" | .mcg => if o.doseTenths % 1000 == 0 then "mg" else "mcg" | u => u.name))
+  else if e == "dose" then some (.qty o.doseTenths o.unit)
+  else if e == "doseUnit" || e == "unit" then some (.code o.unit.name)
   else if e == "route" then some (.code o.route)
   else if e == "freq" || e == "frequency" then some (.code o.freq)
   else if e == "indication" then o.indication?.map .text
@@ -158,6 +155,7 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
 types when the scenario fixes no value). -/
 def placeholder (facts : Facts) (user : User) : ValueKind → Value
   | .quantity u => .qty 10 u
+  | .medicationDose => .qty 10 .mg
   | .coded _ => .code "other"
   | .text => .text "See note."
   | .flag => .flag true
@@ -372,7 +370,12 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
   let raw := commits.flatMap fun c =>
     (sp.entries.filter (·.commit == c)).flatMap fun rq =>
       match sp.element? rq.element with
-      | some el => entryGoals facts user choices med? orders hyp0 el rq
+      | some el =>
+        let viaAttending := !entryRelevantForRole sp user.role rq
+        match (if viaAttending then rq.waivedBy? else none).bind sp.element? with
+        | some waiver => entryGoals facts user choices med? orders hyp0 waiver
+            { rq with element := waiver.id, waivedBy? := none }
+        | none => entryGoals facts user choices med? orders hyp0 el rq
       | none => []
   -- Core's currentLineComplete checks every per-line requirement, including
   -- other signing artifacts, before advancing. These captures are necessary

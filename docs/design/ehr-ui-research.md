@@ -119,3 +119,41 @@ Use Tab/Shift+Tab in reading order, arrows in selection widgets, Enter to accept
 The references cover open-source, public-sector, and hospital training examples; they do not establish a single industry layout or universal status palette. The OpenEMR and MD-Reports SED reports were read for task paths; screenshot composition was inspected in CPRS and Health PEI manuals, not inferred from SED task timings. No authenticated patient systems were accessed. Some alternate SED report URLs were inaccessible; no conclusions rely on them. Medplum's Provider docs currently defer some messaging/lab/medication documentation, so its sidebar is the supported reference here, not an assumed full inpatient UI. [Medplum Provider](https://www.medplum.com/docs/provider).
 
 Before implementation acceptance, have a clinician walk P1's signing/refill, P2's lb-weight case, P3's overdue/high-alert/PRN medication, P4's stale weight, and P5's consent/time-out/discharge. Check terminology and information hierarchy; this research is not a clinical validation or a change to the hospital spec.
+
+## Cosignature
+
+Public Cerner training routes orders to the ordering provider's Message Centre
+according to the communication type. Some verbal orders become active before
+cosignature; proposed orders wait for provider signature. These are distinct
+states, governed by site policy. [CST computerized order entry](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Orders/CPOE/Place_Computerized_Order_Entry_%28Nurse%29.htm).
+Epic's public export specification separately records ordering and cosigning
+users, providers and In Basket messages. This supports a pending order and a
+separate attending response, rather than treating the NP as the attending.
+[Epic ORDER_SIGNED_PROC](https://open.epic.com/EHITables/GetTable/ORDER_SIGNED_PROC.htm).
+CMS hospital guidance requires medical-staff rules to describe countersignature
+processes when state law or hospital policy requires them, and requires an
+identifiable author and genuine authentication. It does not establish this
+project's blanket NP pre-op restriction. Our rule
+is hospital policy, owner decision 2026-10-31.
+[CMS hospital survey guidance, §482.24](https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/downloads/som107ap_a_hospitals.pdf).
+
+We adopt the queue/response pattern, without copying screens. The NP reviews
+the order summary and awaits an attending co-signature on the pre-op signing
+screen. Orders remain pending until that response. The human-only, distinct-user
+cosign attests only consentVerified, hpUpdate and medsToHold. Physicians and
+surgeons enter those three fields directly. This is a small abstract model of
+an attending queue response, not a complete messaging or identity service.
+
+The simulator records the response with `actor: "simulated-attending"` and
+`responseDelayMinutes`. It draws uniformly from integers 1–5 using the task's
+seeded SplitMix stream. The delay adds to task wall-time, including receipt age,
+but the response contributes no NP operators, clicks or keys. This distribution
+is an explicit modeling assumption, not an observed clinical turnaround time.
+
+FHIR writes a `Provenance` targeting each signed `MedicationRequest`, with the
+attending as an `attester` agent. The NP remains requester/recorder.
+`MedicationRequest.performer` describes the intended medication administrator,
+so it is not used for the cosigner.
+[FHIR Provenance](https://hl7.org/fhir/R4/provenance-definitions.html),
+[FHIR attester participant](https://hl7.org/fhir/R4B/valueset-provenance-participant-type.html),
+[FHIR MedicationRequest](https://hl7.org/fhir/R4/medicationrequest-definitions.html).
