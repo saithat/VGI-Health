@@ -31,6 +31,7 @@ structure Answer where
   space : SearchSpace := .full
   keystrokeSpace : SearchSpace := .full
   exact : Bool := true
+  geometryTrace : List Json := []
   path : List (List Event) := []
   keystrokePath : List (List Event) := []
   fixedElements : List String := []
@@ -77,12 +78,15 @@ def measureRequest (r : Request) : IO Answer := do
     backtrackRate := 0
     searchWhenBuried := false
     overrideRate := 0 }
+  let mut geometryTrace : List Json := []
   for event in click.path do
     let ctx ← ioExcept (optionExcept (taskContext? contexts state) "missing episode")
     if !(taskMoves contexts click.space state).contains event then
       throw (IO.userError "minimum path is not an allowed interpreter transition")
     if let some e := event then
-      ops := ops ++ (actionOps ctx params state.state e 0).1
+      let eventOps := (actionOps ctx params state.state e 0).1
+      geometryTrace := geometryTrace ++ [Json.mkObj [("task", toJson r.task.id), ("screen", toJson state.state.screen), ("event", toJson e), ("ops", toJson eventOps)]]
+      ops := ops ++ eventOps
       if let .ack _ := e then popups := popups + 1
       let comp := match e with | .enter c _ | .confirm c => some c | _ => none
       if let some id := comp then
@@ -110,7 +114,7 @@ def measureRequest (r : Request) : IO Answer := do
       clicks := fm.clicks, keystrokes := fm.keystrokes, klmSeconds := fm.klmDeciSec.toFloat / 10,
       screens := contexts.length, requiredFields := floorFields, popups := fm.popups },
     space := click.space, keystrokeSpace := keys.space,
-    path := episodePaths click.path, keystrokePath := episodePaths keys.path,
+    geometryTrace, path := episodePaths click.path, keystrokePath := episodePaths keys.path,
     fixedElements := r.fixedValues.map (·.1) }
 
 def main (args : List String) : IO UInt32 := do

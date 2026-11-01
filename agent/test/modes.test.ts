@@ -32,8 +32,8 @@ describe('surface-feature (v2)', () => {
   it('decides per persona from its own traces and records why', () => {
     const p1 = rec(1, 'P1');
     expect(p1.mode).toBe('surface-feature');
-    expect(p1.outcome).toBe('surfaced');
-    expect(p1.release).toMatchObject({ id: RELEASE_IDS.feature, surfaced: true });
+    expect(p1.outcome).toBe('not-surfaced');
+    expect(p1.release).toMatchObject({ id: RELEASE_IDS.feature, surfaced: false });
     expect(p1.release?.recheck.status).toBe('pass');
     expect(p1.specVersion).toBe(RELEASE_IDS.feature);
     const p2 = rec(1, 'P2');

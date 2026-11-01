@@ -19,7 +19,7 @@ import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './p
 import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
 import {
-  InfrastructureError, MAX_REPAIRS, completionOk, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
+  InfrastructureError, MAX_REPAIRS, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
@@ -155,16 +155,16 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
-  // A feature panel may cost a little screen space; accept unless it makes the day >5% slower.
-  const tolerable = completionOk(replay) && replay ? replay.after.klmDeciSec <= replay.before.klmDeciSec * 1.05 : false;
+  // Vendor surfacing preserves completion and the physical-interaction tolerances.
+  const tolerable = replay ? interactionAcceptable(replay) : false;
   rec.validation.improved = replay ? improved(replay) : null;
   rec.validation.stabilityOk = true;
   if (!tolerable) {
     if (rec.release) rec.release.surfaced = false;
-    return recertify('validation replay: surfacing made the day more than 5% slower');
+    return recertify('validation replay: interaction regression or missing geometry');
   }
   rec.validation.accepted = true;
-  rec.validation.reason = 'validation replay within tolerance (feature release: accept unless >5% slower)';
+  rec.validation.reason = 'validation replay within count/pixel tolerances with full completion';
   rec.userResponse = userResponse(deps, night, persona.id, best.componentsMoved ?? 0);
   if (rec.userResponse.response === 'reverted') {
     if (rec.release) rec.release.surfaced = false;

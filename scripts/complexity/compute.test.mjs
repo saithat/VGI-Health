@@ -51,3 +51,11 @@ test('canonical report covers every workflow once and actually enters pinned val
     }
   }
 });
+
+
+test('current metric aggregation reports physical interactions and preserves unavailable geometry', async () => {
+  const {sum}=await import('./compute.mjs');
+  const row={clicks:2,keystrokes:3,scrolls:1,scrollPx:900,mouseTravelPx:5,screens:1,requiredFields:1,popups:0,klmSeconds:123};
+  assert.deepEqual(sum([row,row]),{clicks:4,keystrokes:6,scrolls:2,scrollPx:1800,mouseTravelPx:10,screens:2,requiredFields:2,popups:0});
+  assert.equal(sum([row,{...row,mouseTravelPx:null}]).mouseTravelPx,null);
+});

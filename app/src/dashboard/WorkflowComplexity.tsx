@@ -45,10 +45,7 @@ function pointsFor(
   return versionsFor(run, persona).map((version) => {
     const iteration = exact?.iterations.find((i) => i.version === version);
     const workload = workloadAt(run, persona, version);
-    const key =
-      metric === "clicks" || metric === "keystrokes" || metric === "klmSeconds"
-        ? metric
-        : null;
+    const key = metric === "clicks" || metric === "keystrokes" || metric === "scrolls" || metric === "scrollPx" || metric === "mouseTravelPx" ? metric : null;
     return {
       version,
       spec:
@@ -60,15 +57,9 @@ function pointsFor(
         ),
       values:
         measure === "expert"
-          ? (iteration?.workflows.map((w) => ({
-              workflow: w.workflow,
-              value: w.metrics[metric],
-            })) ?? [])
+          ? (iteration?.workflows.flatMap((w) => typeof w.metrics[metric]==='number'?[{workflow:w.workflow,value:w.metrics[metric]??0}]:[]) ?? [])
           : key
-            ? workload.workflows.map((w) => ({
-                workflow: w.workflow,
-                value: w.mean[key],
-              }))
+            ? workload.workflows.flatMap((w) => typeof w.mean[key]==='number'?[{workflow:w.workflow,value:w.mean[key]??0}]:[])
             : [],
       total:
         measure === "expert"
@@ -274,7 +265,7 @@ export function WorkflowComplexity({
   const options = metricOptions.filter(
     (m) =>
       measure === "expert" ||
-      ["clicks", "keystrokes", "klmSeconds"].includes(m.key),
+      ["clicks", "keystrokes", "scrolls","scrollPx","mouseTravelPx"].includes(m.key),
   );
   const unit = metricOptions.find((m) => m.key === metric)?.unit;
   const exact = run.complexity?.personas.find((p) => p.persona === persona);
@@ -286,6 +277,7 @@ export function WorkflowComplexity({
       className="workflow-complexity"
       aria-label="Union workflow complexity"
     >
+      <p>Geometry model: Chromium at 1440×900, representative screen states, straight-line travel between control centers with no tremor. Scroll distance includes measured reveal offsets. Missing pixels are unavailable; these are modeled interactions, not observed humans.</p>
       <div className="complexity-controls">
         <h3>Union workflow complexity</h3>
         <label>
@@ -297,7 +289,7 @@ export function WorkflowComplexity({
               setMeasure(
                 e.currentTarget.value === "workload" ? "workload" : "expert",
               );
-              if (!["clicks", "keystrokes", "klmSeconds"].includes(metric))
+              if (!["clicks", "keystrokes", "scrolls","scrollPx","mouseTravelPx"].includes(metric))
                 setMetric("clicks");
             }}
           >
@@ -335,8 +327,8 @@ export function WorkflowComplexity({
       </div>
       <p className="complexity-method">
         {measure === "expert"
-          ? "Fixed representative case per workflow, summed across the workflow union. Exact within the reported search space; KLM and other counts follow the minimum-click path. Keystrokes are optimized separately."
-          : "Simulated day results: mean clicks, keystrokes or KLM per task within each workflow, then sum those workflow means. Includes incomplete tasks. Patient mix varies by iteration; this is observed effort, not a controlled causal estimate."}
+          ? "Fixed representative case per workflow, summed across the workflow union. Exact within the reported search space; Interaction geometry and other counts follow the minimum-click path. Keystrokes are optimized separately."
+          : "Simulated day results: mean clicks, scrolls and mouse pixels per completed paired task within each workflow, then sum those workflow means. Incomplete tasks are counted separately and excluded from savings. Patient mix varies by iteration; this is observed effort, not a controlled causal estimate."}
       </p>
       <div className="complexity-key">
         <span>
@@ -453,8 +445,7 @@ export function WorkflowComplexity({
         <p>
           Missing values are unavailable, never zero. Realistic workload uses
           recorded day results at the exact program version; no predictions are
-          used. Different personas cover different workflow unions. KLM is
-          modeled effort in seconds, not elapsed time.
+          used. Different personas cover different workflow unions. Mouse travel uses measured component centers at 1440×900, straight lines, no tremor; missing geometry is unavailable.
         </p>
       </details>
     </section>

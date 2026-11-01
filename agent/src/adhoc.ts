@@ -1,3 +1,4 @@
+import {geometryEhr} from './geometry.js';
 import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
 import { RELEASE_IDS, LEGACY_RELEASE_IDS } from './release-config.js';
 /**
@@ -86,8 +87,10 @@ export async function rerunNight(args: {
 
   const outDir = args.outDir ?? path.join(args.runDir, 'adhoc', `night-${pad2(args.night)}-${args.persona}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
   const store = new RunStore(outDir);
+  const screens=args.screens??createScreenChecker(args.ehr,{artifactsDir:path.join(outDir,'reports/screens')});
+  const ehr=screens.geometry?geometryEhr(args.ehr,screens.geometry,outDir):args.ehr;
   const deps: LoopDeps = {
-    runId: `${manifest.runId}/adhoc`, store, ehr: args.ehr, screens: args.screens ?? createScreenChecker(args.ehr), agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
+    runId: `${manifest.runId}/adhoc`, store,ehr,screens, agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
     seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,
   };
   const input = {

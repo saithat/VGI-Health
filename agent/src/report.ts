@@ -72,10 +72,10 @@ for (const persona of manifest.personas) {
   });
 }
 const report = { runId: manifest.runId, worldSeed: world.manifest.seed, comparison: 'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
-await writeJson(path.join(directory, 'metrics/smoke-summary.json'), report);
-console.log('| Persona | Candidates pass/reject | Deployed | Clicks before→after | Keys before→after | KLM s before→after | Incomplete |');
-console.log('|---|---:|---|---:|---:|---:|---:|');
-for (const r of rows) console.log(`| ${r.persona} | ${r.checkerAccepted}/${r.checkerRejected} | ${r.deployedVersions.map((v) => `v${v}`).join(', ')} | ${r.before.clicks}→${r.after.clicks} | ${r.before.keystrokes}→${r.after.keystrokes} | ${r.before.klmDeciSec / 10}→${r.after.klmDeciSec / 10} | ${r.incomplete.length} |`);
-console.log('Agent-only savings vs no-agent control (clicks / keys / KLM seconds):');
-for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.keystrokes} / ${r.noAgent.saving.klmDeciSec/10}`:'Unavailable'}; blind samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
+await writeJson(path.join(directory,'metrics/smoke-summary.json'),JSON.parse(JSON.stringify(report,(key,value)=>/klm|wallTime/i.test(key)?undefined:value)));
+console.log('| Persona | Candidates pass/reject | Deployed | Clicks before→after | Scrolls before→after | Scroll px before→after | Mouse px before→after | Keys before→after (secondary) | Incomplete |');
+console.log('|---|---:|---|---:|---:|---:|---:|---:|---:|');
+for (const r of rows) console.log(`| ${r.persona} | ${r.checkerAccepted}/${r.checkerRejected} | ${r.deployedVersions.map((v) => `v${v}`).join(', ')} | ${r.before.clicks}→${r.after.clicks} | ${r.before.scrolls}→${r.after.scrolls} | ${r.before.scrollPx??"—"}→${r.after.scrollPx??"—"} | ${r.before.mouseTravelPx??"—"}→${r.after.mouseTravelPx??"—"} | ${r.before.keystrokes}→${r.after.keystrokes} | ${r.incomplete.length} |`);
+console.log('Agent-only savings vs no-agent control (clicks / scrolls / scroll px / mouse px (keys secondary)):');
+for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.scrolls} / ${r.noAgent.saving.scrollPx??"—"} / ${r.noAgent.saving.mouseTravelPx??"—"}`:'Unavailable'}; blind samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
 await writeJson(path.join(directory, 'metrics/provenance.json'), { runId: manifest.runId, comparison: report.comparison, scheduleDays: Array.from({ length: manifest.days }, (_, i) => `day-${pad2(i + 1)}`) });
