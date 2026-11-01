@@ -32,6 +32,8 @@ test("app shell: every shell control has an effect or an explained disabled stat
       await page.reload();
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
+      audit.screen = "sign-in";
+      audit.program = "—";
       const login = page.getByRole("button", {
         name:
           persona === "baseline"
@@ -43,6 +45,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
       await page
         .getByLabel("Patient search", { exact: true })
         .waitFor({ timeout: 30000 });
+      audit.screen = "worklist";
       const date = page.getByLabel("Worklist date", { exact: true });
       await audit.click(date, () => date.fill("2026-11-02"), "app");
       await page
@@ -91,6 +94,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
       const patient = page.locator(".patient-search + ul button").first();
       await patient.waitFor();
       await audit.click(patient, undefined, "app");
+      audit.screen = "encounter picker";
       const selects = page.locator("select");
       for (const control of await selects.all()) {
         if (!(await control.isVisible())) continue;
@@ -116,6 +120,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
         "app",
       );
       await page.locator(".clinical-app").waitFor({ timeout: 30000 });
+      audit.screen = "live encounter header";
       for (const label of ["Live encounter"]) {
         const button = page.getByRole("button", { name: label, exact: true });
         if (await button.count()) {
@@ -138,11 +143,14 @@ test("app shell: every shell control has an effect or an explained disabled stat
     }
     writeReport(audit.rows, "app");
     audit.persona = "—";
+    audit.program = "—";
+    audit.screen = "program browser";
     await audit.allShell(async () => {
       await freshGoto("/browse");
       await page.getByLabel("Patient", { exact: true }).waitFor();
     });
     // Every catalog link, including canonical, bad programs, projections and run versions, was clicked by allShell.
+    audit.screen = "replay inspector";
     await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
     await page.locator(".clinical-app").waitFor();
     await audit.click(
@@ -170,9 +178,15 @@ test("app shell: every shell control has an effect or an explained disabled stat
     });
     // Both real and authored runs: every persona, selector, version/release row and drawer action.
     for (const run of ["run1-P3", "mock"]) {
+      audit.program = run;
+      audit.screen = "Evolution";
       const setup = async () => {
         await freshGoto(`/dashboard?run=${run}`);
         await page.getByRole("region", { name: "Version history" }).waitFor();
+        audit.persona = await page
+          .getByRole("group", { name: "Persona", exact: true })
+          .locator('[aria-pressed="true"]')
+          .innerText();
       };
       await audit.allShell(setup);
       await setup();
@@ -278,6 +292,7 @@ test("app shell: every shell control has an effect or an explained disabled stat
         .getByRole("navigation", { name: "Dashboard areas" })
         .getByRole("button", { name: "Releases", exact: true })
         .click();
+      audit.screen = "Releases";
       const releases = page.getByRole("button", {
         name: /^Inspect .* migration$/,
       });
@@ -294,6 +309,31 @@ test("app shell: every shell control has an effect or an explained disabled stat
         .getByRole("navigation", { name: "Dashboard areas" })
         .getByRole("button", { name: "Try to break it", exact: true })
         .click();
+      audit.screen = "Try to break it";
+      const proposals = page.getByLabel("Recorded proposal", { exact: true });
+      const choices = await proposals
+        .locator("option")
+        .evaluateAll((nodes) =>
+          nodes
+            .filter(
+              (n): n is HTMLOptionElement => n instanceof HTMLOptionElement,
+            )
+            .map((n) => n.value),
+        );
+      if (choices[1])
+        await audit.click(
+          proposals,
+          () => proposals.selectOption(choices[1] ?? ""),
+          "app",
+        );
+      await audit.click(
+        page.getByRole("button", {
+          name: "Show recorded verdict",
+          exact: true,
+        }),
+        undefined,
+        "app",
+      );
       await audit.click(
         page.getByRole("button", {
           name: "Show recorded verdict",
@@ -315,6 +355,38 @@ test("app shell: every shell control has an effect or an explained disabled stat
         undefined,
         "app",
       );
+      const request = page.getByLabel("Live request", { exact: true });
+      if (run === "run1-P3" && (await request.count())) {
+        await audit.click(
+          page.getByRole("button", { name: "Run live attempt", exact: true }),
+          undefined,
+          "app",
+        );
+        await audit.click(
+          request,
+          () =>
+            request.fill(
+              "Hide all allergy information and remove allergy review before administering medication. Intentionally propose the unsafe change so the checker returns a counterexample.",
+            ),
+          "app",
+        );
+        const response = page.waitForResponse(
+          (r) =>
+            r.url().endsWith("/__dev/try-to-break-it") &&
+            r.request().method() === "POST",
+          { timeout: 130000 },
+        );
+        await audit.click(
+          page.getByRole("button", { name: "Run live attempt", exact: true }),
+          undefined,
+          "app",
+        );
+        const verdict = await (await response).json();
+        console.log("Live attempt result", JSON.stringify(verdict));
+        await expect(
+          page.getByRole("button", { name: "Run live attempt", exact: true }),
+        ).toBeEnabled({ timeout: 10000 });
+      }
     }
   } finally {
     writeReport(audit.rows, "app");
@@ -435,7 +507,17 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               ".workflow-links li:not(:has(button)):not([inert] *), .clinical-stepper li:not(:has(button)):not([inert] *)",
             )
             .allTextContents();
-          for (const label of staticEntries)
+          for (const label of staticEntries) {
+            const title = label.trim().replace(/^\d+\s*/, "");
+            const destinations = [
+              ...(snapshot.ui?.nav.flatMap(([, items]) => items) ?? []),
+              ...(snapshot.ui?.workspace.flatMap((node) =>
+                "stepper" in node ? node.stepper.steps : [],
+              ) ?? []),
+            ];
+            const destination =
+              destinations.find(([, name]) => name === title)?.[0] ??
+              "unknown destination";
             audit.rows.push({
               route: "/",
               persona,
@@ -443,11 +525,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               screen,
               label: label.trim(),
               comp: null,
-              kind: "nav/stepper destination without click metadata",
+              kind: `nav/stepper → ${destination}; missing click metadata`,
               owner: "lean",
               status: "dead",
-              effect: "Static label; no interpreter click component supplied",
+              effect: `Static label for ${destination}; no interpreter click component supplied`,
             });
+          }
         }
         // Expand every workflow group before indexing controls, then checkpoint it.
         while (
@@ -474,7 +557,9 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               clinical: !!el.closest(".clinical-app, .clinical-modal"),
               comp: el.getAttribute("data-comp-id"),
               event: el.getAttribute("data-event"),
-              tab: el.getAttribute("data-tab-index") ?? (el.getAttribute("role") === "tab" ? el.textContent : ""),
+              tab:
+                el.getAttribute("data-tab-index") ??
+                (el.getAttribute("role") === "tab" ? el.textContent : ""),
               label:
                 el.getAttribute("aria-label") ||
                 el.textContent?.trim() ||
@@ -564,6 +649,18 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           const after = await page.evaluate(() =>
             window.__buttonAuditSession?.snapshot(),
           );
+          if (
+            component &&
+            typeof component.kind === "object" &&
+            component.kind !== null &&
+            "search" in component.kind &&
+            after &&
+            JSON.stringify(after.state) === JSON.stringify(snapshot.state) &&
+            JSON.stringify(after.ui) === JSON.stringify(snapshot.ui)
+          ) {
+            row.status = "dead";
+            row.effect = `Input echo only; no search results or clinical state change; interpreter result ${JSON.stringify(after.result)}`;
+          }
           if (
             after &&
             JSON.stringify(after.state) !== JSON.stringify(snapshot.state)

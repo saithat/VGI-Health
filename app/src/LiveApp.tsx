@@ -247,7 +247,12 @@ function Chart({
         )}
       </div>
       <div className="live-controls">
-        <Button size="xs" loading={pending} onClick={() => setPanel(true)}>
+        <Button
+          size="xs"
+          loading={pending}
+          title={pending ? "Saving encounter changes" : undefined}
+          onClick={() => setPanel(true)}
+        >
           Live encounter
         </Button>
       </div>
@@ -454,7 +459,13 @@ function SelectEncounter({
             variant="default"
             loading={starting}
             disabled={pending}
-            title={pending ? "Loading Medplum data" : undefined}
+            title={
+              starting
+                ? "Creating encounter"
+                : pending
+                  ? "Loading Medplum data"
+                  : undefined
+            }
             onClick={() => {
               setStarting(true);
               setError("");
@@ -858,7 +869,11 @@ function Home({
           value={query}
           onChange={(e) => setQuery(e.currentTarget.value)}
         />
-        <Button type="submit" loading={pending}>
+        <Button
+          type="submit"
+          loading={pending}
+          title={pending ? "Searching Medplum" : undefined}
+        >
           Search Medplum
         </Button>
       </form>

@@ -68,7 +68,23 @@ export function createSession(
         ? args
         : ([args[0], args[1], JSON.stringify(facts), args[3]] as const);
     const nextState = JSON.stringify(response.state);
-    const nextSnapshot = readSnapshot(response.result, nextArgs, nextState);
+    // Lean rendering is pure for identical inputs. A no-op step still updates
+    // the inspector result, but must not rebuild the entire clinical tree.
+    const previous = snapshot;
+    const nextSnapshot =
+      nextState === stateJson && nextArgs === args
+        ? {
+            get page() {
+              return previous.page;
+            },
+            get view() {
+              return previous.view;
+            },
+            ui: previous.ui,
+            state: previous.state,
+            result: response.result,
+          }
+        : readSnapshot(response.result, nextArgs, nextState);
     args = nextArgs;
     stateJson = nextState;
     snapshot = nextSnapshot;

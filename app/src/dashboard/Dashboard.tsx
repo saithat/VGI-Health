@@ -812,8 +812,14 @@ function BreakPanel({
         </label>
         <button
           type="submit"
-          disabled={!attack}
-          title={!attack ? "No recorded proposal available" : undefined}
+          disabled={!attack || result?.id === attack.id}
+          title={
+            !attack
+              ? "No recorded proposal available"
+              : result?.id === attack.id
+                ? "Already showing this recorded verdict"
+                : undefined
+          }
         >
           Show recorded verdict
         </button>
@@ -835,7 +841,14 @@ function BreakPanel({
             {result.check.counterexample?.length ?? 0} recorded counterexample
             events.
           </p>
-          <button onClick={() => replay(result)}>Replay counterexample</button>
+          {result.check.status === "fail" &&
+          result.check.counterexample !== null ? (
+            <button onClick={() => replay(result)}>
+              Replay counterexample
+            </button>
+          ) : (
+            <p>No counterexample was returned for this verdict.</p>
+          )}
         </section>
       )}
     </>

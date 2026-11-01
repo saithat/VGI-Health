@@ -52,19 +52,36 @@ export function writeReport(rows: Control[], scope: string) {
       all.filter((r) => r.status === status).length,
     ]),
   );
+  const build = existsSync("dist/build-info.json")
+    ? z
+        .object({
+          revision: z.string(),
+          mainRevision: z.string(),
+          leanHash: z.string(),
+          builtAt: z.string(),
+        })
+        .parse(JSON.parse(readFileSync("dist/build-info.json", "utf8")))
+    : null;
   writeFileSync(
     resolve(directory, "buttons.json"),
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
-        revision: execFileSync("git", ["rev-parse", "HEAD"], {
-          encoding: "utf8",
-        }).trim(),
-        mainRevision: execFileSync("git", ["rev-parse", "origin/main"], {
-          encoding: "utf8",
-        }).trim(),
-        leanHash: JSON.parse(readFileSync("public/ehr/manifest.json", "utf8"))
-          .leanSourceHash,
+        revision:
+          build?.revision ??
+          execFileSync("git", ["rev-parse", "HEAD"], {
+            encoding: "utf8",
+          }).trim(),
+        mainRevision:
+          build?.mainRevision ??
+          execFileSync("git", ["rev-parse", "origin/main"], {
+            encoding: "utf8",
+          }).trim(),
+        builtAt: build?.builtAt ?? null,
+        leanHash:
+          build?.leanHash ??
+          JSON.parse(readFileSync("public/ehr/manifest.json", "utf8"))
+            .leanSourceHash,
         counts,
         byOwner: Object.fromEntries(
           ["app", "lean"].map((owner) => [
@@ -95,9 +112,23 @@ export function writeReport(rows: Control[], scope: string) {
       )
       .join("\n") +
     "\n";
+  const baseline = existsSync(resolve(directory, "buttons-before-app.json"))
+    ? JSON.parse(
+        readFileSync(resolve(directory, "buttons-before-app.json"), "utf8"),
+      )
+    : [];
+  const countRow = (label: string, rows: Control[]) =>
+    `| ${label} | ${["works", "disabled-with-reason", "dead", "error"].map((status) => rows.filter((r) => r.status === status).length).join(" | ")} |`;
+  const comparison = `| Scope | Works | Disabled with reason | Dead | Error |\n|---|---:|---:|---:|---:|\n${countRow("App baseline", baseline)}\n${countRow(
+    "App final",
+    all.filter((r) => r.owner === "app"),
+  )}\n${countRow(
+    "Lean final",
+    all.filter((r) => r.owner === "lean"),
+  )}\n`;
   writeFileSync(
     resolve(directory, "buttons.md"),
-    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker.\n\n${JSON.stringify(counts)}\n\nEach enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
+    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker.\n\n${comparison}\nApp coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.\n\nEach enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
   );
   writeFileSync(
     resolve(directory, "ehr-dead-controls.md"),

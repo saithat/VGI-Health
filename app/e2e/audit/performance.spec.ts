@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -5,7 +6,22 @@ import { resolve } from "node:path";
 test("performance: cold dashboard and EHR round trip", async ({
   browser,
   baseURL,
+  request,
 }) => {
+  if (process.env.AUDIT_PHASE !== "before") {
+    const manifest = z
+      .object({ leanSourceHash: z.string() })
+      .parse(await (await request.get("/ehr/manifest.json")).json());
+    const wasm = await request.get(
+      `/ehr/ehr-interp.wasm?v=${manifest.leanSourceHash}`,
+      { headers: { "Accept-Encoding": "gzip" } },
+    );
+    expect(wasm.headers()["content-encoding"]).toBe("gzip");
+    expect(wasm.headers()["cache-control"]).toContain("immutable");
+    expect([...new Uint8Array(await wasm.body()).slice(0, 4)]).toEqual([
+      0, 97, 115, 109,
+    ]);
+  }
   const result: {
     host: string;
     label: string;

@@ -8,6 +8,7 @@ export class Audit {
   rows: Control[] = [];
   errors: string[] = [];
   writes: string[] = [];
+  popups: string[] = [];
   persona = "—";
   program = "—";
   screen = "shell";
@@ -19,6 +20,15 @@ export class Audit {
     page.on("pageerror", (e) => this.errors.push(e.message));
     page.on("console", (m) => {
       if (m.type() === "error") this.errors.push(m.text());
+    });
+    page.on("popup", async (popup) => {
+      popup.on("pageerror", (error) => this.errors.push(error.message));
+      try {
+        await popup.waitForLoadState("domcontentloaded", { timeout: 10000 });
+        this.popups.push(popup.url());
+      } finally {
+        await popup.close();
+      }
     });
     page.on("response", (r) => {
       if (
@@ -131,7 +141,8 @@ export class Audit {
     const clickedAt = Date.now();
     let effectAt: number | null | undefined;
     const errorCount = this.errors.length,
-      writeCount = this.writes.length;
+      writeCount = this.writes.length,
+      popupCount = this.popups.length;
     try {
       if (action) await action();
       else await control.click({ timeout: 15000 });
@@ -143,7 +154,8 @@ export class Audit {
         before.markup !== after.markup ||
         before.values !== after.values ||
         (before.state !== after.state && after.result !== '"ignored"') ||
-        this.writes.length > writeCount;
+        this.writes.length > writeCount ||
+        this.popups.length > popupCount;
       const start = Date.now();
       while (
         !changed() &&
@@ -164,9 +176,11 @@ export class Audit {
             ? `URL → ${new URL(after.url).pathname}${new URL(after.url).search}`
             : this.writes.length > writeCount
               ? this.writes.slice(writeCount).join("; ")
-              : before.state !== after.state && after.result !== '"ignored"'
-                ? `Lean state changed; result ${after.result}`
-                : "DOM changed";
+              : this.popups.length > popupCount
+                ? `Opened tab → ${this.popups.slice(popupCount).join(", ")}`
+                : before.state !== after.state && after.result !== '"ignored"'
+                  ? `Lean state changed; result ${after.result}`
+                  : "DOM changed";
       }
       if (metadata.href && new URL(metadata.href).pathname === "/ehr") {
         await this.page

@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import { brotliCompress, gzip, constants } from "node:zlib";
@@ -21,6 +22,19 @@ export function compressionPlugin(): Plugin {
       ).leanSourceHash;
     },
     async closeBundle() {
+      await writeFile(
+        resolve(output, "build-info.json"),
+        JSON.stringify({
+          revision: execFileSync("git", ["rev-parse", "HEAD"], {
+            encoding: "utf8",
+          }).trim(),
+          mainRevision: execFileSync("git", ["rev-parse", "origin/main"], {
+            encoding: "utf8",
+          }).trim(),
+          leanHash,
+          builtAt: new Date().toISOString(),
+        }),
+      );
       async function compress(directory: string): Promise<void> {
         for (const entry of await readdir(directory, { withFileTypes: true })) {
           const file = resolve(directory, entry.name);

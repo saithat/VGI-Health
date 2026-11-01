@@ -287,7 +287,10 @@ export async function submitBreakAttempt(
     body: JSON.stringify({ persona, request, run }),
   });
   const body: unknown = await response.json();
-  if (!response.ok)
+  if (
+    !response.ok ||
+    (typeof body === "object" && body !== null && "error" in body)
+  )
     throw new Error(z.object({ error: z.string() }).parse(body).error);
   return liveBreakSchema.parse(body);
 }
