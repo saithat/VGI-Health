@@ -170,21 +170,30 @@ export function WorkflowNav({
       </Text>
       <div className="workflow-groups">
         {available.map(([group, items]) => (
-          <div key={group}>
-            <Text component="h2" size="sm" fw={700}>
+          <section key={group} className="workflow-group" aria-label={group}>
+            <h2 className="nav-group-title">
+              <ClinicalIcon
+                name={
+                  /basket|result|request/i.test(group)
+                    ? "message"
+                    : /med|mar/i.test(group)
+                      ? "pill"
+                      : /schedule|round|surg/i.test(group)
+                        ? "clock"
+                        : "user"
+                }
+              />
               {group}
-            </Text>
+            </h2>
             <ul className="workflow-links" aria-label={`${group} screens`}>
               {items.map(([id, label]) => (
-                <li
-                  key={id}
-                  aria-current={label === title ? "page" : undefined}
-                >
+                <li key={id}>
                   <button
                     type="button"
                     className="clinical-nav-link"
                     data-comp-id={id}
                     data-event="click"
+                    aria-current={label === title ? "page" : undefined}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
                     <span aria-hidden="true" className="nav-dot" />
@@ -193,7 +202,7 @@ export function WorkflowNav({
                 </li>
               ))}
             </ul>
-          </div>
+          </section>
         ))}
       </div>
       <div className="nav-footer">

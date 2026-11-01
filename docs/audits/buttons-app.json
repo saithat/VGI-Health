@@ -165,7 +165,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -333,7 +333,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -489,7 +489,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -633,7 +633,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -789,7 +789,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -945,7 +945,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -3070,18 +3070,6 @@
     "owner": "app",
     "status": "works",
     "effect": "DOM changed"
-  },
-  {
-    "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
-    "persona": "P3",
-    "program": "run1-P3",
-    "screen": "Trajectories",
-    "label": "Navigator",
-    "comp": null,
-    "kind": "button",
-    "owner": "app",
-    "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",

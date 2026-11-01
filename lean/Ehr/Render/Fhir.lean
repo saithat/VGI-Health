@@ -467,12 +467,6 @@ def obsValue (r : Json) : String × String × Option Nat :=
       let cc := field r "valueCodeableConcept"
       if cc != .null then (ccText cc, "", none) else (str r "valueString", "", none)
 
-/-- The display row of a vital sign. -/
-def vitalRow (r : Json) : VitalRow :=
-  let (v, u, h) := obsValue r
-  { id := str r "id", code := firstCode (field r "code"), name := ccText (field r "code")
-    value := v, unit := u, date := obsWhen r, hundredths? := h }
-
 /-! ## Labs -/
 
 /-- Demo reference ranges (×100) by LOINC code: low, high, text. Not clinical advice. -/
@@ -1123,6 +1117,31 @@ def observationRow (r : Json) : ObservationRow :=
     (labResultValue r, qtyUnitText (field r "valueQuantity"))
   { measure := ccText (field r "code"), value, unit, time := obsWhen r,
     status := str r "status", categories := categoryCodes r }
+
+/-- Ambulatory vitals use coded BP meaning and retain component labels/units.
+Unpaired or ambiguous panels stay explicit instead of acquiring slash order. -/
+def vitalRow (r : Json) : VitalRow :=
+  let reading := observationRow r
+  let components := arr r "component"
+  let bp := observationBpValue? r
+  let bpPart := fun c => (codings (field c "code")).any fun code =>
+    str code "system" == "http://loinc.org" && ["8480-6", "8462-4"].contains (str code "code")
+  let exactPair := bp.isSome && components.all (fun c => str (field c "valueQuantity") "comparator" == "")
+  let details := if exactPair then components.filter (fun c => !bpPart c) else components
+  let detailText := details.map fun c =>
+    let name := ccText (field c "code")
+    (if name == "" then "Component" else name) ++ ": " ++ labResultValue c ++
+      (let unit := qtyUnitText (field c "valueQuantity")
+       if unit == "" then "" else " " ++ unit)
+  let primary := if reading.value == "See component results" then "" else
+    reading.value ++ if reading.unit == "" then "" else " " ++ reading.unit
+  let value := if components.isEmpty || exactPair && details.isEmpty then reading.value
+    else " · ".intercalate ((if primary == "" || !exactPair && bp.isSome then [] else [primary]) ++ detailText)
+  let unit := if components.isEmpty || exactPair && details.isEmpty then reading.unit else ""
+  { id := str r "id", code := firstCode (field r "code"), name := reading.measure
+    value, unit, date := reading.time
+    hundredths? := if components.isEmpty && str (field r "valueQuantity") "comparator" == ""
+      then qtyScaled (field r "valueQuantity") 2 else none }
 
 /-- Every assessment component retains its own value/unit and report context. -/
 def observationComponentRow (parent component : Json) : ObservationRow :=

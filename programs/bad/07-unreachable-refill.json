@@ -11863,7 +11863,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w7Decision.decisionGroup",
-     "label": "Reason for denial",
+     "label": "Reason for denial (if denying)",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},

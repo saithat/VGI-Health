@@ -1,18 +1,22 @@
 # VGI clinical visual style
 
-Design specification, 2026-10-31, for the semantic React/Mantine painter. This is an original muted clinical theme inspired by the information density and conventions in the [research](ehr-ui-research.md), not any vendor's exact screen. The [blueprint](canonical-blueprint.md) owns screen content. The Lean tree owns visibility, values, alert tiers, enabled state, provenance, and human requirements. React maps node kinds to presentation; it must not derive clinical status from a color or duplicate workflow logic.
+Design specification, 2026-10-31, for the semantic React/Mantine painter. This is an original colorful clinical theme inspired by the information density and conventions in the [research](ehr-ui-research.md), not any vendor's exact screen. The [blueprint](canonical-blueprint.md) owns screen content. The Lean tree owns visibility, values, alert tiers, enabled state, provenance, and human requirements. React maps node kinds to presentation; it must not derive clinical status from a color or duplicate workflow logic.
 
 ## Palette
 
-Use white work surfaces, cool gray framing, dark text, and a restrained blue for navigation/commit actions. Color is a secondary cue beside text. These are VGI tokens, not vendor color samples.
+Use white work surfaces, indigo application framing, tinted blue navigation, dark text, and saturated blue or green actions. Color is a secondary cue beside text. These are VGI tokens, not vendor color samples.
 
 | Token / use | Value | Pairing |
 | --- | --- | --- |
 | Canvas | `#F3F5F7` | Behind workspace / rail |
 | Surface | `#FFFFFF` | Fields, sections, tables |
-| Banner / table heading | `#E8EEF2` | Dark ink, no saturated full-width header |
+| Application bar | `#243E73` | White text |
+| Activity strip | `#DCE6F6` | Dark ink, active text/edge cue |
+| Patient banner / table heading | `#E5F0FA` | Dark ink |
+| Navigator / storyboard | `#EBF0FA` | Dark ink |
+| Section heading | `#EDF3FB` | Dark ink, blue accent |
 | Subtle row / hover | `#F6F8FA` | Ink; hover never implies selection |
-| Selected row / active tab | `#E6EFF7` | Ink, blue left/bottom marker and explicit selected state |
+| Selected row / active tab | `#DAE9FA` | Ink, blue left/bottom marker and explicit selected state |
 | Ink | `#243341` | Default clinical text |
 | Secondary ink | `#526171` | Dates, source text, unit labels; fully legible |
 | Divider | `#CBD5DF` | Decorative separators only |
@@ -26,7 +30,7 @@ Use white work surfaces, cool gray framing, dark text, and a restrained blue for
 | Violet ink / tint | `#65448B` / `#F1ECF7` | Refused dose, explicitly labeled |
 | Neutral ink / tint | `#526171` / `#EDF0F3` | Future, stopped, unavailable, unknown state with text |
 
-Calculated sRGB contrast for the specified ink/tint pairs is 5.55:1–6.64:1; primary white-on-blue is 7.36:1 and secondary ink on the banner is 5.43:1. The control border against white is 4.02:1. These checks cover these exact pairs only; implementation still needs to check actual rendered states and neighboring colors.
+Calculated sRGB contrast for the specified ink/tint pairs is 5.55:1–6.64:1; primary white-on-blue is 7.36:1 and secondary ink on the banner exceeds 5.4:1. The control border against white is 4.02:1. These checks cover these exact pairs only; implementation still needs to check actual rendered states and neighboring colors.
 
 Body-sized text must meet at least 4.5:1 against its actual background; do not treat 14–16 px headings as “large text” to relax this. Check every token pair including hover, badges, disabled explanations and modal text. Meaningful control boundaries/focus should achieve 3:1 against adjacent colors. Never use the decorative divider as the only visible boundary of a field. [W3C text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html), [W3C non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
 
@@ -137,9 +141,9 @@ Use visible 2 px blue focus outlines with offset, not only background tint. Tab/
 
 ## Mantine mapping and acceptance
 
-The checked-in app declares Mantine 8.x; this document prescribes component roles rather than version-specific API syntax. Map `UiScreen` to shell/header/nav/workspace/side/modal; `section` to a semantic titled group with a restrained border; `columns` to responsive layout; `tabs` to labeled tabs; `stepper` to task navigation; `field` to the typed labeled input; `info` to list/table/trend/summary; `alert` to inline alert; `button` to its declared role. Buttons marked nav/secondary/macro do not inherit filled primary styling. Prefer a single shared theme/token definition over per-workflow palettes. Mantine primitives provide presentation/accessibility mechanics, while Lean remains the authority for UI state and events.
+The checked-in app declares Mantine 8.x; this document prescribes component roles rather than version-specific API syntax. Map `UiScreen` to shell/header/nav/workspace/side/modal; `section` to a semantic titled group with a restrained border; `columns` to responsive layout; `tabs` to labeled tabs; `stepper` to its declared progress steps (only explicit actions are interactive); `field` to the typed labeled input; `info` to list/table/trend/summary; `alert` to inline alert; `button` to its declared role. Buttons marked nav/secondary/macro do not inherit filled primary styling. Prefer a single shared theme/token definition over per-workflow palettes. Mantine primitives provide presentation/accessibility mechanics, while Lean remains the authority for UI state and events.
 
-Check desktop 1440×900 and 1280×800, 200% zoom, narrow single-column layout, keyboard-only, scanner Enter, long translated labels, long names, 20+ allergies/meds/orders, multiline sigs, unknown status, stale weight and missing lab values. Match the accessibility tree to the semantic tree; inspect banner count, all required workspace rows, blocked reasons, focus/modal behavior, color contrast and no covered controls. A compact mockup with missing history does not pass. This docs-only deliverable changes no theme or painter code; these checks are implementation acceptance criteria.
+Check desktop 1440×900 and 1280×800, 200% zoom, narrow single-column layout, keyboard-only, scanner Enter, long translated labels, long names, 20+ allergies/meds/orders, multiline sigs, unknown status, stale weight and missing lab values. Match the accessibility tree to the semantic tree; inspect banner count, all required workspace rows, blocked reasons, focus/modal behavior, color contrast and no covered controls. A compact mockup with missing history does not pass. These checks are implementation acceptance criteria; current evidence and screenshots are recorded in the shared-shell research section and `docs/audits/`.
 
 ## Shared shell color system — 1 Nov 2026
 

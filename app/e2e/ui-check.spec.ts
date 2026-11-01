@@ -35,7 +35,7 @@ async function render(page: Page, screen: UiScreen) {
     { screen, presentations },
   );
   await page.evaluate(() => document.fonts.ready);
-  // Accordion uses transitions. Wait for every expected region to settle.
+  // Wait for presentation transitions before inspecting the expected regions.
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {

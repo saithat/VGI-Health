@@ -85,4 +85,11 @@ for (const { persona, workflow } of reviewCases.cases) {
 }
 assert.ok(references > 0, 'Published reference catalog was exercised');
 assert.ok(pickers > 0, 'Coded-field metadata was exercised');
+const bloodPressureBundle = read(`${root}/lean/Ehr/Render/TestData/clinical.json`);
+const bloodPressure = bloodPressureBundle.entry.find(entry => entry.resource?.resourceType === 'Observation' && entry.resource.code?.coding?.some(code => code.code === '85354-9')).resource;
+bloodPressure.component.reverse();
+const bloodPressureInput = { bundle: bloodPressureBundle, context: { today: '2026-10-31', now: 0, receipts: [], record: [] } };
+const bloodPressureOutput = native('facts', bloodPressureInput);
+assert.deepEqual(call('facts', bloodPressureInput), bloodPressureOutput);
+assert.equal(bloodPressureOutput.display.vitals.find(row => row.code === '85354-9').value, '128/82');
 console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves; actual navigation, source facts and all semantic output agree.`);

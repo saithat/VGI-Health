@@ -12,6 +12,11 @@ def reversedBloodPressure := Tests.json r#"{"resourceType":"Observation","status
 #guard (observationRows [reversedBloodPressure]).length == 3
 #guard (observationRows [reversedBloodPressure]).any (fun r => r.measure == "Blood pressure • Diastolic blood pressure" && r.value == "76")
 
+/-- The ambulatory chart uses the same coded order as the typed flowsheet. -/
+def ambulatoryBloodPressureExample := vitalRow reversedBloodPressure
+#guard ambulatoryBloodPressureExample.value == "128/76"
+#guard ambulatoryBloodPressureExample.unit == "mmHg"
+
 /-- Uncoded or incomplete panels never acquire meaning from array position. -/
 def uncodedPanel := reversedBloodPressure.setObjVal! "code" (Tests.json r#"{"text":"Assessment panel"}"#)
 #guard observationBpValue? uncodedPanel == none
@@ -19,6 +24,15 @@ def uncodedPanel := reversedBloodPressure.setObjVal! "code" (Tests.json r#"{"tex
 #guard (observationRows [uncodedPanel]).length == 3
 #guard observationBpValue? (reversedBloodPressure.setObjVal! "valueQuantity" (Tests.json r#"{"value":42,"unit":"mmHg"}"#)) == none
 #guard (observationRow (reversedBloodPressure.setObjVal! "valueQuantity" (Tests.json r#"{"value":42,"unit":"mmHg"}"#))).value == "42"
+
+/-- Unpaired panels retain named values; mixed units cannot masquerade as one BP pair. -/
+def ambulatoryUncodedPanelExample := vitalRow uncodedPanel
+#guard (ambulatoryUncodedPanelExample.value.splitOn "Diastolic blood pressure: 76 mmHg").length == 2
+#guard (ambulatoryUncodedPanelExample.value.splitOn "Systolic blood pressure: 128 mmHg").length == 2
+def mixedUnitBloodPressure := reversedBloodPressure.setObjVal! "component"
+  (Tests.json r#"[{"code":{"text":"Diastolic blood pressure","coding":[{"system":"http://loinc.org","code":"8462-4"}]},"valueQuantity":{"value":76,"unit":"mmHg"}},{"code":{"text":"Systolic blood pressure","coding":[{"system":"http://loinc.org","code":"8480-6"}]},"valueQuantity":{"value":17,"unit":"kPa"}}]"#)
+#guard (vitalRow mixedUnitBloodPressure).unit == ""
+#guard ((vitalRow mixedUnitBloodPressure).value.splitOn "Systolic blood pressure: 17 kPa").length == 2
 
 /-- A categorical assessment component retains the parent's time, status and category. -/
 def assessment := Tests.json r#"{"resourceType":"Observation","status":"preliminary","category":[{"coding":[{"code":"exam"}]}],"code":{"text":"Mobility assessment"},"effectiveDateTime":"2026-11-01T09:00:00","component":[{"code":{"text":"Ambulates independently"},"valueBoolean":false},{"code":{"text":"Assistance"},"valueCodeableConcept":{"text":"One person assist"}}]}"#
@@ -33,6 +47,11 @@ def censoredOutput := Tests.json r#"{"resourceType":"Observation","status":"fina
 def absentAssessment := Tests.json r#"{"resourceType":"Observation","status":"final","code":{"text":"Pain assessment"},"dataAbsentReason":{"text":"Patient declined"}}"#
 #guard (observationRow censoredOutput).value == "<5"
 #guard (observationRow absentAssessment).value == "Not available · Patient declined"
+
+#guard ((vitalRow assessment).value.splitOn "Ambulates independently: No").length == 2
+#guard (vitalRow censoredOutput).value == "<5"
+#guard (vitalRow censoredOutput).hundredths? == none
+#guard (vitalRow absentAssessment).value == "Not available · Patient declined"
 
 /-- Whole-chart input keeps labs in Display/Results without mixing them into nursing rows. -/
 def lab := LabResultsTests.hemoglobinDl

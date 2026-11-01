@@ -77,7 +77,7 @@ def decision : Screen :=
         (prefill := .fromRecord "requestPharmacy"),
       field s "refillProtocolMet" "refillProtocolMet" "Refill protocol criteria met"
         (parent := some "decisionGroup"),
-      field s "refillDenyReason" "refillDenyReason" "Reason for denial" (parent := some "decisionGroup"),
+      field s "refillDenyReason" "refillDenyReason" "Reason for denial (if denying)" (parent := some "decisionGroup"),
       field s "refillNote" "refillNote" "Note to pharmacy" (parent := some "decisionGroup"),
       { table s "labs" "relevantLabs" "Latest available labs" with tag := "present.results" },
       panel s "lastVisit" "lastVisit" "Last visit",

@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { uiScreenSchema } from "../src/ehr/ui/types";
+import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
+import type {} from "../src/core/buttonAudit";
 import type {} from "../src/ehr/offline";
 
 test("shared shell and browser visual review", async ({ page }) => {
@@ -21,6 +23,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       ).toBeVisible();
     if (name === "browse" && process.env.REALISM_SHOTS !== "before")
       await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/${name}.png`,
       animations: "disabled",
@@ -34,12 +37,21 @@ test("shared shell and browser visual review", async ({ page }) => {
     ["P5", "w6PreOp", "w6PreOp"],
   ] as const) {
     await page.goto(
-      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
+      `/ehr?mode=replay&audit=buttons&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
     await expect(page.locator(".clinical-app")).toBeVisible();
     await page
       .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
       .click();
+    if (process.env.REALISM_SHOTS !== "before") {
+      const navigator = page.getByRole("navigation", {
+        name: "Clinical navigation",
+      });
+      await expect(
+        navigator.locator("button[data-comp-id]").first(),
+      ).toBeVisible();
+      await expect(navigator).not.toHaveClass(/empty-navigator/);
+    }
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
@@ -47,6 +59,16 @@ test("shared shell and browser visual review", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
+    if (process.env.REALISM_SHOTS !== "before") {
+      const semantic = await page.evaluate(
+        () => window.__buttonAuditSession?.snapshot().ui,
+      );
+      if (!semantic) throw new Error(`Missing ${persona} semantic screen`);
+      expect(
+        observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+      ).toEqual(expectedAria(semantic));
+    }
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/${screen}.png`,
       animations: "disabled",
@@ -59,11 +81,13 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     await expect(page.locator(".clinical-note-card").first()).toBeVisible();
     await page.locator(".clinical-note-card").first().scrollIntoViewIfNeeded();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
     await page.locator(".clinical-home-meds").first().scrollIntoViewIfNeeded();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/home-medications.png`,
       animations: "disabled",
@@ -75,6 +99,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     );
     await page.evaluate((screen) => window.renderUi(screen), alert);
     await expect(page.getByRole("dialog")).toBeVisible();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/interruptive-alert.png`,
       animations: "disabled",
@@ -85,6 +110,7 @@ test("shared shell and browser visual review", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   if (process.env.REALISM_SHOTS !== "before")
     await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
+  await page.mouse.move(1, 1);
   await page.screenshot({
     path: `${folder}/browse-narrow.png`,
     animations: "disabled",
