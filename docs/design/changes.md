@@ -627,8 +627,9 @@ are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.
   `confirm`, and `ack` identify the existing interpreter events without adding
   fields to the owner-approved node types. `nav` and `macro` retain their specified
   roles. Tab labels occupy actual indexes, including sparse tab indexes.
-- The official GenTS generator already exports Render.Types after main's merge;
-  no core generator change was necessary. Generated output is regenerated.
+- Minimal allowed GenTS addition: import Render.Fhir, include Render.Json and
+  Render.Fhir in sourceModules, and require UiNode/UiScreen/FactsInput exports.
+  Regenerated output includes 141 types and 40 typed JSON samples.
 - Shown items are retained exactly once, with no semantic deduplication. Groups
   and selected tab bodies nest children in component order; malformed orphan or
   out-of-order components remain visible at workspace level. A component banner
@@ -667,3 +668,19 @@ and never comes from typing an attestation. Clinical, evidence and payload adapt
 integration, source-row coverage and remaining AST limitations are CR-16 work;
 per-rule status/reasons are in catalog.json. No runtime/core/property statement
 was edited by content.
+
+### App integration follow-up
+
+Merged app-owned semantic painter and fidelity gate (`f810f92`) into render;
+app build/lint and all 124 unit tests now pass, including the 24-seed catalog.
+The real P1 rooming/orders/sign samples pass 8 desktop/narrow ARIA checks.
+Group-header buttons dispatch the existing `Event.click` (there is no
+`Event.toggle`); confirm and ack roles select their actual events.
+
+The semantic field kind now preserves `identity`, `scan`, and `cosign`, and
+`code:<choice>|<choice>...` carries the existing Lean formulary choices. This
+uses section 10's existing String field; no UiNode type change was made. Other
+coded sets retain the previous free-code entry behavior. The clinical banner
+also emits allergy records with reactions/status, and explicit code status
+from `Facts.record["codeStatus"]` when supplied, otherwise `Not recorded`.
+React does not need to infer these clinical fields.

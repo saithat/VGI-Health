@@ -67,11 +67,11 @@ theorem uiComponents_mem (cx : Ctx) (n : UiNode) :
 name, DOB, and MRN on every input. Missing source values remain visibly empty;
 the renderer cannot invent a missing patient identifier. -/
 theorem D1_landmark (sp prog facts disp user s) :
-    (renderUi sp prog facts disp user s).banner = uiBanner disp ∧
+    (renderUi sp prog facts disp user s).banner = uiClinicalBanner facts disp ∧
     ("Patient", disp.banner.name) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("DOB", disp.banner.dob) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("MRN", disp.banner.mrn) ∈ (renderUi sp prog facts disp user s).banner := by
-  simp [renderUi, uiBanner]
+  simp [renderUi, uiClinicalBanner, uiBanner]
 
 @[simp] theorem uiLabel_nonempty (s fallback : String) (h : fallback ≠ "") :
     uiLabel s fallback ≠ "" := by

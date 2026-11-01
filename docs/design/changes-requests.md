@@ -898,10 +898,33 @@ Read-only sidebar and missing-required-review info nodes deliberately use empty
 an empty info comp and must never turn a summary into a component event.
 
 The app branch at `28cdbd9` forwards all semantic buttons as `Event.click`.
-It must map `role = "toggle"` to `Event.toggle {comp}`, `"confirm"` to
-`Event.confirm {comp}`, and `"ack"` to `Event.ack {alert := comp}`. Other roles
+It must map `role = "toggle"` to the existing group-header `Event.click {comp}`,
+`"confirm"` to `Event.confirm {comp}`, and `"ack"` to `Event.ack {alert := comp}`. Other roles
 retain `Event.click`. The explicit confirm node already provides the D6
 affordance; do not invent a second confirm control from pendingConfirm or the
 ARIA fidelity check will see extra buttons. Use the generated types instead of
 a parallel handwritten UI union. The existing generic WASM `.call` method can
 invoke `ehr_render_ui` directly; no convenience wrapper change is required.
+
+## Render/app integration resolution
+
+Merged the app owner's `f810f92` changes. The catalog expectation, generated UI
+types, empty read-only info IDs, confirm/ack mapping, and explicit-confirm
+painting are integrated. All **124** app unit tests and **8** P1 desktop/narrow
+ARIA fidelity checks pass. Group toggles correctly dispatch **Event.click**;
+the earlier request for Event.toggle was a documentation error, now corrected.
+
+Render preserves identity/scan/cosign field kinds and the existing formulary
+choices in the kind string, and supplies allergy/code-status banner fields.
+The app's remaining navigation Event request belongs to lean-core. Source
+labels that contain legal authoring instructions belong to content: render
+must show the interpreter's clinical text rather than fabricate legal text.
+
+## Render → lean-core: previous GenTS request completed
+
+The user-authorized minimal GenTS addition now imports Render.Fhir, includes
+Render.Json/Fhir in sourceModules, and fail-fast checks UiNode, UiScreen, and
+FactsInput. Official regenerated output has **141 types and 40 typed samples**;
+strict tsc passes. No Core definitions or proof statements changed. Rebuilding
+WASM after this tool-only change produces byte-for-byte identical tested assets;
+the source manifest has been refreshed and make wasm-check passes.

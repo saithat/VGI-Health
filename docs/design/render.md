@@ -123,8 +123,9 @@ D4 filters passive/unknown modal IDs even in externally supplied malformed state
 D6 copies raw provenance/human-only/pending flags exactly; the painter may label
 the provenance but must not infer or modify it. Pending fields get a confirm button.
 
-Extra button roles `toggle`, `confirm`, and `ack` select those events; `primary`,
-`secondary`, `nav`, and `macro` use click. Tab labels are indexed by the actual
+Button roles `confirm` and `ack` select their named events. `toggle` uses the
+existing Event.click for group headers; `primary`, `secondary`, `nav`, and `macro`
+also use click. There is no Event.toggle. Tab labels are indexed by the actual
 interpreter tab number. A tab body contains only shown items from selected tabs.
 Clinical data are rows with clinical labels; alert keys, wristband transport
 payloads, artifact IDs, and serialized payload/debug objects are not displayed.
@@ -136,3 +137,10 @@ statements independently of the solution. D5 belongs to the checker: decidable
 `NavSane spec prog` in NavRules checks real nav labels, group sizes, and orphans.
 Its P1 report currently fails the 12-entry limit (14 W1, 17 W3, 18 W6); no entries
 are truncated. The content/checker integration request is tracked separately.
+
+Field kind strings preserve `identity`, `scan`, and `cosign`. Formulary inputs
+carry `code:<name>|<name>...`, taken directly from Lean's formulary; other coded
+inputs use `code`. This keeps the original entry semantics and choices without
+requiring React to reconstruct domain data. The clinical banner includes allergy
+records/reactions/status and code status from Facts.record's `codeStatus` value,
+or explicit `Not recorded` if unavailable. It never assumes full code.
