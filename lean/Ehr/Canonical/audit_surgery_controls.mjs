@@ -52,6 +52,17 @@ for (const release of ['v1', 'v2', 'v3']) {
     assert.equal(state.screen, screen.id);
     const ui = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: projection.display, state })));
     assert.equal(ui.error, undefined);
+    assert.ok(ui.nav.length <= 12);
+    assert.equal(new Set(ui.nav.map(([title]) => title)).size, ui.nav.length);
+    for (const [, items] of ui.nav) {
+      assert.ok(items.length <= 12);
+      assert.equal(new Set(items.map(([, label]) => label)).size, items.length);
+      assert.equal(new Set(items.map(([id]) => id)).size, items.length);
+    }
+    if (['W1', 'W6'].includes(screen.workflow)) {
+      assert.equal(ui.activeNav, `${screen.id}.nav.${screen.id}`);
+      assert.ok(ui.nav.some(([, items]) => items.some(([id]) => id === ui.activeNav)));
+    }
     const shown = [...ui.workspace, ...ui.side, ...(ui.modal ? [ui.modal] : [])].flatMap(nodes);
     const buttons = shown.filter(n => n.button).map(n => n.button);
     buttons.push(...ui.nav.flatMap(([, items]) => items.map(([comp, label]) => ({ comp, label, role: 'nav', enabled: true }))));

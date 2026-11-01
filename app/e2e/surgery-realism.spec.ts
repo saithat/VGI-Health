@@ -51,6 +51,10 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
       title ?? "",
     );
     current = target ?? "";
+    await expect(control(page, `${current}.nav.${current}`)).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
   }
   await control(page, "w6Schedule.nav.w6OpNote").click();
   const findings = control(page, "w6OpNote.opFindings", "enter");
@@ -80,6 +84,10 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await control(page, "w6Sign.nav.w6Schedule").click();
   await control(page, "w6Schedule.clinic").click();
   await control(page, "w1Rooming.nav.w1Hpi").click();
+  await expect(control(page, "w1Hpi.nav.w1Hpi")).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
   const hpi = control(page, "w1Hpi.hpi", "enter");
   await expect(hpi).toHaveJSProperty("tagName", "TEXTAREA");
   await hpi.fill("Postoperative follow-up.\nWound symptoms reviewed.");

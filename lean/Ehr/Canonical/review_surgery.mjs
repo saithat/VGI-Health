@@ -12,7 +12,9 @@ const { chromium } = require('@playwright/test');
 const [source, stage] = process.argv.slice(2);
 if (!source || !['before', 'after'].includes(stage)) throw new Error('Supply a screen directory and before or after');
 const out = `${root}/app/shots/realism/surg/${stage}`;
-const server = spawn('pnpm', ['--filter', 'app', 'exec', 'vite', '--host', '127.0.0.1', '--port', '4196', '--strictPort'], { cwd: root, stdio: 'ignore', detached: true });
+// A baseline checkout can supply its own painter for a true before image.
+const painterRoot = process.env.EHR_REVIEW_APP_ROOT ?? root;
+const server = spawn('pnpm', ['--filter', 'app', 'exec', 'vite', '--host', '127.0.0.1', '--port', '4196', '--strictPort'], { cwd: painterRoot, stdio: 'ignore', detached: true });
 let browser;
 try {
   let ready = false;

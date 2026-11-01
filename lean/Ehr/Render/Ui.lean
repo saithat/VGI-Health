@@ -197,6 +197,12 @@ def uiNav (cx : Ctx) : List (String × List (String × String)) :=
     (title, (items.filter (fun it => uiNavTitle cx it == title)).map fun it =>
       (it.comp.id, uiLabel it.comp.label "Action"))
 
+/-- Selection comes from the actual goto target, without interpreting labels. -/
+def uiActiveNav (cx : Ctx) : Option CompId :=
+  (cx.v.items.find? fun it => it.shown && uiNavButton cx it && match it.comp.kind with
+    | .button (.goto target) => target == cx.s.screen
+    | _ => false).map (·.comp.id)
+
 /-- One compact line per source record; workspace info retains the full rows. -/
 def uiAllergySummary (r : AllergyRow) : List (String × String) :=
   [("Record", r.substance ++ (if r.reaction == "" then "" else " — " ++ r.reaction) ++
@@ -336,7 +342,7 @@ the single shell landmark and are excluded from workspace and side components. -
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
-  { banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
+  { banner := uiClinicalBanner facts disp, nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

@@ -501,6 +501,8 @@ inductive UiNode
 structure UiScreen where
   banner : List (String × String)
   nav : List (String × List (String × String))
+  /-- The declared navigator component that opens the current screen, if any. -/
+  activeNav? : Option CompId := none
   title : String
   workspace : List UiNode
   side : List UiNode

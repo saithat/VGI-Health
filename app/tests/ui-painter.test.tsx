@@ -79,15 +79,19 @@ describe("semantic EHR painter", () => {
           screen={{
             ...view,
             nav: [["Surgical navigator", [["case.open", "Open case"]]]],
+            activeNav: "case.open",
           }}
           onEvent={onEvent}
         />
       </MantineProvider>,
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: /^Open case$/ }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /^Open case$/ }));
     expect(onEvent).toHaveBeenCalledWith({ click: { comp: "case.open" } });
+    expect(
+      screen
+        .getByRole("button", { name: /^Open case$/ })
+        .getAttribute("aria-current"),
+    ).toBe("page");
     expect(
       screen.getByRole("list", { name: "Surgical navigator screens" }),
     ).toBeTruthy();

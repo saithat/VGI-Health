@@ -54,7 +54,7 @@ def frame (s : ScreenId) : List Component :=
      panel s "caseSummary.procedure" "scheduleTasks" "Case" (parent := some "caseSummary")] ++
     [{ group s "caseNavigation" "Surgical navigator" (collapsible := false) with
         tag := cid s "navigator" }] ++
-    (nav.filter (·.1 != s)).map (fun (target, label) =>
+    nav.map (fun (target, label) =>
       goto s ("nav." ++ target) target label (parent := some "caseNavigation"))
 
 /-- The OR list is distinct from the selected patient's preprocedure record.
@@ -347,7 +347,13 @@ def screens : List Screen :=
 tab and note prompts appropriate to consultation and postoperative follow-up. -/
 def clinicView (sc : Screen) : Screen :=
   if sc.workflow != "W1" then sc else
-  { sc with components := sc.components.map (fun c => match c.kind with
+  { sc with components :=
+      [{ group sc.id "visitNavigation" "Visit navigator" (collapsible := false) with
+          tag := cid sc.id "navigator" }] ++
+      sc.components.map (fun c =>
+      if c.id.startsWith (cid sc.id "nav.") then
+        { c with parent? := some (cid sc.id "visitNavigation") }
+      else match c.kind with
       | .field e _ _ =>
         let label := if e == "chiefComplaint" then "Reason for visit / postoperative concern"
           else if e == "exam" then "Examination / surgical site"
@@ -355,7 +361,8 @@ def clinicView (sc : Screen) : Screen :=
         { c with label, tag := if ["hpi", "ros", "exam", "assessmentPlan", "patientInstructions"].contains e
             then c.tag ++ ".multiline" else c.tag }
       | _ => c) ++
-      [panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
+      [goto sc.id ("nav." ++ sc.id) sc.id sc.title (parent := some "visitNavigation"),
+       panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
         (parent := some "chart") (tab := 9)] }
 
 /-- The surgeon's landing page is an OR list with a real selected-case action.

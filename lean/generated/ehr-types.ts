@@ -2127,6 +2127,10 @@ export type UiNode =
 export interface UiScreen {
   banner: [string, string][];
   nav: [string, [string, string][]][];
+  /**
+   * The declared navigator component that opens the current screen, if any.
+   */
+  activeNav?: CompId;
   title: string;
   workspace: UiNode[];
   side: UiNode[];
@@ -2198,6 +2202,19 @@ export interface LabPoint {
   hundredths?: number;
   range?: [number, number];
   flagged: boolean;
+}
+
+/**
+ * One surgical request on its actual planned date. Status is the request's
+ * status; this does not assert that a patient is roomed or a procedure completed.
+ */
+export interface SurgicalCaseRow {
+  room: string;
+  start: string;
+  procedure: string;
+  patient: string;
+  surgeon: string;
+  status: string;
 }
 
 /**

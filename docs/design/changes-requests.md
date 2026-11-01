@@ -26,6 +26,15 @@ a text field selects the generic textarea painter; its entry event, provenance,
 human-only marker and guard remain unchanged. Other lanes can use the additive
 `narrative` builder without implementing clinical behavior in React.
 
+The generic painter now renders every `UiScreen.nav` entry as its declared Lean
+click. The ARIA gate checks every navigation button. `UiScreen.activeNav` is an
+optional, Lean-derived component ID based on the actual goto target; it is
+omitted for archived screens that have no current navigator entry. A declared
+navigator replaces the numbered progress overview. P5's existing W1 links are
+grouped into a Visit navigator in the preset; no clinical binding is changed.
+Do not put consent or anticoagulant review copies in a permanent sidebar: doing
+so could accidentally satisfy a shown-review requirement on every screen.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

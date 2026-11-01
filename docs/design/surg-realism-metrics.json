@@ -1,0 +1,1098 @@
+{
+  "method": "Actual P5 presets, same native interpreter for both programs. Shared certified jointMinimum and KLM adapter. Clicks and keys are independently optimized within each reported space. KLM replays the minimum-click path at fixed clock; it is an estimate, not a KLM minimum. Directed spaces make no global-minimum claim. Native min-clicks is also recorded without benchmark fixedValues.",
+  "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
+  "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
+  "binarySha256": "59a94c77ca5803eeeb1bad596a484b5cddaece2ea1a05c3c429c7c60c73d456f",
+  "stages": [
+    {
+      "stage": "before",
+      "rows": [
+        {
+          "release": "v1",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 141.6,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 19,
+            "keystrokes": 7,
+            "klmSeconds": 31.8,
+            "popups": 1,
+            "requiredFields": 17,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 30,
+            "keystrokes": 93,
+            "klmSeconds": 96.55,
+            "popups": 1,
+            "requiredFields": 18,
+            "screens": 8
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 30,
+            "keystrokes": 93,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 141.6,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 19,
+            "keystrokes": 7,
+            "klmSeconds": 31.8,
+            "popups": 1,
+            "requiredFields": 17,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 30,
+            "keystrokes": 93,
+            "klmSeconds": 96.55,
+            "popups": 1,
+            "requiredFields": 18,
+            "screens": 8
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 30,
+            "keystrokes": 93,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 141.6,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 20,
+            "keystrokes": 7,
+            "klmSeconds": 33.4,
+            "popups": 1,
+            "requiredFields": 18,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 31,
+            "keystrokes": 98,
+            "klmSeconds": 100.9,
+            "popups": 1,
+            "requiredFields": 19,
+            "screens": 8
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 31,
+            "keystrokes": 98,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        }
+      ]
+    },
+    {
+      "stage": "after",
+      "rows": [
+        {
+          "release": "v1",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 19,
+            "keystrokes": 7,
+            "klmSeconds": 31.8,
+            "popups": 1,
+            "requiredFields": 17,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 25,
+            "keystrokes": 94,
+            "klmSeconds": 92.9,
+            "popups": 1,
+            "requiredFields": 19,
+            "screens": 4
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 25,
+            "keystrokes": 94,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v1",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
+          "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 19,
+            "keystrokes": 7,
+            "klmSeconds": 31.8,
+            "popups": 1,
+            "requiredFields": 17,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 25,
+            "keystrokes": 94,
+            "klmSeconds": 92.9,
+            "popups": 1,
+            "requiredFields": 19,
+            "screens": 4
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 25,
+            "keystrokes": 94,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v2",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
+          "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W1",
+          "task": "benchmark-W1-1",
+          "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [
+            "refills",
+            "visitDiagnosis",
+            "orderDiagnosis",
+            "claimDiagnosis",
+            "levelOfService"
+          ],
+          "floor": {
+            "clicks": 27,
+            "keystrokes": 7,
+            "klmSeconds": 44.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "popups": 1,
+            "requiredFields": 24,
+            "screens": 10
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 39,
+            "keystrokes": 203,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-1",
+          "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 20,
+            "keystrokes": 7,
+            "klmSeconds": 33.4,
+            "popups": 1,
+            "requiredFields": 18,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 26,
+            "keystrokes": 99,
+            "klmSeconds": 97.25,
+            "popups": 1,
+            "requiredFields": 20,
+            "screens": 4
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 26,
+            "keystrokes": 99,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-2",
+          "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 10,
+            "keystrokes": 1,
+            "klmSeconds": 15.7,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "klmSeconds": 43.5,
+            "popups": 0,
+            "requiredFields": 9,
+            "screens": 3
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 49,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        },
+        {
+          "release": "v3",
+          "workflow": "W6",
+          "task": "benchmark-W6-3",
+          "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
+          "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+          "exact": true,
+          "fixedElements": [],
+          "floor": {
+            "clicks": 7,
+            "keystrokes": 0,
+            "klmSeconds": 10.8,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 1
+          },
+          "keystrokeSpace": "navigationDirected",
+          "metrics": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "klmSeconds": 40.65,
+            "popups": 0,
+            "requiredFields": 6,
+            "screens": 5
+          },
+          "reason": "",
+          "space": "navigationDirected",
+          "supported": true,
+          "native": {
+            "clicks": 12,
+            "keystrokes": 67,
+            "space": "navigationDirected",
+            "keystrokeSpace": "navigationDirected",
+            "exact": true
+          }
+        }
+      ]
+    }
+  ],
+  "simulator": {
+    "world": "runs/world/2",
+    "seed": 7,
+    "releaseDays": {
+      "v2": 4,
+      "v3": 7
+    },
+    "stages": [
+      {
+        "stage": "before",
+        "days": [
+          {
+            "day": 1,
+            "release": "v1",
+            "tasks": 18,
+            "completed": 18,
+            "clicks": 527,
+            "klmSeconds": 3545.3
+          },
+          {
+            "day": 2,
+            "release": "v1",
+            "tasks": 14,
+            "completed": 14,
+            "clicks": 736,
+            "klmSeconds": 4053.3
+          },
+          {
+            "day": 3,
+            "release": "v1",
+            "tasks": 19,
+            "completed": 19,
+            "clicks": 509,
+            "klmSeconds": 3019.9
+          },
+          {
+            "day": 4,
+            "release": "v2",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 487,
+            "klmSeconds": 2474.9
+          },
+          {
+            "day": 5,
+            "release": "v2",
+            "tasks": 17,
+            "completed": 17,
+            "clicks": 424,
+            "klmSeconds": 2432.3
+          },
+          {
+            "day": 6,
+            "release": "v2",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 531,
+            "klmSeconds": 3022.6
+          },
+          {
+            "day": 7,
+            "release": "v3",
+            "tasks": 14,
+            "completed": 14,
+            "clicks": 368,
+            "klmSeconds": 1678.1
+          },
+          {
+            "day": 8,
+            "release": "v3",
+            "tasks": 12,
+            "completed": 12,
+            "clicks": 558,
+            "klmSeconds": 2968.2
+          },
+          {
+            "day": 9,
+            "release": "v3",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 307,
+            "klmSeconds": 1513.8
+          },
+          {
+            "day": 10,
+            "release": "v3",
+            "tasks": 9,
+            "completed": 9,
+            "clicks": 333,
+            "klmSeconds": 1741.1
+          }
+        ]
+      },
+      {
+        "stage": "after",
+        "days": [
+          {
+            "day": 1,
+            "release": "v1",
+            "tasks": 18,
+            "completed": 18,
+            "clicks": 527,
+            "klmSeconds": 3581.3
+          },
+          {
+            "day": 2,
+            "release": "v1",
+            "tasks": 14,
+            "completed": 14,
+            "clicks": 728,
+            "klmSeconds": 4075
+          },
+          {
+            "day": 3,
+            "release": "v1",
+            "tasks": 19,
+            "completed": 19,
+            "clicks": 507,
+            "klmSeconds": 3046.4
+          },
+          {
+            "day": 4,
+            "release": "v2",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 487,
+            "klmSeconds": 2510.5
+          },
+          {
+            "day": 5,
+            "release": "v2",
+            "tasks": 17,
+            "completed": 17,
+            "clicks": 408,
+            "klmSeconds": 2450.8
+          },
+          {
+            "day": 6,
+            "release": "v2",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 525,
+            "klmSeconds": 3055.3
+          },
+          {
+            "day": 7,
+            "release": "v3",
+            "tasks": 14,
+            "completed": 14,
+            "clicks": 352,
+            "klmSeconds": 1686.7
+          },
+          {
+            "day": 8,
+            "release": "v3",
+            "tasks": 12,
+            "completed": 12,
+            "clicks": 552,
+            "klmSeconds": 3014.7
+          },
+          {
+            "day": 9,
+            "release": "v3",
+            "tasks": 11,
+            "completed": 11,
+            "clicks": 285,
+            "klmSeconds": 1504.2
+          },
+          {
+            "day": 10,
+            "release": "v3",
+            "tasks": 9,
+            "completed": 9,
+            "clicks": 329,
+            "klmSeconds": 1762.6
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "world": "runs/world/2",
   "seed": 7,
-  "binarySha256": "444b87aca077f63bee1655608cb54a184d55628e1cda066a4db5233378892530",
+  "binarySha256": "59a94c77ca5803eeeb1bad596a484b5cddaece2ea1a05c3c429c7c60c73d456f",
   "releaseDays": {
     "v2": 4,
     "v3": 7
@@ -74,7 +74,7 @@
       "release": "v1",
       "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "c60b211fe0d53ad0b5edde0ef20f1f55940245c36cd2622dbf230ff9b15908ac",
+      "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
       "scheduleSha256": "76985fb033591518433d22d0fd57675aa20d27e8846317044ce3cf4c1baeb9de",
       "preopTasks": [],
       "incomplete": 0,
@@ -148,7 +148,7 @@
       "release": "v1",
       "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "c60b211fe0d53ad0b5edde0ef20f1f55940245c36cd2622dbf230ff9b15908ac",
+      "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
       "scheduleSha256": "197708e111bf39afc7964b2771ce40dc2450b6f4bc894953e808191a42cae765",
       "preopTasks": [
         "d02-P5-W6-003",
@@ -228,7 +228,7 @@
       "release": "v1",
       "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "c60b211fe0d53ad0b5edde0ef20f1f55940245c36cd2622dbf230ff9b15908ac",
+      "programSha256": "2ef59d917cdf6ad1b5220b85d16534cd54dc1e07c24ebe04b0efb89da38214ce",
       "scheduleSha256": "7663d59996a2543efa8fd46efc2db1f3e5f48140649d329757454d7eacc0e377",
       "preopTasks": [
         "d03-P5-W6-004"
@@ -306,7 +306,7 @@
       "release": "v2",
       "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "5c52e840b7a15621ab68b30eff2c0ecea92c3dfb2ac507e145400d447b5f9c55",
+      "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
       "scheduleSha256": "ef164eb66259b0c6bfd61d316ad0f18bc36eebf0e01f0f73dcc0488a1c18158c",
       "preopTasks": [
         "d04-P5-W6-002",
@@ -384,7 +384,7 @@
       "release": "v2",
       "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "5c52e840b7a15621ab68b30eff2c0ecea92c3dfb2ac507e145400d447b5f9c55",
+      "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
       "scheduleSha256": "a80bd3ae9664fe8b792ca9be3131523e32eab0afebfea702f75023938913126c",
       "preopTasks": [],
       "incomplete": 0,
@@ -464,7 +464,7 @@
       "release": "v2",
       "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "5c52e840b7a15621ab68b30eff2c0ecea92c3dfb2ac507e145400d447b5f9c55",
+      "programSha256": "0557c38585361f287a36d3d2a3fe6e938c571f28a1e9369b50bd9c4ef707645b",
       "scheduleSha256": "db14a0d2294a59164d160180695e54b8450371b89b58d6fe344d8a13b53b958d",
       "preopTasks": [
         "d06-P5-W6-001",
@@ -545,7 +545,7 @@
       "release": "v3",
       "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "a804c23f661ad59bb037ec728602cdaa66bd1c14d99c90c9e9340684f3f4b90e",
+      "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
       "scheduleSha256": "bc0abd9230c3910dd23be1ef5e1d87033112804eff020f3a7f18d367fc8e4b93",
       "preopTasks": [],
       "incomplete": 0,
@@ -622,7 +622,7 @@
       "release": "v3",
       "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "a804c23f661ad59bb037ec728602cdaa66bd1c14d99c90c9e9340684f3f4b90e",
+      "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
       "scheduleSha256": "156d97c4f5c6a90e317eff0ee5fbbd109f890e6b230090ca3e96e9a063cfc21a",
       "preopTasks": [
         "d08-P5-W6-002",
@@ -700,7 +700,7 @@
       "release": "v3",
       "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "a804c23f661ad59bb037ec728602cdaa66bd1c14d99c90c9e9340684f3f4b90e",
+      "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
       "scheduleSha256": "4e2cdab31b5202b3b328ce1dc748bc14c3e64b755e13be03a15bdb55b11e9e17",
       "preopTasks": [],
       "incomplete": 0,
@@ -772,7 +772,7 @@
       "release": "v3",
       "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
       "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
-      "programSha256": "a804c23f661ad59bb037ec728602cdaa66bd1c14d99c90c9e9340684f3f4b90e",
+      "programSha256": "80b2e61bccd6aef604391a2f5bac57ac1930e1511fbd5739d9804a621fb6f3e6",
       "scheduleSha256": "19d11f2615bdd0e73f2b347371b38c4da3ff098e5d2b569032165c91a8e9fb2a",
       "preopTasks": [
         "d10-P5-W6-001",

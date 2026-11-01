@@ -231,6 +231,14 @@ def uiNavSavedCollapsedCtx : Ctx :=
     uiNavSavedCollapsedCtx.disp uiNavSavedCollapsedCtx.user uiNavSavedCollapsedCtx.s).nav ==
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
+#guard uiShellScreen.activeNav? == none
+/-- A selected navigator item follows its declared target, even when labels differ. -/
+def uiCurrentNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components ++
+      [{ id := "shell.nav.current", kind := .button (.goto "shell"), label := "Current section",
+         tag := "nav.current", parent? := some "shell.nav" }] } } }
+#guard uiActiveNav uiCurrentNavCtx == some "shell.nav.current"
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 #guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with
   | .info _ _ "patientBanner" _ _ | .section "shell.nav" _ _ | .section "shell.sidebar" _ _ | .button "shell.nav.next" _ _ _ _ _ => true

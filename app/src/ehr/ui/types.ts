@@ -79,11 +79,16 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   ]),
 );
 /** Offline boundary only; the clinician path forwards Lean output unchanged. */
-export const uiScreenSchema: z.ZodType<UiScreen> = z.strictObject({
-  banner: z.array(pair),
-  nav: z.array(z.tuple([label, z.array(pair)])),
-  title: label,
-  workspace: z.array(uiNodeSchema),
-  side: z.array(uiNodeSchema),
-  modal: uiNodeSchema.nullable(),
-});
+export const uiScreenSchema: z.ZodType<UiScreen> = z
+  .strictObject({
+    banner: z.array(pair),
+    nav: z.array(z.tuple([label, z.array(pair)])),
+    activeNav: label.optional(),
+    title: label,
+    workspace: z.array(uiNodeSchema),
+    side: z.array(uiNodeSchema),
+    modal: uiNodeSchema.nullable(),
+  })
+  .transform(({ activeNav, ...screen }) =>
+    activeNav === undefined ? screen : { ...screen, activeNav },
+  );

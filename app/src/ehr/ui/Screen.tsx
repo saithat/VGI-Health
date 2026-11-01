@@ -147,6 +147,7 @@ export function WorkflowNav({
                 <li key={id} aria-current={id === active ? "page" : undefined}>
                   <button
                     type="button"
+                    aria-current={id === active ? "page" : undefined}
                     data-comp-id={id}
                     data-event="click"
                     onClick={() => onEvent({ click: { comp: id } })}
@@ -176,11 +177,7 @@ export function UiScreenView({
   onEvent: Emit;
 }) {
   const modal = screen.modal;
-  const stepper = screen.workspace.find((node) => "stepper" in node);
-  const active =
-    stepper && "stepper" in stepper
-      ? stepper.stepper.steps[stepper.stepper.current]?.[0]
-      : undefined;
+  const active = screen.activeNav;
   // A new screen starts at its heading. Ordinary field updates retain position.
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
