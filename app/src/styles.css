@@ -6,6 +6,13 @@ body {
     12px/1.5 Inter,
     sans-serif;
 }
+.live-controls { position: fixed; bottom: 16px; left: 16px; z-index: 150; }
+.live-home nav { flex-wrap: wrap; align-items: center; }
+.worklist-scroll { overflow-x: auto; margin-top: 16px; }
+.worklist-table { width: 100%; border-collapse: collapse; background: white; }
+.worklist-table th, .worklist-table td { padding: 12px; text-align: left; border-bottom: 1px solid #d5dfe7; }
+.patient-search { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 24px; }
+.live-home select { max-width: 100%; padding: 8px; }
 .workspace-toolbar {
   display: flex;
   flex-wrap: wrap;

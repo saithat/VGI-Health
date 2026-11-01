@@ -19,7 +19,7 @@ export function createSession(
   bundle: unknown,
   user: unknown,
 ) {
-  const args = [
+  let args = [
     JSON.stringify(spec),
     JSON.stringify(program),
     JSON.stringify(bundle),
@@ -37,6 +37,15 @@ export function createSession(
   }
   let snapshot = readSnapshot();
   const listeners = new Set<() => void>();
+  function preview(event: Event): StepOutput {
+    return JSON.parse(interp.step(...args, stateJson, JSON.stringify(event)));
+  }
+  function accept(response: StepOutput, facts?: unknown) {
+    if (facts !== undefined) args = [args[0], args[1], JSON.stringify(facts), args[3]];
+    stateJson = JSON.stringify(response.state);
+    snapshot = readSnapshot(response.result);
+    listeners.forEach((listener) => listener());
+  }
   return {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
@@ -45,13 +54,8 @@ export function createSession(
         listeners.delete(listener);
       };
     },
-    dispatch(event: Event) {
-      const response: StepOutput = JSON.parse(
-        interp.step(...args, stateJson, JSON.stringify(event)),
-      );
-      stateJson = JSON.stringify(response.state);
-      snapshot = readSnapshot(response.result);
-      listeners.forEach((listener) => listener());
-    },
+    preview,
+    accept,
+    dispatch(event: Event) { accept(preview(event)); },
   };
 }

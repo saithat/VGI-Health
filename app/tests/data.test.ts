@@ -7,6 +7,8 @@ const calls = vi.hoisted(() => ({
   pages: vi.fn(),
 }));
 vi.mock("@medplum/core", () => ({
+  ClientStorage: class {},
+  MemoryStorage: class {},
   MedplumClient: class {
     isAuthenticated = calls.authenticated;
     readResource = calls.patient;
