@@ -1,3 +1,4 @@
+import { RELEASE_IDS, releaseModule } from './release-config.js';
 /**
  * Spec versions, canonical programs, and vendor release inputs.
  *
@@ -28,7 +29,6 @@ export interface Release {
   fake: boolean;
 }
 
-const LEAN_MODULE: Record<string, string> = { v1: 'V1', 'v2': 'V2', v3: 'V3' };
 
 async function readText(file: string): Promise<string | null> {
   return existsSync(file) ? readFile(file, 'utf8') : null;
@@ -41,7 +41,7 @@ export async function loadRelease(id: string, ehr: EhrClient, root: string = REP
   const dir = path.join(root, 'releases', id);
   const specFile = path.join(dir, 'spec.json');
   const spec = existsSync(specFile) ? await readJson(specFile, specSchema) : await ehr.specExport(id);
-  const candidates = [path.join(dir, 'canonical.json'), ...(id === 'v1' ? [path.join(root, 'programs', 'canonical', 'v0.json')] : [])];
+  const candidates = [path.join(dir, 'canonical.json'), ...(id === RELEASE_IDS.base ? [path.join(root, 'programs', 'canonical', 'v0.json')] : [])];
   const canonicalFile = candidates.find((f) => existsSync(f));
   if (!canonicalFile) throw new Error(`no canonical program for release ${id} (looked in ${candidates.join(', ')})`);
   const canonical = await readJson(canonicalFile, programSchema);
@@ -50,7 +50,7 @@ export async function loadRelease(id: string, ehr: EhrClient, root: string = REP
     const file = path.join(dir, 'personas', `${persona}.json`);
     if (existsSync(file)) personaCanonicals[persona] = await readJson(file, programSchema);
   }
-  const moduleName = LEAN_MODULE[id];
+  const moduleName = releaseModule(id);
   const leanSpecSource = moduleName ? await readText(path.join(root, 'lean', 'Ehr', 'Specs', `${moduleName}.lean`)) : null;
   return { id, specVersion: id, spec, canonical, personaCanonicals, notes: (await readText(path.join(dir, 'RELEASE_NOTES.md'))) ?? '', leanSpecSource, fake: false };
 }
@@ -79,4 +79,11 @@ export function specDiff(before: Spec, after: Spec): Record<string, unknown> {
     catalogAdded: after.design.catalog.filter((k) => !before.design.catalog.includes(k)),
     designChanged: JSON.stringify(before.design) !== JSON.stringify(after.design),
   };
+}
+
+/** Use the vendor's role-safe projection; the all-role canonical is a template. */
+export async function releaseForPersona(release: Release, persona: string, root: string = REPO_ROOT): Promise<Release> {
+  if (release.fake) return release;
+  const file = path.join(root, 'releases', release.id, 'personas', `${persona}.json`);
+  return { ...release, canonical: await readJson(file, programSchema) };
 }

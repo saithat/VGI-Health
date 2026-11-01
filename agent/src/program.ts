@@ -1,3 +1,4 @@
+import { expandProgram } from './composites.js';
 /** Helpers over UI programs: patching, personalization, stability, hashing. */
 import { createHash } from 'node:crypto';
 import { applyPatch, isRecord } from './jsonpatch.js';
@@ -33,8 +34,8 @@ export function applyToProgram(
     const first = parsed.error.issues[0];
     throw new Error(`patched program is not a valid Program: ${first ? `${first.path.join('.')}: ${first.message}` : 'invalid'}`);
   }
-  for (const key of ['id', 'owner', 'role'] as const) {
-    if (parsed.data[key] !== program[key]) throw new Error(`patch may not change program ${key}`);
+  for (const key of ['id', 'owner', 'role', 'version', 'specVersion'] as const) {
+    if (parsed.data[key] !== program[key]) throw new Error(`Candidate may not change program metadata: ${key}`);
   }
   const out: Program = { ...parsed.data, version: next.version };
   if (next.specVersion !== undefined) out.specVersion = next.specVersion;
@@ -123,9 +124,9 @@ export function isBackButton(c: Component): boolean {
  * stability budget). Informational only; the Lean checker enforces the budget.
  */
 export function componentsMoved(before: Program, after: Program): number {
-  const old = componentById(before);
+  const old = componentById(expandProgram(before));
   let moved = 0;
-  for (const { screen, component } of allComponents(after)) {
+  for (const { screen, component } of allComponents(expandProgram(after))) {
     if (component.copyOf) continue;
     const prev = old.get(component.id);
     if (!prev) continue;

@@ -1,0 +1,36 @@
+{
+  "name": "bad-06-stale-weight",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/06-stale-weight.json",
+    "--prev",
+    "programs/bad/06-stale-weight.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 204,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w5Rooming"
+      ],
+      "property": "units",
+      "message": "field w5Rooming.weight on screen w5Rooming fills weight from record value weightYesterday, a bare number with no unit or date; only weightToday keeps its unit",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w5Rooming"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w5Rooming\"],\n  \"property\": \"units\",\n  \"message\":\n  \"field w5Rooming.weight on screen w5Rooming fills weight from record value weightYesterday, a bare number with no unit or date; only weightToday keeps its unit\",\n  \"counterexample\": [{\"click\": {\"comp\": \"home.work.w5Rooming\"}}]}}\n",
+  "stderr": ""
+}

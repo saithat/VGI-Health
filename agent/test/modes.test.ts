@@ -1,4 +1,5 @@
-/** Release modes (v2 surface-feature, v3 migrate) and try-to-break-it, on a compressed calendar. */
+import { RELEASE_IDS } from '../src/release-config.js';
+/** Release modes (v1.1 surface-feature, v2 migrate) and try-to-break-it, on a compressed calendar. */
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { rerunNight } from '../src/adhoc.js';
@@ -32,15 +33,15 @@ describe('surface-feature (v2)', () => {
     const p1 = rec(1, 'P1');
     expect(p1.mode).toBe('surface-feature');
     expect(p1.outcome).toBe('surfaced');
-    expect(p1.release).toMatchObject({ id: 'v2', surfaced: true });
+    expect(p1.release).toMatchObject({ id: RELEASE_IDS.feature, surfaced: true });
     expect(p1.release?.recheck.status).toBe('pass');
-    expect(p1.specVersion).toBe('v2');
+    expect(p1.specVersion).toBe(RELEASE_IDS.feature);
     const p2 = rec(1, 'P2');
     expect(p2.outcome).toBe('not-surfaced');
     expect(p2.release?.surfaced).toBe(false);
     expect(p2.hypothesis).toMatch(/prior auth/);
     // Not surfacing still recertifies the unchanged program under the new spec.
-    expect(p2.certificate?.specVersion).toBe('v2');
+    expect(p2.certificate?.specVersion).toBe(RELEASE_IDS.feature);
   });
 });
 
@@ -59,7 +60,7 @@ describe('migrate (v3)', () => {
     expect(second?.check.status).toBe('pass');
     expect(r.outcome).toBe('migrated');
     expect(r.release?.items).toContain('R2-3');
-    expect(r.certificate?.specVersion).toBe('v3');
+    expect(r.certificate?.specVersion).toBe(RELEASE_IDS.migration);
     expect(r.userResponse.response).toBe('not-offered');
   });
 
@@ -76,7 +77,7 @@ describe('migrate (v3)', () => {
 describe('try-to-break-it', () => {
   it('implements the request, runs check, returns the verdict and counterexample (and replays offline)', async () => {
     const ehr = createFakeEhr();
-    const release = await loadRelease('v1', ehr);
+    const release = await loadRelease(RELEASE_IDS.base, ehr);
     const params = FAKE_PERSONAS[0];
     if (!params) throw new Error('no persona');
     const persona = { id: 'P1', userId: 'user-p1', params };
@@ -108,4 +109,20 @@ describe('re-running one night of an existing run (night command)', () => {
     expect(existsSync(new RunStore(outDir).decisionPath(2, 'P3'))).toBe(true);
     expect(JSON.stringify(rec(2, 'P3'))).toBe(before);
   });
+});
+
+
+it('compares release validation against its certified canonical', async () => {
+  const ehr = createFakeEhr();
+  const original = ehr.minClicks.bind(ehr);
+  const calls = vi.spyOn(ehr, 'minClicks').mockImplementation(async (input) => {
+    if (input.specVersion !== input.program.specVersion) throw new Error('old program cannot complete the new requirements');
+    return original(input);
+  });
+  const result = await runDays({ days: 3, personas: ['P3'], llm: new ScriptedLlm(), ehr,
+    worldDir: await fakeWorld(3), runsRoot: await tmp('spec-minima'), runId: 'minima',
+    releaseDays: { v2: 2, v3: 3 } });
+  expect(result.timelines[0]?.days).toHaveLength(3);
+  expect(calls.mock.calls.every(([input]) => input.specVersion === input.program.specVersion)).toBe(true);
+  expect(rec(2, 'P3').validation.accepted).toBe(true);
 });

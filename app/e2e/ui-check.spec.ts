@@ -1,3 +1,4 @@
+import { presentationBundleSchema } from "../src/ehr/ui/presentation-types";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
@@ -19,12 +20,13 @@ const fixtures = supplied.length
   : readdirSync("src/fixtures/ui")
       .filter((name) => name.endsWith(".json"))
       .map((name) => resolve("src/fixtures/ui", name));
+const presentations = process.env.EHR_PRESENTATION_BUNDLE ? presentationBundleSchema.parse(JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, "utf8"))) : null;
 const minimum = Number(process.env.EHR_MIN_FONT_PX ?? 12);
 if (!Number.isFinite(minimum) || minimum < 12)
   throw new Error("Legibility minimum must be at least 12px");
 
 async function render(page: Page, screen: UiScreen) {
-  await page.evaluate((screen) => window.renderUi(screen), screen);
+  await page.evaluate(({ screen, presentations }) => window.renderUi(screen, presentations), { screen, presentations });
   await page.evaluate(() => document.fonts.ready);
   // Accordion uses transitions. Wait for every expected region to settle.
   await page.waitForTimeout(220);
@@ -38,6 +40,9 @@ function nodes(tree: UiNode): UiNode[] {
 async function visibility(page: Page) {
   const failures = await page.evaluate((min) => {
     const errors: string[] = [];
+    // Font checks overlap through regions/groups and their child controls. Inspect
+    // each text node once in this synchronous, static DOM pass.
+    const textChecked = new WeakSet<Node>();
     const selector =
       'header, nav, main h1, section[role="region"], [data-comp-id], [data-info-id] th, [data-info-id] td, [data-info-id] dt, [data-info-id] dd, [data-info-id] li, nav button, [role="tab"], [role="dialog"]';
     for (const el of document.querySelectorAll(selector)) {
@@ -81,6 +86,8 @@ async function visibility(page: Page) {
       }
       const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
       for (let text = walk.nextNode(); text; text = walk.nextNode()) {
+        if (textChecked.has(text)) continue;
+        textChecked.add(text);
         const parent = text.parentElement;
         if (
           !parent ||
@@ -146,20 +153,21 @@ for (const file of fixtures)
     await visibility(page);
     // Every record cell and banner value must survive painting, including rows after
     // the first one. Values are data, not FHIR/clinical interpretation in React.
+    // The assertions are identical to toContainText's normalized text checks,
+    // collected in two browser round trips rather than one per patient value.
+    const normalize = (text: string) => text.replace(/[\u200b\u00ad]/g, "").replace(/\s+/g, " ").trim();
+    const bannerText = normalize(await page.getByRole("banner").textContent() ?? "");
     for (const [, value] of screen.banner)
-      if (value)
-        await expect(page.getByRole("banner")).toContainText(
-          formatDisplayValue(value),
-        );
+      if (value) expect(bannerText).toContain(normalize(formatDisplayValue(value)));
     const infos = [...screen.side, ...screen.workspace]
       .flatMap(nodes)
       .flatMap((node) => ("info" in node ? [node.info] : []));
+    const panels = (await page.locator("[data-info-id]").allTextContents()).map(normalize);
     for (const [index, info] of infos.entries()) {
-      const panel = page.locator("[data-info-id]").nth(index);
+      expect(panels[index], `Missing rendered info ${index}`).toBeDefined();
       for (const row of info.rows)
         for (const [, value] of row)
-          if (value)
-            await expect(panel).toContainText(formatDisplayValue(value));
+          if (value) expect(panels[index]).toContain(normalize(formatDisplayValue(value)));
     }
     expect(browserErrors).toEqual([]);
   });

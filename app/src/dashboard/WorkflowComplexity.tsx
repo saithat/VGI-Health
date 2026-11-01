@@ -72,7 +72,7 @@ function pointsFor(
           : key
             ? (workload.total?.[key] ?? null)
             : null,
-      expert: iteration?.total[metric] ?? null,
+      expert: measure === "workload" && run.manifest.measurementProtocol && key ? workload.canonical?.[key] ?? null : iteration?.total[metric] ?? null,
       floor: iteration?.floor[metric] ?? null,
       sample:
         measure === "expert"
@@ -341,7 +341,7 @@ export function WorkflowComplexity({
         <span className="floor-key">Theoretical minimum · fixed benchmark</span>
         {measure === "workload" && (
           <span className="expert-key">
-            Solid line: exact expert minimum · fixed cases
+            Solid line: {run.manifest.measurementProtocol ? "certified canonical for each day’s active release · same schedule and seed" : "exact expert minimum · fixed cases"}
           </span>
         )}
       </div>

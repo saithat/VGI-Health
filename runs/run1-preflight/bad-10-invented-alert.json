@@ -1,0 +1,42 @@
+{
+  "name": "bad-10-invented-alert",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/10-invented-alert.json",
+    "--prev",
+    "programs/bad/10-invented-alert.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 145,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w1Rooming",
+        "w1Orders"
+      ],
+      "property": "wellFormed",
+      "message": "alert w1Orders.everyDose on screen w1Orders names alert doseRangeEveryOrder, which the spec does not have",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w1Rooming"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Rooming.nav.w1Orders"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w1Rooming\", \"w1Orders\"],\n  \"property\": \"wellFormed\",\n  \"message\":\n  \"alert w1Orders.everyDose on screen w1Orders names alert doseRangeEveryOrder, which the spec does not have\",\n  \"counterexample\":\n  [{\"click\": {\"comp\": \"home.work.w1Rooming\"}},\n   {\"click\": {\"comp\": \"w1Rooming.nav.w1Orders\"}}]}}\n",
+  "stderr": ""
+}

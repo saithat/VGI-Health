@@ -1,3 +1,4 @@
+import { usePresentation } from "./presentations";
 import { useId, useState } from "react";
 import {
   Alert,
@@ -596,7 +597,7 @@ function unreachable(node: never): never {
   throw new Error(`Unknown semantic UI node: ${String(node)}`);
 }
 /** Exhaustive dispatch: extending the wire union requires a matching component. */
-export function UiNodeView({
+export function StockUiNodeView({
   node,
   onEvent,
   confirmProvided = false,
@@ -633,4 +634,9 @@ export function UiNodeView({
     default:
       return unreachable(node);
   }
+}
+
+export function UiNodeView(props: { node: UiNode; onEvent: Emit; confirmProvided?: boolean }) {
+  const original = StockUiNodeView(props);
+  return usePresentation(props.node, original);
 }

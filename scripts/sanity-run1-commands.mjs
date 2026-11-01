@@ -1,0 +1,31 @@
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
+import { resolve, join } from 'node:path';
+const out = resolve('runs/run1-preflight');
+const ehr = resolve('lean/.lake/build/bin/ehr');
+mkdirSync(out, { recursive: true });
+const results = [];
+function run(name, binary, args) {
+  const start = Date.now();
+  const r = spawnSync(binary, args, { encoding: 'utf8', maxBuffer: 128 * 1024 * 1024 });
+  const result = { name, command: [binary, ...args], exit: r.status, ms: Date.now() - start, stderr: r.stderr, error: r.error?.message };
+  writeFileSync(join(out, `${name}.stdout`), r.stdout ?? '');
+  writeFileSync(join(out, `${name}.json`), JSON.stringify(result, null, 2) + '\n');
+  results.push(result); console.log(name, 'exit', r.status, 'ms', result.ms);
+  return result;
+}
+for (const p of ['P1', 'P3']) run(`${p}-simulate`, ehr, ['simulate', '--spec', 'v1', '--program', `releases/v1/personas/${p}.json`, '--persona', `runs/world/1/personas/${p}.json`, '--schedule', `runs/world/1/schedules/day-01/${p}.json`, '--world', 'runs/world/1', '--seed', '1000004']);
+const schedule = JSON.parse(readFileSync('runs/world/1/schedules/day-01/P3.json'));
+const task = '/tmp/vgi-run1-task.json';
+writeFileSync(task, JSON.stringify(schedule.tasks[0]));
+run('P3-min-clicks', ehr, ['min-clicks', '--spec', 'v1', '--program', 'releases/v1/personas/P3.json', '--task', task, '--world', 'runs/world/1']);
+const index = JSON.parse(readFileSync('fixtures/synthea/index.json'));
+const bundle = `fixtures/synthea/${index.patients.find(p => p.id === schedule.tasks[0].patientId).file}`;
+const screens = '/tmp/vgi-run1-screens';
+const user = '/tmp/vgi-run1-user.json'; writeFileSync(user, JSON.stringify({id:'P3',role:'rn'}));
+run('P3-render-screens', ehr, ['render-screens', '--spec', 'releases/v1/spec.json', '--program', 'releases/v1/personas/P3.json', '--fhir', bundle, '--user', user, '--out', screens]);
+const files = readdirSync(screens).filter(f => f.endsWith('.json')).map(f => join(screens, f));
+run('P3-screen-check', 'pnpm', ['--filter', 'app', 'screen-check', ...files]);
+const deploy = '/tmp/vgi-run1-deploy';
+run('P3-deploy', ehr, ['deploy', '--spec', 'releases/v1/spec.json', '--program', 'releases/v1/personas/P3.json', '--prev', 'releases/v1/personas/P3.json', '--canonical', 'releases/v1/personas/P3.json', '--out', deploy]);
+writeFileSync(join(out, 'commands.json'), JSON.stringify({bundle, screens, deploy, pages:files.length, results}, null, 2) + '\n');
