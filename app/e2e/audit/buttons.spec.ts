@@ -667,6 +667,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     await page
       .locator('div[aria-busy="true"]')
       .waitFor({ state: "hidden", timeout: 30000 });
+    // Prior actions can leave Saved toasts over the next restored list row.
+    // Dismiss them through their real controls before timing an isolated click.
+    for (const notification of await page
+      .locator(".mantine-Notification-closeButton")
+      .all())
+      if (await notification.isVisible()) await notification.click();
     const resourceClose = page.getByRole("button", {
       name: "Close saved resource",
       exact: true,
@@ -1015,7 +1021,14 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
                 .join(", "),
             )
             .filter({ visible: true });
-          const control = controls.nth(target.index);
+          // A restored chart can add/remove controls while React paints it.
+          // Resolve certified controls by semantic identity, not a stale DOM index.
+          const semantic = target.comp
+            ? `[data-comp-id=${JSON.stringify(target.comp)}]${target.event ? `[data-event=${JSON.stringify(target.event)}]` : ""}${/^\d+$/.test(target.tab ?? "") ? `[data-tab-index=${JSON.stringify(target.tab)}]` : ""}`
+            : null;
+          const control = semantic
+            ? controls.and(page.locator(semantic)).first()
+            : controls.nth(target.index);
           if (!(await control.count()) || !(await control.isVisible()))
             continue;
           let action: (() => Promise<unknown>) | undefined;

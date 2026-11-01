@@ -413,3 +413,11 @@ clear the patient context. Clinical activity navigation retains it.
 Recorded programs without this flag retain their original replay behavior.
 Interactive historical layouts and fresh simulations add the same fixed
 selection wrapper; recorded source artifacts and saved replay events stay intact.
+
+The `workspace.*` component namespace is reserved by certification so a candidate
+cannot replace a chart action with a workspace action. Lookup entries use the
+ordinary `enter` event on `workspace.search`; row selection uses the ordinary
+click event. Day-list rows preserve their source work-item reference: chart
+loading honors that existing encounter/request while lookup opens the patient's
+existing chart without inventing an encounter. Interactive work dates default
+to the world manifest's first work date and timeline links retain their day.

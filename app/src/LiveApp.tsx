@@ -243,6 +243,7 @@ function Chart({
   const inspecting =
     new URLSearchParams(window.location.search).get("inspect") === "1";
   const [pending, setPending] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [error, setError] = useState("");
   const [panel, setPanel] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
@@ -265,6 +266,9 @@ function Chart({
   };
   return (
     <>
+      {opening && (
+        <Text role="status">Loading the selected patient's chart…</Text>
+      )}
       <div
         aria-busy={pending}
         ref={(el) => {
@@ -279,10 +283,19 @@ function Chart({
             onEvent={(event) => {
               if (pending) return;
               setError("");
-              // Ordinary input events resolve immediately; only commits wait on I/O.
+              const selecting =
+                "click" in event &&
+                event.click.comp.startsWith("workspace.open|");
               setPending(true);
-              void session
-                .dispatch(event)
+              setOpening(selecting);
+              // Paint feedback before a potentially large chart projection blocks the UI.
+              const ready = selecting
+                ? new Promise<void>((resolve) =>
+                    requestAnimationFrame(() => setTimeout(resolve, 0)),
+                  )
+                : Promise.resolve();
+              void ready
+                .then(() => session.dispatch(event))
                 .then((result) => {
                   if (result) {
                     setLinks(result.links);
@@ -326,7 +339,10 @@ function Chart({
                   setError(errorText(error));
                   setPanel(true);
                 })
-                .finally(() => setPending(false));
+                .finally(() => {
+                  setOpening(false);
+                  setPending(false);
+                });
             }}
           />
         ) : (

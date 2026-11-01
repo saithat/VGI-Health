@@ -1,0 +1,2 @@
+$ node scripts/trajectories/index.mjs --run run1-P3 --verify-only
+run1-P3: 424 tasks / 14658 events + 3 baselines / 137 events; 0 mismatches
