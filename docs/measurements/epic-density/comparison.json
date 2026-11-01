@@ -1,0 +1,41 @@
+{
+  "rows": 15,
+  "viewport": [
+    1440,
+    900
+  ],
+  "mode": "REAL-native-zero-LLM",
+  "beforeBase": "c9f30993",
+  "afterSource": "15896ac3",
+  "scope": "Full-day baseline for each role in each release; includes intervening acute integration. All task and patient-selection costs are counted.",
+  "totals": {
+    "before": {
+      "completed": 384,
+      "tasks": 384,
+      "clicks": 10947,
+      "keystrokes": 43437,
+      "scrolls": 12702,
+      "scrollPx": 15996081,
+      "mouseTravelPx": 5380479.25
+    },
+    "after": {
+      "completed": 384,
+      "tasks": 384,
+      "clicks": 11417,
+      "keystrokes": 43581,
+      "scrolls": 17697,
+      "scrollPx": 20698074,
+      "mouseTravelPx": 4961802.83
+    }
+  },
+  "delta": {
+    "completed": 0,
+    "tasks": 0,
+    "clicks": 470,
+    "keystrokes": 144,
+    "scrolls": 4995,
+    "scrollPx": 4701993,
+    "mouseTravelPx": -418676.42
+  },
+  "missingTargets": 0
+}

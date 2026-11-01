@@ -56,4 +56,3 @@ REBIND REFUSED P5/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fak
       Tests  95 passed (95)
    Start at  11:12:18
    Duration  19.08s (transform 2.00s, setup 0ms, collect 14.77s, tests 44.92s, environment 4ms, prepare 2.96s)
-

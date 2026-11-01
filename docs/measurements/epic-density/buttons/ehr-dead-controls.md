@@ -4,4 +4,3 @@ Content lane: remove inert components or give them interpreter behavior. Render 
 
 | Route / persona / program | Screen | Label | Comp id | Kind / owner | Status | Observed effect |
 |---|---|---|---|---|---|---|
-
