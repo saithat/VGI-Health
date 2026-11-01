@@ -51,7 +51,6 @@ def result : Screen :=
     components := frame s ++ [
       { table s "detail" "resultDetail" "Result details and reference ranges" with tag := "present.results" },
       { trend s "trend" "resultTrend" "Result trend" with tag := "present.trend" },
-      { table s "trendValues" "resultTrend" "Dated values" with tag := "present.table" },
       clinicalSection s "followup" "Result follow-up",
       field s "resultAction" "resultAction" "Clinical action" (parent := some "followup"),
       field s "resultFollowUpOrder" "resultFollowUpOrder" "Follow-up test (LOINC)" (parent := some "followup"),

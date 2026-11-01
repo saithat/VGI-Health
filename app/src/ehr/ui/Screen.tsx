@@ -168,7 +168,7 @@ export function WorkflowNav({
         PATIENT WORKSPACE
       </Text>
       <div className="workflow-groups">
-        {groups.map(([group, items]) => (
+        {available.map(([group, items]) => (
           <div key={group}>
             <Text component="h2" size="sm" fw={700}>
               {group}

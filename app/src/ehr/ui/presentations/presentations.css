@@ -239,12 +239,13 @@
 .presentation-chart svg {
   display: block;
   width: 100%;
+  max-width: 700px;
   height: auto;
   overflow: visible;
 }
 .presentation-chart svg text {
   fill: var(--p-muted);
-  font-size: 20px;
+  font-size: 16px;
   font-family: inherit;
 }
 .chart-grid {

@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "6b148a71ed168355b1b804cc47f9260b8a32e162",
+  "sourceRevisionAtValidation": "373cbc3954b70ae02bd7cc9de6e494d5c33741ce",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "61f50acbf45da099904441812ace627066652abd9784325b7f4d226cc11a078c",
-  "nativeBinarySha256": "79809a46aaa774ffd2dfd6997f364d61fc647d9f705084eb5670f4e9e229f8f4",
+  "leanSourceHash": "0ff3cdb3b7befd7fb6e4a1d3f87b2aace4f71d4cb4cb0624dbf02f60e5672bd8",
+  "nativeBinarySha256": "2b234c92e74c54aac200565d80376493268cb3e74455a96ed63f45ac868db6ee",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -20,7 +20,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "1517093ad5c09c9efb4e6668ccf853a54c3d56dfd107d7c50b765c51b6376dbb"
+    "reportSha256": "902030b004494a5797febf28251d2fbda87da111c13c519ddda113ef3a21a9ec"
   },
   "world2": {
     "world": "runs/world/2",
@@ -514,8 +514,8 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 171,
-    "agentTests": 41,
+    "appTests": 199,
+    "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
     "seedTests": 7
