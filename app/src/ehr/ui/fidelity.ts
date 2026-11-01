@@ -129,9 +129,8 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
       entry("navigation", "Clinical workflows"),
       screen.nav
         .filter(([, items]) => items.length > 0)
-        .flatMap(([group, items]) => [
-          { role: "button", name: group, disabled: false },
-          ...nest(
+        .flatMap(([group, items]) =>
+          nest(
             entry("region", group),
             nest(
               entry("list", `${group} screens`),
@@ -142,7 +141,7 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
               })),
             ),
           ),
-        ]),
+        ),
     ),
     ...nest(entry("main"), [
       ...(screen.side.length

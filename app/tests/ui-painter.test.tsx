@@ -153,6 +153,9 @@ describe("semantic EHR painter", () => {
       [{ click: { comp: "actual.goto.component" } }],
     ]);
     expect(screen.queryByText("Empty group")).toBeNull();
+    expect(screen.getByRole("heading", { name: "Navigator" })).toBeTruthy();
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(screen.queryByRole("button", { name: "Navigator" })).toBeNull();
   });
 
   it("renders every UiNode constructor and all supplied records", () => {

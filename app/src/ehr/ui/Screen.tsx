@@ -2,7 +2,6 @@ import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect } from "react";
 import {
-  Accordion,
   AppShell,
   Badge,
   Group,
@@ -175,56 +174,42 @@ export function WorkflowNav({
       >
         PATIENT WORKSPACE
       </Text>
-      {available.length > 0 && (
-        <Accordion
-          multiple
-          defaultValue={available.map((_, index) => String(index))}
-          chevronPosition="right"
-          chevron={<ClinicalIcon name="chevron" />}
-          variant="default"
-          className="workflow-groups"
-        >
-          {available.map(([group, items], index) => (
-            <Accordion.Item key={group} value={String(index)}>
-              <Accordion.Control
-                icon={
-                  <ClinicalIcon
-                    name={
-                      /basket|result|request/i.test(group)
-                        ? "message"
-                        : /med|mar/i.test(group)
-                          ? "pill"
-                          : /schedule|round|surg/i.test(group)
-                            ? "clock"
-                            : "user"
-                    }
-                  />
+      <div className="workflow-groups">
+        {available.map(([group, items]) => (
+          <section key={group} className="workflow-group" aria-label={group}>
+            <h2 className="nav-group-title">
+              <ClinicalIcon
+                name={
+                  /basket|result|request/i.test(group)
+                    ? "message"
+                    : /med|mar/i.test(group)
+                      ? "pill"
+                      : /schedule|round|surg/i.test(group)
+                        ? "clock"
+                        : "user"
                 }
-              >
-                {group}
-              </Accordion.Control>
-              <Accordion.Panel>
-                <ul className="workflow-links" aria-label={`${group} screens`}>
-                  {items.map(([id, label]) => (
-                    <li key={id}>
-                      <button
-                        type="button"
-                        data-comp-id={id}
-                        data-event="click"
-                        aria-current={label === title ? "page" : undefined}
-                        onClick={() => onEvent({ click: { comp: id } })}
-                      >
-                        <span aria-hidden="true" className="nav-dot" />
-                        {label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </Accordion.Panel>
-            </Accordion.Item>
-          ))}
-        </Accordion>
-      )}
+              />
+              {group}
+            </h2>
+            <ul className="workflow-links" aria-label={`${group} screens`}>
+              {items.map(([id, label]) => (
+                <li key={id}>
+                  <button
+                    type="button"
+                    data-comp-id={id}
+                    data-event="click"
+                    aria-current={label === title ? "page" : undefined}
+                    onClick={() => onEvent({ click: { comp: id } })}
+                  >
+                    <span aria-hidden="true" className="nav-dot" />
+                    {label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
       <div className="nav-footer">
         <span className="status-dot" aria-hidden="true" />
         <Text size="xs">Encounter workspace</Text>

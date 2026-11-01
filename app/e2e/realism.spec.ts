@@ -1,6 +1,8 @@
 import { mkdirSync, readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { uiScreenSchema } from "../src/ehr/ui/types";
+import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
+import type {} from "../src/core/buttonAudit";
 import type {} from "../src/ehr/offline";
 
 test("shared shell and browser visual review", async ({ page }) => {
@@ -35,7 +37,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     ["P5", "w6PreOp", "w6PreOp"],
   ] as const) {
     await page.goto(
-      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
+      `/ehr?mode=replay&audit=buttons&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
     await expect(page.locator(".clinical-app")).toBeVisible();
     await page
@@ -55,6 +57,15 @@ test("shared shell and browser visual review", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
+    if (process.env.REALISM_SHOTS !== "before") {
+      const semantic = await page.evaluate(
+        () => window.__buttonAuditSession?.snapshot().ui,
+      );
+      if (!semantic) throw new Error(`Missing ${persona} semantic screen`);
+      expect(
+        observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+      ).toEqual(expectedAria(semantic));
+    }
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/${screen}.png`,
