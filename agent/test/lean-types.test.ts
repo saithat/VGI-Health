@@ -27,13 +27,9 @@ describe('validators vs Lean-written samples', () => {
   it('preserves optional encounter role policy and accepts legacy commits', () => {
     const reason = 'Pre-op orders are signed by a physician or surgeon';
     const withPolicy = { ...tinySpec, commits: tinySpec.commits.map((commit) => ({
-      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason, cosign: 'attendingCosign' }],
+      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason }],
     })) };
     same(specSchema.parse(withPolicy), withPolicy);
-    const withAttestation = { ...withPolicy, entries: withPolicy.entries.map(entry => ({
-      ...entry, waivedBy: 'attendingCosign',
-    })) };
-    same(specSchema.parse(withAttestation), withAttestation);
     same(specSchema.parse(tinySpec), tinySpec);
   });
 

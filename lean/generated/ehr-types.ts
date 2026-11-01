@@ -557,7 +557,6 @@ export interface EncounterRoleRule {
   encounter: string;
   roles: Role[];
   reason: string;
-  cosign?: ElementId;
 }
 
 /**
@@ -616,10 +615,6 @@ export interface EntryReq {
    * some [] permits no value. For numeric refills, some ["0"] permits only zero.
    */
   allowed?: string[];
-  /**
-   * A human attestation may replace a scalar text/flag entry; never a quantity or per-line entry.
-   */
-  waivedBy?: ElementId;
 }
 
 /**
@@ -1450,8 +1445,6 @@ export interface TraceEvent {
   event: Event;
   ops: Op[];
   result: StepResult;
-  actor?: string;
-  responseDelayMinutes?: number;
 }
 
 /**

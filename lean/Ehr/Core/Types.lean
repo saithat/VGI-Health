@@ -442,7 +442,6 @@ structure EncounterRoleRule where
   encounter : String
   roles : List Role
   reason : String
-  cosign? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A commit and the roles allowed to perform it. -/
@@ -493,8 +492,6 @@ structure EntryReq where
   /-- Allowed values, parsed using the element's kind. None adds no constraint;
   some [] permits no value. For numeric refills, some ["0"] permits only zero. -/
   allowed? : Option (List String) := none
-  /-- A human attestation may replace a scalar text/flag entry; never a quantity or per-line entry. -/
-  waivedBy? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- How a review requirement can be met. -/
@@ -1087,8 +1084,6 @@ structure TraceEvent where
   event : Event
   ops : List Op
   result : StepResult
-  actor? : Option String := none
-  responseDelayMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Effort counts for one task. -/

@@ -103,7 +103,7 @@ def requiredCommits (spec : Spec) (canonical prog : Program) : List CommitId :=
 /-- Required commits for this episode exclude commits this user's role may not perform. -/
 def requiredCommitsFor (spec : Spec) (canonical prog : Program) (facts : Facts)
     (user : User) : List CommitId :=
-  (requiredCommits spec canonical prog).filter (commitRolePossible spec facts user)
+  (requiredCommits spec canonical prog).filter (commitRoleOk spec facts user)
 
 /-! ## Shown -/
 
@@ -178,17 +178,13 @@ def AllowedEntryValue (rq : EntryReq) (el : ElementSpec) (x : Captured) : Prop :
 needs a counting value on every matching order line; any other requirement
 needs one counting value (if it applies). The same value must satisfy the
 requirement's allowed-value list. -/
-def EntryDirectMetIn (ep : Episode) (s : State) (rq : EntryReq) : Prop :=
+def EntryMetIn (ep : Episode) (s : State) (rq : EntryReq) : Prop :=
   ∃ el, ep.spec.element? rq.element = some el ∧
     if rq.perOrderLine then
       ∀ line ∈ orderLines s, lineMatches ep.facts s rq.when line.1 line.2 = true →
         ∃ x ∈ s.captured, x.slot = line.1 ∧ CountsFor ep el x ∧ AllowedEntryValue rq el x
     else
       Applies ep s rq.when → ∃ x ∈ s.captured, CountsFor ep el x ∧ AllowedEntryValue rq el x
-
-/-- An entry is a direct capture or its declared human attestation. -/
-def EntryMetIn (ep : Episode) (s : State) (rq : EntryReq) : Prop :=
-  entryWaiver ep.spec ep.facts ep.user s rq = true ∨ EntryDirectMetIn ep s rq
 
 /-- A human must enter this element: it is human-only (marked, or an
 identity, scan, or cosign), or its prefill policy is `never`. -/

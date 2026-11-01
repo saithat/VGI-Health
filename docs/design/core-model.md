@@ -83,7 +83,6 @@ structure EncounterRoleRule where
   encounter : String
   roles : List Role
   reason : String
-  cosign? : Option ElementId := none
 
 structure CommitSpec where
   id : CommitId
@@ -107,7 +106,6 @@ structure EntryReq where
   when : When := .always
   perOrderLine : Bool := false     -- required for each order line that matches `when`
   allowed? : Option (List String) := none -- strings parsed using the element kind
-  waivedBy? : Option ElementId := none -- declared human scalar attestation
 
 inductive ReviewMode
   | shownOnCommit                  -- shown on the commit screen; no receipt allowed
@@ -606,22 +604,17 @@ Nothing else is constrained: columns, grouping, order, density, colors, and comp
 **Fidelity (offline, before deploy):** generate the expected accessibility tree (roles + names) from `UiScreen` and compare it to the rendered DOM's accessibility tree (Playwright ARIA snapshot). Also check visibility, the legibility minimum, and no element covered. A mismatch blocks the deploy.
 
 
-### Encounter roles (owner decision 2026-10-31)
+### Encounter roles (owner decision 2026-11-01)
 
-Hospital policy (not law): physicians and surgeons sign pre-op orders directly.
-An NP needs a confirmed human `attendingCosign`, naming a different user.
-`CommitSpec.encounterRoles?` declares both the direct roles and the optional
-cosign route, using the same encounter matcher as `When.encounter`. Absent
-restrictions preserve legacy JSON behavior. The NP-only, human-only cosign field
-appears only in pre-op, beside the order summary. Its blocked reason is
-“Pre-op orders need an attending co-signature”. Only consentVerified, hpUpdate
-and medsToHold declare `EntryReq.waivedBy`; their entry permissions are unchanged.
-The guard accepts that attestation only from an authorized role, confirmed,
-nonempty and valid for its kind. Quantities, cosigns and per-line entries cannot
-be waived. The checker requires the cosign route and skips only its explicitly
-attested entries. Every other entry stays required. Unknown encounter kinds
-match no named encounter. The simulator records the second user's response and
-seeded delay separately from the NP's own effort.
+Hospital policy (not law): only physicians and surgeons sign pre-op orders.
+`CommitSpec.encounterRoles?` stands in for security-class order privileges,
+using the same encounter matcher as `When.encounter`. Missing restrictions
+preserve legacy JSON behavior. A clinic NP sees “Pre-op orders are signed by a
+physician or surgeon”. No co-signature replaces consentVerified, hpUpdate or
+medsToHold; their entry permissions remain unchanged. Completableness excludes
+only encounters where that role cannot commit. Both worlds route surgical-day
+steps exclusively to P5. Production cosign is a non-blocking In Basket
+follow-up; not modeled.
 
 ### Medication dose units
 

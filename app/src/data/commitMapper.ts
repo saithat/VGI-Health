@@ -45,7 +45,6 @@ export const cptLabels: Readonly<Record<string, string>> = {
 
 // Explicit storage paths supported by this mapper; fail on spec drift.
 const supportedTargets: Readonly<Record<string, string>> = {
-  attendingCosign: "Provenance.agent[attester].who",
   hpi: "Composition.section[hpi].text",
   ros: "Composition.section[ros].text",
   exam: "Composition.section[exam].text",
@@ -344,7 +343,6 @@ export function mapCommit(input: CommitInput): Bundle {
         },
         encounter: orderEncounter,
         requester: actor,
-        recorder: actor,
         authoredOn: now,
         medicationCodeableConcept: /^\d+$/.test(drug)
           ? cc(drug, systems.rxnorm)
@@ -423,7 +421,6 @@ export function mapCommit(input: CommitInput): Bundle {
           ? { note: [{ text: text("orderComment", slot) }] }
           : {}),
       });
-
     }
   };
   const serviceOrders = () => {
@@ -1058,22 +1055,6 @@ export function mapCommit(input: CommitInput): Bundle {
         throw new Error(
           `FHIR mapping is not available for commit ${input.commitId}`,
         );
-  }
-  const signature = field("attendingCosign");
-  if (signature) {
-    const id = text("attendingCosign").replace(/^Practitioner\//, "");
-    if (!signature.byHuman || !("user" in signature.value) || !id || id === user.id)
-      throw new Error("Attending co-signature must be a distinct human practitioner");
-    const target = entries.filter(entry =>
-      entry.resource?.resourceType === "MedicationRequest" || entry.resource?.resourceType === "ServiceRequest"
-    ).flatMap(entry => entry.fullUrl ? [{ reference: entry.fullUrl }] : []);
-    if (target.length) add({
-      resourceType: "Provenance", target, recorded: now,
-      agent: [{
-        type: cc("attester", "http://terminology.hl7.org/CodeSystem/provenance-participant-type"),
-        who: { reference: `Practitioner/${id}` },
-      }],
-    });
   }
   if (encounterChanged) update(changedEncounter);
   if (!entries.length)

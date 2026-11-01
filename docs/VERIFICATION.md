@@ -2,7 +2,7 @@
 
 The proofs cover the Lean interpreter that decides screen contents and handles events. The browser runs this code through WebAssembly. They do not prove that the hospital's rules are complete or that care is clinically correct.
 
-**General completion remains open.** Acceptance now proves all thirteen properties for the scalar clinical fragment (`satisfies_of_checked_scalar`): one flat screen, one unrestricted scalar entry (all kinds except medication dose), a pinned allergy review in either mode, and one alert with any condition and tier. The general assembly theorem still assumes property 6. This fragment is not the entire core profile; see the exact remaining lemma in `TODO_PROOFS.md` and its unproved proposition in the opt-in `CompletionObligations` library.
+**The main gap is completion:** checker acceptance proves properties 1–5 and 7–13. The theorem for all thirteen still **assumes property 6**, that the user can finish. Do not describe acceptance alone as a proof of all thirteen.
 
 ## 1. What is proved: the short review
 
@@ -14,8 +14,8 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 |---|---|---|
 | `T0_commit_needs_guard` | Every newly added commit passed its guard in the preceding state. | U; `lean/Ehr/Proofs/T0.lean:151` |
 | `commitGuard_iff` | The guard passes exactly when the encounter permits this role, entries and reviews are met, interruptive alerts are acknowledged, and the extra checks pass. | U; `lean/Ehr/Proofs/T0.lean:162` |
-| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:363` |
-| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:391` |
+| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:348` |
+| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:375` |
 | `T2_receipts_sound` | An applicable review hidden at commit has a matching, timely, role-allowed receipt or a human-entered waiver. | U; `lean/Ehr/Proofs/T2.lean:52` |
 | `T2_shownOnCommit_shown` | A review that forbids receipts and has no waiver is shown when its commit happens. | U; `lean/Ehr/Proofs/T2.lean:66` |
 | `T3_macro_step` | An event sent as a macro cannot add commits, acknowledgments, receipts or human-only captures. | U; `lean/Ehr/Proofs/T3.lean:159` |
@@ -31,7 +31,7 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 | `A4_run` | Every event run from the initial state has only non-passive popups. | U; `lean/Ehr/Proofs/Alerts.lean:319` |
 | `A4_passive_never_popup` | A passive rule looked up by its ID never becomes a popup in such a run. | U; `lean/Ehr/Proofs/Alerts.lean:337` |
 
-[`Satisfies`](../lean/Ehr/Props/Properties.lean#L430) means **all** the following. These are definitions; the acceptance theorems prove the listed implications. The semantic clauses range over every patient record and user with the program's role.
+[`Satisfies`](../lean/Ehr/Props/Properties.lean#L428) means **all** the following. These are definitions; the acceptance theorems prove the listed implications. The semantic clauses range over every patient record and user with the program's role.
 
 | Property | One-sentence meaning | Definition; proof |
 |---|---|---|
@@ -40,13 +40,13 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 | 3. `WritesOnly` | Declared and reachable captures, commits and new receipts stay within the spec and role permissions. | `Properties.lean:157`; C, `accepted_writesOnly` |
 | 4. `ReviewsBeforeCommit` | Commits meet their reviews, and a shown commit button already has its unwaived reviews met. | `Properties.lean:181`; C, `accepted_reviewsBeforeCommit` |
 | 5. `HumanOnlyKept` | Human-only entry, signing, acknowledgment and distinct-user cosigning cannot be automated, and the program does not attempt it. | `Properties.lean:236`; C, `accepted_humanOnlyKept` |
-| 6. `Completable` | From every reachable state, each required, role-allowed unfinished commit has a human event path to completion, provided the record supplies any needed medication scan. | `Properties.lean:261`; fragment: `Scalar.completable` / `satisfies_of_checked_scalar`; general acceptance proof open |
-| 7. `UnitsRight` | Whole-episode quantity requirements use the declared unit, and record quantity prefills use `weightToday`. | `Properties.lean:290`; C, `accepted_units` |
-| 8. `WithinBudgets` | Reachable-screen popup requests do not exceed the canonical count, and moved component tags stay within the stability budget. | `Properties.lean:314`; C, `accepted_budgets` |
-| 9. A1 `AlertsFire` | Interruptive keys are acknowledged before commit, firing passive alerts are shown on targeted screens, and macros do not target alerts. | `Properties.lean:344`; C, `accepted_alertsFire` |
-| 10. A2 `NoFalseAlarms` | Reachable popups and shown alerts have true conditions, and programs cannot request interruptive popups directly. | `Properties.lean:370`; C, `accepted_noFalseAlarms` |
-| 11. A3 `NoRepeatInterruptions` | Acknowledgments persist, open popups persist until acknowledged, acknowledged keys do not return, and interruptive requests are not spread across screens. | `Properties.lean:395`; C, `accepted_noRepeatInterruptions` |
-| 12. A4 `SeverityTiers` | Passive rules cannot pop up and the program cannot request that they do. | `Properties.lean:414`; C, `accepted_severityTiers` |
+| 6. `Completable` | From every reachable state, each required, role-allowed unfinished commit has a human event path to completion, provided the record supplies any needed medication scan. | `Properties.lean:261`; **no acceptance proof** |
+| 7. `UnitsRight` | Whole-episode quantity requirements use the declared unit, and record quantity prefills use `weightToday`. | `Properties.lean:288`; C, `accepted_units` |
+| 8. `WithinBudgets` | Reachable-screen popup requests do not exceed the canonical count, and moved component tags stay within the stability budget. | `Properties.lean:312`; C, `accepted_budgets` |
+| 9. A1 `AlertsFire` | Interruptive keys are acknowledged before commit, firing passive alerts are shown on targeted screens, and macros do not target alerts. | `Properties.lean:342`; C, `accepted_alertsFire` |
+| 10. A2 `NoFalseAlarms` | Reachable popups and shown alerts have true conditions, and programs cannot request interruptive popups directly. | `Properties.lean:368`; C, `accepted_noFalseAlarms` |
+| 11. A3 `NoRepeatInterruptions` | Acknowledgments persist, open popups persist until acknowledged, acknowledged keys do not return, and interruptive requests are not spread across screens. | `Properties.lean:393`; C, `accepted_noRepeatInterruptions` |
+| 12. A4 `SeverityTiers` | Passive rules cannot pop up and the program cannot request that they do. | `Properties.lean:412`; C, `accepted_severityTiers` |
 | 13. D5 `NavigationSane` | The workflow overview has unique group and within-group labels, at most twelve groups and entries per group, and represents every program screen. | `lean/Ehr/Props/Navigation.lean:9`; C, `accepted_navigation` |
 
 `Properties.lean` above is [`lean/Ehr/Props/Properties.lean`](../lean/Ehr/Props/Properties.lean). “Once” does not prohibit deliberate re-entry; the budget counts requests on reachable screens, not actual interruptions on every path; unit safety is not a proof of clinical dose correctness.
@@ -56,23 +56,21 @@ The renderer theorems describe the **semantic screen tree**, before browser draw
 | Rule | One-sentence meaning | Kind; file:line (`lean/Ehr/Render/`) |
 |---|---|---|
 | D1 `D1_landmark` | The shell banner includes the supplied name, formatted birth date and medical-record number. | U; `UiProofs.lean:78` |
-| D2 `D2_workspace_required` / `D2_required_info` / `D2_commit_review` | Every applicable review for a shown commit button has its full rows in the workspace, including a read-only supplement when needed. | U; `UiProofs.lean:301`, `:330`, `:433` |
-| D3 `D3_honest_actions` / `D3_all_buttons` | Buttons have labels and disabled reasons, and primary buttons correspond to shown commits with interpreter enablement, including modal buttons. | U; `UiProofs.lean:386`, `:512` |
-| D4 `D4_interruptive_modal` | An open interruptive rule renders a labeled modal with an enabled acknowledgment. | U; `UiProofs.lean:395` |
-| D4 `D4_passive_no_modal` / `D4_passive_inline` | A passive popup state makes no modal, while a shown passive alert renders inline. | U; `UiProofs.lean:405`, `:488` |
+| D2 `D2_workspace_required` / `D2_required_info` / `D2_commit_review` | Every applicable review for a shown commit button has its full rows in the workspace, including a read-only supplement when needed. | U; `UiProofs.lean:298`, `:327`, `:430` |
+| D3 `D3_honest_actions` / `D3_all_buttons` | Buttons have labels and disabled reasons, and primary buttons correspond to shown commits with interpreter enablement, including modal buttons. | U; `UiProofs.lean:383`, `:509` |
+| D4 `D4_interruptive_modal` | An open interruptive rule renders a labeled modal with an enabled acknowledgment. | U; `UiProofs.lean:392` |
+| D4 `D4_passive_no_modal` / `D4_passive_inline` | A passive popup state makes no modal, while a shown passive alert renders inline. | U; `UiProofs.lean:402`, `:485` |
 | D5 | This is the per-program overview check above, not a theorem for every renderer input. | C; `lean/Ehr/Check/NavigationSound.lean:7` |
-| D6 `D6_clear_fields` / `D6_field_labels` | Shown fields copy provenance, human-only and pending-confirmation markers, offer pending confirmation, and have nonempty labels. | U; `UiProofs.lean:413`, `:522` |
+| D6 `D6_clear_fields` / `D6_field_labels` | Shown fields copy provenance, human-only and pending-confirmation markers, offer pending confirmation, and have nonempty labels. | U; `UiProofs.lean:410`, `:519` |
 
 T4 and checker soundness:
 
 - **`T4_publish_only_if_ok`:** a planned write of the current program or certificate requires checker acceptance (`lean/Ehr/Proofs/CheckDeploy.lean:26`, U).
 - **`T4_rejected_not_published`:** a rejected candidate has no planned publishing write (`:41`, U).
 - **`T4_published_certificate`:** a planned current certificate describes this spec and program with verdict `ok` (`:51`, U).
-- **`satisfies_of_checked_completable`:** acceptance **plus a separate proof of completion** implies all thirteen properties (`Check/Sound.lean`, C with extra premise).
-- **`satisfies_of_checked_scalar`:** acceptance implies all thirteen for the explicitly defined scalar clinical family, with completion proved by `Scalar.completable` (`Check/Sound.lean`, C).
+- **`satisfies_of_checked_completable`:** acceptance **plus a separate proof of completion** implies all thirteen properties (`lean/Ehr/Check/Sound.lean:16`, C with extra premise).
 
 **T4 does not prove crash-safe atomic publication.** The CLI writes files one at a time ([`lean/Ehr/Cli/Check.lean:82`](../lean/Ehr/Cli/Check.lean#L82)); no theorem makes the program/certificate pair an atomic filesystem or Medplum transaction.
-
 
 ## 2. What the statements depend on
 
@@ -101,47 +99,46 @@ Read these definitions first:
 
 ## 3. Axioms
 
-The fresh audit found **only `propext`, `Classical.choice`, `Quot.sound` in all 63 audited theorems**. These support reasoning about equal propositions, choices and quotients. Each theorem's exact output is in the generated appendix. There is no `sorryAx`, native-computation axiom, or extra assumption declared as an axiom in these proofs. Logical premises such as completion remain premises even when this axiom audit is clean.
+The fresh audit found **only `propext`, `Classical.choice`, `Quot.sound` in all 48 audited theorems**. These support reasoning about equal propositions, choices and quotients. Each theorem's exact output is in the generated appendix. There is no `sorryAx`, native-computation axiom, or extra assumption declared as an axiom in these proofs. Logical premises such as completion remain premises even when this axiom audit is clean.
 
-The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`](../lean/Solution.lean) imports the proved implementations instead. This audit does not import the challenge files. Each verification milestone passed the default `lake build`, whole-project `lake check`, and root `lake comparator`. The final milestone also passed the checker’s separate `Ehr/Check/comparator.json` challenge (21 statements), in addition to the 18 root Comparator statements. These checks are distinct from the generated statement/axiom audit. `CompletionObligations` is an opt-in proposition with no supplied proof; its presence does not close general T1.
+The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`](../lean/Solution.lean) imports the proved implementations instead. This audit does not import the challenge files. A clean axiom list is not a new Comparator or whole-project `lake check` result; the earlier reported results are in [`docs/STATUS.md:75`](STATUS.md#L75).
 
 ## 4. Can the hypotheses actually hold?
 
-“Complete” below means a concrete example supplies all input conditions, or there are no proof conditions. “Partial” means useful examples exist but a single complete instance of that theorem is missing. The formerly partial/missing cases now have named complete applications in [`lean/Ehr/Proofs/HypothesisExamples.lean`](../lean/Ehr/Proofs/HypothesisExamples.lean), under `Ehr.Proofs.HypothesisExamples`. Each named application supplies every premise; presence and actual popup-opening witnesses prevent vacuous renderer/alert examples.
+“Complete” below means a concrete example supplies all input conditions, or there are no proof conditions. “Partial” means useful examples exist but a single complete instance of that theorem is missing. Examples are usually anonymous, despite CLAUDE.md asking for names.
 
 | Main theorem(s) | Evidence; limit |
 |---|---|
-| `T0_commit_needs_guard` | Complete: `Ehr.Proofs.tiny_sign_commit_occurs` proves a real new commit; `tiny_sign_guard_holds` applies T0 to it (`Proofs/T0.lean`). |
-| `commitGuard_iff` | No proof conditions; `tiny_sign_guard_holds`, `tiny_hidden_review_blocks`, and `tiny_pounds_blocks` supply true and false guards (`Proofs/T0.lean`). |
-| `T0_entry_values` | Complete conditions for the stronger allowed-value forms: `scheduleII_zero_refills_whole_episode` and `scheduleII_zero_refills_per_line` (`Proofs/T0.lean`). |
-| `T3_cosign_distinct` | Complete: `cosign_distinct_instance` applies T3 to a real high-alert commit with requirement membership, applicability, per-line flag, declaration lookup and cosign kind all discharged. |
-| `T2_receipts_sound` | Complete: `receipt_sound_instance` applies T2 to a real hidden-review commit with a current receipt, including review membership and commit equality. |
-| `T2_shownOnCommit_shown` | Complete: `shown_review_instance` supplies a committing state and the actual shown-only dose review, with all premises discharged. |
+| `T0_commit_needs_guard` | Complete: a new commit really occurs, `lean/Ehr/Proofs/T0.lean:403`; the theorem is applied at `:407`. |
+| `commitGuard_iff` | No proof conditions; concrete true and false guards at `T0.lean:407`, `:413`, `:414`. |
+| `T0_entry_values` | Complete input conditions for a stronger allowed-value result are discharged at `T0.lean:434`; the per-line case is separate at `:426`. |
+| `T3_cosign_distinct` | Partial: real second-user commit and high-alert condition at `T0.lean:418`; no single example explicitly supplies all requirement/element lookup premises to this theorem. |
+| `T2_receipts_sound` | Partial: hidden-review commit with current receipt at `lean/Ehr/Proofs/T2.lean:87`; the example does not explicitly supply the chosen review's membership and commit-equality premises. |
+| `T2_shownOnCommit_shown` | Partial: review membership at `T2.lean:102` and committing state at `T0.lean:403`; no combined application discharges every premise. |
 | `T3_macro_step`, `T3_prefill_never_human_only` | No proof conditions; executable Tiny states/programs in `lean/Ehr/Examples/TinyTests.lean`. |
-| `T3_macro_run`, `T6_macro_run_safe` | Complete shared conditions: `tiny_macro_run_premises`; observable navigation/capture effects: `tiny_macro_changes_screen_and_captures` (`Proofs/Audit.lean`). |
-| `T6_macro_is_fold`, `runMacro_ok_iff` | No proof conditions; `tiny_macro_stops_at_identity` and `tiny_safe_macro_prefix_succeeds` give concrete stopping and successful expansions (`Proofs/T6.lean`). |
-| `A2_view_firing` | Complete firing-item existence: `tiny_care_gap_firing_and_shown` (`Proofs/Alerts.lean`). |
-| `A2_view_shown` | Complete: `shown_alert_instance` supplies the exact shown care-gap alert item, its view membership and alert kind. |
-| `A2_popup_holds` | Complete new-popup conditions: `tiny_allergy_click_opens_popup` (`Proofs/Alerts.lean`). |
-| `A4_step` | Complete: `popup_step_instance` proves the initial `PopupNotPassive` premise and applies A4 to a real step; `popup_step_opens` proves an interruptive popup actually opens. |
-| `A4_run` | No proof conditions; `tiny_passive_never_popup` uses the concrete Tiny program for every event list (`Proofs/Alerts.lean`). |
-| `A4_passive_never_popup` | Complete lookup/tier conditions and application: `tiny_passive_rule_lookup` and `tiny_passive_never_popup` (`Proofs/Alerts.lean`). |
-| All twelve `accepted_*` theorems | Complete on a nonempty clinical program: `scalar_identity_satisfies` discharges acceptance by `decide` and proves all thirteen properties; `scalar_identity_required` proves the required commit list is nonempty for every physician and record. |
-| `satisfies_of_checked_completable` | Complete: `scalar_identity_satisfies` supplies acceptance and the all-records/all-reachable-states proof `Scalar.completable`, with a human-only identity entry, shown allergy review, and interruptive allergy alert. |
-| D1 | No proof conditions; `RenderExamples.patient_banner_present` supplies the concrete name/DOB banner example. |
-| D2 workspace / required-info / commit-review | Complete: `RenderExamples.shell_review_in_workspace`, `missing_review_is_supplemented`, and `sign_allergy_review_present`. |
-| D3 honest-actions / all-buttons | Complete: `sign_button_honest_instance` and `all_buttons_instance` apply both theorems to one concrete primary Sign button; `sign_button_present` supplies presence. |
-| D4 modal / no-modal / inline | Complete: `RenderExamples.interruptive_allergy_modal`, `passive_rule_has_no_modal`, and `passive_care_gap_inline`. |
-| D6 clear-fields | Complete: `RenderExamples.weight_field_present`, `weight_confirmation_pending`, and `weight_confirmation_action_present`. |
-| D6 field-labels | Complete: `weight_label_instance` directly applies D6 to a present, pending clinical weight field, using `weight_field_present`. |
-| T4 publish / reject / certificate | Complete: `publish_ok_instance`, `rejected_not_published_instance`, and `published_certificate_instance` apply T4 to concrete planned writes. `current_certificate_planned` proves membership and `currentCert` is discharged. |
+| `T3_macro_run`, `T6_macro_run_safe` | Complete shared conditions: button resolves to a macro and no popup is open, `lean/Ehr/Proofs/Audit.lean:98`; the run changes the screen and captures at `:103`. |
+| `T6_macro_is_fold`, `runMacro_ok_iff` | No proof conditions; stopping and successful concrete expansions at `lean/Ehr/Proofs/T6.lean:147`, `:154`. |
+| `A2_view_firing` | Complete firing-item existence at `lean/Ehr/Proofs/Alerts.lean:353`. |
+| `A2_view_shown` | Partial: the same example shows a firing, shown item, but does not explicitly identify its alert kind and discharge that premise. |
+| `A2_popup_holds` | Complete new-popup conditions at `Alerts.lean:358`. |
+| `A4_step` | Missing a concrete example explicitly discharging `PopupNotPassive` before applying this step theorem. |
+| `A4_run` | No proof conditions; a concrete Tiny spec is used by the passive-rule run example at `Alerts.lean:374`. |
+| `A4_passive_never_popup` | Complete lookup/tier conditions and theorem application at `Alerts.lean:370`, `:374`. |
+| All twelve `accepted_*` theorems | Their common acceptance premise is discharged by `decide` in the assembled `Satisfies` example, `lean/Ehr/Check/Sound.lean:55`; **this spec has no required commits**, so it is a weak usefulness witness. |
+| `satisfies_of_checked_completable` | Both premises are discharged in that same example; completion holds because there are no required commits. A nonempty all-records/all-reachable-states completion witness is missing. |
+| D1 | No proof conditions; concrete banner example at `lean/Ehr/Render/UiTests.lean:28`. |
+| D2 workspace / required-info / commit-review | Complete examples at `UiTests.lean:254`, `:109`, `:32`, respectively. |
+| D3 honest-actions / all-buttons | Partial: `UiTests.lean:38` specializes the context but still quantifies over nodes and their presence; no single concrete button example supplies all premises. |
+| D4 modal / no-modal / inline | Complete examples at `UiTests.lean:44`, `:53`, `:120`, respectively. |
+| D6 clear-fields | Complete application at `UiTests.lean:60`, including a genuinely pending confirmation at `:65`. |
+| D6 field-labels | Partial: nonempty fallback-label example at `UiTests.lean:73`; no direct concrete field-presence application of `D6_field_labels`. |
+| T4 publish / reject / certificate | Partial: a publishing plan and a nonpublishing plan at `lean/Ehr/Proofs/CheckDeploy.lean:66`, `:71`; no explicit per-write theorem applications, particularly the `currentCert` premise. |
 
-The named property examples in [`lean/Ehr/Props/Examples.lean`](../lean/Ehr/Props/Examples.lean) describe individual clauses. `good_sign_has_one_continuation` proves one successful signing continuation; `Scalar.completable` supplies the separate all-records/all-reachable-states completion theorem. Named renderer counterparts are in [`lean/Ehr/Proofs/RenderExamples.lean`](../lean/Ehr/Proofs/RenderExamples.lean), under `Ehr.Proofs.RenderExamples`; the owning lane’s `Render/**` files remain untouched. For property 13, [`lean/Ehr/Check/Tests.lean:37`](../lean/Ehr/Check/Tests.lean#L37) directly applies `accepted_navigation` to the good Tiny program.
-
+The property examples at [`lean/Ehr/Props/Examples.lean:65`](../lean/Ehr/Props/Examples.lean#L65) cover clauses, not a clinical all-thirteen proof. In particular, its signing path at `:130` proves one successful continuation, not completion from every reachable state. For property 13, [`lean/Ehr/Check/Tests.lean:37`](../lean/Ehr/Check/Tests.lean#L37) directly applies `accepted_navigation` to the good Tiny program.
 
 ## 5. Does the spec reject bad behaviour?
 
-**Fresh kernel proofs:** `tiny_bad_catalog`, `tiny_bad_role`, `tiny_bad_automation` prove `¬ Satisfies` for properties 1, 3 and 5 ([`lean/Ehr/Check/TinyRejections.lean:8`](../lean/Ehr/Check/TinyRejections.lean#L8), `:16`, `:21`). The audit imports and audits these. Named negative examples also reject hidden/stale reviews (`tiny_hidden_review_blocks`, `tiny_stale_receipt_blocks`), pounds (`tiny_pounds_blocks`), automated identity capture (`macro_identity_capture_is_unsafe`), and passive popups (`tiny_passive_popup_state_rejected`, `passive_popup_request_rejected`).
+**Fresh kernel proofs:** `tiny_bad_catalog`, `tiny_bad_role`, `tiny_bad_automation` prove `¬ Satisfies` for properties 1, 3 and 5 ([`lean/Ehr/Check/TinyRejections.lean:8`](../lean/Ehr/Check/TinyRejections.lean#L8), `:16`, `:21`). The audit imports and audits these. Smaller negative examples also reject hidden/stale reviews, pounds, a macro entering patient ID, and a passive popup (`T0.lean:413`, `T2.lean:96`, `Proofs/Audit.lean:109`, `:116`, `Proofs/Alerts.lean:381`, `Props/Examples.lean:171`).
 
 **Compiled checks, not `¬ Satisfies` proofs:** the 17 core seeds have mutation-specific failing-rule and replay checks at [`lean/Ehr/Check/SeedTests.lean:31`](../lean/Ehr/Check/SeedTests.lean#L31). `#guard` executes a check; it is not `native_decide` and adds no theorem or axiom. The saved [`certification-report.json`](../lean/Ehr/Check/certification-report.json) records 17/17 rejected and 15/15 accepted persona baselines. It labels its source revision `ce226d8…` **dirty**; this is prior run evidence, not a fresh run of this audit.
 
@@ -192,21 +189,19 @@ Owner hospital policy, **2026-10-31**, implemented by commit [`5aad7a9`](https:/
 +      commitRoleOk sp facts user c = true ∧
 ```
 
-The role must now pass both its ordinary permission and any encounter-specific restriction (`lean/Ehr/Core/Guard.lean:153`). The later attending-route update permits an NP to sign pre-op orders only after a declared human attending cosign; the NP’s own role is insufficient. Ordinary entry permissions remain unchanged. `commitRoleOk` checks both ordinary permission and the encounter’s direct-role or human-cosign route. `np_preop_without_cosign_never_signs` records the refusal without that route, and named P4/P5 walks are in `Check/EncounterRoleTests.lean`.
+The role must now pass both its ordinary permission and any encounter-specific restriction (`lean/Ehr/Core/Guard.lean:153`). An NP can prescribe in clinic but cannot sign pre-op orders. The three pre-op entries and who may enter them did not change. Completion and depth now exclude only forbidden role/encounter cases (`Props/Basics.lean:103`, `Core/Guard.lean:164`). [`np_preop_never_signs`](../lean/Ehr/Check/DomainObstruction.lean) proves refusal for every program/state/event; named P4/P5 walks are in `Check/EncounterRoleTests.lean:18`, `:23`, `:42`.
 
 Two other scope decisions matter: the temporary core profile removes most catalog content (above), and D2 now requires full review rows in the workspace even when a compact sidebar is present (`Render/UiProofs.lean:298`). D5's current overview check must not be described as a proof about interactive navigation. Signing roles, dose units and navigation are active lanes: regenerate the appendix after merging them, then re-review these plain-language claims.
 
 ## 8. Gaps against CLAUDE.md §§4 and 7
 
-- [x] **T1 fragment and nonempty witness:** `Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`, `scalar_identity_required`. The fragment covers scalar kinds except medication doses, both review modes, every alert condition and tier. `human_finish_ready` proves finite alert discharge for the real interpreter.
-- [ ] **General T1:** arbitrary accepted navigation/reveal, multiple compatible entry requirements, per-line/archived-line repair, and encounter/waiver routes. The precise `accepted_completable` lemma is recorded in `TODO_PROOFS.md`, and `CompletionObligations.AcceptedCompletion` records its proposition in a non-default library without assuming or proving it. No property or checker rule was weakened.
-- [x] **Complete the hypothesis examples:** all formerly partial/missing section 4 cases have named concrete applications with every premise discharged in `Proofs/HypothesisExamples.lean`; T1 has the nonempty all-records/all-reachable-states witness in `Check/Sound.lean`.
-- [x] **Name cited examples:** 47 previously anonymous property/interpreter/deploy/soundness examples now have descriptive theorem names and docstrings. Sixteen named renderer counterparts live in `Proofs/RenderExamples.lean` to preserve lane ownership. Each states its individual clause; the one-path signing witness does not claim universal completion.
+- [ ] **Finish T1:** prove completion from acceptance instead of assuming it (`lean/Ehr/Check/Sound.lean:16`; `Props/Properties.lean:261`). Add a nonempty clinical example satisfying all premises.
+- [ ] **Complete the hypothesis examples:** the partial/missing rows in section 4 need complete concrete applications, especially cosign, receipt/shown-review, A4 step, D3, D6 labels and T4 certificate (`Proofs/T0.lean:418`, `T2.lean:87`, `Alerts.lean:304`, `Render/UiTests.lean:38`, `:73`, `Proofs/CheckDeploy.lean:66`).
+- [ ] **Name examples:** most are anonymous (`Props/Examples.lean:65`, `Proofs/T0.lean:403`, `Render/UiTests.lean:28`); many demonstrate a clause rather than the entire property.
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
 - [ ] **Align D5 with the clickable tree:** `Props/Navigation.lean:6` and `Check/NavigationSound.lean:6` say actual navigation, but `Render/NavRules.lean:12` checks `uiOverviewNav`; its own docstring records the open integration.
 - [ ] **Add the Lean ARIA projection and design proofs:** current semantic rules end at `renderUi` (`Render/Ui.lean:312`), not the browser accessibility tree; see the last section of `TODO_PROOFS.md`.
-- [x] **Correct role/unit/property comments and checker helper docstrings:** `Statements.lean` now describes encounter restrictions, the human attending-cosign route and `extraGuard`; its declaration tokens are unchanged. Property comments now state whole-episode and declared-unit scope, capture retention and linked-prefill declarations precisely. Twenty-five public checker helper docstrings were added.
-- [ ] **Renderer-owned helper docstrings:** the original `Render/UiContracts.uiAtomsList` and several `Render/UiTests` fixtures still lack declaration docstrings. `Render/**` was left untouched for the active checker lane; named renderer counterparts in `Proofs/RenderExamples.lean` are documented. Existing owner-review notices in `Props/Defs.lean` and `Statements.lean` remain explicit.
+- [ ] **Review docstrings:** the role comment in `Statements.lean:35` omits encounter restrictions and `extraGuard`; unit/property comments can sound broader than their clauses (`Props/Properties.lean:286`). Some public helpers lack their own docstring (`Render/UiContracts.lean:15`, `Check/Sound.lean:44`, `Render/UiTests.lean:9`). Draft owner-review notices remain (`Props/Defs.lean:4`, `Statements.lean:5`).
 - [x] **Opaque contracts:** no project `opaque` or `axiom` declarations were found in `lean/Ehr/**`; there is no bodyless project contract to list. External I/O/toolchains remain trusted, not secretly proved by this result.
 - [x] **Audit the main proof axioms:** the generated results contain only the three allowed axioms. This does not validate parked proofs or replace a final Comparator / `lake check` run after lane merges.
 - [ ] **Review surface size:** the generated counts are large for event/check/deploy statements because they include the real interpreter, rule code and JSON definitions; these need human review, not a claim that a clean proof makes the definitions right.
@@ -219,34 +214,34 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated with Git HEAD `f2c347353e6f3f230a09d4a492798b9e79fde95d`. Audited source SHA-256: `09a0e315cec52b709797d79940349df3783f58be5746abe485f25c5bb561763a`. The source hash includes uncommitted source changes; HEAD identifies the checkout base.
+Generated with Git HEAD `efd411fc5f3ef5b9e7496e5962ab3cd742b804ea`. Audited source SHA-256: `f9102caac601bddb37e02be17da82799fac55d1b19365ace9227a611db3b5b75`. The source hash includes uncommitted source changes; HEAD identifies the checkout base.
 
-63 theorems audited; 65 statement surfaces; 46 distinct lists; 722 distinct definitions/types overall; 0–469 per statement. 76 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
+63 theorems audited; 65 statement surfaces; 46 distinct lists; 719 distinct definitions/types overall; 0–466 per statement. 77 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
 Counts include named project definitions and types. Compiler helpers, instances, constructors and projections are omitted from the display after traversal. Library definitions are traversed but not listed. Proof bodies are followed only for the axiom column. `P` = propext; `C` = Classical.choice; `Q` = Quot.sound; `none` = no axioms. Each S-list below gives its complete list as shared B-groups; each definition is printed once. No names are removed by this grouping.
 
 | Declaration | Source | Surface / count | Axioms |
 |---|---|---|---|
-| `Ehr.Proofs.T0_commit_needs_guard` | [lean/Ehr/Proofs/T0.lean:151](../lean/Ehr/Proofs/T0.lean#L151) | S1 / 265 | C, Q, P |
-| `Ehr.Proofs.commitGuard_iff` | [lean/Ehr/Proofs/T0.lean:162](../lean/Ehr/Proofs/T0.lean#L162) | S2 / 206 | C, Q, P |
-| `Ehr.Proofs.T0_entry_values` | [lean/Ehr/Proofs/T0.lean:363](../lean/Ehr/Proofs/T0.lean#L363) | S3 / 264 | C, Q, P |
-| `Ehr.Proofs.T3_cosign_distinct` | [lean/Ehr/Proofs/T0.lean:391](../lean/Ehr/Proofs/T0.lean#L391) | S3 / 264 | C, Q, P |
-| `Ehr.Proofs.T2_receipts_sound` | [lean/Ehr/Proofs/T2.lean:52](../lean/Ehr/Proofs/T2.lean#L52) | S4 / 266 | C, Q, P |
-| `Ehr.Proofs.T2_shownOnCommit_shown` | [lean/Ehr/Proofs/T2.lean:66](../lean/Ehr/Proofs/T2.lean#L66) | S3 / 264 | C, Q, P |
-| `Ehr.Proofs.T3_macro_step` | [lean/Ehr/Proofs/T3.lean:159](../lean/Ehr/Proofs/T3.lean#L159) | S5 / 265 | C, Q, P |
-| `Ehr.Proofs.T3_macro_run` | [lean/Ehr/Proofs/T3.lean:171](../lean/Ehr/Proofs/T3.lean#L171) | S5 / 265 | C, Q, P |
+| `Ehr.Proofs.T0_commit_needs_guard` | [lean/Ehr/Proofs/T0.lean:151](../lean/Ehr/Proofs/T0.lean#L151) | S1 / 262 | C, Q, P |
+| `Ehr.Proofs.commitGuard_iff` | [lean/Ehr/Proofs/T0.lean:162](../lean/Ehr/Proofs/T0.lean#L162) | S2 / 203 | C, Q, P |
+| `Ehr.Proofs.T0_entry_values` | [lean/Ehr/Proofs/T0.lean:348](../lean/Ehr/Proofs/T0.lean#L348) | S3 / 261 | C, Q, P |
+| `Ehr.Proofs.T3_cosign_distinct` | [lean/Ehr/Proofs/T0.lean:375](../lean/Ehr/Proofs/T0.lean#L375) | S3 / 261 | C, Q, P |
+| `Ehr.Proofs.T2_receipts_sound` | [lean/Ehr/Proofs/T2.lean:52](../lean/Ehr/Proofs/T2.lean#L52) | S4 / 263 | C, Q, P |
+| `Ehr.Proofs.T2_shownOnCommit_shown` | [lean/Ehr/Proofs/T2.lean:66](../lean/Ehr/Proofs/T2.lean#L66) | S3 / 261 | C, Q, P |
+| `Ehr.Proofs.T3_macro_step` | [lean/Ehr/Proofs/T3.lean:159](../lean/Ehr/Proofs/T3.lean#L159) | S5 / 262 | C, Q, P |
+| `Ehr.Proofs.T3_macro_run` | [lean/Ehr/Proofs/T3.lean:171](../lean/Ehr/Proofs/T3.lean#L171) | S5 / 262 | C, Q, P |
 | `Ehr.Proofs.T3_prefill_never_human_only` | [lean/Ehr/Proofs/T3.lean:184](../lean/Ehr/Proofs/T3.lean#L184) | S6 / 70 | C, Q, P |
-| `Ehr.Proofs.T6_macro_is_fold` | [lean/Ehr/Proofs/T6.lean:42](../lean/Ehr/Proofs/T6.lean#L42) | S7 / 266 | C, Q, P |
-| `Ehr.Proofs.runMacro_ok_iff` | [lean/Ehr/Proofs/T6.lean:73](../lean/Ehr/Proofs/T6.lean#L73) | S7 / 266 | C, Q, P |
-| `Ehr.Proofs.T6_macro_run_safe` | [lean/Ehr/Proofs/T6.lean:126](../lean/Ehr/Proofs/T6.lean#L126) | S5 / 265 | C, Q, P |
-| `Ehr.Proofs.A2_view_firing` | [lean/Ehr/Proofs/Alerts.lean:27](../lean/Ehr/Proofs/Alerts.lean#L27) | S8 / 240 | C, Q, P |
-| `Ehr.Proofs.A2_view_shown` | [lean/Ehr/Proofs/Alerts.lean:40](../lean/Ehr/Proofs/Alerts.lean#L40) | S8 / 240 | C, Q, P |
-| `Ehr.Proofs.A2_popup_holds` | [lean/Ehr/Proofs/Alerts.lean:281](../lean/Ehr/Proofs/Alerts.lean#L281) | S3 / 264 | C, Q, P |
-| `Ehr.Proofs.A4_step` | [lean/Ehr/Proofs/Alerts.lean:304](../lean/Ehr/Proofs/Alerts.lean#L304) | S9 / 265 | C, Q, P |
-| `Ehr.Proofs.A4_run` | [lean/Ehr/Proofs/Alerts.lean:319](../lean/Ehr/Proofs/Alerts.lean#L319) | S10 / 268 | C, Q, P |
-| `Ehr.Proofs.A4_passive_never_popup` | [lean/Ehr/Proofs/Alerts.lean:337](../lean/Ehr/Proofs/Alerts.lean#L337) | S11 / 267 | C, Q, P |
+| `Ehr.Proofs.T6_macro_is_fold` | [lean/Ehr/Proofs/T6.lean:42](../lean/Ehr/Proofs/T6.lean#L42) | S7 / 263 | C, Q, P |
+| `Ehr.Proofs.runMacro_ok_iff` | [lean/Ehr/Proofs/T6.lean:73](../lean/Ehr/Proofs/T6.lean#L73) | S7 / 263 | C, Q, P |
+| `Ehr.Proofs.T6_macro_run_safe` | [lean/Ehr/Proofs/T6.lean:126](../lean/Ehr/Proofs/T6.lean#L126) | S5 / 262 | C, Q, P |
+| `Ehr.Proofs.A2_view_firing` | [lean/Ehr/Proofs/Alerts.lean:27](../lean/Ehr/Proofs/Alerts.lean#L27) | S8 / 237 | C, Q, P |
+| `Ehr.Proofs.A2_view_shown` | [lean/Ehr/Proofs/Alerts.lean:40](../lean/Ehr/Proofs/Alerts.lean#L40) | S8 / 237 | C, Q, P |
+| `Ehr.Proofs.A2_popup_holds` | [lean/Ehr/Proofs/Alerts.lean:281](../lean/Ehr/Proofs/Alerts.lean#L281) | S3 / 261 | C, Q, P |
+| `Ehr.Proofs.A4_step` | [lean/Ehr/Proofs/Alerts.lean:304](../lean/Ehr/Proofs/Alerts.lean#L304) | S9 / 262 | C, Q, P |
+| `Ehr.Proofs.A4_run` | [lean/Ehr/Proofs/Alerts.lean:319](../lean/Ehr/Proofs/Alerts.lean#L319) | S10 / 265 | C, Q, P |
+| `Ehr.Proofs.A4_passive_never_popup` | [lean/Ehr/Proofs/Alerts.lean:337](../lean/Ehr/Proofs/Alerts.lean#L337) | S11 / 264 | C, Q, P |
 | `Ehr.Check.accepted_wellFormed` | [lean/Ehr/Check/PartialSound.lean:39](../lean/Ehr/Check/PartialSound.lean#L39) | S12 / 409 | C, Q, P |
-| `Ehr.Check.accepted_capturesAllOnce` | [lean/Ehr/Check/EnterOnceSound.lean:120](../lean/Ehr/Check/EnterOnceSound.lean#L120) | S13 / 397 | C, Q, P |
+| `Ehr.Check.accepted_capturesAllOnce` | [lean/Ehr/Check/EnterOnceSound.lean:120](../lean/Ehr/Check/EnterOnceSound.lean#L120) | S13 / 396 | C, Q, P |
 | `Ehr.Check.accepted_writesOnly` | [lean/Ehr/Check/WritesSound.lean:270](../lean/Ehr/Check/WritesSound.lean#L270) | S14 / 389 | C, Q, P |
 | `Ehr.Check.accepted_reviewsBeforeCommit` | [lean/Ehr/Check/PartialSound.lean:49](../lean/Ehr/Check/PartialSound.lean#L49) | S15 / 414 | C, Q, P |
 | `Ehr.Check.accepted_humanOnlyKept` | [lean/Ehr/Check/HumanEventsSound.lean:167](../lean/Ehr/Check/HumanEventsSound.lean#L167) | S16 / 395 | C, Q, P |
@@ -257,133 +252,133 @@ Counts include named project definitions and types. Compiler helpers, instances,
 | `Ehr.Check.accepted_noRepeatInterruptions` | [lean/Ehr/Check/AlertSound.lean:175](../lean/Ehr/Check/AlertSound.lean#L175) | S21 / 392 | C, Q, P |
 | `Ehr.Check.accepted_severityTiers` | [lean/Ehr/Check/SeveritySound.lean:29](../lean/Ehr/Check/SeveritySound.lean#L29) | S22 / 389 | C, Q, P |
 | `Ehr.Check.accepted_navigation` | [lean/Ehr/Check/NavigationSound.lean:7](../lean/Ehr/Check/NavigationSound.lean#L7) | S23 / 384 | C, Q, P |
-| `Ehr.Check.satisfies_of_checked_completable` | [lean/Ehr/Check/Sound.lean:17](../lean/Ehr/Check/Sound.lean#L17) | S24 / 458 | C, Q, P |
-| `Ehr.Render.D1_landmark` | [lean/Ehr/Render/UiProofs.lean:78](../lean/Ehr/Render/UiProofs.lean#L78) | S25 / 321 | C, Q, P |
-| `Ehr.Render.D2_workspace_required` | [lean/Ehr/Render/UiProofs.lean:301](../lean/Ehr/Render/UiProofs.lean#L301) | S26 / 323 | C, Q, P |
-| `Ehr.Render.D2_required_info` | [lean/Ehr/Render/UiProofs.lean:330](../lean/Ehr/Render/UiProofs.lean#L330) | S27 / 325 | C, Q, P |
-| `Ehr.Render.D2_commit_review` | [lean/Ehr/Render/UiProofs.lean:433](../lean/Ehr/Render/UiProofs.lean#L433) | S27 / 325 | C, Q, P |
-| `Ehr.Render.D3_honest_actions` | [lean/Ehr/Render/UiProofs.lean:386](../lean/Ehr/Render/UiProofs.lean#L386) | S28 / 326 | C, Q, P |
-| `Ehr.Render.D3_all_buttons` | [lean/Ehr/Render/UiProofs.lean:512](../lean/Ehr/Render/UiProofs.lean#L512) | S28 / 326 | C, Q, P |
-| `Ehr.Render.D4_interruptive_modal` | [lean/Ehr/Render/UiProofs.lean:395](../lean/Ehr/Render/UiProofs.lean#L395) | S25 / 321 | C, Q, P |
-| `Ehr.Render.D4_passive_no_modal` | [lean/Ehr/Render/UiProofs.lean:405](../lean/Ehr/Render/UiProofs.lean#L405) | S25 / 321 | C, Q, P |
-| `Ehr.Render.D4_passive_inline` | [lean/Ehr/Render/UiProofs.lean:488](../lean/Ehr/Render/UiProofs.lean#L488) | S27 / 325 | C, Q, P |
-| `Ehr.Render.D6_clear_fields` | [lean/Ehr/Render/UiProofs.lean:413](../lean/Ehr/Render/UiProofs.lean#L413) | S27 / 325 | C, Q, P |
-| `Ehr.Render.D6_field_labels` | [lean/Ehr/Render/UiProofs.lean:522](../lean/Ehr/Render/UiProofs.lean#L522) | S27 / 325 | C, Q, P |
-| `Ehr.Proofs.T4_publish_only_if_ok` | [lean/Ehr/Proofs/CheckDeploy.lean:26](../lean/Ehr/Proofs/CheckDeploy.lean#L26) | S29 / 397 | C, Q, P |
-| `Ehr.Proofs.T4_rejected_not_published` | [lean/Ehr/Proofs/CheckDeploy.lean:41](../lean/Ehr/Proofs/CheckDeploy.lean#L41) | S29 / 397 | C, Q, P |
-| `Ehr.Proofs.T4_published_certificate` | [lean/Ehr/Proofs/CheckDeploy.lean:51](../lean/Ehr/Proofs/CheckDeploy.lean#L51) | S30 / 396 | C, Q, P |
-| `Ehr.Check.tiny_bad_catalog` | [lean/Ehr/Check/TinyRejections.lean:8](../lean/Ehr/Check/TinyRejections.lean#L8) | S31 / 397 | C, Q, P |
-| `Ehr.Check.tiny_bad_role` | [lean/Ehr/Check/TinyRejections.lean:16](../lean/Ehr/Check/TinyRejections.lean#L16) | S31 / 397 | C, Q, P |
-| `Ehr.Check.tiny_bad_automation` | [lean/Ehr/Check/TinyRejections.lean:21](../lean/Ehr/Check/TinyRejections.lean#L21) | S31 / 397 | C, Q, P |
+| `Ehr.Check.satisfies_of_checked_completable` | [lean/Ehr/Check/Sound.lean:17](../lean/Ehr/Check/Sound.lean#L17) | S24 / 456 | C, Q, P |
+| `Ehr.Render.D1_landmark` | [lean/Ehr/Render/UiProofs.lean:78](../lean/Ehr/Render/UiProofs.lean#L78) | S25 / 319 | C, Q, P |
+| `Ehr.Render.D2_workspace_required` | [lean/Ehr/Render/UiProofs.lean:301](../lean/Ehr/Render/UiProofs.lean#L301) | S26 / 321 | C, Q, P |
+| `Ehr.Render.D2_required_info` | [lean/Ehr/Render/UiProofs.lean:330](../lean/Ehr/Render/UiProofs.lean#L330) | S27 / 323 | C, Q, P |
+| `Ehr.Render.D2_commit_review` | [lean/Ehr/Render/UiProofs.lean:433](../lean/Ehr/Render/UiProofs.lean#L433) | S27 / 323 | C, Q, P |
+| `Ehr.Render.D3_honest_actions` | [lean/Ehr/Render/UiProofs.lean:386](../lean/Ehr/Render/UiProofs.lean#L386) | S28 / 324 | C, Q, P |
+| `Ehr.Render.D3_all_buttons` | [lean/Ehr/Render/UiProofs.lean:512](../lean/Ehr/Render/UiProofs.lean#L512) | S28 / 324 | C, Q, P |
+| `Ehr.Render.D4_interruptive_modal` | [lean/Ehr/Render/UiProofs.lean:395](../lean/Ehr/Render/UiProofs.lean#L395) | S25 / 319 | C, Q, P |
+| `Ehr.Render.D4_passive_no_modal` | [lean/Ehr/Render/UiProofs.lean:405](../lean/Ehr/Render/UiProofs.lean#L405) | S25 / 319 | C, Q, P |
+| `Ehr.Render.D4_passive_inline` | [lean/Ehr/Render/UiProofs.lean:488](../lean/Ehr/Render/UiProofs.lean#L488) | S27 / 323 | C, Q, P |
+| `Ehr.Render.D6_clear_fields` | [lean/Ehr/Render/UiProofs.lean:413](../lean/Ehr/Render/UiProofs.lean#L413) | S27 / 323 | C, Q, P |
+| `Ehr.Render.D6_field_labels` | [lean/Ehr/Render/UiProofs.lean:522](../lean/Ehr/Render/UiProofs.lean#L522) | S27 / 323 | C, Q, P |
+| `Ehr.Proofs.T4_publish_only_if_ok` | [lean/Ehr/Proofs/CheckDeploy.lean:26](../lean/Ehr/Proofs/CheckDeploy.lean#L26) | S29 / 396 | C, Q, P |
+| `Ehr.Proofs.T4_rejected_not_published` | [lean/Ehr/Proofs/CheckDeploy.lean:41](../lean/Ehr/Proofs/CheckDeploy.lean#L41) | S29 / 396 | C, Q, P |
+| `Ehr.Proofs.T4_published_certificate` | [lean/Ehr/Proofs/CheckDeploy.lean:51](../lean/Ehr/Proofs/CheckDeploy.lean#L51) | S30 / 395 | C, Q, P |
+| `Ehr.Check.tiny_bad_catalog` | [lean/Ehr/Check/TinyRejections.lean:8](../lean/Ehr/Check/TinyRejections.lean#L8) | S31 / 394 | C, Q, P |
+| `Ehr.Check.tiny_bad_role` | [lean/Ehr/Check/TinyRejections.lean:16](../lean/Ehr/Check/TinyRejections.lean#L16) | S31 / 394 | C, Q, P |
+| `Ehr.Check.tiny_bad_automation` | [lean/Ehr/Check/TinyRejections.lean:21](../lean/Ehr/Check/TinyRejections.lean#L21) | S31 / 394 | C, Q, P |
 | `Ehr.Props.Completable` | [lean/Ehr/Props/Properties.lean:261](../lean/Ehr/Props/Properties.lean#L261) | S32 / 2 | definition |
 | `Ehr.Props.Satisfies` | [lean/Ehr/Props/Properties.lean:430](../lean/Ehr/Props/Properties.lean#L430) | S32 / 2 | definition |
-| `Ehr.Check.human_finish_ready` | [lean/Ehr/Check/Completion.lean:52](../lean/Ehr/Check/Completion.lean#L52) | S33 / 265 | C, Q, P |
-| `Ehr.Check.Scalar.completable` | [lean/Ehr/Check/ScalarCompletion.lean:71](../lean/Ehr/Check/ScalarCompletion.lean#L71) | S34 / 288 | C, Q, P |
-| `Ehr.Check.satisfies_of_checked_scalar` | [lean/Ehr/Check/Sound.lean:35](../lean/Ehr/Check/Sound.lean#L35) | S35 / 469 | C, Q, P |
-| `Ehr.Check.scalar_identity_satisfies` | [lean/Ehr/Check/Sound.lean:45](../lean/Ehr/Check/Sound.lean#L45) | S36 / 394 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.cosign_distinct_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:25](../lean/Ehr/Proofs/HypothesisExamples.lean#L25) | S37 / 284 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.receipt_sound_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:38](../lean/Ehr/Proofs/HypothesisExamples.lean#L38) | S38 / 286 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.shown_review_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:51](../lean/Ehr/Proofs/HypothesisExamples.lean#L51) | S39 / 284 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.shown_alert_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:61](../lean/Ehr/Proofs/HypothesisExamples.lean#L61) | S40 / 282 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.popup_step_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:66](../lean/Ehr/Proofs/HypothesisExamples.lean#L66) | S41 / 284 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.sign_button_honest_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:88](../lean/Ehr/Proofs/HypothesisExamples.lean#L88) | S42 / 411 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.all_buttons_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:92](../lean/Ehr/Proofs/HypothesisExamples.lean#L92) | S42 / 411 | C, Q, P |
+| `Ehr.Check.human_finish_ready` | [lean/Ehr/Check/Completion.lean:52](../lean/Ehr/Check/Completion.lean#L52) | S33 / 262 | C, Q, P |
+| `Ehr.Check.Scalar.completable` | [lean/Ehr/Check/ScalarCompletion.lean:71](../lean/Ehr/Check/ScalarCompletion.lean#L71) | S34 / 287 | C, Q, P |
+| `Ehr.Check.satisfies_of_checked_scalar` | [lean/Ehr/Check/Sound.lean:35](../lean/Ehr/Check/Sound.lean#L35) | S35 / 466 | C, Q, P |
+| `Ehr.Check.scalar_identity_satisfies` | [lean/Ehr/Check/Sound.lean:45](../lean/Ehr/Check/Sound.lean#L45) | S36 / 391 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.cosign_distinct_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:25](../lean/Ehr/Proofs/HypothesisExamples.lean#L25) | S37 / 281 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.receipt_sound_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:38](../lean/Ehr/Proofs/HypothesisExamples.lean#L38) | S38 / 283 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.shown_review_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:51](../lean/Ehr/Proofs/HypothesisExamples.lean#L51) | S39 / 281 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.shown_alert_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:61](../lean/Ehr/Proofs/HypothesisExamples.lean#L61) | S40 / 279 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.popup_step_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:66](../lean/Ehr/Proofs/HypothesisExamples.lean#L66) | S41 / 281 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.sign_button_honest_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:88](../lean/Ehr/Proofs/HypothesisExamples.lean#L88) | S42 / 408 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.all_buttons_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:92](../lean/Ehr/Proofs/HypothesisExamples.lean#L92) | S42 / 408 | C, Q, P |
 | `Ehr.Proofs.HypothesisExamples.weight_label_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:103](../lean/Ehr/Proofs/HypothesisExamples.lean#L103) | S43 / 0 | C, Q, P |
-| `Ehr.Proofs.HypothesisExamples.publish_ok_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:118](../lean/Ehr/Proofs/HypothesisExamples.lean#L118) | S44 / 398 | C, Q, P |
+| `Ehr.Proofs.HypothesisExamples.publish_ok_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:118](../lean/Ehr/Proofs/HypothesisExamples.lean#L118) | S44 / 397 | C, Q, P |
 | `Ehr.Proofs.HypothesisExamples.published_certificate_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:124](../lean/Ehr/Proofs/HypothesisExamples.lean#L124) | S45 / 83 | C, Q, P |
 | `Ehr.Proofs.HypothesisExamples.rejected_not_published_instance` | [lean/Ehr/Proofs/HypothesisExamples.lean:134](../lean/Ehr/Proofs/HypothesisExamples.lean#L134) | S46 / 30 | C, Q, P |
 
-**S1 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B77](#audit-b77), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S1 (262):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B77](#audit-b77), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S2 (206):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B77](#audit-b77)
+**S2 (203):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B77](#audit-b77)
 
-**S3 (264):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S3 (261):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S4 (266):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B55](#audit-b55), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S4 (263):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B56](#audit-b56), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S5 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S5 (262):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S6 (70):** [B1](#audit-b1), [B6](#audit-b6), [B15](#audit-b15), [B33](#audit-b33), [B34](#audit-b34), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S6 (70):** [B1](#audit-b1), [B6](#audit-b6), [B15](#audit-b15), [B33](#audit-b33), [B34](#audit-b34), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S7 (266):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B63](#audit-b63), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S7 (263):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B63](#audit-b63), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S8 (240):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B81](#audit-b81)
+**S8 (237):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B82](#audit-b82)
 
-**S9 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B59](#audit-b59), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81)
+**S9 (262):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B60](#audit-b60), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82)
 
-**S10 (268):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B59](#audit-b59), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S10 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B60](#audit-b60), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S11 (267):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S11 (264):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S12 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B44](#audit-b44), [B50](#audit-b50), [B52](#audit-b52), [B54](#audit-b54), [B56](#audit-b56), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S12 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B45](#audit-b45), [B51](#audit-b51), [B53](#audit-b53), [B55](#audit-b55), [B57](#audit-b57), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S13 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B41](#audit-b41), [B43](#audit-b43), [B46](#audit-b46), [B50](#audit-b50), [B51](#audit-b51), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S13 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B42](#audit-b42), [B44](#audit-b44), [B47](#audit-b47), [B51](#audit-b51), [B52](#audit-b52), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S14 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B50](#audit-b50), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S14 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B51](#audit-b51), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S15 (414):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B43](#audit-b43), [B45](#audit-b45), [B46](#audit-b46), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B56](#audit-b56), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S15 (414):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B44](#audit-b44), [B46](#audit-b46), [B47](#audit-b47), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B57](#audit-b57), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S16 (395):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B43](#audit-b43), [B46](#audit-b46), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S16 (395):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B44](#audit-b44), [B47](#audit-b47), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S17 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B43](#audit-b43), [B46](#audit-b46), [B47](#audit-b47), [B50](#audit-b50), [B51](#audit-b51), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S17 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B44](#audit-b44), [B47](#audit-b47), [B48](#audit-b48), [B51](#audit-b51), [B52](#audit-b52), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S18 (388):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B37](#audit-b37), [B54](#audit-b54), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S18 (388):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B38](#audit-b38), [B55](#audit-b55), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S19 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B38](#audit-b38), [B39](#audit-b39), [B42](#audit-b42), [B46](#audit-b46), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S19 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B39](#audit-b39), [B40](#audit-b40), [B43](#audit-b43), [B47](#audit-b47), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S20 (405):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B38](#audit-b38), [B40](#audit-b40), [B42](#audit-b42), [B50](#audit-b50), [B52](#audit-b52), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S20 (405):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B39](#audit-b39), [B41](#audit-b41), [B43](#audit-b43), [B51](#audit-b51), [B53](#audit-b53), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S21 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B50](#audit-b50), [B51](#audit-b51), [B57](#audit-b57), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S21 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B51](#audit-b51), [B52](#audit-b52), [B58](#audit-b58), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S22 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B50](#audit-b50), [B58](#audit-b58), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S22 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B51](#audit-b51), [B59](#audit-b59), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S23 (384):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S23 (384):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S24 (458):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B37](#audit-b37), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B54](#audit-b54), [B56](#audit-b56), [B57](#audit-b57), [B58](#audit-b58), [B60](#audit-b60), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S24 (456):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B55](#audit-b55), [B57](#audit-b57), [B58](#audit-b58), [B59](#audit-b59), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82), [B83](#audit-b83)
 
-**S25 (321):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81)
+**S25 (319):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81), [B82](#audit-b82)
 
-**S26 (323):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B69](#audit-b69), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81)
+**S26 (321):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B69](#audit-b69), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81), [B82](#audit-b82)
 
-**S27 (325):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B68](#audit-b68), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81)
+**S27 (323):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B68](#audit-b68), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81), [B82](#audit-b82)
 
-**S28 (326):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B67](#audit-b67), [B68](#audit-b68), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81)
+**S28 (324):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B66](#audit-b66), [B67](#audit-b67), [B68](#audit-b68), [B70](#audit-b70), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B81](#audit-b81), [B82](#audit-b82)
 
-**S29 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B7](#audit-b7), [B8](#audit-b8), [B9](#audit-b9), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S29 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B7](#audit-b7), [B8](#audit-b8), [B9](#audit-b9), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S30 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B7](#audit-b7), [B8](#audit-b8), [B9](#audit-b9), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S30 (395):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B7](#audit-b7), [B8](#audit-b8), [B9](#audit-b9), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S31 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B37](#audit-b37), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B54](#audit-b54), [B56](#audit-b56), [B57](#audit-b57), [B58](#audit-b58), [B60](#audit-b60), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S31 (394):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B54](#audit-b54), [B55](#audit-b55), [B57](#audit-b57), [B58](#audit-b58), [B59](#audit-b59), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82), [B83](#audit-b83)
 
 **S32 (2):** [B34](#audit-b34), [B73](#audit-b73)
 
-**S33 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81), [B82](#audit-b82)
+**S33 (262):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B15](#audit-b15), [B16](#audit-b16), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82), [B83](#audit-b83)
 
-**S34 (288):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B42](#audit-b42), [B48](#audit-b48), [B50](#audit-b50), [B62](#audit-b62), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B81](#audit-b81), [B82](#audit-b82)
+**S34 (287):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B43](#audit-b43), [B49](#audit-b49), [B51](#audit-b51), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B82](#audit-b82), [B83](#audit-b83)
 
-**S35 (469):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B37](#audit-b37), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B54](#audit-b54), [B56](#audit-b56), [B57](#audit-b57), [B58](#audit-b58), [B60](#audit-b60), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S35 (466):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B55](#audit-b55), [B57](#audit-b57), [B58](#audit-b58), [B59](#audit-b59), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82), [B83](#audit-b83)
 
-**S36 (394):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B37](#audit-b37), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B54](#audit-b54), [B56](#audit-b56), [B57](#audit-b57), [B58](#audit-b58), [B60](#audit-b60), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S36 (391):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53), [B55](#audit-b55), [B57](#audit-b57), [B58](#audit-b58), [B59](#audit-b59), [B61](#audit-b61), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82), [B83](#audit-b83)
 
-**S37 (284):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B23](#audit-b23), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S37 (281):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B23](#audit-b23), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S38 (286):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B24](#audit-b24), [B25](#audit-b25), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B55](#audit-b55), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S38 (283):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B24](#audit-b24), [B25](#audit-b25), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B56](#audit-b56), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S39 (284):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B21](#audit-b21), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S39 (281):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B21](#audit-b21), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S40 (282):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B25](#audit-b25), [B26](#audit-b26), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S40 (279):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B25](#audit-b25), [B26](#audit-b26), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S41 (284):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B22](#audit-b22), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B59](#audit-b59), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
+**S41 (281):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B22](#audit-b22), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B60](#audit-b60), [B72](#audit-b72), [B73](#audit-b73), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82), [B83](#audit-b83)
 
-**S42 (411):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B65](#audit-b65), [B67](#audit-b67), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S42 (408):** [B1](#audit-b1), [B3](#audit-b3), [B5](#audit-b5), [B6](#audit-b6), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B64](#audit-b64), [B65](#audit-b65), [B67](#audit-b67), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B74](#audit-b74), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B82](#audit-b82)
 
 **S43 (0):**
 
-**S44 (398):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B53](#audit-b53), [B62](#audit-b62), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81)
+**S44 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B54](#audit-b54), [B71](#audit-b71), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75), [B76](#audit-b76), [B78](#audit-b78), [B79](#audit-b79), [B80](#audit-b80), [B81](#audit-b81), [B82](#audit-b82)
 
-**S45 (83):** [B1](#audit-b1), [B3](#audit-b3), [B7](#audit-b7), [B8](#audit-b8), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B33](#audit-b33), [B34](#audit-b34), [B35](#audit-b35), [B53](#audit-b53), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75)
+**S45 (83):** [B1](#audit-b1), [B3](#audit-b3), [B7](#audit-b7), [B8](#audit-b8), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B19](#audit-b19), [B28](#audit-b28), [B30](#audit-b30), [B31](#audit-b31), [B33](#audit-b33), [B34](#audit-b34), [B36](#audit-b36), [B54](#audit-b54), [B72](#audit-b72), [B73](#audit-b73), [B75](#audit-b75)
 
-**S46 (30):** [B1](#audit-b1), [B8](#audit-b8), [B11](#audit-b11), [B13](#audit-b13), [B17](#audit-b17), [B30](#audit-b30), [B31](#audit-b31), [B34](#audit-b34), [B36](#audit-b36), [B72](#audit-b72)
+**S46 (30):** [B1](#audit-b1), [B8](#audit-b8), [B11](#audit-b11), [B13](#audit-b13), [B17](#audit-b17), [B30](#audit-b30), [B31](#audit-b31), [B34](#audit-b34), [B37](#audit-b37), [B72](#audit-b72)
 
 <a id="audit-b1"></a>
 <details>
@@ -411,17 +406,17 @@ Counts include named project definitions and types. Compiler helpers, instances,
 
 <a id="audit-b4"></a>
 <details>
-<summary>B4: 39 shared definitions and types</summary>
+<summary>B4: 37 shared definitions and types</summary>
 
-`Ehr.AlertSpec.targetsScreen`, `Ehr.CommitSpec.encounterRoleAllowed`, `Ehr.Kind.catalogTag`, `Ehr.Props.DeclaredWritesInSpec`, `Ehr.Props.HumanMustEnter`, `Ehr.Props.IdsUnique`, `Ehr.Props.LinkedNotRetyped`, `Ehr.Props.NavigationSane`, `Ehr.Props.NoAlertSuppression`, `Ehr.Props.NoAutomationAttempts`, `Ehr.Props.NoHumanRequest`, `Ehr.Props.NoInterruptivePopupRequests`, `Ehr.Props.NoPassivePopupRequests`, `Ehr.Props.QuantityPrefillsKeepUnits`, `Ehr.Props.ReferencesResolve`, `Ehr.Props.SpecIdsUnique`, `Ehr.Props.StabilityBudget`, `Ehr.Props.alertOf?`, `Ehr.Props.allComps`, `Ehr.Props.clickTarget?`, `Ehr.Props.commitOf?`, `Ehr.Props.fieldOf?`, `Ehr.Props.gotoOf?`, `Ehr.Props.gotoStep?`, `Ehr.Props.isContainer`, `Ehr.Props.isQuantity`, `Ehr.Props.kindName`, `Ehr.Props.macroOf?`, `Ehr.Props.movedTags`, `Ehr.Props.placeOf`, `Ehr.Props.popupRequestCount`, `Ehr.Props.recordFactOf?`, `Ehr.Props.reviewOf?`, `Ehr.Props.setTarget?`, `Ehr.Props.stepTarget?`, `Ehr.Render.NavSane`, `Ehr.Render.uiOverviewNav`, `Ehr.Render.workflowLabel`, `Ehr.entryRelevantForRole`
+`Ehr.AlertSpec.targetsScreen`, `Ehr.Kind.catalogTag`, `Ehr.Props.DeclaredWritesInSpec`, `Ehr.Props.HumanMustEnter`, `Ehr.Props.IdsUnique`, `Ehr.Props.LinkedNotRetyped`, `Ehr.Props.NavigationSane`, `Ehr.Props.NoAlertSuppression`, `Ehr.Props.NoAutomationAttempts`, `Ehr.Props.NoHumanRequest`, `Ehr.Props.NoInterruptivePopupRequests`, `Ehr.Props.NoPassivePopupRequests`, `Ehr.Props.QuantityPrefillsKeepUnits`, `Ehr.Props.ReferencesResolve`, `Ehr.Props.SpecIdsUnique`, `Ehr.Props.StabilityBudget`, `Ehr.Props.alertOf?`, `Ehr.Props.allComps`, `Ehr.Props.clickTarget?`, `Ehr.Props.commitOf?`, `Ehr.Props.fieldOf?`, `Ehr.Props.gotoOf?`, `Ehr.Props.gotoStep?`, `Ehr.Props.isContainer`, `Ehr.Props.isQuantity`, `Ehr.Props.kindName`, `Ehr.Props.macroOf?`, `Ehr.Props.movedTags`, `Ehr.Props.placeOf`, `Ehr.Props.popupRequestCount`, `Ehr.Props.recordFactOf?`, `Ehr.Props.reviewOf?`, `Ehr.Props.setTarget?`, `Ehr.Props.stepTarget?`, `Ehr.Render.NavSane`, `Ehr.Render.uiOverviewNav`, `Ehr.entryRelevantForRole`
 
 </details>
 
 <a id="audit-b5"></a>
 <details>
-<summary>B5: 115 shared definitions and types</summary>
+<summary>B5: 112 shared definitions and types</summary>
 
-`Ehr.ArtifactBinding`, `Ehr.BusinessCalendar`, `Ehr.ClinicalAge`, `Ehr.ClinicalFacts`, `Ehr.ClinicalFacts.field`, `Ehr.ClinicalObservation`, `Ehr.ClockRenewal`, `Ehr.ClockStamp`, `Ehr.EventEvidence`, `Ehr.InfoPayload`, `Ehr.MonthCutoff`, `Ehr.ObligationStatus`, `Ehr.OrderClock`, `Ehr.OrderClock.anchorStamp`, `Ehr.OrderInstanceId`, `Ehr.PatientIdentity`, `Ehr.PayloadIdentifier`, `Ehr.PayloadRow`, `Ehr.Spec.commit?`, `Ehr.Spec.info?`, `Ehr.State.tabOf`, `Ehr.User`, `Ehr.Value.nonEmpty`, `Ehr.WorkflowPhase`, `Ehr.actionLabelOk`, `Ehr.alertKeys`, `Ehr.allergyMatch`, `Ehr.bannerInfo`, `Ehr.businessLocalDay`, `Ehr.cappedDoseBound`, `Ehr.capturedSatisfies`, `Ehr.capturedWeightKg?`, `Ehr.clinicalApplies`, `Ehr.clinicalCode`, `Ehr.clinicalEval`, `Ehr.clinicalSourceValid`, `Ehr.commitRoleOk`, `Ehr.defaultsOk`, `Ehr.displayActive`, `Ehr.displayReqMet`, `Ehr.displayScopeActive`, `Ehr.displayShown`, `Ehr.displaysOk`, `Ehr.doseElement`, `Ehr.doseOutOfRange`, `Ehr.drugClasses`, `Ehr.drugsInPlay`, `Ehr.duplicate`, `Ehr.encounterMatches`, `Ehr.encounterRolesOk`, `Ehr.encounterRouteAvailable`, `Ehr.entriesOk`, `Ehr.entryDirectMet`, `Ehr.entryMet`, `Ehr.entryValueAllowed`, `Ehr.entryWaiver`, `Ehr.epochNow`, `Ehr.eventTime`, `Ehr.expiryCutoff`, `Ehr.expiryStatus`, `Ehr.extraGuard`, `Ehr.factVersion`, `Ehr.fieldRequired`, `Ehr.freqElement`, `Ehr.guardBase`, `Ehr.hasGoodEntry`, `Ehr.hasValidReceipt`, `Ehr.highMme`, `Ehr.humanWaiverMet`, `Ehr.identityText`, `Ehr.inClass`, `Ehr.infoPayload`, `Ehr.infoShown`, `Ehr.infoVersion`, `Ehr.interacts`, `Ehr.isHighAlert`, `Ehr.isLbWeight`, `Ehr.keyAt`, `Ehr.layoutShown`, `Ehr.layoutShownAux`, `Ehr.lineDoseMgTenths?`, `Ehr.lineFreqPerDay?`, `Ehr.lineMatches`, `Ehr.mmeFactor`, `Ehr.monthDays`, `Ehr.naloxoneLine`, `Ehr.namedClinicalCode`, `Ehr.nowMin`, `Ehr.orderLines`, `Ehr.ownVisible`, `Ehr.parentOpen`, `Ehr.payloadComplete`, `Ehr.payloadField`, `Ehr.payloadFieldMet`, `Ehr.primaryClass`, `Ehr.receiptValid`, `Ehr.renewalValid`, `Ehr.reviewMet`, `Ehr.reviewsOk`, `Ehr.roleOk`, `Ehr.scanMatches`, `Ehr.showsInfo`, `Ehr.stampMinute`, `Ehr.stampValid`, `Ehr.temporalOrdering`, `Ehr.temporalStatus`, `Ehr.timeDistance`, `Ehr.validationsOk`, `Ehr.valueAccepted`, `Ehr.valueSatisfies`, `Ehr.waived`, `Ehr.weightBasedDrug`, `Ehr.weightElement`, `Ehr.weightKgTenths?`, `Ehr.whenHolds`
+`Ehr.ArtifactBinding`, `Ehr.BusinessCalendar`, `Ehr.ClinicalAge`, `Ehr.ClinicalFacts`, `Ehr.ClinicalFacts.field`, `Ehr.ClinicalObservation`, `Ehr.ClockRenewal`, `Ehr.ClockStamp`, `Ehr.CommitSpec.encounterRoleAllowed`, `Ehr.EventEvidence`, `Ehr.InfoPayload`, `Ehr.MonthCutoff`, `Ehr.ObligationStatus`, `Ehr.OrderClock`, `Ehr.OrderClock.anchorStamp`, `Ehr.OrderInstanceId`, `Ehr.PatientIdentity`, `Ehr.PayloadIdentifier`, `Ehr.PayloadRow`, `Ehr.Spec.commit?`, `Ehr.Spec.info?`, `Ehr.State.tabOf`, `Ehr.User`, `Ehr.Value.nonEmpty`, `Ehr.WorkflowPhase`, `Ehr.actionLabelOk`, `Ehr.alertKeys`, `Ehr.allergyMatch`, `Ehr.bannerInfo`, `Ehr.businessLocalDay`, `Ehr.cappedDoseBound`, `Ehr.capturedSatisfies`, `Ehr.capturedWeightKg?`, `Ehr.clinicalApplies`, `Ehr.clinicalCode`, `Ehr.clinicalEval`, `Ehr.clinicalSourceValid`, `Ehr.commitRoleOk`, `Ehr.defaultsOk`, `Ehr.displayActive`, `Ehr.displayReqMet`, `Ehr.displayScopeActive`, `Ehr.displayShown`, `Ehr.displaysOk`, `Ehr.doseElement`, `Ehr.doseOutOfRange`, `Ehr.drugClasses`, `Ehr.drugsInPlay`, `Ehr.duplicate`, `Ehr.encounterMatches`, `Ehr.encounterRolesOk`, `Ehr.entriesOk`, `Ehr.entryMet`, `Ehr.entryValueAllowed`, `Ehr.epochNow`, `Ehr.eventTime`, `Ehr.expiryCutoff`, `Ehr.expiryStatus`, `Ehr.extraGuard`, `Ehr.factVersion`, `Ehr.fieldRequired`, `Ehr.freqElement`, `Ehr.guardBase`, `Ehr.hasGoodEntry`, `Ehr.hasValidReceipt`, `Ehr.highMme`, `Ehr.identityText`, `Ehr.inClass`, `Ehr.infoPayload`, `Ehr.infoShown`, `Ehr.infoVersion`, `Ehr.interacts`, `Ehr.isHighAlert`, `Ehr.isLbWeight`, `Ehr.keyAt`, `Ehr.layoutShown`, `Ehr.layoutShownAux`, `Ehr.lineDoseMgTenths?`, `Ehr.lineFreqPerDay?`, `Ehr.lineMatches`, `Ehr.mmeFactor`, `Ehr.monthDays`, `Ehr.naloxoneLine`, `Ehr.namedClinicalCode`, `Ehr.nowMin`, `Ehr.orderLines`, `Ehr.ownVisible`, `Ehr.parentOpen`, `Ehr.payloadComplete`, `Ehr.payloadField`, `Ehr.payloadFieldMet`, `Ehr.primaryClass`, `Ehr.receiptValid`, `Ehr.renewalValid`, `Ehr.reviewMet`, `Ehr.reviewsOk`, `Ehr.roleOk`, `Ehr.scanMatches`, `Ehr.showsInfo`, `Ehr.stampMinute`, `Ehr.stampValid`, `Ehr.temporalOrdering`, `Ehr.temporalStatus`, `Ehr.timeDistance`, `Ehr.validationsOk`, `Ehr.valueAccepted`, `Ehr.valueSatisfies`, `Ehr.waived`, `Ehr.weightBasedDrug`, `Ehr.weightElement`, `Ehr.weightKgTenths?`, `Ehr.whenHolds`
 
 </details>
 
@@ -659,9 +654,9 @@ Counts include named project definitions and types. Compiler helpers, instances,
 
 <a id="audit-b35"></a>
 <details>
-<summary>B35: 1 shared definitions and types</summary>
+<summary>B35: 5 shared definitions and types</summary>
 
-`Ehr.Proofs.HypothesisExamples.currentCertificate`
+`Ehr.Program.presetOwner`, `Ehr.Props.commitButtons`, `Ehr.Props.requiredCommits`, `Ehr.presetScreen`, `Ehr.presetWorkflows`
 
 </details>
 
@@ -669,55 +664,55 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B36: 1 shared definitions and types</summary>
 
-`Ehr.Proofs.HypothesisExamples.rejectedVersion`
+`Ehr.Proofs.HypothesisExamples.currentCertificate`
 
 </details>
 
 <a id="audit-b37"></a>
 <details>
-<summary>B37: 3 shared definitions and types</summary>
+<summary>B37: 1 shared definitions and types</summary>
 
-`Ehr.Props.AlertBudget`, `Ehr.Props.ReachableScreen`, `Ehr.Props.WithinBudgets`
+`Ehr.Proofs.HypothesisExamples.rejectedVersion`
 
 </details>
 
 <a id="audit-b38"></a>
 <details>
-<summary>B38: 1 shared definitions and types</summary>
+<summary>B38: 3 shared definitions and types</summary>
 
-`Ehr.Props.AlertShownInline`
+`Ehr.Props.AlertBudget`, `Ehr.Props.ReachableScreen`, `Ehr.Props.WithinBudgets`
 
 </details>
 
 <a id="audit-b39"></a>
 <details>
-<summary>B39: 3 shared definitions and types</summary>
+<summary>B39: 1 shared definitions and types</summary>
 
-`Ehr.Props.AlertsFire`, `Ehr.Props.InterruptiveHandled`, `Ehr.Props.PassiveShownInline`
+`Ehr.Props.AlertShownInline`
 
 </details>
 
 <a id="audit-b40"></a>
 <details>
-<summary>B40: 2 shared definitions and types</summary>
+<summary>B40: 3 shared definitions and types</summary>
 
-`Ehr.Props.AlertsOnlyWhenTrue`, `Ehr.Props.NoFalseAlarms`
+`Ehr.Props.AlertsFire`, `Ehr.Props.InterruptiveHandled`, `Ehr.Props.PassiveShownInline`
 
 </details>
 
 <a id="audit-b41"></a>
 <details>
-<summary>B41: 7 shared definitions and types</summary>
+<summary>B41: 2 shared definitions and types</summary>
 
-`Ehr.Props.AllowedEntryValue`, `Ehr.Props.CapturesAllOnce`, `Ehr.Props.CommitCapturesAll`, `Ehr.Props.CountsFor`, `Ehr.Props.EnteredOnce`, `Ehr.Props.EntryDirectMetIn`, `Ehr.Props.EntryMetIn`
+`Ehr.Props.AlertsOnlyWhenTrue`, `Ehr.Props.NoFalseAlarms`
 
 </details>
 
 <a id="audit-b42"></a>
 <details>
-<summary>B42: 1 shared definitions and types</summary>
+<summary>B42: 6 shared definitions and types</summary>
 
-`Ehr.Props.Always`
+`Ehr.Props.AllowedEntryValue`, `Ehr.Props.CapturesAllOnce`, `Ehr.Props.CommitCapturesAll`, `Ehr.Props.CountsFor`, `Ehr.Props.EnteredOnce`, `Ehr.Props.EntryMetIn`
 
 </details>
 
@@ -725,47 +720,47 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B43: 1 shared definitions and types</summary>
 
-`Ehr.Props.Applies`
+`Ehr.Props.Always`
 
 </details>
 
 <a id="audit-b44"></a>
 <details>
-<summary>B44: 5 shared definitions and types</summary>
+<summary>B44: 1 shared definitions and types</summary>
 
-`Ehr.Props.CatalogOnly`, `Ehr.Props.LandmarksShown`, `Ehr.Props.RequiredWithinDepth`, `Ehr.Props.WellFormed`, `Ehr.Props.WithinClicks`
+`Ehr.Props.Applies`
 
 </details>
 
 <a id="audit-b45"></a>
 <details>
-<summary>B45: 7 shared definitions and types</summary>
+<summary>B45: 5 shared definitions and types</summary>
 
-`Ehr.Props.CommitButtonShown`, `Ehr.Props.CommitReviewsMet`, `Ehr.Props.CommitScreenShowsReviews`, `Ehr.Props.ReceiptCovers`, `Ehr.Props.ReviewMetIn`, `Ehr.Props.ReviewsBeforeCommit`, `Ehr.Props.Waived`
+`Ehr.Props.CatalogOnly`, `Ehr.Props.LandmarksShown`, `Ehr.Props.RequiredWithinDepth`, `Ehr.Props.WellFormed`, `Ehr.Props.WithinClicks`
 
 </details>
 
 <a id="audit-b46"></a>
 <details>
-<summary>B46: 1 shared definitions and types</summary>
+<summary>B46: 7 shared definitions and types</summary>
 
-`Ehr.Props.CommitHappens`
+`Ehr.Props.CommitButtonShown`, `Ehr.Props.CommitReviewsMet`, `Ehr.Props.CommitScreenShowsReviews`, `Ehr.Props.ReceiptCovers`, `Ehr.Props.ReviewMetIn`, `Ehr.Props.ReviewsBeforeCommit`, `Ehr.Props.Waived`
 
 </details>
 
 <a id="audit-b47"></a>
 <details>
-<summary>B47: 2 shared definitions and types</summary>
+<summary>B47: 1 shared definitions and types</summary>
 
-`Ehr.Props.CommitUnitsRight`, `Ehr.Props.UnitsRight`
+`Ehr.Props.CommitHappens`
 
 </details>
 
 <a id="audit-b48"></a>
 <details>
-<summary>B48: 6 shared definitions and types</summary>
+<summary>B48: 2 shared definitions and types</summary>
 
-`Ehr.Props.CommitsStayReachable`, `Ehr.Props.Completable`, `Ehr.Props.Episode.afterHuman`, `Ehr.Props.RecordAllowsScans`, `Ehr.Props.requiredCommitsFor`, `Ehr.commitRolePossible`
+`Ehr.Props.CommitUnitsRight`, `Ehr.Props.UnitsRight`
 
 </details>
 
@@ -773,15 +768,15 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B49: 5 shared definitions and types</summary>
 
-`Ehr.Props.CosignIsSecondUser`, `Ehr.Props.Episode.start`, `Ehr.Props.HumanOnlyKept`, `Ehr.Props.HumanStepsByHuman`, `Ehr.Props.OnlyHumanCommitsAndAcks`
+`Ehr.Props.CommitsStayReachable`, `Ehr.Props.Completable`, `Ehr.Props.Episode.afterHuman`, `Ehr.Props.RecordAllowsScans`, `Ehr.Props.requiredCommitsFor`
 
 </details>
 
 <a id="audit-b50"></a>
 <details>
-<summary>B50: 2 shared definitions and types</summary>
+<summary>B50: 5 shared definitions and types</summary>
 
-`Ehr.Props.Episode`, `Ehr.Props.Reachable`
+`Ehr.Props.CosignIsSecondUser`, `Ehr.Props.Episode.start`, `Ehr.Props.HumanOnlyKept`, `Ehr.Props.HumanStepsByHuman`, `Ehr.Props.OnlyHumanCommitsAndAcks`
 
 </details>
 
@@ -789,7 +784,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B51: 2 shared definitions and types</summary>
 
-`Ehr.Props.Episode.next`, `Ehr.Props.EveryStep`
+`Ehr.Props.Episode`, `Ehr.Props.Reachable`
 
 </details>
 
@@ -797,63 +792,63 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B52: 2 shared definitions and types</summary>
 
-`Ehr.Props.Episode.screen`, `Ehr.Props.ShowsSome`
+`Ehr.Props.Episode.next`, `Ehr.Props.EveryStep`
 
 </details>
 
 <a id="audit-b53"></a>
 <details>
-<summary>B53: 5 shared definitions and types</summary>
+<summary>B53: 2 shared definitions and types</summary>
 
-`Ehr.Props.Examples.goodMacro`, `Ehr.Props.Examples.goodOrderScreen`, `Ehr.Props.Examples.goodProgram`, `Ehr.Props.Examples.goodSignScreen`, `Ehr.Props.Examples.pinTinyAlerts`
+`Ehr.Props.Episode.screen`, `Ehr.Props.ShowsSome`
 
 </details>
 
 <a id="audit-b54"></a>
 <details>
-<summary>B54: 1 shared definitions and types</summary>
+<summary>B54: 5 shared definitions and types</summary>
 
-`Ehr.Props.GotoPath`
+`Ehr.Props.Examples.goodMacro`, `Ehr.Props.Examples.goodOrderScreen`, `Ehr.Props.Examples.goodProgram`, `Ehr.Props.Examples.goodSignScreen`, `Ehr.Props.Examples.pinTinyAlerts`
 
 </details>
 
 <a id="audit-b55"></a>
 <details>
-<summary>B55: 2 shared definitions and types</summary>
+<summary>B55: 1 shared definitions and types</summary>
 
-`Ehr.Props.HumanWaiverFor`, `Ehr.Props.ValidReceiptFor`
+`Ehr.Props.GotoPath`
 
 </details>
 
 <a id="audit-b56"></a>
 <details>
-<summary>B56: 1 shared definitions and types</summary>
+<summary>B56: 2 shared definitions and types</summary>
 
-`Ehr.Props.InfoShown`
+`Ehr.Props.HumanWaiverFor`, `Ehr.Props.ValidReceiptFor`
 
 </details>
 
 <a id="audit-b57"></a>
 <details>
-<summary>B57: 3 shared definitions and types</summary>
+<summary>B57: 1 shared definitions and types</summary>
 
-`Ehr.Props.InterruptsOnce`, `Ehr.Props.NoRepeatInterruptions`, `Ehr.Props.PopupRequestedOnce`
+`Ehr.Props.InfoShown`
 
 </details>
 
 <a id="audit-b58"></a>
 <details>
-<summary>B58: 2 shared definitions and types</summary>
+<summary>B58: 3 shared definitions and types</summary>
 
-`Ehr.Props.PassiveNeverPopsUp`, `Ehr.Props.SeverityTiers`
+`Ehr.Props.InterruptsOnce`, `Ehr.Props.NoRepeatInterruptions`, `Ehr.Props.PopupRequestedOnce`
 
 </details>
 
 <a id="audit-b59"></a>
 <details>
-<summary>B59: 1 shared definitions and types</summary>
+<summary>B59: 2 shared definitions and types</summary>
 
-`Ehr.Props.PopupNotPassive`
+`Ehr.Props.PassiveNeverPopsUp`, `Ehr.Props.SeverityTiers`
 
 </details>
 
@@ -861,15 +856,15 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B60: 1 shared definitions and types</summary>
 
-`Ehr.Props.Satisfies`
+`Ehr.Props.PopupNotPassive`
 
 </details>
 
 <a id="audit-b61"></a>
 <details>
-<summary>B61: 2 shared definitions and types</summary>
+<summary>B61: 1 shared definitions and types</summary>
 
-`Ehr.Props.WritesAllowed`, `Ehr.Props.WritesOnly`
+`Ehr.Props.Satisfies`
 
 </details>
 
@@ -877,7 +872,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B62: 2 shared definitions and types</summary>
 
-`Ehr.Props.commitButtons`, `Ehr.Props.requiredCommits`
+`Ehr.Props.WritesAllowed`, `Ehr.Props.WritesOnly`
 
 </details>
 
@@ -1029,13 +1024,21 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B81: 1 shared definitions and types</summary>
 
-`Ehr.resolveSlot`
+`Ehr.navigatorNames`
 
 </details>
 
 <a id="audit-b82"></a>
 <details>
 <summary>B82: 1 shared definitions and types</summary>
+
+`Ehr.resolveSlot`
+
+</details>
+
+<a id="audit-b83"></a>
+<details>
+<summary>B83: 1 shared definitions and types</summary>
 
 `Ehr.runAll`
 

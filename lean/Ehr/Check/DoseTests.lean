@@ -41,12 +41,12 @@ def pediatricState : State := { (default : State) with captured :=
 #guard !elementValueValid child pediatricState Specs.Rules.Features.elementCalculatedPediatricDose 0 (.qty 9000 .units)
 #guard ((specForProfile .full).element? "dose").any (fun el => el.kind == .medicationDose)
 #guard ((specForProfile .full).commit? "signOrders").any (fun cs =>
-  cs.encounterRoles?.any (fun rules => rules.any (fun rule => rule.cosign? == some "attendingCosign")))
--- A cosign route must never hide a new, unattested pre-op obligation.
-#guard entryRelevantForRole specV1 .np
-  { commit := "signOrders", element := "hpUpdate", when := .encounter "preop" }
+  !cs.encounterRoleAllowed (some "preop") .np)
+-- Forbidden encounters add no NP completion obligation; allowed roles keep it.
 #guard !entryRelevantForRole specV1 .np
-  { commit := "signOrders", element := "hpUpdate", when := .encounter "preop", waivedBy? := some "attendingCosign" }
+  { commit := "signOrders", element := "hpUpdate", when := .encounter "preop" }
+#guard entryRelevantForRole specV1 .surgeon
+  { commit := "signOrders", element := "hpUpdate", when := .encounter "preop" }
 -- A changed selector cannot strand an invalid line behind Add order.
 def lineSpec : Spec := { specV1 with elements := [drug, dose, doseUnit], entries :=
   [ { commit := "signOrders", element := "drug", perOrderLine := true },

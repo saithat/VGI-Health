@@ -16,14 +16,14 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 | T5 | Abstraction facts match the FHIR data | **proven**: today’s weight has exact source/date/unit/value evidence; versions cover all source resources and are permutation invariant (digest collision freedom remains a stated assumption) | `lean/Ehr/Render/FhirProofs.lean` |
 | T6 | Macros behave like their expansion or stop at a guard | **proven** for the interpreter: a macro run gives the same state as folding the public `step` with `actor := macro` over its steps (`goto` as navigation), stopping at the first non-ok step; same ok/stop result (`T6_macro_is_fold`, `runMacro_ok_iff`); and, reusing T3 per step, no macro run commits, acks, creates receipts, or captures human-only values (`T6_macro_run_safe`) | `lean/Ehr/Proofs/T6.lean` |
 | T7 | Counterexamples are genuine | **partial**: replay and a failed static rule are proven; every returned navigation/reveal event succeeds (cut paths included), with at most one final triggering click. The BRIEF's stronger assertion that every rejection demonstrates semantic falsity is **false for the present conservative rules** (`T7_semantic_rejection_false` gives a safe rejected program). A verdict/property contract decision is required; no safety rule or property was weakened. Conservative rules can reject without establishing `¬ Satisfies`; do not present these replay theorems as full T7. | `lean/Ehr/Check/ReplaySound.lean`, `RuleSound.lean` |
-| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v1_1` and `T8_v1_1_to_v2`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
-| T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
 | T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v2` and `T8_v2_to_v3`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
 | T7 | Counterexamples are genuine | not started | A |
 | T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, with no axioms: `specV2_extends_specV1` and `specV3_extends_specV2`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V2,V3}.lean` |
 | T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
 | T8 | Releases only tighten | Concrete additive witnesses proved by `decide`, using only permitted `propext`: `specV2_extends_specV1` and `specV3_extends_specV2`. General checker/deploy theorem remains with check lane. | `lean/Ehr/Specs/{Extends,V2,V3}.lean` |
 | T9 | Minimum clicks is exact | not started | A |
+| T8 | Releases preserve old obligations; only the catalog may grow | **proven** for executions of the installed release: `OldObligations` projects older entry/review requirements and preserves human actions, units and alerts. General `T8_checked_old_obligations` starts directly from `check = ok`, without assuming T1. Semantic `T8_old_obligations`, plus `T8_v1_to_v1_1` and `T8_v1_1_to_v2`, use the actual `Spec.Extends` witnesses. `T8_unqualified_false` remains the counterexample to full old-catalog transport. | `lean/Ehr/Props/OldObligations.lean`, `lean/Ehr/Check/Monotonicity.lean` |
+| T9 | Minimum clicks is exact | **proven** for certified search over the reported goal-relevant space (`T9_jointMinimum`, `T9_taskSearch`, `T9_minimum`, `T9_minimum_real`): real interpreter replay at the claimed cost, and no cheaper allowed goal-reaching run; full, goalDirected and navigationDirected spaces reported separately; joint episode search preserves receipt effects and guards reset edges. Concrete kernel-decided satisfiable instance and wrong-answer rejection tests. | D/sim: `lean/Ehr/Sim/MinClicks.lean`, `Certificate.lean`, `History.lean`, `TaskMinimum.lean`, `MinClicksTests.lean`, `TaskMinimumTests.lean` |
 | T10 | The page shows what must be shown | **proven**: every shown item has its id/label; only shown ids occur; no tiny class; every guard-counted info tree appears in its component; event disabled iff absent from enabled; shown commit enabled iff no popup, not already committed, and base guard | `lean/Ehr/Render/Proofs.lean`, `CommitProofs.lean` |
 | T11 | Panels are complete | **proven** end to end for active FHIR allergies/medications, with no row limits; pending prefills show provenance and their confirm action | `lean/Ehr/Render/FhirProofs.lean`, `PanelProofs.lean`, `PrefillProofs.lean` |
 | A2 | An alert appears only when its condition holds | **proven** for the interpreter: view firing/shown (`A2_view_firing`, `A2_view_shown`), new popups (`A2_popup_holds`) | `lean/Ehr/Proofs/Alerts.lean` |
@@ -90,17 +90,15 @@ unfinished. Seed 13 now removes every CURES report/review/exemption route;
 The old `bad13_preop_not_satisfies` witness is stale after review pinning and
 must not be presented as a proof of the new seed's CURES defect.
 
-Owner decision 2026-10-31 resolves the NP/pre-op domain obstruction:
-physicians and surgeons sign directly; NPs need a human attending cosign.
-`np_preop_without_cosign_never_signs` replaces `np_preop_obstruction`.
-Only consent, H&P and medication-hold entries may use the attending attestation;
-their original entry permissions stay unchanged. `entry_direct_or_attested`
-bridges the guard and property. The macro/prefill attending safety theorems are
-kernel checked with clean axiom audits. Persona walkthroughs and a deterministic
-NP pre-op simulator walkthrough are compiled #guards, avoiding whole-program
-kernel reduction. `Statements.lean` supplies state to the role predicate and
-adds a no-attestation hypothesis to `T0_entry_values`; direct quantity, per-line
-and distinct-user cosign safety statements remain unchanged.
+Owner decision 2026-11-01 resolves the NP/pre-op domain obstruction with
+security-class order privileges: only physicians and surgeons sign pre-op
+orders. `np_preop_never_signs` has no state or attestation exception. The three
+entries retain their original permissions. The blocking attending route and
+its tests are removed; entry waivers are gone. `entry_relevant_when_allowed`
+connects the role restriction to completion obligations. `T0_entry_values`
+again has its original statement without a waiver hypothesis. Executable
+walkthroughs cover NP clinic completion, NP pre-op refusal with reason, and
+surgeon pre-op completion. All remaining high-alert cosign theorems stay active.
 General T1 completion remains the previously recorded unfinished construction.
 Render visual-review follow-up: shell/side/nav presence is covered by T10;
 semantic T11 distinguishes the requested full and compact record projections.
@@ -136,7 +134,7 @@ a pinned allergy review (either review mode), and one alert with **any condition
 and any tier**. Entry kinds include text, flag, code, every quantity unit,
 identity, cosign and targeted scans. Medication scans retain `RecordAllowsScans`.
 Medication-dose values are excluded: they need a selected formulary drug.
-There are no per-line requirements, allowed-value lists, encounter cosign routes,
+There are no per-line requirements, allowed-value lists, encounter role restrictions,
 waiver-only reviews or additional temporal/relational contracts in this fragment.
 This is a structural family, not all programs accepted by the core profile.
 
