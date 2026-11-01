@@ -1,4 +1,4 @@
-import { createElement, type ReactNode, type SyntheticEvent } from "react";
+import { createElement, Fragment, type ReactNode, type SyntheticEvent } from "react";
 import { UnitKindValues, type Event, type Value } from "../../../lean/generated/ehr-types";
 import { allowedAttribute, classes, tags, type Html } from "./html";
 
@@ -78,5 +78,5 @@ export function paint(tree: Html, onEvent: (event: Event) => void): ReactNode {
     props[event === "enter" || event === "search" ? "onChange" : event === "scroll" ? "onScroll" : "onClick"] = handler;
   }
   if (safe.value !== undefined && !props.onChange) props.onChange = () => {};
-  return createElement(tag, props, ...children.map(child => paint(child, onEvent)));
+  return createElement(tag, props, ...children.map((child, index) => createElement(Fragment, { key: index }, paint(child, onEvent))));
 }

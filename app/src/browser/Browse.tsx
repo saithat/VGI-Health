@@ -1,0 +1,58 @@
+import { useEffect, useState } from 'react';
+import { currentProgram, defaultPatient, ehrUrl, loadCatalog, personas, type Catalog, type Patient } from './data';
+
+export function PatientPicker({ catalog, value, onChange }: { catalog: Catalog; value: string; onChange: (patient: Patient) => void }) {
+  const [search, setSearch] = useState('');
+  const [flags, setFlags] = useState<string[]>([]);
+  const patients = catalog.patients.filter(patient => patient.name.toLowerCase().includes(search.toLowerCase()) &&
+    flags.every(flag => Object.entries(patient.flags).some(([name, enabled]) => name === flag && enabled)));
+  return <fieldset className="patient-picker">
+    <legend>Patient · {catalog.patients.length} committed Synthea fixtures</legend>
+    <label>Search by name <input type="search" value={search} onChange={event => setSearch(event.currentTarget.value)} /></label>
+    <div className="patient-filters">{['pediatric', 'allergic', 'anticoagulated', 'surgical'].map(flag => <label key={flag}>
+      <input type="checkbox" checked={flags.includes(flag)} onChange={() => setFlags(current => current.includes(flag) ? current.filter(item => item !== flag) : [...current, flag])} />{flag}
+    </label>)}</div>
+    <label>{patients.length} matching patients <select aria-label="Patient" value={value} onChange={event => {
+      const patient = catalog.patients.find(patient => patient.id === event.currentTarget.value);
+      if (patient) onChange(patient);
+    }}>
+      {!patients.some(patient => patient.id === value) && <option value={value}>Selected patient (outside filter)</option>}
+      {patients.map(patient => <option key={patient.id} value={patient.id}>{patient.name} · {patient.age} · {patient.sex} · {patient.encounterClass}</option>)}
+    </select></label>
+  </fieldset>;
+}
+
+export function Browse() {
+  const query = new URLSearchParams(window.location.search);
+  const [catalog, setCatalog] = useState<Catalog>();
+  const [patient, setPatient] = useState(query.get('patient') ?? '');
+  const [persona, setPersona] = useState(query.get('persona') ?? 'P1');
+  const [error, setError] = useState('');
+  useEffect(() => {
+    loadCatalog().then(data => {
+      setCatalog(data);
+      setPatient(current => data.patients.some(patient => patient.id === current) ? current : defaultPatient(data, persona).id);
+    }).catch((error: unknown) => setError(String(error)));
+  }, [persona]);
+  if (error) return <p role="alert">{error}</p>;
+  if (!catalog) return <p>Loading offline UI catalog…</p>;
+  const groups = [...new Set(catalog.programs.map(program => program.group))];
+  return <main className="browser-page">
+    <nav><a href="/browse">VGI HEALTH · UI browser</a><a href="/dashboard">Recorded dashboard</a></nav>
+    <h1>Open a clinical UI</h1>
+    <p>{catalog.programs.length} programs · real Lean WASM · local fixtures · record date {catalog.referenceDate}</p>
+    <PatientPicker catalog={catalog} value={patient} onChange={selected => setPatient(selected.id)} />
+    <label>Acting persona <select aria-label="Acting persona" value={persona} onChange={event => {
+      setPersona(event.currentTarget.value);
+      setPatient(defaultPatient(catalog, event.currentTarget.value).id);
+    }}>{personas.map(id => <option key={id}>{id}</option>)}</select></label>
+    <p><a href={ehrUrl(currentProgram(catalog, persona, query.get('run')), patient, persona)}>Open {persona}’s current program →</a></p>
+    <div className="program-groups">{groups.map(group => <section key={group}>
+      <h2>{group}</h2>
+      <ul>{catalog.programs.filter(program => program.group === group).map(program => <li key={program.path}>
+        <a href={ehrUrl(program, patient, program.label === 'Canonical source' ? persona : program.persona)}>{program.label}</a>
+        <small>{program.path} · {program.release}</small>
+      </li>)}</ul>
+    </section>)}</div>
+  </main>;
+}

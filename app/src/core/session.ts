@@ -1,4 +1,4 @@
-import type { Event, StepOutput } from "../../../lean/generated/ehr-types";
+import type { Event, StepOutput, State, ScreenView } from "../../../lean/generated/ehr-types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
 
@@ -21,7 +21,12 @@ export function createSession(
   ] as const;
   let stateJson = interp.init(...args);
   const readPage = (): Html => JSON.parse(interp.render(...args, stateJson));
-  let snapshot = { page: readPage() };
+  function readSnapshot(result: StepOutput["result"] | null = null) {
+    const state: State = JSON.parse(stateJson);
+    const view: ScreenView = JSON.parse(interp.view(...args, stateJson));
+    return { page: readPage(), state, view, result };
+  }
+  let snapshot = readSnapshot();
   const listeners = new Set<() => void>();
   return {
     getSnapshot: () => snapshot,
@@ -36,7 +41,7 @@ export function createSession(
         interp.step(...args, stateJson, JSON.stringify(event)),
       );
       stateJson = JSON.stringify(response.state);
-      snapshot = { page: readPage() };
+      snapshot = readSnapshot(response.result);
       listeners.forEach((listener) => listener());
     },
   };
