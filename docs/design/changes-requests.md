@@ -2181,3 +2181,7 @@ AMB integration correction for shared display: `formatMedicationLine` retains pr
 Default encounter save notifications/options no longer expose Medplum resource paths or logical Encounter IDs. `inspect=1` retains technical writeback links/JSON. A typed `refreshRequired` result preserves the reopen-chart warning after a saved write with failed refresh. New encounter selection follows the returned server Encounter, including when other chart encounters are future-dated. The existing host controls and Core clinical actions remain.
 
 The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release equality and `AUDIT_REPORT_DIR` for scoped evidence. Its recursive shape/key traversal now matches all four transparent semantic wrappers and includes supplied textareas. Default quick-login coverage is explicitly deployed-context coverage; program IDs alone cannot establish current canonical coverage.
+
+### AMB M13: optional public field-source metadata
+
+`UiScreen.fieldSources` supplies public captions keyed to existing sourced fields. See the additive presentation contract. Exact raw provenance and all field flags remain in `UiNode.field`; D6 and the legacy HTML provenance contract are unchanged. Stock inputs use the supplied caption visibly and as their accessible description. The browser screenshot suite checks each rendered sourced field's description, including quantity inputs. Old JSON remains accepted. No FHIR projection, clinical control or D-rule is added.

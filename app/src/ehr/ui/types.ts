@@ -118,6 +118,7 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
 export const uiScreenSchema: z.ZodType<UiScreen> = z
   .strictObject({
     screen: label.optional(),
+    fieldSources: z.array(pair).optional(),
     banner: z.array(pair),
     nav: z.array(z.tuple([label, z.array(pair)])),
     title: label,
@@ -125,6 +126,8 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
   })
-  .transform(({ screen, ...rest }) =>
-    screen === undefined ? rest : { ...rest, screen },
-  );
+  .transform(({ screen, fieldSources, ...rest }) => ({
+    ...rest,
+    ...(screen === undefined ? {} : { screen }),
+    ...(fieldSources === undefined ? {} : { fieldSources }),
+  }));

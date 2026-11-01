@@ -18,6 +18,26 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- A public caption accompanies the original pending weight field. -/
+def publicWeightSourceExample : String := uiFieldSourceText uiRoomCtx "record:weightToday"
+#guard publicWeightSourceExample == "Source: Chart weight recorded today · chart as of " ++ uiRoomCtx.disp.asOf
+#guard !(Fhir.containsStr publicWeightSourceExample "weightToday")
+#guard (uiScreenTest.fieldSources?.getD []).lookup "weightField" == some publicWeightSourceExample
+#guard match uiField uiRoomCtx uiWeightItem "weight" with
+  | .field _ _ _ _ _ provenance pending _ _ =>
+      provenance == some "record:weightToday" && pending
+  | _ => false
+
+/-- Linked captions use the source element's public label, never its key. -/
+def linkedWeightSourceExample : String := uiFieldSourceText uiRoomCtx "linked:weight"
+#guard linkedWeightSourceExample == "Source: Linked entry — Weight (kg)"
+def unknownRecordSourceExample : String := uiFieldSourceText uiRoomCtx "record:privateConverterKey"
+#guard !(Fhir.containsStr unknownRecordSourceExample "privateConverterKey")
+
+example : (uiWeightItem.comp.id, publicWeightSourceExample) ∈ uiFieldSources uiRoomCtx :=
+  uiFieldSources_shown uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
+    "record:weightToday" (by decide) (by decide) rfl (by decide)
+
 /-- Current documentation is separate from old chart notes and preserves entry status. -/
 def enteredVisitNoteCtx : Ctx :=
   { uiRoomCtx with

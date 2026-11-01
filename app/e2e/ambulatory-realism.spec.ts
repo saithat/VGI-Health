@@ -56,6 +56,19 @@ for (const persona of ["P1", "P4"]) {
       expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
         expectedAria(screen),
       );
+      const fieldSources = new Map(screen.fieldSources ?? []);
+      for (const node of [...screen.workspace, ...screen.side].flatMap(
+        descendants,
+      )) {
+        if (!("field" in node) || !node.field.provenance) continue;
+        await expect(
+          page.locator(
+            `[data-comp-id="${node.field.comp}"][data-event="enter"]`,
+          ),
+        ).toHaveAccessibleDescription(
+          fieldSources.get(node.field.comp) ?? node.field.provenance,
+        );
+      }
       await page.screenshot({
         path: join(
           output,

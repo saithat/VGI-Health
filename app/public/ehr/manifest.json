@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "a9e7c8edc6aada39984e3b8033f3480b5b5fe582489c528da50d4d197ea48f47",
+  "leanSourceHash": "5d7223699f028b058d55347bfa151dd9a37a29a4cc60f13e4c4570cef1390976",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -189,12 +189,12 @@
     "lean/Ehr/Render/PresentationTests.lean": "2cbd7e7ea13a2cd7706181616a6c09318589373d157fc1a56c373a6d90dbdd9b",
     "lean/Ehr/Render/Presentations.lean": "abd6216c02e484e6744cbe02991844573c7875197641cda5b609c3fa69eacde4",
     "lean/Ehr/Render/Proofs.lean": "73e66422de77c8db330c53937c340f8ea7892523f264275dea1b093731bf4a4e",
-    "lean/Ehr/Render/Types.lean": "9886072f0cbec0e6d3982eebfed24eb4012fde2f1552373e538025bc927a5ebf",
-    "lean/Ehr/Render/Ui.lean": "e77822fa14f94baa9050f8b96743594584912ed84a54eb6c22c670bece379b34",
+    "lean/Ehr/Render/Types.lean": "071e1d631f141f477a925174477a3de0226beaf070142bc9976aeb04b5154e9f",
+    "lean/Ehr/Render/Ui.lean": "8fdd540e39fa731402816926b1fd99430237a6da5a9ef677c19d014475e4252f",
     "lean/Ehr/Render/UiContracts.lean": "43f88ba5446573415c93e84fe1fb782253e309ffefb894d9622340adbebfe569",
     "lean/Ehr/Render/UiData.lean": "060ad1ce1582d7e852341ee4a57499090816e854caa4ce1571d93ff263fe466b",
-    "lean/Ehr/Render/UiProofs.lean": "7eb13f4b0c22b38f956a0e1c8d59870f78827b4edbafd79f8cd628d19876e534",
-    "lean/Ehr/Render/UiTests.lean": "0da0e7aa97d29d09623658289945fcdbd02ea4d376b30f1b4a398787b382a80c",
+    "lean/Ehr/Render/UiProofs.lean": "db089fbf29c2287a16e21887cb8547aaf70e61ea9c186b02faa6f36b56c5fef8",
+    "lean/Ehr/Render/UiTests.lean": "f82204ff0a146895cd49b534be2ccb6d3035a6d4fe49c761ac33e314d8763f72",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
     "lean/Ehr/Sim/FactsTests.lean": "7139f5045bde039ac62334901972a80ebfeb3b30221c98cb24106668fdbad161",
@@ -251,7 +251,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "bacc4e4eef9d3759c9d3bcb66963f5995010590554a5474903130f49f9dfc6ed",
+    "ehr-interp.wasm": "3917f1ba7c8a242de1a8027028d040198d0513d32f55fac6a5525af72e695454",
     "interp-loader.mjs": "898e0bd0c37b3520c95f7cdd78cefd6c23d17ef225275544c49cbcbd6d1f5b14",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

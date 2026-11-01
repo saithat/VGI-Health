@@ -508,12 +508,51 @@ def uiPlaceFooter (cx : Ctx) (nodes : List UiNode) : List UiNode :=
 def uiWorkspace (cx : Ctx) : List UiNode :=
   uiProgress cx ++ uiPlaceFooter cx (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
+/-- Public source descriptions are separate from exact machine provenance. -/
+def uiProvenanceSourceLabel (source : String) : String :=
+  if source.startsWith "record:" then
+    match (source.toSlice.drop 7).toString with
+    | "weightToday" => "Chart weight recorded today"
+    | "appointmentReason" => "Appointment reason"
+    | "preferredPharmacy" => "Preferred pharmacy on file"
+    | "requestPharmacy" => "Pharmacy from refill request"
+    | "requestDose" => "Dose from refill request"
+    | "requestQuantity" => "Quantity from refill request"
+    | "requestRefills" => "Refills from refill request"
+    | _ => "Chart record"
+  else if source.startsWith "linked:" then "Linked clinical entry"
+  else if source == "default" then "Configured default"
+  else if source == "macro" then "Automated entry"
+  else "Prefilled value"
+
+/-- The date identifies the chart snapshot, not an invented observation time. -/
+def uiProvenanceText (cx : Ctx) (source : String) : String :=
+  "Source: " ++ uiProvenanceSourceLabel source ++ " · chart as of " ++ cx.disp.asOf
+
+/-- A linked source uses its public spec label; other sources use chart captions.
+The exact machine provenance remains unchanged in the ordinary field node. -/
+def uiFieldSourceText (cx : Ctx) (source : String) : String :=
+  if source.startsWith "linked:" then
+    match cx.sp.element? (source.toSlice.drop 7).toString with
+    | some element => "Source: Linked entry — " ++ uiLabel element.label "Clinical entry"
+    | none => uiProvenanceText cx source
+  else uiProvenanceText cx source
+
+/-- Only shown fields contribute public captions. This metadata adds no action,
+capture or confirmation, and does not replace the original field provenance. -/
+def uiFieldSources (cx : Ctx) : List (CompId × String) :=
+  cx.v.items.filterMap fun it =>
+    if !it.shown then none else match it.comp.kind with
+    | .field .. => it.provenance?.map fun source => (it.comp.id, uiFieldSourceText cx source)
+    | _ => none
+
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
-  { screen? := some s.screen, banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
+  { screen? := some s.screen, fieldSources? := some (uiFieldSources cx),
+    banner := uiClinicalBanner facts disp, nav := uiNav cx, title := cx.v.title,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

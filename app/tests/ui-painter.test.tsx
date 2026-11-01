@@ -107,6 +107,58 @@ const field: NodeOf<"field"> = {
   required: false,
 };
 
+it("shows Lean's public prefill source while retaining the raw field and confirm action", () => {
+  const emit = vi.fn();
+  const source = "Source: Chart weight recorded today · chart as of 2026-11-01";
+  const model: UiScreen = {
+    banner: [["Patient", "Alex Morgan"]],
+    nav: [],
+    title: "Rooming",
+    side: [],
+    modal: null,
+    fieldSources: [[field.comp, source]],
+    workspace: [
+      {
+        field: {
+          ...field,
+          value: "72.0",
+          provenance: "record:weightToday",
+          pendingConfirm: true,
+        },
+      },
+      {
+        button: {
+          comp: field.comp,
+          label: "Confirm prefilled value",
+          role: "confirm",
+          enabled: true,
+          blockedReason: null,
+          hotkey: null,
+        },
+      },
+    ],
+  };
+  const original = JSON.stringify(model);
+  expect(uiScreenSchema.parse(model).fieldSources).toEqual(model.fieldSources);
+  render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>,
+  );
+  expect(screen.getByText(source)).not.toBeNull();
+  expect(
+    screen.getByRole("textbox", { name: field.label, description: source }),
+  ).not.toBeNull();
+  expect(screen.queryByText("record:weightToday")).toBeNull();
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Confirm prefilled value",
+    }),
+  );
+  expect(emit.mock.calls).toEqual([[{ confirm: { comp: field.comp } }]]);
+  expect(JSON.stringify(model)).toBe(original);
+});
+
 it("paints a semantic narrative editor and dispatches its complete multiline text", () => {
   const onEvent = vi.fn();
   render(
@@ -763,7 +815,7 @@ describe("semantic EHR painter", () => {
     );
     for (const kind of ["identity", "scan", "cosign"])
       expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
-    expect(screen.getAllByText("Human entry only")).toHaveLength(3);
+    expect(screen.getAllByText("Clinician entry required")).toHaveLength(3);
   });
   it("keeps modal acknowledgement blocking and uses its alert id", () => {
     const emit = vi.fn();

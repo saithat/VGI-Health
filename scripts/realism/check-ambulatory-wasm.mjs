@@ -18,7 +18,7 @@ const descend = node => {
     if (node[key]) return [node, ...node[key].children.flatMap(descend)];
   return node.tabs ? [node, ...node.tabs.body.flatMap(descend)] : [node];
 };
-let screens = 0, references = 0, pickers = 0, reviewClicks = 0, invalidReviewCases = 0, medicationCaptions = 0;
+let screens = 0, references = 0, pickers = 0, reviewClicks = 0, invalidReviewCases = 0, medicationCaptions = 0, prefillCaptions = 0, prefillConfirmations = 0, prefillHumanEdits = 0;
 const reviewCases = read(`${review}/review-cases.json`);
 for (const { persona, workflow } of reviewCases.cases) {
   const spec = read(`${root}/releases/v1/spec.json`);
@@ -53,8 +53,40 @@ for (const { persona, workflow } of reviewCases.cases) {
     const ui = native('render-ui', input);
     assert.deepEqual(call('render_ui', input), ui);
     const nodes = [...ui.workspace, ...ui.side].flatMap(descend);
+    const sources = new Map(ui.fieldSources ?? []);
+    for (const { field } of nodes.filter(node => node.field?.provenance)) {
+      const caption = sources.get(field.comp);
+      assert.ok(caption?.startsWith('Source: '), 'A sourced field needs its Lean public caption');
+      assert.ok(!/record:|linked:/.test(caption), 'Internal provenance keys are not clinical copy');
+      prefillCaptions++;
+    }
     pickers += nodes.filter(node => node.valueSet).length;
     for (const node of nodes) references += node.chartReferences?.references.length ?? 0;
+    const weightControl = screen.components.find(component => component.kind?.field?.element === 'weight');
+    if (weightControl && sources.has(weightControl.id)) {
+      const confirmInput = { ...base, state, event: { confirm: { comp: weightControl.id } } };
+      const confirmed = native('step', confirmInput);
+      assert.deepEqual(call('step', confirmInput), confirmed);
+      assert.equal(confirmed.result, 'ok');
+      const confirmedInput = { ...input, state: confirmed.state };
+      const confirmedUi = native('render-ui', confirmedInput);
+      assert.deepEqual(call('render_ui', confirmedInput), confirmedUi);
+      assert.equal(new Map(confirmedUi.fieldSources).get(weightControl.id), sources.get(weightControl.id));
+      assert.equal(confirmedUi.workspace.flatMap(descend).find(node => node.field?.comp === weightControl.id)?.field.pendingConfirm, false);
+      prefillConfirmations++;
+      const humanInput = { ...base, state: confirmed.state, event: { enter: { comp: weightControl.id, value: { qty: { tenths: 720, unit: 'kg' } } } } };
+      const entered = native('step', humanInput);
+      assert.deepEqual(call('step', humanInput), entered);
+      assert.equal(entered.result, 'ok');
+      const editedInput = { ...input, state: entered.state };
+      const editedUi = native('render-ui', editedInput);
+      assert.deepEqual(call('render_ui', editedInput), editedUi);
+      assert.equal(new Map(editedUi.fieldSources).has(weightControl.id), false, 'Human entry removes the previous source caption');
+      const editedField = editedUi.workspace.flatMap(descend).find(node => node.field?.comp === weightControl.id)?.field;
+      assert.equal(editedField?.provenance, null);
+      assert.equal(editedField?.pendingConfirm, false);
+      prefillHumanEdits++;
+    }
     if (workflow === 'W7' && screen.id === 'w7Decision') {
       const comparison = nodes.find(node => node.info?.infoId === 'refillComparison')?.info;
       assert.equal(comparison?.rows.length, 4);
@@ -153,6 +185,7 @@ for (const { persona, workflow } of reviewCases.cases) {
 }
 assert.ok(references > 0, 'Published reference catalog was exercised');
 assert.ok(pickers > 0, 'Coded-field metadata was exercised');
+assert.ok(prefillConfirmations > 0 && prefillHumanEdits > 0, 'Prefill caption lifecycle was exercised through real human events');
 const bloodPressureBundle = read(`${root}/lean/Ehr/Render/TestData/clinical.json`);
 const bloodPressure = bloodPressureBundle.entry.find(entry => entry.resource?.resourceType === 'Observation' && entry.resource.code?.coding?.some(code => code.code === '85354-9')).resource;
 bloodPressure.component.reverse();
@@ -160,4 +193,4 @@ const bloodPressureInput = { bundle: bloodPressureBundle, context: { today: '202
 const bloodPressureOutput = native('facts', bloodPressureInput);
 assert.deepEqual(call('facts', bloodPressureInput), bloodPressureOutput);
 assert.equal(bloodPressureOutput.display.vitals.find(row => row.code === '85354-9').value, '128/82');
-console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves, ${reviewClicks} actual review clicks, ${invalidReviewCases} invalid-receipt probes, ${medicationCaptions} source medication captions/entries; actual navigation, source facts and all semantic output agree.`);
+console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves, ${reviewClicks} actual review clicks, ${invalidReviewCases} invalid-receipt probes, ${medicationCaptions} source medication captions/entries, ${prefillCaptions} public prefill captions, ${prefillConfirmations} confirmations / ${prefillHumanEdits} human replacements; actual navigation, source facts and all semantic output agree.`);

@@ -4,6 +4,15 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- Every shown field with provenance receives its public source caption.
+The original provenance and confirmation flags are still covered by D6. -/
+theorem uiFieldSources_shown (cx : Ctx) (it : ItemView) (element slot prefill source)
+    (hm : it ∈ cx.v.items) (hs : it.shown = true)
+    (hk : it.comp.kind = .field element slot prefill) (hp : it.provenance? = some source) :
+    (it.comp.id, uiFieldSourceText cx source) ∈ uiFieldSources cx := by
+  apply List.mem_filterMap.mpr
+  exact ⟨it, hm, by simp [hs, hk, hp]⟩
+
 /-- Every captured note section remains present with its exact entered text. -/
 theorem uiVisitNoteRows_captured (cx : Ctx) (entry : Captured)
     (he : entry.element ∈ uiVisitNoteElements) (hc : entry ∈ cx.s.captured) :

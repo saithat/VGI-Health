@@ -132,6 +132,7 @@
  "screen": "example",
  "nav": [],
  "modal": null,
+ "fieldSources": [],
  "banner":
  [["Patient", "Chen, David"],
   ["DOB", "Mar 22, 1974"],

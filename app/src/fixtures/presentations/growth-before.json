@@ -277,6 +277,7 @@
  "screen": "example",
  "nav": [],
  "modal": null,
+ "fieldSources": [],
  "banner":
  [["Patient", "Morgan, Alex"],
   ["DOB", "May 1, 2017"],

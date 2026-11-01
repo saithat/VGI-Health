@@ -2,7 +2,7 @@
   "today": "2026-11-02",
   "patients": 324,
   "beforeBinarySha256": "61bc65be80d5f95cb354bca8cc4d16ad1d56369833f31a4d341e06c4b738e891",
-  "afterBinarySha256": "a9a7fc4adedce61f3ba4a36f979a58181215c68bcbc0ab84c10bfe91c759a81d",
+  "afterBinarySha256": "59eb440f301f80baed8f92ef24c46a6955fdb527c3694d068fb9fd746af72332",
   "scope": "Primitive clinical facts, including direct data versions; supporting payloads/bindings and record version aliases excluded.",
   "mismatches": []
 }

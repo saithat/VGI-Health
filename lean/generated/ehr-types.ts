@@ -2297,6 +2297,10 @@ export interface UiScreen {
    * Stable view identity for scroll/focus lifecycle; never a visible label.
    */
   screen?: ScreenId;
+  /**
+   * Public source captions for fields whose exact provenance remains in their node.
+   */
+  fieldSources?: [CompId, string][];
   banner: [string, string][];
   nav: [string, [string, string][]][];
   title: string;

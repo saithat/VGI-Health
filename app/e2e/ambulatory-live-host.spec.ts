@@ -4,6 +4,7 @@ import { catalogSchema, defaultPatient } from "../src/browser/data";
 import type {} from "../src/core/buttonAudit";
 
 const phase = process.env.EHR_AMB_LIVE_SHOTS;
+const shotPrefix = process.env.EHR_AMB_LIVE_SHOT_PREFIX ?? phase;
 const cases = [
   { persona: "P1", screen: "w1Rooming", inspecting: false },
   { persona: "P4", screen: "w5Rooming", inspecting: false },
@@ -12,7 +13,7 @@ const cases = [
     : []),
 ];
 for (const { persona, screen, inspecting } of cases) {
-  const capture = `${phase}-${persona}-live${inspecting ? "-inspection" : ""}`;
+  const capture = `${shotPrefix}-${persona}-live${inspecting ? "-inspection" : ""}`;
   test(`live host ${phase}: ${persona}${inspecting ? " inspection" : ""} save feedback and encounter options`, async ({
     page,
     request,

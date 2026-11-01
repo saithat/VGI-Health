@@ -30,6 +30,7 @@ import { PresentationContext, rowLayout } from "./presentations/row-layout";
 import {
   ChartReferenceContext,
   ExplicitConfirmContext,
+  FieldSourceContext,
   ValueSetContext,
 } from "./clinical-metadata";
 import {
@@ -207,6 +208,10 @@ export function FieldNode({
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [typedCode, setTypedCode] = useState("");
   const valueSet = useContext(ValueSetContext);
+  const fieldSources = useContext(FieldSourceContext);
+  const sourceCaption = node.provenance
+    ? (fieldSources.get(node.comp) ?? node.provenance)
+    : undefined;
   const explicitConfirms = useContext(ExplicitConfirmContext);
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
@@ -225,6 +230,14 @@ export function FieldNode({
   const common = {
     label: fieldCaption(node.label),
     "aria-label": node.label,
+    "aria-describedby": sourceCaption ? `field-source-${node.comp}` : undefined,
+    ...(sourceCaption
+      ? {
+          attributes: {
+            input: { "aria-describedby": `field-source-${node.comp}` },
+          },
+        }
+      : {}),
     required: node.required,
     size: "xs" as const,
     "data-comp-id": node.comp,
@@ -279,7 +292,7 @@ export function FieldNode({
             color="gray"
             leftSection={<ClinicalIcon name="lock" />}
           >
-            Human entry only
+            Clinician entry required
           </Badge>
         )}
       </Group>
@@ -380,8 +393,9 @@ export function FieldNode({
               color="gray"
               size="sm"
               className="provenance-chip"
+              id={`field-source-${node.comp}`}
             >
-              <DisplayValue value={node.provenance} />
+              <DisplayValue value={sourceCaption ?? node.provenance} />
             </Badge>
           )}
           {node.pendingConfirm &&

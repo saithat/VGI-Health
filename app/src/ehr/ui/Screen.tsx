@@ -3,6 +3,7 @@ import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect, useRef } from "react";
 import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
+import { FieldSourceContext } from "./clinical-metadata";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { allergyDisplay, sectionCaption } from "./clinical-display";
@@ -367,11 +368,15 @@ export function UiScreenView(props: {
 }) {
   return (
     <PresentationProvider bundle={props.presentations ?? null}>
-      <StockUiScreenView
-        screen={props.screen}
-        onEvent={props.onEvent}
-        viewer={props.viewer}
-      />
+      <FieldSourceContext.Provider
+        value={new Map(props.screen.fieldSources ?? [])}
+      >
+        <StockUiScreenView
+          screen={props.screen}
+          onEvent={props.onEvent}
+          viewer={props.viewer}
+        />
+      </FieldSourceContext.Provider>
     </PresentationProvider>
   );
 }

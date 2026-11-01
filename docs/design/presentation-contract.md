@@ -118,3 +118,9 @@ Growth measurements use the existing tenths-of-kg/cm display precision. Gram wei
 ### Current visit documentation
 
 A source info component tagged `layout.document` selects the semantic info display `document` outside the side rail. Its rows retain `Section`, exact `Text`, and source-computed `Entry status` cells; any additional supplied cells remain visible. The painter uses one read-only document region with a keyboard-scrollable body. It never edits, confirms or signs the note. Document/status info does not claim tabular row-action slots; controls targeting those layouts retain their ordinary inline fallback. W1/W5 use this for the current captured visit documentation, separately from historical Chart Review notes. Missing documentation and pending confirmation stay explicit in Lean.
+
+### Public prefill source captions
+
+`UiScreen.fieldSources` is an optional list of `[component ID, public caption]` pairs supplied by Lean. It accompanies sourced, shown fields without replacing their exact `UiNode.field.provenance`, pending-confirmation flag, human-only flag, value, unit or control ID. The stock painter uses the supplied caption as visible source text and the field's accessible description. It does not interpret `record:` or `linked:` keys. Linked captions read the source element's public spec label; record captions identify the declared source and the chart snapshot date. An unknown record key stays a generic chart-record source rather than acquiring an invented clinical meaning.
+
+Older semantic JSON without this optional metadata retains its original raw provenance caption. The legacy native HTML renderer and its exact provenance contract are unchanged. This metadata adds no control, receipt, capture or confirmation.

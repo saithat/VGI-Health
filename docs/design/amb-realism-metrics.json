@@ -1,7 +1,7 @@
 {
   "scope": "Fixed benchmark cases; exact only within the reported directed search spaces. KLM is effort on the minimum-click path, not a separate time minimum. Keystrokes are minimized separately.",
   "baselineRevision": "add0d2e",
-  "implementationRevision": "d271ef9",
+  "implementationRevision": "035a88c + public prefill captions",
   "command": "LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=8192 pnpm complexity --release-root releases",
   "before": {
     "suite": "union-workflows-v1",
@@ -13,9 +13,9 @@
   "after": {
     "suite": "union-workflows-v1",
     "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-    "ehrSha256": "a9a7fc4adedce61f3ba4a36f979a58181215c68bcbc0ab84c10bfe91c759a81d",
+    "ehrSha256": "59eb440f301f80baed8f92ef24c46a6955fdb527c3694d068fb9fd746af72332",
     "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
-    "reportSha256": "aa3c2f454ba2a1d5b715e2c24ea3bdf14f6c275ea67b9261fe20b72cd52c698d"
+    "reportSha256": "17f8fb678780b3656f700a504afd9947967c033003955ea82c69032214bfed94"
   },
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
