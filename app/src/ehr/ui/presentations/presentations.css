@@ -496,6 +496,9 @@
 }
 .mar-order-details {
   margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
 }
 .mar-order-details div {
   display: flex;
@@ -517,14 +520,19 @@
 }
 .mar-medication-name dt {
   flex-basis: auto;
+
   font-size: 12px;
 }
 .mar-medication-detail {
-  margin-top: 2px;
+  margin: 0;
+}
+.mar-order-details [data-order-detail="Frequency"],
+.mar-order-details [data-order-detail="Instructions"] {
+  flex-basis: 100%;
 }
 .presentation-mar td {
   border-right: 1px solid var(--p-border);
-  padding: 5px 2px;
+  padding: 6px 4px;
 }
 .presentation-mar .presentation-status {
   display: block;
@@ -533,6 +541,8 @@
 }
 .presentation-mar th {
   font-size: 12px;
+  padding-right: 4px;
+  padding-left: 4px;
 }
 .presentation-mar .mar-day-heading {
   text-align: center;

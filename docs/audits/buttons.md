@@ -1,12 +1,12 @@
 # Button audit
 
-Generated 2026-11-01T15:06:32.828Z. Preview build; one Chromium worker.
+Generated 2026-11-01T17:52:42.257Z. Preview build; one Chromium worker.
 
 | Scope | Works | Disabled with reason | Dead | Error |
 |---|---:|---:|---:|---:|
 | App baseline | 684 | 4 | 103 | 0 |
-| App final | 441 | 74 | 0 | 0 |
-| Lean final | 2365 | 40 | 0 | 0 |
+| App final | 437 | 74 | 0 | 0 |
+| Lean final | 2352 | 40 | 0 | 0 |
 
 App coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.
 
@@ -14,7 +14,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 
 | Route / persona / program | Screen | Label | Comp id | Kind / owner | Status | Observed effect |
 |---|---|---|---|---|---|---|
-| /?audit=buttons&inspect=1 · P1 · — | sign-in | P1 · Primary care | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons&inspect=1 · P1 · — | sign-in | P1 · Primary care | — | button / app | works | POST /__dev/persona-password |
 | /?audit=buttons&inspect=1 · P1 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -28,7 +28,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P2 · — | sign-in | P2 · Emergency | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons&inspect=1 · P2 · — | sign-in | P2 · Emergency | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons&inspect=1 · P2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -43,7 +43,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons&inspect=1 · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons&inspect=1 · P3 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P3 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P3 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -71,7 +71,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P4 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P4 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons&inspect=1 · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons&inspect=1 · P5 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P5 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P5 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -85,7 +85,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P5 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P5 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons&inspect=1 · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons&inspect=1 · RN2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · RN2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · RN2 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -99,7 +99,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · RN2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons&inspect=1 · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons&inspect=1 · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons&inspect=1 · baseline · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -108,7 +108,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · baseline · — | encounter picker | Live encounter | — | select / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | encounter picker | Medication order / MAR No medication selectedinsulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin] · dolutegravir 50 MG Oral Tablet · 24 HR tacrolimus 1 MG Extended Release Oral Tablet [Envarsus] · Take as needed.lamivudine 300 MG / tenofovir disoproxil fumarate 300 MG Oral Tablet · lisinopril 10 MG Oral Tablet · Take lisinopril 10 MG Oral Tablet by mouth daily. | — | select / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | encounter picker | Start new encounter | — | button / app | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Open EHR | — | button / app | works | Lean state changed; result null |
+| /?audit=buttons&inspect=1 · baseline · — | encounter picker | Open EHR | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | live encounter header | Live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · baseline · — | live encounter header | Return to worklist | — | button / app | works | DOM changed |
@@ -176,7 +176,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard?run=run1-P3&view=Evolution&persona=P3 |
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
@@ -197,7 +197,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | VGI HEALTH | — | a / app | works | URL → / |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Recorded run | — | select / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P3 |
-| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Open EHR | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv7.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
+| /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Open EHR | — | a / app | works | URL → /ehr?mode=replay&persona=P3&run=run1-P3; real EHR rendered |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Live EHR | — | a / app | works | URL → / |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | UI browser | — | a / app | works | URL → /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Evolution | — | button / app | disabled-with-reason | Current dashboard area |
@@ -286,8 +286,8 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Visit close | w1Rooming.nav.w1Close | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.sidebar | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search chart | w1Rooming.chartSearch | enter / app | disabled-with-reason | Search chart · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Back | w1Rooming.back | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Patient workspace | w1Rooming.home | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Back | w1Rooming.back | click / app | disabled-with-reason | Back · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Patient workspace | w1Rooming.home | click / app | disabled-with-reason | Patient workspace · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Results | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Imaging | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Notes | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
@@ -318,8 +318,8 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.phq | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | PHQ-2 score | w1Rooming.depressionScreen | enter / app | disabled-with-reason | PHQ-2 score · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.allergyGroup | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Mark allergies reviewed | w1Rooming.review.allergyList | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Next: medication reconciliation | w1Rooming.next | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Mark allergies reviewed | w1Rooming.review.allergyList | click / app | disabled-with-reason | Mark allergies reviewed · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Next: medication reconciliation | w1Rooming.next | click / app | disabled-with-reason | Next: medication reconciliation · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-00127/14 clicks · 39/20 keys · 255.1/92.3s KLM · Completed | — | option / app | disabled-with-reason | Current trajectory |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-0246/3 clicks · 10/0 keys · 40.2/10.3s KLM · Completed | — | option / app | works | DOM changed |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | W4 · d01-P3-W4-03315/9 clicks · 20/11 keys · 69.5/16.1s KLM · Completed | — | option / app | works | DOM changed |
@@ -477,14 +477,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | In Basket: Rx Requests | home.work.w7Queue | click / {"button":{"action":{"goto":{"screen":"w7Queue"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Open encounter | home.work.w1Rooming | click / {"button":{"action":{"goto":{"screen":"w1Rooming"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Problem list | home.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Results | home.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Notes | home.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Medications | home.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Allergies | home.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Encounters | home.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | Coverage | home.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P1 · canonical-P1 | home | History | home.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Inbasket | Search chart | w2Inbasket.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Inbasket | Search In Basket | w2Inbasket.basketSearch | enter / {"search":{"scope":"inbasket"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Inbasket | Review result | w2Inbasket.openResult | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
@@ -547,6 +539,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Result | Allergies | w2Result.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Result | Imaging | w2Result.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Result | Back | w2Result.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Inbasket | Expand section | w2Inbasket.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Search chart | w7Review.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Last visit | w7Review.refillTabs | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Labs | w7Review.refillTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -565,6 +558,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Imaging | w7Review.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Respond to request | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Queue | Expand section | w7Queue.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1MedRec | View saved record 1 | — | button / app | works | DOM changed |
@@ -593,6 +587,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Surgical history | w1Hpi.historyTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Family history | w1Hpi.historyTabs | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Social history | w1Hpi.historyTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Expand section | w1Hpi.historyTabs.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Encounters | w1Hpi.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Notes | w1Hpi.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Results | w1Hpi.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -694,6 +689,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Close | Allergies | w1Close.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Close | Imaging | w1Close.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Close | Back | w1Close.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Rooming | Expand section | w1Rooming.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Search chart | w2Message.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Normal result | w2Message.normalLetter | click / {"macro":{"id":"w2NormalLetter"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Repeat test | w2Message.repeatLetter | click / {"macro":{"id":"w2RepeatLetter"}} / lean | works | Lean state changed; result "ok" |
@@ -706,9 +702,11 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Allergies | w2Message.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Imaging | w2Message.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Back | w2Message.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Result | Expand section | w2Result.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Mark fill history reviewed | w7Review.review.adherence | click / {"button":{"action":{"markReviewed":{"info":"adherence"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | View saved record 1 | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Review | Expand section | w7Review.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok"; target readiness took 11737 ms before input |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Search chart | w7Decision.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Approve / deny / modify | w7Decision.refillDecision | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"refillDecision"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Pharmacy | w7Decision.refillPharmacy | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":{"fromRecord":{"fact":"requestPharmacy"}},"element":"refillPharmacy"}} / lean | works | Lean state changed; result "ok" |
@@ -725,9 +723,12 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Allergies | w7Decision.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Imaging | w7Decision.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Back | w7Decision.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1MedRec | Expand section | w1MedRec.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Exam | Confirm prefilled value | w1Exam.exam | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Exam | Confirm prefilled value | w1Exam.assessmentPlan | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Confirm prefilled value | w1Hpi.ros | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Hpi | Expand section | w1Hpi.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Exam | Expand section | w1Exam.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Confirm prefilled value | w1Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Confirm prefilled value | w1Orders.dose | confirm / {"field":{"slot":"current","prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Confirm prefilled value | w1Orders.doseUnit | confirm / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
@@ -740,6 +741,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Confirm prefilled value | w1Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | I have reviewed the patient's allergies | w1Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Mark CURES report reviewed | w1Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Orders | Expand section | w1Orders.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Search chart | w1Verify.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Allergies re-verified before signing | w1Verify.allergyReconfirmSigning | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmSigning"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Encounters | w1Verify.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -751,8 +753,13 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Imaging | w1Verify.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Continue to sign | w1Verify.continue | click / {"button":{"action":{"goto":{"screen":"w1Sign"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Back | w1Verify.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Labs | Expand section | w1Labs.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Close | Confirm prefilled value | w1Close.patientInstructions | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientInstructions"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Close | Expand section | w1Close.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Confirm prefilled value | w2Message.patientMessage | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientMessage"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w2Message | Expand section | w2Message.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w7Decision | Expand section | w7Decision.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Verify | Expand section | w1Verify.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Search chart | w1Sign.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Sign orders | w1Sign.commit.signOrders | click / {"button":{"action":{"commit":{"commit":"signOrders"}}}} / lean | disabled-with-reason | Re-enter patient ID (initials / sex / age) to sign |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Encounters | w1Sign.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -763,59 +770,94 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Allergies | w1Sign.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Imaging | w1Sign.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Back | w1Sign.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | ED Track Board | home.work.w3TrackBoard | click / {"button":{"action":{"goto":{"screen":"w3TrackBoard"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Problem list | home.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Results | home.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Notes | home.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Medications | home.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Allergies | home.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Encounters | home.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Coverage | home.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | History | home.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Triage | w3TrackBoard.nav.w3Triage | click / {"button":{"action":{"goto":{"screen":"w3Triage"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Provider note | w3TrackBoard.nav.w3Provider | click / {"button":{"action":{"goto":{"screen":"w3Provider"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Order sets | w3TrackBoard.nav.w3OrderSets | click / {"button":{"action":{"goto":{"screen":"w3OrderSets"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P1 · canonical-P1 | w1Sign | Expand section | w1Sign.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Triage summary | w3TrackBoard.nav.w3Triage | click / {"button":{"action":{"goto":{"screen":"w3Triage"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | ED Provider Note | w3TrackBoard.nav.w3Provider | click / {"button":{"action":{"goto":{"screen":"w3Provider"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Orders | w3TrackBoard.nav.w3Orders | click / {"button":{"action":{"goto":{"screen":"w3Orders"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Order sets | w3TrackBoard.nav.w3OrderSets | click / {"button":{"action":{"goto":{"screen":"w3OrderSets"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Disposition | w3TrackBoard.nav.w3Disposition | click / {"button":{"action":{"goto":{"screen":"w3Disposition"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Search chart | w3TrackBoard.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Back | w3TrackBoard.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Back | w3TrackBoard.back | click / {"button":{"action":"back"}} / lean | disabled-with-reason | no previous screen |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Patient workspace | w3TrackBoard.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Results | w3TrackBoard.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Imaging | w3TrackBoard.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Notes | w3TrackBoard.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Encounters | w3TrackBoard.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Encounters | w3TrackBoard.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Notes | w3TrackBoard.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Results | w3TrackBoard.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Meds | w3TrackBoard.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Problems | w3TrackBoard.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Allergies | w3TrackBoard.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Imaging | w3TrackBoard.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | ED Track Board | w3Triage.nav.w3TrackBoard | click / {"button":{"action":{"goto":{"screen":"w3TrackBoard"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Search chart | w3Triage.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Collapse section | w3Triage.vitalsGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Pain (0–10) | w3Triage.painScore | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"painScore"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Acuity (ESI) | w3Triage.triageAcuity | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"triageAcuity"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | ESI acuity (1–5) | w3Triage.triageAcuity | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"triageAcuity"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Arrival mode | w3Triage.arrivalMode | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"arrivalMode"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"isolationScreen"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Pain (0–10) | w3Triage.painScore | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"painScore"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Isolation screening | w3Triage.isolationScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"isolationScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | View saved record 1 | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Back | w3Triage.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Results | w3Triage.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Imaging | w3Triage.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Notes | w3Triage.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Encounters | w3Triage.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Encounters | w3Triage.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Notes | w3Triage.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Results | w3Triage.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Meds | w3Triage.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Problems | w3Triage.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Allergies | w3Triage.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Imaging | w3Triage.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Search chart | w3Provider.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | History of present illness | w3Provider.hpi | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"hpi"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Review of systems | w3Provider.ros | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Exam findings | w3Provider.exam | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Differential, ED course and plan | w3Provider.assessmentPlan | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Medication reconciliation decision | w3Provider.medRecDecision | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Billing diagnosis (ICD-10) | w3Provider.claimDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"claimDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Encounter diagnosis (linked ICD-10) | w3Provider.claimDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"claimDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Level of service | w3Provider.levelOfService | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"levelOfService"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Physical exam | w3Provider.exam | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Medical decision making | w3Provider.assessmentPlan | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Sign ED note | w3Provider.commit.signNote | click / {"button":{"action":{"commit":{"commit":"signNote"}}}} / lean | disabled-with-reason | entry required: Chief complaint |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Back | w3Provider.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Results | w3Provider.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Imaging | w3Provider.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Notes | w3Provider.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Encounters | w3Provider.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Encounters | w3Provider.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Notes | w3Provider.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Results | w3Provider.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Meds | w3Provider.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Problems | w3Provider.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Allergies | w3Provider.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Imaging | w3Provider.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Search chart | w3Orders.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Find orders | w3Orders.orderSearch | enter / {"search":{"scope":"formulary"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.prefList | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Acetaminophen 1 g PO | w3Orders.prefAcetaminophen | click / {"macro":{"id":"w3PrefAcetaminophen"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ibuprofen 600 mg PO | w3Orders.prefIbuprofen | click / {"macro":{"id":"w3PrefIbuprofen"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ondansetron 8 mg IV | w3Orders.prefOndansetron | click / {"macro":{"id":"w3PrefOndansetron"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ceftriaxone 2 g IV | w3Orders.prefCeftriaxone | click / {"macro":{"id":"w3PrefCeftriaxone"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Morphine 10 mg IV q4h PRN | w3Orders.prefMorphine | click / {"macro":{"id":"w3PrefMorphine"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.medication | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Enter Medication | w3Orders.drug | enter / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Antibiotic indication (required for antibiotics) | w3Orders.abxIndication | enter / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Dose unit | w3Orders.doseUnit | enter / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | DOM changed |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Route | w3Orders.route | enter / {"field":{"slot":"current","prefill":"none","element":"route"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Frequency | w3Orders.freq | enter / {"field":{"slot":"current","prefill":"none","element":"freq"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | As needed (PRN) | w3Orders.prn | enter / {"field":{"slot":"current","prefill":"none","element":"prn"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.dispense | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Duration | w3Orders.duration | enter / {"field":{"slot":"current","prefill":"none","element":"duration"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Generic substitution allowed | w3Orders.substitution | enter / {"field":{"slot":"current","prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.dx | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Pharmacy | w3Orders.pharmacy | enter / {"field":{"slot":"current","prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Associated diagnosis (ICD-10) | w3Orders.orderDiagnosis | enter / {"field":{"slot":"current","prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Expand section | w3Orders.more | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Current meds | w3Orders.orderInfo | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | CURES report | w3Orders.orderInfo | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Recent labs | w3Orders.orderInfo | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Request authorization (human entry) | w3Orders.priorAuthRequest | enter / {"field":{"slot":"current","prefill":"none","element":"priorAuthRequest"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Request prior authorization | w3Orders.requestPriorAuth | click / {"button":{"action":"requestPriorAuth"}} / lean | disabled-with-reason | no order on this line |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Accept and add another order | w3Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Review and sign | w3Orders.toSign | click / {"button":{"action":{"goto":{"screen":"w3Sign"}}}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Back | w3Orders.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Encounters | w3Orders.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Notes | w3Orders.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Results | w3Orders.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Meds | w3Orders.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Problems | w3Orders.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Allergies | w3Orders.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Imaging | w3Orders.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Search chart | w3OrderSets.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Collapse section | w3OrderSets.sets | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Sepsis (adult) | w3OrderSets.sepsis | click / {"macro":{"id":"w3SepsisSet"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Abdominal pain | w3OrderSets.abdominal | click / {"macro":{"id":"w3AbdominalPainSet"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Cellulitis | w3OrderSets.cellulitis | click / {"macro":{"id":"w3CellulitisSet"}} / lean | works | Lean state changed; result "ok" |
@@ -848,59 +890,61 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Pharmacy | w3OrderSets.row11.pharmacy | enter / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Associated diagnosis (ICD-10) | w3OrderSets.row11.orderDiagnosis | enter / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Back | w3OrderSets.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Results | w3OrderSets.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Imaging | w3OrderSets.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Notes | w3OrderSets.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Encounters | w3OrderSets.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Review and sign | w3OrderSets.toSign | click / {"button":{"action":{"goto":{"screen":"w3Sign"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Search chart | w3Orders.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Find orders | w3Orders.orderSearch | enter / {"search":{"scope":"formulary"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.prefList | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Acetaminophen 1 g PO | w3Orders.prefAcetaminophen | click / {"macro":{"id":"w3PrefAcetaminophen"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ibuprofen 600 mg PO | w3Orders.prefIbuprofen | click / {"macro":{"id":"w3PrefIbuprofen"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ondansetron 8 mg IV | w3Orders.prefOndansetron | click / {"macro":{"id":"w3PrefOndansetron"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Ceftriaxone 2 g IV | w3Orders.prefCeftriaxone | click / {"macro":{"id":"w3PrefCeftriaxone"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Morphine 10 mg IV q4h PRN | w3Orders.prefMorphine | click / {"macro":{"id":"w3PrefMorphine"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.dosing | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.medication | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Enter Medication | w3Orders.drug | enter / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Antibiotic indication (required for antibiotics) | w3Orders.abxIndication | enter / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Dose unit | w3Orders.doseUnit | enter / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | DOM changed |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Route | w3Orders.route | enter / {"field":{"slot":"current","prefill":"none","element":"route"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Frequency | w3Orders.freq | enter / {"field":{"slot":"current","prefill":"none","element":"freq"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | As needed (PRN) | w3Orders.prn | enter / {"field":{"slot":"current","prefill":"none","element":"prn"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.dispense | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Duration | w3Orders.duration | enter / {"field":{"slot":"current","prefill":"none","element":"duration"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Generic substitution allowed | w3Orders.substitution | enter / {"field":{"slot":"current","prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Collapse section | w3Orders.dx | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Pharmacy | w3Orders.pharmacy | enter / {"field":{"slot":"current","prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Associated diagnosis (ICD-10) | w3Orders.orderDiagnosis | enter / {"field":{"slot":"current","prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Expand section | w3Orders.more | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Current meds | w3Orders.orderInfo | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | CURES report | w3Orders.orderInfo | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Recent labs | w3Orders.orderInfo | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Request authorization (human entry) | w3Orders.priorAuthRequest | enter / {"field":{"slot":"current","prefill":"none","element":"priorAuthRequest"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Request prior authorization | w3Orders.requestPriorAuth | click / {"button":{"action":"requestPriorAuth"}} / lean | disabled-with-reason | no order on this line |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Accept and add another order | w3Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Back | w3Orders.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Results | w3Orders.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Imaging | w3Orders.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Notes | w3Orders.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Encounters | w3Orders.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Encounters | w3OrderSets.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Notes | w3OrderSets.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Results | w3OrderSets.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Meds | w3OrderSets.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Problems | w3OrderSets.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Allergies | w3OrderSets.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Imaging | w3OrderSets.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Search chart | w3Disposition.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Disposition | w3Disposition.dispositionChoice | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"dispositionChoice"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Admit / discharge / transfer / observe / consult | w3Disposition.dispositionChoice | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"dispositionChoice"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | ED diagnosis (ICD-10) | w3Disposition.visitDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"visitDiagnosis"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Condition | w3Disposition.dispositionCondition | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"dispositionCondition"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Collapse section | w3Disposition.admitGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Condition at disposition | w3Disposition.dispositionCondition | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"dispositionCondition"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Admitting service | w3Disposition.admitService | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"admitService"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Level of care | w3Disposition.admitLevelOfCare | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"admitLevelOfCare"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Expand section | w3Disposition.dischargeGroup | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Set disposition | w3Disposition.commit.disposition | click / {"button":{"action":{"commit":{"commit":"disposition"}}}} / lean | disabled-with-reason | entry required: Disposition |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Back | w3Disposition.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Results | w3Disposition.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Imaging | w3Disposition.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Notes | w3Disposition.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Encounters | w3Disposition.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Encounters | w3Disposition.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Notes | w3Disposition.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Results | w3Disposition.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Meds | w3Disposition.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Problems | w3Disposition.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Allergies | w3Disposition.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Imaging | w3Disposition.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Expand section | w3TrackBoard.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3TrackBoard | Back | w3TrackBoard.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Triage | Expand section | w3Triage.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Provider | Expand section | w3Provider.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.dose | confirm / {"field":{"slot":"current","prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.doseUnit | confirm / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.route | confirm / {"field":{"slot":"current","prefill":"none","element":"route"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.freq | confirm / {"field":{"slot":"current","prefill":"none","element":"freq"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.duration | confirm / {"field":{"slot":"current","prefill":"none","element":"duration"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.quantity | confirm / {"field":{"slot":"current","prefill":"none","element":"quantity"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.refills | confirm / {"field":{"slot":"current","prefill":"none","element":"refills"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Accept and add another order | w3Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | disabled-with-reason | finish this order line first |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | I have reviewed the patient's allergies | w3Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Mark CURES report reviewed | w3Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Search chart | w3Sign.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Collapse section | w3Sign.controlled | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | CURES not checked: exemption | w3Sign.curesExemptionReason | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"curesExemptionReason"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Naloxone offered | w3Sign.naloxoneOffer | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"naloxoneOffer"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Overdose and naloxone education given | w3Sign.naloxoneEducation | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"naloxoneEducation"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Sign orders | w3Sign.commit.signOrders | click / {"button":{"action":{"commit":{"commit":"signOrders"}}}} / lean | disabled-with-reason | Re-enter patient ID (initials / sex / age) to sign |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Back | w3Sign.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Encounters | w3Sign.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Notes | w3Sign.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Results | w3Sign.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Meds | w3Sign.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Problems | w3Sign.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Allergies | w3Sign.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Imaging | w3Sign.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Expand section | w3Orders.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row10.drug | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row10.abxIndication | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row10.dose | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
@@ -929,31 +973,11 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row11.pharmacy | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row11.indication | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"indication"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Confirm prefilled value | w3OrderSets.row11.orderDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Search chart | w3Sign.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Collapse section | w3Sign.controlled | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | CURES not checked: exemption | w3Sign.curesExemptionReason | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"curesExemptionReason"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Naloxone offered | w3Sign.naloxoneOffer | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"naloxoneOffer"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Overdose and naloxone education given | w3Sign.naloxoneEducation | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"naloxoneEducation"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Sign orders | w3Sign.commit.signOrders | click / {"button":{"action":{"commit":{"commit":"signOrders"}}}} / lean | disabled-with-reason | Re-enter patient ID (initials / sex / age) to sign |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Back | w3Sign.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Results | w3Sign.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Imaging | w3Sign.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Notes | w3Sign.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Encounters | w3Sign.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.dose | confirm / {"field":{"slot":"current","prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.doseUnit | confirm / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.route | confirm / {"field":{"slot":"current","prefill":"none","element":"route"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.freq | confirm / {"field":{"slot":"current","prefill":"none","element":"freq"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.duration | confirm / {"field":{"slot":"current","prefill":"none","element":"duration"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.quantity | confirm / {"field":{"slot":"current","prefill":"none","element":"quantity"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.refills | confirm / {"field":{"slot":"current","prefill":"none","element":"refills"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Accept and add another order | w3Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | disabled-with-reason | finish this order line first |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Confirm prefilled value | w3Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | I have reviewed the patient's allergies | w3Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Orders | Mark CURES report reviewed | w3Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3OrderSets | Expand section | w3OrderSets.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Discharge instructions | w3Disposition.patientInstructions | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientInstructions"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Follow-up | w3Disposition.followUp | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"followUp"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Disposition | Expand section | w3Disposition.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P2 · canonical-P2 | w3Sign | Expand section | w3Sign.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P3 · P3 | home | Collapse section | home.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P3 · P3 | home | Ward: shift worklist and MAR | home.toolbar.ward | click / {"button":{"action":{"goto":{"screen":"w4Worklist"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P3 · P3 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
@@ -1523,14 +1547,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | In Basket: Rx Requests | home.work.w7Queue | click / {"button":{"action":{"goto":{"screen":"w7Queue"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Open encounter | home.work.w5Rooming | click / {"button":{"action":{"goto":{"screen":"w5Rooming"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Problem list | home.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Results | home.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Notes | home.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Medications | home.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Allergies | home.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Encounters | home.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | Coverage | home.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P4 · canonical-P4 | home | History | home.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Search chart | w2Inbasket.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Search In Basket | w2Inbasket.basketSearch | enter / {"search":{"scope":"inbasket"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Review result | w2Inbasket.openResult | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1589,6 +1605,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Allergies | w2Result.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Imaging | w2Result.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Back | w2Result.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Inbasket | Expand section | w2Inbasket.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Search chart | w7Review.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Last visit | w7Review.refillTabs | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Labs | w7Review.refillTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1607,6 +1624,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Imaging | w7Review.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Respond to request | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Queue | Expand section | w7Queue.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Search chart | w5Growth.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Encounters | w5Growth.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Notes | w5Growth.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1629,6 +1647,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Surgical history | w5Note.historyTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Family history | w5Note.historyTabs | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Social history | w5Note.historyTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Expand section | w5Note.historyTabs.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Encounters | w5Note.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Notes | w5Note.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Results | w5Note.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1712,6 +1731,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Close | Imaging | w5Close.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Close | Immunizations | w5Close.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Close | Back | w5Close.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Rooming | Expand section | w5Rooming.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Reviewed / Done | w2Result.commit.ackResult | click / {"button":{"action":{"commit":{"commit":"ackResult"}}}} / lean | works | DOM changed; validation drawer: Select a Task for this patient Your inputs are retained. Close this panel, correct the issue, and retry the action. |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Search chart | w2Message.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Normal result | w2Message.normalLetter | click / {"macro":{"id":"w2NormalLetter"}} / lean | works | Lean state changed; result "ok" |
@@ -1725,9 +1745,11 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Allergies | w2Message.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Imaging | w2Message.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Back | w2Message.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Result | Expand section | w2Result.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Mark fill history reviewed | w7Review.review.adherence | click / {"button":{"action":{"markReviewed":{"info":"adherence"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | View saved record 1 | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Close saved resource | — | button / app | works | DOM changed |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Review | Expand section | w7Review.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Search chart | w7Decision.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Approve / deny / modify | w7Decision.refillDecision | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"refillDecision"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Pharmacy | w7Decision.refillPharmacy | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":{"fromRecord":{"fact":"requestPharmacy"}},"element":"refillPharmacy"}} / lean | works | Lean state changed; result "ok" |
@@ -1744,10 +1766,12 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Allergies | w7Decision.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Imaging | w7Decision.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Back | w7Decision.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Growth | Expand section | w5Growth.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Confirm prefilled value | w5Note.hpi | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"hpi"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Confirm prefilled value | w5Note.ros | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Confirm prefilled value | w5Note.exam | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Confirm prefilled value | w5Note.anticipatoryGuidance | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"anticipatoryGuidance"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Note | Expand section | w5Note.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Confirm prefilled value | w5Orders.doseMgPerKg | confirm / {"field":{"slot":"current","prefill":"none","element":"doseMgPerKg"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Confirm prefilled value | w5Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Confirm prefilled value | w5Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
@@ -1760,6 +1784,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Accept and add another order | w5Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | disabled-with-reason | finish this order line first |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | I have reviewed the patient's allergies | w5Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Mark CURES report reviewed | w5Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Orders | Expand section | w5Orders.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Sign | Search chart | w5Sign.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Sign | Sign orders | w5Sign.commit.signOrders | click / {"button":{"action":{"commit":{"commit":"signOrders"}}}} / lean | disabled-with-reason | Re-enter patient ID (initials / sex / age) to sign |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Sign | Encounters | w5Sign.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1774,7 +1799,12 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Confirm prefilled value | w5Immunizations.vaccine | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"vaccine"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Confirm prefilled value | w5Immunizations.vaccineLot | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"vaccineLot"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Confirm prefilled value | w5Immunizations.vaccineRoute | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"vaccineRoute"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Expand section | w5Immunizations.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Close | Expand section | w5Close.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Confirm prefilled value | w2Message.patientMessage | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientMessage"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w2Message | Expand section | w2Message.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w7Decision | Expand section | w7Decision.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Sign | Expand section | w5Sign.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Record immunization | w5Immunizations.commit.recordImmunization | click / {"button":{"action":{"commit":{"commit":"recordImmunization"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | View saved record 1 | — | button / app | works | DOM changed |
 | /?audit=buttons&inspect=1 · P4 · canonical-P4 | w5Immunizations | Close saved resource | — | button / app | works | DOM changed |
@@ -1784,14 +1814,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | In Basket: Results | home.work.w2Inbasket | click / {"button":{"action":{"goto":{"screen":"w2Inbasket"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Open selected case | home.openSelectedCase | click / {"button":{"action":{"goto":{"screen":"w6PreOp"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Problem list | home.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Results | home.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Notes | home.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Medications | home.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Allergies | home.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Encounters | home.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | Coverage | home.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | home | History | home.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Consult note | w6Schedule.nav.w6Consult | click / {"button":{"action":{"goto":{"screen":"w6Consult"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Sign Consult | w6Schedule.nav.w6ConsultClose | click / {"button":{"action":{"goto":{"screen":"w6ConsultClose"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Orders | w6Schedule.nav.w6Orders | click / {"button":{"action":{"goto":{"screen":"w6Orders"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1919,7 +1941,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Oxycodone 10 mg q6h PRN | w6Orders.prefOxycodone | click / {"macro":{"id":"w6PrefOxycodone"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Enoxaparin 40 mg SC daily | w6Orders.prefEnoxaparin | click / {"macro":{"id":"w6PrefEnoxaparin"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Ondansetron 8 mg IV q8h PRN | w6Orders.prefOndansetron | click / {"macro":{"id":"w6PrefOndansetron"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Collapse section | w6Orders.dosing | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Collapse section | w6Orders.medication | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Enter Medication | w6Orders.drug | enter / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Antibiotic indication (required for antibiotics) | w6Orders.abxIndication | enter / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
@@ -1965,7 +1986,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Sign | Imaging | w6Sign.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Sign | Surgical history | w6Sign.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Search chart | w6OpNote.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Template: laparoscopic appendectomy | w6OpNote.template | click / {"macro":{"id":"w6OpNoteTemplate"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Brief operative note | w6OpNote.template | click / {"macro":{"id":"w6OpNoteTemplate"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Pre-op diagnosis (ICD-10-CM) | w6OpNote.opPreopDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opPreopDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Post-op diagnosis (ICD-10-CM) | w6OpNote.opPostopDiagnosis | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opPostopDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Procedure (CPT) | w6OpNote.opProcedure | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opProcedure"}} / lean | works | Lean state changed; result "ok" |
@@ -1985,7 +2006,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Imaging | w6OpNote.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Surgical history | w6OpNote.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Search chart | w6PostOp.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Laparoscopic appendectomy — postoperative | w6PostOp.appendectomySet | click / {"macro":{"id":"w6AppendectomySet"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | General surgery — postoperative | w6PostOp.appendectomySet | click / {"macro":{"id":"w6AppendectomySet"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Diet | w6PostOp.postOpDiet | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"postOpDiet"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Activity | w6PostOp.postOpActivity | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"postOpActivity"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Mechanical prophylaxis | w6PostOp.vteMechanical | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"vteMechanical"}} / lean | works | Lean state changed; result "ok" |
@@ -2086,6 +2107,8 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Discharge | Allergies | w6Discharge.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Discharge | Imaging | w6Discharge.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Discharge | Surgical history | w6Discharge.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Schedule | Expand section | w6Schedule.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consults | Expand section | w6Consults.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1MedRec | View saved record 1 | — | button / app | works | DOM changed |
@@ -2115,6 +2138,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Surgical history | w1Hpi.historyTabs | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Family history | w1Hpi.historyTabs | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Social history | w1Hpi.historyTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Expand section | w1Hpi.historyTabs.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Encounters | w1Hpi.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Notes | w1Hpi.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Results | w1Hpi.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -2219,6 +2243,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Close | Imaging | w1Close.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Close | Surgical history | w1Close.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Close | Back | w1Close.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Rooming | Expand section | w1Rooming.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Search chart | w2Result.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Clinical action | w2Result.resultAction | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"resultAction"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Follow-up test (LOINC) | w2Result.resultFollowUpOrder | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"resultFollowUpOrder"}} / lean | works | Lean state changed; result "ok" |
@@ -2232,6 +2257,10 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Allergies | w2Result.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Imaging | w2Result.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Back | w2Result.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Inbasket | Expand section | w2Inbasket.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PreOp | Expand section | w6PreOp.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Consult | Expand section | w6Consult.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6ConsultClose | Expand section | w6ConsultClose.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Confirm prefilled value | w6Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Confirm prefilled value | w6Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Confirm prefilled value | w6Orders.dose | confirm / {"field":{"slot":"current","prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
@@ -2244,14 +2273,10 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Accept and add another order | w6Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | disabled-with-reason | finish this order line first |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | I have reviewed the patient's allergies | w6Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Mark CURES report reviewed | w6Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opPreopDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opPreopDiagnosis"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opPostopDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opPostopDiagnosis"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opProcedure | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opProcedure"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Orders | Expand section | w6Orders.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Sign | Expand section | w6Sign.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opAnesthesia | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opAnesthesia"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opFindings | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opFindings"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opSpecimens | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opSpecimens"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opComplications | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opComplications"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Confirm prefilled value | w6OpNote.opCondition | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"opCondition"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Expand section | w6OpNote.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.postOpDiet | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"postOpDiet"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.postOpActivity | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"postOpActivity"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.vteMechanical | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"vteMechanical"}} / lean | works | Lean state changed; result "ok" |
@@ -2270,7 +2295,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row10.substitution | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row10.pharmacy | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row10.indication | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":"none","element":"indication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row10.orderDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":10}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.drug | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.dose | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.doseUnit | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
@@ -2283,7 +2307,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.substitution | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.pharmacy | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.indication | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":"none","element":"indication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row11.orderDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":11}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.drug | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.dose | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.doseUnit | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
@@ -2296,7 +2319,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.substitution | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.pharmacy | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.indication | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":"none","element":"indication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row12.orderDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":12}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.drug | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.dose | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.doseUnit | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
@@ -2309,11 +2331,16 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.substitution | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":"none","element":"substitution"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.pharmacy | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":{"fromRecord":{"fact":"preferredPharmacy"}},"element":"pharmacy"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.indication | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":"none","element":"indication"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Confirm prefilled value | w6PostOp.row13.orderDiagnosis | confirm / {"field":{"slot":{"fixed":{"n":13}},"prefill":{"linked":{"element":"visitDiagnosis"}},"element":"orderDiagnosis"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6PostOp | Expand section | w6PostOp.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Rounding | Expand section | w6Rounding.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Discharge | Confirm prefilled value | w6Discharge.dischargeInstructions | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"dischargeInstructions"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6Discharge | Expand section | w6Discharge.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1MedRec | Expand section | w1MedRec.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Exam | Confirm prefilled value | w1Exam.exam | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Exam | Confirm prefilled value | w1Exam.assessmentPlan | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"assessmentPlan"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Confirm prefilled value | w1Hpi.ros | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"ros"}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Hpi | Expand section | w1Hpi.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
+| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Exam | Expand section | w1Exam.chart.includeResolved | click / {"group":{"startCollapsed":true,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Confirm prefilled value | w1Orders.drug | confirm / {"field":{"slot":"current","prefill":"none","element":"drug"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Confirm prefilled value | w1Orders.dose | confirm / {"field":{"slot":"current","prefill":"none","element":"dose"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Confirm prefilled value | w1Orders.doseUnit | confirm / {"field":{"slot":"current","prefill":"none","element":"doseUnit"}} / lean | works | Lean state changed; result "ok" |
@@ -2325,50 +2352,6 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Accept and add another order | w1Orders.newLine | click / {"button":{"action":"newOrderLine"}} / lean | disabled-with-reason | finish this order line first |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Confirm prefilled value | w1Orders.abxIndication | confirm / {"field":{"slot":"current","prefill":"none","element":"abxIndication"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | I have reviewed the patient's allergies | w1Orders.allergyReconfirmOrdering | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmOrdering"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Orders | Mark CURES report reviewed | w1Orders.review.curesReport | click / {"button":{"action":{"markReviewed":{"info":"curesReport"}}}} / lean | works | DOM changed; validation drawer: No versioned source record is available for this review. Refresh the chart or obtain the report before retrying. Your inputs are retained. Close this panel, correct the issue, and retry the action. |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Search chart | w1Verify.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Allergies re-verified before signing | w1Verify.allergyReconfirmSigning | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"allergyReconfirmSigning"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Encounters | w1Verify.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Notes | w1Verify.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Results | w1Verify.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Medications | w1Verify.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Problems | w1Verify.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Allergies | w1Verify.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Imaging | w1Verify.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Surgical history | w1Verify.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Continue to sign | w1Verify.continue | click / {"button":{"action":{"goto":{"screen":"w1Sign"}}}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Verify | Back | w1Verify.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Close | Confirm prefilled value | w1Close.patientInstructions | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientInstructions"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Result | Reviewed / Done | w2Result.commit.ackResult | click / {"button":{"action":{"commit":{"commit":"ackResult"}}}} / lean | works | DOM changed; validation drawer: Select a Task for this patient Your inputs are retained. Close this panel, correct the issue, and retry the action. |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Search chart | w2Message.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Normal result | w2Message.normalLetter | click / {"macro":{"id":"w2NormalLetter"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Repeat test | w2Message.repeatLetter | click / {"macro":{"id":"w2RepeatLetter"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Message to patient | w2Message.patientMessage | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientMessage"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Encounters | w2Message.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Notes | w2Message.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Results | w2Message.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Medications | w2Message.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Problems | w2Message.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Allergies | w2Message.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Imaging | w2Message.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Back | w2Message.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Sign op note | w6OpNote.commit.signOpNote | click / {"button":{"action":{"commit":{"commit":"signOpNote"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | View saved record 1 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | View saved record 2 | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Search chart | w1Sign.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Sign orders | w1Sign.commit.signOrders | click / {"button":{"action":{"commit":{"commit":"signOrders"}}}} / lean | disabled-with-reason | Re-enter patient ID (initials / sex / age) to sign |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Encounters | w1Sign.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Notes | w1Sign.chart | selectTab index 1 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Results | w1Sign.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Medications | w1Sign.chart | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Problems | w1Sign.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Allergies | w1Sign.chart | selectTab index 5 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Imaging | w1Sign.chart | selectTab index 6 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Surgical history | w1Sign.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w1Sign | Back | w1Sign.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
-| /?audit=buttons&inspect=1 · P5 · canonical-P5 | w2Message | Confirm prefilled value | w2Message.patientMessage | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"patientMessage"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · RN2 · P3 | home | Collapse section | home.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · RN2 · P3 | home | Ward: shift worklist and MAR | home.toolbar.ward | click / {"button":{"action":{"goto":{"screen":"w4Worklist"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons&inspect=1 · RN2 · P3 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |

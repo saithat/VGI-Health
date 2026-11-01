@@ -48,6 +48,10 @@ export function factsContext(
   const date = new Date(now);
   const renewal = context?.renewal;
   const record: [string, string][] = [];
+  if (context?.encounter.id)
+    record.push(["selectedEncounterId", context.encounter.id]);
+  if (context?.medication?.id)
+    record.push(["selectedMedicationRequestId", context.medication.id]);
   if (renewal) {
     const dosage = renewal.dosageInstruction?.[0];
     for (const [key, value] of Object.entries({
@@ -325,16 +329,21 @@ export async function createLiveSession(
           const encounters = resources.filter(
             (r): r is Encounter => r.resourceType === "Encounter",
           );
+          const priorContext = patientCharts.get(selected)?.context;
+          const preselectedEncounter = priorContext?.encounter.id
+            ? encounters.find((r) => r.id === priorContext.encounter.id)
+            : undefined;
           const encounter = encounterRef
             ? encounters.find((r) => `Encounter/${r.id}` === encounterRef)
-            : encounters.sort(
+            : (preselectedEncounter ??
+              encounters.sort(
                 (a, b) =>
                   Number(b.period?.start?.slice(0, 10) === workspaceDate) -
                     Number(a.period?.start?.slice(0, 10) === workspaceDate) ||
                   Number(b.status === "in-progress") -
                     Number(a.status === "in-progress") ||
                   (b.period?.start ?? "").localeCompare(a.period?.start ?? ""),
-              )[0];
+              )[0]);
           if (!encounter)
             throw new Error(
               "This chart has no matching existing encounter to open",
@@ -371,6 +380,11 @@ export async function createLiveSession(
             patient,
             encounter,
             worldContext: directoryBundle,
+            ...(priorContext &&
+            priorContext.encounter.id === encounter.id &&
+            priorContext.bed
+              ? { bed: priorContext.bed }
+              : {}),
             ...(task ? { task } : {}),
             ...(renewal ? { renewal } : {}),
           };

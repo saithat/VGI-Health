@@ -61,6 +61,29 @@ def table (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) (size : Size := .normal) : Component :=
   mk s name (.table info) label parent tab size
 
+
+
+/-- Use actual navigator sections in place of an additional numbered progress strip. -/
+def activityNavigator (c : Component) : Component :=
+  { c with tag := c.tag ++ ".layout.activities.nav" }
+
+/-- The layout hint retains the authored navigator and its identifier. -/
+def activityNavigatorExample := activityNavigator (mk "example" "nav" (.group false false) "Navigator")
+#guard activityNavigatorExample.id == "example.nav"
+#guard activityNavigatorExample.kind == .group false false
+
+/-- Keep a selected work item's real navigation action beside its clinical context. -/
+def primaryNavigation (c : Component) : Component :=
+  { c with tag := c.tag ++ ".primaryNavigation" }
+
+/-- Place an existing action in a supplied clinical row; its event stays unchanged. -/
+def rowAction (target : CompId) (row : Nat) (c : Component) : Component :=
+  { c with tag := c.tag ++ ".present.row|" ++ target ++ "|" ++ toString row }
+
+/-- A wide clinical grid omits automatic summary-rail supplements, not authored reviews. -/
+def wideWorkspace (c : Component) : Component :=
+  { c with tag := c.tag ++ ".layout.overview" }
+
 /-- A trend chart. -/
 def trend (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) : Component :=
@@ -103,6 +126,9 @@ def group (s : ScreenId) (name : String) (label : String) (collapsible : Bool :=
 /-- A structured information view; its original info and all rows are retained. -/
 def presented (kind : String) (c : Component) : Component :=
   { c with tag := c.tag ++ ".present." ++ kind }
+
+/-- Compatibility spelling for the shared presentation selector. -/
+abbrev presentation := presented
 
 /-- A narrative input retains its ordinary field binding and capture policy. -/
 def narrative (s : ScreenId) (name : String) (element : ElementId) (label : String)
@@ -168,8 +194,11 @@ def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Bloc
   tabsC s name label ::
     (((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
       showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)) ++
-    (if blocks.any (fun (_, info, _) => info == "problemList") then
-      [group s (name ++ ".includeResolved") "Include resolved problems" (startCollapsed := true)] else [])
+    (match blocks.findIdx? (fun (_, info, _) => info == "problemList") with
+     | some index =>
+       [group s (name ++ ".includeResolved") "Include resolved problems"
+         (startCollapsed := true) (parent := some name) (tab := index)]
+     | none => [])
 
 /-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
 def navigator (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=
@@ -297,7 +326,7 @@ def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
   [group s "prefList" "Preference list"] ++
   o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "prefList")) ++
-  [group s "dosing" "Dosing"] ++
+  (if o.askWeight || o.askDosingWeight || o.weightBased then [group s "dosing" "Dosing"] else []) ++
   (if o.askWeight then [field s "weight" "weight" "Weight today (kg)" (parent := some "dosing")]
    else []) ++
   (if o.askDosingWeight then

@@ -25,7 +25,13 @@ import {
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { entryEvent } from "./events";
 import { ClinicalIcon } from "./Icons";
-import { DisplayValue, severityTone, statusTone, sectionTone } from "./display";
+import {
+  DisplayValue,
+  formatProvenance,
+  severityTone,
+  statusTone,
+  sectionTone,
+} from "./display";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
 import {
@@ -83,6 +89,7 @@ export function UiChildren({
   for (const node of nodes)
     if ("button" in node && node.button.role === "confirm")
       explicit.add(node.button.comp);
+
   const groups: { nav: boolean; entries: { node: UiNode; index: number }[] }[] =
     [];
   nodes.forEach((node, index) => {
@@ -91,7 +98,7 @@ export function UiChildren({
     if (nav && previous?.nav) previous.entries.push({ node, index });
     else groups.push({ nav, entries: [{ node, index }] });
   });
-  const draw = (node: UiNode, i: number) => (
+  const drawNode = (node: UiNode, i: number) => (
     <UiNodeView
       key={i}
       node={node}
@@ -107,6 +114,37 @@ export function UiChildren({
       }
     />
   );
+  // Keep adjacent source fields/confirmations together without adding controls.
+  // Every field retains its wrapper when a pending confirmation disappears.
+  const draw = (node: UiNode, i: number) => {
+    if ("field" in node) {
+      const next = nodes[i + 1];
+      const confirm =
+        next &&
+        "button" in next &&
+        next.button.role === "confirm" &&
+        next.button.comp === node.field.comp;
+      return (
+        <div
+          key={i}
+          className={`clinical-field-pair${node.field.kind === "textarea" ? " field-pair-narrative" : ""}`}
+        >
+          {drawNode(node, i)}
+          {confirm && drawNode(next, i + 1)}
+        </div>
+      );
+    }
+    const previous = nodes[i - 1];
+    if (
+      "button" in node &&
+      node.button.role === "confirm" &&
+      previous &&
+      "field" in previous &&
+      previous.field.comp === node.button.comp
+    )
+      return null;
+    return drawNode(node, i);
+  };
   return (
     <ExplicitConfirmContext.Provider value={explicit}>
       {groups.map((group) =>
@@ -250,7 +288,7 @@ export function FieldNode({
   const sourceCaption = node.provenance
     ? (fieldSources.get(node.comp) ??
       sourceLabels.find(([source]) => source === node.provenance)?.[1] ??
-      node.provenance)
+      formatProvenance(node.provenance))
     : undefined;
   const explicitConfirms = useContext(ExplicitConfirmContext);
   const send = (value: string | number | boolean) => {
@@ -427,6 +465,7 @@ export function FieldNode({
                   label: cleanClinicalText(value),
                 }))
           }
+
           value={node.value}
           placeholder={fieldPlaceholder(node.label, kind)}
           onChange={(value) => {
@@ -448,6 +487,7 @@ export function FieldNode({
           onChange={(e) => send(e.currentTarget.value)}
           minRows={3}
           autosize
+
           autoComplete="off"
         />
       ) : (
@@ -487,12 +527,14 @@ export function FieldNode({
               id={`field-source-${node.comp}`}
             >
               <span
-                title={sourceCaption ?? node.provenance}
-                aria-label={sourceCaption ?? node.provenance}
+                title={sourceCaption ?? formatProvenance(node.provenance)}
+                aria-label={sourceCaption ?? formatProvenance(node.provenance)}
               >
-                {internalSource(sourceCaption ?? node.provenance)
+                {internalSource(
+                  sourceCaption ?? formatProvenance(node.provenance),
+                )
                   ? "Source"
-                  : (sourceCaption ?? node.provenance)}
+                  : (sourceCaption ?? formatProvenance(node.provenance))}
               </span>
             </Badge>
           )}
@@ -621,6 +663,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
           : undefined);
   if (kind) {
     const slots = presentation?.rows.get(node);
+
     const actions =
       slots &&
       new Map(
@@ -645,6 +688,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
     return <StructuredInfo node={node} kind={kind} actions={actions} />;
   }
   const empty = node.rows.length === 0;
+
   return (
     <div
       className={`clinical-info info-${node.display}`}

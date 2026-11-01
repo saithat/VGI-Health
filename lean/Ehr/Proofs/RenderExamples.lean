@@ -19,7 +19,7 @@ theorem sign_allergy_review_present : ∃ comp label display, UiPresent
     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s)
     (.info comp label uiReview.info display (uiRows uiSignCtx uiReview.info)) := by
   exact D2_commit_review uiSignCtx uiReview (by decide) (by decide) uiSignItem
-    (by decide) (by decide) (by decide)
+    (uiSourceItem_mem uiSignCtx _ (by decide)) (by decide) (by decide)
 
 /-- Every present Sign-screen button meets D3 action honesty. -/
 theorem all_sign_screen_actions_honest : ∀ n, UiPresent
@@ -49,7 +49,7 @@ theorem passive_rule_has_no_modal : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoom
 /-- The real rooming weight field is present. -/
 theorem weight_field_present : UiPresent uiScreenTest (uiField uiRoomCtx uiWeightItem "weight") :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).1
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).1
 
 /-- The real rooming prefill has a pending confirmation. -/
 theorem weight_confirmation_pending : uiWeightItem.pendingConfirm = true := by decide
@@ -59,7 +59,7 @@ theorem weight_confirmation_action_present : UiPresent uiScreenTest
     (.button "weightField" "Confirm prefilled value" "confirm" (uiEnabled uiRoomCtx "weightField")
       (uiBlocked uiRoomCtx "weightField") none) :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).2.2 (by decide)
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).2.2 (by decide)
 
 /-- An empty source label receives a nonempty clinical fallback. -/
 theorem empty_label_has_fallback : uiLabel "" "Clinical entry" ≠ "" := uiLabel_nonempty _ _ (by decide)

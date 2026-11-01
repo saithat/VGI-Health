@@ -123,16 +123,25 @@ export class Audit {
       this.rows.push(row);
       return row;
     }
-    // Position the target before starting the click-response timer. Playwright's
-    // click otherwise includes automatic scrolling and layout stabilization.
-    // Selection travel/scroll costs are measured separately by the geometry path.
-    await control.evaluate((element) =>
-      element.scrollIntoView({
-        block: "center",
-        inline: "nearest",
-        behavior: "instant",
-      }),
-    );
+    // Target positioning/readiness precedes the input event. Keep that wait
+    // separate from the unchanged response deadline after the real click.
+    const preparingAt = Date.now();
+    try {
+      await control.evaluate((element) =>
+        element.scrollIntoView({
+          block: "center",
+          inline: "nearest",
+          behavior: "instant",
+        }),
+      );
+      await control.click({ trial: true, timeout: 15000 });
+    } catch (error) {
+      row.status = "error";
+      row.effect = `Target not ready: ${String(error).split("\n")[0]}`;
+      this.rows.push(row);
+      return row;
+    }
+    const preparationMs = Date.now() - preparingAt;
     const before = await this.fingerprint();
     await this.page.evaluate(
       ({ dom, state }) => {
@@ -280,6 +289,8 @@ export class Audit {
       row.status = "dead";
       row.effect = `Effect took ${(effectAt ?? Date.now()) - clickedAt} ms (limit approximately 2 seconds): ${row.effect}`;
     }
+    if (preparationMs > 2400)
+      row.effect += `; target readiness took ${preparationMs} ms before input`;
     await this.page.evaluate(() =>
       window.__buttonAuditObservation?.disconnect(),
     );
@@ -355,6 +366,27 @@ export class Audit {
           await this.click(control, () => control.setChecked(true), "app");
         else await this.click(control, () => control.fill("Aaron"), "app");
       } else await this.click(control, undefined, "app");
+    }
+  }
+}
+
+/** A notification may expire during Playwright's ordinary actionability wait. */
+export async function dismissNotifications(page: Page) {
+  for (const notification of await page
+    .locator(".mantine-Notification-closeButton")
+    .all()) {
+    if (!(await notification.isVisible())) continue;
+    try {
+      await notification.click({ timeout: 1500 });
+    } catch (error) {
+      // Disappearance is the intended cleanup effect; a remaining blocker fails.
+      if (await notification.isVisible()) {
+        await notification
+          .waitFor({ state: "hidden", timeout: 10000 })
+          .catch(() => {
+            throw error;
+          });
+      }
     }
   }
 }

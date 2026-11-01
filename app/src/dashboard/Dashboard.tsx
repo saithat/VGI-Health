@@ -34,7 +34,7 @@ const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
-    ? `${value.clicks} clicks · ${value.scrolls} scrolls / ${value.scrollPx??"—"}px · ${value.mouseTravelPx??"—"}px mouse · ${value.keystrokes} keys (secondary)`
+    ? `${value.clicks} clicks · ${value.scrolls} scrolls · ${value.scrollPx == null || value.mouseTravelPx == null ? "pixel metrics not measured for archived runs" : `${value.scrollPx}px scroll · ${value.mouseTravelPx}px mouse`} · ${value.keystrokes} keys (secondary)`
     : "No prediction recorded";
 }
 function Badge({
@@ -265,24 +265,26 @@ function OutcomeTable({ record }: { record: DecisionRecord }) {
             </tr>
           </thead>
           <tbody>
-            {(["clicks", "scrolls", "scrollPx","mouseTravelPx","keystrokes"] as const).map(
-              (key) => (
-                <tr key={key}>
-                  <th>{key}</th>
-                  {[
-                    record.predicted?.[key],
-                    validation?.saving[key],
-                    test?.saving[key],
-                  ].map((n, i) => (
-                    <td key={i}>
-                      {n === undefined || n === null
-                        ? "—"
-                        : n}
-                    </td>
-                  ))}
-                </tr>
-              ),
-            )}
+            {(
+              [
+                "clicks",
+                "scrolls",
+                "scrollPx",
+                "mouseTravelPx",
+                "keystrokes",
+              ] as const
+            ).map((key) => (
+              <tr key={key}>
+                <th>{key}</th>
+                {[
+                  record.predicted?.[key],
+                  validation?.saving[key],
+                  test?.saving[key],
+                ].map((n, i) => (
+                  <td key={i}>{n === undefined || n === null ? "—" : n}</td>
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -337,8 +339,11 @@ function Why({
           {record.evidence.totals.tasks} tasks · {record.evidence.totals.clicks}{" "}
           clicks · {record.evidence.totals.keystrokes} keys ·{" "}
           {record.evidence.totals.scrolls} scrolls ·{" "}
-          {record.evidence.totals.mouseTravelPx??"—"}px mouse travel · {record.evidence.totals.scrollPx??"—"}px scroll. Train
-          days: {record.evidence.trainDays.join(", ")}.
+          {record.evidence.totals.mouseTravelPx == null ||
+          record.evidence.totals.scrollPx == null
+            ? "Pixel metrics not measured for archived runs."
+            : `${record.evidence.totals.mouseTravelPx}px mouse travel · ${record.evidence.totals.scrollPx}px scroll.`}{" "}
+          Train days: {record.evidence.trainDays.join(", ")}.
         </p>
         {record.evidence.complaints.map((c, i) => (
           <p key={i}>
@@ -491,9 +496,11 @@ function BeforeAfter({
   return (
     <div className="dash-review">
       <p>
-        Recorded patient context · real EHR interpreter. Use the controls in
-        either screen, or step through a recorded task for each version. The
-        day’s patient mix may differ.
+        Archived interpreter comparison: each pane uses its own recorded task
+        and may have different patient context. Navigation includes screens from
+        other personas. Next task event advances each available trace
+        independently; a pane with no further recorded events stays still. This
+        is not a synchronized clinical task comparison.
       </p>
       <div className="dash-controls">
         <button
@@ -894,7 +901,7 @@ function VersionList({
     before: ReturnType<typeof exactAt>,
   ) =>
     after && before
-      ? `${fmt(before.total.clicks - after.total.clicks)} clicks / ${before.total.mouseTravelPx!==null&&after.total.mouseTravelPx!==null?fmt(before.total.mouseTravelPx-after.total.mouseTravelPx):'—'}px mouse`
+      ? `${after.total.clicks - before.total.clicks > 0 ? "+" : ""}${fmt(after.total.clicks - before.total.clicks)} clicks${before.total.mouseTravelPx !== null && after.total.mouseTravelPx !== null ? ` / ${fmt(after.total.mouseTravelPx - before.total.mouseTravelPx)}px mouse` : " · pixel metrics not measured for archived runs"}`
       : "Unavailable";
   return (
     <section className="version-history" aria-label="Version history">
@@ -947,7 +954,11 @@ function VersionList({
               : "Certificate unavailable"}
         </Badge>
       </button>
-      <RuleConformanceBadge data={run.ruleConformance} persona={persona} revision={0} />
+      <RuleConformanceBadge
+        data={run.ruleConformance}
+        persona={persona}
+        revision={0}
+      />
       {records.map((r) => {
         // Behavioral conformance is recorded after deployment; certification remains the gate.
         const deployed = r.versionAfter !== r.versionBefore;
@@ -1003,7 +1014,7 @@ function VersionList({
                 <span className="mobile-label">vs baseline: </span>
                 {blindProtocol
                   ? r.measured.test
-                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${r.measured.test.saving.mouseTravelPx??"—"}px mouse vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${r.measured.testNoAgent.saving.mouseTravelPx??"—"}px mouse agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
+                    ? `${-r.measured.test.saving.clicks > 0 ? "+" : ""}${fmt(-r.measured.test.saving.clicks)} clicks vs active canonical (after − before); ${r.measured.testNoAgent ? `${-r.measured.testNoAgent.saving.clicks > 0 ? "+" : ""}${fmt(-r.measured.testNoAgent.saving.clicks)} clicks agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
                     : "Unavailable"
                   : change(after, baseline)}
               </span>
@@ -1016,7 +1027,11 @@ function VersionList({
                 <Badge>{r.certification.result}</Badge>
               )}
             </button>
-            <RuleConformanceBadge data={run.ruleConformance} persona={persona} revision={r.versionAfter} />
+            <RuleConformanceBadge
+              data={run.ruleConformance}
+              persona={persona}
+              revision={r.versionAfter}
+            />
             {rejected.map((rejection) => (
               <button
                 key={rejection.id}
@@ -1200,7 +1215,7 @@ export function Dashboard({
           >
             {index.map((e) => (
               <option key={e.id} value={e.id}>
-                {e.id}
+                {e.id === "mock" ? "mock (illustrative)" : e.id}
               </option>
             ))}
           </select>

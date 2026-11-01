@@ -13,7 +13,7 @@ A normal `.panel infoId`, `.table infoId` or `.trend infoId` selects a structure
 | `trackBoard` | Room, Patient, Age/sex, Chief complaint, Acuity, Arrival, LOS, RN, Provider, Labs, Imaging, Disposition, Status. |
 | `orSchedule` | Room, Start, Procedure, Patient, Surgeon, Status. |
 | `worklist` | Due, Patient, Task, Priority, Status, Owner. |
-| `timeGrid` | Medication, Dose, Route, Frequency, then date/time columns. Each time cell contains the supplied status and actual dose/time. |
+| `timeGrid` | Medication, Dose, Route, Frequency or Instructions, optional PRN indication, then date/time columns. Each time cell contains the supplied status and actual dose/time. |
 | `flowsheet` | Measure, Unit, then date/time columns. Empty cells are missing, never normal or zero. |
 | `folderList` | Folder, Count, Unread, Status. Count is a supplied value, never a browser calculation. |
 | `messages` | Received, Patient, Subject, From, Priority, Status. |
@@ -142,6 +142,10 @@ The constrained MAR can be tall because each supplied hour remains explicit. A d
 Numeric strings outside the browser's finite plotting range remain complete table text, without a fabricated point. Axis geometry also remains finite for large representable source values. The independent ARIA projection expects images only for representable plotted series; source-value coverage remains unchanged.
 
 Growth measurements use the existing tenths-of-kg/cm display precision. Gram weights are converted to kg; the shared ambulatory height reader accepts explicitly recorded cm, m or inches and declines unknown units. The latest timestamp supplies each day's plotted weight/height regardless of FHIR array order. Original Observation values and units remain in their complete display projections. A missing/invalid birth or measurement date produces `Not recorded` for plotted age while retaining the measurement row; a valid newborn age remains zero. Clinical Facts and dosing calculations are unchanged.
+
+### Acute MAR directions and coded PRN conditions
+
+`timeGrid` additionally accepts `Instructions` and `PRN indication` as left-hand order-detail keys. `Frequency` retains its existing meaning and rendering for older sources. The acute reader supplies full Dosage.text/SIG under Instructions, rather than relabeling it as a frequency; supplied coded as-needed conditions retain their reason and source-linked administration history. These metadata keys never become time-axis columns or administration-detail records. No new control or calculation is added to the painter.
 
 ### Shared display integration
 
@@ -389,6 +393,8 @@ adjacent to the list instead of attaching it to another patient's row.
 ### Unified drawing compatibility
 
 Ordinary legacy info tables, historical-note lists and trends use the same structured table, note and chart painters as explicit `present.*` nodes. Source-declared current documents retain their document-region semantics within the structured information module. Compact side summaries remain compact. One supplied-status tone map decorates all these views; the source text and clinical events remain unchanged.
+
+Acute integration retains `shiftWorklist` for assigned patient rows and adds the optional read-only `shiftTasks` view for the selected encounter’s source Task records. Both use the shared table/worklist drawings. A dated world census can replace patient rows without replacing the selected patient’s due-task details; this adds no review, attestation or clinical guard.
 
 ### Patient workspace selection
 

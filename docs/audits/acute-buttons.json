@@ -1,0 +1,1240 @@
+{
+  "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
+  "sourceRevision": "bd408b01f8aead3ed86238d943c6434b4165c52b",
+  "sourceTreeDirty": false,
+  "binarySha256": "7d1c745d54014d950fc1aae2678fa7435d52498f96968f77defce6e61c38a777",
+  "programs": [
+    {
+      "release": "v1",
+      "persona": "P2",
+      "path": "releases/v1/personas/P2.json",
+      "sha256": "94aa9cb84e9ea82d47a787ab0c079394e726fa599959e2e65f0229291c7abb76"
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "path": "releases/v1/personas/P3.json",
+      "sha256": "4b680e7d57189db4429c4400e417a192ee6b985ae124d789c4cd1a027f954b01"
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "path": "releases/v2/personas/P2.json",
+      "sha256": "fecab4f23f20ec669ea7bf2b4c5483fac3598a96e6a0b53b96fc142ee721c026"
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "path": "releases/v2/personas/P3.json",
+      "sha256": "9cc317932809ef108ad51a9cbe4b6eb01c3244389f200e67b95dbae8d271e78f"
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "path": "releases/v3/personas/P2.json",
+      "sha256": "aae884139c220961708d284351b94ccc203b07ccae87be9730e67a896d5c8437"
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "path": "releases/v3/personas/P3.json",
+      "sha256": "5e603a110363aa3a90192e86c8e48bbe9f03865215cd32fabe152b9962f4b496"
+    }
+  ],
+  "fixtures": [
+    {
+      "persona": "P2",
+      "files": [
+        {
+          "file": "P2.json",
+          "sha256": "a221bc56c423592a2a0768647aaebad7ffd1b16a79cf3a59cb46de1ba8bd5aaf"
+        },
+        {
+          "file": "P2-context.json",
+          "sha256": "774dfd69184a0730fe4970319894b11e83f829648c6b9538b4460f03e2dd9c2c"
+        },
+        {
+          "file": "P2-user.json",
+          "sha256": "9f6d2e60b6092425e2018e498b301aba83523862064c731a7e7d4d827b17d37a"
+        }
+      ]
+    },
+    {
+      "persona": "P3",
+      "files": [
+        {
+          "file": "P3.json",
+          "sha256": "2645e92aba0db3200f579688ccec6d559bf561eb9312d7ed5fa06471c16333c8"
+        },
+        {
+          "file": "P3-context.json",
+          "sha256": "b8550c2ae0f31016c07f267e44cf661f90708572b544476f124360d4c8c465d2"
+        },
+        {
+          "file": "P3-user.json",
+          "sha256": "1a1baa6990a9d90e4b4dac267ca36b612414f337de2ca648f26eccc22be44120"
+        }
+      ]
+    }
+  ],
+  "screens": 36,
+  "clicked": 369,
+  "tabs": 228,
+  "searches": 39,
+  "disabled": 17,
+  "results": [
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3TrackBoard",
+      "clicked": [
+        "w3TrackBoard.back",
+        "w3TrackBoard.home",
+        "w3TrackBoard.nav.w3Triage",
+        "w3TrackBoard.nav.w3Provider",
+        "w3TrackBoard.nav.w3Orders",
+        "w3TrackBoard.nav.w3OrderSets",
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3TrackBoard.chart/1",
+        "w3TrackBoard.chart/2",
+        "w3TrackBoard.chart/3",
+        "w3TrackBoard.chart/4",
+        "w3TrackBoard.chart/5",
+        "w3TrackBoard.chart/6"
+      ],
+      "searches": [
+        "w3TrackBoard.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3Triage",
+      "clicked": [
+        "w3Triage.review.allergyList",
+        "w3Triage.back",
+        "w3Triage.home",
+        "w3Triage.nav.w3TrackBoard",
+        "w3Triage.nav.w3Provider",
+        "w3Triage.nav.w3Orders",
+        "w3Triage.nav.w3OrderSets",
+        "w3Triage.nav.w3Disposition",
+        "w3Triage.next"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3Triage.chart/1",
+        "w3Triage.chart/2",
+        "w3Triage.chart/3",
+        "w3Triage.chart/4",
+        "w3Triage.chart/5",
+        "w3Triage.chart/6"
+      ],
+      "searches": [
+        "w3Triage.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3Provider",
+      "clicked": [
+        "w3Provider.back",
+        "w3Provider.home",
+        "w3Provider.nav.w3TrackBoard",
+        "w3Provider.nav.w3Triage",
+        "w3Provider.nav.w3Orders",
+        "w3Provider.nav.w3OrderSets",
+        "w3Provider.nav.w3Disposition",
+        "w3Provider.toSets",
+        "w3Provider.toOrders"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Provider.commit.signNote",
+          "reason": "entry required: chiefComplaint"
+        }
+      ],
+      "tabs": [
+        "w3Provider.chart/1",
+        "w3Provider.chart/2",
+        "w3Provider.chart/3",
+        "w3Provider.chart/4",
+        "w3Provider.chart/5",
+        "w3Provider.chart/6"
+      ],
+      "searches": [
+        "w3Provider.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.toSign",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ],
+      "searches": [
+        "w3Orders.chartSearch",
+        "w3Orders.orderSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3OrderSets",
+      "clicked": [
+        "w3OrderSets.sepsis",
+        "w3OrderSets.abdominal",
+        "w3OrderSets.cellulitis",
+        "w3OrderSets.row10",
+        "w3OrderSets.row10.medication",
+        "w3OrderSets.row10.dispense",
+        "w3OrderSets.row10.dx",
+        "w3OrderSets.row11",
+        "w3OrderSets.row11.medication",
+        "w3OrderSets.row11.dispense",
+        "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
+        "w3OrderSets.back",
+        "w3OrderSets.home",
+        "w3OrderSets.nav.w3TrackBoard",
+        "w3OrderSets.nav.w3Triage",
+        "w3OrderSets.nav.w3Provider",
+        "w3OrderSets.nav.w3Orders",
+        "w3OrderSets.nav.w3Disposition",
+        "w3OrderSets.toOrders"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3OrderSets.chart/1",
+        "w3OrderSets.chart/2",
+        "w3OrderSets.chart/3",
+        "w3OrderSets.chart/4",
+        "w3OrderSets.chart/5",
+        "w3OrderSets.chart/6"
+      ],
+      "searches": [
+        "w3OrderSets.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3Sign",
+      "clicked": [
+        "w3Sign.controlled",
+        "w3Sign.back",
+        "w3Sign.home",
+        "w3Sign.nav.w3TrackBoard",
+        "w3Sign.nav.w3Triage",
+        "w3Sign.nav.w3Provider",
+        "w3Sign.nav.w3Orders",
+        "w3Sign.nav.w3OrderSets",
+        "w3Sign.nav.w3Disposition",
+        "w3Sign.next",
+        "w3Sign.edit"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Sign.commit.signOrders",
+          "reason": "entry required: patientIdReentry"
+        }
+      ],
+      "tabs": [
+        "w3Sign.chart/1",
+        "w3Sign.chart/2",
+        "w3Sign.chart/3",
+        "w3Sign.chart/4",
+        "w3Sign.chart/5",
+        "w3Sign.chart/6"
+      ],
+      "searches": [
+        "w3Sign.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
+      "screen": "w3Disposition",
+      "clicked": [
+        "w3Disposition.dischargeGroup",
+        "w3Disposition.back",
+        "w3Disposition.home",
+        "w3Disposition.nav.w3TrackBoard",
+        "w3Disposition.nav.w3Triage",
+        "w3Disposition.nav.w3Provider",
+        "w3Disposition.nav.w3Orders",
+        "w3Disposition.nav.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Disposition.commit.disposition",
+          "reason": "entry required: dispositionChoice"
+        }
+      ],
+      "tabs": [
+        "w3Disposition.chart/1",
+        "w3Disposition.chart/2",
+        "w3Disposition.chart/3",
+        "w3Disposition.chart/4",
+        "w3Disposition.chart/5",
+        "w3Disposition.chart/6"
+      ],
+      "searches": [
+        "w3Disposition.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "screen": "w4Worklist",
+      "clicked": [
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
+        "w4Worklist.review.allergyList",
+        "w4Worklist.back",
+        "w4Worklist.home",
+        "w4Worklist.nav.w4Mar",
+        "w4Worklist.nav.w4Flowsheet",
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Worklist.chart/1",
+        "w4Worklist.chart/2",
+        "w4Worklist.chart/3",
+        "w4Worklist.chart/4",
+        "w4Worklist.chart/5",
+        "w4Worklist.chart/6"
+      ],
+      "searches": [
+        "w4Worklist.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "screen": "w4Mar",
+      "clicked": [
+        "w4Mar.openDue",
+        "w4Mar.back",
+        "w4Mar.home",
+        "w4Mar.nav.w4Worklist",
+        "w4Mar.nav.w4Flowsheet",
+        "w4Mar.nav.w4Handoff"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Mar.marTabs/1",
+        "w4Mar.marTabs/2",
+        "w4Mar.chart/1",
+        "w4Mar.chart/2",
+        "w4Mar.chart/3",
+        "w4Mar.chart/4",
+        "w4Mar.chart/5",
+        "w4Mar.chart/6"
+      ],
+      "searches": [
+        "w4Mar.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "screen": "w4Admin",
+      "clicked": [
+        "w4Admin.heldNpo",
+        "w4Admin.back",
+        "w4Admin.home",
+        "w4Admin.nav.w4Worklist",
+        "w4Admin.nav.w4Mar",
+        "w4Admin.nav.w4Flowsheet",
+        "w4Admin.nav.w4Handoff",
+        "w4Admin.toFlowsheet",
+        "w4Admin.toMar"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Admin.commit.administerMed",
+          "reason": "entry required: wristbandScan"
+        }
+      ],
+      "tabs": [
+        "w4Admin.chart/1",
+        "w4Admin.chart/2",
+        "w4Admin.chart/3",
+        "w4Admin.chart/4",
+        "w4Admin.chart/5",
+        "w4Admin.chart/6"
+      ],
+      "searches": [
+        "w4Admin.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "screen": "w4Flowsheet",
+      "clicked": [
+        "w4Flowsheet.copyAssessment",
+        "w4Flowsheet.back",
+        "w4Flowsheet.home",
+        "w4Flowsheet.nav.w4Worklist",
+        "w4Flowsheet.nav.w4Mar",
+        "w4Flowsheet.nav.w4Handoff",
+        "w4Flowsheet.toHandoff"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Flowsheet.commit.chartAssessment",
+          "reason": "entry required: bpSystolic"
+        }
+      ],
+      "tabs": [
+        "w4Flowsheet.chart/1",
+        "w4Flowsheet.chart/2",
+        "w4Flowsheet.chart/3",
+        "w4Flowsheet.chart/4",
+        "w4Flowsheet.chart/5",
+        "w4Flowsheet.chart/6"
+      ],
+      "searches": [
+        "w4Flowsheet.chartSearch"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P3",
+      "screen": "w4Handoff",
+      "clicked": [
+        "w4Handoff.template",
+        "w4Handoff.back",
+        "w4Handoff.home",
+        "w4Handoff.nav.w4Worklist",
+        "w4Handoff.nav.w4Mar",
+        "w4Handoff.nav.w4Flowsheet",
+        "w4Handoff.toWorklist"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Handoff.chart/1",
+        "w4Handoff.chart/2",
+        "w4Handoff.chart/3",
+        "w4Handoff.chart/4",
+        "w4Handoff.chart/5",
+        "w4Handoff.chart/6"
+      ],
+      "searches": [
+        "w4Handoff.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3TrackBoard",
+      "clicked": [
+        "w3TrackBoard.back",
+        "w3TrackBoard.home",
+        "w3TrackBoard.nav.w3Triage",
+        "w3TrackBoard.nav.w3Provider",
+        "w3TrackBoard.nav.w3Orders",
+        "w3TrackBoard.nav.w3OrderSets",
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3TrackBoard.chart/1",
+        "w3TrackBoard.chart/2",
+        "w3TrackBoard.chart/3",
+        "w3TrackBoard.chart/4",
+        "w3TrackBoard.chart/5",
+        "w3TrackBoard.chart/6"
+      ],
+      "searches": [
+        "w3TrackBoard.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3Triage",
+      "clicked": [
+        "w3Triage.review.allergyList",
+        "w3Triage.back",
+        "w3Triage.home",
+        "w3Triage.nav.w3TrackBoard",
+        "w3Triage.nav.w3Provider",
+        "w3Triage.nav.w3Orders",
+        "w3Triage.nav.w3OrderSets",
+        "w3Triage.nav.w3Disposition",
+        "w3Triage.next"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3Triage.chart/1",
+        "w3Triage.chart/2",
+        "w3Triage.chart/3",
+        "w3Triage.chart/4",
+        "w3Triage.chart/5",
+        "w3Triage.chart/6"
+      ],
+      "searches": [
+        "w3Triage.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3Provider",
+      "clicked": [
+        "w3Provider.back",
+        "w3Provider.home",
+        "w3Provider.nav.w3TrackBoard",
+        "w3Provider.nav.w3Triage",
+        "w3Provider.nav.w3Orders",
+        "w3Provider.nav.w3OrderSets",
+        "w3Provider.nav.w3Disposition",
+        "w3Provider.toSets",
+        "w3Provider.toOrders"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Provider.commit.signNote",
+          "reason": "entry required: chiefComplaint"
+        }
+      ],
+      "tabs": [
+        "w3Provider.chart/1",
+        "w3Provider.chart/2",
+        "w3Provider.chart/3",
+        "w3Provider.chart/4",
+        "w3Provider.chart/5",
+        "w3Provider.chart/6"
+      ],
+      "searches": [
+        "w3Provider.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.toSign",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Orders.requestPriorAuth",
+          "reason": "no order on this line"
+        }
+      ],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ],
+      "searches": [
+        "w3Orders.chartSearch",
+        "w3Orders.orderSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3OrderSets",
+      "clicked": [
+        "w3OrderSets.sepsis",
+        "w3OrderSets.abdominal",
+        "w3OrderSets.cellulitis",
+        "w3OrderSets.row10",
+        "w3OrderSets.row10.medication",
+        "w3OrderSets.row10.dispense",
+        "w3OrderSets.row10.dx",
+        "w3OrderSets.row11",
+        "w3OrderSets.row11.medication",
+        "w3OrderSets.row11.dispense",
+        "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
+        "w3OrderSets.back",
+        "w3OrderSets.home",
+        "w3OrderSets.nav.w3TrackBoard",
+        "w3OrderSets.nav.w3Triage",
+        "w3OrderSets.nav.w3Provider",
+        "w3OrderSets.nav.w3Orders",
+        "w3OrderSets.nav.w3Disposition",
+        "w3OrderSets.toOrders"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3OrderSets.chart/1",
+        "w3OrderSets.chart/2",
+        "w3OrderSets.chart/3",
+        "w3OrderSets.chart/4",
+        "w3OrderSets.chart/5",
+        "w3OrderSets.chart/6"
+      ],
+      "searches": [
+        "w3OrderSets.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3Sign",
+      "clicked": [
+        "w3Sign.controlled",
+        "w3Sign.back",
+        "w3Sign.home",
+        "w3Sign.nav.w3TrackBoard",
+        "w3Sign.nav.w3Triage",
+        "w3Sign.nav.w3Provider",
+        "w3Sign.nav.w3Orders",
+        "w3Sign.nav.w3OrderSets",
+        "w3Sign.nav.w3Disposition",
+        "w3Sign.next",
+        "w3Sign.edit"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Sign.commit.signOrders",
+          "reason": "entry required: patientIdReentry"
+        }
+      ],
+      "tabs": [
+        "w3Sign.chart/1",
+        "w3Sign.chart/2",
+        "w3Sign.chart/3",
+        "w3Sign.chart/4",
+        "w3Sign.chart/5",
+        "w3Sign.chart/6"
+      ],
+      "searches": [
+        "w3Sign.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
+      "screen": "w3Disposition",
+      "clicked": [
+        "w3Disposition.dischargeGroup",
+        "w3Disposition.back",
+        "w3Disposition.home",
+        "w3Disposition.nav.w3TrackBoard",
+        "w3Disposition.nav.w3Triage",
+        "w3Disposition.nav.w3Provider",
+        "w3Disposition.nav.w3Orders",
+        "w3Disposition.nav.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Disposition.commit.disposition",
+          "reason": "entry required: dispositionChoice"
+        }
+      ],
+      "tabs": [
+        "w3Disposition.chart/1",
+        "w3Disposition.chart/2",
+        "w3Disposition.chart/3",
+        "w3Disposition.chart/4",
+        "w3Disposition.chart/5",
+        "w3Disposition.chart/6"
+      ],
+      "searches": [
+        "w3Disposition.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "screen": "w4Worklist",
+      "clicked": [
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
+        "w4Worklist.review.allergyList",
+        "w4Worklist.back",
+        "w4Worklist.home",
+        "w4Worklist.nav.w4Mar",
+        "w4Worklist.nav.w4Flowsheet",
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Worklist.chart/1",
+        "w4Worklist.chart/2",
+        "w4Worklist.chart/3",
+        "w4Worklist.chart/4",
+        "w4Worklist.chart/5",
+        "w4Worklist.chart/6"
+      ],
+      "searches": [
+        "w4Worklist.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "screen": "w4Mar",
+      "clicked": [
+        "w4Mar.openDue",
+        "w4Mar.back",
+        "w4Mar.home",
+        "w4Mar.nav.w4Worklist",
+        "w4Mar.nav.w4Flowsheet",
+        "w4Mar.nav.w4Handoff"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Mar.marTabs/1",
+        "w4Mar.marTabs/2",
+        "w4Mar.chart/1",
+        "w4Mar.chart/2",
+        "w4Mar.chart/3",
+        "w4Mar.chart/4",
+        "w4Mar.chart/5",
+        "w4Mar.chart/6"
+      ],
+      "searches": [
+        "w4Mar.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "screen": "w4Admin",
+      "clicked": [
+        "w4Admin.heldNpo",
+        "w4Admin.back",
+        "w4Admin.home",
+        "w4Admin.nav.w4Worklist",
+        "w4Admin.nav.w4Mar",
+        "w4Admin.nav.w4Flowsheet",
+        "w4Admin.nav.w4Handoff",
+        "w4Admin.toFlowsheet",
+        "w4Admin.toMar"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Admin.commit.administerMed",
+          "reason": "entry required: wristbandScan"
+        }
+      ],
+      "tabs": [
+        "w4Admin.chart/1",
+        "w4Admin.chart/2",
+        "w4Admin.chart/3",
+        "w4Admin.chart/4",
+        "w4Admin.chart/5",
+        "w4Admin.chart/6"
+      ],
+      "searches": [
+        "w4Admin.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "screen": "w4Flowsheet",
+      "clicked": [
+        "w4Flowsheet.copyAssessment",
+        "w4Flowsheet.back",
+        "w4Flowsheet.home",
+        "w4Flowsheet.nav.w4Worklist",
+        "w4Flowsheet.nav.w4Mar",
+        "w4Flowsheet.nav.w4Handoff",
+        "w4Flowsheet.toHandoff"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Flowsheet.commit.chartAssessment",
+          "reason": "entry required: bpSystolic"
+        }
+      ],
+      "tabs": [
+        "w4Flowsheet.chart/1",
+        "w4Flowsheet.chart/2",
+        "w4Flowsheet.chart/3",
+        "w4Flowsheet.chart/4",
+        "w4Flowsheet.chart/5",
+        "w4Flowsheet.chart/6"
+      ],
+      "searches": [
+        "w4Flowsheet.chartSearch"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P3",
+      "screen": "w4Handoff",
+      "clicked": [
+        "w4Handoff.template",
+        "w4Handoff.back",
+        "w4Handoff.home",
+        "w4Handoff.nav.w4Worklist",
+        "w4Handoff.nav.w4Mar",
+        "w4Handoff.nav.w4Flowsheet",
+        "w4Handoff.toWorklist"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Handoff.chart/1",
+        "w4Handoff.chart/2",
+        "w4Handoff.chart/3",
+        "w4Handoff.chart/4",
+        "w4Handoff.chart/5",
+        "w4Handoff.chart/6"
+      ],
+      "searches": [
+        "w4Handoff.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3TrackBoard",
+      "clicked": [
+        "w3TrackBoard.back",
+        "w3TrackBoard.home",
+        "w3TrackBoard.nav.w3Triage",
+        "w3TrackBoard.nav.w3Provider",
+        "w3TrackBoard.nav.w3Orders",
+        "w3TrackBoard.nav.w3OrderSets",
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3TrackBoard.chart/1",
+        "w3TrackBoard.chart/2",
+        "w3TrackBoard.chart/3",
+        "w3TrackBoard.chart/4",
+        "w3TrackBoard.chart/5",
+        "w3TrackBoard.chart/6"
+      ],
+      "searches": [
+        "w3TrackBoard.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3Triage",
+      "clicked": [
+        "w3Triage.review.allergyList",
+        "w3Triage.back",
+        "w3Triage.home",
+        "w3Triage.nav.w3TrackBoard",
+        "w3Triage.nav.w3Provider",
+        "w3Triage.nav.w3Orders",
+        "w3Triage.nav.w3OrderSets",
+        "w3Triage.nav.w3Disposition",
+        "w3Triage.next"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3Triage.chart/1",
+        "w3Triage.chart/2",
+        "w3Triage.chart/3",
+        "w3Triage.chart/4",
+        "w3Triage.chart/5",
+        "w3Triage.chart/6"
+      ],
+      "searches": [
+        "w3Triage.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3Provider",
+      "clicked": [
+        "w3Provider.back",
+        "w3Provider.home",
+        "w3Provider.nav.w3TrackBoard",
+        "w3Provider.nav.w3Triage",
+        "w3Provider.nav.w3Orders",
+        "w3Provider.nav.w3OrderSets",
+        "w3Provider.nav.w3Disposition",
+        "w3Provider.toSets",
+        "w3Provider.toOrders"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Provider.commit.signNote",
+          "reason": "entry required: chiefComplaint"
+        }
+      ],
+      "tabs": [
+        "w3Provider.chart/1",
+        "w3Provider.chart/2",
+        "w3Provider.chart/3",
+        "w3Provider.chart/4",
+        "w3Provider.chart/5",
+        "w3Provider.chart/6"
+      ],
+      "searches": [
+        "w3Provider.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.toSign",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Orders.requestPriorAuth",
+          "reason": "no order on this line"
+        }
+      ],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ],
+      "searches": [
+        "w3Orders.chartSearch",
+        "w3Orders.orderSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3OrderSets",
+      "clicked": [
+        "w3OrderSets.sepsis",
+        "w3OrderSets.abdominal",
+        "w3OrderSets.cellulitis",
+        "w3OrderSets.row10",
+        "w3OrderSets.row10.medication",
+        "w3OrderSets.row10.dispense",
+        "w3OrderSets.row10.dx",
+        "w3OrderSets.row11",
+        "w3OrderSets.row11.medication",
+        "w3OrderSets.row11.dispense",
+        "w3OrderSets.row11.dx",
+        "w3OrderSets.toSign",
+        "w3OrderSets.back",
+        "w3OrderSets.home",
+        "w3OrderSets.nav.w3TrackBoard",
+        "w3OrderSets.nav.w3Triage",
+        "w3OrderSets.nav.w3Provider",
+        "w3OrderSets.nav.w3Orders",
+        "w3OrderSets.nav.w3Disposition",
+        "w3OrderSets.toOrders"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3OrderSets.chart/1",
+        "w3OrderSets.chart/2",
+        "w3OrderSets.chart/3",
+        "w3OrderSets.chart/4",
+        "w3OrderSets.chart/5",
+        "w3OrderSets.chart/6"
+      ],
+      "searches": [
+        "w3OrderSets.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3Sign",
+      "clicked": [
+        "w3Sign.controlled",
+        "w3Sign.back",
+        "w3Sign.home",
+        "w3Sign.nav.w3TrackBoard",
+        "w3Sign.nav.w3Triage",
+        "w3Sign.nav.w3Provider",
+        "w3Sign.nav.w3Orders",
+        "w3Sign.nav.w3OrderSets",
+        "w3Sign.nav.w3Disposition",
+        "w3Sign.next",
+        "w3Sign.edit"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Sign.commit.signOrders",
+          "reason": "entry required: patientIdReentry"
+        }
+      ],
+      "tabs": [
+        "w3Sign.chart/1",
+        "w3Sign.chart/2",
+        "w3Sign.chart/3",
+        "w3Sign.chart/4",
+        "w3Sign.chart/5",
+        "w3Sign.chart/6"
+      ],
+      "searches": [
+        "w3Sign.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
+      "screen": "w3Disposition",
+      "clicked": [
+        "w3Disposition.dischargeGroup",
+        "w3Disposition.back",
+        "w3Disposition.home",
+        "w3Disposition.nav.w3TrackBoard",
+        "w3Disposition.nav.w3Triage",
+        "w3Disposition.nav.w3Provider",
+        "w3Disposition.nav.w3Orders",
+        "w3Disposition.nav.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Disposition.commit.disposition",
+          "reason": "entry required: dispositionChoice"
+        }
+      ],
+      "tabs": [
+        "w3Disposition.chart/1",
+        "w3Disposition.chart/2",
+        "w3Disposition.chart/3",
+        "w3Disposition.chart/4",
+        "w3Disposition.chart/5",
+        "w3Disposition.chart/6"
+      ],
+      "searches": [
+        "w3Disposition.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "screen": "w4Worklist",
+      "clicked": [
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
+        "w4Worklist.review.allergyList",
+        "w4Worklist.back",
+        "w4Worklist.home",
+        "w4Worklist.nav.w4Mar",
+        "w4Worklist.nav.w4Flowsheet",
+        "w4Worklist.nav.w4Handoff",
+        "w4Worklist.toMar"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Worklist.chart/1",
+        "w4Worklist.chart/2",
+        "w4Worklist.chart/3",
+        "w4Worklist.chart/4",
+        "w4Worklist.chart/5",
+        "w4Worklist.chart/6"
+      ],
+      "searches": [
+        "w4Worklist.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "screen": "w4Mar",
+      "clicked": [
+        "w4Mar.openDue",
+        "w4Mar.back",
+        "w4Mar.home",
+        "w4Mar.nav.w4Worklist",
+        "w4Mar.nav.w4Flowsheet",
+        "w4Mar.nav.w4Handoff"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Mar.marTabs/1",
+        "w4Mar.marTabs/2",
+        "w4Mar.chart/1",
+        "w4Mar.chart/2",
+        "w4Mar.chart/3",
+        "w4Mar.chart/4",
+        "w4Mar.chart/5",
+        "w4Mar.chart/6"
+      ],
+      "searches": [
+        "w4Mar.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "screen": "w4Admin",
+      "clicked": [
+        "w4Admin.heldNpo",
+        "w4Admin.back",
+        "w4Admin.home",
+        "w4Admin.nav.w4Worklist",
+        "w4Admin.nav.w4Mar",
+        "w4Admin.nav.w4Flowsheet",
+        "w4Admin.nav.w4Handoff",
+        "w4Admin.toFlowsheet",
+        "w4Admin.toMar"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Admin.commit.administerMed",
+          "reason": "entry required: wristbandScan"
+        }
+      ],
+      "tabs": [
+        "w4Admin.chart/1",
+        "w4Admin.chart/2",
+        "w4Admin.chart/3",
+        "w4Admin.chart/4",
+        "w4Admin.chart/5",
+        "w4Admin.chart/6"
+      ],
+      "searches": [
+        "w4Admin.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "screen": "w4Flowsheet",
+      "clicked": [
+        "w4Flowsheet.copyAssessment",
+        "w4Flowsheet.back",
+        "w4Flowsheet.home",
+        "w4Flowsheet.nav.w4Worklist",
+        "w4Flowsheet.nav.w4Mar",
+        "w4Flowsheet.nav.w4Handoff",
+        "w4Flowsheet.toHandoff"
+      ],
+      "disabled": [
+        {
+          "comp": "w4Flowsheet.commit.chartAssessment",
+          "reason": "entry required: bpSystolic"
+        }
+      ],
+      "tabs": [
+        "w4Flowsheet.chart/1",
+        "w4Flowsheet.chart/2",
+        "w4Flowsheet.chart/3",
+        "w4Flowsheet.chart/4",
+        "w4Flowsheet.chart/5",
+        "w4Flowsheet.chart/6"
+      ],
+      "searches": [
+        "w4Flowsheet.chartSearch"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P3",
+      "screen": "w4Handoff",
+      "clicked": [
+        "w4Handoff.template",
+        "w4Handoff.back",
+        "w4Handoff.home",
+        "w4Handoff.nav.w4Worklist",
+        "w4Handoff.nav.w4Mar",
+        "w4Handoff.nav.w4Flowsheet",
+        "w4Handoff.toWorklist"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w4Handoff.chart/1",
+        "w4Handoff.chart/2",
+        "w4Handoff.chart/3",
+        "w4Handoff.chart/4",
+        "w4Handoff.chart/5",
+        "w4Handoff.chart/6"
+      ],
+      "searches": [
+        "w4Handoff.chartSearch"
+      ]
+    }
+  ]
+}

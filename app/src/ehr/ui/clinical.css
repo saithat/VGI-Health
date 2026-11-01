@@ -144,7 +144,7 @@
 .clinical-app .clinical-shell[data-pinned="true"] > .clinical-banner {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 150;
 }
 .clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar {
   position: sticky;
@@ -369,13 +369,16 @@
   min-width: 0;
   flex: 1 1 100%;
 }
-.clinical-section-body > .clinical-field {
+.clinical-section-body > .clinical-field,
+.clinical-section-body > .clinical-field-pair {
   flex: 1 1 208px;
 }
-.clinical-section-body > .field-narrative {
+.clinical-section-body > .field-narrative,
+.clinical-section-body > .field-pair-narrative {
   flex-basis: 100%;
 }
-.clinical-workspace-body > .field-narrative {
+.clinical-workspace-body > .field-narrative,
+.clinical-workspace-body > .field-pair-narrative {
   grid-column: 1 / -1;
 }
 .clinical-section-body > .clinical-action {
@@ -857,7 +860,8 @@
 }
 
 /* Perioperative review panes retain every record in a local scroll area. */
-.clinical-info[data-info-id="labResults"][data-comp-id^="w6"] .presentation-table-wrap {
+.clinical-info[data-info-id="labResults"][data-comp-id^="w6"]
+  .presentation-table-wrap {
   max-height: 320px;
   overflow: auto;
 }
@@ -866,11 +870,15 @@
   overflow: auto;
 }
 
-.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] .record-secondary {
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"]
+  .record-secondary {
   display: block;
   margin-top: 3px;
 }
-.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] li > span + span::before {
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"]
+  li
+  > span
+  + span::before {
   content: none;
 }
 
@@ -879,14 +887,22 @@
   min-width: 160px;
   width: 160px;
 }
-.clinical-info[data-info-id="scheduleTasks"] .presentation-row-actions .mantine-Button-label,
-.clinical-info[data-info-id="consultRequest"] .presentation-row-actions .mantine-Button-label {
+.clinical-info[data-info-id="scheduleTasks"]
+  .presentation-row-actions
+  .mantine-Button-label,
+.clinical-info[data-info-id="consultRequest"]
+  .presentation-row-actions
+  .mantine-Button-label {
   white-space: nowrap;
 }
-.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Procedure"] {
+.clinical-info[data-info-id="scheduleTasks"]
+  .presentation-table
+  [data-column="Procedure"] {
   width: 22%;
 }
-.clinical-info[data-info-id="scheduleTasks"] .presentation-table [data-column="Indication"] {
+.clinical-info[data-info-id="scheduleTasks"]
+  .presentation-table
+  [data-column="Indication"] {
   width: 15%;
 }
 
@@ -1042,32 +1058,131 @@
   outline: 2px solid var(--clinical-primary);
   outline-offset: -2px;
 }
-.clinical-document-section { padding: 10px 12px; }
-.clinical-document-section + .clinical-document-section { border-top: 1px solid var(--clinical-border); }
-.clinical-document-section h4 { margin: 0 0 6px; font-size: 14px; font-weight: 650; }
-.clinical-document-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
-.clinical-document-detail { margin-top: 6px; font-size: 12px; color: var(--clinical-muted); }
+.clinical-document-section {
+  padding: 10px 12px;
+}
+.clinical-document-section + .clinical-document-section {
+  border-top: 1px solid var(--clinical-border);
+}
+.clinical-document-section h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.clinical-document-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.clinical-document-detail {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+
+.clinical-field-pair {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.clinical-field-pair > .clinical-action {
+  align-self: flex-end;
+}
 
 /* Clinician review: compact identity and quiet missing metadata. */
-.patient-banner-details { gap: 5px 12px; }
-.banner-missing { flex-basis: 100%; color: var(--clinical-muted); font-size: 12px; line-height: 16px; }
-.banner-pill { padding: 2px 6px; }
-.clinical-banner-content { min-height: 64px; }
-.clinical-tabs .mantine-Tabs-tab { border-top: 3px solid #9276a7; background: #f0ebf5; color: #543e70; }
-.clinical-tabs .mantine-Tabs-tab:nth-child(3n+2) { border-top-color: #36857d; background: #e7f3ef; color: #205e55; }
-.clinical-tabs .mantine-Tabs-tab:nth-child(3n) { border-top-color: #ad7d27; background: #fff3d6; color: #795010; }
-.clinical-tabs .mantine-Tabs-tab[data-active] { background: var(--clinical-selected); color: var(--clinical-primary); border-top-color: var(--clinical-primary); }
-.clinical-action .mantine-Button-root { white-space: normal; overflow-wrap: normal; word-break: normal; flex-shrink: 0; }
-.clinical-action .mantine-Button-label { white-space: normal; overflow-wrap: normal; word-break: normal; }
-.human-lock { padding: 0 3px; min-width: 20px; }
-.clinical-side .clinical-info-list > li { padding-top: 4px; padding-bottom: 4px; }
-.clinical-side .clinical-info-list .record-label { color: var(--clinical-muted); }
-.allergy-badge.allergy-unknown { border-left: 3px solid #ad7d27; background: #fff3d6; color: #795010; }
+.patient-banner-details {
+  gap: 5px 12px;
+}
+.banner-missing {
+  flex-basis: 100%;
+  color: var(--clinical-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+.banner-pill {
+  padding: 2px 6px;
+}
+.clinical-banner-content {
+  min-height: 64px;
+}
+.clinical-tabs .mantine-Tabs-tab {
+  border-top: 3px solid #9276a7;
+  background: #f0ebf5;
+  color: #543e70;
+}
+.clinical-tabs .mantine-Tabs-tab:nth-child(3n + 2) {
+  border-top-color: #36857d;
+  background: #e7f3ef;
+  color: #205e55;
+}
+.clinical-tabs .mantine-Tabs-tab:nth-child(3n) {
+  border-top-color: #ad7d27;
+  background: #fff3d6;
+  color: #795010;
+}
+.clinical-tabs .mantine-Tabs-tab[data-active] {
+  background: var(--clinical-selected);
+  color: var(--clinical-primary);
+  border-top-color: var(--clinical-primary);
+}
+.clinical-action .mantine-Button-root {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  flex-shrink: 0;
+}
+.clinical-action .mantine-Button-label {
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.human-lock {
+  padding: 0 3px;
+  min-width: 20px;
+}
+.clinical-side .clinical-info-list > li {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.clinical-side .clinical-info-list .record-label {
+  color: var(--clinical-muted);
+}
+.allergy-badge.allergy-unknown {
+  border-left: 3px solid #ad7d27;
+  background: #fff3d6;
+  color: #795010;
+}
 /* Geometry-only toolbar placement: source/ARIA order and controls are unchanged. */
 @media (min-width: 1100px) {
-  .clinical-app main:has(> .clinical-workspace > .clinical-workspace-body > .clinical-field:first-child [data-comp-id$=".chartSearch"]) { position: relative; }
-  .clinical-app main:has(> .clinical-workspace > .clinical-workspace-body > .clinical-field:first-child [data-comp-id$=".chartSearch"]) > .clinical-workspace-heading { min-height: 52px; padding-right: 380px; }
-  .clinical-workspace-body > .clinical-field:first-child:has([data-comp-id$=".chartSearch"]) { position: absolute; top: 8px; right: 10px; width: 350px; margin: 0; }
+  .clinical-app
+    main:has(
+      > .clinical-workspace
+        > .clinical-workspace-body
+        > .clinical-field:first-child
+        [data-comp-id$=".chartSearch"]
+    ) {
+    position: relative;
+  }
+  .clinical-app
+    main:has(
+      > .clinical-workspace
+        > .clinical-workspace-body
+        > .clinical-field:first-child
+        [data-comp-id$=".chartSearch"]
+    )
+    > .clinical-workspace-heading {
+    min-height: 52px;
+    padding-right: 380px;
+  }
+  .clinical-workspace-body
+    > .clinical-field:first-child:has([data-comp-id$=".chartSearch"]) {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 350px;
+    margin: 0;
+  }
 }
 
 /* Production density: source order, content and clinical actions are unchanged. */

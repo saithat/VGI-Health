@@ -67,6 +67,15 @@ export function DisplayValue({ value }: { value: string }) {
   );
 }
 
+/** Readable source markers; the semantic field retains its exact provenance. */
+export function formatProvenance(source: string): string {
+  if (source.startsWith("record:")) return "From chart";
+  if (source.startsWith("linked:")) return "Linked value";
+  if (source === "default") return "Default value";
+  if (source === "macro") return "Template draft";
+  return source;
+}
+
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
   const status = (value.split(/[·\n]/)[0] ?? "")
@@ -91,7 +100,7 @@ export function statusTone(value: string): ClinicalTone | undefined {
   )
     return "yellow";
   if (
-    /^(in progress|in-progress|booked|ordered|requested)(?:$|\s)/.test(status)
+    /^(in progress|in-progress|preliminary|partial|booked|ordered|requested)(?:$|\s)/.test(status)
   )
     return "blue";
   if (

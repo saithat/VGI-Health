@@ -233,6 +233,7 @@ export function WorkflowNav({
     <AppShell.Navbar
       component="nav"
       aria-label="Clinical navigation"
+
       className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >

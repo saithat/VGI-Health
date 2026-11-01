@@ -1,0 +1,167 @@
+{
+  "capturedAt": "2026-11-01T10:42:26.678139+00:00",
+  "baseRevision": "79623f5",
+  "headBeforeCommit": "d276d9f5868a311f6aa70f6dba59243e666cd511",
+  "sourceTreeDirty": true,
+  "leanHash": "c3b834e35d8585c02faff57b186e40e19c573cf4a31925831a93a2dfe100f0cc",
+  "binarySha256": "8906aa01051a62c9c48d146f29f42289b3830943739d7e89fc09cd20a0901840",
+  "scope": "Patient-scoped acute charts, 14 desktop/narrow semantic views, five live role baselines and 36 acute screen/release control samples; not exhaustive clinical-state exploration or a complete department census.",
+  "gates": {
+    "build": {
+      "status": "pass",
+      "evidenceSha256": "eefee6944a5d33ae4807db52ed8068a97cc7dacd16e32eaf13b96238b88d5005",
+      "marker": "Build completed successfully (353 jobs)."
+    },
+    "certify": {
+      "status": "pass",
+      "evidenceSha256": "35277c829d90151b25d48d98d49e608c7742efeb77f62d33ad190ea1868fb87e",
+      "marker": "Personas 15/15; bad rejected 18/18"
+    },
+    "world": {
+      "status": "pass",
+      "evidenceSha256": "e10f93be8d13da1695bcd3e37fcb4a4b23b3fd7990857694dbbced575f000bfb",
+      "marker": "1,284/1,284 tasks complete"
+    },
+    "kernel": {
+      "status": "pass",
+      "evidenceSha256": "d08af72e1bebe7d844b341b632fd54c610e55f7d96b0d8315e240501045b5cfb",
+      "marker": "Lean default kernel accepts the solution"
+    },
+    "comparator": {
+      "status": "pass",
+      "evidenceSha256": "584154972f988b2882e1d1ab354071db980f6577a85f8587944b45c45a8881b1",
+      "marker": "Your solution is okay!"
+    },
+    "render-comparator": {
+      "status": "pass",
+      "evidenceSha256": "4e4fe4908742bd19b2601ca244016f3214e1d23b303fc922ce894ea2e8b3ba06",
+      "marker": "Your solution is okay!"
+    },
+    "api-diff": {
+      "status": "pass",
+      "evidenceSha256": "5283c74695c2735901c158f08278a46f254430f9e3a1fef81b5860e0d94a6153",
+      "marker": "690 canonical HTML + semantic UI variants"
+    },
+    "widgets": {
+      "status": "pass",
+      "evidenceSha256": "aa5932e19fc87979fe621b44f3baa6057e449f6009e5d87929b8584d83a6ed04",
+      "marker": "15 presentations"
+    },
+    "chart-search": {
+      "status": "pass",
+      "evidenceSha256": "c84bc1f101ef5aae7be6c8f3a68d13f0bd5507efc29255aec69b0eff9bfadba8",
+      "marker": "324/324 patients"
+    },
+    "trajectories": {
+      "status": "pass",
+      "evidenceSha256": "00c0603f41b293c9b700f54adb2d5ebdbe602952796c01e228fccb25874b4de2",
+      "marker": "0 mismatches"
+    },
+    "unit": {
+      "status": "pass",
+      "evidenceSha256": "ca95550e665c9247adedfd7dd81721aa8ce5a5d87f254ca80094d8715ef9b878",
+      "marker": "207 passed"
+    },
+    "agent": {
+      "status": "pass",
+      "evidenceSha256": "7a39d96cfa88ae4ffd90c0e2bea4188d0b75bcc5ecd0c6c5b309e182d8cdc486",
+      "marker": "84 passed"
+    },
+    "browser": {
+      "status": "pass",
+      "evidenceSha256": "a09968d6f2a5fa51f3d53a2d5500462fb0a5cf1cddf11d5e1232a780d840a024",
+      "marker": "16 passed"
+    },
+    "five-roles": {
+      "status": "pass",
+      "evidenceSha256": "a622f901932b0a6178c4f5e5ad5bd052bdd98a35795210e8b5ccb4f3a3e4fc89",
+      "marker": "1 passed"
+    },
+    "aria": {
+      "status": "pass",
+      "evidenceSha256": "0f30249ac4d15dcaf1f80ffb23b320d0ed517b34c6c5a7f86f2d8649558b32fb",
+      "marker": "37 passed"
+    },
+    "wasm-check": {
+      "status": "pass",
+      "evidenceSha256": "294fe99339dfa3bd9aa0551c55b1d50012b73fcd4a4b46e2abf05afef291b255",
+      "marker": "WASM assets current"
+    }
+  },
+  "world": {
+    "schedules": 50,
+    "tasks": 1284,
+    "completed": 1284
+  },
+  "controls": {
+    "screens": 36,
+    "clicked": 357,
+    "tabs": 228,
+    "searches": 39,
+    "disabled": 23
+  },
+  "specCatalog": [
+    {
+      "release": "v1",
+      "sha256": "e7f6b1f58b61f836213c09b88f3e6105c482f4fdacd367ce31f4ba9769c06ffc",
+      "onlyAddition": {
+        "version": "",
+        "label": "Patient list",
+        "id": "unitCensus"
+      },
+      "existingSpecDataUnchanged": true
+    },
+    {
+      "release": "v2",
+      "sha256": "8f53c8f79c65e78a55fc1824011278ff6899abb0ee293dcbeced7d8128c80ac3",
+      "onlyAddition": {
+        "version": "",
+        "label": "Patient list",
+        "id": "unitCensus"
+      },
+      "existingSpecDataUnchanged": true
+    },
+    {
+      "release": "v3",
+      "sha256": "0f95e8f858dd4115e815e6fd5503afa8cbcedb2b128b0eac447321e43c65bbc3",
+      "onlyAddition": {
+        "version": "",
+        "label": "Patient list",
+        "id": "unitCensus"
+      },
+      "existingSpecDataUnchanged": true
+    }
+  ],
+  "rendererComparatorStatements": 51,
+  "screenshots": {
+    "w3Disposition-task.png": "1284282e5e7015c680223e1cae2273a7a29d90c525a667840a12dbd530cb185f",
+    "w3Disposition.png": "b70b9db1eb837e06e66b5c20c8879282d7e02fda1c51897a48d9653ed8dc02dc",
+    "w3OrderSets-task.png": "183ce57149f082ef0179f109192da32317ef13c32f8babad8578348f088a975b",
+    "w3OrderSets.png": "183ce57149f082ef0179f109192da32317ef13c32f8babad8578348f088a975b",
+    "w3Orders-task.png": "2e7b9e0b382431986742bf4e1b04f10b0dc940129078a271e9fb3b4d36884500",
+    "w3Orders.png": "327ae589cb8097dd0a28cbd2b4a43e35028f3fa0bb8bce0aa6ced29f1a654cc8",
+    "w3Provider-chart-results-task.png": "d9dfbcc81fc4a10030efcb7091f3668a734c0dbada2bc4a887176461078394f8",
+    "w3Provider-chart-results.png": "f1c6218e0813c665b8b968fd8ddb9c92bdad8e915867d6fa32c512eae18d59fd",
+    "w3Provider-task.png": "44d0b642cdadc6384cf711119d36ca1e3fedd8844af979a3d28325116620631a",
+    "w3Provider.png": "f1c6218e0813c665b8b968fd8ddb9c92bdad8e915867d6fa32c512eae18d59fd",
+    "w3Sign-task.png": "42c15308f80eb295357979a192ddce1acb51976623d39e014cf682ab6a6dff3d",
+    "w3Sign.png": "a6763c7460fda01515469aa066cafb225a61d24ae63d13ac1f84ede44bbf79d1",
+    "w3TrackBoard-task.png": "6ed99fabe9a2cb61374c1a0ec7d571089ff60ab6658e61f2c1248d837fa6da38",
+    "w3TrackBoard.png": "6ed99fabe9a2cb61374c1a0ec7d571089ff60ab6658e61f2c1248d837fa6da38",
+    "w3Triage-task.png": "41d263fbc7c367e700d6815312d7b2b0def79634b7fd5790700d994e6706baab",
+    "w3Triage.png": "2f5d669b6f0009145eaf571c35fe8f6ff4ee375f286b1c89dd405b121b06470b",
+    "w4Admin-task.png": "1da5f82c8c10d0355f3990996b7077832423b6c644a036d6346d5270413f8d57",
+    "w4Admin.png": "d1745c1302fb360870f0c56012a39d0aeab154a154c1c8ba390fd4c18b05ea97",
+    "w4Flowsheet-task.png": "2974c10f7c40ca50e47c9e0742f195e69b3ae1cbbc9d14362111bce58536e004",
+    "w4Flowsheet.png": "3931afb19dffd0651f563d5d2fa04b3ea7b0d2164239750c0b39a3afec18b247",
+    "w4Handoff-task.png": "48c503a95a95765c17fb649c37b58151caa7d711079e3be6039d5d52026a6c94",
+    "w4Handoff.png": "48c503a95a95765c17fb649c37b58151caa7d711079e3be6039d5d52026a6c94",
+    "w4Mar-chart-results-task.png": "35af9674a0822e78b331da8163ac94c48b5de3d2a1ff03c423d0e471319dfff0",
+    "w4Mar-chart-results.png": "0d12822dbb671832df147a388930fb3691b52cd066b43935f569fd56855983f1",
+    "w4Mar-task.png": "0d12822dbb671832df147a388930fb3691b52cd066b43935f569fd56855983f1",
+    "w4Mar.png": "0d12822dbb671832df147a388930fb3691b52cd066b43935f569fd56855983f1",
+    "w4Worklist-task.png": "1e312a771039fc57dd16a01ce0c1b512abe82b4126fc91f313c315ddb3e14fa6",
+    "w4Worklist.png": "1e312a771039fc57dd16a01ce0c1b512abe82b4126fc91f313c315ddb3e14fa6"
+  },
+  "metricReportSha256": "8906d2fa1c51791e7de2899c998af28db4c2e06a1f158739081c70aba00ae19a"
+}

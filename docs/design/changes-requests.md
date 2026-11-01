@@ -1,5 +1,29 @@
+## Acute numeric-scale choices (2026-11-01)
+
+## Acute administration encounter consistency (2026-11-01)
+
+The selected-dose, MAR and PRN readers now reject an administration with explicitly different or unresolved context despite an exact selected-order reference. Missing optional context still uses the exact order. `acute-projection:v7` invalidates stale read-only payloads. No controls, specs, clinical state, theorem statements or task policies change.
+
+
+Lean now emits the existing code-option payload for the spec-defined ESI 1–5 and pain 0–10 scales. This fixes empty numeric menus without a default, capture, receipt, commit or clinical-rule change. Other unenumerated code systems keep free entry. Native/WASM and browser tests check exact options, no automatic selection and ordinary human code entry. No React choice-set inference or new control kind is introduced.
+
+Presentation follow-up: an empty `present.table` PRN panel retains a generic Record header. Prefer the existing quiet empty-info treatment while retaining its semantic note and every supplied control. The adverse-context screenshots show this minor fallback limitation.
+
+## Acute MAR SIG and PRN projection (2026-11-01)
+
+The acute MAR supplies full dosage directions as Instructions and preserves a coded PRN indication. Both valid FHIR asNeeded choices classify the modeled dosage instruction; only exact patient/encounter/order-linked administrations populate PRN history. The painter accepts Instructions and PRN indication as additive left-hand MAR metadata keys, preserving legacy Frequency support. Neither key is a time column or administration-detail record. No spec, clinical rule or original theorem statement changes.
+
+## Acute nursing draft and navigation review (2026-11-01)
+
+Integrated main `062a4ef` display polish. W4’s fixed normal assessment and “Stable overnight” macros now insert explicit unconfirmed outlines; their public IDs remain stable. Generic layout wrappers keep each supplied field/confirmation pair together without adding a control, and preserve focus after editing. Measured banner height reserves space for retained navigator links. The decorative navigator footer was removed after a screenshot exposed overlap; deep-scroll tests check actual link hit targets. Imaging findings now retain component values and absent reasons. All specs, clinical rules and existing theorem statements are unchanged. The current acute verification receipt records complete green gates and isolated API-input hashes.
+
 # Cross-lane change requests
 
+## Acute imaging projection and banner coverage (2026-11-01)
+
+The focused screenshot also caught a legacy blood-pressure panel joined in array order. It now shares the coded systolic/diastolic reader with structured observations; unknown or mixed-unit components keep their individual labels/units. `node scripts/check-acute-wasm.mjs` checks both original acute source bundles, all reachable role screens and Imaging tabs. Frozen replay extraction now uses four workers, matching this lane’s resource budget.
+
+The acute lane now supplies the existing `imaging` info from patient-bound DiagnosticReport/ImagingStudy resources, preserving report text and exact linked study/observation context. Board availability distinguishes source order/image/report milestones. W3 provider and W3/W4 Chart Review Imaging opt into the existing `present.notes` layout; there is no new control or info catalog item. Exact Bundle full-URL aliases are retained privately for reference resolution, without suffix matching or visible resource IDs. The desktop banner also stacks above the navigator; stronger browser checks test actual coverage rather than only viewport bounds. Existing clinical rules/spec data and theorem signatures remain unchanged.
 ## CHECK conformance repair — 2026-11-01
 
 The five findings below have implementation fixes: CURES waiver membership and
@@ -2331,6 +2355,153 @@ Resolved by the check lane: the generated-type boundary now accepts and preserve
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.
 
+## ACUTE-REALISM-2026-11-01: presentation aliases and selected work items
+
+Acute adopts the `presentation-contract.md` suffixes through
+`Canonical.presentation`: W3 board `edTrackBoard` → `present.trackBoard`,
+W4 shift queue `shiftWorklist` → `present.worklist`, MAR `marSchedule` →
+`present.timeGrid`, history `flowsheetHistory` → `present.flowsheet`, plus
+`present.results`, `present.table` and `present.trend` for existing reviews.
+Please preserve these existing spec info IDs as aliases to the typed FHIR
+projections. They must retain all supplied rows and honor explicit bound payloads.
+The single selected chart has a separate ordinary goto adjacent to each queue;
+no read-only cell claims to open another patient or select a medication.
+
+Remaining data needed beyond the initial presentation contract: triageSummary
+(current Encounter complaint/ESI/arrival and dated vitals), marDoseDetails
+(the selected MedicationRequest's ordered dose/unit/route/timing, separately
+from recorded MedicationAdministration actual values), prnHistory and
+handoffSummary. Missing selected-order identity must not select an arbitrary
+medication merely by drug name. The current FactsContext has no encounter or
+order ID selector. The live adapter already carries this context separately;
+please expose a shared typed selector before claiming exact selection across
+multiple same-drug orders. Never add an active-order-to-Given or generic
+frequency-to-due-time inference.
+
+`Canonical` uses original destination labels and explicit units, preserves
+all component IDs, scans, distinct-nurse checks, modal alerts, commit reviews
+and the separate worklist/MAR/administration path. No hospital spec changes
+are requested. Layout groups are open without extra navigation requirements.
+
+### ACUTE supporting panels / selected-order follow-up
+
+The acute lane now supplies patient-scoped `triageSummary`, `marDoseDetails`,
+`glucoseTrend`, `coagLabs`, `prnHistory` and `handoffSummary` in a clearly separated
+`Render/Fhir.lean` section. They use existing InfoPayload/ArtifactBinding types,
+with the current bundle's documented version digest. No event evidence or human
+capture is synthesized. `FactsContext.record` accepts `selectedEncounterId` and
+`selectedMedicationRequestId`; these are exact selectors, never visible columns.
+The live-session adapter forwards its already-selected Encounter/MedicationRequest
+IDs and retains native payloads unless an explicit version-bound adapter payload
+for the same info replaces one. This resolves acute supporting-panel selection
+without changing a wire type or hospital rule. Missing order identity stays empty;
+the reader never chooses a same-drug order. Named FHIR regressions cover duplicate
+drugs, wrong encounter/patient, ordered-vs-actual dose and missing flags.
+
+`present.trackBoard`, `present.timeGrid`, `present.worklist` and
+`present.flowsheet` still need the presentation lane's FHIR aliases and wrapper.
+The current Blueprint cleanup also strips the old nav group and leaves its goto
+buttons in the workspace. Please preserve real semantic navigation when the shell
+lands; a displayed list item without a click event does not replace a goto button.
+
+### ACUTE populated fallback views
+
+The same separated section now also supplies existing `edTrackBoard`,
+`shiftWorklist`, `marSchedule` and `flowsheetHistory` payloads. This uses the
+presentation contract's human-readable row keys and tags, with no new wire type.
+A scoped bundle yields its scoped patient rows; a full departmental census still
+requires a supplied departmental payload. MAR scheduled cells come only from
+explicit `dosageInstruction.timing.event`; Given/Held/Refused cells come only
+from MedicationAdministration. Same-time source records are retained together.
+Flowsheets use current-encounter observations, grouped by measure/unit with
+explicit time columns. No frequency expansion or inferred overdue threshold.
+These payloads can flow directly into the presentation wrapper once merged;
+they take ordinary explicit-payload precedence over derived fallback rows.
+
+### ACUTE observed shell/control issues for owning lanes
+
+Populated screenshots expose `record:weightToday` in the provenance badge.
+Please keep the semantic provenance metadata, but present its source category
+in clinical language without internal record keys. Generic formatting is enough;
+no human confirmation or source identity should be changed.
+
+Search is a separate functional gap: current `Core/Interp.lean` `basic` handles
+`Event.search` as `(s, .ok)` when a search is shown; State contains no search
+query/results. Semantic `Ui.lean` emits the search field with no value. The
+native **button** audit does not cover search inputs and is not a claim that
+these search fields work. Please supply actual Lean search state/results and
+preserve archived trajectory compatibility, rather than adding a React-only
+search engine. This affects the shared chart search and Find orders composer.
+The acute lane retains the declared controls while this core/shell integration
+is outstanding; removing required search would be an unauthorized scope cut.
+
+
+### ACUTE semantic navigation and note-entry bridge
+
+Acute retains the existing W3/W4 `nav` group in Blueprint cleanup and paints its
+actual component IDs as destination buttons, rather than client-only accordion
+headings. Other workflows retain their prior cleanup until their own migration.
+The generic `UiScreen.nav` contract already contains the component ID and label;
+ARIA fidelity now checks those actual buttons. P2/P3 preset starts are their ED
+board/unit worklist, only when the supplied vendor start was `home`; custom
+starts are retained. No workflow capability or permission changes.
+
+`Canonical.narrative` appends `.narrative` to a text-field tag. `Render.Ui` emits
+`kind: "textarea"`; the generic painter sends the existing ordinary text-entry
+event. No new wire constructor or clinical behavior is introduced. Prefill badges
+now show source category only; the underlying provenance is unchanged. These
+small generic painter edits should be preserved when shell/presentation merges.
+The no-op Core search issue above remains open.
+
+
+### ACUTE structured presentation integration
+
+The acute lane integrates `lane/present` transparently, preserving its info children
+and theorem statements. Source grids can request `wideWorkspace` before their
+`present.*` suffix. `Render.Ui` then omits automatic summary-rail supplements;
+authored side components and required commit reviews remain. This is a program
+layout choice, not CSS hiding of semantic nodes. W3 board and W4 worklist/MAR/
+flowsheet request it. MAR Category is order metadata, not an hourly column.
+Current selected acute vitals/results bind their actual current-encounter rows,
+including explicit empty payloads, to prevent silently substituting historical
+outpatient values. Tied current records are retained. No rule is changed.
+
+
+### ACUTE shared-search resolution
+
+Integrated the shell lane’s `f8280e7` search implementation and `29c42a8` dated
+weight/banner follow-up. Search uses the existing text-entry event and optional
+nonclinical State query metadata. It returns actual Lean-projected matches or an
+explicit empty result; full source/commit panels remain intact. The acute audit
+now exercises all 39 shown, unmasked search fields across v1/v2/v3 and verifies
+semantic feedback plus unchanged captures, receipts, commits and order slot.
+The original no-op legacy search event remains for archived trajectory behavior;
+visible search inputs use the new ordinary-entry path. No new clinical rule.
+
+
+### ACUTE source-context and bedside projection follow-up
+
+Integrated shared complete laboratory rows and `layout.overview`; new acute
+programs use the standard hint, with compatibility for the earlier acute hint.
+The banner, current result/vital panels, worklist, PRN history and handoff now
+share exact encounter selection. Missing/ambiguous selection cannot substitute
+an older visit. Projection versions also include order/encounter/day selectors.
+
+Acute MAR reads explicit order-linked Task due times/business statuses without
+turning Task completion into an actual dose. Bedside flowsheets include exam and
+survey observations, components, I&O and narrative assessments. Raw lab values,
+comparators, components, intervals and source flags survive the acute payload.
+Existing info IDs and ordinary source actions are unchanged.
+
+Corrected source terminology in the original review fixtures: measured oral
+intake is LOINC 9000-1; point urine output is 9187-6; 9192-6 is a 24-hour rate.
+A generic Letter (51852-2) is not an SBAR handoff. The acute handoff now uses an
+explicit local code and encounter reference. No frozen world or trajectory data
+was changed. Desktop patient context is sticky; narrow layouts retain document
+flow. Research links and source regressions are in the acute research section.
+# Acute patient-list integration (2026-11-01, second layout pass)
+
+The acute lane adds the bound `unitCensus` projection and its read-only display-catalog entry. It shows the selected patient's encounter/assignment and supplied open-task count, while `shiftWorklist` keeps the complete current-encounter Task rows. The existing MAR action targets the patient row; no patient change is inferred from task order. The source is still a patient chart, not a department feed. W3/W4 additionally opt into `layout.activities.nav` to use their actual navigator without a redundant generated progress strip. Missing/empty navigation retains progress. No clinical rule, required review, human-only constraint or D-rule changes.
 ## AMB realism integration (2026-11-01)
 
 - Ambulatory screens select `present.schedule/messages/folderList/growth/table`
@@ -2513,6 +2684,9 @@ To canonical/presentation lanes, against main `81691fb`:
 All changes here are presentation only; no FHIR facts, clinical requirements,
 permissions, human-only flags, input values or commit/review rules change.
 
+### ACUTE shared-list integration (2026-11-01)
+
+The shared world consumer now supplies dated assigned-patient and unit-census queues. `shiftWorklist` retains that shared queue contract. The additive optional `shiftTasks` info catalog entry carries the existing source-bound selected-encounter Task rows, preventing the queue overlay from replacing their due times/statuses. The shared worklist presentation draws these records; no separate painter, clinical rule or synthetic completion state is introduced.
 ### Shell → content: in-EHR patient opening integration (1 Nov, 07:53)
 
 The browser now opens a persona/program/day only. It has no external patient
@@ -2553,3 +2727,6 @@ After merging `32369320` / `fc291cbe`, the patient-scope filter removes legitima
 The shared painter now supports source `columns` containing at least three read-only `section` cards as a compact 3/2/1-column flow, leaving their DOM/accessibility order intact. `layout.chartIndex.columns` and the storyboard sections in `Density.lean` fit this contract. Icons decorate actual activity buttons; no toolbar controls are invented. Twelve-pixel type is the retained fidelity floor. CSS is isolated in `app/src/ehr/ui/dense-shell.css`.
 
 Before captures found that the first P3 replay My Patients / MAR row (Leanne Harber) has an empty `marSchedule` at the world day, while the department graph contains no MedicationRequest resources. Please check the source projection/context for representative active MAR rows when adding the dense baseline. The shell will not fabricate medications, hide the empty state, or fill clinical inputs for screenshots. A different appropriately populated patient can be selected through the native Patient Lookup / worklist for a representative screenshot.
+## DEMO-HONESTY: archived chart display names (painter owner)
+
+Archived replay panes can expose raw values `disch`, `given`, `Last encounter SS`, and `Department primary-care`. Render these as Discharged, Administered, Short stay, and Primary care respectively while retaining source codes in inspector data. Apply in the shared semantic display formatter, including dashboard/browser replay. DEMO-HONESTY leaves app/src/ehr untouched as required.

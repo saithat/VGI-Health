@@ -153,15 +153,18 @@ def unitOf (q : Json) : Option UnitKind :=
 /-- A resource's type. -/
 def resourceType (r : Json) : String := str r "resourceType"
 
-/-- Keep server IDs and the Patient's declared bundle alias. Resources without
-an ID use their fullUrl. The private alias stays inside the FHIR adapter. -/
+/-- Normalize identity: resources without an ID use their fullUrl. Every resource
+keeps its exact Bundle fullUrl for local reference resolution, and the Patient also
+keeps its declared bundle alias. These private keys are never display values. -/
 def entryResource (e : Json) : Json :=
   let r := field e "resource"
   match r with
   | .obj _ =>
-    let r := if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
-    if resourceType r == "Patient" && str e "fullUrl" != "" then
-      r.setObjVal! "_bundleFullUrl" (.str (str e "fullUrl")) else r
+    let normalized := if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+    let withUrl := if str e "fullUrl" == "" then normalized
+      else normalized.setObjVal! "_vgiBundleFullUrl" (.str (str e "fullUrl"))
+    if resourceType withUrl == "Patient" && str e "fullUrl" != "" then
+      withUrl.setObjVal! "_bundleFullUrl" (.str (str e "fullUrl")) else withUrl
   | _ => r
 
 /-- **The resources of a bundle**: normalized `entry[i].resource`, in order. -/
@@ -485,6 +488,23 @@ def isVital (r : Json) : Bool := isObservation r && (categoryCodes r).contains "
 /-- A laboratory Observation. -/
 def isLab (r : Json) : Bool := isObservation r && (categoryCodes r).contains "laboratory"
 
+/-- Only explicitly coded BP components can form a systolic/diastolic pair.
+FHIR slices are unordered; a component's array position never supplies its meaning. -/
+def observationBpValue? (r : Json) : Option (String × String) := do
+  let loinc := fun cc code => (codings cc).any
+    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
+  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
+      |>.any (fun key => field r key != .null)
+  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
+    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
+    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
+    let s := field systolic "valueQuantity"
+    let d := field diastolic "valueQuantity"
+    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" ||
+        qtyUnitText s != qtyUnitText d || str s "code" != str d "code" then none
+    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
+
 /-- The value of an observation as text, its unit, and its value × 100.
 Blood pressure (components) reads `"128/82"`. -/
 def obsValue (r : Json) : String × String × Option Nat :=
@@ -493,11 +513,27 @@ def obsValue (r : Json) : String × String × Option Nat :=
   else
     let comps := arr r "component"
     if !comps.isEmpty then
-      let qs := comps.map (field · "valueQuantity")
-      ("/".intercalate (qs.map qtyText), qtyUnitText (qs.headD .null), none)
+      match observationBpValue? r with
+      | some (value, unit) => (value, unit, none)
+      | none =>
+        let values := comps.map fun component =>
+          let quantity := field component "valueQuantity"
+          let label := ccText (field component "code")
+          let value := if quantity != .null then str quantity "comparator" ++ qtyText quantity
+            else if field component "valueCodeableConcept" != .null then ccText (field component "valueCodeableConcept")
+            else if str component "valueString" != "" then str component "valueString" else
+              match field component "valueInteger", field component "valueBoolean" with
+              | .num n, _ => toString n
+              | _, .bool b => if b then "Yes" else "No"
+              | _, _ => ""
+          let unit := qtyUnitText quantity
+          (if label == "" then "Component" else label) ++ ": " ++
+            (if value == "" then "Not recorded" else value) ++ (if unit == "" then "" else " " ++ unit)
+        ("; ".intercalate values, "", none)
     else
       let cc := field r "valueCodeableConcept"
       if cc != .null then (ccText cc, "", none) else (str r "valueString", "", none)
+
 
 /-! ## Labs -/
 
@@ -884,6 +920,7 @@ def coverageOf (rs : List Json) : String :=
     | some e => str (field (first e "insurance") "coverage") "display"
     | none => ""
 
+
 /-- Resolve a reference against the supplied bundle, without guessing a patient. -/
 def referenced? (rs : List Json) (ref : Json) : Option Json :=
   let key := str ref "reference"
@@ -1164,22 +1201,6 @@ def labResultRowsFor (r : Json) : List LabResultRow :=
 /-- Full clinical result history. Latest-result aggregates remain a separate legacy API. -/
 def labResultRows (rs : List Json) : List LabResultRow :=
   newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
-
-/-- Only explicitly coded BP components can form a systolic/diastolic pair.
-FHIR slices are unordered; a component's array position never supplies its meaning. -/
-def observationBpValue? (r : Json) : Option (String × String) := do
-  let loinc := fun cc code => (codings cc).any
-    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
-  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
-    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
-      |>.any (fun key => field r key != .null)
-  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
-    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
-    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
-    let s := field systolic "valueQuantity"
-    let d := field diastolic "valueQuantity"
-    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" || qtyUnitText s != qtyUnitText d then none
-    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
 
 /-- Source values include assessments, absent reasons and censored quantities. -/
 def observationRow (r : Json) : ObservationRow :=
@@ -1531,6 +1552,604 @@ end Ambulatory
 
 /-! ## Facts and display -/
 
+/-! ## Acute-care supporting information
+
+These are read-only projections of supplied resources. Selection uses exact
+resource references; no scan, signature, due time or clinical event is created.
+The record adapter may supply selectedEncounterId and selectedMedicationRequestId.
+They are selectors, never visible clinical columns or evidence of completion. -/
+
+/-- Match a FHIR reference to the exact supplied resource, including fixture URNs. -/
+def acuteRefersTo (reference resource : Json) : Bool :=
+  let id := str resource "id"
+  let ref := str reference "reference"
+  id != "" && ref != "" && (ref == id || ref == resourceType resource ++ "/" ++ id ||
+    ref == str resource "_vgiBundleFullUrl")
+
+/-- Encounter links differ by resource: direct, administration context, or document context. -/
+def acuteInEncounter (resource encounter : Json) : Bool :=
+  acuteRefersTo (field resource "encounter") encounter ||
+  acuteRefersTo (field resource "context") encounter ||
+  (arr (field resource "context") "encounter").any (acuteRefersTo · encounter)
+
+/-- An exact order link can supply missing administration context, but cannot
+override an explicitly different or unresolved administration context. -/
+def acuteAdministrationMatchesOrder (encounter order administration : Json) : Bool :=
+  acuteRefersTo (field administration "request") order &&
+    (field administration "context" == .null ||
+      acuteRefersTo (field administration "context") encounter)
+
+/-- Patient-scoped sources; another patient's records never enter these panels. -/
+def acutePatientResources (rs : List Json) (patient : Json) : List Json :=
+  rs.filter fun r => acuteRefersTo (field r "subject") patient ||
+    acuteRefersTo (field r "patient") patient || acuteRefersTo (field r "for") patient
+
+/-- Observation and short-stay bed encounters use the same acute chart context. -/
+def acuteCareClass (code : String) : Bool :=
+  ["EMER", "IMP", "ACUTE", "OBSENC", "SS", "emergency", "inpatient", "observation"].contains code
+
+/-- A selected encounter or ongoing acute stay needs exact encounter resolution. -/
+def acuteSelectionRequired (ctx : FactsContext) (rs : List Json) (patient : Json) : Bool :=
+  ctx.encounterId?.isSome || (ctx.record.lookup "selectedEncounterId").isSome ||
+    (ofType "Encounter" (acutePatientResources rs patient)).any (fun encounter =>
+      str encounter "status" == "in-progress" && acuteCareClass (str (field encounter "class") "code"))
+
+/-- An explicit encounter selector is authoritative. Otherwise use only an
+ongoing acute encounter for this patient, never a historical clinic visit.
+Ambiguous latest encounters require selection instead of depending on bundle order. -/
+def acuteEncounter (ctx : FactsContext) (rs : List Json) (patient : Json) : Option Json :=
+  let encounters := (ofType "Encounter" (acutePatientResources rs patient)).filter
+    (fun encounter => str encounter "status" != "entered-in-error")
+  match ctx.encounterId?.orElse (fun _ => ctx.record.lookup "selectedEncounterId") with
+  | some id => encounters.find? (fun r => str r "id" == id)
+  | none => do
+    let ongoing := encounters.filter fun r => str r "status" == "in-progress" &&
+      acuteCareClass (str (field r "class") "code")
+    let newest ← latestBy (fun r => str (field r "period") "start") ongoing
+    let [only] := ongoing.filter (fun r => str (field r "period") "start" == str (field newest "period") "start") | none
+    some only
+
+/-- An explicit or ongoing acute encounter determines chart context. Missing or
+ambiguous acute selection cannot silently become a different historical visit. -/
+def selectedChartEncounter (ctx : FactsContext) (rs : List Json) (patient : Json) : Option Json :=
+  let patientRecords := acutePatientResources rs patient
+  if acuteSelectionRequired ctx rs patient
+  then acuteEncounter ctx rs patient
+  else latestEncounter patientRecords
+
+/-- The medication task must name its exact order. A same-drug order is not a
+substitute, even if it is the only current order in the supplied chart. -/
+def acuteMedicationRequest (ctx : FactsContext) (rs : List Json) (patient : Json) : Option Json := do
+  let id ← ctx.record.lookup "selectedMedicationRequestId"
+  let order ← (ofType "MedicationRequest" (acutePatientResources rs patient)).find?
+    (fun r => str r "id" == id && str r "status" != "entered-in-error")
+  let encounter ← acuteEncounter ctx rs patient
+  if acuteRefersTo (field order "encounter") encounter then some order else none
+
+/-- Recorded administration status remains distinct from an active medication order. -/
+def acuteAdministrationStatus (r : Json) : String :=
+  match str r "status" with
+  | "completed" => "Given"
+  | "not-done" =>
+    let reasons := (arr r "statusReason").map firstCode
+    if reasons.contains "refused" then "Refused"
+    else if reasons.contains "held" then "Held" else "Not given"
+  | "on-hold" => "Held"
+  | "in-progress" => "In progress"
+  | other => other
+
+/-- Recorded dose, route, site and time come only from MedicationAdministration.
+Held/refused records do not imply that their documented dose was given. -/
+def acuteAdministrationRow (r : Json) : List (String × String) :=
+  let dosage := field r "dosage"
+  [("Medication", ccText (field r "medicationCodeableConcept")),
+   ("Recorded dose", qtyText (field dosage "dose")),
+   ("Unit", qtyUnitText (field dosage "dose")),
+   ("Route", ccText (field dosage "route")), ("Site", ccText (field dosage "site")),
+   ("Recorded time", let actual := str r "effectiveDateTime"
+     if actual != "" then actual else str (field r "effectivePeriod") "start"),
+   ("Status", acuteAdministrationStatus r),
+   ("Reason", "; ".intercalate ((arr r "statusReason").map ccText))]
+
+/-- A lab value carries its recorded flag/range/time. No clinical threshold is
+inferred here and unlike units are never joined into a computed trend. -/
+def acuteLabRow (r : Json) : List (String × String) :=
+  let unit := qtyUnitText (field r "valueQuantity")
+  [("Test", ccText (field r "code")), ("Value", labResultValue r), ("Unit", unit),
+   ("Flag", labSourceFlags r),
+   ("Range", "; ".intercalate ((arr r "referenceRange").map (labRangeText unit))),
+   ("Recorded", obsWhen r), ("Status", str r "status")]
+
+/-- A component retains its own value, unit, range and interpretation and its report time. -/
+def acuteLabComponentRow (report component : Json) : List (String × String) :=
+  (acuteLabRow component).map fun (key, value) =>
+    (key, if key == "Test" then ccText (field report "code") ++ " • " ++ value
+      else if key == "Recorded" then obsWhen report
+      else if key == "Status" then str report "status" else value)
+
+/-- Full reports and their component results remain separate, complete rows. -/
+def acuteLabRowsFor (report : Json) : List (List (String × String)) :=
+  acuteLabRow report :: (arr report "component").map (acuteLabComponentRow report)
+
+/-- Glucose/coagulation selection also recognizes a coded component of a report. -/
+def acuteLabsByCodes (reports : List Json) (codes : List String) : List (List (String × String)) :=
+  reports.flatMap fun report =>
+    if codes.any (hasCode (field report "code")) then acuteLabRowsFor report else
+      ((arr report "component").filter fun component => codes.any (hasCode (field component "code"))).map
+        (acuteLabComponentRow report)
+
+/-- Latest vital signs belong to the selected encounter. Conflicting records
+at the same latest timestamp are retained together. -/
+def acuteVitalRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter =>
+    let vitals := (acutePatientResources rs patient).filter fun r => isVital r &&
+      acuteRefersTo (field r "encounter") encounter
+    let latest := vitals.filter fun r =>
+      let sameCode := vitals.filter fun other => firstCode (field other "code") == firstCode (field r "code")
+      (latestBy obsWhen sameCode).any fun newest => obsWhen r == obsWhen newest
+    latest.map fun r =>
+        let (value, unit, _) := obsValue r
+        [("Vital sign", (vitalRow r).name), ("Value", value),
+         ("Unit", unit), ("Recorded", obsWhen r)]
+
+/-- Triage context and its dated vitals come from the selected encounter. -/
+def acuteTriageRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter =>
+    [[("Chief complaint", ccText (first encounter "reasonCode")),
+      ("Acuity", ccText (field encounter "priority")),
+      ("Arrival", str (field encounter "period") "start"),
+      ("Arrival mode", ccText (field (field encounter "hospitalization") "admitSource")),
+      ("Location", (encRow encounter).location)]] ++
+    acuteVitalRows ctx rs patient
+
+/-- Ordered details and prior actual administrations are separate rows. Timing
+events are explicit source times, never an expansion of a frequency sentence. -/
+def acuteDoseRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteMedicationRequest ctx rs patient with
+  | none => []
+  | some order =>
+    let instruction := first order "dosageInstruction"
+    let dose := field (first instruction "doseAndRate") "doseQuantity"
+    [[("Ordered medication", medName order), ("Ordered dose", qtyText dose),
+      ("Unit", qtyUnitText dose), ("Route", ccText (field instruction "route")),
+      ("Instructions", sigText order),
+      ("Scheduled times (recorded local time)", "; ".intercalate ((arr (field instruction "timing") "event").filterMap fun j =>
+        match j with | .str t => some (dayOf t ++ " " ++ sub t 11 5) | _ => none)),
+      ("Order status", str order "status")]] ++
+    ((ofType "MedicationAdministration" (acutePatientResources rs patient)).filter fun r =>
+      str r "status" != "entered-in-error" &&
+      (acuteEncounter ctx rs patient).any (fun encounter =>
+        acuteAdministrationMatchesOrder encounter order r)).map acuteAdministrationRow
+
+/-- A participant is assigned only from its explicit role coding. -/
+def acuteParticipant (encounter : Json) (role : String) : String :=
+  "; ".intercalate (((arr encounter "participant").filter fun participant =>
+    (arr participant "type").any (hasCode · role)).map fun participant =>
+      str (field participant "individual") "display")
+
+/-! ### Acute imaging reports and study availability -/
+
+/-- Classification uses an explicit service category, never a test-name guess. -/
+def acuteCategory (r : Json) (codes : List String) : Bool :=
+  (arr r "category").any fun category =>
+    codes.any (fun code => hasCode category code || (ccText category).toLower == code.toLower)
+
+/-- An imaging order and a radiology report are different source resources. -/
+def acuteImagingOrder (r : Json) : Bool :=
+  resourceType r == "ServiceRequest" && acuteCategory r ["imaging", "RAD", "radiology"] &&
+    !["entered-in-error", "revoked"].contains (str r "status")
+
+/-- A report can identify its imaging service directly or through an exact order link. -/
+def acuteImagingReport (sources : List Json) (r : Json) : Bool :=
+  resourceType r == "DiagnosticReport" && !["entered-in-error", "cancelled"].contains (str r "status") &&
+    (acuteCategory r ["RAD", "imaging", "radiology"] ||
+      (!acuteCategory r ["LAB", "laboratory"] && (arr r "basedOn").any (fun reference => sources.any (fun order =>
+        acuteImagingOrder order && acuteRefersTo reference order))))
+
+/-- Images being available does not imply that a radiologist's report is final. -/
+def acuteImagingStudy (r : Json) : Bool :=
+  resourceType r == "ImagingStudy" && !["entered-in-error", "cancelled"].contains (str r "status")
+
+/-- Use a supplied clinician/organization name, never a logical reference as a name. -/
+def acuteReferenceName (sources : List Json) (reference : Json) : String :=
+  let supplied := str reference "display"
+  if supplied != "" then supplied else
+  match sources.filter (acuteRefersTo reference) with
+  | [resource] => if resourceType resource == "Organization" then str resource "name"
+    else if resourceType resource == "Practitioner"
+      then displayName resource else ""
+  | _ => ""
+
+/-- Only inline plain-text attachments are decoded. Other attachments remain
+explicitly unavailable; no network fetch or fake viewer action is added. -/
+def acuteReportAttachment (attachment : Json) : String :=
+  let title := str attachment "title"
+  let contentType := str attachment "contentType"
+  let name := if title == "" then "Report attachment" else title
+  if (((contentType.splitOn ";").headD "").trimAscii.toString.toLower) == "text/plain"
+  then name ++ ": " ++ noteAttachmentText attachment
+  else name ++ (if contentType == "" then "" else " (" ++ contentType ++ ")") ++ " — preview unavailable"
+
+/-- A report retains its full conclusion, coded impressions, explicitly linked
+patient observations and inline report text. No conclusion is inferred from images. -/
+def acuteImagingText (sources : List Json) (report : Json) : String :=
+  let findings := (arr report "result").flatMap fun reference =>
+    (sources.filter fun resource => resourceType resource == "Observation" &&
+      !["entered-in-error", "cancelled"].contains (str resource "status") && acuteRefersTo reference resource).flatMap fun result =>
+        (labResultRowsFor result).map fun row =>
+          row.name ++ ": " ++ row.value ++ (if row.unit == "" then "" else " " ++ row.unit)
+  "\n".intercalate (([str report "conclusion"] ++ (arr report "conclusionCode").map ccText ++
+    findings ++ (arr report "presentedForm").map acuteReportAttachment).filter (· != ""))
+
+/-- Study details preserve acquisition status, modality and date separately from
+the report status. A report may explicitly reference more than one study. -/
+def acuteStudyFields (study : Json) : List (String × String) :=
+  [("Study", str study "description"), ("Image status", str study "status"),
+   ("Acquired", str study "started"),
+   ("Modality", "; ".intercalate ((arr study "modality").map fun coding =>
+      let label := str coding "display"; if label == "" then str coding "code" else label))]
+
+/-- The chart contains full patient imaging history. Current encounter context is
+identified by an exact link; unrelated patients and invalidated reports are excluded. -/
+def acuteImagingRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  let sources := acutePatientResources rs patient
+  let reports := sources.filter (acuteImagingReport sources)
+  let studies := sources.filter acuteImagingStudy
+  let context := fun resource =>
+    if field resource "encounter" == .null then "Encounter not recorded"
+    else match selectedChartEncounter ctx rs patient with
+      | none => "Encounter not selected"
+      | some selected => if acuteInEncounter resource selected then "Selected encounter" else "Another encounter"
+  let reportRows := reports.map fun report =>
+    let interpreters := (arr report "resultsInterpreter").map (acuteReferenceName rs)
+    let author := "; ".intercalate ((if interpreters.any (· != "") then interpreters
+      else (arr report "performer").map (acuteReferenceName rs)).filter (· != ""))
+    let linked := studies.filter fun study => (arr report "imagingStudy").any (acuteRefersTo · study)
+    [("Title", let title := ccText (field report "code"); if title == "" then "Radiology report" else title),
+     ("Type", "Radiology report"), ("Date", obsWhen report), ("Reported", str report "issued"),
+     ("Author", author), ("Status", str report "status"), ("Encounter", context report),
+     ("Text", acuteImagingText sources report)] ++ linked.flatMap acuteStudyFields
+  let studyRows := (studies.filter fun study =>
+    !reports.any (fun report => (arr report "imagingStudy").any (acuteRefersTo · study))).map fun study =>
+      [("Title", let title := str study "description"; if title == "" then "Imaging study" else title),
+       ("Type", "Imaging study"), ("Date", str study "started"),
+       ("Author", "; ".intercalate (((arr study "interpreter").map (acuteReferenceName rs)).filter (· != ""))),
+       ("Status", str study "status"), ("Encounter", context study)] ++ acuteStudyFields study
+  newestFirst (fun row => (row.lookup "Date").getD "") (reportRows ++ studyRows)
+
+/-- Board availability reports source milestones, not completion of every order. -/
+def acuteImagingAvailability (sources : List Json) (lookupSources : List Json := sources) : String :=
+  let reports := sources.filter (acuteImagingReport lookupSources)
+  if reports.any (fun r => ["final", "amended", "corrected", "appended"].contains (str r "status"))
+    then "Report available"
+  else if reports.any (fun r => ["partial", "preliminary"].contains (str r "status")) then "Preliminary report"
+  else if sources.any (fun r => acuteImagingStudy r && str r "status" == "available") then "Images available"
+  else if sources.any (fun r => acuteImagingOrder r && str r "status" == "active") then "Ordered" else ""
+
+/-- A supplied active ED encounter is one board row. Missing assignments, LOS
+and disposition remain empty; no default acuity or progress is invented. -/
+def acuteBoardRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  let encounters := (ofType "Encounter" (acutePatientResources rs patient)).filter fun encounter =>
+    ["EMER", "emergency"].contains (str (field encounter "class") "code") &&
+    ["arrived", "triaged", "in-progress", "onleave"].contains (str encounter "status")
+  let selected := fun encounter => (acuteEncounter ctx rs patient).any
+    (fun current => str encounter "id" == str current "id")
+  -- The selected encounter is first for orientation. Opening remains attached
+  -- to its separate exact-selector summary, never another encounter's board row.
+  ((encounters.filter selected) ++ (encounters.filter fun encounter => !selected encounter)).map fun encounter =>
+    let sources := (acutePatientResources rs patient).filter fun r =>
+      acuteRefersTo (field r "encounter") encounter
+    [("Room", (encRow encounter).location), ("Patient", displayName patient),
+     ("Age/sex", (if str patient "birthDate" == "" then "Age not recorded"
+       else toString (ageYears (str patient "birthDate") ctx.today)) ++ " / " ++ sexOf patient),
+     ("Chief complaint", ccText (first encounter "reasonCode")),
+     ("Acuity", ccText (field encounter "priority")), ("Arrival", str (field encounter "period") "start"),
+     ("LOS", " ".intercalate ([qtyText (field encounter "length"), qtyUnitText (field encounter "length")].filter (· != ""))),
+     ("RN", acuteParticipant encounter "RN"), ("Provider", acuteParticipant encounter "ATND"),
+     ("Labs", if sources.any isLab then "Results available" else ""),
+     ("Imaging", acuteImagingAvailability sources (acutePatientResources rs patient)),
+     ("Disposition", ccText (field (field encounter "hospitalization") "dischargeDisposition")),
+     ("Status", str encounter "status")]
+
+/-- A shift queue uses exact patient and encounter bindings, not a prior admission. -/
+def acuteTasks (ctx : FactsContext) (rs : List Json) (patient : Json) : List Json :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter => (ofType "Task" (acutePatientResources rs patient)).filter fun task =>
+      !["entered-in-error", "cancelled"].contains (str task "status") && acuteInEncounter task encounter
+
+/-- A patient-list row is bound to the selected chart, not the first task.
+The count includes only source tasks with an explicit open status. -/
+def acuteCensusRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter =>
+    let openTasks := (acuteTasks ctx rs patient).filter fun task =>
+      ["draft", "requested", "received", "accepted", "ready", "in-progress", "on-hold"].contains (str task "status")
+    [[("Room", (encRow encounter).location), ("Patient", displayName patient),
+      ("Age/sex", (if str patient "birthDate" == "" then "Age not recorded"
+        else toString (ageYears (str patient "birthDate") ctx.today)) ++ " / " ++ sexOf patient),
+      ("RN", acuteParticipant encounter "RN"), ("Attending", acuteParticipant encounter "ATND"),
+      ("Reason for visit", ccText (first encounter "reasonCode")),
+      ("Open tasks", toString openTasks.length)]]
+
+/-- The worklist uses supplied Task dates and states, never a completion mark
+from visiting a screen. Business status remains distinct from record status. -/
+def acuteWorklistRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  (acuteTasks ctx rs patient).map fun task =>
+    [("Due", str (field (field task "restriction") "period") "end"),
+     ("Patient", displayName patient),
+     ("Task", let description := str task "description"
+       if description != "" then description else ccText (field task "code")),
+     ("Priority", str task "priority"), ("Status", str task "status"),
+     ("Owner", str (field task "owner") "display")] ++
+    (let business := ccText (field task "businessStatus")
+      if business == "" then [] else [("Task status", business)])
+
+/-- Display recorded wall-clock minutes with their supplied UTC offset. -/
+def acuteTimeColumn (time : String) : String :=
+  if time.length < 16 then if time == "" then "Time not recorded" else time else
+  let offset := sub time (time.length - 6) 6
+  let zone := if time.endsWith "Z" then " UTC"
+    else if offset.startsWith "+" || offset.startsWith "-" then " " ++ offset else ""
+  dayOf time ++ " " ++ sub time 11 5 ++ zone
+
+/-- Recorded times are grouped into hour columns; this does not associate an
+actual administration with a planned dose. The original minute remains in text. -/
+def acuteHourColumn (time : String) : String :=
+  let label := acuteTimeColumn time
+  if time.length < 16 then label else sub label 0 13 ++ ":00" ++ sub label 16 label.length
+
+/-- The MAR's selected calendar day is explicit in the supplied context. Unknown
+times remain visible, rather than being assigned to an invented hour. -/
+def acuteMarDay (ctx : FactsContext) (time : String) : Bool :=
+  ctx.today == "" || time.length < 10 || dayOf time == ctx.today
+
+/-- One actual record retains its exact minute, dose, route, site and reason. -/
+def acuteAdminCell (ctx : FactsContext) (administration : Json) : Option (String × String) :=
+  let values := acuteAdministrationRow administration
+  let time := (values.lookup "Recorded time").getD ""
+  if str administration "status" == "entered-in-error" ||
+      (!acuteMarDay ctx time && str administration "status" != "in-progress") then none else
+  some (acuteHourColumn time,
+    " · ".intercalate ([acuteAdministrationStatus administration,
+      if time.length ≥ 16 then sub time 11 5 else "Time not recorded",
+      " ".intercalate ([(values.lookup "Recorded dose").getD "", (values.lookup "Unit").getD ""].filter (· != "")),
+      (values.lookup "Route").getD "", (values.lookup "Site").getD "",
+      (values.lookup "Reason").getD ""].filter (· != "")))
+
+/-- An order-linked Task can supply a recorded due time/status. Task completion
+is not an actual dose, and an execution start never substitutes for a due time. -/
+def acuteMarTaskEvents (ctx : FactsContext) (sources : List Json) (order : Json) : List (String × String) :=
+  let encounter := sources.find? fun resource => resourceType resource == "Encounter" &&
+    acuteRefersTo (field order "encounter") resource
+  ((ofType "Task" sources).filter fun task => str task "intent" == "order" &&
+    !["cancelled", "entered-in-error"].contains (str task "status") &&
+    acuteRefersTo (field task "focus") order && encounter.any (acuteInEncounter task)).filterMap fun task =>
+      let due := str (field (field task "restriction") "period") "end"
+      if !acuteMarDay ctx due || due.length < 16 then none else
+        let business := ccText (field task "businessStatus")
+        let label := if ["due", "overdue", "future", "scheduled"].contains business.toLower
+          then business else "Task " ++ str task "status"
+        some (due, label ++ " · " ++ sub due 11 5)
+
+/-- An order has only explicit timing events, recorded due tasks and referenced
+actual records. A Task status never becomes a Given administration. -/
+def acuteMarCells (ctx : FactsContext) (sources : List Json) (order : Json) : List (String × String) :=
+  let instruction := first order "dosageInstruction"
+  let tasks := acuteMarTaskEvents ctx sources order
+  let encounter := sources.find? fun resource => resourceType resource == "Encounter" &&
+    acuteRefersTo (field order "encounter") resource
+  ((arr (field instruction "timing") "event").filterMap fun event => match event with
+      | .str time => if acuteMarDay ctx time && !tasks.any (·.1 == time) then
+          some (acuteHourColumn time, "Scheduled · " ++ (if time.length ≥ 16 then sub time 11 5 else time))
+        else none
+      | _ => none) ++ tasks.map (fun (time, status) => (acuteHourColumn time, status)) ++
+    ((ofType "MedicationAdministration" sources).filter fun administration =>
+      encounter.any (fun current =>
+        acuteAdministrationMatchesOrder current order administration)).filterMap (acuteAdminCell ctx)
+
+/-- Empty hourly axis cells are layout, never scheduled doses. Separate supplied
+offsets remain separate axes; this code performs no time-zone conversion. -/
+def acuteMarAxis (cells : List (String × String)) : List String :=
+  let labels := (cells.map (·.1)).eraseDups
+  let timed := labels.filter fun label => label.length ≥ 16 && (sub label 11 2).toNat?.any (· < 24)
+  let axes := (timed.map fun label => (sub label 0 10, sub label 16 label.length)).eraseDups
+  let hours := axes.flatMap fun (day, zone) =>
+    let values := (timed.filter fun label => sub label 0 10 == day && sub label 16 label.length == zone).filterMap
+      (fun label => (sub label 11 2).toNat?)
+    match values.head? with
+    | none => []
+    | some first =>
+      let lo := min 23 (values.foldl min first)
+      let hi := min 23 (values.foldl max first)
+      (List.range (hi - lo + 1)).map fun n =>
+        day ++ " " ++ (if lo + n < 10 then "0" else "") ++ toString (lo + n) ++ ":00" ++ zone
+  (hours ++ labels.filter (fun label => !timed.contains label)).eraseDups.mergeSort (· ≤ ·)
+
+/-- FHIR permits either a Boolean or a coded PRN condition. A supplied Boolean
+keeps its explicit meaning when a malformed source contains both choices. -/
+def acutePrnInstruction (instruction : Json) : Bool :=
+  match field instruction "asNeededBoolean" with
+  | .bool value => value
+  | .null => match field instruction "asNeededCodeableConcept" with
+    | .obj _ => true
+    | _ => false
+  | _ => false
+
+/-- The selected day's MAR uses hourly columns with exact times inside cells.
+Unmatched actual records stay separate when their context explicitly identifies
+the selected encounter. No same-drug matching or frequency expansion occurs. -/
+def acuteMarRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter =>
+    let sources := acutePatientResources rs patient
+    let orders := (ofType "MedicationRequest" sources).filter fun order =>
+      str order "status" != "entered-in-error" && acuteRefersTo (field order "encounter") encounter
+    let unmatched := (ofType "MedicationAdministration" sources).filter fun administration =>
+      acuteRefersTo (field administration "context") encounter &&
+      !orders.any (acuteRefersTo (field administration "request"))
+    let orphanCells := unmatched.filterMap (acuteAdminCell ctx)
+    let times := acuteMarAxis ((orders.flatMap (acuteMarCells ctx sources)) ++ orphanCells)
+    (orders.map fun order =>
+      let instruction := first order "dosageInstruction"
+      let dose := field (first instruction "doseAndRate") "doseQuantity"
+      let cells := acuteMarCells ctx sources order
+      [("Medication", medName order), ("Dose", qtyText dose ++ " " ++ qtyUnitText dose),
+       ("Route", ccText (field instruction "route")), ("Instructions", sigText order)] ++
+       (let reason := ccText (field instruction "asNeededCodeableConcept")
+        if acutePrnInstruction instruction && field instruction "asNeededBoolean" == .null && reason != ""
+          then [("PRN indication", reason)] else []) ++
+       [("Category", if acutePrnInstruction instruction then "PRN"
+         else if (arr (field instruction "timing") "event").isEmpty then "Not recorded" else "Scheduled"),
+       ("Order status", str order "status")] ++ times.flatMap fun time =>
+         let records := cells.filter (·.1 == time)
+         if records.isEmpty then [(time, "")] else records) ++
+    unmatched.filterMap fun administration => do
+      let cell ← acuteAdminCell ctx administration
+      let values := acuteAdministrationRow administration
+      some ([("Medication", (values.lookup "Medication").getD ""),
+        ("Dose", (values.lookup "Recorded dose").getD "" ++ " " ++ (values.lookup "Unit").getD ""),
+        ("Route", (values.lookup "Route").getD ""), ("Instructions", ""),
+        ("Category", "Recorded administration"), ("Order status", "Order unavailable in this encounter")] ++
+        times.map fun time => (time, if cell.1 == time then cell.2 else ""))
+
+/-- Nursing flowsheets include vitals, examinations, assessments and I&O.
+Laboratory data remains in Results, not silently relabeled as a bedside assessment. -/
+def acuteFlowsheetObservation (r : Json) : Bool :=
+  isObservation r && !isLab r &&
+    (categoryCodes r).any (["vital-signs", "exam", "survey"].contains ·)
+
+/-- Typed bedside values preserve raw text, units, comparators and report components. -/
+def acuteFlowsheetReadings (report : Json) : List (String × ObservationRow) :=
+  let reading := fun (source : Json) (name : String) =>
+    let point : ObservationRow :=
+      { measure := name
+        value := labResultValue source
+        unit := qtyUnitText (field source "valueQuantity")
+        time := obsWhen report
+        status := str report "status" }
+    (firstCode (field source "code"), point)
+  let components := arr report "component"
+  let ownValue := (["valueQuantity", "valueString", "valueCodeableConcept", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueDateTime", "valueTime", "valuePeriod",
+    "valueSampledData", "dataAbsentReason"] : List String).any (fun key => field report key != .null)
+  (if components.isEmpty || ownValue then [reading report (ccText (field report "code"))] else []) ++
+    components.map fun component => reading component
+      (ccText (field report "code") ++ " • " ++ ccText (field component "code"))
+
+/-- Current-encounter flowsheet observations share a recorded time axis.
+All values at a shared timestamp survive; blanks are never filled with zero. -/
+def acuteFlowsheetRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  match acuteEncounter ctx rs patient with
+  | none => []
+  | some encounter =>
+    let observations := ((acutePatientResources rs patient).filter fun r =>
+      acuteFlowsheetObservation r && acuteInEncounter r encounter).flatMap acuteFlowsheetReadings
+    let measures := (observations.map fun (code, reading) => (code, reading.measure, reading.unit)).eraseDups
+    let times := ((observations.map fun (_, reading) => reading.time).eraseDups).mergeSort (· ≤ ·)
+    measures.map fun (code, measure, unit) =>
+      let readings := observations.filter fun (otherCode, reading) =>
+        code == otherCode && measure == reading.measure && unit == reading.unit
+      [("Measure", measure), ("Unit", unit)] ++ times.map fun time =>
+        (acuteTimeColumn time, "; ".intercalate ((readings.filter (fun (_, reading) => reading.time == time)).map fun (_, reading) =>
+          reading.value ++ (if reading.status == "" || reading.status == "final" then "" else " · " ++ reading.status)))
+
+/-- A generic letter is not a nursing handoff. Local handoff codes and explicit
+nursing/provider transfer summaries are recognized without inspecting prose. -/
+def acuteHandoffDocument (r : Json) : Bool :=
+  documentVisible r && (hasCode (field r "type") "handoff" ||
+    (codings (field r "type")).any fun coding => str coding "system" == "http://loinc.org" &&
+      ["68482-9", "18761-7"].contains (str coding "code"))
+
+/-- A single report needs no transport heading; all attachment text/titles survive. -/
+def acuteHandoffText (r : Json) : String :=
+  match arr r "content" with
+  | [content] =>
+    let attachment := field content "attachment"
+    let title := str attachment "title"
+    (if title == "" then "" else title ++ "\n") ++ noteAttachmentText attachment
+  | _ => (noteRow r).text
+
+/-- Supporting panels are sourced from this patient's chart. An absent source
+produces no rows; absent clinical data does not become a normal result. -/
+def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
+    List (InfoId × List (List (String × String))) :=
+  let sources := acutePatientResources rs patient
+  let labs := (sources.filter isLab).filter fun r =>
+    (acuteEncounter ctx rs patient).any (acuteRefersTo (field r "encounter"))
+  let acuteCare := (acuteEncounter ctx rs patient).any fun encounter =>
+    acuteCareClass (str (field encounter "class") "code")
+  let unresolved := acuteSelectionRequired ctx rs patient && (acuteEncounter ctx rs patient).isNone
+  let labCodes := acuteLabsByCodes labs
+  let prnOrders := (ofType "MedicationRequest" sources).filter fun r =>
+    str r "status" != "entered-in-error" &&
+    (acuteEncounter ctx rs patient).any (acuteInEncounter r) &&
+    acutePrnInstruction (first r "dosageInstruction")
+  let administrations := (ofType "MedicationAdministration" sources).filter fun r =>
+    str r "status" != "entered-in-error" &&
+    (acuteEncounter ctx rs patient).any (fun encounter =>
+      prnOrders.any (fun order => acuteAdministrationMatchesOrder encounter order r))
+  let handoffs := (ofType "DocumentReference" sources).filter fun r =>
+    acuteHandoffDocument r && (acuteEncounter ctx rs patient).any (acuteInEncounter r)
+  [("triageSummary", acuteTriageRows ctx rs patient),
+   ("edTrackBoard", acuteBoardRows ctx rs patient),
+   ("unitCensus", acuteCensusRows ctx rs patient),
+   ("imaging", acuteImagingRows ctx rs patient),
+   ("shiftWorklist", acuteCensusRows ctx rs patient),
+   ("shiftTasks", acuteWorklistRows ctx rs patient),
+   ("marSchedule", acuteMarRows ctx rs patient),
+   ("flowsheetHistory", acuteFlowsheetRows ctx rs patient),
+   ("labResults", if acuteCare then labs.flatMap acuteLabRowsFor else []),
+   ("resultTrend", if acuteCare || unresolved then (newestFirst obsWhen (sources.filter isLab)).flatMap acuteLabRowsFor else []),
+   ("vitals", if acuteCare then acuteVitalRows ctx rs patient else []),
+   ("marDoseDetails", acuteDoseRows ctx rs patient),
+   ("glucoseTrend", labCodes ["2339-0", "2345-7", "41653-7", "14743-9"]),
+   ("coagLabs", labCodes ["6301-6", "5902-2", "3173-2", "14979-9"]),
+   ("prnHistory", administrations.map acuteAdministrationRow),
+   ("handoffSummary", handoffs.map fun r =>
+      let note := noteRow r
+      [("Report", note.title), ("Author", note.author), ("Recorded", note.date),
+       ("Text", acuteHandoffText r), ("Status", note.status)])]
+
+/-- Selection and displayed day are part of a projection's data version. A
+different task/encounter cannot reuse an identical-bundle projection version. -/
+def acuteProjectionVersion (ctx : FactsContext) (rs : List Json) : Nat :=
+  let selection := fun key => key ++ ":" ++ match ctx.record.lookup key with
+    | none => "absent" | some value => "selected:" ++ value
+  versionDigest (((rs.map (fun resource => versionKey resource ++ "|" ++ str resource "_vgiBundleFullUrl")) ++
+    ["acute-projection:v7", "day:" ++ ctx.today,
+    selection "selectedEncounterId", selection "selectedMedicationRequestId",
+    "encounter:" ++ ctx.encounterId?.getD "absent"]).mergeSort (· ≤ ·))
+
+/-- Banner encounter/location/attending follow the selected chart, not whichever
+resource happens to have the latest date. A primary nurse is not an attending. -/
+def bannerFor (ctx : FactsContext) (rs : List Json) (patient : Json) : BannerInfo :=
+  let base := bannerOf ctx.today rs patient
+  let encounter := (selectedChartEncounter ctx rs patient).getD .null
+  { base with encounterClass := str (field encounter "class") "code"
+              attending := acuteParticipant encounter "ATND"
+              location := (encRow encounter).location }
+
+/-- Bind supplied acute projections to this bundle and selection's digest. Current
+results/vitals stay explicitly empty when absent, without historical fallback.
+These read-only panels supply no temporal event evidence or human captures. -/
+def acutePayloads (ctx : FactsContext) (rs : List Json) (patient : Json) : List InfoPayload :=
+  let acuteCare := (acuteEncounter ctx rs patient).any fun encounter =>
+    acuteCareClass (str (field encounter "class") "code")
+  let invalidSelection := acuteSelectionRequired ctx rs patient &&
+    (acuteEncounter ctx rs patient).isNone
+  ((acuteSupportingRows ctx rs patient).filter (fun (info, rows) =>
+    !rows.isEmpty || (["labResults", "resultTrend", "vitals"].contains info && (acuteCare || invalidSelection)))).map fun (info, rows) =>
+    { info, patient := patientIdOf patient, artifactKey := "acute:" ++ info
+      artifact := "acute-chart:" ++ patientIdOf patient, version := acuteProjectionVersion ctx rs
+      rows := rows.zipIdx.map fun (fields, slot) => { id := info ++ ":" ++ toString slot, slot, fields } }
+
 /-! ## Perioperative chart projections
 
 These views read supplied FHIR resources for the selected patient. They do not
@@ -1707,22 +2326,28 @@ def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option St
       | "SS" => if (ccText (first enc "type")).startsWith "Preoperative" then some "preop" else none
       | _ => none
 
+
 /-- The facts the spec needs. -/
 def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
   let allergies := rs.filter isAllergy
   let meds := rs.filter isMedRequest
   let labs := labRows rs
-  let visitDx := match latestEncounter (encounterRecords ctx rs p) with
+  let visitDx := match selectedChartEncounter ctx rs p with
     | some e => firstCode (first e "reasonCode")
     | none => ""
+  let acute := acutePayloads ctx rs p
+
   let surgical := surgicalPayloads ctx.today rs p
   let ambulatory := Ambulatory.payloads ctx rs p
   let setting := encounterKindOf ctx rs p
   let preop := setting == some "preop" ||
     (setting.isNone && !(surgicalCaseRows ctx.today rs p).isEmpty)
-  let supporting := (surgical.filter fun payload => payload.info != "scheduleTasks" || preop) ++
-    (ambulatory.filter fun payload => payload.info != "scheduleTasks" || !preop)
+  let supporting := acute ++
+    (((surgical.filter fun payload => payload.info != "scheduleTasks" || preop) ++
+      (ambulatory.filter fun payload => payload.info != "scheduleTasks" || !preop)).filter
+        fun payload => !acute.any (fun other => other.info == payload.info))
+
   { patientId := patientIdOf p
     sourcePatientId? := some (str p "id")
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
@@ -1742,20 +2367,21 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     infoPayloads? := some supporting
     artifactBindings? := some (supporting.map fun payload =>
       { key := payload.artifactKey, artifact := payload.artifact, version := payload.version })
-    record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++
+    record := ctx.record ++ (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++
       (let enc := (latestEncounter (encounterRecords ctx rs p)).getD .null
        let orders := (ofType "ServiceRequest" rs).filter fun r => str r "status" == "active" &&
          periopSubject p r && (referenced? rs (field r "encounter")).any (fun e => str e "id" == str enc "id")
        [("codeStatus", "; ".intercalate ((orders.filter fun r => hasCode (field r "code") "full-code" || hasCode (field r "code") "dnr").map (fun r => ccText (field r "code")))),
         ("isolation", "; ".intercalate ((orders.filter fun r => ["no-isolation", "contact-precautions", "droplet-precautions"].contains (firstCode (field r "code"))).map (fun r => ccText (field r "code")))),
         ("encounterName", ccText (first enc "type")), ("department", ccText (field enc "serviceType")),
-        ("postoperativeDay", ((arr enc "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/postoperative-day")).map (fun e => qtyText (Json.mkObj [("value", field e "valueInteger")])) |>.getD "")]).filter (fun pair => pair.2 != "") ++ ctx.record }
+        ("postoperativeDay", ((arr enc "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/postoperative-day")).map (fun e => qtyText (Json.mkObj [("value", field e "valueInteger")])) |>.getD "")]).filter (fun pair => pair.2 != "") }
 
 /-- The display rows. -/
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
   let dob := str p "birthDate"
   { asOf := ctx.today
-    banner := bannerOf ctx.today (encounterRecords ctx rs p) p
+    banner := bannerFor ctx rs p
+
     allergies := allergyRows rs
     meds := medRows rs
     vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)
