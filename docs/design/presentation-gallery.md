@@ -2,7 +2,7 @@
 
 All viewport images are 1440×900. The sixteen fixture pairs come from native Lean `renderUi`; their ordinary before views remove layout wrappers while retaining the supplied records. `growthUnits-before` is the genuine archived pre-fix projection. The final pair is an actual chart capture before/after shared display integration: provenance remains visible in secondary type, and every original note body is compared verbatim with Lean output.
 
-[Research and per-screen review](ehr-ui-research.md#presentation-lane-structured-clinical-widgets) · [Stable integration contract](presentation-contract.md) · [Dimensions and source/image hashes](../audits/presentation-screenshots.json)
+[Research and per-screen review](ehr-ui-research.md#presentation-lane-structured-clinical-widgets) · [Stable integration contract](presentation-contract.md) · [Dimensions and source/image hashes](../audits/presentation-screenshots.json) · [Final verification](../audits/presentation-verification.json)
 
 | View | Before | After |
 | --- | --- | --- |
