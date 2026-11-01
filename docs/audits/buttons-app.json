@@ -333,7 +333,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons",
@@ -489,7 +489,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons",
@@ -633,7 +633,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons",
@@ -789,7 +789,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons",
@@ -945,7 +945,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons",
@@ -1752,7 +1752,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1764,7 +1764,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1776,7 +1776,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1788,7 +1788,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1800,7 +1800,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1812,7 +1812,7 @@
     "effect": "URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1824,7 +1824,7 @@
     "effect": "URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1836,7 +1836,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1848,7 +1848,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1857,10 +1857,10 @@
     "kind": "a",
     "owner": "app",
     "status": "works",
-    "effect": "URL → /dashboard?run=run1-P3&view=Evolution&persona=P3"
+    "effect": "URL → /dashboard"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1872,7 +1872,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1884,7 +1884,7 @@
     "effect": "URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1896,7 +1896,7 @@
     "effect": "URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1908,7 +1908,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1920,7 +1920,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1932,7 +1932,7 @@
     "effect": "Current patient source"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1944,7 +1944,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1956,7 +1956,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1968,7 +1968,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1980,7 +1980,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -1992,7 +1992,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2004,7 +2004,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2016,7 +2016,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2028,7 +2028,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2040,7 +2040,7 @@
     "effect": "URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=d0fe99e5-c869-b0e2-1379-6ff2293e6704"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2052,7 +2052,7 @@
     "effect": "URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=03a74d02-12a9-6ff0-5eb9-c44fff429559"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -2064,7 +2064,7 @@
     "effect": "DOM changed"
   },
   {
-    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+    "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
     "persona": "—",
     "program": "—",
     "screen": "replay inspector",
@@ -3165,7 +3165,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Search chart · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3321,7 +3321,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Weight (kg) · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3333,7 +3333,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Height (cm) · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3345,7 +3345,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "BP systolic · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3357,7 +3357,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "BP diastolic · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3369,7 +3369,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Heart rate · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3381,7 +3381,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Respiratory rate · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3393,7 +3393,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Temperature · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3405,7 +3405,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "SpO₂ · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3417,7 +3417,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Pain (0–10) · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3429,7 +3429,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Chief complaint · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3453,7 +3453,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Tobacco use · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3465,7 +3465,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Fall in the past year? · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3477,7 +3477,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Travel in the past 30 days? · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3489,7 +3489,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Advance directive discussed · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3501,7 +3501,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Interpreter needed? · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3513,7 +3513,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Preferred pharmacy confirmed · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3537,7 +3537,7 @@
     "kind": "enter",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "PHQ-2 score · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",

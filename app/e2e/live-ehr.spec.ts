@@ -7,7 +7,7 @@ function component(page: Page, id: string) {
 async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   test.setTimeout(120000);
   await page.goto(
-    `/ehr?${new URLSearchParams({ mode: "replay", release: "v1", program, persona: "P1", patient: adult })}`,
+    `/ehr?${new URLSearchParams({ mode: "replay", inspect: "1", release: "v1", program, persona: "P1", patient: adult })}`,
   );
   await component(page, "home.work.w1Rooming").click();
   await component(page, "w1Rooming.weight").fill("93.4");
@@ -28,7 +28,7 @@ async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   await component(page, "w1Orders.toSign").click();
   await component(page, "w1Verify.continue").click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Sign orders",
+    "Sign Orders",
   );
 }
 
@@ -91,7 +91,7 @@ test("bad 01: unopened allergy tab hides the list and Lean blocks signing", asyn
 test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   page,
 }) => {
-  await page.goto("/?mode=replay&persona=P3");
+  await page.goto("/?mode=replay&inspect=1&persona=P3");
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.locator(".patient-switcher summary")).toContainText("IMP");
   await page
