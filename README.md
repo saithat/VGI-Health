@@ -41,13 +41,12 @@ Start with these files, in order:
 | The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: deterministic Lean policies; clicks, scrolls and straight-line mouse travel at 1440×900 | `Sim/` |
 | The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
 
-## What "proved" means here, and the gap to real deployment
+## Assurance by layer, and gaps to deployment
 
-For readers who build software but don't use formal verification: a **proof**
-is like a test that covers every possible input at once. Lean checks it
-mechanically, so it can't be "mostly right". The guarantee only covers the
-code the theorem talks about, though. Everything around that code is tested
-or trusted, as in any other system.
+Each layer of the stack, from the clinician to the database, by the strongest
+evidence that covers it. A theorem quantifies over all patients, users and
+event sequences, but covers only the definitions in its statement; the layers
+around the interpreter rest on tests or on trusted components.
 
 ```mermaid
 flowchart TB
@@ -56,7 +55,7 @@ flowchart TB
   classDef trusted fill:#eeeeee,stroke:#777,color:#222
   classDef gap fill:#fde2e1,stroke:#b42318,color:#5c100b
 
-  U["👩‍⚕️ Clinician"]:::gap
+  U["Clinician"]:::gap
   B["Browser + React drawing<br/>🔵 tested: accessibility tree = Lean's screen tree;<br/>every control works (button audit)"]:::checked
   W["WebAssembly build of the Lean code<br/>⚪ trusted: Lean compiler + Emscripten;<br/>🔵 tested: native and WASM agree on every recorded event"]:::trusted
   I["Lean interpreter: screen contents, events, signing<br/>🟢 proved for every patient, user and click sequence:<br/>no sign-off without required entries, reviews and alert acks;<br/>automation can't do human-only steps; alerts only when true"]:::proved
@@ -79,13 +78,10 @@ flowchart TB
   end
 ```
 
-**How to read it.** Green is guaranteed by a Lean proof for all inputs. Blue is
-checked by tests or per-program checks: strong evidence, but only for what was
-run. Grey is trusted, like any compiler, library or database. Red is not
-covered, and is listed so nobody mistakes the demo for a deployable product.
-The key design choice is that the AI agent is never trusted: whatever it
-proposes, only UIs the checker accepts reach clinicians, and the interpreter
-enforces the signing rules even then.
+Green: Lean theorem. Blue: tests or per-program checks, covering only what was
+executed. Grey: trusted components (compilers, runtime, database). Red: not
+covered. The agent sits outside the trusted base: deployment requires checker
+acceptance, and the interpreter's guard applies regardless of the deployed UI.
 
 ## Architecture
 
