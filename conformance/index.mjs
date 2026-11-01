@@ -4,6 +4,7 @@ import { realpathSync } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { pathToFileURL } from 'node:url';
+import { Worker } from 'node:worker_threads';
 import { Native, digest } from './native.mjs';
 import { fixtures, scenarioCatalog } from './scenarios.mjs';
 import { historicalRunIds, historicalReleaseId } from '../scripts/historical-releases.mjs';
@@ -117,6 +118,31 @@ export async function runSuite({ targets, binary, runId = null, selected }) {
   return report;
 }
 
+/** Workers run read-only native processes; no model calls or agent delegation. */
+export async function runParallel({ targets, binary, runId = null, selected, jobs = 2 }) {
+  if (targets.length < 2 || jobs === 1) return runSuite({ targets, binary, runId, selected });
+  const reports = new Array(targets.length);
+  let next = 0;
+  await Promise.all(Array.from({ length: Math.min(jobs, targets.length) }, async () => {
+    while (next < targets.length) {
+      const i = next++;
+      reports[i] = await new Promise((resolve, reject) => {
+        const worker = new Worker(new URL('./worker.mjs', import.meta.url), { workerData: { target: targets[i], binary, selected } });
+        worker.once('message', m => m.error ? reject(new Error(m.error)) : resolve(m.report));
+        worker.once('error', reject);
+        worker.once('exit', code => { if (code) reject(new Error(`Conformance worker exited ${code}`)); });
+      });
+    }
+  }));
+  const first = reports[0];
+  return { ...first, runId, generatedAt: new Date().toISOString(),
+    native: { ...first.native, calls: reports.reduce((n, r) => n + r.native.calls, 0), jobs },
+    targets: reports.flatMap(r => r.targets), results: reports.flatMap(r => r.results),
+    summary: { targets: targets.length, scenarios: first.scenarios.length,
+      passed: reports.reduce((n, r) => n + r.summary.passed, 0), failed: reports.reduce((n, r) => n + r.summary.failed, 0),
+      notApplicable: reports.reduce((n, r) => n + r.summary.notApplicable, 0) } };
+}
+
 function writeAtomic(file, value) {
   mkdirSync(path.dirname(file), { recursive: true });
   const temp = `${file}.${process.pid}.tmp`;
@@ -126,6 +152,7 @@ export async function main(args = process.argv.slice(2)) {
   const { values } = parseArgs({ args: args.filter(x => x !== '--'), options: {
     program: { type: 'string' }, spec: { type: 'string' }, run: { type: 'string' },
     binary: { type: 'string' }, out: { type: 'string' }, canonical: { type: 'boolean' }, scenario: { type: 'string' },
+    jobs: { type: 'string', default: '2' },
   } });
   if (!!values.program !== !!values.spec) throw new Error('--program and --spec are required together');
   if (!values.program && !values.run && !values.canonical) throw new Error('Usage: pnpm conformance --program <file> --spec <file> | --run <id> | --canonical');
@@ -138,7 +165,9 @@ export async function main(args = process.argv.slice(2)) {
     targets = [{ id: `program/${program.id}/v${program.version}`, kind: 'program', persona, release: spec.version,
       semanticRelease: spec.version, revision: program.version, programPath, specPath, program, spec, certification: 'not evaluated by this behavioral runner' }];
   } else targets = [...canonicals(), ...(values.run ? runTargets(values.run) : [])];
-  const report = await runSuite({ targets, binary: path.resolve(binary), runId: values.run ?? null, selected: values.scenario });
+  const jobs = Number(values.jobs);
+  if (!Number.isInteger(jobs) || jobs < 1 || jobs > 4) throw new Error('--jobs must be 1–4');
+  const report = await runParallel({ targets, binary: path.resolve(binary), runId: values.run ?? null, selected: values.scenario, jobs });
   const output = values.out ? path.resolve(values.out) : values.run
     ? path.join(root, 'runs', values.run, values.scenario ? 'conformance.partial.json' : 'conformance.json')
     : path.join(root, 'conformance/results', values.program ? 'program.json' : 'canonical.json');

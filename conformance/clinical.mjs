@@ -46,7 +46,7 @@ export const linked = { dosingWeight: 'weight', orderDiagnosis: 'visitDiagnosis'
 
 export function context(commit, variant = {}) {
   const f = facts(commit === 'administerMed' ? { medToGive: 'morphine' } : commit === 'ackResult' ? { abnormalResult: true } : {});
-  return { ...variant, commit, facts: { ...f, ...variant.facts }, drug: variant.drug ?? 'metformin' };
+  return { ...variant, commit, facts: variant.facts ?? f, drug: variant.drug ?? 'metformin' };
 }
 export function sample(element, ctx, driver) {
   const values = {

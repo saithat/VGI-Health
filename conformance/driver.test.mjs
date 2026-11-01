@@ -7,6 +7,7 @@ import path from 'node:path';
 import { Native } from './native.mjs';
 import { Driver } from './driver.mjs';
 import { context, prepare } from './clinical.mjs';
+import { fixtures, scenarioCatalog } from './scenarios.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
 const binary = process.env.EHR_BIN ?? path.join(root, '.cache/conformance/ehr');
@@ -48,4 +49,12 @@ test('removing a legitimate control is a conformance failure', { skip: !existsSy
   for (const s of p.screens) s.components = s.components.filter(c => c.kind?.field?.element !== 'wristbandScan');
   const d = new Driver(new Native(binary), sp, p, context('administerMed').facts);
   assert.throws(() => prepare(d, context('administerMed')), /Workflow impossible.*wristbandScan/);
+});
+
+test('hand-written expectation catches a removed entry guard without consulting the checker', { skip: !existsSync(binary) }, () => {
+  const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
+  sp.entries = sp.entries.filter(r => !(r.commit === 'administerMed' && r.element === 'wristbandScan'));
+  const target = { program: p, spec: sp, persona: 'P3', semanticRelease: 'v3' };
+  const scenario = scenarioCatalog.find(s => s.id === 'entry.administerMed.wristbandScan');
+  assert.throws(() => scenario.run(fixtures(new Native(binary), target)), /Expected refusal naming wristbandScan/);
 });

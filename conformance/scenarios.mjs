@@ -482,3 +482,39 @@ add('patient-switch.chart-scoping', 'Patient isolation in FHIR projection', 'Ope
   assert(!projected.facts.allergyClasses.includes('penicillin'), 'Patient A allergy altered B safety facts');
   return { d, observed: 'Patient A clinical resource excluded from B projection' };
 }, { scope: 'adapter-probe', expectationBoundary: 'Defensive mixed-bundle test. Native init reset is tested separately; shell chart-loading/patient-selection integration is outside this no-browser suite.' });
+
+for (const [id, cm, variant] of [
+  ['healthMaintenancePopup', 'signNote', { facts: facts({ careGaps: ['screening-due'] }) }],
+  ['highAlertOrderNotice', 'signOrders', { drug: 'oxycodone', freq: 'q6h' }],
+  ['activeRxPopup', 'approveRefill', { facts: facts({ medToGive: 'metformin', currentMedClasses: ['biguanide'] }) }],
+  ['refillCareGapPopup', 'approveRefill', { facts: facts({ careGaps: ['screening-due'] }) }],
+  ['minorInteractionPopup', 'administerMed', { facts: facts({ medToGive: 'amoxicillin', currentMedClasses: ['vitaminKAntagonist'] }) }],
+]) add(`alert.removable.${id}`, `Core optional/removable alert ${id}`, 'May be removed or inline; if configured to interrupt, fires only for its trigger and legitimate completion remains possible', t => supports(t, cm), f => {
+  const ctx = context(cm, variant), d = f.driver(ctx);
+  prepare(d, ctx, cm === 'administerMed' ? ['painScore', 'highAlertCosign'] : []);
+  d.atCommit(cm);
+  const present = d.program.screens.flatMap(s => s.components).some(alert(id));
+  if (present) {
+    const c = d.find(alert(id), `optional alert ${id}`);
+    assert(d.view.items.some(i => i.comp.id === c.id && i.firing), `Configured ${id} did not fire for its trigger`);
+  }
+  d.finish(cm); return { d, observed: `${id} ${present ? 'fired when configured' : 'lawfully removed'}; legitimate ${cm} completed` };
+});
+
+add('design.banner-identifiers', 'D1 patient banner identifiers', 'Native semantic UI contains selected patient name, MRN and birth date', () => true, f => {
+  const projected = f.native.call('facts', { bundle: patientBundle('heldout-B'), context: { today: '2026-11-02', now: 600, receipts: [], record: [] } });
+  const d = new Driver(f.native, f.target.spec, f.target.program, projected.facts);
+  const ui = f.native.call('render-ui', { ...d.input, state: d.state, display: projected.display });
+  const serialized = JSON.stringify(ui);
+  assert(serialized.includes('heldout-B') && serialized.includes('1984') && serialized.includes('MRN'), 'Patient name/MRN/DOB missing from semantic banner');
+  return { d, observed: 'Selected patient identifiers present in native semantic UI' };
+});
+
+add('epcs.details-content', 'Law: controlled-prescription details at signing', 'Native semantic order summary shows selected drug, native dose, directions, quantity and refills', t => supports(t, 'signOrders'), f => {
+  const ctx = controlled(), d = f.prefix(ctx); d.atCommit('signOrders');
+  const projected = f.native.call('facts', { bundle: patientBundle(), context: { today: '2026-11-02', now: 600, receipts: [], record: [] } });
+  const ui = f.native.call('render-ui', { ...d.input, state: d.state, display: projected.display });
+  const serialized = JSON.stringify(ui);
+  for (const marker of ['oxycodone', 'mg', 'q6h', '14', '0']) assert(serialized.includes(marker), `EPCS details missing ${marker}`);
+  d.finish('signOrders'); return { d, observed: 'Controlled drug, mg dose, frequency, quantity and zero refills present in native semantic UI; signed' };
+});

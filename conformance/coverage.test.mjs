@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { scenarioCatalog } from './scenarios.mjs';
 import { entries } from './clinical.mjs';
+import { context, facts } from './clinical.mjs';
 const read = name => JSON.parse(readFileSync(new URL(`../${name}`, import.meta.url), 'utf8'));
 
 test('hand-written scenarios account for every exported core entry, review and alert', () => {
@@ -24,4 +25,9 @@ test('scenario definitions contain semantic intents rather than canonical compon
   for (const id of new Set(components)) {
     if (id.length > 8) assert.ok(!source.includes(`'${id}'`) && !source.includes(`"${id}"`), `Hard-coded component id ${id}`);
   }
+});
+
+test('projected absence of today’s weight is never replaced by a fixture default', () => {
+  const projected = facts(); delete projected.weightToday;
+  assert.equal(context('signOrders', { facts: projected }).facts.weightToday, undefined);
 });
