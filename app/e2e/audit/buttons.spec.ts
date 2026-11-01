@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { State } from "../../../lean/generated/ehr-types";
+import type { ButtonAuditSession } from "../../src/core/buttonAudit";
 import type { Control } from "./report";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
@@ -561,8 +561,24 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
   const catalog = catalogSchema.parse(
     await (await request.get("/catalog.json")).json(),
   );
+  const selectedPersonas = process.env.AUDIT_PERSONAS?.split(",") ?? personas;
+  expect(selectedPersonas.every((persona) => personas.includes(persona))).toBe(
+    true,
+  );
+  if (process.env.AUDIT_PERSONAS) {
+    const prior: Control[] = JSON.parse(
+      readFileSync(resolve("../docs/audits/buttons-ehr.json"), "utf8"),
+    );
+    const report = JSON.parse(
+      readFileSync(resolve("../docs/audits/buttons.json"), "utf8"),
+    );
+    const build = JSON.parse(readFileSync("dist/build-info.json", "utf8"));
+    expect(report.leanHash).toBe(build.leanHash);
+    expect(report.mainRevision).toBe(build.mainRevision);
+    audit.rows = prior.filter((row) => !selectedPersonas.includes(row.persona));
+  }
   try {
-    for (const persona of personas) {
+    for (const persona of selectedPersonas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
       await freshGoto("/?audit=buttons");
@@ -630,11 +646,21 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       ];
       const seenScreens = new Set<string>();
       const checkedResources = new Set<string>();
-      const variantOf = (state: State) =>
-        JSON.stringify({ ...state, history: state.history.length > 0 });
+      // Deduplicate by the rendered control configuration. Off-screen history and
+      // expansion order cannot expose a new visible control on this screen.
+      const variantOf = (
+        snapshot: ReturnType<ButtonAuditSession["snapshot"]>,
+      ) =>
+        JSON.stringify({
+          screen: snapshot.state.screen,
+          slot: snapshot.state.currentSlot,
+          ui: snapshot.ui,
+        });
       const discovered = new Set<string>();
-      const enqueue = async (state: State) => {
-        const key = variantOf(state);
+      const enqueue = async (
+        snapshot: ReturnType<ButtonAuditSession["snapshot"]>,
+      ) => {
+        const key = variantOf(snapshot);
         if (discovered.has(key)) return;
         discovered.add(key);
         queue.push(
@@ -644,6 +670,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
       };
       const tested = new Set<string>();
+      const preparedForms = new Set<string>();
       while (queue.length) {
         const checkpoint = queue.shift() ?? -1;
         await restore(checkpoint);
@@ -653,7 +680,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
         if (!snapshot) throw new Error("Missing audit session");
         const screen = snapshot.state.screen;
-        const variant = variantOf(snapshot.state);
+        const variant = variantOf(snapshot);
         discovered.add(variant);
         if (seenScreens.has(variant)) continue;
         seenScreens.add(variant);
@@ -877,13 +904,86 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             after &&
             JSON.stringify(after.state) !== JSON.stringify(snapshot.state)
           )
-            await enqueue(after.state);
+            await enqueue(after);
         }
         await restore(checkpoint);
+        // Complete ordinary synthetic form inputs through their actual controls.
+        // Identity, barcode and second-clinician evidence are never invented.
+        const fields = await page
+          .locator('input[data-event="enter"]:enabled:not([inert] *)')
+          .filter({ visible: true })
+          .evaluateAll((nodes) =>
+            nodes
+              .filter(
+                (node): node is HTMLInputElement =>
+                  node instanceof HTMLInputElement &&
+                  !node.closest(".field-identity, .field-scan, .field-cosign"),
+              )
+              .map((input) => {
+                return {
+                  comp: input.getAttribute("data-comp-id"),
+                  label: input.getAttribute("aria-label") ?? "",
+                  value: input.value,
+                  checked: input.checked,
+                  type: input.type,
+                  numeric: input.inputMode === "decimal",
+                  combo: input.getAttribute("role") === "combobox",
+                };
+              }),
+          );
+        const formKey = JSON.stringify([
+          screen,
+          snapshot.state.currentSlot,
+          fields,
+        ]);
+        const prepareForm = !preparedForms.has(formKey);
+        if (prepareForm) {
+          preparedForms.add(formKey);
+          for (const field of fields) {
+            if (!field.comp || (field.value && field.type !== "checkbox"))
+              continue;
+            const input = page
+              .locator(
+                `input[data-event="enter"][data-comp-id=${JSON.stringify(field.comp)}]:enabled`,
+              )
+              .filter({ visible: true })
+              .first();
+            if (!(await input.count())) continue;
+            if (field.type === "checkbox") {
+              if (!field.checked) await input.setChecked(true);
+            } else if (field.combo) {
+              await input.click();
+              const option = page.getByRole("option").first();
+              if (await option.count()) await option.click();
+              else
+                await input.fill(
+                  /diagnos/i.test(field.label)
+                    ? "I10"
+                    : /CPT|level of service/i.test(field.label)
+                      ? "99213"
+                      : "audit-code",
+                );
+              await page.keyboard.press("Escape");
+            } else {
+              const value = field.numeric
+                ? /systolic/i.test(field.label)
+                  ? "120"
+                  : /diastolic/i.test(field.label)
+                    ? "80"
+                    : /refill/i.test(field.label)
+                      ? "0"
+                      : "72"
+                : /date|time/i.test(field.label)
+                  ? "2026-11-02"
+                  : "Synthetic patient audit documentation";
+              await input.fill(value);
+            }
+          }
+        }
         const pending = page
           .locator('[data-event="confirm"]:not([inert] *)')
           .filter({ visible: true });
-        if (await pending.count()) {
+        if (prepareForm && (await pending.count())) {
           const beforeBatch = await page.evaluate(() =>
             JSON.stringify(window.__buttonAuditSession?.snapshot().state),
           );
@@ -903,7 +1003,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             window.__buttonAuditSession?.snapshot(),
           );
           if (afterBatch && JSON.stringify(afterBatch.state) !== beforeBatch)
-            await enqueue(afterBatch.state);
+            await enqueue(afterBatch);
         }
         console.log(
           `${persona} ${screen}: ${tested.size} controls, ${queue.length} queued`,
@@ -961,7 +1061,7 @@ test("app live agent: capability, request and real verdict in the EHR viewer", a
     });
     if (!capability.available) {
       await expect(submit).toHaveCount(0);
-      await expect(page.getByText(/Set ANTHROPIC_API_KEY/)).toBeVisible();
+      await expect(page.getByText(/Set ANTHROPIC_API_KEY|Set EHR_BIN/)).toBeVisible();
     } else {
       await expect(submit).toBeVisible();
       await audit.click(submit, undefined, "app");

@@ -28,6 +28,8 @@ export function tryBreakPlugin(): Plugin {
   let backend: "claude" | "codex" | null = null;
   let environment = process.env;
   let busy = false;
+  let unavailableReason =
+    "Set ANTHROPIC_API_KEY in .env or run codex login on the app server, then restart preview.";
   const middleware = async (
     req: IncomingMessage,
     res: ServerResponse,
@@ -45,9 +47,7 @@ export function tryBreakPlugin(): Plugin {
       return send(200, {
         available: !!backend,
         backend,
-        reason: backend
-          ? null
-          : "Set ANTHROPIC_API_KEY in .env or run codex login on the app server, then restart preview.",
+        reason: backend ? null : unavailableReason,
       });
     const host = req.headers.host;
     if (
@@ -184,6 +184,22 @@ export function tryBreakPlugin(): Plugin {
               ),
           );
         });
+      if (backend) {
+        const checker = await new Promise<boolean>((done) =>
+          execFile(
+            environment.EHR_BIN ?? resolve(root, "lean/.lake/build/bin/ehr"),
+            ["--help"],
+            { timeout: 2000, env: environment },
+            (_error, stdout, stderr) =>
+              done(/check --spec/.test(stdout + stderr)),
+          ),
+        );
+        if (!checker) {
+          backend = null;
+          unavailableReason =
+            "Agent authentication is configured. Set EHR_BIN to an existing native ehr checker matching the committed releases, then restart preview. Recorded attempts remain available.";
+        }
+      }
     },
     configureServer(server) {
       server.middlewares.use(middleware);

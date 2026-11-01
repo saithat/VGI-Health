@@ -52,6 +52,7 @@ const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 're
 const whenSchema: z.ZodType<L.When> = z.union([
   z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk', 'weightBased']),
   z.object({ orderClass: z.object({ cls: str }) }),
+  z.object({ drugClass: z.object({ cls: str }) }),
   z.object({ medClass: z.object({ cls: str }) }),
   z.object({ encounter: z.object({ kind: str }) }),
 ]);
@@ -69,7 +70,7 @@ export const specSchema: z.ZodType<L.Spec> = z.object({
       encounter: str, roles: z.array(roleSchema), reason: str,
     })).exactOptional(),
   }))),
-  entries: z.array(z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean() })),
+  entries: z.array(dropNulls(['allowed'], z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), allowed: z.array(str).exactOptional() }))),
   reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.object({
     id: str, label: str,
@@ -98,7 +99,7 @@ const prefillSchema: z.ZodType<L.Prefill> = z.union([
   z.object({ linked: z.object({ element: str }) }),
 ]);
 const actionSchema: z.ZodType<L.Action> = z.union([
-  z.enum(['back', 'newOrderLine']),
+  z.enum(['back', 'newOrderLine', 'requestPriorAuth']),
   z.object({ goto: z.object({ screen: str }) }),
   z.object({ commit: z.object({ commit: str }) }),
   z.object({ markReviewed: z.object({ info: str }) }),

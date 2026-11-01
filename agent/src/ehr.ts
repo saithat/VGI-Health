@@ -26,8 +26,8 @@
  *   ehr spec-export <name>       stdout: Spec
  *   (also init / step / view on stdin; the agent loop does not need them)
  *
- * `--spec` names a Lean spec module version ("v1", "v1.1", "v2"); the spec
- * itself is compiled into the checker, never passed in as JSON.
+ * Check/deploy/render-screens accept the committed spec JSON path. Simulation
+ * commands and spec-export accept a registered release version.
  *
  * EHR_FAKE=1 swaps in `createFakeEhr()` (src/fake/ehr-fake.ts): plausible,
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.
@@ -135,7 +135,7 @@ class CliEhr implements EhrClient {
 
   check(i: CheckInput): Promise<Verdict> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await run(this.binary, ['check', '--spec', i.specVersion, '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
+      const res = await run(this.binary, ['check', '--spec', path.join(REPO_ROOT, 'releases', i.specVersion, 'spec.json'), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
       return parseOut('check', res, verdictSchema);
     });
   }
@@ -164,7 +164,7 @@ class CliEhr implements EhrClient {
   deploy(i: DeployInput): Promise<DeployResult> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
       const res = await run(this.binary, [
-        'deploy', '--spec', i.specVersion, '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
+        'deploy', '--spec', path.join(REPO_ROOT, 'releases', i.specVersion, 'spec.json'), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
         '--canonical', p['canonical'] ?? '', '--out', i.outDir,
       ]);
       if (res.code === 0) return { deployed: true, certificate: parseOut('deploy', res, certificateSchema) };
@@ -175,7 +175,7 @@ class CliEhr implements EhrClient {
   renderScreens(i: RenderInput): Promise<string[]> {
     return this.withFiles({ program: i.program }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
-      const res = await run(this.binary, ['render-screens', '--spec', i.specVersion, '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
+      const res = await run(this.binary, ['render-screens', '--spec', path.join(REPO_ROOT, 'releases', i.specVersion, 'spec.json'), '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });
