@@ -47,6 +47,20 @@ def uiColumnTag (tag : String) : Bool :=
 def uiColumnChildren (tag : String) (children : List UiNode) : List UiNode :=
   if uiColumnTag tag then [.columns children] else children
 
+/-- An explicit row tag names an info component and zero-based source row. -/
+def uiRowTarget? (tag : String) : Option (CompId × Nat) := do
+  if tag == "" then none else match tag.splitOn "|" with
+  | [head, target, row] =>
+    if !(head == "present.row" || head.endsWith ".present.row") || target == "" then none
+    else some (target, ← row.toNat?)
+  | _ => none
+
+/-- The original semantic control is retained with all of its event metadata. -/
+def uiWrapRow (tag : String) (node : UiNode) : UiNode :=
+  match uiRowTarget? tag with
+  | some (target, row) => .rowAction target row [node]
+  | none => node
+
 /-- Human-facing schedule columns, without FHIR references or resource IDs. -/
 def scheduleCells (r : ScheduleRow) : List (String × String) :=
   [("Time", uiDate r.time), ("Patient", r.patient), ("Age/sex", r.ageSex),

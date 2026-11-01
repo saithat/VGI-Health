@@ -54,6 +54,17 @@ theorem column_presence_example (children : List UiNode) :
 def unchangedLayout := uiColumnChildren "rooming" [.text "Chief complaint"]
 #guard match unchangedLayout with | [.text s] => s == "Chief complaint" | _ => false
 
+/-- Only a complete, explicit nonnegative row target selects row placement. -/
+def firstRowTarget := uiRowTarget? "ward.present.row|worklist-records|0"
+#guard firstRowTarget == some ("worklist-records", 0)
+#guard uiRowTarget? "present.row|records|-1" == none
+#guard uiRowTarget? "present.row||1" == none
+#guard uiRowTarget? "unrelated|records|1" == none
+
+/-- Row placement retains the event, label and enabled state exactly. -/
+theorem row_action_presence_example (control : UiNode) :
+    uiAtoms (uiWrapRow "present.row|records|0" control) = uiAtoms control := by simp
+
 /-- JSON round trips include the new closed kind and the ordinary info child. -/
 def semanticExample : UiNode := .presentation .timeGrid
   [.info "mar" "Medication administration" "mar" "table" (marCells documented)]

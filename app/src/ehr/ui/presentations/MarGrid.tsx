@@ -1,4 +1,4 @@
-import type { Info } from "./StructuredInfo";
+import type { Info, RowActions } from "./StructuredInfo";
 import { SuppliedStatus } from "./StructuredInfo";
 import { DisplayValue } from "../display";
 
@@ -10,7 +10,13 @@ const detailKeys = new Set([
   "Order status",
 ]);
 /** Medication details stay together; hour columns are already assigned by Lean. */
-export function MarGrid({ node }: { node: Info }) {
+export function MarGrid({
+  node,
+  actions,
+}: {
+  node: Info;
+  actions?: RowActions | undefined;
+}) {
   const columns = [
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
   ].filter((key) => !detailKeys.has(key));
@@ -72,6 +78,11 @@ export function MarGrid({ node }: { node: Info }) {
                         </div>
                       ))}
                   </dl>
+                  {actions?.get(i) && (
+                    <div className="presentation-row-actions">
+                      {actions.get(i)}
+                    </div>
+                  )}
                 </td>
                 {columns.map((key) => (
                   <td key={key} data-column={key}>

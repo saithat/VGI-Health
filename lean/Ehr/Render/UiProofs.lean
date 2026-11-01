@@ -9,6 +9,17 @@ namespace Ehr.Render
     uiAtoms (uiWrapInfo kind node) = uiAtoms node := by
   cases kind <;> simp [uiWrapInfo, uiAtoms, uiAtomsList]
 
+/-- Row placement preserves the complete original semantic action. -/
+@[simp] theorem uiWrapRow_atoms (tag node) :
+    uiAtoms (uiWrapRow tag node) = uiAtoms node := by
+  unfold uiWrapRow
+  split <;> simp [uiAtoms, uiAtomsList]
+
+/-- Navigation and untagged controls retain their exact original wire node. -/
+@[simp] theorem uiWrapRow_empty (node) : uiWrapRow "" node = node := by
+  have empty : uiRowTarget? "" = none := by decide
+  simp [uiWrapRow, empty]
+
 @[simp] theorem uiAtomsList_nil : uiAtomsList [] = [] := by simp [uiAtomsList]
 @[simp] theorem uiAtomsList_cons (n ns) : uiAtomsList (n :: ns) = uiAtoms n ++ uiAtomsList ns := by simp [uiAtomsList]
 /-- A column layout adds only its layout atom and retains every child's atoms. -/
@@ -119,10 +130,11 @@ theorem uiNav_mem (cx : Ctx) (n : UiNode) :
 /-- Relocated nav entries retain the exact semantic click, with no invented id. -/
 theorem uiNavButton_item (cx : Ctx) (it : ItemView) (h : uiNavButton cx it = true) :
     uiItem cx it [] = [.button it.comp.id (uiLabel it.comp.label "Action") "nav" true none none] := by
+  have hnav := h
   cases hk : it.comp.kind <;> simp [uiNavButton, hk] at h
   rename_i a
   cases a <;> simp [uiNavButton, hk] at h
-  simp [uiItem, hk, actionRole, uiButton, h.1.1, uiBlocked, h.1.2]
+  simp [uiItem, hk, actionRole, uiButton, hnav, h.1.1, uiBlocked, h.1.2]
 
 /-- T10: every semantic contribution of every shown item appears in UiScreen,
 whether its proper region is the shell, navigation, workspace, or side. -/

@@ -24,6 +24,118 @@ function paint(nodes: UiNode[]) {
   return onEvent;
 }
 describe("structured clinical data boundary", () => {
+  it("places the original action in its explicit row through nested presentations", () => {
+    const onEvent = paint([
+      {
+        presentation: {
+          kind: "worklist",
+          children: [
+            {
+              section: {
+                id: "tasks",
+                title: "Tasks",
+                children: [
+                  {
+                    presentation: {
+                      kind: "worklist",
+                      children: [
+                        {
+                          info: {
+                            comp: "records",
+                            infoId: "worklist",
+                            label: "Worklist",
+                            display: "table",
+                            rows: [
+                              [["Task", "Medication review"]],
+                              [["Task", "Pain reassessment"]],
+                            ],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                  {
+                    rowAction: {
+                      target: "records",
+                      row: 1,
+                      children: [
+                        {
+                          button: {
+                            comp: "open-pain",
+                            label: "Open assessment",
+                            role: "nav",
+                            enabled: true,
+                            blockedReason: null,
+                            hotkey: null,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const button = screen.getByRole("button", { name: "Open assessment" });
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    expect(button.closest("tr")?.textContent).toContain("Pain reassessment");
+    fireEvent.click(button);
+    expect(onEvent).toHaveBeenCalledExactlyOnceWith({
+      click: { comp: "open-pain" },
+    });
+  });
+  it("retains unmatched, out-of-range and invalid row actions inline", () => {
+    const onEvent = paint([
+      {
+        presentation: {
+          kind: "worklist",
+          children: [
+            {
+              info: {
+                comp: "records",
+                infoId: "worklist",
+                label: "Worklist",
+                display: "table",
+                rows: [[["Task", "Review"]]],
+              },
+            },
+            ...[
+              ["missing", 0],
+              ["records", 5],
+              ["records", -1],
+            ].map(([target, row], i): UiNode => ({
+              rowAction: {
+                target: String(target),
+                row: Number(row),
+                children: [
+                  {
+                    button: {
+                      comp: `fallback-${i}`,
+                      label: `Open ${i}`,
+                      role: "nav",
+                      enabled: true,
+                      blockedReason: null,
+                      hotkey: null,
+                    },
+                  },
+                ],
+              },
+            })),
+          ],
+        },
+      },
+    ]);
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(3);
+    for (const button of buttons) {
+      expect(button.closest("table")).toBeNull();
+      fireEvent.click(button);
+    }
+    expect(onEvent).toHaveBeenCalledTimes(3);
+  });
   it("preserves repeated cells and unknown clinical columns without adding controls", () => {
     paint([
       {
@@ -85,6 +197,41 @@ describe("structured clinical data boundary", () => {
     expect(events).toHaveBeenCalledExactlyOnceWith({
       click: { comp: "open-selected-encounter" },
     });
+  });
+  it("retains complete administration documentation below compact MAR cells", () => {
+    const record =
+      "Given · 08:12 · 500 mg · Oral · Left side · Jordan Reed, RN";
+    paint([
+      {
+        presentation: {
+          kind: "timeGrid",
+          children: [
+            {
+              info: {
+                comp: "mar",
+                label: "MAR",
+                infoId: "mar",
+                display: "table",
+                rows: [
+                  [
+                    ["Medication", "Example medication"],
+                    ["08:00", record],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(screen.getByRole("table", { name: "MAR" }).textContent).toContain(
+      "Given · 08:12 · 500 mg",
+    );
+    expect(
+      screen.getByRole("list", { name: "MAR administration details" })
+        .textContent,
+    ).toContain(record);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
   it("keeps unlike units in separate trend images and preserves nonnumeric results", () => {
     paint([

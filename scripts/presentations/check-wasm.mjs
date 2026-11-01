@@ -16,6 +16,16 @@ for (const [kind, input] of corpus) {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
     assert.ok(panes.every(node => node.presentation.children.some(child => child.info)));
+  } else if (kind === 'rowActions') {
+    const children = result.workspace[1].presentation.children[0].section.children;
+    assert.equal(children[0].presentation.kind, 'worklist');
+    assert.deepEqual(children.slice(1).map(node => [node.rowAction.target, node.rowAction.row]), [['records', 0], ['records', 1], ['records', 2]]);
+    for (const [id, target] of [['open-mar', 'mar-detail'], ['open-pain', 'pain-detail'], ['open-vitals', 'vitals-detail']]) {
+      const stepInput = { ...input, event: { click: { comp: id } } };
+      const actual = JSON.parse(wasm.step(JSON.stringify(stepInput)));
+      assert.deepEqual(actual, native('step', stepInput));
+      assert.equal(actual.state.screen, target);
+    }
   } else {
     assert.equal(result.workspace[1].presentation.kind, kind);
     assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);

@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "62036fd9d5aecf0de8d66afbf7f17f632b93078a14f203ea17dab466d6ee44c0",
+  "leanSourceHash": "f226218c38fa4f743e813dc2a1a3e00e996d10214f47fdac11cbabce9abbe651",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -179,16 +179,16 @@
     "lean/Ehr/Render/PageTests.lean": "6ecda8c71837f4a6c4d5eea79e5fbe9d10d973bcb1f7a081c55d9258b4e65f49",
     "lean/Ehr/Render/PanelProofs.lean": "30ac1509f04bf2284c8cea5ef42c9fac8e47a2bcd75d0c4ab87fa98dc4913bdc",
     "lean/Ehr/Render/PrefillProofs.lean": "efb90abdecc3ce02f284a803e5cc823bb152f3b06e8d15fd5aace443b0b4d48f",
-    "lean/Ehr/Render/PresentationFixtures.lean": "e2507125f8a387ce10a9fcd7c905261eb615a89ef77686bc9069495ca989376e",
+    "lean/Ehr/Render/PresentationFixtures.lean": "ff818cfe0f55c260d3f689b01754090323d9bb588483224ecdf88c1639049502",
     "lean/Ehr/Render/PresentationProofs.lean": "08f94047b317f3c66b94f360eaea851261c2ca4ecd3450f8b27e6f9cff07dad6",
-    "lean/Ehr/Render/PresentationTests.lean": "28e80cd7b3e2ad29dd79b704ef31fcff86589306e9b3f6740f1a8af32d1062c6",
-    "lean/Ehr/Render/Presentations.lean": "aef9a6d43e9e90eb44e459fa1d245d989d9d6b782909753204529eeabc73977b",
+    "lean/Ehr/Render/PresentationTests.lean": "2637d31369fb3a916290f001ebca610ef1cbbc5ff4df62d02a66a149f69a3be5",
+    "lean/Ehr/Render/Presentations.lean": "cabb6b5a9fa0ebaed6c1d80c74920a506d0d51e4f93eb2a29fecdec8addecf8d",
     "lean/Ehr/Render/Proofs.lean": "73e66422de77c8db330c53937c340f8ea7892523f264275dea1b093731bf4a4e",
-    "lean/Ehr/Render/Types.lean": "34f0225add90b69d9c57aab835ff69a81e7adf465745f2128c2bdba00d7e58de",
-    "lean/Ehr/Render/Ui.lean": "1ad16c01525c979b509af3f01832ca9962656df1fc1a4152ec39f922cba2cd79",
-    "lean/Ehr/Render/UiContracts.lean": "76ffb8c27b3b64393d131c846db274f3dc484c9bd9beba0ad59224e9bd27f041",
+    "lean/Ehr/Render/Types.lean": "22ce2c33f193b020f9169caabfe206393cdbe7dcfbd830fa39a37fd6b6a125a3",
+    "lean/Ehr/Render/Ui.lean": "305e7405baff64160f147335632bbc4d7b80e18eb4dfc4c571ac46f366f9c654",
+    "lean/Ehr/Render/UiContracts.lean": "eae9972b2988d409ce8dd2a31119fe8a0e364fd44071c0aa31bba3c6bf860385",
     "lean/Ehr/Render/UiData.lean": "de94e9f95eee170e090791cde886f0dc7804c0817e68ae2fff7fd1143da78566",
-    "lean/Ehr/Render/UiProofs.lean": "6fd32fd132b053cd85d28fe9ffd9bc57a8effc02168dab3ae3cc224243976d47",
+    "lean/Ehr/Render/UiProofs.lean": "4ae13235760b30b828bf096bfcff09f66109a1f918ed6c77fdeebca0c773a9ac",
     "lean/Ehr/Render/UiTests.lean": "e2213385ad7459b64336dce49ce590569fddc19ae6cdee522154de2d1694a4d8",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
@@ -246,7 +246,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "05252a62414bb93e2327a45b980fec1e3b773904a7e7126397e9cb4004fc85c2",
+    "ehr-interp.wasm": "e6f8fa9eb043e53e51d239afa0a5c867660785fb399710dba6b2069d6a821755",
     "interp-loader.mjs": "898e0bd0c37b3520c95f7cdd78cefd6c23d17ef225275544c49cbcbd6d1f5b14",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

@@ -424,6 +424,22 @@
   border-bottom: 1px solid var(--p-border);
   background: var(--p-surface);
 }
+.presentation-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: start;
+}
+.presentation-row-actions .clinical-action {
+  margin: 0;
+}
+.presentation-row-actions button {
+  white-space: normal;
+  height: auto;
+  min-height: 28px;
+  text-align: left;
+  padding: 4px 6px;
+}
 
 /* The columns exist in UiScreen; only their proportions belong to the painter. */
 .clinical-columns:has(> .presentation-folderList) {
