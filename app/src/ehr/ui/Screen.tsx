@@ -358,7 +358,7 @@ function StockUiScreenView({
         {screen.banner.length > 0 ? (
           <PatientBanner
             fields={bannerFields(screen)}
-            viewer={screen.viewer ?? viewer}
+            viewer={viewer ?? screen.viewer}
           />
         ) : (
           <AppShell.Header
@@ -369,7 +369,7 @@ function StockUiScreenView({
             <div className="clinical-brand">
               <strong>VGI HEALTH</strong>
               <span>Clinical workspace</span>
-              <span>{screen.viewer ?? viewer}</span>
+              <span>{viewer ?? screen.viewer}</span>
             </div>
           </AppShell.Header>
         )}

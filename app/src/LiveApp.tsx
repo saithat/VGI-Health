@@ -1,4 +1,4 @@
-import { clinicalDate } from "./data/clinicalDate";
+import { clinicalDate, formatClinicalDate } from "./data/clinicalDate";
 import { CURRENT_RELEASE } from "./core/currentRelease";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
@@ -732,7 +732,7 @@ function PatientWorkspaceHome({
     <Chart
       session={loaded.session}
       presentations={loaded.presentations}
-      viewer={`${clinicianRoleNames[user.persona] ?? "Clinician"} · Clinical date: ${loaded?.date ?? clinicalDate()}`}
+      viewer={`${user.practitioner.name?.[0]?.text ?? [...(user.practitioner.name?.[0]?.given ?? []), user.practitioner.name?.[0]?.family].filter(Boolean).join(" ")} · ${clinicianRoleNames[user.persona] ?? "Clinician"} · Clinical date: ${formatClinicalDate(loaded.date)}`}
       onClose={() => {
         void loaded.session
           .dispatch({ click: { comp: "workspace.return" } })
