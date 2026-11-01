@@ -98,6 +98,9 @@ SplitMix64 plus UTF-8 FNV-1a produces one seeded stream per (seed,task ID).
 Interruptions are assigned before UI-dependent random draws and retained when a
 faster UI skips entries. A fuel bound and commit retry cap prevent loops; stuck
 tasks and rejected/stale receipt reasons are complaints, not successes.
+Navigation fails early when a goal names an undeclared spec element: Core cannot
+capture that value, so exploring more screens cannot complete the task. The
+goal and incomplete result remain in the report.
 
 `TaskContext.lean` binds a renewal to the focused contained MedicationRequest
 in the current task's `todayResources`, validating both patient references.

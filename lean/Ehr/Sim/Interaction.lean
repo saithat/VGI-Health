@@ -131,6 +131,9 @@ def bfsNav (ctx : Context) : Nat → List (State × List Event) → Std.HashSet 
     bfsNav ctx fuel queue' seen'
 
 def planNavigation (ctx : Context) (s : State) : Option (List Event) :=
-  bfsNav ctx (max 128 (ctx.prog.screens.length * 64)) [(s, [])] (({} : Std.HashSet String).insert (navKey s))
+  -- An undeclared element cannot be captured by the interpreter. Retain its
+  -- goal and report failure instead of exhausting BFS over unrelated screens.
+  if ctx.goals.values.any (fun g => (ctx.sp.element? g.element).isNone) then none
+  else bfsNav ctx (max 128 (ctx.prog.screens.length * 64)) [(s, [])] (({} : Std.HashSet String).insert (navKey s))
 
 end Ehr.Sim
