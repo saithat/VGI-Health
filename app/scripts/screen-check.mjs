@@ -25,7 +25,10 @@ const result = spawnSync(
   {
     cwd: appDir,
     stdio: "inherit",
-    env: { ...process.env, [ui ? "EHR_UI_FILES" : "EHR_SCREEN_FILES"]: JSON.stringify(files) },
+    env: {
+      ...process.env,
+      [ui ? "EHR_UI_FILES" : "EHR_SCREEN_FILES"]: JSON.stringify(files),
+    },
   },
 );
 if (result.error) process.stderr.write(`${result.error.message}\n`);

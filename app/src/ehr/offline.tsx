@@ -27,5 +27,11 @@ window.renderEhr = (tree) => {
 };
 
 window.renderUi = (screen) => {
-  flushSync(() => root.render(<MantineProvider theme={clinicalTheme}><UiScreenView screen={screen} onEvent={() => {}} /></MantineProvider>));
+  flushSync(() =>
+    root.render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={screen} onEvent={() => {}} />
+      </MantineProvider>,
+    ),
+  );
 };

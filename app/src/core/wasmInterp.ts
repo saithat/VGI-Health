@@ -82,14 +82,22 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
           `{${context(spec, program, facts, user, true)},"state":${state}}`,
         ),
       ),
-    ...(wasm.renderUi || (wasm.exports?.includes("ehr_render_ui") && wasm.call) ? {
-      renderUi: (spec: string, program: string, facts: string, user: string, state: string) => {
-        const input = `{${context(spec, program, facts, user, true)},"state":${state}}`;
-        if (wasm.renderUi) return checked(wasm.renderUi(input));
-        if (wasm.call) return checked(wasm.call("ehr_render_ui", input));
-        throw new Error("Semantic UI export is unavailable");
-      },
-    } : {}),
+    ...(wasm.renderUi || (wasm.exports?.includes("ehr_render_ui") && wasm.call)
+      ? {
+          renderUi: (
+            spec: string,
+            program: string,
+            facts: string,
+            user: string,
+            state: string,
+          ) => {
+            const input = `{${context(spec, program, facts, user, true)},"state":${state}}`;
+            if (wasm.renderUi) return checked(wasm.renderUi(input));
+            if (wasm.call) return checked(wasm.call("ehr_render_ui", input));
+            throw new Error("Semantic UI export is unavailable");
+          },
+        }
+      : {}),
     facts: (bundle) => checked(wasm.facts(bundle)),
   };
 }

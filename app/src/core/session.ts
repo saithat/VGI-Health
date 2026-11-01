@@ -31,7 +31,8 @@ export function createSession(
     const state: State = JSON.parse(stateJson);
     const view: ScreenView = JSON.parse(interp.view(...args, stateJson));
     const ui: UiScreen | undefined = interp.renderUi
-      ? JSON.parse(interp.renderUi(...args, stateJson)) : undefined;
+      ? JSON.parse(interp.renderUi(...args, stateJson))
+      : undefined;
     return { page: readPage(), ui, state, view, result };
   }
   let snapshot = readSnapshot();

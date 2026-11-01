@@ -7,7 +7,12 @@ import { UiChildren, UiNodeView } from "../src/ehr/ui/nodes";
 import { entryEvent } from "../src/ehr/ui/events";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import { clinicalTheme } from "../src/ehr/ui/theme";
-import { uiScreenSchema, type NodeOf, type UiNode, type UiScreen } from "../src/ehr/ui/types";
+import {
+  uiScreenSchema,
+  type NodeOf,
+  type UiNode,
+  type UiScreen,
+} from "../src/ehr/ui/types";
 import rooming from "../src/fixtures/ui/w1Rooming.json";
 import orders from "../src/fixtures/ui/w1Orders.json";
 import sign from "../src/fixtures/ui/w1Sign.json";
@@ -15,42 +20,172 @@ import popup from "../src/fixtures/ui/p1-alert.json";
 import bad from "../src/fixtures/ui/bad-sign.json";
 
 beforeAll(() => {
-  window.matchMedia = vi.fn().mockImplementation(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
-  vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
+  window.matchMedia = vi.fn().mockImplementation(() => ({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+  vi.stubGlobal(
+    "ResizeObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
   Element.prototype.scrollIntoView = vi.fn();
 });
 afterEach(cleanup);
-const field: NodeOf<"field"> = { comp: "entry", label: "Clinical value", kind: "text", value: null, unit: null, provenance: null, pendingConfirm: false, humanOnly: false, required: false };
-const button: NodeOf<"button"> = { comp: "action", label: "Continue", role: "nav", enabled: true, blockedReason: null, hotkey: null };
+const field: NodeOf<"field"> = {
+  comp: "entry",
+  label: "Clinical value",
+  kind: "text",
+  value: null,
+  unit: null,
+  provenance: null,
+  pendingConfirm: false,
+  humanOnly: false,
+  required: false,
+};
+const button: NodeOf<"button"> = {
+  comp: "action",
+  label: "Continue",
+  role: "nav",
+  enabled: true,
+  blockedReason: null,
+  hotkey: null,
+};
 function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
-  return render(<MantineProvider theme={clinicalTheme}><UiChildren nodes={nodes} onEvent={onEvent} /></MantineProvider>);
+  return render(
+    <MantineProvider theme={clinicalTheme}>
+      <UiChildren nodes={nodes} onEvent={onEvent} />
+    </MantineProvider>,
+  );
 }
 
 describe("semantic EHR painter", () => {
   it("renders every UiNode constructor and all supplied records", () => {
-    paint([{ section: { id: "review", title: "Review", children: [
-      { columns: { children: [{ field }, { field: { ...field, comp: "flag", kind: "flag", label: "Reviewed", value: "true" } }] } },
-      { tabs: { id: "tabs", labels: ["Chart", "History"], selected: 0, body: [{ text: { s: "Selected chart body" } }] } },
-      { stepper: { steps: [["review", "Review"], ["sign", "Sign"]], current: 0 } },
-      { info: { comp: "meds", label: "Medication records", infoId: "currentMeds", display: "table", rows: [[["Drug", "Losartan"], ["Dose", "50 mg"]], [["Drug", "Metformin"], ["Dose", "500 mg"]]] } },
-      { alert: { comp: "warning", alertId: "allergy", label: "Review allergy", severity: "warning" } }, { button },
-    ] } }]);
+    paint([
+      {
+        section: {
+          id: "review",
+          title: "Review",
+          children: [
+            {
+              columns: {
+                children: [
+                  { field },
+                  {
+                    field: {
+                      ...field,
+                      comp: "flag",
+                      kind: "flag",
+                      label: "Reviewed",
+                      value: "true",
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              tabs: {
+                id: "tabs",
+                labels: ["Chart", "History"],
+                selected: 0,
+                body: [{ text: { s: "Selected chart body" } }],
+              },
+            },
+            {
+              stepper: {
+                steps: [
+                  ["review", "Review"],
+                  ["sign", "Sign"],
+                ],
+                current: 0,
+              },
+            },
+            {
+              info: {
+                comp: "meds",
+                label: "Medication records",
+                infoId: "currentMeds",
+                display: "table",
+                rows: [
+                  [
+                    ["Drug", "Losartan"],
+                    ["Dose", "50 mg"],
+                  ],
+                  [
+                    ["Drug", "Metformin"],
+                    ["Dose", "500 mg"],
+                  ],
+                ],
+              },
+            },
+            {
+              alert: {
+                comp: "warning",
+                alertId: "allergy",
+                label: "Review allergy",
+                severity: "warning",
+              },
+            },
+            { button },
+          ],
+        },
+      },
+    ]);
     expect(screen.getByRole("region", { name: "Review" })).toBeTruthy();
-    expect(screen.getByRole("textbox", { name: "Clinical value" })).toBeTruthy();
+    expect(
+      screen.getByRole("textbox", { name: "Clinical value" }),
+    ).toBeTruthy();
     expect(screen.getByRole("checkbox", { name: "Reviewed" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Chart" })).toBeTruthy();
     expect(screen.getByRole("list", { name: "Visit progress" })).toBeTruthy();
-    expect(screen.getByRole("table", { name: "Medication records" }).textContent).toContain("Metformin");
+    expect(
+      screen.getByRole("table", { name: "Medication records" }).textContent,
+    ).toContain("Metformin");
     expect(screen.getByRole("alert", { name: "Review allergy" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Continue" })).toBeTruthy();
     expect(screen.getByText("Selected chart body")).toBeTruthy();
   });
   it("renders lists, summaries, trends, code Selects, and empty records", () => {
-    paint([...["list", "summary", "trend", "table"].map((display): UiNode => ({ info: { comp: display, infoId: "labs", label: display, display, rows: [[["Date", "2026-10-31"], ["Value", "7.1"]], [["Date", "2026-10-01"], ["Value", "7.5"]]] } })), { info: { comp: "empty", infoId: "allergyList", label: "Allergies", display: "table", rows: [] } }, { field: { ...field, kind: "code", value: "I10" } }]);
+    paint([
+      ...["list", "summary", "trend", "table"].map((display): UiNode => ({
+        info: {
+          comp: display,
+          infoId: "labs",
+          label: display,
+          display,
+          rows: [
+            [
+              ["Date", "2026-10-31"],
+              ["Value", "7.1"],
+            ],
+            [
+              ["Date", "2026-10-01"],
+              ["Value", "7.5"],
+            ],
+          ],
+        },
+      })),
+      {
+        info: {
+          comp: "empty",
+          infoId: "allergyList",
+          label: "Allergies",
+          display: "table",
+          rows: [],
+        },
+      },
+      { field: { ...field, kind: "code", value: "I10" } },
+    ]);
     expect(screen.getByRole("list", { name: "list" })).toBeTruthy();
     expect(screen.getByRole("img", { name: "trend trend" })).toBeTruthy();
     expect(screen.getByRole("table", { name: "trend" })).toBeTruthy();
-    expect(screen.getByRole("combobox", { name: "Clinical value" })).toBeTruthy();
+    expect(
+      screen.getByRole("combobox", { name: "Clinical value" }),
+    ).toBeTruthy();
     expect(screen.getByText("No records on file")).toBeTruthy();
   });
   it.each([
@@ -62,79 +197,289 @@ describe("semantic EHR painter", () => {
     ["identity", "AA/M/58", null, { text: { s: "AA/M/58" } }],
     ["flag", true, null, { flag: { b: true } }],
     ["qty", "83.46", "kg", { qty: { tenths: 835, unit: "kg" } }],
-  ] as const)("maps %s values to the exact Lean constructor", (kind, raw, unit, expected) => {
-    expect(entryEvent({ ...field, kind, unit }, raw)).toEqual({ enter: { comp: "entry", value: expected } });
-  });
+  ] as const)(
+    "maps %s values to the exact Lean constructor",
+    (kind, raw, unit, expected) => {
+      expect(entryEvent({ ...field, kind, unit }, raw)).toEqual({
+        enter: { comp: "entry", value: expected },
+      });
+    },
+  );
   it("refuses invalid quantities and preserves the search event", () => {
-    for (const value of ["", "-1", "abc", "Infinity"]) expect(entryEvent({ ...field, kind: "qty", unit: "kg" }, value)).toBeUndefined();
-    expect(entryEvent({ ...field, kind: "qty", unit: "bogus" }, "5")).toBeUndefined();
-    expect(entryEvent({ ...field, kind: "search" }, "metformin")).toEqual({ search: { query: "metformin" } });
+    for (const value of ["", "-1", "abc", "Infinity"])
+      expect(
+        entryEvent({ ...field, kind: "qty", unit: "kg" }, value),
+      ).toBeUndefined();
+    expect(
+      entryEvent({ ...field, kind: "qty", unit: "bogus" }, "5"),
+    ).toBeUndefined();
+    expect(entryEvent({ ...field, kind: "search" }, "metformin")).toEqual({
+      search: { query: "metformin" },
+    });
   });
   it("maps DOM text, number, checkbox and confirm events once, by comp id", () => {
     const emit = vi.fn();
-    paint([{ field }, { field: { ...field, comp: "weight", label: "Weight", kind: "qty", unit: "kg" } }, { field: { ...field, comp: "flag", label: "Reviewed", kind: "flag" } }, { field: { ...field, comp: "dose", label: "Dose", value: "50", provenance: "Prior order", pendingConfirm: true } }], emit);
+    paint(
+      [
+        { field },
+        {
+          field: {
+            ...field,
+            comp: "weight",
+            label: "Weight",
+            kind: "qty",
+            unit: "kg",
+          },
+        },
+        { field: { ...field, comp: "flag", label: "Reviewed", kind: "flag" } },
+        {
+          field: {
+            ...field,
+            comp: "dose",
+            label: "Dose",
+            value: "50",
+            provenance: "Prior order",
+            pendingConfirm: true,
+          },
+        },
+      ],
+      emit,
+    );
     expect(emit).not.toHaveBeenCalled();
-    fireEvent.change(screen.getByRole("textbox", { name: "Clinical value" }), { target: { value: "abc" } });
-    fireEvent.change(screen.getByRole("textbox", { name: "Weight" }), { target: { value: "83.4" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Clinical value" }), {
+      target: { value: "abc" },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Weight" }), {
+      target: { value: "83.4" },
+    });
     fireEvent.click(screen.getByRole("checkbox", { name: "Reviewed" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirm Dose" }));
     expect(emit.mock.calls.map(([event]) => event)).toEqual([
       { enter: { comp: "entry", value: { text: { s: "abc" } } } },
-      { enter: { comp: "weight", value: { qty: { tenths: 834, unit: "kg" } } } },
+      {
+        enter: { comp: "weight", value: { qty: { tenths: 834, unit: "kg" } } },
+      },
       { enter: { comp: "flag", value: { flag: { b: true } } } },
       { confirm: { comp: "dose" } },
     ]);
   });
-  it.each(["primary", "secondary", "nav", "macro", "toggle", "confirm", "ack"])("maps %s button semantics", (role) => {
-    const emit = vi.fn(); paint([{ button: { ...button, role } }], emit);
-    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
-    expect(emit.mock.calls).toEqual([[role === "ack" ? { ack: { alert: "action" } } : role === "confirm" ? { confirm: { comp: "action" } } : { click: { comp: "action" } }]]);
+  it("maps free code entry and enumerated Select choices without render-time events", () => {
+    const emit = vi.fn();
+    paint(
+      [
+        { field: { ...field, label: "Diagnosis", kind: "code", value: "I10" } },
+        {
+          field: {
+            ...field,
+            comp: "route",
+            label: "Route",
+            kind: "coded:PO|IV",
+            value: "PO",
+          },
+        },
+      ],
+      emit,
+    );
+    expect(emit).not.toHaveBeenCalled();
+    fireEvent.input(screen.getByRole("combobox", { name: "Diagnosis" }), {
+      target: { value: "E11.9" },
+    });
+    fireEvent.click(screen.getByRole("combobox", { name: "Route" }));
+    fireEvent.click(screen.getByRole("option", { name: "IV" }));
+    expect(emit.mock.calls.map(([event]) => event)).toEqual([
+      { enter: { comp: "entry", value: { code: { c: "E11.9" } } } },
+      { enter: { comp: "route", value: { code: { c: "IV" } } } },
+    ]);
   });
+  it("uses an explicit sibling confirm node as the pending field's single affordance", () => {
+    const emit = vi.fn();
+    paint(
+      [
+        { field: { ...field, pendingConfirm: true, provenance: "Record" } },
+        {
+          button: {
+            ...button,
+            role: "confirm",
+            comp: field.comp,
+            label: "Confirm prefilled value",
+          },
+        },
+      ],
+      emit,
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirm prefilled value" }),
+    );
+    expect(emit.mock.calls).toEqual([[{ confirm: { comp: "entry" } }]]);
+  });
+  it.each(["primary", "secondary", "nav", "macro", "toggle", "confirm", "ack"])(
+    "maps %s button semantics",
+    (role) => {
+      const emit = vi.fn();
+      paint([{ button: { ...button, role } }], emit);
+      fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+      expect(emit.mock.calls).toEqual([
+        [
+          role === "ack"
+            ? { ack: { alert: "action" } }
+            : role === "confirm"
+              ? { confirm: { comp: "action" } }
+              : { click: { comp: "action" } },
+        ],
+      ]);
+    },
+  );
   it("does not emit on render, blocks disabled commits, and exposes their reason", () => {
-    const emit = vi.fn(); paint([{ button: { ...button, role: "primary", enabled: false, blockedReason: "Identity required", hotkey: "Ctrl + Enter" } }], emit);
+    const emit = vi.fn();
+    paint(
+      [
+        {
+          button: {
+            ...button,
+            role: "primary",
+            enabled: false,
+            blockedReason: "Identity required",
+            hotkey: "Ctrl + Enter",
+          },
+        },
+      ],
+      emit,
+    );
     const action = screen.getByRole("button", { name: "Continue" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe("Identity required");
-    fireEvent.click(action); expect(emit).not.toHaveBeenCalled();
+    fireEvent.click(action);
+    expect(emit).not.toHaveBeenCalled();
   });
   it("emits tab selection by tab component and actual index", () => {
-    const emit = vi.fn(); paint([{ tabs: { id: "chart-tabs", labels: ["Current", "History"], selected: 0, body: [{ text: { s: "Current content" } }] } }], emit);
+    const emit = vi.fn();
+    paint(
+      [
+        {
+          tabs: {
+            id: "chart-tabs",
+            labels: ["Current", "History"],
+            selected: 0,
+            body: [{ text: { s: "Current content" } }],
+          },
+        },
+      ],
+      emit,
+    );
     fireEvent.click(screen.getByRole("tab", { name: "History" }));
-    expect(emit.mock.calls).toEqual([[{ selectTab: { comp: "chart-tabs", idx: 1 } }]]);
+    expect(emit.mock.calls).toEqual([
+      [{ selectTab: { comp: "chart-tabs", idx: 1 } }],
+    ]);
   });
   it("shows human-only and identity/scan/cosign styling", () => {
-    const { container } = paint(["identity", "scan", "cosign"].map((kind) => ({ field: { ...field, kind, comp: kind, label: kind, humanOnly: true } })));
-    for (const kind of ["identity", "scan", "cosign"]) expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
+    const { container } = paint(
+      ["identity", "scan", "cosign"].map((kind) => ({
+        field: { ...field, kind, comp: kind, label: kind, humanOnly: true },
+      })),
+    );
+    for (const kind of ["identity", "scan", "cosign"])
+      expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
     expect(screen.getAllByText("Human entry only")).toHaveLength(3);
   });
   it("keeps modal acknowledgement blocking and uses its alert id", () => {
     const emit = vi.fn();
-    const model: UiScreen = { banner: [["Patient", "Alex Morgan"], ["MRN", "123"]], nav: [], title: "Orders", workspace: [{ button }], side: [], modal: { section: { id: "interaction", title: "Interaction alert", children: [{ text: { s: "Review concurrent medication" } }, { button: { ...button, role: "ack", comp: "interaction", label: "Acknowledge" } }] } } };
-    render(<MantineProvider><UiScreenView screen={model} onEvent={emit} /></MantineProvider>);
-    expect(screen.getByRole("dialog", { name: "Interaction alert" })).toBeTruthy();
+    const model: UiScreen = {
+      banner: [
+        ["Patient", "Alex Morgan"],
+        ["MRN", "123"],
+      ],
+      nav: [],
+      title: "Orders",
+      workspace: [{ button }],
+      side: [],
+      modal: {
+        section: {
+          id: "interaction",
+          title: "Interaction alert",
+          children: [
+            { text: { s: "Review concurrent medication" } },
+            {
+              button: {
+                ...button,
+                role: "ack",
+                comp: "interaction",
+                label: "Acknowledge",
+              },
+            },
+          ],
+        },
+      },
+    };
+    render(
+      <MantineProvider>
+        <UiScreenView screen={model} onEvent={emit} />
+      </MantineProvider>,
+    );
+    expect(
+      screen.getByRole("dialog", { name: "Interaction alert" }),
+    ).toBeTruthy();
     fireEvent.keyDown(document, { key: "Escape" });
-    expect(screen.getByRole("dialog", { name: "Interaction alert" })).toBeTruthy();
+    expect(
+      screen.getByRole("dialog", { name: "Interaction alert" }),
+    ).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Acknowledge" }));
     expect(emit.mock.calls).toEqual([[{ ack: { alert: "interaction" } }]]);
   });
-  it.each([rooming, orders, sign, popup, bad])("accepts actual Lean fixture %# with a deterministic accessibility contract", (input) => {
-    const model = uiScreenSchema.parse(input);
-    const expected = expectedAria(model);
-    expect(expected.some((item) => item.role === (model.modal ? "dialog" : "banner"))).toBe(true);
-    expect(expectedAria(uiScreenSchema.parse(JSON.parse(JSON.stringify(model))))).toEqual(expected);
-  });
+  it.each([rooming, orders, sign, popup, bad])(
+    "accepts actual Lean fixture %# with a deterministic accessibility contract",
+    (input) => {
+      const model = uiScreenSchema.parse(input);
+      const expected = expectedAria(model);
+      expect(
+        expected.some(
+          (item) => item.role === (model.modal ? "dialog" : "banner"),
+        ),
+      ).toBe(true);
+      expect(
+        expectedAria(uiScreenSchema.parse(JSON.parse(JSON.stringify(model)))),
+      ).toEqual(expected);
+    },
+  );
   it("compares exact role/name/disabled projections and detects drift", () => {
-    const snapshot = '- banner "Patient banner"\n- main:\n  - button "Sign orders" [disabled]\n  - textbox "Weight": "83.4"';
-    expect(observedAria(snapshot)).toEqual([{ role: "banner", name: "Patient banner" }, { role: "main", name: "" }, { role: "button", name: "Sign orders", disabled: true }, { role: "textbox", name: "Weight" }]);
-    expect(observedAria(snapshot.replace('[disabled]', ''))).not.toEqual(observedAria(snapshot));
-    expect(observedAria(snapshot.replace('Weight', 'Wrong label'))).not.toEqual(observedAria(snapshot));
+    const snapshot =
+      '- banner "Patient banner"\n- main:\n  - button "Sign orders" [disabled]\n  - textbox "Weight": "83.4"';
+    expect(observedAria(snapshot)).toEqual([
+      { role: "banner", name: "Patient banner" },
+      { role: "main", name: "" },
+      {
+        role: "button",
+        name: "Sign orders",
+        disabled: true,
+        ancestors: ['main ""'],
+      },
+      { role: "textbox", name: "Weight", ancestors: ['main ""'] },
+    ]);
+    expect(observedAria(snapshot.replace("[disabled]", ""))).not.toEqual(
+      observedAria(snapshot),
+    );
+    expect(observedAria(snapshot.replace("Weight", "Wrong label"))).not.toEqual(
+      observedAria(snapshot),
+    );
+  });
+  it("detects fields moved out of their contracted section even when role order is unchanged", () => {
+    const nested = '- main:\n  - region "Vitals":\n    - textbox "Weight"';
+    const moved = '- main:\n  - region "Vitals"\n  - textbox "Weight"';
+    expect(observedAria(nested)).not.toEqual(observedAria(moved));
   });
   it("rejects malformed or unknown wire constructors offline", () => {
-    expect(uiScreenSchema.safeParse({ ...rooming, workspace: [{ debug: { json: "bad" } }] }).success).toBe(false);
+    expect(
+      uiScreenSchema.safeParse({
+        ...rooming,
+        workspace: [{ debug: { json: "bad" } }],
+      }).success,
+    ).toBe(false);
   });
   it("unknown nodes cannot silently disappear", () => {
     // The exhaustive never branch is also a hard runtime failure for unvalidated data.
     const unknown: UiNode = JSON.parse('{"unknown":{}}');
-    expect(() => UiNodeView({ node: unknown, onEvent: () => {} })).toThrow("Unknown semantic UI node");
+    expect(() => UiNodeView({ node: unknown, onEvent: () => {} })).toThrow(
+      "Unknown semantic UI node",
+    );
   });
 });
