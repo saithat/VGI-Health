@@ -81,9 +81,16 @@ describe("offline live UI catalog", () => {
       expect(session.getSnapshot().state.patientContext?.bound).toBe(
         facts.facts.sourcePatientId,
       );
-      session.dispatch({ click: { comp: "w1Rooming.home" } });
+      expect(session.getSnapshot().state.screen).toBe("chartSummary");
+      const search = session
+        .getSnapshot()
+        .ui?.workspace.find(
+          (node) => "field" in node && node.field.kind === "search",
+        );
+      if (!search || !("field" in search))
+        throw new Error("Current chart has no semantic search");
       session.dispatch({
-        enter: { comp: "home.chartSearch", value: { text: { s: "72" } } },
+        enter: { comp: search.field.comp, value: { text: { s: "72" } } },
       });
       const snapshot = session.getSnapshot();
       expect(snapshot.result, patient.name).toBe("ok");

@@ -12,8 +12,9 @@ def base (n : Nat) : Program :=
 def seed (n : Nat) (p : Program) : Program := { p with id := "bad-" ++ toString n }
 /-- 1: Hide allergies on an unopened sign-screen tab. -/
 def hiddenAllergies : Program := seed 1 <| (base 1).updateScreen "w1Sign" fun s =>
-  (s.insertAfter "w1Sign.banner" [tabsC s.id "hiddenTabs" "Details"]).updateComp
-    "w1Sign.allergies" fun c => { c with parent? := some "w1Sign.hiddenTabs", tab := 1 }
+  let s := s.insertAfter "w1Sign.banner" [tabsC s.id "hiddenTabs" "Details"]
+  { s with components := s.components.map fun c =>
+      if showsInfo "allergyList" c.kind then { c with parent? := some "w1Sign.hiddenTabs", tab := 1 } else c }
 /-- 2: Prefill the human-only patient-ID re-entry from the chart. -/
 def prefilledIdentity : Program := seed 2 <| (base 2).updateScreen "w1Sign" fun s =>
   s.updateComp "w1Sign.patientIdReentry" fun c =>

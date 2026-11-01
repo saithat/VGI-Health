@@ -58,7 +58,7 @@ def presetProgram (owner : String) (p : Program) : Program :=
     { s with components := fields ++ s.components }
   let available := screens.map (·.id)
   { p with screens := screens.map fun s =>
-      clinicLandingLayout owner { s with
+      Density.forOwner owner <| clinicLandingLayout owner { s with
                title := if s.id == "home" then ((presetLandings owner).head?).map (·.2) |>.getD s.title
                         else (navigatorNames s).2
                components := s.components.filterMap fun c =>

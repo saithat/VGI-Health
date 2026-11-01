@@ -25,7 +25,10 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
              [("Folder", a.title), ("Count", toString a.rows.length)])]] else []) ++ [.info "workspace.list" title info "table" ((Workspace.rows p f s).map (·.fields))] ++
         (Workspace.openControls p f s).map fun control =>
           .rowAction "workspace.list" (control.row?.getD 0)
-            [.button control.id control.label "nav" true none none])] }
+            [.button control.id control.label "nav" true none none])] ++
+       (if p.screens.any (·.id == "chartSummary") then
+         [.info "" "Reports" "chartReports" "summary" [[("Department snapshot", "Schedule, census and case lists are available in Application activities.")]]]
+        else []) }
 
 /-- Patient-scoped renderUi retains all clinical presentation guarantees. -/
 def renderPatientWorkspace (sp : Spec) (p : Program) (f : Facts) (d : Display) (u : User) (s : State) : UiScreen :=

@@ -1,4 +1,5 @@
 import Ehr.Specs.Profile
+import Ehr.Specs.ChartInfo
 import Ehr.Specs.ClinicalTables
 import Ehr.Core.Types
 import Ehr.Specs.Rules.Cms
@@ -1809,7 +1810,7 @@ def infos : List InfoSpec := [
   refillRequest, inbasketItems, triageSummary, consultRequest, consentDocument,
   socialHistory, familyHistory, surgicalHistory, coverage, prnHistory, pendingResults,
   edTrackBoard, careGapList, curesReport
-]
+] ++ ChartInfo.infos
 
 /-! ## Commits
 

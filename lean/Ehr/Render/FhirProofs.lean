@@ -53,6 +53,18 @@ theorem parseBundle_eq (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
     · contradiction
     · cases h; exact ⟨_, rfl, rfl⟩
 
+/-- Read-only previews never attest identity, weight, review, medication class or code status. -/
+theorem chart_previews_preserve_clinical_facts (ctx : FactsContext) (rs : List Json) (p : Json) :
+    (factsOf ctx rs p).patientId = (baseFactsOf ctx rs p).patientId ∧
+    (factsOf ctx rs p).sourcePatientId? = (baseFactsOf ctx rs p).sourcePatientId? ∧
+    (factsOf ctx rs p).weightToday? = (baseFactsOf ctx rs p).weightToday? ∧
+    (factsOf ctx rs p).allergyVersion = (baseFactsOf ctx rs p).allergyVersion ∧
+    (factsOf ctx rs p).currentMedClasses = (baseFactsOf ctx rs p).currentMedClasses ∧
+    (factsOf ctx rs p).receipts = (baseFactsOf ctx rs p).receipts ∧
+    (factsOf ctx rs p).record = (baseFactsOf ctx rs p).record := by simp [factsOf]
+
+#print axioms chart_previews_preserve_clinical_facts
+
 /-- T11: every active allergy survives abstraction into Display. -/
 theorem T11_allergy (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
     (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
