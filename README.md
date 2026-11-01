@@ -15,6 +15,30 @@ Start with these files, in order:
 5. [Check/Sound.lean](lean/Ehr/Check/Sound.lean): what checker acceptance proves.
 6. [Render/UiProofs.lean](lean/Ehr/Render/UiProofs.lean): how the EHR tree preserves controls and information.
 
+## What is proved, and what is not
+
+**Proved** means a Lean theorem, kernel-checked, using only `propext`,
+`Classical.choice` and `Quot.sound` (no `sorry`, no `native_decide`).
+**Checked** means a test or a per-program check, not a theorem.
+
+| Claim | Status | Where |
+|---|---|---|
+| Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
+| Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
+| Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
+| A program is deployed only if the checker accepts it, with a certificate naming that spec and program | **Proved** (the plan; not crash-atomic file writes) | `Proofs/CheckDeploy.lean` (T4) |
+| Checker acceptance implies properties 1–5 and 7–13 for every patient record and every reachable state | **Proved** | `Check/*Sound.lean` (`accepted_*`) |
+| Checker acceptance implies property 6, "every required task can be completed" | **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
+| The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
+| Navigation is sane (D5) | **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
+| Known-bad UIs are rejected | **Proved** for 3 small programs and the completion counterexample; **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
+| The browser's accessibility tree equals Lean's screen tree; every control works | **Checked** (browser tests, button audit) | `app/e2e/` |
+| Each rule is enforced in realistic workflows on every deployed revision | **Checked** (200 held-out scenarios, hidden from the agent; 0 failures) | `conformance/` |
+| The React drawing, FHIR mapping/Medplum writes, Lean compiler and Emscripten | **Trusted**, not proved | — |
+| The hospital rules are complete and clinically right | **Not proved**: the rules are a reviewed spec (core profile; catalog rules switched off) | `Specs/` |
+| The simulated clinicians and workload numbers reflect real people | **Not proved**: deterministic Lean policies; clicks, scrolls and straight-line mouse travel at 1440×900 | `Sim/` |
+| The AI agent is correct or honest | **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
+
 [VERIFICATION.md](docs/VERIFICATION.md) records the proof scope, trusted code and
 open gaps. Checker implications cover 12 of 13 properties; general completion
 still requires a separate proof. Current releases use the **core** rule profile.
