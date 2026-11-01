@@ -53,6 +53,12 @@ def allergyCells (r : AllergyRow) : List (String × String) :=
 def medCells (r : MedRow) : List (String × String) :=
   [("Medication", r.name), ("Instructions", r.sig), ("Status", r.status),
    ("Authored", uiDate r.authored), ("Prescriber", r.prescriber)]
+def noteCells (r : NoteRow) : List (String × String) :=
+  [("Date", uiDate r.date), ("Type", r.noteType), ("Author", r.author),
+   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status),
+   ("Source date", uiDate r.sourceDate), ("Shift days", uiLabel r.shiftDays "Unknown")]
+def historyCells (r : HistoryRow) : List (String × String) :=
+  [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
   [("Vital sign", r.name), ("Value", r.value), ("Unit", r.unit), ("Recorded", uiDate r.date)]
 def problemCells (r : ProblemRow) : List (String × String) :=
@@ -72,6 +78,11 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
   | "allergyList" => cx.disp.allergies.map allergyCells
   | "currentMeds" => cx.disp.meds.map medCells
+  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
+  | "importedHistory" => cx.disp.history.map historyCells
+  | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
+  | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
+  | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
   | "vitals" => cx.disp.vitals.map vitalCells
   | "problemList" => cx.disp.problems.map problemCells
   | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
@@ -201,6 +212,7 @@ def uiLatestVitals (d : Display) : List VitalRow :=
 
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
+  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
   | "allergyList" => cx.disp.allergies.map uiAllergySummary
   | "currentMeds" => cx.disp.meds.map uiMedSummary
   | "problemList" => (cx.disp.problems.filter (fun r => r.status != "resolved" && r.status != "inactive" && r.abatement == "")).map uiProblemSummary
@@ -275,6 +287,9 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
 already present in the program's side column. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
+    (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+      [.info "" "Home medications (reported)" "importedHistory" "list"
+        ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)

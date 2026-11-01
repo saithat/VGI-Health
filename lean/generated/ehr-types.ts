@@ -957,6 +957,8 @@ export interface Facts {
   allergyVersion: number;
   allergyClasses: string[];
   medsVersion: number;
+  notesVersion: number;
+  historyVersion: number;
   currentMedClasses: string[];
   /**
    * Weight recorded today: tenths, and the unit as recorded.
@@ -2021,6 +2023,36 @@ export interface GrowthPoint {
 }
 
 /**
+ * One visible DocumentReference, with all inline plain-text attachments.
+ */
+export interface NoteRow {
+  id: string;
+  date: string;
+  noteType: string;
+  author: string;
+  encounter: string;
+  title: string;
+  text: string;
+  status: string;
+  sourceDate: string;
+  shiftDays: string;
+  versionId: string;
+}
+
+/**
+ * Reported history; never an order or evidence of administration.
+ */
+export interface HistoryRow {
+  id: string;
+  kind: string;
+  item: string;
+  detail: string;
+  status: string;
+  source: string;
+  versionId: string;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
@@ -2054,6 +2086,8 @@ export interface Display {
   encounters: EncRow[];
   procedures: ProcRow[];
   growth: GrowthPoint[];
+  notes: NoteRow[];
+  history: HistoryRow[];
 }
 
 /**

@@ -6,9 +6,19 @@ review/display contracts are retained. The new optional views add no signature,
 waiver, receipt or safety rule. Adapter/row-coverage integration is CR-16/17. -/
 namespace Ehr.Specs.ClinicalTables
 
+def encounterNotes : InfoSpec :=
+  { id := "encounterNotes", label := "Notes", version := "notesVersion",
+    payload? := some { rowFields := ["date", "type", "author", "encounter",
+      "title", "text", "status", "sourceDate", "shiftDays"] } }
+
+def importedHistory : InfoSpec :=
+  { id := "importedHistory", label := "History", version := "historyVersion",
+    payload? := some { rowFields := ["kind", "item", "detail", "status", "source"], groupBy? := some "kind" } }
+
 /-- Optional supporting views in the blueprint's clinical reading order. -/
 def infos : List InfoSpec :=
-  [{ id := "orderCatalog", label := "Order catalog", version := "formularyVersion",
+  [encounterNotes, importedHistory,
+   { id := "orderCatalog", label := "Order catalog", version := "formularyVersion",
      payload? := some { rowFields := ["name", "strength", "form", "route", "formularyStatus"] } },
    { id := "messagePreview", label := "Selected message", version := "inbasketVersion",
      payload? := some { fields := [{ field := "subject" }, { field := "context" }, { field := "received" }], identifiers := [.patient] } },
@@ -28,7 +38,8 @@ def infos : List InfoSpec :=
 /-- Complete clinical columns for existing views. A MAR row is one medication
 and scheduled-time cell; no scan or administration is implied by displaying it. -/
 def columns : List (InfoId × List String × Option String) :=
-  [("orderSummary", ["line", "action", "order", "dose", "unit", "route", "frequencyPrn",
+  [("priorNotes", ["date", "type", "author", "encounter", "title", "text", "status", "sourceDate", "shiftDays"], none),
+   ("orderSummary", ["line", "action", "order", "dose", "unit", "route", "frequencyPrn",
      "timingDuration", "quantityRefills", "indicationDiagnosis", "destination", "status"], none),
    ("resultDetail", ["test", "value", "unit", "flag", "referenceRange", "collectedAt", "resultedAt", "status"], none),
    ("resultTrend", ["test", "date", "value", "unit"], none),

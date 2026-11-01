@@ -420,6 +420,32 @@ structure GrowthPoint where
   heightTenths? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- One visible DocumentReference, with all inline plain-text attachments. -/
+structure NoteRow where
+  id : String
+  date : String
+  noteType : String
+  author : String
+  encounter : String
+  title : String
+  text : String
+  status : String
+  sourceDate : String
+  shiftDays : String
+  versionId : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Reported history; never an order or evidence of administration. -/
+structure HistoryRow where
+  id : String
+  kind : String
+  item : String
+  detail : String
+  status : String
+  source : String
+  versionId : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The patient's records as the page shows them. Computed in Lean from the
 FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first. -/
 structure Display where
@@ -440,6 +466,8 @@ structure Display where
   encounters : List EncRow
   procedures : List ProcRow
   growth : List GrowthPoint
+  notes : List NoteRow := []
+  history : List HistoryRow := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- An empty display (no records). -/
@@ -448,7 +476,7 @@ def Display.empty : Display :=
     banner := { name := "", mrn := "", dob := "", ageYears := 0, sex := "U", language := ""
                 pcp := "", coverage := "", encounterClass := "", attending := "", location := "" }
     allergies := [], meds := [], vitals := [], labs := [], problems := []
-    immunizations := [], encounters := [], procedures := [], growth := [] }
+    immunizations := [], encounters := [], procedures := [], growth := [], notes := [], history := [] }
 
 /-! ## Semantic UI (section 10; Init-only) -/
 

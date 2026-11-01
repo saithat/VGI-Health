@@ -1,5 +1,5 @@
 import Ehr.Core.View
-import Ehr.Core.Json
+import Ehr.JsonCompat
 
 /-!
 # API: JSON in, JSON out

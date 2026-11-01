@@ -47,7 +47,9 @@ def main (args : List String) : IO Unit := do
       ("prescriptionDirections", "Take one capsule by mouth twice daily for 7 days"),
       ("controlledPrescriberName", "Morgan Patel (synthetic)"),
       ("prescriberFederalRegistration", "DEMO-REG-001")] do
-    let some el := p1spec.element? element | throw (IO.userError s!"sample element missing: {element}")
+    -- Full-profile signing fields are absent from the default core profile.
+    -- Never add them to the spec or synthesize a capture just for a sample.
+    let some el := p1spec.element? element | continue
     let some it := (Ehr.view p1spec p1 facts user ordered).items.find? (fun it =>
       it.shown && match it.comp.kind with | .field e _ _ => e == element | _ => false)
       | throw (IO.userError s!"sample field not shown: {element}")

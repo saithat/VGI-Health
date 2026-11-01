@@ -29,9 +29,9 @@ def home : Screen :=
       sidebar s clinicSidebar ++
       tabStrip s "chart" "Chart review"
         [(.table, "problemList", "Problem list"), (.table, "labResults", "Results"),
-         (.panel, "priorNotes", "Notes"), (.table, "currentMeds", "Medications"),
+         (.panel, "encounterNotes", "Notes"), (.table, "currentMeds", "Medications"),
          (.panel, "allergyList", "Allergies"), (.table, "encounterHistory", "Encounters"),
-         (.panel, "coverage", "Coverage")] ++
+         (.panel, "coverage", "Coverage"), (.table, "importedHistory", "History")] ++
       [table s "schedule" "scheduleTasks" "Today's work",
        table s "openOrders" "openOrders" "Open orders",
        group s "work" "Workflows" (collapsible := false)] ++

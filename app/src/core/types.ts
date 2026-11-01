@@ -212,6 +212,8 @@ export const factsSchema = ctor({
   allergyVersion: nat,
   allergyClasses: z.array(z.string()),
   medsVersion: nat,
+  notesVersion: nat.default(0),
+  historyVersion: nat.default(0),
   currentMedClasses: z.array(z.string()),
   weightToday: z.tuple([nat, unitKindSchema]).nullable(),
   careGaps: z.array(z.string()),
