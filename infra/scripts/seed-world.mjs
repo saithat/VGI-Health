@@ -251,7 +251,8 @@ export function buildResources(data, patients, practitioners) {
       if (task.workflow === 'W1' || task.workflow === 'W5') {
         add(`appointment-${task.id}`, { resourceType: 'Appointment', status: 'booked', start,
           end: time(data, SHIFTS[p] + task.startMin + 20), minutesDuration: 20,
-          description: `${p} ${task.workflow} ${task.choices.noteSections.join(', ')}`,
+          appointmentType: { text: task.workflow === 'W5' ? 'Pediatric office visit' : 'Office visit' },
+          description: task.workflow === 'W5' ? 'Pediatric office visit' : 'Office visit',
           participant: [{ actor: patient(task.patientId), status: 'accepted' },
             { actor: practitioner(p), status: 'accepted' }, { actor: roles[p], status: 'accepted' },
             { actor: p === 'P4' ? peds : clinic, status: 'accepted' }] }, `${p}-appointments`);

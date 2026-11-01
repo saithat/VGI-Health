@@ -637,15 +637,21 @@ export const scheduleIIRefillsSpec: Spec = {"version": "tiny-1",
  "alerts": []};
 
 export const sampleDisplay: Display = {"vitals": [],
+ "schedule": [],
  "procedures": [],
  "problems": [],
+ "observations": [],
  "notes": [],
  "meds": [],
+ "marOrders": [],
  "labs": [],
+ "labResults": [],
+ "labFlags": [],
  "immunizations": [],
  "history": [],
  "growth": [],
  "encounters": [],
+ "board": [],
  "banner":
  {"sex": "U",
   "pcp": "",
@@ -659,7 +665,8 @@ export const sampleDisplay: Display = {"vitals": [],
   "attending": "",
   "ageYears": 0},
  "asOf": "",
- "allergies": []};
+ "allergies": [],
+ "administrations": []};
 
 export const samplePage: PageNode = {"node":
  {"tag": "div",
@@ -1023,15 +1030,21 @@ export const sampleRenderInput: RenderInput = {"user": {"role": "physician", "id
   "abnormalResult": false},
  "display":
  {"vitals": [],
+  "schedule": [],
   "procedures": [],
   "problems": [],
+  "observations": [],
   "notes": [],
   "meds": [],
+  "marOrders": [],
   "labs": [],
+  "labResults": [],
+  "labFlags": [],
   "immunizations": [],
   "history": [],
   "growth": [],
   "encounters": [],
+  "board": [],
   "banner":
   {"sex": "U",
    "pcp": "",
@@ -1045,7 +1058,8 @@ export const sampleRenderInput: RenderInput = {"user": {"role": "physician", "id
    "attending": "",
    "ageYears": 0},
   "asOf": "",
-  "allergies": []}};
+  "allergies": [],
+  "administrations": []}};
 
 export const sampleFactsContext: FactsContext = {"today": "2026-10-31",
  "record": [],
@@ -1070,15 +1084,21 @@ export const sampleFactsOutput: FactsOutput = {"facts":
   "abnormalResult": false},
  "display":
  {"vitals": [],
+  "schedule": [],
   "procedures": [],
   "problems": [],
+  "observations": [],
   "notes": [],
   "meds": [],
+  "marOrders": [],
   "labs": [],
+  "labResults": [],
+  "labFlags": [],
   "immunizations": [],
   "history": [],
   "growth": [],
   "encounters": [],
+  "board": [],
   "banner":
   {"sex": "U",
    "pcp": "",
@@ -1092,7 +1112,8 @@ export const sampleFactsOutput: FactsOutput = {"facts":
    "attending": "",
    "ageYears": 0},
   "asOf": "",
-  "allergies": []}};
+  "allergies": [],
+  "administrations": []}};
 
 export const tinySpec: Spec = {"version": "tiny-1",
  "reviews":

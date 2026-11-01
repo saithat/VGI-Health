@@ -1,5 +1,6 @@
 import Ehr.Render.Fhir
 import Ehr.Core.Basics
+import Ehr.Specs.ClinicalTables
 
 namespace Ehr.Render.Tests
 open Lean Fhir
@@ -33,6 +34,26 @@ def parsed := output clinical
 #guard patientIdOf ((entryResource (first clinical "entry")).setObjVal! "id" (.str "server-id")) == parsed.facts.patientId
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null
+
+/-- Administrative gender does not stand in for the reference-population code. -/
+def administrativeGenderOnlyExample : Json := json "{\"gender\":\"male\"}"
+#guard growthReferenceSex administrativeGenderOnlyExample == none
+
+/-- A recorded birth-sex extension selects the published boys' reference. -/
+def recordedBirthSexExample : Json := json "{\"gender\":\"other\",\"extension\":[{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"M\"}]}"
+#guard growthReferenceSex recordedBirthSexExample == some "M"
+
+/-- Conflicting source codes never silently choose the first population. -/
+def conflictingBirthSexExample : Json := json "{\"extension\":[{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"F\"},{\"url\":\"http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex\",\"valueCode\":\"M\"}]}"
+#guard growthReferenceSex conflictingBirthSexExample == none
+
+/-- Meter and inch readings convert before rounding to the growth axis unit. -/
+def meterHeightExample : Json := json "{\"value\":1.75,\"code\":\"m\"}"
+def inchHeightExample : Json := json "{\"value\":70,\"code\":\"[in_i]\"}"
+def unlabelledHeightExample : Json := json "{\"value\":175}"
+#guard heightCmTenths meterHeightExample == some 1750
+#guard heightCmTenths inchHeightExample == some 1778
+#guard heightCmTenths unlabelledHeightExample == none
 #guard decodeBase64Utf8 "SGVsbG8KCs6xIPCfmIA=" == some "Hello\n\nα 😀"
 #guard decodeBase64Utf8 "" == some ""
 #guard decodeBase64Utf8 "YQ==" == some "a"
@@ -53,7 +74,7 @@ def json (s : String) : Json := (Json.parse s).toOption.getD .null
 #guard (noteAttachmentText .null).startsWith "Note body unavailable"
 def note : Json := json r#"{"resourceType":"DocumentReference","id":"n","status":"superseded","docStatus":"amended","date":"2026-01-02","author":[{"display":"A"},{"display":"B"}],"context":{"encounter":[{"reference":"Encounter/1"},{"display":"Clinic"}]},"extension":[{"url":"urn:vgi:synthetic-hospital:original-date","valueDate":"2020-01-01"},{"url":"urn:vgi:synthetic-hospital:shift-days","valueInteger":-12}],"content":[{"attachment":{"title":"First","contentType":"text/plain","data":"YQ=="}},{"attachment":{"title":"Second","contentType":"text/plain","data":"Yg=="}}]}"#
 #guard (noteRow note).author == "A, B"
-#guard (noteRow note).encounter == "Encounter/1, Clinic"
+#guard (noteRow note).encounter == "Not recorded, Clinic"
 #guard (noteRow note).text == "Attachment 1: First\na\n\nAttachment 2: Second\nb"
 #guard (noteRow note).status == "superseded / amended"
 #guard (noteRow note).sourceDate == "2020-01-01"
@@ -93,4 +114,127 @@ def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-r
 #guard (output emptyBundle).display.banner.weight? == none
 #guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none
 
+/-- A visit clinician is not evidence of an assigned primary care provider. -/
+def encounterProviderExample : Json := json r#"{"resourceType":"Encounter","participant":[{"individual":{"display":"Dr Visit"}}]}"#
+def primaryCareProviderExample : Json := json r#"{"resourceType":"Practitioner","id":"assigned-pcp","name":[{"given":["Taylor"],"family":"Morgan"}]}"#
+def assignedPatientExample : Json := patientWithoutMrn.setObjVal! "generalPractitioner"
+  (json r#"[{"reference":"Practitioner/assigned-pcp"}]"#)
+#guard (bannerOf context.today [encounterProviderExample] patientWithoutMrn).pcp == ""
+#guard (bannerOf context.today [primaryCareProviderExample] assignedPatientExample).pcp == "Morgan, Taylor"
+
+/-- Transaction-bundle URNs still resolve an explicitly assigned clinician. -/
+def urnPrimaryCareExample : Json := primaryCareProviderExample.setObjVal! "id" (.str "urn:uuid:assigned-pcp")
+#guard (bannerOf context.today [urnPrimaryCareExample] assignedPatientExample).pcp == "Morgan, Taylor"
+
+end Ehr.Render.Tests
+
+namespace Ehr.Render.Tests
+open Lean Fhir
+
+/-- Named clinic examples use only explicit source status, dates and references. -/
+def clinicPatient : Json := json r#"{"resourceType":"Patient","id":"clinic-patient","name":[{"given":["Alex"],"family":"Morgan"}],"birthDate":"2020-01-01","gender":"female"}"#
+def clinicAppointment : Json := json r#"{"resourceType":"Appointment","id":"appointment","status":"booked","start":"2026-10-31T09:00:00-07:00","appointmentType":{"text":"Office visit"},"participant":[{"actor":{"reference":"Patient/clinic-patient"}},{"actor":{"reference":"Practitioner/doctor","display":"Dr Morgan"}}]}"#
+def otherAppointment : Json := json r#"{"resourceType":"Appointment","status":"arrived","start":"2026-10-31T10:00:00-07:00","participant":[{"actor":{"reference":"Patient/other-patient"}}]}"#
+def clinicRefill : Json := json r##"{"resourceType":"Task","id":"request","for":{"reference":"Patient/clinic-patient"},"status":"requested","authoredOn":"2026-10-31T08:00:00-07:00","code":{"text":"Refill request"},"focus":{"reference":"#requested-rx"},"contained":[{"resourceType":"MedicationRequest","id":"requested-rx","medicationCodeableConcept":{"text":"lisinopril"},"dosageInstruction":[{"text":"10 mg by mouth daily"}]}]}"##
+def clinicForecast : Json := json r#"{"resourceType":"ImmunizationRecommendation","date":"2026-10-31","authority":{"display":"State immunization registry"},"recommendation":[{"vaccineCode":[{"text":"Influenza"}],"forecastStatus":{"text":"Due"},"dateCriterion":[{"code":{"text":"Recommended"},"value":"2026-10-31"}]}]}"#
+
+/-- Result selection follows the Task's report, while its trend retains earlier
+measurements of that analyte without pulling in unrelated tests. -/
+def clinicResult : Json := json r#"{"resourceType":"Task","id":"result-message","for":{"reference":"Patient/clinic-patient"},"status":"requested","code":{"text":"Result review"},"focus":{"reference":"DiagnosticReport/result-report"}}"#
+def clinicReport : Json := json r#"{"resourceType":"DiagnosticReport","id":"urn:uuid:result-report","result":[{"reference":"Observation/current-result"}]}"#
+def clinicLab : Json := json r#"{"resourceType":"Observation","id":"urn:uuid:current-result","status":"final","category":[{"coding":[{"code":"laboratory"}]}],"code":{"coding":[{"code":"4548-4","display":"Hemoglobin A1c"}]},"effectiveDateTime":"2026-10-31","valueQuantity":{"value":7.2,"unit":"%"}}"#
+def clinicPriorLab : Json := (clinicLab.setObjVal! "id" (.str "prior-result")).setObjVal! "effectiveDateTime" (.str "2026-07-31")
+def clinicOtherLab : Json := (clinicLab.setObjVal! "id" (.str "other-result")).setObjVal! "code" (json r#"{"coding":[{"code":"6299-2","display":"Urea nitrogen"}]}"#)
+def clinicResultRecords : List Json := [clinicResult, clinicReport, clinicLab, clinicPriorLab, clinicOtherLab]
+/-- Same-time duplicate observations are distinct records, with their own units. -/
+def clinicDuplicateLab : Json := (clinicLab.setObjVal! "id" (.str "duplicate-result")).setObjVal!
+  "valueQuantity" (json r#"{"value":72,"unit":"mmol/mol"}"#)
+#guard (Ambulatory.resultRows [clinicLab, clinicDuplicateLab]).length == 2
+#guard (Ambulatory.resultRows [clinicDuplicateLab]).any (fun row =>
+  row.lookup "value" == some "72" && row.lookup "unit" == some "mmol/mol")
+
+/-- Censored and component results keep their source value rather than a scalar approximation. -/
+def clinicPanelExample : Json := clinicLab.setObjVal! "component"
+  (json r#"[{"code":{"text":"Urine protein"},"valueQuantity":{"value":5,"comparator":"<","unit":"mg/dL"}}]"#)
+#guard (Ambulatory.resultRows [clinicPanelExample]).length == 2
+#guard (Ambulatory.resultRows [clinicPanelExample]).any (fun row => row.lookup "value" == some "<5")
+
+/-- The refill evidence view preserves ties and undated results; full history stays intact. -/
+def clinicUndatedLab : Json := clinicLab.setObjVal! "effectiveDateTime" (.str "")
+def clinicLatestLabs : List Json :=
+  Ambulatory.latestResultSources [clinicPriorLab, clinicLab, clinicDuplicateLab, clinicUndatedLab]
+#guard clinicLatestLabs.length == 3
+#guard !clinicLatestLabs.contains clinicPriorLab
+#guard clinicLatestLabs.contains clinicDuplicateLab && clinicLatestLabs.contains clinicUndatedLab
+#guard (labResultRows [clinicPriorLab, clinicLab, clinicDuplicateLab, clinicUndatedLab]).length == 4
+
+#guard Ambulatory.selectedResultSources clinicResultRecords clinicPatient == [clinicLab]
+#guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).length == 2
+#guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).all fun row => row.lookup "Test" == some "Hemoglobin A1c"
+#guard (Ambulatory.selectedResultSources [clinicResult] clinicPatient).isEmpty
+/-- Missing selected-report records remain empty even when unrelated labs exist. -/
+def missingClinicResult : Facts := factsOf context [clinicPatient, clinicResult, clinicOtherLab] clinicPatient
+#guard ((infoPayload missingClinicResult "resultTrend").map (·.rows)) == some []
+
+#guard (Ambulatory.scheduleRows context [clinicAppointment, otherAppointment] clinicPatient).length == 1
+#guard (Ambulatory.scheduleRows context [clinicAppointment] (clinicPatient.setObjVal! "id" (.str "urn:uuid:clinic-patient"))).length == 1
+#guard ((Ambulatory.scheduleRows context [clinicAppointment] clinicPatient).head?).any (fun row => row.status == "booked" && row.provider == "Dr Morgan")
+#guard (Ambulatory.scheduleRows { context with today := "2026-11-01" } [clinicAppointment] clinicPatient).isEmpty
+#guard (Ambulatory.patientTasks [clinicRefill] clinicPatient).length == 1
+#guard (Ambulatory.patientTasks [clinicRefill.setObjVal! "status" (.str "completed")] clinicPatient).isEmpty
+#guard (Ambulatory.patientTasks [clinicRefill] (clinicPatient.setObjVal! "id" (.str "other-patient"))).isEmpty
+#guard ((Ambulatory.refillMedication [] clinicRefill).map medName) == some "lisinopril"
+#guard ((Ambulatory.refillMedication [json r#"{"resourceType":"MedicationRequest","id":"urn:uuid:requested-rx","medicationCodeableConcept":{"text":"lisinopril"}}"#]
+  (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/requested-rx"}"#))).map medName) == some "lisinopril"
+#guard (Ambulatory.refillMedication [homeMed] (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/missing"}"#))).isNone
+#guard (Ambulatory.forecastRows [clinicForecast]).any fun row => row.lookup "Status" == some "Due" && row.lookup "Source" == some "State immunization registry"
+#guard (Ambulatory.forecastRows [json r#"{"resourceType":"Immunization","status":"completed"}"#]).isEmpty
+#guard (Ambulatory.payloads context [clinicRefill] clinicPatient).all (fun p => p.info != "adherence")
+#guard (Ambulatory.payloads context [] clinicPatient).isEmpty
+/-- A complete focused request supplies quantities, explicit zero refills and a resolved pharmacy. -/
+def refillSourceExample : Json := json r#"{"resourceType":"MedicationRequest","id":"requested-rx","subject":{"reference":"Patient/clinic-patient"},"status":"active","medicationCodeableConcept":{"text":"lisinopril"},"dosageInstruction":[{"doseAndRate":[{"doseQuantity":{"value":10,"unit":"mg"}}]}],"dispenseRequest":{"quantity":{"value":30},"numberOfRepeatsAllowed":0,"performer":{"reference":"Organization/pharmacy"}}}"#
+def refillPharmacyExample : Json := json r#"{"resourceType":"Organization","id":"pharmacy","name":"Main Street Pharmacy"}"#
+def completeRefillTaskExample : Json := clinicRefill.setObjVal! "contained" (.arr #[refillSourceExample])
+def refillComparisonExample := Ambulatory.refillComparisonRows [refillPharmacyExample] completeRefillTaskExample
+#guard refillComparisonExample.length == 4
+#guard refillComparisonExample.any (fun row => row.lookup "detail" == some "Dose" && row.lookup "requested" == some "10 mg" && row.lookup "current" == some "10 mg")
+#guard refillComparisonExample.any (fun row => row.lookup "detail" == some "Refills" && row.lookup "requested" == some "0")
+#guard refillComparisonExample.any (fun row => row.lookup "requested" == some "Main Street Pharmacy")
+#guard refillComparisonExample.all (fun row => row.lookup "proposed" == some "Awaiting clinician entry")
+
+/-- A missing unit and an explicitly different patient never supply assumed dose evidence. -/
+def unitlessRefillDoseExample : Json := json r#"{"dosageInstruction":[{"doseAndRate":[{"doseQuantity":{"value":1}}]}]}"#
+#guard Ambulatory.refillPrescriptionDetail [] unitlessRefillDoseExample "Dose" == "1 (unit not recorded)"
+def otherPatientRefillExample : Json := refillSourceExample.setObjVal! "subject" (json r#"{"reference":"Patient/another-patient"}"#)
+#guard (Ambulatory.refillMedication [] (clinicRefill.setObjVal! "contained" (.arr #[otherPatientRefillExample]))).isNone
+#guard (Ambulatory.refillComparisonRows [] (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/missing"}"#))).isEmpty
+
+/-- A draft only compares against its explicit prior prescription for this patient. -/
+def draftRefillExample : Json := (refillSourceExample.setObjVal! "status" (.str "draft")).setObjVal!
+  "priorPrescription" (json r#"{"reference":"MedicationRequest/prior-rx"}"#)
+def priorRefillExample : Json := refillSourceExample.setObjVal! "id" (.str "prior-rx")
+#guard Ambulatory.currentRefillPrescription [priorRefillExample] clinicRefill draftRefillExample == some priorRefillExample
+#guard (Ambulatory.currentRefillPrescription [otherPatientRefillExample.setObjVal! "id" (.str "prior-rx")]
+  clinicRefill (draftRefillExample.setObjVal! "subject" .null)).isNone
+
+/-- A newer fill for another medication cannot supply this request's last-fill date. -/
+def codedRefillExample : Json := refillSourceExample.setObjVal! "medicationCodeableConcept"
+  (json r#"{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"29046"}]}"#)
+def matchingFillExample : Json := json r#"{"resourceType":"MedicationDispense","subject":{"reference":"Patient/clinic-patient"},"status":"completed","whenHandedOver":"2026-09-01","medicationCodeableConcept":{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"29046"}]}}"#
+def otherDrugFillExample : Json := (matchingFillExample.setObjVal! "whenHandedOver" (.str "2026-10-01")).setObjVal! "medicationCodeableConcept" (json r#"{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"different-drug"}]}"#)
+#guard Ambulatory.refillLastFill [matchingFillExample, otherDrugFillExample] completeRefillTaskExample codedRefillExample == "2026-09-01"
+#guard Ambulatory.refillLastFill [otherDrugFillExample] completeRefillTaskExample codedRefillExample == "Not recorded"
+#guard Ambulatory.refillLastFill [matchingFillExample.setObjVal! "status" (.str "in-progress")] completeRefillTaskExample codedRefillExample == "Not recorded"
+
+/-- The comparison satisfies its existing schema and ordinary patient/version binding. -/
+def completeRefillFactsExample : Facts := factsOf context
+  [clinicPatient, completeRefillTaskExample, refillPharmacyExample] clinicPatient
+def refillComparisonContractExample :=
+  (Ehr.Specs.ClinicalTables.infos.find? (·.id == "refillComparison")).bind (·.payload?)
+#guard refillComparisonContractExample.any (fun contract =>
+  (infoPayload completeRefillFactsExample "refillComparison").any (fun p => payloadComplete p contract))
+
+/-- Every generated supporting view passes the ordinary patient/version binding. -/
+def clinicFacts : Facts := factsOf context [clinicPatient, clinicAppointment, clinicRefill] clinicPatient
+#guard (clinicFacts.infoPayloads?.getD []).all fun payload => (infoPayload clinicFacts payload.info).isSome
 end Ehr.Render.Tests

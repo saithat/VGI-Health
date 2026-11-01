@@ -28,23 +28,21 @@ namespace Ehr.Canonical.W1
 
 open Ehr.Canonical
 
-/-- The W1 visit navigator (the sign and verification steps are reached only
-through the composer). -/
+/-- The encounter section list. Order review and signing are composer actions. -/
 def nav : List (ScreenId × String) :=
-  [("w1Rooming", "Rooming"), ("w1MedRec", "Med rec"), ("w1Hpi", "HPI / ROS"),
-   ("w1Exam", "Exam / A&P"), ("w1Orders", "Orders"), ("w1Labs", "Labs"),
-   ("w1Close", "Visit close")]
+  [("w1Rooming", "Rooming"), ("w1MedRec", "Medications"), ("w1Hpi", "History / ROS"),
+   ("w1Exam", "Exam / Assessment & Plan"), ("w1Orders", "Orders"), ("w1Labs", "Lab Orders"),
+   ("w1Close", "Sign Visit")]
 
 /-- The chart-review tabs on W1 screens. -/
 def chart : List Block :=
-  [(.table, "labResults", "Results"), (.table, "imaging", "Imaging"),
-   (.panel, "priorNotes", "Notes"), (.table, "encounterHistory", "Encounters"),
-   (.panel, "socialHistory", "Social history"), (.panel, "familyHistory", "Family history"),
-   (.table, "careGapList", "Care gaps"), (.table, "immunizationHistory", "Immunizations"),
-   (.panel, "coverage", "Coverage")]
+  [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
+   (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
+   (.table, "problemList", "Problems"), (.table, "allergyList", "Allergies"),
+   (.table, "imaging", "Imaging")]
 
 /-- The shell for a W1 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav clinicSidebar chart
+def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart
 
 /-- Rooming: vital signs, chief complaint, intake questions, depression screen,
 care gaps (inline), and the allergy review. -/
@@ -52,19 +50,23 @@ def rooming : Screen :=
   let s := "w1Rooming"
   { id := s, title := "Rooming", workflow := "W1"
     components := frame s ++ [
-      group s "vitalsGroup" "Vital signs",
+      clinicalSection s "reason" "Reason for visit",
+      field s "chiefComplaint" "chiefComplaint" "Chief complaint"
+        (parent := some "reason") (prefill := .fromRecord "appointmentReason"),
+      clinicalSection s "vitalsGroup" "Vitals",
       field s "weight" "weight" "Weight (kg)" (parent := some "vitalsGroup"),
       field s "height" "height" "Height (cm)" (parent := some "vitalsGroup"),
-      field s "bpSystolic" "bpSystolic" "BP systolic" (parent := some "vitalsGroup"),
-      field s "bpDiastolic" "bpDiastolic" "BP diastolic" (parent := some "vitalsGroup"),
-      field s "heartRate" "heartRate" "Heart rate" (parent := some "vitalsGroup"),
-      field s "respRate" "respRate" "Respiratory rate" (parent := some "vitalsGroup"),
-      field s "temperature" "temperature" "Temperature" (parent := some "vitalsGroup"),
-      field s "spo2" "spo2" "SpO₂" (parent := some "vitalsGroup"),
+      field s "bpSystolic" "bpSystolic" "Systolic BP (mmHg)" (parent := some "vitalsGroup"),
+      field s "bpDiastolic" "bpDiastolic" "Diastolic BP (mmHg)" (parent := some "vitalsGroup"),
+      field s "heartRate" "heartRate" "Pulse (beats/min)" (parent := some "vitalsGroup"),
+      field s "respRate" "respRate" "Respirations (/min)" (parent := some "vitalsGroup"),
+      field s "temperature" "temperature" "Temperature (°C)" (parent := some "vitalsGroup"),
+      field s "spo2" "spo2" "SpO₂ (%)" (parent := some "vitalsGroup"),
       field s "painScore" "painScore" "Pain (0–10)" (parent := some "vitalsGroup"),
-      field s "chiefComplaint" "chiefComplaint" "Chief complaint"
-        (prefill := .fromRecord "appointmentReason"),
-      group s "intake" "Intake questions",
+      clinicalSection s "allergyGroup" "Allergies",
+      table s "allergies" "allergyList" "Allergy review" (parent := some "allergyGroup"),
+      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup") (feedback := true),
+      clinicalSection s "intake" "Screenings and pharmacy",
       field s "tobaccoUse" "tobaccoUse" "Tobacco use" (parent := some "intake"),
       field s "fallRiskScreen" "fallRiskScreen" "Fall in the past year?" (parent := some "intake"),
       field s "travelScreen" "travelScreen" "Travel in the past 30 days?" (parent := some "intake"),
@@ -73,57 +75,65 @@ def rooming : Screen :=
       field s "interpreterNeeded" "interpreterNeeded" "Interpreter needed?" (parent := some "intake"),
       field s "pharmacyConfirmedRooming" "pharmacyConfirmedRooming" "Preferred pharmacy confirmed"
         (parent := some "intake"),
-      group s "phq" "Depression screen (PHQ-2)",
+      clinicalSection s "phq" "Depression screening",
       field s "depressionScreen" "depressionScreen" "PHQ-2 score" (parent := some "phq"),
       alertC s "careGaps" "careGapsInline" "Care gaps due" (popup := false),
-      group s "allergyGroup" "Allergies",
-      panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup"),
-      goto s "next" "w1MedRec" "Next: medication reconciliation"
+      table s "healthMaintenance" "careGapList" "Health maintenance",
+      goto s "next" "w1MedRec" "Review medications"
     ] }
 
 /-- Medication reconciliation: the medication list, a decision per medication,
 and the fill history (one tab away). -/
 def medRec : Screen :=
   let s := "w1MedRec"
-  { id := s, title := "Med rec", workflow := "W1"
+  { id := s, title := "Medication Review", workflow := "W1"
     components := frame s ++ [
       table s "meds" "currentMeds" "Medication list",
-      reviewBtn s "currentMeds" "Mark medications reviewed",
-      group s "rows" "Reconciliation"] ++
+      reviewBtn s "currentMeds" "Mark medications reviewed" (feedback := true),
+      clinicalSection s "rows" "Reconcile medications"] ++
       ((List.range 4).map fun i =>
-        field s ("decision" ++ toString i) "medRecDecision"
-          s!"Medication {i + 1}: continue / stop / modify" (parent := some "rows") (slot := .fixed i)) ++
+        let c := field s ("decision" ++ toString i) "medRecDecision"
+          s!"Medication {i + 1}: continue / stop / modify" (parent := some "rows") (slot := .fixed i)
+        { c with tag := c.tag ++ ".context.currentMedication" }) ++
       tabStrip s "medTabs" "Medication history"
         [(.panel, "priorNotes", "Last plan"), (.table, "adherence", "Fill history")] ++ [
-      goto s "next" "w1Hpi" "Next: HPI / ROS"
+      goto s "next" "w1Hpi" "History / ROS"
     ] }
 
 /-- HPI and review of systems, with copy-forward and a template. -/
 def hpi : Screen :=
   let s := "w1Hpi"
-  { id := s, title := "HPI / ROS", workflow := "W1"
+  { id := s, title := "History / ROS", workflow := "W1"
     components := frame s ++ [
-      macroBtn s "copyForward" "w1CopyForward" "Copy forward last note",
-      macroBtn s "rosTemplate" "w1RosTemplate" "ROS template (12 systems negative)",
+      clinicalSection s "noteTools" "Note tools",
+      macroBtn s "copyForward" "w1CopyForward" "Copy previous note" (parent := some "noteTools"),
+      macroBtn s "rosTemplate" "w1RosTemplate" "Normal ROS template" (parent := some "noteTools"),
       group s "lastNote" "Last note" (startCollapsed := true),
       panel s "lastNoteText" "priorNotes" "Last note" (parent := some "lastNote"),
-      field s "hpi" "hpi" "History of present illness",
-      field s "ros" "ros" "Review of systems",
-      goto s "next" "w1Exam" "Next: exam and A&P"
+      clinicalSection s "historyNote" "History of present illness",
+      field s "hpi" "hpi" "HPI" (parent := some "historyNote"),
+      clinicalSection s "systems" "Review of systems",
+      field s "ros" "ros" "ROS" (parent := some "systems")] ++
+      tabStrip s "historyTabs" "Patient history"
+        [(.table, "problemList", "Medical history"), (.table, "surgicalHistory", "Surgical history"),
+         (.panel, "familyHistory", "Family history"), (.panel, "socialHistory", "Social history")] ++ [
+      goto s "next" "w1Exam" "Exam / Assessment & Plan"
     ] }
 
 /-- Exam, assessment and plan, and the visit diagnosis. -/
 def exam : Screen :=
   let s := "w1Exam"
-  { id := s, title := "Exam / A&P", workflow := "W1"
+  { id := s, title := "Exam / Assessment & Plan", workflow := "W1"
     components := frame s ++ [
-      macroBtn s "examTemplate" "w1ExamTemplate" "Normal exam template",
-      field s "exam" "exam" "Physical exam",
-      field s "assessmentPlan" "assessmentPlan" "Assessment and plan",
-      table s "problems" "problemList" "Problem list",
-      field s "visitDiagnosis" "visitDiagnosis" "Visit diagnosis (ICD-10)",
-      goto s "next" "w1Orders" "Next: orders"
+      clinicalSection s "physical" "Physical exam",
+      macroBtn s "examTemplate" "w1ExamTemplate" "Normal exam template" (parent := some "physical"),
+      field s "exam" "exam" "Exam findings" (parent := some "physical"),
+      clinicalSection s "assessment" "Assessment & Plan",
+      field s "visitDiagnosis" "visitDiagnosis" "Encounter diagnosis (ICD-10-CM)" (parent := some "assessment"),
+      field s "assessmentPlan" "assessmentPlan" "Problem-based assessment and plan" (parent := some "assessment"),
+      group s "problemReview" "Problem list" (startCollapsed := true),
+      table s "problems" "problemList" "Chart problems" (parent := some "problemReview"),
+      goto s "next" "w1Orders" "Place orders"
     ] }
 
 /-- The W1 order composer. -/
@@ -146,10 +156,10 @@ def orders : Screen :=
 /-- Lab orders with a diagnosis association. -/
 def labs : Screen :=
   let s := "w1Labs"
-  { id := s, title := "Lab orders", workflow := "W1"
+  { id := s, title := "Lab Orders", workflow := "W1"
     components := frame s ++ [
       searchC s "labSearch" "loinc" "Search lab tests",
-      group s "labOrder" "Lab order",
+      clinicalSection s "labOrder" "Order details",
       field s "labTest" "labTest" "Test" (parent := some "labOrder"),
       field s "labDiagnosis" "labDiagnosis" "Diagnosis (ICD-10)" (parent := some "labOrder"),
       field s "labPriority" "labPriority" "Priority" (parent := some "labOrder"),
@@ -164,7 +174,7 @@ def labs : Screen :=
 again and asks for one more allergy checkbox (accidental friction). -/
 def verify : Screen :=
   let s := "w1Verify"
-  { id := s, title := "Verify orders", workflow := "W1"
+  { id := s, title := "Order Review", workflow := "W1"
     components := frame s ++ [
       table s "orders" "orderSummary" "Orders to sign",
       panel s "allergies" "allergyList" "Allergies",
@@ -177,7 +187,7 @@ def verify : Screen :=
 report are shown; alerts; patient-ID re-entry; the Sign button. -/
 def sign : Screen :=
   let s := "w1Sign"
-  { id := s, title := "Sign orders", workflow := "W1"
+  { id := s, title := "Sign Orders", workflow := "W1"
     components := frame s ++ [
       table s "orders" "orderSummary" "Orders to sign",
       panel s "allergies" "allergyList" "Allergies",
@@ -192,7 +202,7 @@ def sign : Screen :=
         (popup := true),
       field s "patientIdReentry" "patientIdReentry" "Re-enter patient ID (initials/sex/age)",
       commitBtn s "signOrders" "Sign orders",
-      goto s "next" "w1Close" "Next: visit close",
+      goto s "next" "w1Close" "Sign Visit",
       goto s "edit" "w1Orders" "Edit orders"
     ] }
 
@@ -200,18 +210,21 @@ def sign : Screen :=
 and Sign note. A removable health-maintenance popup fires at signing. -/
 def close : Screen :=
   let s := "w1Close"
-  { id := s, title := "Close visit", workflow := "W1"
+  { id := s, title := "Sign Visit", workflow := "W1"
     components := frame s ++ [
-      panel s "noteReview" "noteSummary" "Note review",
-      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
-      field s "levelOfService" "levelOfService" "Level of service",
-      field s "followUp" "followUp" "Follow-up",
-      macroBtn s "avsTemplate" "w1AvsTemplate" "Instructions template",
-      field s "patientInstructions" "patientInstructions" "Patient instructions",
+      { panel s "noteReview" "noteSummary" "Note review" with tag := "layout.document" },
+      clinicalSection s "billing" "Level of Service",
+      field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10-CM)" (parent := some "billing"),
+      field s "levelOfService" "levelOfService" "E/M service level" (parent := some "billing"),
+      clinicalSection s "followup" "Follow-up",
+      field s "followUp" "followUp" "Return in" (parent := some "followup"),
+      clinicalSection s "avs" "Patient Instructions / AVS",
+      macroBtn s "avsTemplate" "w1AvsTemplate" "Insert instructions" (parent := some "avs"),
+      field s "patientInstructions" "patientInstructions" "After-visit instructions" (parent := some "avs"),
       table s "gaps" "careGapList" "Care gaps",
       alertC s "alert.healthMaintenance" "healthMaintenancePopup" "Health maintenance reminder"
         (popup := true),
-      commitBtn s "signNote" "Sign note"
+      commitBtn s "signNote" "Sign Visit"
     ] }
 
 /-- Long copy-forward text: the realistic note bloat. -/

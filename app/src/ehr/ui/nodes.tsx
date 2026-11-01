@@ -1,5 +1,5 @@
 import { usePresentation } from "./presentations";
-import { useId, useState } from "react";
+import { useContext, useId, useState } from "react";
 import {
   Alert,
   Badge,
@@ -17,6 +17,7 @@ import {
   Tabs,
   Text,
   TextInput,
+  Textarea,
   Tooltip,
 } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
@@ -24,7 +25,23 @@ import { entryEvent } from "./events";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue, severityTone, statusTone } from "./display";
 import { clinicalTokens } from "./theme";
-import { cleanClinicalText, emptyInfoText, fieldCaption, fieldPlaceholder, formatMedicationDirections, formatMedicationLine, sectionCaption } from "./clinical-display";
+import { StructuredInfo } from "./presentations/StructuredInfo";
+import { PresentationContext, rowLayout } from "./presentations/row-layout";
+import {
+  ChartReferenceContext,
+  ExplicitConfirmContext,
+  FieldSourceContext,
+  ValueSetContext,
+} from "./clinical-metadata";
+import {
+  cleanClinicalText,
+  emptyInfoText,
+  fieldCaption,
+  fieldPlaceholder,
+  formatMedicationDirections,
+  formatMedicationLine,
+  sectionCaption,
+} from "./clinical-display";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -46,7 +63,13 @@ export function UiChildren({
   nodes: UiNode[];
   onEvent: Emit;
 }) {
-  const groups: { nav: boolean; entries: { node: UiNode; index: number }[] }[] = [];
+  const inherited = useContext(ExplicitConfirmContext);
+  const explicit = new Set(inherited);
+  for (const node of nodes)
+    if ("button" in node && node.button.role === "confirm")
+      explicit.add(node.button.comp);
+  const groups: { nav: boolean; entries: { node: UiNode; index: number }[] }[] =
+    [];
   nodes.forEach((node, index) => {
     const nav = "button" in node && node.button.role === "nav";
     const previous = groups.at(-1);
@@ -54,19 +77,36 @@ export function UiChildren({
     else groups.push({ nav, entries: [{ node, index }] });
   });
   const draw = (node: UiNode, i: number) => (
-    <UiNodeView key={i} node={node} onEvent={onEvent} confirmProvided={
-      "field" in node && nodes.some((other) => "button" in other &&
-        other.button.role === "confirm" && other.button.comp === node.field.comp)
-    } />
+    <UiNodeView
+      key={i}
+      node={node}
+      onEvent={onEvent}
+      confirmProvided={
+        "field" in node &&
+        nodes.some(
+          (other) =>
+            "button" in other &&
+            other.button.role === "confirm" &&
+            other.button.comp === node.field.comp,
+        )
+      }
+    />
   );
   return (
-    <>
-      {groups.map((group) => group.nav
-        ? <div className="clinical-navigation-bar" key={group.entries[0]?.index}>
+    <ExplicitConfirmContext.Provider value={explicit}>
+      {groups.map((group) =>
+        group.nav ? (
+          <div
+            className="clinical-navigation-bar"
+            key={group.entries[0]?.index}
+          >
             {group.entries.map(({ node, index }) => draw(node, index))}
           </div>
-        : group.entries.map(({ node, index }) => draw(node, index)))}
-    </>
+        ) : (
+          group.entries.map(({ node, index }) => draw(node, index))
+        ),
+      )}
+    </ExplicitConfirmContext.Provider>
   );
 }
 export function SectionNode({ node, onEvent }: Props<"section">) {
@@ -152,7 +192,9 @@ export function StepperNode({ node }: Props<"stepper">) {
           <span className="step-number" aria-hidden="true">
             {index + 1}
           </span>
-          <span className="step-label" title={label}>{sectionCaption(label)}</span>
+          <span className="step-label" title={label}>
+            {sectionCaption(label)}
+          </span>
         </li>
       ))}
     </ol>
@@ -164,6 +206,13 @@ export function FieldNode({
   confirmProvided = false,
 }: Props<"field"> & { confirmProvided?: boolean }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [typedCode, setTypedCode] = useState("");
+  const valueSet = useContext(ValueSetContext);
+  const fieldSources = useContext(FieldSourceContext);
+  const sourceCaption = node.provenance
+    ? (fieldSources.get(node.comp) ?? node.provenance)
+    : undefined;
+  const explicitConfirms = useContext(ExplicitConfirmContext);
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
     if (event) onEvent(event);
@@ -181,6 +230,14 @@ export function FieldNode({
   const common = {
     label: fieldCaption(node.label),
     "aria-label": node.label,
+    "aria-describedby": sourceCaption ? `field-source-${node.comp}` : undefined,
+    ...(sourceCaption
+      ? {
+          attributes: {
+            input: { "aria-describedby": `field-source-${node.comp}` },
+          },
+        }
+      : {}),
     required: node.required,
     size: "xs" as const,
     "data-comp-id": node.comp,
@@ -197,9 +254,20 @@ export function FieldNode({
   const codes = Array.from(
     new Set([...(node.value ? [node.value] : []), ...options]),
   );
+  const choices = valueSet
+    ? valueSet.options.map(({ code, label }) => ({ value: code, label }))
+    : codes.map((code) => ({ value: code, label: code }));
+  if (node.value && !choices.some((choice) => choice.value === node.value))
+    choices.unshift({ value: node.value, label: node.value });
+  if (
+    valueSet?.allowCustom &&
+    typedCode.trim() &&
+    !choices.some((choice) => choice.value === typedCode)
+  )
+    choices.push({ value: typedCode, label: `Use code: ${typedCode}` });
   return (
     <Box
-      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "search" ? " field-search" : ""}`}
+      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "textarea" ? " field-narrative" : ""}${kind === "search" ? " field-search" : ""}`}
     >
       <Group
         gap={6}
@@ -224,7 +292,7 @@ export function FieldNode({
             color="gray"
             leftSection={<ClinicalIcon name="lock" />}
           >
-            Human entry only
+            Clinician entry required
           </Badge>
         )}
       </Group>
@@ -246,7 +314,7 @@ export function FieldNode({
           rightSection={
             node.unit && node.unit !== "none" ? (
               <Text size="xs" c="dimmed">
-                {node.unit}
+                {node.unit === "mgPerKg" ? "mg/kg" : node.unit}
               </Text>
             ) : null
           }
@@ -258,19 +326,38 @@ export function FieldNode({
           role="combobox"
           aria-expanded={dropdownOpen}
           onDropdownOpen={() => setDropdownOpen(true)}
-          onDropdownClose={() => setDropdownOpen(false)}
+          onDropdownClose={() => {
+            setDropdownOpen(false);
+            setTypedCode("");
+          }}
           rightSection={<ClinicalIcon name="chevron" />}
           searchable
-          data={codes.map((value) => ({ value, label: cleanClinicalText(value) }))}
+          data={choices.map((choice) => ({
+            ...choice,
+            label: cleanClinicalText(choice.label),
+          }))}
           value={node.value}
           placeholder={fieldPlaceholder(node.label, kind)}
-          onChange={(value) => send(value ?? "")}
+          onChange={(value) => {
+            send(value ?? "");
+            setTypedCode("");
+          }}
           onInput={(event) => {
             // Select's onSearchChange also fires when it synchronizes a supplied
             // value. Only a real input event may turn a code into human entry.
-            if (options.length === 0) send(event.currentTarget.value);
+            if (valueSet) setTypedCode(event.currentTarget.value);
+            else if (options.length === 0) send(event.currentTarget.value);
           }}
           nothingFoundMessage="No matching options"
+        />
+      ) : kind === "textarea" ? (
+        <Textarea
+          {...common}
+          value={node.value ?? ""}
+          onChange={(e) => send(e.currentTarget.value)}
+          minRows={4}
+          autosize
+          autoComplete="off"
         />
       ) : (
         <TextInput
@@ -306,29 +393,41 @@ export function FieldNode({
               color="gray"
               size="sm"
               className="provenance-chip"
+              id={`field-source-${node.comp}`}
             >
-              <DisplayValue value={node.provenance} />
+              {sourceCaption ?? node.provenance}
             </Badge>
           )}
-          {node.pendingConfirm && !confirmProvided && (
-            <Button
-              size="compact-xs"
-              variant="light"
-              color="yellow"
-              aria-label={`Confirm ${node.label}`}
-              data-comp-id={node.comp}
-              data-event="confirm"
-              onClick={() => onEvent({ confirm: { comp: node.comp } })}
-            >
-              Confirm
-            </Button>
-          )}
+          {node.pendingConfirm &&
+            !confirmProvided &&
+            !explicitConfirms.has(node.comp) && (
+              <Button
+                size="compact-xs"
+                variant="light"
+                color="yellow"
+                aria-label={`Confirm ${node.label}`}
+                data-comp-id={node.comp}
+                data-event="confirm"
+                onClick={() => onEvent({ confirm: { comp: node.comp } })}
+              >
+                Confirm
+              </Button>
+            )}
         </Group>
       )}
     </Box>
   );
 }
-function RecordValue({ label, value, medication }: { label: string; value: string; medication?: string | undefined }) {
+function RecordValue({
+  label,
+  value,
+  medication,
+}: {
+  label: string;
+  value: string;
+  medication?: string | undefined;
+}) {
+  if (label === "Text") return <span>{value}</span>;
   const tone =
     /status|confirmation|review state|scheduled|administration|^\d{1,2}:\d{2}/i.test(
       label,
@@ -336,8 +435,17 @@ function RecordValue({ label, value, medication }: { label: string; value: strin
       ? statusTone(value)
       : undefined;
   return (
-    <span title={value} className={tone ? `clinical-status status-${tone}` : undefined}>
-      <DisplayValue value={medication && label === "Instructions" ? formatMedicationDirections(medication, value) : value} />
+    <span
+      title={value}
+      className={tone ? `clinical-status status-${tone}` : undefined}
+    >
+      <DisplayValue
+        value={
+          medication && label === "Instructions"
+            ? formatMedicationDirections(medication, value)
+            : value
+        }
+      />
     </span>
   );
 }
@@ -375,7 +483,13 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
         </Table.Thead>
         <Table.Tbody>
           {node.rows.map((row, index) => (
-            <Table.Tr key={index} aria-label={row.map(([key, value]) => `${key}: ${value}`).join(" · ")} title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}>
+            <Table.Tr
+              key={index}
+              aria-label={row
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(" · ")}
+              title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+            >
               {headers.map((header) => (
                 <Table.Td
                   key={header}
@@ -387,7 +501,11 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
                   <RecordValue
                     label={header}
                     value={row.find(([key]) => key === header)?.[1] ?? "—"}
-                    medication={node.infoId === "currentMeds" ? row.find(([key]) => key === "Medication")?.[1] : undefined}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([key]) => key === "Medication")?.[1]
+                        : undefined
+                    }
                   />
                 </Table.Td>
               ))}
@@ -448,9 +566,12 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
             ) : (
               <>
                 <span className="home-med-name">
-                  {formatMedicationLine(value("Item"), value("Detail")
-                    .replace(/^Reported home medication;\s*/i, "")
-                    .replace(/;\s*date:\s*Unknown/gi, ""))}
+                  {formatMedicationLine(
+                    value("Item"),
+                    value("Detail")
+                      .replace(/^Reported home medication;\s*/i, "")
+                      .replace(/;\s*date:\s*Unknown/gi, ""),
+                  )}
                 </span>
                 <span className="clinical-status status-blue">reported</span>
                 {known(value("Status")) && (
@@ -464,7 +585,79 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
     </ul>
   );
 }
-export function InfoNode({ node }: Props<"info">) {
+function DocumentInfo({ node }: Props<"info">) {
+  return (
+    <div
+      className="clinical-info info-document"
+      data-comp-id={node.comp || undefined}
+      data-info-id={node.infoId}
+    >
+      <h3 className="clinical-info-label">{node.label}</h3>
+      <div
+        role="region"
+        aria-label={node.label}
+        tabIndex={0}
+        className="clinical-document-body"
+      >
+        {node.rows.map((row, index) => (
+          <div className="clinical-document-section" key={index}>
+            {row.map(([key, value], cell) =>
+              key === "Section" ? (
+                <h4 key={cell}>{value}</h4>
+              ) : key === "Text" ? (
+                <div key={cell} className="clinical-document-text">
+                  {value}
+                </div>
+              ) : (
+                <div key={cell} className="clinical-document-detail">
+                  <span>{key}: </span>
+                  <RecordValue label={key} value={value} />
+                </div>
+              ),
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+export function InfoNode({ node, onEvent }: Props<"info">) {
+  const presentation = useContext(PresentationContext);
+  if (node.display === "document")
+    return <DocumentInfo node={node} onEvent={onEvent} />;
+  if (node.display === "status") {
+    return (
+      <div
+        role="status"
+        aria-label={node.label}
+        className="clinical-info info-status clinical-review-status"
+        data-comp-id={node.comp || undefined}
+        data-info-id={node.infoId}
+      >
+        <ClinicalIcon name="check" />
+        <span>{node.label}</span>
+        {node.rows.map((row, index) => (
+          <span key={index}>
+            {row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+          </span>
+        ))}
+      </div>
+    );
+  }
+  if (presentation) {
+    const slots = presentation.rows.get(node);
+    const actions =
+      slots &&
+      new Map(
+        [...slots].map(([row, nodes]) => [
+          row,
+          <UiChildren key={row} nodes={nodes} onEvent={onEvent} />,
+        ]),
+      );
+    return (
+      <StructuredInfo node={node} kind={presentation.kind} actions={actions} />
+    );
+  }
   const empty = node.rows.length === 0;
   const values = node.rows
     .flatMap((row) =>
@@ -487,11 +680,25 @@ export function InfoNode({ node }: Props<"info">) {
       data-comp-id={node.comp || undefined}
       data-info-id={node.infoId}
     >
-      {!(empty && node.infoId === "orderCatalog") && <Text component="h3" className="clinical-info-label" size="xs" fw={650} title={node.label}>
-        {sectionCaption(node.label)}
-      </Text>}
+      {!(empty && node.infoId === "orderCatalog") && (
+        <Text
+          component="h3"
+          className="clinical-info-label"
+          size="xs"
+          fw={650}
+          title={node.label}
+        >
+          {sectionCaption(node.label)}
+        </Text>
+      )}
       {empty ? (
-        <Text role="note" aria-label={node.label} className="clinical-empty" size="xs" c="dimmed">
+        <Text
+          role="note"
+          aria-label={node.label}
+          className="clinical-empty"
+          size="xs"
+          c="dimmed"
+        >
           {emptyInfoText(node.infoId)}
         </Text>
       ) : node.display === "list" &&
@@ -508,7 +715,13 @@ export function InfoNode({ node }: Props<"info">) {
         <ul aria-label={node.label} className="clinical-info-list">
           {node.rows.length === 0 && <li>No records on file</li>}
           {node.rows.map((row, index) => (
-            <li key={index} title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")} aria-label={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}>
+            <li
+              key={index}
+              title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+              aria-label={row
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(" · ")}
+            >
               {row.map(([key, value], fieldIndex) => (
                 <span
                   key={key}
@@ -519,7 +732,15 @@ export function InfoNode({ node }: Props<"info">) {
                   {fieldIndex > 0 && (
                     <span className="record-label">{key}: </span>
                   )}
-                  <RecordValue label={key} value={value} medication={node.infoId === "currentMeds" ? row.find(([name]) => name === "Medication")?.[1] : undefined} />
+                  <RecordValue
+                    label={key}
+                    value={value}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([name]) => name === "Medication")?.[1]
+                        : undefined
+                    }
+                  />
                 </span>
               ))}
             </li>
@@ -532,7 +753,15 @@ export function InfoNode({ node }: Props<"info">) {
               <div key={`${index}-${key}`}>
                 <dt>{key}</dt>
                 <dd aria-label={value} title={value}>
-                  <RecordValue label={key} value={value} medication={node.infoId === "currentMeds" ? row.find(([name]) => name === "Medication")?.[1] : undefined} />
+                  <RecordValue
+                    label={key}
+                    value={value}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([name]) => name === "Medication")?.[1]
+                        : undefined
+                    }
+                  />
                 </dd>
               </div>
             )),
@@ -605,7 +834,9 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
   const primary = node.role === "primary";
   const reasonId = useId();
   return (
-    <div className={`clinical-action${primary ? " primary-action" : ""}${node.role === "nav" ? " clinical-navigation-action" : ""}`}>
+    <div
+      className={`clinical-action${primary ? " primary-action" : ""}${node.role === "nav" ? " clinical-navigation-action" : ""}`}
+    >
       <Tooltip
         label={node.blockedReason ?? "Unavailable"}
         disabled={node.enabled}
@@ -625,7 +856,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
                     ? "light"
                     : node.role === "nav"
                       ? "default"
-                    : "subtle"
+                      : "subtle"
             }
             disabled={!node.enabled}
             color={
@@ -695,6 +926,33 @@ export function TextNode({ node }: Props<"text">) {
 function unreachable(node: never): never {
   throw new Error(`Unknown semantic UI node: ${String(node)}`);
 }
+function PresentationNode({
+  node,
+  onEvent,
+}: {
+  node: NodeOf<"presentation">;
+  onEvent: Emit;
+}) {
+  const parent = useContext(PresentationContext);
+  const layout = rowLayout(node.kind, node.children, parent);
+  return (
+    <PresentationContext.Provider value={layout}>
+      <UiChildren nodes={node.children} onEvent={onEvent} />
+    </PresentationContext.Provider>
+  );
+}
+function RowActionNode({
+  node,
+  onEvent,
+}: {
+  node: NodeOf<"rowAction">;
+  onEvent: Emit;
+}) {
+  const layout = useContext(PresentationContext);
+  return layout?.embedded.has(node) ? null : (
+    <UiChildren nodes={node.children} onEvent={onEvent} />
+  );
+}
 /** Exhaustive dispatch: extending the wire union requires a matching component. */
 export function StockUiNodeView({
   node,
@@ -706,6 +964,22 @@ export function StockUiNodeView({
   confirmProvided?: boolean;
 }) {
   switch (true) {
+    case "presentation" in node:
+      return <PresentationNode node={node.presentation} onEvent={onEvent} />;
+    case "valueSet" in node:
+      return (
+        <ValueSetContext.Provider value={node.valueSet}>
+          <UiChildren nodes={node.valueSet.children} onEvent={onEvent} />
+        </ValueSetContext.Provider>
+      );
+    case "chartReferences" in node:
+      return (
+        <ChartReferenceContext.Provider value={node.chartReferences.references}>
+          <UiChildren nodes={node.chartReferences.children} onEvent={onEvent} />
+        </ChartReferenceContext.Provider>
+      );
+    case "rowAction" in node:
+      return <RowActionNode node={node.rowAction} onEvent={onEvent} />;
     case "section" in node:
       return <SectionNode node={node.section} onEvent={onEvent} />;
     case "columns" in node:

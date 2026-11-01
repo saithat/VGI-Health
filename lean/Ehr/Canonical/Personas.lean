@@ -12,6 +12,29 @@ def roleComponentAllowed (sp : Spec) (role : Role) (c : Component) : Bool :=
   | .button .requestPriorAuth => (sp.element? "priorAuthRequest").any fun el => el.enteredBy.contains role
   | _ => true
 
+/-- Clinic presets place the existing encounter opener in the selected schedule
+row. In Basket remains a separate activity; no destination or event is added. -/
+def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
+  if screen.id != "home" || !["P1", "P4"].contains owner then screen else
+  match screen.components.find? (·.id == "home.work") with
+  | none => screen
+  | some work =>
+    let work := { work with label := "Scheduled visits", tag := "present.schedule" }
+    let activities : Component :=
+      { id := "home.activityTabs", kind := .group false false, label := "Activities", tag := "activities" }
+    let rest := screen.components.filter (·.id != "home.work")
+    { screen with components := rest.flatMap fun c =>
+        if c.kind == .banner then [{ c with tag := "layout.clinicalActivity" }]
+        else if c.id == "home.schedule" then
+          [activities, work, { c with label := "Appointments", parent? := some "home.work" }]
+        else match c.kind with
+        | .button (.goto target) =>
+          if !c.id.startsWith "home.work." then [c]
+          else if ["w1Rooming", "w5Rooming"].contains target then
+            [{ c with tag := "present.row|home.schedule|0" }]
+          else [{ c with parent? := some "home.activityTabs" }]
+        | _ => [c] }
+
 /-- Apply the pre-set view before permissions, removing links to absent screens. -/
 def presetProgram (owner : String) (p : Program) : Program :=
   if !["P1", "P2", "P3", "P4", "P5"].contains owner then p else
@@ -26,14 +49,16 @@ def presetProgram (owner : String) (p : Program) : Program :=
     { s with components := fields ++ s.components }
   let available := screens.map (·.id)
   { p with screens := screens.map fun s =>
-      { s with title := if s.id == "home" then ((presetLandings owner).head?).map (·.2) |>.getD s.title
+      clinicLandingLayout owner { s with
+               title := if s.id == "home" then ((presetLandings owner).head?).map (·.2) |>.getD s.title
                         else (navigatorNames s).2
                components := s.components.filterMap fun c =>
                  match c.kind with
                  | .button (.goto target) =>
                    if !available.contains target then none else
                    if s.id == "home" && c.id.startsWith "home.work." then
-                     ((presetLandings owner).find? (·.1 == target)).map (fun landing => { c with label := landing.2 })
+                     ((presetLandings owner).find? (·.1 == target)).map (fun landing =>
+                       { c with label := presetLandingControlLabel owner target landing.2 })
                    else some c
                  | .group _ _ => some (if c.id == "home.work" then { c with label := "Activities" } else c)
                  | _ => some c } }

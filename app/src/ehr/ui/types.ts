@@ -3,6 +3,7 @@ import { z } from "zod";
 /** §10 wire format: Lean's externally tagged constructors, without FHIR interpretation. */
 export type Pair = [string, string];
 export type { UiNode, UiScreen } from "../../../../lean/generated/ehr-types";
+import { UiPresentationKindValues } from "../../../../lean/generated/ehr-types";
 import type { UiNode, UiScreen } from "../../../../lean/generated/ehr-types";
 export type NodeOf<K extends keyof UnionKeys> = Extract<
   UiNode,
@@ -14,6 +15,41 @@ const label = z.string().min(1);
 const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
+    z.strictObject({
+      valueSet: z.strictObject({
+        options: z.array(z.strictObject({ code: label, label })),
+        allowCustom: z.boolean(),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      chartReferences: z.strictObject({
+        references: z.array(
+          z.strictObject({
+            measure: label,
+            unit: label,
+            percentile: label,
+            source: label,
+            population: label,
+            points: z.array(z.tuple([nat, nat])),
+          }),
+        ),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      rowAction: z.strictObject({
+        target: label,
+        row: nat,
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      presentation: z.strictObject({
+        kind: z.enum(UiPresentationKindValues),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
     z.strictObject({
       section: z.strictObject({
         id: label,
@@ -79,11 +115,19 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   ]),
 );
 /** Offline boundary only; the clinician path forwards Lean output unchanged. */
-export const uiScreenSchema: z.ZodType<UiScreen> = z.strictObject({
-  banner: z.array(pair),
-  nav: z.array(z.tuple([label, z.array(pair)])),
-  title: label,
-  workspace: z.array(uiNodeSchema),
-  side: z.array(uiNodeSchema),
-  modal: uiNodeSchema.nullable(),
-});
+export const uiScreenSchema: z.ZodType<UiScreen> = z
+  .strictObject({
+    screen: label.optional(),
+    fieldSources: z.array(pair).optional(),
+    banner: z.array(pair),
+    nav: z.array(z.tuple([label, z.array(pair)])),
+    title: label,
+    workspace: z.array(uiNodeSchema),
+    side: z.array(uiNodeSchema),
+    modal: uiNodeSchema.nullable(),
+  })
+  .transform(({ screen, fieldSources, ...rest }) => ({
+    ...rest,
+    ...(screen === undefined ? {} : { screen }),
+    ...(fieldSources === undefined ? {} : { fieldSources }),
+  }));

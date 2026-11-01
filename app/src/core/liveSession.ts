@@ -99,17 +99,32 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
+  const external = fhirDisplayContext(
+    bundle,
+    context.patient.id ?? "",
+    projection.facts.patientId,
+    context.encounter.id,
+  );
   return {
     ...projection,
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...fhirDisplayContext(
-        bundle,
-        context.patient.id ?? "",
-        projection.facts.patientId,
-        context.encounter.id,
-      ),
+      ...external,
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (binding) =>
+            !external.artifactBindings.some((item) => item.key === binding.key),
+        ),
+        ...external.artifactBindings,
+      ],
+      infoPayloads: [
+        ...(projection.facts.infoPayloads ?? []).filter(
+          (payload) =>
+            !external.infoPayloads.some((item) => item.info === payload.info),
+        ),
+        ...external.infoPayloads,
+      ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
       epochMinute: Math.floor(Date.parse(now) / 60000),
@@ -178,7 +193,9 @@ export async function createLiveSession(
     getContext: () => context,
     async dispatch(
       event: Event,
-    ): Promise<{ links: string[]; message: string } | undefined> {
+    ): Promise<
+      { links: string[]; message: string; refreshRequired?: true } | undefined
+    > {
       if (pending) throw new Error("A transaction is already saving");
       if (refreshNeeded)
         throw new Error(
@@ -241,7 +258,11 @@ export async function createLiveSession(
         if (result.refreshError) {
           refreshNeeded = true;
           session.accept(staged);
-          return { links: result.links, message: result.refreshError };
+          return {
+            links: result.links,
+            message: result.refreshError,
+            refreshRequired: true,
+          };
         }
         chart = result.bundle;
         const updated = bundleResources(chart).find(
@@ -259,6 +280,7 @@ export async function createLiveSession(
           session.accept(staged);
           return {
             links: result.links,
+            refreshRequired: true,
             message: `Saved. Facts refresh failed: ${error instanceof Error ? error.message : String(error)}. Reopen the chart.`,
           };
         }

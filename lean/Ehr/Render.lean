@@ -12,3 +12,9 @@ import Ehr.Render.FhirProofs
 import Ehr.Render.PanelProofs
 import Ehr.Render.PrefillProofs
 import Ehr.Render.UiTests
+
+import Ehr.Render.PresentationTests
+import Ehr.Render.PresentationProofs
+import Ehr.Render.LabResultsTests
+import Ehr.Render.ObservationTests
+import Ehr.Render.GrowthReadingsTests

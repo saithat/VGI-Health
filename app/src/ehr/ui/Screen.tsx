@@ -1,15 +1,9 @@
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
-import { useLayoutEffect } from "react";
-import {
-  AppShell,
-  Badge,
-  Group,
-  Modal,
-  Text,
-  Title,
-} from "@mantine/core";
+import { useLayoutEffect, useRef } from "react";
+import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
+import { FieldSourceContext } from "./clinical-metadata";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { allergyDisplay, sectionCaption } from "./clinical-display";
@@ -116,7 +110,9 @@ export function PatientBanner({
                   color={
                     allergyDisplay(value) === "Allergies not on file"
                       ? "yellow"
-                      : /^No Known (?:Drug )?Allergies(?: \([^()]+\))?$/.test(allergyDisplay(value))
+                      : /^No Known (?:Drug )?Allergies(?: \([^()]+\))?$/.test(
+                            allergyDisplay(value),
+                          )
                         ? "gray"
                         : "red"
                   }
@@ -126,7 +122,11 @@ export function PatientBanner({
                   title={value}
                   aria-label={`${label}: ${value}`}
                 >
-                  {/^(?:Allergies not on file|No Known (?:Drug )?Allergies)/.test(allergyDisplay(value)) ? allergyDisplay(value) : `${label}: ${allergyDisplay(value)}`}
+                  {/^(?:Allergies not on file|No Known (?:Drug )?Allergies)/.test(
+                    allergyDisplay(value),
+                  )
+                    ? allergyDisplay(value)
+                    : `${label}: ${allergyDisplay(value)}`}
                 </Badge>
               ) : (
                 <span
@@ -160,10 +160,11 @@ export function WorkflowNav({
   title?: string;
 }) {
   const available = groups.filter(([, items]) => items.length > 0);
+  if (!available.length) return null;
   return (
     <AppShell.Navbar
       component="nav"
-      aria-label="Clinical workflows"
+      aria-label="Clinical navigation"
       className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >
@@ -198,6 +199,7 @@ export function WorkflowNav({
                 <li key={id}>
                   <button
                     type="button"
+                    className="clinical-nav-link"
                     data-comp-id={id}
                     data-event="click"
                     aria-current={label === title ? "page" : undefined}
@@ -231,6 +233,7 @@ function StockUiScreenView({
   viewer?: string | undefined;
 }) {
   const modal = screen.modal;
+  const shellRef = useRef<HTMLDivElement | null>(null);
   const stepper = screen.workspace.find((node) => "stepper" in node);
   const active =
     stepper && "stepper" in stepper
@@ -239,7 +242,35 @@ function StockUiScreenView({
   // A new screen starts at its heading. Ordinary field updates retain position.
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
-  }, [active, screen.title]);
+  }, [screen.screen, active, screen.title]);
+  // Geometry only: preserve patient identity above a long chart without hiding
+  // a tall banner on a small viewport. No clinical state is derived here.
+  useLayoutEffect(() => {
+    const shell = shellRef.current;
+    const header = shell?.querySelector<HTMLElement>(".clinical-banner");
+    if (!shell || !header) return;
+    const root = document.documentElement;
+    const previousPadding = root.style.scrollPaddingTop;
+    const measure = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      const pinned =
+        window.innerWidth >= 1100 && height < window.innerHeight * 0.45;
+      shell.dataset.pinned = String(pinned);
+      shell.style.setProperty("--clinical-header-height", `${height}px`);
+      root.style.scrollPaddingTop = pinned
+        ? `${height + 12}px`
+        : previousPadding;
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+      root.style.scrollPaddingTop = previousPadding;
+    };
+  }, []);
   return (
     <AppShell
       className="clinical-app"
@@ -252,6 +283,7 @@ function StockUiScreenView({
         className={`clinical-shell${screen.nav.some(([, items]) => items.length) ? "" : " without-nav"}`}
         aria-hidden={modal ? true : undefined}
         ref={(element) => {
+          shellRef.current = element;
           if (element) element.inert = Boolean(modal);
         }}
       >
@@ -268,10 +300,12 @@ function StockUiScreenView({
               <Text size="xs" c="dimmed" mb={3}>
                 PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER
               </Text>
-              <Title order={1} title={screen.title}>{sectionCaption(screen.title)}</Title>
+              <Title order={1} title={screen.title}>
+                {sectionCaption(screen.title)}
+              </Title>
             </div>
             <Badge color="gray" size="md">
-              Active encounter
+              Patient chart
             </Badge>
           </div>
           <div
@@ -334,11 +368,15 @@ export function UiScreenView(props: {
 }) {
   return (
     <PresentationProvider bundle={props.presentations ?? null}>
-      <StockUiScreenView
-        screen={props.screen}
-        onEvent={props.onEvent}
-        viewer={props.viewer}
-      />
+      <FieldSourceContext.Provider
+        value={new Map(props.screen.fieldSources ?? [])}
+      >
+        <StockUiScreenView
+          screen={props.screen}
+          onEvent={props.onEvent}
+          viewer={props.viewer}
+        />
+      </FieldSourceContext.Provider>
     </PresentationProvider>
   );
 }

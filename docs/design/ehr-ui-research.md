@@ -163,6 +163,639 @@ so it is not used for the cosigner.
 [FHIR attester participant](https://hl7.org/fhir/R4B/valueset-provenance-participant-type.html),
 [FHIR MedicationRequest](https://hl7.org/fhir/R4/medicationrequest-definitions.html).
 
+## Canonical realism: P1 PCP and P4 pediatric NP (ambulatory)
+
+Research and implementation pass: 2026-11-01, AMB lane. This is one vendor
+baseline with role projections, not a separate pediatric product. No vendor
+assets or screenshot pixels are included. The public guides describe particular
+installations; the layouts below are our synthesis. The hospital rulebook and
+all human entry, review, alert and signature requirements remain authoritative.
+
+### References inspected
+
+- [Mount Sinai EHHOP student guide (2019), printed pp.9–12, 19–25](https://ehhapp.org/uploads/Student-Guide-to-Epic-for-EHHOP.pdf): schedule selection opens the visit navigator; reason for visit, vitals, allergies, medication review, history, orders and patient instructions have distinct sections. The navigator screenshot on printed p.12 was visually inspected. Adopt its separation of chart activities from encounter sections, with our own visual design.
+- [Washington Regional, WRMS Provider Musts, pp.2–3, 6–8, 11–12](https://www.wregional.com/Uploads/Public/Documents/MedStaff/Epic%20Resources/WRMS%20Provider%20Musts.pdf): folder list, message list and preview/action pane are separate. Request handling supports approval, rejection and editing, with recent-visit, medication and lab reports nearby. The general-layout and request-context screenshots were visually inspected. Retain a review-to-response path and explicit signing, without copying its artwork.
+- [Iowa, Rooming / Check In–Check Out](https://epicsupport.sites.uiowa.edu/epic-resources/check-incheck-out): rooming status is a schedule operation; merely opening a visit must not change a booked appointment to roomed.
+- [Iowa, Growth Chart](https://epicsupport.sites.uiowa.edu/epic-resources/growth-chart): growth is a chart activity with age/measure-specific CDC or WHO reference datasets. A raw measurement series is not a percentile calculation.
+- [Iowa, Immunizations](https://epicsupport.sites.uiowa.edu/epic-resources/immunizations): history reconciliation and determining vaccines due are distinct tasks; outside registry information matters. Only supplied `ImmunizationRecommendation` data is called a forecast here.
+- [Iowa, After Visit Summary](https://epicsupport.sites.uiowa.edu/epic-resources/after-visit-summary-avs): patient instructions contribute to the AVS at visit completion. Keep instructions, follow-up, charges and signing as separately named sections.
+- [Johns Hopkins, In Basket QuickActions](https://medicine-matters.blogs.hopkinsmedicine.org/2019/04/epic-tip-of-the-week-10/): result-note actions and refill approval/denial are message-type-specific; personalized shortcuts can reduce clicks. This supports retaining ordinary multi-step baseline paths for the overnight agent to improve.
+- [Epic public e-refill export definition](https://open.epic.com/EHITables/GetTable/RX_EREFILL_RQST.htm): a refill request has its own medication, follow-up status and pharmacy-comment context. Request and current prescription must be distinguishable.
+- [AHRQ alert fatigue](https://psnet.ahrq.gov/primer/alert-fatigue): preserve clinically consequential warnings while distinguishing passive reminders. No alert tier or clinical guard changes are made in this pass.
+
+### Target layouts and clinical paths
+
+| Screen | Target layout and terminology | Initial review / intended change |
+| --- | --- | --- |
+| P1/P4 Schedule (`home`) | Day-list table: time, patient, age/sex, visit type, source status, chief complaint, provider/location; normal adjacent encounter action. In Basket remains an activity, not a labeled clinical workflow. | The former “Today's work” panel was empty on ordinary chart fixtures. Use supplied Appointment rows and the `present.schedule` contract. A chart-scoped bundle is explicitly only that chart's appointments. |
+| `w1Rooming` | Reason for visit, compact metric vitals with units, allergy table + Mark reviewed, screenings/pharmacy, PHQ-2, health maintenance. | Before: vitals came before the complaint; collapse controls competed with form inputs. Open clinical sections and an actual left visit navigator establish the normal rooming order. |
+| `w1MedRec` | Medication table, reconciliation decisions, Mark reviewed, optional fill-history/prior-plan reports. | Before: abbreviated “Med rec” and generic reconciliation grouping. Use Medication Review and preserve each existing capture/receipt. |
+| `w1Hpi` | Medical/surgical/family/social history, prior-note tools, HPI, ROS. | Before: “History” meant only an HPI/ROS form. Put real history context here and name the note sections explicitly. |
+| `w1Exam` | Exam/template, problem list, encounter diagnoses, problem-based Assessment & Plan. | Before: ungrouped exam and plan fields. Keep distinct clinical sections, with the diagnosis as the source of linked order/claim diagnoses. |
+| `w1Orders` | Search/catalog, preference list, dosing, medication/dispense/pharmacy/diagnosis, pending orders, Review and sign. | Preserve the long baseline composer and per-field confirmations; no quick-sign macro. |
+| `w1Labs` | Test search, order details/associated diagnosis, recent results, pended orders. | Clarify Lab Orders and keep the diagnosis linked rather than retranscribed. |
+| `w1Verify` | Pended order table, allergies, baseline reconfirmation, then Sign Orders. | Keep the extra Order Review step as documented baseline friction. |
+| `w1Sign` | Full order summary and required chart reviews, dose check, applicable alerts, human identity directly before signature. | Preserve all required reviews outside optional tabs and the exact signing guard. |
+| `w1Close` | Note review, Level of Service, Follow-up, Patient Instructions / AVS, health maintenance, Sign Visit. | Before: a single closing form. Named sections match the visit navigator and retain billing/instruction captures. |
+| `w2Inbasket` | Folder counts, searchable result list, selected-message context, Review result; Rx Requests is a genuine destination. | Before: generic “Messages” with no meaningful message-type hierarchy. Use actual Task rows and `present.folderList` / `present.messages`. Counts are chart-scoped unless an explicit department payload is supplied. |
+| `w2Result` | Result values, units, flags and reference ranges; dated trend; clinical action/follow-up test; Result Note; Reviewed / Done. | Before: result detail was an empty fallback despite available lab data. Project the real result rows; preserve result and abnormal trend at acknowledgment. |
+| `w2Message` | Result context, result-note templates, patient communication draft, return to review. | Before: generic message screen. Use Result Note terminology. Return uses the entered message; it does not independently claim delivery. The acknowledgment writer persists the communication. |
+| `w5Rooming` | Complaint, dated metric growth measurements, allergies and medications with review actions. | Before: growth chart duplicated the dedicated Growth screen and the complaint followed measurements. Keep rooming focused and retain the separate Growth activity. |
+| `w5Growth` | Dated measurements/series, available source percentiles, last visit. | Before: a raw measurement table was labeled “Percentiles.” Never imply a percentile or normal curve without a named reference. |
+| `w5Note` (new) | History context, HPI, ROS, exam, encounter diagnoses, Assessment & Plan, anticipatory guidance. | Previously all documentation first appeared during visit close. A dedicated Visit Note section precedes prescribing; the same required captures and template confirmations remain. |
+| `w5Orders` | Current kg dosing weight, mg/kg basis, calculated check, entered mg dose, prescription details and pending orders. | Keep the separate mg entry and explicit pharmacy confirmation. Do not replace clinician-entered dose with an automatic acceptance. |
+| `w5Sign` | Every order, current kg weight/dose check, allergies/medications and other required reviews, identity, Sign Orders. | Preserve stale-weight, lb and range guards; weight-based review has no receipt substitute. |
+| `w5Immunizations` | History and supplied forecast, allergies, product/manufacturer/lot/site/route/provider, separate VIS section, Record immunization. | Before: vaccine and VIS fields were mixed in one group. The new grouping preserves every required field and the separate vaccine signature. |
+| `w5Close` | Note review, Level of Service, Follow-up, family AVS instructions, Edit visit note, Sign Visit. | The clinical note is now composed before orders and reviewed here; no duplicate human entry is added. |
+| `w7Queue` | Rx Request folder counts, message list and selected prescription request, Review request. | Before: a generic refill table without source context. Retain actual request status and medication identity. |
+| `w7Review` | Request, last visit/labs/fills/meds/prior-note reports, review receipts, Respond to request. | Keep the baseline's optional report tabs and separate response step. Fills are sourced from MedicationDispense; an active prescription does not prove a fill or adherence. |
+| `w7Decision` | Requested/current/proposed comparison, relevant labs, last visit and fill history, protocol check, response fields, Approve / Sign Rx and the existing separate denial action. | Required reviews stay expanded on the response screen. Modification uses the existing semantic prescription path; no label may turn a Schedule II refill into a valid renewal. |
+
+### Data and presentation integration
+
+The presentation lane's [contract](presentation-contract.md) is selected by
+`present.schedule`, `present.messages`, `present.folderList`, `present.growth`
+and `present.table` tags. Worklists are read-only; adjacent real goto controls
+open the selected encounter. An “Open” string in a table is never a fake control.
+
+The separated `Fhir.Ambulatory` projections add source Appointment rows, Task
+rows/counts, actual refill-focus resolution (including contained resources),
+result details/ranges/flags, prior visits, MedicationDispense fill history and
+supplied immunization forecasts. Result Task inputs/report references select
+the current report; its trend includes historical observations of those same
+analytes, without pulling unrelated tests into the selected report. Relative and
+transaction-bundle UUID references are matched without exposing IDs as cells.
+Missing records stay absent. The three new optional info declarations are
+`inBasketFolders`, `inBasketResults` and `inBasketRxRequests`; they add no entry, review,
+permission, alert or D rule. `V1.lean`, properties and trusted statements are
+unchanged. The live adapter combines these Lean projections with explicit
+version-bound context, giving an explicit payload precedence for the same info.
+
+Review inputs use the existing world-2 seeder and Synthea cohort via
+`scripts/realism/ambulatory-fixtures.mjs`, without a backend or new clinical
+choices. Screenshots are 1440×900 in `app/shots/realism/amb/`.
+
+### Baseline effort before this pass
+
+Measured with `ehr min-clicks` through `pnpm complexity --release-root releases`
+on the existing fixed benchmark cases, before ambulatory program changes.
+These are certified minima **within the reported directed search spaces**, not
+global UI optima. KLM estimates effort on the minimum-click path, not elapsed
+clinical time or a separate time minimum. Keystrokes are minimized separately.
+
+| Release | Workflow | Clicks | Keystrokes | KLM seconds |
+| --- | --- | ---: | ---: | ---: |
+| v1/v2 | W1 | 39 | 202 | 143.20 |
+| v1/v2 | W2 | 7 | 40 | 21.45 |
+| v1/v2 | W5 | 48 | 245 | 175.45 |
+| v1/v2 | W7 | 12 | 12 | 27.50 |
+| v3 | W1 | 39 | 202 | 143.20 |
+| v3 | W2 | 7 | 40 | 21.45 |
+| v3 | W5 | 49 | 250 | 179.80 |
+| v3 | W7 | 12 | 12 | 27.50 |
+
+The measurement adapter now explicitly uses `lean -j4`; its 8 GB address-space
+limit also needs `LEAN_STACK_SIZE_KB=8192` in this environment. This corrects a
+thread-creation failure without changing the search, choices or KLM model.
+After metrics, visual findings and gate results are recorded below as completed.
+
+The FHIR distinction between prescription, dispensing and administration is
+also checked against the [HL7 R4 MedicationDispense specification](https://hl7.org/fhir/R4/medicationdispense.html).
+Forecast fields follow [HL7 R4 ImmunizationRecommendation](https://hl7.org/fhir/R4/immunizationrecommendation.html),
+including its point-in-time status and recommendation authority. No forecasting
+algorithm or clinical protocol thresholds are added by this UI work.
+
+### After effort measurement
+
+The final `ehr min-clicks` / `pnpm complexity` run preserves every ambulatory
+baseline metric above: clicks, independently minimized keystrokes, KLM, visited
+screens, required fields and popup counts. The full per-release comparison and
+binary/suite/report hashes are in [amb-realism-metrics.json](amb-realism-metrics.json).
+The full after report is [canonical-complexity.json](../../programs/benchmarks/canonical-complexity.json).
+
+An intermediate version exposed Sign Orders as a navigator destination and
+reduced W1/W5 minima by two clicks. Visual and effort review rejected that
+shortcut. The final left navigator lists clinical sections; Order Review and
+Sign Orders remain actions reached through the composer. In Basket navigation
+lists folders rather than processing stages. This preserves the baseline's
+ordinary extra review step, separate result-note return trip and refill response
+step. The new pediatric note activity relocates existing captures and templates;
+it does not add a second clinical note or automate a signature.
+
+| Release | Workflow | Before → after clicks | Before → after KLM seconds |
+| --- | --- | ---: | ---: |
+| v1/v2/v3 | W1 | 39 → 39 | 143.20 → 143.20 |
+| v1/v2/v3 | W2 | 7 → 7 | 21.45 → 21.45 |
+| v1/v2 | W5 | 48 → 48 | 175.45 → 175.45 |
+| v3 | W5 | 49 → 49 | 179.80 → 179.80 |
+| v1/v2/v3 | W7 | 12 → 12 | 27.50 → 27.50 |
+
+### Screen-by-screen visual review
+
+Every pair uses native Lean output and the same production painter at 1440×900.
+The before program is `add0d2e`; both phases receive the same existing world-2
+task/cohort sources, including actual seeded Appointment/Task/result records.
+The files follow `app/shots/realism/amb/{before,after}-<persona>-<screen>.png`.
+There is no before image for the new `w5Note`; its source fields previously lived
+on `w5Close`. Additional signature views show the safety footer on long screens.
+
+| Screen | Observed before → reviewed after |
+| --- | --- |
+| P1/P4 `home` | Empty day-list fallback → supplied, dated appointments with booked status preserved. The adjacent activity opens the chart encounter; rows are read-only under the shared contract. |
+| `w1Rooming` | Repeated workspace navigation and an intake form dominated by vitals → real section rail, complaint first, metric vitals, allergy review, screenings/pharmacy and health maintenance. |
+| `w1MedRec` | Generic Med rec → Medication Review, complete medication rows and explicit reconciliation/review actions; optional reports remain tabbed. |
+| `w1Hpi` | Short single-line note fields → separate multiline HPI and ROS editors, note tools and optional history tabs after the editors. An initial full history table above the editor was rejected because it displaced documentation. |
+| `w1Exam` | Undifferentiated exam/plan form → physical-exam and Assessment & Plan sections, diagnosis and a full-width narrative plan; optional problems can be expanded. |
+| `w1Orders` | Navigation mixed with composer actions → section rail and a focused full-width composer, retaining the preference list, dose entry, pharmacy confirmation, pending orders and separate review path. |
+| `w1Labs` | Loose ordering fields → named order details with diagnosis association, recent results and pending orders; return/sign actions remain real interpreter controls. |
+| `w1Verify` | Generic verification → Order Review with pending orders, allergy evidence and the baseline reconfirmation before Sign Orders. |
+| `w1Sign` | Crowded shell → full-width clinical review and a separate signature footer. Required orders, allergies, medications, dose check, CURES and applicable alerts remain before the human signature. |
+| `w1Close` | One closing form → note review, Level of Service, Follow-up and multiline Patient Instructions / AVS, then Sign Visit. |
+| `w2Inbasket` | Empty generic message view → actual folder counts, received/patient/subject/priority/status list, selected-message preview and Review result. UUID reference normalization fixed an initially empty supplied queue. |
+| `w2Result` | Empty detail fallback and unrelated analytes in a generic chart → the selected report's result, original range/flag/status/timestamps, and only the selected analyte's dated history; follow-up and Result Note actions stay adjacent. |
+| `w2Message` | Generic message input → Result Note templates and multiline patient communication, with an honest return-to-result action. |
+| `w5Rooming` | Duplicate growth chart above intake → complaint, kg weight and growth measurements, allergy review and medication reconciliation; Growth Charts remains its own activity. |
+| `w5Growth` | A raw series called Percentiles → dated growth measurements, separately named available percentiles, and last-visit context. No CDC/WHO curve or patient percentile is invented. |
+| `w5Note` | Documentation first appeared at visit close → a dedicated pre-order Visit Note with multiline HPI, ROS, exam, plan and anticipatory guidance. History reports follow the editors. |
+| `w5Orders` | Generic dose preview → current kg weight and its measurement provenance, mg/kg/dose basis, calculated mg preview, separately entered dose, frequency/day amount and configured checks. No preview accepts the dose for the clinician. |
+| `w5Sign` | Generic weight-only dose check → the same explicit kg/dose calculation at signing, full required reviews, alerts and human identity/signature. |
+| `w5Immunizations` | Vaccine and VIS fields mixed → complete history plus supplied forecast, administration details, a separately labeled VIS section, then Record immunization. |
+| `w5Close` | Clinical note mixed with charges → review of the previously composed note, Level of Service, Follow-up, multiline family instructions, Edit visit note and Sign Visit. |
+| `w7Queue` | Empty generic refill fallback → counted Rx Requests and the actual referenced prescription/sig/request date/status; no first-medication substitution. |
+| `w7Review` | Generic chart-review labels → request-specific context, last visit/labs/fill history/medication/note tabs, review receipts and Respond to request. |
+| `w7Decision` | Sparse context → requested/current/proposed comparison, actual request, labs/last visit/fills, protocol attestation, response fields and separate guarded approval/denial. Required reports stay expanded. |
+
+The review removed an optional duplicate full-chart rail in encounter workspaces.
+The program's `layout.focusedWorkspace` tag suppresses only synthesized default
+summaries in Lean; explicit side content, reported home medications and all
+required commit reviews remain. React draws the resulting tree. Narrative editor
+kinds also come from Lean; all entered text, newlines and confirmations use the
+existing interpreter events.
+
+The shared shell still needs its role/weight/isolation banner and activity-tab
+polish, and the tagged structured widgets will replace the generic drawing when
+the presentation lane is integrated. Those integration points are recorded in
+[changes-requests.md](changes-requests.md#amb-realism-integration-2026-11-01).
+
+### Verified ambulatory milestone
+
+The reproducible commands, source/runtime fingerprints and all 50 world-2 day
+totals are recorded in [amb-realism-validation.json](amb-realism-validation.json).
+The final baseline passes:
+
+- Lean default build, default-kernel `lake check`, core Comparator, and D1–D6
+  regression/proof builds, with only the existing three permitted axioms.
+- **15/15** persona certifications across all three releases, **18/18** core
+  bad programs rejected, and **1,284/1,284** world-2 tasks completed. No simulator
+  policy changed; the replay uses v1 on days 1–3, v2 on days 4–6 and v3 thereafter.
+- **226** native button controls audited (**218** enabled controls change actual
+  interpreter state; the other eight carry explicit blocking reasons). The
+  browser dispatch audit checks the exact declared events on all 24 screens.
+- **24** after screenshots, **23** before screenshots and two signature-footer
+  views. Desktop/narrow fidelity, record completeness, legibility, coverage,
+  overflow, keyboard/scanner/modal behavior and contrast: **57** browser checks
+  pass; three duplicate wide-viewport cases are intentionally skipped in the
+  narrow project. Signature capture waits for the identity control to be fully
+  in view so a scrolling frame cannot crop away the safety footer.
+- Regenerated WASM and `make wasm-check`; archived `run1-P3` **424** tasks /
+  **14,658** events plus **3** baselines / **137** events, **0 mismatches**. The
+  archived programs remain unchanged. Painter navigation and multiline editors
+  emit the same interpreter events and Value constructors.
+- App build/lint and **165** tests; agent typecheck/lint and **41**
+  tests; **7** seeder tests.
+
+The live-boundary review also removed resource/cohort IDs from displayed result
+group labels and MRNs. Actual accession/report names or source test codes identify
+result groups; artifact IDs remain in version bindings only. Fill-history review
+receipts bind to MedicationDispense records. An empty-chart review uses the
+versioned patient anchor, as the existing empty medication/allergy review does;
+it makes no claim of a fill or medication adherence, and does not answer the
+separate human protocol attestation.
+
+### Structured presentation integration
+
+The presentation milestone (`eb6703e`) is integrated into AMB. The existing
+before images remain the original comparison; after images are refreshed with
+the shared widget painter, so this second comparison includes its drawing
+changes as well as the ambulatory Lean layout/content changes. Folder counts
+are now clear list rows, result flags have explicit supplied-value tints, result
+trends have dated axes, and growth has separate kg/cm plots with complete data
+tables. The duplicated second Growth widget was removed; the single widget
+retains every measurement row. Patient percentiles remain uncomputed, and the
+current supplied-data view explicitly says when reference curves are absent.
+
+The integration retains the detailed dose check and supplied vaccine forecasts.
+Daily dose previews preserve the captured mg/mcg/units; a valid insulin dose is
+no longer called incomplete because it is not in mg. Missing numeric limits are
+identified as unsupplied, rather than described as an unlimited dose. No clinical
+guard changes. A result Task whose references cannot be resolved now supplies an
+explicit empty result/trend view; unrelated historical labs cannot replace it.
+Relative/UUID references also resolve correctly for external refill orders.
+
+The combined default build, default kernel, core Comparator and **43** frozen
+render theorem statements pass. The statement text is unchanged and is compiled
+against the current implementation for the comparison; layout definitions are
+intentionally different. All **13** widget fixtures agree native-to-WASM.
+Certification remains **15/15**, all **18** bad programs are rejected, world 2
+remains **1,284/1,284**, all **226** native button controls pass, all **24** browser
+screens dispatch correctly, and browser fidelity remains **57** passes / three
+intentional viewport skips. The archived trajectory still has **0 mismatches**.
+App tests are now **171**. Effort metrics remain identical to the before pass.
+
+The visual review identified a follow-up: the single-series result plot expands
+too far vertically in the full-width workspace. It should be more compact so
+the follow-up controls remain near the result. The supplied growth measurements
+look clearer, but a production baseline also needs properly sourced reference
+curves and ordinary coded-field choices, rather than empty pickers.
+
+### Shared shell integration and result density
+
+Integrated the shared clinical shell and the main branch's certified run controls. The shell now supplies a blue application bar, role context, patient identifiers, actual recorded weight and isolation status. Empty navigator groups have no empty heading/list; ordinary navigator links remain real Lean-dispatched buttons. Chart and queue search use the shared Lean query state and source rows rather than inert search decoration.
+
+The Result Review graph previously expanded to roughly 420 pixels high in a full-width panel, with oversized axis labels. It now retains its 700-by-246 drawing scale at desktop widths, with legible ticks and all dated values in the same panel. Removed the second, identical dated-values table from W2; the trend panel itself already retains every source row. Clinical follow-up, patient communication and Reviewed / Done remain separate actions. The workspace badge says Patient chart because an In Basket result is not necessarily an active encounter.
+
+The shell integration retains the required fields, shown-on-commit reviews, human confirmation and modal/passive alert distinctions. The archived trajectory verifier now uses four Lean workers, matching the shared-machine limit. No clinical rule or theorem statement changed. All twelve ambulatory benchmark rows remain identical to the recorded before values. Revalidated 15/15 persona certificates, 18/18 bad rejections, 1,284/1,284 world-2 tasks, 226 native button checks, the default kernel and core Comparator, 43 frozen render theorem statements, 13 native/WASM presentation fixtures, 199 app tests, 84 agent tests and seven seeder tests. The archived run1-P3 verification remains at zero mismatches.
+
+### Row actions, clinical pickers and published growth references
+
+Further primary sources inspected for this increment:
+
+- [CDC growth-chart recommendations](https://www.cdc.gov/growth-chart-training/hcp/overview/recommended.html): WHO standards below age two and CDC charts from age two. Used the published [CDC weight](https://www.cdc.gov/growthcharts/data/zscore/wtage.csv) and [stature](https://www.cdc.gov/growthcharts/data/zscore/statage.csv) percentile samples, not drawn approximations.
+- WHO [weight-for-age](https://www.who.int/tools/child-growth-standards/standards/weight-for-age) and [length/height-for-age](https://www.who.int/toolkits/child-growth-standards/standards/length-height-for-age) tables: extracted the 0–24-month 5th/50th/95th samples for both published populations. `generate-growth-reference.py` records all six source URLs/hashes in the generated Lean module. Raw spreadsheets remain outside the repository.
+- [HL7 US Core birth-sex extension](https://hl7.org/fhir/us/core/StructureDefinition-us-core-birthsex.html): use an explicit source code to select the reference population. Administrative gender is not substituted for a missing or conflicting code.
+- [CMS FY 2027 ICD-10-CM descriptions](https://www.cms.gov/medicare/coding-billing/icd-10-codes) and its linked code-description ZIP: verified the 18 common diagnosis preferences against the published descriptions. This is a preference list with explicit unlisted-code entry, not a complete terminology service. No simulation choices were used to build it.
+- Public LOINC definitions for [CMP](https://loinc.org/24323-8), [CBC with automated differential](https://loinc.org/57021-8) and [HbA1c](https://loinc.org/4548-4): verified the code/label mapping for the small lab preference list. Search now reads that order catalog rather than presenting historical lab results as orders.
+
+The production reference pattern is a folder pane beside messages with a separate selected-message report. W2 and W7 now express that composition as Lean columns. Existing folder goto controls live beside their supplied counts; existing Review buttons live in the selected source row. Schedule presets similarly put Open encounter in the appointment row, with In Basket as a separate activity. These actions open the already selected chart's navigator: a displayed patient name never creates an inferred patient switch. Original action IDs and destinations remain stable. The duplicate Rx Requests shortcut and empty, unbacked Catalog results panel were removed; actual search results and order-entry controls remain.
+
+Coded fields now receive typed Lean code/label choices. This includes diagnoses, order routes/frequencies/duration, lab priority, review decisions, screening scores, level of service and follow-up. The original field, human-only/provenance/pending-confirm metadata, Value.code entry, validation and commit requirements remain unchanged. Typing in a picker does not create evidence; selecting a term sends its exact code. An unlisted code requires explicit selection. Closed formulary and dose-unit controls retain their existing behavior. Confirmation buttons stay single and functional through the metadata wrapper.
+
+Growth now has 24 published reference curves with 2,916 samples in the vendor catalog. Lean selects the recorded population, supplied measures and applicable age range. WHO length and CDC stature are labeled distinctly, retain their source age boundaries, and never join into one curve. Reference curves and patient measurements remain separate semantic data; all patient rows stay in the ordinary info table. The browser calculates coordinates only. It does not estimate a patient's percentile. Unknown population data supplies no curve; missing dates do not become newborn age zero. Explicit meter/inch heights convert in Lean before rounding; an unlabelled height is not assumed to be centimeters. Clinical weight confirmation and dose checks are unchanged.
+
+The allergy banner now summarizes substances and non-active status instead of repeating lengthy reactions in the header. Complete reactions/status remain in allergy lists and required reviews. This reduces the pediatric header's height without concealing the allergy list or changing alerts.
+
+| Screen | Further before → after review |
+| --- | --- |
+| P1/P4 Schedule | Separate Schedule button → the original encounter opener in the actual appointment row; separate In Basket activity controls. |
+| W1 Rooming / Medications | Bare coded entry → labeled screening/reconciliation choices; source human confirmations retained. |
+| W1 Exam / Assessment & Plan | Empty diagnosis selector → searchable common ICD-10 preferences and explicit unlisted-code entry. |
+| W1 Orders | Empty catalog panel → actual source search results; labeled route/frequency/duration choices around unchanged order fields. |
+| W1 Lab Orders | Historical-result search → LOINC order preferences, with the same required diagnosis and priority fields. |
+| W1 Sign Visit | Bare charge/follow-up codes → labeled choices; all required reviews and identity/signature inputs retained. |
+| W2 In Basket / W7 Rx Requests | Stacked folder/list panels and detached open buttons → Lean columns and original row actions. |
+| W2 Result Review | Bare action/test selectors → labeled follow-up choices; Reviewed / Done and separate Result Note path retained. |
+| W7 Rx Response | Bare decision code → Approve/Deny/Modify choices; the separate guarded denial and signing actions remain. |
+| W5 Growth Charts | Patient-only plots → published, sourced reference bands alongside the unchanged measurement table. |
+| W5 Rooming / Visit Note | Long allergy reactions in the header and bare diagnosis code → compact substance/status header and labeled diagnosis choices; full allergy review remains. |
+| W5 Orders / Immunizations / Sign Visit | Shared compact header and coded preferences improve reading; measured kg weight, dose preview, VIS and signature safeguards retain their source controls. |
+
+No new design rule was introduced. The 107 pre-existing render theorem headers are byte-identical to the integrated source; the frozen Comparator audit covers the prior 43 statements plus the presentation lane's two row/column retention statements. The new metadata wrappers have explicit all-child-retention proofs. Native and WASM agree on 26 current ambulatory renders, 39 pickers and 12 selected reference curves, including actual navigation and the unknown-population case. Final visual/gate totals are recorded in `amb-realism-validation.json`. Final self-review caught a too-wide nested folder pane and a collapsed action column: the folder-column selector now follows the actual nested semantic structure, six-column message widths reserve room for Actions, and prescription previews with additional fields retain all columns. Explicit urgent/requested statuses use the shared red/blue tints, with the original words retained. All 24 screen/event checks pass at 1440×900, including two signature views and two open diagnosis-picker views; the independent desktop/narrow fidelity gate passes 57 checks with three intentional duplicate-probe skips. The combined source passes the default build, kernel, both Comparators, certification 15/15, bad rejection 18/18, World 2 1,284/1,284, 237 native button checks, 215 app tests and 84 agent tests. Archived run1-P3 still has zero mismatches. All twelve ambulatory click/keystroke/KLM rows remain identical to the original before values.
+
+### Persistent clinical frame refinement (M05)
+
+The numbered progress strip resembled a sequential wizard above a production-style section navigator. Ambulatory source banners now explicitly request `layout.clinicalActivity`; Lean omits only the read-only progress overview. Every real navigator destination and clinical control remains in the semantic tree. A stable optional screen identity lets the painter reset scrolling when destinations share the same title, without rendering internal IDs. Screens with no navigator entries no longer draw an empty navigation panel.
+
+The existing EHHOP navigator and WRMS In Basket references support keeping chart identity and activity navigation beside long documentation. At desktop width the banner and navigator now stay visible while scrolling; the painter measures geometry only. Small viewports or unusually tall banners use ordinary page flow so patient context cannot cover the editor. Scroll padding keeps focused controls below the pinned banner. The screenshot review includes long growth review, refill decision, and clinician signature views.
+
+Banner self-review also found that a historical encounter clinician could be shown as an assigned PCP. The projection now requires `Patient.generalPractitioner` evidence, resolving its human-readable reference if present; an unassigned PCP remains explicitly unrecorded. Latest-record context is labeled “Last encounter”, “Last provider”, and “Last location” instead of claiming an active visit or attending assignment. This follows [HL7 R4 Patient](https://hl7.org/fhir/R4/patient.html). Recorded pounds are additionally displayed in kg using the exact 0.45359237 conversion from [NIST Handbook 44 Appendix C](https://www.nist.gov/document/2026-nist-handbook-44-appendix-c), rounded to one decimal, with source pounds and date retained. This display conversion neither changes the clinical weight fact nor supplies human confirmation for pediatric dosing.
+
+
+The shared per-observation laboratory projection is also used by ambulatory selected-result detail/trends. Same-analyte records at the same time remain distinct; components, comparator text (such as `<5`), source units, reference text, flags, and status survive. Task references still constrain the selected report. Named regressions cover duplicate records, mixed units and a censored component. In Basket self-review removed a repeated synthetic folder “Status” caption and flattened nested card borders; all folder names/counts, message data and actions remain visible.
+
+
+M05 verification at combined source `2e6cef0`: default build, kernel replay, root Comparator and **48** frozen renderer statements pass; **116** earlier named theorem headers remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284** complete, native buttons **237** checked (**229** enabled / **8** explicitly blocked), and actual native/WASM navigation agrees on **26** views with **39** coded pickers and **12** selected reference curves. App build/lint and **216** tests, **84** agent tests with typecheck/lint, all **7** seed tests, **24** screen/event checks and **57** fidelity checks pass (three duplicate narrow probes intentionally skipped). Archived replay retains **0** mismatches. All **12** ambulatory release/workflow effort measurements still equal the original baseline. Captures now total **53**: 23 before, 24 after, two signature views, two open diagnosis pickers and two scrolled-context views at 1440×900.
+
+The M05 refill review identified the empty optional comparison and the need to distinguish its latest lab evidence from full chart history. Both are addressed by M06 below.
+
+
+### Refill evidence and response refinement (M06)
+
+Additional references reviewed:
+
+- [Tower Health In Basket Guide for Providers (2021), publicly hosted by General Pediatrics](https://www.genpeds.com/wp-content/uploads/2021/08/In-Basket-Guide-for-Providers-1.pdf), pp. 2 and 8–9: folder/message/body hierarchy, prescription details, editing before signing, and a separate refusal reason. These are deployment-specific patterns; no logos, screenshots or text assets are copied into the repository.
+- [UCSF-hosted medication refill standing order (2011/2012 historical document)](https://cepc.ucsf.edu/sites/g/files/tkssra17936/files/Standing%20Order%20-%20Med%20Refill.pdf), pp. 1–2: review of prescription, visits and monitoring evidence, with explicit routing exceptions. This is a historical layout/content reference, not a current clinical protocol or new rule for the experiment.
+- [Penn Medicine refill-protocol implementation study (2022)](https://pmc.ncbi.nlm.nih.gov/articles/PMC9646402/): separates temporal evidence from measurement criteria and describes local protocol governance. The UI displays evidence and keeps the existing human protocol check; it does not infer that a medication-specific protocol passes.
+
+The Rx response now leads with the actual request, then a four-row comparison for dose, quantity, refills and pharmacy, followed by the response editor. Chart evidence and both original approval/denial paths remain on the screen. The comparison uses the Task's focused prescription; an active linked prior prescription is used only when explicitly supplied. A similarly named medication is not substituted. Explicit patient conflicts are rejected. Missing units and quantities remain unknown, zero refills remain zero, and a pharmacy reference resolves only to supplied human-readable data.
+
+The response column reads the interpreter's actual captures. It never copies requested values into the response, confirms a prefill, records a review or signs an order. Unconfirmed captures remain labeled. A supplied draft proposal survives alongside the entered response; the new `uiRefillComparison_preservesSource` theorem protects every clinical source cell, including duplicate keys. The existing `refillComparison` payload schema is satisfied without changing the spec. Its empty-entry marker is presentation metadata, not a proposed prescription.
+
+A last-fill date requires a completed MedicationDispense with a handed-over date and an explicit prescription link or matching medication code/system. A newer fill for another drug, an in-progress dispense or a MedicationStatement cannot supply it. Request details also show the last recorded encounter; the detailed encounter panel includes its setting so an emergency visit is distinguishable from ambulatory care.
+
+Visual review exposed an overly long refill evidence panel after full result-history integration. “Latest available labs” now selects the latest dated source records per coded analyte, retaining ties, components and unknown dates/identities. Full history remains in Chart Review and selected-result trends. This restores the intended evidence summary without truncating its rows or weakening any review requirement. The layout has no new shortcut or automatic capture.
+
+Coverage now includes P4's Results and Rx Request activities as well as its actual pediatric schedule. World 2 assigns P4 only W5 on these sampled days; the extra cases are explicit NP permission/render probes using unchanged P1 source records, not claims of NP-assigned world tasks or a pediatric clinical scenario. `review-cases.json` records that distinction. Native navigation follows goto targets in both presets.
+
+
+M06 screenshot review: `w7Queue` now names prescription status, last fill and last encounter explicitly; absent pharmacy/fill data stay unrecorded. `w7Review` retains its separate review tabs and receipts. `w7Decision` places the request, comparison and response fields in the first viewport, with latest lab evidence, encounter setting, fill history, alerts and signing/denial actions below. The P4 Results/Rx views use the same canonical sections under NP permissions. No new shortcut is introduced. The denial-reason required marker is still action-scoped by the interpreter; improving its conditional presentation remains a visual follow-up, not a change to approval or denial requirements.
+
+Every before capture was reconstructed again from `add0d2e` using the current shared painter and the same raw FHIR inputs as its after view. This controls the painter for the final layout comparison. Earlier historical before images, including their original gray styling, remain in Git at `b9f4465`. There are 29 reconstructed before screens and 30 after screens; the new Visit Note has no prior standalone screen.
+
+
+M06 verification at combined source `598c7b2`: default build, kernel replay, root Comparator and **51** frozen renderer statements pass. All **123** previously named render theorem headers remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, and World 2 completes **1,284/1,284**. Native button checks cover **277** interactions (**266** enabled / **11** blocked with reasons). Native/WASM agrees on **34** views, **42** coded pickers and two actual dose-entry/response checks, plus all **15** shared structured examples and legacy decoding. App build/lint and **217** tests, **84** agent tests with typecheck/lint, **30** after-screen/event audits, **29** reconstructed before views and **69** fidelity checks pass (three duplicate narrow probes skipped). All **12** ambulatory effort records remain identical to the original baseline, and archived replay has **0 mismatches**. The **66** captures include three scrolled-context views. A reproducible comparison against the original binary finds **0** primitive-clinical-fact mismatches across all **324** Synthea/synthetic-hospital bundles; supporting payloads/bindings and record version aliases are explicitly outside that comparison and are covered by the separate runtime/checker tests.
+
+
+### Main integration and ambulatory vital-value consistency (M07)
+
+Main's grouped semantic navigation is integrated while retaining the ambulatory frame's measured sticky header, optional screen identity and absence of empty navigation. Navigation sections now carry their actual group names in the accessibility tree, with decorative clinical icons; every link still sends its original component ID. The shared accessible label is “Clinical navigation”.
+
+A direct comparison exposed a display inconsistency: the same explicitly coded diastolic-first BP appeared as `76/128` in ambulatory vitals and `128/76` in typed observation rows. The [HL7 R4 BP profile](https://hl7.org/fhir/R4/bp.html) defines coded, unordered components. Ambulatory vitals now use that coded interpretation. Ambiguous panels and mixed units retain individual names, values and units; censored and absent-reason values stay explicit. Extra components remain visible. This changes display projection only, not clinical guard facts or captured vitals.
+
+The existing synthetic clinical fixture had an uncoded component array while asserting a known systolic/diastolic reading. Its intended values remain 128 and 82; explicit component codes now supply their meaning, and the original `128/82` assertion is unchanged. Separate adversarial examples ensure uncoded, reordered and mixed-unit records cannot acquire a false slash-pair meaning. Native/WASM also exercises a reversed-component input.
+
+The refill denial field now reads “Reason for denial (if denying)”, clarifying which action requires it while preserving the field, required marker and both commit paths. The current model does not provide a general captured-value visibility condition; no new core visibility rule or relaxed requirement was introduced for this wording change.
+
+
+M07 verification (source `1fbcd8d`): default Lean build, kernel checking, root Comparator and all 51 frozen renderer theorem statements pass; 127 existing theorem headers remain unchanged. Certification is 15/15 with all 18 bad programs rejected; all 1,284 world-2 tasks complete. The native button audit covers 277 controls (266 enabled transitions and 11 disabled with reasons), native/WASM parity covers 34 screens plus the reversed-component BP regression, all 15 structured fixtures pass, and browser fidelity passes 69 tests with three intended viewport skips. Thirty current screen captures were refreshed at 1440×900. App tests pass 217/217, agent tests 84/84, archive verification has zero mismatches, and all 324 primitive clinical fact projections match the original baseline. All twelve AMB effort records remain identical to the recorded before values. The optional shared-shell screenshot test was skipped because its opt-in capture flag was not set; the AMB screen and fidelity suites ran fully.
+
+### Review action feedback and growth-unit integration (M08)
+
+The public [Weill Cornell eCOMP manual](https://practiceops.weillcornell.org/sites/default/files/weill_cornell_medicine_ecomp_manual_10-17.pdf), printed page 7 (PDF page 8), shows a medication list with its review action and nearby last-review indicator. The [Johns Hopkins May 31, 2019 Epic tip](https://medicine-matters.blogs.hopkinsmedicine.org/2019/05/epic-tip-of-the-week-may-31-2019/) distinguishes qualified review from medication-reconciliation completion. We adopt the visible acknowledgement pattern. We do not infer a reviewer name or wall-clock timestamp from the synthetic minute clock, or claim that the broader reconciliation task is complete.
+
+The canonical source explicitly opts six review actions into receipt feedback. Lean supplies a `status` info node only when the existing core receipt predicate accepts the current version, age and reviewer role. The original review action remains available. A missing, stale, future-dated, wrong-version or disallowed-role receipt cannot show this status. Two new renderer theorems cover validity and read-only identity; every existing rule and theorem statement is retained.
+
+| Screen | Before | After |
+| --- | --- | --- |
+| W1 Rooming | Clicking the allergy review action changed state without visible feedback. | A compact green “Review recorded” status appears beside the same action after a valid receipt. |
+| W1 Medication Review | No visible acknowledgement distinguished an acted-on list. | The receipt status sits below the complete medication list; medication decisions remain separate. |
+| W5 Rooming | Allergy and medication review actions had no visible acknowledgement. | Each action receives its own receipt status; growth, dosing weight and reconciliation fields retain their independent requirements. |
+| W7 Review, PCP and NP | Last-visit and fill-history review actions silently created receipts. | Each tab shows the current receipt status after its own review; changing tabs still uses the original semantic tab action. |
+
+Presentation integration `da01a57` also preserves growth readings in grams/metres as their supplied source values with an explicit normalized plot coordinate, retains timestamps for ordering same-day readings, and corrects chart-axis/source-table consistency. These typed projection changes come from the presentation lane; all AMB source clinical facts are rechecked against the original baseline.
+
+M08 screenshot review: the compact status sits beside or directly below its original review action, wraps within its available space, and uses a green border, check icon and explicit words. W1 medication review and P4 rooming retain all medication rows and the separate reconciliation decisions; the receipt does not mark those decisions complete. The two Rx Request review views retain their original tabs and complete chart history. The 77 images include 30 initial after screens, 29 reconstructed before screens, five reviewed-state views, six receipt detail captures, and seven existing signature/picker/scrolled-context captures. All are retained in the repository, including the supplemental captures omitted by the broad screenshot ignore rule in earlier commits.
+
+M08 verification (source `5fe0598`): default build **357** jobs, kernel checking, root Comparator and **53** independently frozen renderer statements pass; **137** prior theorem headers are unchanged. Certification remains **15/15**, bad programs **18/18** rejected, and World 2 **1,284/1,284** complete. Native/WASM agrees on **34** ambulatory views, **8** actual review clicks, **38** invalid-receipt probes and **16** structured examples. A disallowed-role probe is used only where the actual source requirements exclude a modeled role; all four roles can review allergies under at least one existing requirement. The button audit remains **277** (**266** enabled, **11** blocked). All **220** app tests, **84** agent tests and **7** seed tests pass, along with builds/lint/typecheck, **79** desktop/narrow fidelity tests (three intended viewport skips), **35** after-state and **29** before-state screen checks. Archived replay has **0** mismatches; all **324** primitive clinical fact projections match the original binary. All twelve AMB min-click/key/KLM records remain exactly unchanged.
+
+### Medication context and source footer order (M09)
+
+The Cornell medication-review screenshot above places a named medication beside its own status choices. The AMB captures instead had numbered reconciliation decisions separated from the full list. The canonical now explicitly tags these existing slots for medication context. Lean appends the corresponding name from the current-medication display list to each original caption. Empty names, missing rows, unrelated elements and untagged programs keep their original captions. The field ID, slot, captured code, human-entry state and required marker remain the same. The static model still declares the same decision slots; this presentation does not create additional medication write-back bindings or assert that all imported medications have been reconciled.
+
+Main integration `062a4ef` contributes clinical text/sig formatting, quiet unstructured empty states, contextual placeholders and denser framing. Typed pickers, source row placement, growth references, explicit confirmation and receipt feedback remain. Medication-direction formatting is applied consistently to legacy and structured medication tables, with complete original text retained in accessible labels/tooltips.
+
+The shared painter requested source footer order in `changes-requests.md`. Lean now places the original Back / Patient workspace controls after the optional Chart Review tabs for AMB screens. The semantic renderer partitions its source nodes for drawing and proves that every node and semantic atom remains present. Program component order stays stable, preserving directed search and KLM paths. Every original action and component remains. The left navigator remains available while reading the chart.
+
+| Screen | Before | After |
+| --- | --- | --- |
+| W1 Medication Review | Four numbered choices required referring back to the medication list. | Each existing choice keeps its caption and adds the corresponding supplied medication name. |
+| W5 Rooming | Two numbered choices sat below the list without medication context. | The two declared slots show their corresponding chart names; review receipts and decisions remain separate. |
+| All W1/W2/W5/W7 clinical screens | Back / Patient workspace interrupted the clinical content before Chart Review. | The same source controls follow Chart Review in a compact navigation bar. No patient switch or new shortcut is introduced. |
+
+The incoming medication formatter was tightened during integration: product-name “oral tablet/capsule” no longer supplies `PO` or a missing count unit to the sig. [FHIR R4 Dosage](https://hl7.org/fhir/R4/dosage-definitions.html#Dosage.route) carries route separately, while [Medication.form](https://hl7.org/fhir/R4/medication-definitions.html#Medication.form) describes product form. For example, `10 mg, 1x per 1 d` remains `10 mg daily`; it cannot acquire `PO` or become a tablet count. A supplied `1 tab PO daily` remains intact, as do unfamiliar directions and PEG instructions. Product wording stays with the medication name. No clinical fact or captured dose is rewritten, and the structured and legacy painters use the same display function.
+
+Narrative note bodies also bypass terminology/sig cleanup: their `Text` cell is drawn verbatim in both ordinary and structured note views. A regression includes ontology-like wording, a quoted sig and line breaks. The record-completeness browser gate checks these cells against their original text, while compact concept names retain the shared display formatting.
+
+M09 visual review: the first pass repeated the full long medication caption inside its empty selector and left input rows uneven. The final painter retains the full source caption, uses a short generic prompt for a long caption, and aligns the input row. Medication lists, note text, review indicators and all controls remain. The same current painter was used for all 29 reconstructed before views and all 35 current/receipt-state views, with 77 captures refreshed at 1440×900.
+
+M09 verification (source `4442757` with the final prompt/alignment polish): default build **357** jobs, kernel, root Comparator and **56** frozen renderer statements pass. All **154** prior theorem headers in Render/PatchWitness remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, native button audit **277** (**266** enabled / **11** explained disabled), native/WASM **34** screens plus **6** actual medication-context entries, **8** review clicks / **38** invalid receipt probes, and **16** shared structured fixtures. App build/lint and **238** tests, **84** agent tests with typecheck/lint, **7** seed tests, **79** browser fidelity checks (three intended viewport skips), **35** current-state and **29** before-state screenshot/event checks pass. All **324** primitive fact projections match, and archived replay has **0** mismatches. All **21** workflow effort groups match the prior green milestone exactly, including the twelve AMB before/after records. Footer placement is performed in the semantic UI while program component order stays stable; the measured directed search paths and KLM estimates are unchanged. These estimates exclude reading and scrolling.
+
+### Current visit note review (M10)
+
+A native reproduction entered a physician HPI through the public event seam, then projected the closing screen. The human-confirmed entry existed in State, but `noteSummary.rows` was empty. The closing panel was therefore an empty chart placeholder rather than a view of the current note.
+
+[Vanderbilt's outpatient Epic exercise](https://www.vumc.org/vclic/intro-epic-and-build-capabilities) describes documenting the visit throughout the encounter and checking completeness before signing, with structured diagnoses/orders kept distinct from the coherent note. [Johns Hopkins' March 15, 2019 tip](https://medicine-matters.blogs.hopkinsmedicine.org/2019/03/epic-tip-of-the-week-5/) confirms note-preview panes as an ordinary configurable part of the notes activity. The public text was reviewed; the VUMC network-only videos were not accessed.
+
+The source `noteSummary` now projects the actual current note captures, preserving each value, paragraph break and confirmation state across all captured slots. A document layout comes from an explicit canonical `layout.document` tag. It shows one read-only paper with clinical section headings in a keyboard-scrollable pane. It does not infer an author, signature, completed review or clinical fact. Historical notes and supplied supporting records remain separate. No required entry, clinical guard, human-only rule or commit is changed.
+
+| Screen | Before | After |
+| --- | --- | --- |
+| W1 Sign Visit | Note review remained empty after HPI entry. | Current entered history, ROS, examination, plan and other note sections are shown verbatim, with pending confirmation explicit. |
+| W5 Sign Visit | The closing note panel did not reflect the pediatric Visit Note editor. | The current pediatric note, including documented anticipatory guidance, appears in the same read-only document layout. |
+
+M10 visual review: the initial empty state now explicitly identifies an unstarted note. After actual native entry, the PCP and NP closing screens show the entered sections and their confirmation state in one document pane, while billing/follow-up/instructions remain separate. The keyboard test reaches the end of the pane and resets it to the top before capture; waiting for the completed scroll prevents an animated intermediate position from clipping the first heading in the evidence image. The body retains every source row and line break. The six new comparison/detail images bring the AMB gallery to **83** captures.
+
+M10 verification (source `6da7318` with the capture-timing correction): default **357**-job build, kernel, root Comparator and **58** frozen renderer statements pass. All **157** previous Render/PatchWitness theorem headers remain unchanged. Certification remains **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, and the native button audit **277** (**266** enabled / **11** explained disabled). Native/WASM matches **34** initial ambulatory views plus the actual-entry/confirmation probes: **9** human note entries, **2** closing note views and **2** pending-confirmation cases. The saved before binary reproduces the empty panel for the same entries. All **16** structured fixtures, **240** app tests, **84** agent tests with typecheck/lint, **7** seed tests, **83** desktop/narrow fidelity checks (three intended viewport skips), **37** current-state and **31** before-state screen checks pass. The two note-detail views additionally verify complete keyboard scrolling. Primitive fact comparison remains **324** bundles / **0** differences; archived replay remains **0** mismatches, and all **21** workflow effort groups remain exactly unchanged. No new D-rule or clinical spec change was introduced.
+
+
+### Live host feedback and explicit canonical census (M11–M12)
+
+The connected host still displayed a technical save toast with `/medplum/fhir/R4/Provenance/...` and a drawer headed “Live Medplum encounter” containing the Encounter resource ID. The normal host now says “Saved” and “Your changes have been saved”, with “Encounter options” retaining the return-to-worklist action. Diagnostic write links, raw errors and JSON inspection require the same explicit `inspect=1` flag as the replay inspector. A typed refresh-required result keeps the orange warning and tells the clinician to reopen the chart after a successful write whose refresh failed; it is not presented as an ordinary complete save. The existing pending state, staged atomic writes, clinical actions and modal alerts remain unchanged.
+
+The encounter-selection panel keeps DOB, encounter date/class/status, the selected request and medication, while removing logical resource IDs. New encounter selection now uses the actual server-created Encounter through the existing selection path. A real browser test with a future-dated chart exposed why assuming that the new encounter sorts first was wrong. Neither an existing future encounter nor the oldest selected encounter can substitute for the explicitly created encounter.
+
+Before/after review at 1440×900: P1 and P4 save feedback changes from resource paths to concise clinical feedback; encounter options changes from a diagnostic resource drawer to the existing worklist return control. Inspection mode still opens the saved Provenance JSON and its close control. No vendor assets are used. The evidence lives in `app/shots/realism/amb/{before,after}-P{1,4}-live-*.png`.
+
+The browser control census now traverses transparent presentation/value-set/reference/row-action wrappers and includes narrative textareas. It supports an explicit canonical-baseline mode that selects the baseline role and compares the entire active program against its current v3 release JSON. This is necessary because ordinary quick-login can load an older deployed fork bearing the same program ID. Report output can be isolated to avoid replacing unrelated audit evidence. The completed deployed-context regression records **2,371** working interactions, **40** explained disabled states, **0** dead controls and **0** errors across all six profiles. It sampled 198 configurations; P3 and RN2 each had eight queued checkpoints outside the 48-configuration bound. This is bounded EHR control coverage, not an exhaustive state search or a fresh run of the separate app-shell/live-agent tests; its full evidence is `amb-live-button-audit-deployed.json`.
+
+
+M11–M12 verification: the explicit five-role canonical census and app-shell audit passed **1,652** working interactions / **109** explained disabled states / **0** dead / **0** errors. The five clinical samples covered **111** configurations with no queued checkpoints remaining inside the observed exploration. This is still bounded coverage, not exhaustive clinical-state enumeration. The separate live-agent request test was not run. Full build identity, controls and scope are recorded in `amb-live-button-audit-baseline.json`.
+
+Host checks pass **240** app tests, **84** agent tests, **6** real local Medplum transaction tests, app build/lint, agent typecheck/lint, **2** matched before cases and **5** current host/search browser checks. The picker regression waits for the loaded option set, identifies the actual newly created ID, and verifies that it is selected even with a future-dated existing encounter. Before/after saves use distinct test-clock review minutes so both represent real new persisted human reviews rather than an idempotent repeat. The **14** host captures include both selection panels, both save toasts, both encounter-option panels and the explicit inspection path; the full gallery now has **97** images. `amb-live-host-validation.json` records dimensions and hashes. Native clinical programs, fields, action paths and M10's core verification are unchanged in this host pass.
+
+
+### Public prefill captions without changing evidence (M13)
+
+Live Rooming self-review exposed `record:weightToday` beneath an imported weight. The canonical now supplies optional `UiScreen.fieldSources` captions from Lean. A record caption identifies its declared chart/refill source and the chart snapshot date; a linked caption reads the source element's public spec label. The date is not invented as the observation's measurement time. The field still contains its exact raw provenance, value/unit, pending-confirmation flag, human-only flag and control ID. The original D6 statement/proof and the legacy HTML renderer's provenance contract remain unchanged. This is an additive display contract, not a new D-rule.
+
+| Screen/context | Before → after | Self-review |
+| --- | --- | --- |
+| PCP/pediatric Rooming when a same-day weight exists | Internal record key → “Source: Chart weight recorded today” with the chart snapshot date. | The two-line caption fits its existing pending field; confirmation remains beside it. Older chart weights remain in the banner and do not prefill today's field. |
+| Orders/refill fields with configured or linked sources | Internal default/linked key → declared source category or the linked element's public label. | The metadata creates no prefill. Missing source data, exact units and original controls remain. |
+| Human-only entries throughout the ambulatory navigator | “Human entry only” → “Clinician entry required”. | A wording change from the same Lean flag; scan, identity, note and cosign events/guards are unchanged. |
+
+The painter uses the supplied caption and links it to the field's accessible description. Its input library initially overwrote a direct description attribute; using the library's documented input-attribute path fixed this, and both the unit test and real browser now check the accessible description. Native/WASM probes confirm that confirmation retains the source caption, while an actual new human weight entry removes the prior source. Neither event is fabricated by the painter. The 30 unique ambulatory semantic trees match M10 exactly after excluding only the new optional caption metadata. All **159** previous Render/PatchWitness theorem headers remain unchanged; the new shown-source caption theorem joins the **59** frozen renderer Comparator checks.
+
+
+M13 verification (source `035a88c` plus the public-caption change): default **357**-job build, default kernel, root Comparator and **59** frozen renderer statements pass. Certification **15/15**, bad programs **18/18**, World 2 **1,284/1,284**, **277** native button checks, **34** native/WASM initial views, all actual-entry/receipt probes, **16** structured fixtures and **324** primitive clinical fact comparisons pass. App build/lint and **241** tests, **84** agent tests with typecheck/lint, **6** live transaction tests, **7** seed tests, **83** fidelity checks (three intended viewport skips), **37** current / **31** before screenshot/event cases and **5** live-host/search browser cases pass. The refreshed full browser census again records **1,652** working / **109** explained disabled / **0** dead / **0** errors across **111** canonical configurations with no queued checkpoints remaining in the observed sample. Its exact scope/build is `amb-live-button-audit-current.json`; the separate live-agent request test is excluded. Archived replay has **0** mismatches; all **21** effort groups and all fixed task payloads remain identical. The **105**-image manifest includes eight new live-host views under `m13-after-*`, leaving all 14 M12 host comparisons and their hashes intact.
+
+
+### Allergy terminology self-review (M14)
+
+The pediatric banner and allergy table still exposed repeated “(organism)” and “(substance)” suffixes, crowding the persistent patient context. [SNOMED International's semantic-tag table](https://docs.snomed.org/snomed-ct-specifications/snomed-ct-editorial-guide/readme/authoring/general-naming-conventions/descriptions/fully-specified-name/index) identifies these as FSN domain annotations. The existing closed-list display fallback now recognizes them at term boundaries, including delimited summaries and a following parenthetical status. It retains unfamiliar qualifiers and recognized words embedded in running prose. This does not retrieve a preferred term or rename a clinical concept: original source strings, codes, row accessibility labels and native tooltips remain.
+
+Public prefill captions are rendered verbatim rather than passing through clinical-term cleanup. A source element label containing a parenthetical is therefore retained in both the visible caption and accessible description. Existing note/document rendering already keeps entered text verbatim; its regression now also includes organism/substance wording. No Lean program, field, flag, FHIR projection, clinical guard or effort path changes in this pass.
+
+The matched terminology baseline is the actual green M13 painter: **52** canonical/detail captures are preserved as `before-terms-*` before the change. Current captures are refreshed from the same semantic fixtures at 1440×900. This allows an honest comparison of the shorter allergy banner, table labels and retained patient context without substituting another source chart.
+
+
+M14 final verification (source `b409cda` plus the display-only pass): app build/lint and **246** tests, **84** agent tests with typecheck/lint, **6** live transaction tests, **37** current screenshot/event cases, **5** live-host/search cases and **83** fidelity checks (three intended viewport skips) pass. The complete clean browser census records **1,652** working interactions / **109** explained disabled states / **0** dead / **0** errors, with the same **111** canonical configurations and no remaining observed checkpoints. App-shell inventory reflects the currently available run data; exact rows/build/scope are in `amb-live-button-audit-current.json`. The quota-interrupted attempt is excluded. Scratch cleanup removed only obsolete reproducible AMB outputs, retaining the original baseline and current fixtures/reports. All **165** gallery files fully decode as 1440×900 PNGs; M12's 14 frozen host hashes remain intact, and current host images use `m14-after-*`.
+
+Lean source, native binary, WASM assets, specs and clinical programs are byte-identical to the green M13 model. Its default build/kernel/Comparator and **59** frozen renderer statements, **15/15** certifications, **18/18** rejected bad programs, **1,284/1,284** World-2 tasks, **277** native controls, **34** native/WASM views, **16** structured fixtures, **324** unchanged primitive fact projections, zero-mismatch archived replay and unchanged **21** effort groups therefore remain the verified model baseline. `make wasm-check` confirms freshness. M14 changes presentation only and adds no design rule.
+
+## Presentation lane: structured clinical widgets
+
+Research and implementation: 2026-11-01, `lane/present`. The stable integration API is [presentation-contract.md](presentation-contract.md). These are original drawings of public interaction and information patterns. Vendor screenshots were inspected in temporary files outside the repository; no vendor image, icon, logo, or copied screen composition is shipped.
+
+### Sources checked for this pass
+
+- **Inpatient RN / MAR:** [CST Cerner MAR overview](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Medication_Administration_Record_(MAR)_Overview.htm) describes medication categories, order details at left and dated administration cells at right. Its scheduled, future and overdue task colors are blue, gray and red. Actual administration and pending task are different records. I inspected the category-navigation and task-cell screenshots. We adopt the medication-by-hour arrangement, explicit words beside color, and actual dose/time. Our order data never imply that a dose was given. [UHN MAR overview](https://www.uhnmodules.ca/For_Staff/computer_education/Robohelp/MAR_-_MAR_Overview.htm) independently confirms medication rows, time columns, last administration and distinct held/changed/scheduled indicators. Colors vary by installation; our palette remains the project's accessible palette.
+- **RN / shift overview:** [University of Iowa Brain training](https://epicsupport.sites.uiowa.edu/epic-resources/brain) describes signed-in patients, required documentation and tasks together. We keep patient, due time, task, owner and status explicit in the worklist schema; a display row is not evidence that documentation or medication administration was completed.
+- **RN / flowsheets:** [CST I&O documentation](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/iView/Document_Intake_and_Output_(I_and_O).htm) uses categories down the left and hourly time columns, with totals identified separately. We adopt measure × time layout and visible units. We do not invent totals, device values or editable spreadsheet cells. New charting remains an ordinary Lean field/action beside the recorded observations.
+- **ED physician:** [Epic Track Board training, J. R. Gibson](https://sw-anesthesia.com/wp-content/uploads/2018/04/How-to-review-ED-Track-Board.pdf) identifies a location-specific census and separate consult/all-patient views. [CST ED LaunchPoint overview](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm) supports the dense room/patient/assignment/complaint/status pattern. We use a grid rather than patient cards. Missing acuity, assignments and pending results stay missing unless explicitly supplied; encounter priority is not automatically converted to ESI.
+- **PCP / pediatric NP / schedule and inbox:** [CST scheduling foundational workbook](https://cstcernerhelp.healthcarebc.ca/Workbooks_Manuals/Workbooks/W-N29_Scheduling%20Foundational.pdf) shows patient, appointment type/location, scheduled time and status together. [UVM In Basket guide](https://www.uvmhealth.org/document/5878) describes a left folder list with unread counts, a message list, preview and explicit completion actions. We adopt counted folders and dense received/patient/subject/sender/status rows. Our read-only presentations do not manufacture sort, filter, reply or Done buttons.
+- **Results:** [CST Spine Surgical Clinic provider workbook](https://cstcernerhelp.healthcarebc.ca/Workbooks_Manuals/Workflow_Review/Clinic/VGH/VGH%20Spine%20Surgical%20Clinic%20Provider%20Workbook.pdf) distinguishes low, high, abnormal and critical markers alongside color, with date/result-type grouping. We preserve explicit H/L/HH/LL/A flags, units, ranges and timestamps. Low uses blue, high amber and critical red. Lean reads source interpretations and performs the existing numeric-range policy; the painter never compares a result against its range.
+- **Pediatrics / growth:** [CDC growth-chart guidance](https://www.cdc.gov/growthcharts/index.htm) defines age-related reference curves. The fixture uses actual published female CDC 2000 2–20 year reference points from [weight-for-age CSV](https://www.cdc.gov/growthcharts/data/zscore/wtage.csv) and [stature-for-age CSV](https://www.cdc.gov/growthcharts/data/zscore/statage.csv), sampled at six-month intervals over the example child's chart. Reference input and source URLs are committed in `lean/Ehr/Render/TestData/growth-reference.json`. These are reference curves, not computed patient percentiles. Weight and stature occupy separate plots with separate units. Absent reference data is stated explicitly.
+- **Surgeon / OR and notes:** [CST perioperative tracking](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Perioperative_Tracking/Navigate_to_Perioperative_Tracking.htm) describes one patient per row, usually arranged by room, with a separate chart-opening action. The [CST physician workbook, p.25](https://cstcernerhelp.healthcarebc.ca/Workbooks_Manuals/Workbooks/W-N153_Physician_Gynecologic_Oncologist_Inpatient_Systemic%20Therapy.pdf) identifies a location-specific surgical slate whose statuses follow nursing documentation. These supplement the surgical research above on the room/time/procedure/patient/status columns and templated narrative. We apply the same dense tabular vocabulary to the OR schedule and use full-width note cards for narrative, with date, author, encounter and document status. Required signing controls remain the surgical lane's semantic components.
+- **FHIR boundary:** [FHIR R4 Appointment](https://hl7.org/fhir/R4/appointment-definitions.html) separates a planned booking from the encounter; [FHIR R4 MedicationAdministration](https://hl7.org/fhir/R4/medicationadministration-definitions.html) records an actual administration, status/reason, dose, route, site and performer. [open.epic's FHIR interface guide](https://open.epic.com/Interface/FHIR) likewise directs upcoming appointments to Appointment rather than Encounter. The implementation follows these distinctions. It does not expand frequency into assumed dose times or expose unresolved resource references as patient/clinician names.
+
+### Screen-by-screen visual review
+
+All examples are generated by `Render/PresentationFixtures.lean` through the real `renderUi` function from fictional FHIR records and patient-bound payloads. The before view removes only the presentation wrapper, retaining the same rows; it is a controlled comparison of the old generic painter and the new drawing, not a claim that the old canonical already contained these new queues. Each pair is captured at **1440×900** in `app/shots/realism/present/<kind>{,-before}.png`, with full-page counterparts. The reviewed shell is the current shared painter; its styling is owned by SHELL.
+
+| Screen / kind | Before | After and self-review |
+| --- | --- | --- |
+| Day schedule / `schedule` | Generic, uniformly weighted table. | Time and patient anchor each row; appointment type, complaint, location and explicit arrival/booking chips read together. No decorative workflow buttons. Date repetition is deliberate because the payload may span days. |
+| ED board / `trackBoard` | No distinction between patient/room/status columns. | Dense room/patient/age/complaint grid with supplied ESI, RN/MD, pending lab/imaging and disposition text. The fixture supplies these facts explicitly. This remains a read-only board; encounter-opening controls must be real program buttons. |
+| OR schedule / `orSchedule` | Generic column sizing obscured procedure names. | Wider procedure column; room/start/patient/surgeon/status remain in one row. Status tints follow supplied text. |
+| Worklist / `worklist` | Unstructured task records. | Due time, task, owner and explicit due/overdue status align in a compact table. No invented urgency threshold or completion control. |
+| MAR / `timeGrid` | Exact administration minutes created separate narrow columns; medication metadata spread across five columns. | Iteration 1 was still too tall and broke words. Iteration 2 groups medication, dose, route, frequency and order status at left, uses hourly columns and keeps exact administration times/details in the cells. Empty intervening hours are axis cells, not invented doses. Green/amber/blue cells retain Given/Held/Scheduled text. Full details remain visible rather than disappearing into hover content. |
+| Flowsheet / `flowsheet` | A chronological list made comparison difficult. | Measurements and units form rows, recorded times form columns, and repeated same-time observations survive. It reads like an assessment/results grid. Values from different units never share a measure row. |
+| In Basket folders / `folderList` | Generic table with repeated column labels. | Left-rail style counted rows, visible folder and unread counts, no fake selectable controls. |
+| In Basket messages / `messages` | Generic list without an information hierarchy. | Received/patient/subject/from/priority/status columns; unread and review states remain explicit. Use adjacent semantic navigation/actions for selection and completion. |
+| Results / `results` | A boolean abnormal value and generic table. | Human-facing H/L flags beside result/unit/range/time; all source trend records retained. No numeric clinical logic in React. |
+| Result trends / `trend` | One sparkline could join unlike tests or units. | One labeled plot per test/unit, followed by its complete source table. Nonnumeric values remain in the table. Separate plotting avoids visually joining potassium, hemoglobin and creatinine. |
+| Growth / `growth` | Generic mixed weight/height sparkline. | Separate age-axis kg/cm plots, explicit reference-percentile curves and source labels, plus complete measured/reference data. The initial plot labels were too small; the second pass enlarged them and removed excess SVG whitespace. Patient percentiles are not fabricated. |
+| Notes / `notes` | Narrative squeezed into a wide table cell. | Full-width dated note cards preserve the complete text, author, encounter, document status and source metadata. No hidden overflow or collapse. |
+| Medication review / `table` | Generic table styling. | Consistent compact headers, alternating rows, readable instructions and status words. Extra columns and duplicate keys are preserved. |
+
+### Baseline efficiency
+
+Measured with `LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 pnpm complexity --release-root releases`; the command also invokes native `ehr min-clicks` for every case. These are certified minima within the reported search spaces; KLM is the estimate for the minimum-click replay, not a global KLM minimum. The initial unbounded-stack attempt failed to create a thread; the bounded-stack run completed.
+
+| Workflow | v1/v2 clicks | v1/v2 KLM seconds | v3 clicks | v3 KLM seconds |
+| --- | ---: | ---: | ---: | ---: |
+| W1 | 39 | 143.2 | 39 | 143.2 |
+| W2 | 7 | 21.45 | 7 | 21.45 |
+| W3 | 57 | 198.45 | 57 | 198.45 |
+| W4 | 25 | 129.95 | 25 | 129.95 |
+| W5 | 48 | 175.45 | 49 | 179.8 |
+| W6 | 52 | 178.3 | 53 | 182.65 |
+| W7 | 12 | 27.5 | 12 | 27.5 |
+
+Presentation adds no navigation or entry operators. The after run used the same command and release inputs. All seven workflow metrics (including clicks, keystrokes, KLM, screens, required fields and popups) are unchanged in all three releases. Native `ehr min-clicks` was rerun as part of both measurements. This presentation layer adds no navigation or entry operators.
+
+### Validation of the presentation milestone
+
+- Lean default build, kernel replay (`lake check`), the core Comparator and the render Comparator pass. All 43 pre-existing semantic UI theorem signatures are unchanged. The render audit also checks the new FHIR completeness theorems. Only `propext`, `Quot.sound` and `Classical.choice` are permitted. No new D-rule, spec rule, simulator policy or clinical guard was introduced.
+- Certification: **15/15** persona projections across v1/v2/v3; **17/17** core bad programs rejected with their expected properties.
+- World 2: **1,284/1,284** tasks complete across all 50 schedules, using the public native simulator. Reproduce with `python3 scripts/presentations/check-world.py`.
+- `make wasm` and `make wasm-check` pass. All **13** presentation fixtures agree exactly between native and WASM, as do facts from all **324** Synthea/Synthetic Hospital bundles and all **652** current canonical HTML/semantic variants. Actual RN wristband acceptance/rejection is exercised.
+- App build/lint and **166** app tests pass; **41** agent tests pass. The browser fidelity gate passes **45** checks for the 13 widget fixtures plus the five existing semantic screens at desktop/narrow widths; three duplicate wide-viewport probes are intentionally skipped in the narrow project. The gate checks exact role/name/disabled/ancestry, every supplied value, legibility, coverage, overflow, keyboard/scanner/modal behavior and status contrast.
+- Archived `run1-P3`: **424** tasks / **14,658** events plus **3** baselines / **137** events, **0 mismatches**. Existing unwrapped info nodes keep their drawing. The new wrapper adds layouts without changing interpreter event semantics.
+- Test-tool repairs: the old sample exporter tried to parse a native-unit medication dose without the state's selected unit; it now uses the actual unit and still enters through the interpreter. The differential test assumed navigator labels equaled screen titles; it now verifies exact screen IDs/order and nonempty labels, while still comparing complete native/WASM output. The actual semantic theorem statements and clinical rules are unchanged.
+
+### First chart-polish increment and main integration
+
+Merged main's same-slot dose/drug dependency rule at `66e6f49`; the generated merge conflicts were resolved by rebuilding WASM and rerunning certification. The combined branch certifies **15/15** personas and rejects **18/18** bad programs, including the new dependency regression. World 2 remains **1,284/1,284**, and the archived trajectory remains at **0 mismatches**. Kernel replay and both Comparator audits pass on the merged source.
+
+Growth's first combined table mixed patient measurements with reference-point metadata and produced many empty cells. The revised drawing puts recorded date/age/weight/height in a clean clinical table, with the complete published reference data in a separate labeled table below. Both plots and the reference bands remain visible. Every original value remains in the same info panel; there is no collapse or truncation. New 1440×900 screenshots replace `growth.png` and `growth-full.png`.
+
+Trend axes now label actual recorded points instead of interpolated dates. A single observation is centered and gets one label, and undated observations use an explicitly labeled sequence axis. Axis labels retain the supplied wall date/time; they are not converted through UTC. This fixes repeated overlapping labels and a possible following-day label on a late-evening observation. Regression tests cover both cases. Large series use a reduction for bounds, avoiding a spread-argument limit without imposing a row limit.
+
+App build/lint and **168** tests pass; **41** agent tests pass. The 13-widget desktop/narrow fidelity run passes **35** checks (plus three intentionally skipped duplicate probes), and all **26** before/after screenshot checks pass. Screenshot review now also checks the actual rendered structured status tints for at least 4.5:1 text contrast. The semantic wire, clinical rules and click/KLM measurements are unchanged by this drawing-only increment.
+
+### Semantic composition increment
+
+The UVM guide explicitly puts folders in a left pane and the message list beside them, with a separate message-detail report and actions. The new `inBasket` example applies that folder/list pattern through a normal source group tagged `layout.columns`; Lean now emits the existing `UiNode.columns`. An ordinary group may also select a presentation around its normal children. There is no React-owned screen composition and no new D-rule. The per-item and nesting proofs still retain their original statements, including malformed-program cases.
+
+The composed fixture supplies 14 Results messages, six unread, matching the explicit Results folder counts. Its before/after pair retains identical records and semantic columns; the wrapper changes their drawing. Folder entries are read-only until the workflow program supplies a real action. The example is a folder/list composition, not a claim to implement all message preview and completion behavior in the widget. MAR fixture events now agree with the stated every-six-hour/every-eight-hour/daily frequencies within the displayed day shift, and the RN worklist uses the same adult patient as the chart banner.
+
+Visual review at 1440×900 found that a broader hourly MAR axis again broke long documentation across narrow cells. The new pass keeps supplied status/time/dose in the hourly grid and puts each complete original administration record in a labeled list directly below. Nothing is hidden in a tooltip or collapsed panel. The medication details and hours become scannable while route, site, performer and reason remain readable. The independent ARIA projection includes this additional documentation list. The old generic `timeGrid-before` fails the overflow gate at both widths; this is retained as comparison evidence, while the structured view must pass the unchanged gate.
+
+This checkpoint passes the default Lean build, kernel replay and renderer Comparator with the original theorem statements. Certification is **15/15**, bad programs **18/18** rejected, and World 2 **1,284/1,284** complete. Native/WASM matches all **14** examples exactly; `make wasm-check`, app build/lint and **168** app tests pass. All **28** before/after screenshot checks pass, and the current 14 examples pass **37** desktop/narrow fidelity checks, with three intentionally skipped duplicate probes. In Basket now uses the intended narrow folder pane; the MAR's four medication rows fit the desktop viewport. Click paths and KLM are unchanged because the new tags select layout only.
+
+### Source row actions and main's personalized presentations
+
+Merged main's versioned presentation support at `7a478ac`. Its declarative wrappers and tests coexist with the structured clinical renderer; neither replaces the other's semantic controls. The combined app passed **183** tests and the agent **73**, and archived `run1-P3` remained at **0 mismatches** before this increment.
+
+The CST perioperative-tracking guide separates a row's patient information from the chart-opening arrow. The new additive row-action contract follows that distinction: an existing source button explicitly identifies its info component and source-row index, and Lean emits a transparent `rowAction` wrapper. React places the original button in that row. The worklist example opens MAR, assessment and vitals screens, each with a real return control. No patient switch or new event is inferred from the displayed patient name. Missing targets, invalid/out-of-range rows and unsupported chart/note views retain the action inline. Multiple controls retain their source order. Unit tests cover exact-once dispatch through nested presentations and all three fallback cases; the native/WASM comparison checks all three actual transitions. The browser audit independently clicks all three row buttons and their return buttons at both widths and checks each resulting semantic screen.
+
+All **89** pre-existing named render theorem headers are byte-identical to the initial lane base. The Comparator audit additionally includes the column-retention and row-wrapper-retention helpers. No specification, clinical guard, D-rule or simulator policy is changed. The third efficiency run, including native `ehr min-clicks`, matches all **21** release/workflow metric records exactly; the frozen historical benchmark artifact was restored after collecting the new measurement in `/tmp`.
+
+This increment passes the default build, `lake check`, root Comparator and all **45** renderer Comparator statements. Certification remains **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, and the rebuilt WASM passes its manifest check. The native/WASM corpus matches all **15** presentations and row transitions, **324** fact bundles and **652** canonical render variants, including RN scanning. The shared default `/tmp/vgi-render-api` contained stale P1 golden files; the full comparison was rerun against the lane-local corpus with the exact current app goldens and passed without changing an assertion.
+
+App build/lint and **186** app tests pass; all **73** agent tests pass. The 15 new examples plus five original screens pass **49** desktop/narrow fidelity checks, with three intentionally skipped duplicate probes. All **30** before/after screenshot checks pass at 1440×900, and both browser row-action audits pass. The screenshot shows the three original actions once each in their intended task rows, with the original labels and due/overdue/scheduled text. Archived `run1-P3` still verifies **424** tasks / **14,658** events plus **3** baselines / **137** events with **0 mismatches**.
+
+### MAR date headers and row-tag transport
+
+The next MAR review replaces the repeated full date in every hour header with one date band above its supplied hours, following the public MAR references. It preserves source order across multiple dates and leaves undated columns explicitly labeled. A regression example covers two dates and an undated administration. The new 1440×900 `timeGrid.png` shows all four medication rows and the beginning of the complete administration documentation in the first viewport.
+
+Lean now declines row tags beyond JavaScript's exact integer range and emits the original button instead. This is transport handling, not a clinical or design rule. Native/WASM tests exercise both the first unsafe integer and a 512-digit index, retaining `Open MAR` as an ordinary working control. All previous semantic theorem statements remain unchanged.
+
+Default build, kernel replay, both Comparators, certification **15/15**, bad-program rejection **18/18**, World 2 **1,284/1,284**, all **324** native/WASM fact bundles and **652** canonical variants, and archived replay **0 mismatches** pass again. App build/lint and **187** tests, **73** agent tests, both browser action audits, all **30** screenshot checks and **49** desktop/narrow fidelity checks pass. There are three intentionally skipped duplicate narrow probes. The painter still uses the shared clinical CSS variables, including semantic status inks/tints; there are no new controls or click-path changes.
+
+### Per-result units and complete report history
+
+Source review found that the legacy lab trend kept only a date and numeric value, then labeled every historical point with the latest result's unit. The aggregate also omitted qualitative historical values and repeated the latest numeric result in the table. The new typed `LabResultRow` projection retains one row per valid observation plus its components, with each result's own value, unit, interval, interpretation, status and time. Legacy aggregates remain available, and the clinical `Facts` objects were compared before/after across all **324** bundles: they are unchanged.
+
+This follows [HL7 R4 Observation](https://hl7.org/fhir/R4/observation-definitions.html), which ties values, interpretations and reference intervals to each observation and gives components their own values/ranges within report context. [FHIR quantity and sampled-data definitions](https://hl7.org/fhir/R4/datatypes-definitions.html) support preserving comparison operators and supplied scale/timing rather than presenting a censored/complex result as an exact scalar. Source interpretations stay authoritative; display-only inference declines incompatible units, censored values and ambiguous/population-specific or non-normal intervals. No clinical guard or Facts calculation is changed.
+
+The fictional visual record now includes hemoglobin in g/L in an older report and g/dL in recent reports, a `No growth` urine culture and a `<5` urine-protein result. The codes were checked against the primary [LOINC culture entry](https://loinc.org/630-4) and [LOINC urine-protein entry](https://loinc.org/2888-6). The trend must show separate hemoglobin plots; neither qualitative nor censored values may become numeric points. Results use wider test names and compact flag/unit columns, retaining every source field and any ordinary row actions.
+
+The RN flowsheet fixture is now scoped to vitals and I&O, includes blood pressure and kg weight, and uses human temperature/score units. Ordinary final charting does not repeat the technical word `final` in every value cell; corrected/nonfinal status stays visible. Lab report status remains explicit. Nurse widgets use an RN input, growth uses an NP input and surgical examples use a surgeon input. The ED banner now selects the active patient's own encounter while the supplied department board retains all its rows. All fixtures are still generated through Lean.
+
+The result and flowsheet before/after screenshots at 1440×900 now show the complete mixed-unit history and a clean nine-row nursing grid. Review also identified the next polish tasks: department boards need more workspace width, and the single-result trend axis needs distinct numeric ticks and its full recorded date. These are recorded here rather than treating a passing overflow check as sufficient visual quality.
+
+Validation passes the default build, kernel replay, root Comparator and all **48** renderer Comparator statements. All **89** original named render theorem headers remain byte-identical. Certification is **15/15**, bad programs **18/18** rejected and World 2 **1,284/1,284** complete. Native/WASM matches all **15** layouts, their legacy-Display defaults and actual row transitions, **324** fact bundles and **652** canonical variants. All **21** release/workflow click and KLM records remain unchanged. App build/lint and **187** tests, **73** agent tests, both browser action audits, all **30** screenshot checks and **49** desktop/narrow fidelity checks pass; three duplicate narrow probes are intentionally skipped. `make wasm-check` confirms the rebuilt assets.
+
+The archived `run1-P3` verification also completes with **0 mismatches** across **424** tasks / **14,658** events and **3** baselines / **137** events.
+
+### Overview width and chart axes
+
+The [CST ED LaunchPoint overview](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm) describes a unit-wide landing list and explicitly recommends maximizing its viewing area. Its board separates patient demographics, chief complaint, assignment, order progress and disposition/status. The prior widget had those columns but squeezed them beside automatic single-patient summaries, breaking words such as `Complete` across lines. The new optional Lean `layout.overview` hint leaves that automatic summary space to the department list. Explicit source panels/controls and required reviews still appear; a named commit-review example and the original proofs cover that distinction. The CST reference uses CTAS, while this fictional payload explicitly supplies ESI; the renderer preserves the supplied acuity system.
+
+The same opt-in applies to the Schedule, OR Schedule and message-list examples. The composed In Basket retains its semantic folder pane and message list, following the UVM reference, but gains the chart-summary width. Chart-oriented MAR, flowsheet, growth, Results, Notes and patient worklist examples keep their patient summaries. Previous drawings are retained locally as `*-pre-overview.png` alongside the new 1440×900 screenshots.
+
+The trend screenshot exposed duplicate rounded numeric ticks around a single `120 g/L` observation and a clock-only label that concealed its older date. The drawing now uses distinct readable numeric intervals and retains the complete date/time for a single result. Growth age labels select supplied measurement ages instead of invented fractional ages between them. These are geometry/label changes only; neither source values nor clinical reference intervals change, and every source/reference row stays in its table.
+
+| Screen | Previous drawing | Reviewed drawing at 1440×900 |
+| --- | --- | --- |
+| Schedule | Eight columns shared the workspace with automatic chart summaries. | The six appointments use the full overview width; visit type, complaint and location remain readable together. |
+| ED board | Thirteen columns broke chief complaints and status words. | All thirteen columns are readable in one compact grid; room, acuity, assignments and order status remain distinct. |
+| OR schedule | Procedure rows had unnecessary chart-summary competition. | The six supplied columns have full overview width, retaining complete procedure names and status words. |
+| Message list | Single-patient summaries consumed queue width. | All six message columns retain their supplied detail in the overview workspace. |
+| Composed In Basket | Status wrapping pushed the fourteen-message list below the first viewport. | The folder pane and all fourteen supplied messages fit the viewport; counts and unread values remain supplied data. |
+| Result trends | A single point had repeated rounded Y labels and only a clock on X. | Numeric ticks are distinct, and the older result displays its full recorded date/time beside separate unit-specific series. |
+| Growth | Interpolated fractional-month labels were awkward to scan. | Six recorded ages label the curves; weight/height plots, reference bands and all measurement/reference tables remain present. |
+
+After merging main's overnight-run fixes, the default build, `lake check`, root Comparator and **48** renderer statements pass. All **89** original theorem headers remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, and archived `run1-P3` has **0 mismatches**. Rebuilt native/WASM agrees across **15** examples, **324** fact bundles and **652** canonical variants. App build/lint and **188** tests, **82** agent tests, both row-action browser audits, all **30** screenshot checks and **49** desktop/narrow fidelity checks pass, with the same three intentionally skipped duplicate probes. All **27** benchmark task metric records and full native minimum-click paths are unchanged across **21** release/workflow groups. The historical benchmark artifact is retained unchanged.
+
+### Whole-chart flowsheets and note detail
+
+The [FHIR Observation definition](https://hl7.org/fhir/R4/observation-definitions.html) explicitly identifies category as a way to select displayed observation collections and requires component code/value pairs to retain their meaning. The [R4 blood-pressure profile](https://hl7.org/fhir/R4/bp.html) defines its systolic and diastolic slices as unordered. The old generic reader joined any component array with slashes; it could reverse a BP pair or turn an assessment into an unlabeled sequence. The new display projection uses coded BP meanings, retains every component with its own label/unit, and preserves boolean, qualitative, censored and absent-reason assessment values. Ambiguous, incomplete or mismatched-unit pairs stay as component detail. No clinical Facts calculation changes.
+
+The nursing fixture now supplies the whole adult chart, including laboratory observations, rather than filtering those observations before rendering. Source categories keep laboratory-only values in Results and nursing/vital values in the default flowsheet. All valid observations and components still survive into Display, with new component/cardinality theorems; legacy JSON rows with no category keep their previous inclusion. Explicit payloads continue to show their full supplied rows.
+
+The [CST documentation guide](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Notes/Dynamic_Documentation_%28Providers%29.htm) emphasizes note title, date, type, authorship and clinical sections for scanning and reading. Our note card instead appended empty import metadata and prefixed a single untitled body with an artificial attachment heading. The revised semantic rows omit only absent optional metadata; actual original-date/shift values and all titled/multiple attachment boundaries remain. The complete note body is retained.
+
+Time-series geometry now sorts supplied coordinates before drawing a line. This prevents unordered source rows from drawing an artificial backtracking path. The source table order and every value remain unchanged; a regression example checks both behaviors.
+
+| Screen | Previous drawing | Reviewed drawing at 1440×900 |
+| --- | --- | --- |
+| Flowsheet | A prefiltered nine-row fixture masked how a whole chart would mix labs into nursing data and omit assessment-component detail. | Whole-chart input produces eleven nursing rows, including the explicit systolic/diastolic components, across the same three times; all fit the viewport. Laboratory records remain in Display and Results. |
+| Notes | A generated Attachment 1 line and empty Source date/Unknown Shift days footer surrounded the clinical text. | The complete SOAP body, author, date, encounter, title and status remain; absent optional import fields add no clutter. |
+| Trend and growth | The supplied fixtures were already ordered, so their traces looked correct, but arbitrary row order could backtrack. | The current traces and all source/reference tables remain visually consistent. An unordered three-date regression now verifies chronological geometry and unchanged source-table order. |
+
+This increment passes the default build, kernel replay, root Comparator and all **50** renderer statements, including component completeness and observation cardinality. The original **89** theorem headers remain unchanged, and all **324** clinical Facts objects match their saved pre-change values exactly. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, and archived replay has **0 mismatches**. Rebuilt native/WASM matches **15** presentations, legacy category/Display decoding, **324** fact bundles and **652** canonical variants. App build/lint and **189** tests, **82** agent tests, both row-action audits, all **30** screenshot checks and **49** desktop/narrow fidelity checks pass, with three intentionally skipped duplicate probes. All **27** benchmark task metrics and full native minimum-click paths remain unchanged across **21** release/workflow groups.
+
+### Available-width review
+
+The next review tested the same semantic widgets at 1024 and 1280px, beyond the required 1440×900 screenshots. A word-level browser probe found that `Scheduled` in MAR and `Complete`, `Pending` and `Ordered` on the ED board could split between lines even though the overflow gate passed. The pre-fix screenshots remain as `*-1024-before-container.png` and `trackBoard-1280-before-columns.png`.
+
+CSS container queries now use the actual widget width. Constrained grids become complete labeled records; medium-width ED records use two columns. The 1280px ED view keeps its grid with slightly wider lab/imaging/disposition columns. The 1440px board and MAR retain their dense grid layout. All source fields and row controls remain present, and the exact ARIA model is unchanged. All **90** before/after screenshot checks pass across 1024, 1280 and 1440px, including the new unsplit-status-word assertion.
+
+Geometry review also found that large finite axis bounds could overflow, and that an unrepresentable numeric string could make the independent ARIA model expect a plot the painter could not draw. Both cases now preserve their full original table text; finite source values get finite coordinates, and unrepresentable values do not acquire a fabricated point. The ARIA model now matches that existing finite-number drawing contract. The source-value and control assertions are retained.
+
+The first broad persona matrix exported **2,877** native group/tab/alert variants across all **15** certified persona/release combinations, using the first appropriate World 2 task and patient for each role. It contained **1,099** byte-distinct semantic trees. The unchanged browser gate passed **2,207** checks at desktop/narrow widths, then validated coverage receipts for every original file under the same exact-tree/build context. The second call also reran its standard/known-bad probes (**19** checks). Each call intentionally skipped the three duplicate narrow probes. A visible-text scan of banners, labels, data rows and field values found no UUID, repository-path, FHIR transport-reference or W1–W7 label patterns in these variants. This is a textual diagnostic in addition to the exact browser gate, not a general proof about arbitrary note text.
+
+### Growth measurement fidelity
+
+A native reproduction found that gram weights vanished from growth history, and an out-of-order FHIR bundle could choose an older same-day weight while clinical Facts correctly selected the later one. The mixed-unit fixture also demonstrated a meter height labeled as centimeters. The projection now includes grams on its kg axis, uses the ambulatory lane's identical explicit-unit height reader, and orders readings by timestamp before selecting each day's point. Missing/invalid birth or measurement dates keep the row and display `Not recorded` for age; they do not become a plotted newborn age. Valid newborn age zero remains valid. The existing display precision is tenths of kg/cm. No clinical Facts or dosing calculation changes.
+
+`growthUnits-before.png` is a true pre-fix semantic snapshot from `10517bcc2233bf201fe6aa2777481c1a347b2488` (native binary SHA-256 `84dcdd677dc15bf93a2b4382be55427e52d27bf5819f1e2c8437f309d4981781`), rather than an unstyled current projection. It shows a missing 22.2 kg point, 1.232 m mislabeled as 1.2 cm, and the older 29.9 kg reading despite a newer 30.4 kg reading. The corrected screenshot shows 22.2 kg, 123.2 cm and 30.4 kg. The original observations/units remain available in the complete source display. The archived pre-fix JSON is kept only as comparison evidence.
+
+The 1280px ED review also found a split Provider header after status columns had been widened. The final thirteen explicit widths total 100%; provider/RN names, LOS, headers and status words now fit. The screenshot probe now checks column-header words as well as status words. All **96** before/after screenshot checks pass at 1024, 1280 and 1440px for the **16** examples. Every original data field and control remains present.
+
+The growth and constrained-width checkpoint passes the default build, `lake check`, root Comparator and all **50** renderer statements. The original **89** theorem headers and all **324** clinical Facts remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, and archived replay has **0 mismatches**. Native/WASM agrees across **16** examples, **324** fact bundles and **652** canonical variants. App build/lint and **191** tests, **82** agent tests, both row-action audits, **96** screenshot checks and **51** desktop/narrow fidelity checks pass, with three intentionally skipped duplicate probes. All **27** benchmark task metrics and full native minimum-click paths remain unchanged across **21** release/workflow groups. The broader persona matrix above was run before this final growth increment and will be repeated after shared-shell integration.
+### Shared-shell integration and committed review pairs
+
+Merged main's shared role shell, semantic navigator/search and recorded banner weight at `daee7a1`. The presentation painter retains row-action placement and complete structured records alongside those controls. The default build, kernel replay, core Comparator and all **50** renderer statements pass; all **89** original theorem headers remain unchanged. Certification is **15/15**, bad programs **18/18** rejected, World 2 **1,284/1,284**, archived replay **0 mismatches**, and native/WASM still agrees across **16** examples, **324** fact bundles and **652** variants. All **27** task metrics/native paths and **21** workflow metric groups remain unchanged.
+
+The merged app passes build/lint and **204** unit tests; agent lint and **84** tests pass. The full app browser suite passes **67** checks; its **79** skips are opt-in screenshot captures and duplicate narrow probes. One narrow replay check needed to scroll its actual heading inside the iframe, because the complete navigator made the heading lower than the iframe's first viewport. The viewport assertion remains intact. The visual capture now selects note records by their semantic info ID instead of the shell lane's old CSS class. No clinical state or gate assertion changes.
+
+All **96** widget screenshot checks pass at the three widths, and the five-role shared-shell capture passes with exact live accessibility-tree checks. Every one of the sixteen new 1440×900 views was inspected again in the shared palette. The dense board, schedule, OR and In Basket keep their columns; Results retains flags and per-record units; flowsheets retain all eleven nursing rows; note cards retain their complete narrative; trends and growth retain their distinct plots and source tables. The taller shared banner initially clipped the fourth MAR row at 900px. Putting its existing Medication label and name on one line, without dropping either, now fits all four rows and the start of administration documentation. The thirty-two before/after viewport images are committed, with dimensions, source-tree hashes and image hashes in `docs/audits/presentation-screenshots.json`; wider/full-page review images remain local.
+
+
 ## Shared shell, visual system and UI browser
 
 Lane: `lane/app`, 1 Nov 2026. The shared painter remains a projection of Lean's `UiScreen`. The new indigo application bar, blue activity strips, tinted patient banner, role colors and green signing actions are original VGI choices; no source assets are included.

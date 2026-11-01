@@ -44,6 +44,8 @@ assert.deepEqual(JSON.parse(ehr.init(JSON.stringify(common))), native('init', co
 function walk(nodes) {
   return nodes.flatMap((node) => {
     if (node.section) return [node, ...walk(node.section.children)];
+    if (node.presentation) return [node, ...walk(node.presentation.children)];
+    if (node.rowAction) return [node, ...walk(node.rowAction.children)];
     if (node.columns) return [node, ...walk(node.columns.children)];
     if (node.tabs) return [node, ...walk(node.tabs.body)];
     return [node];
@@ -61,7 +63,9 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const screen = program.screens.find((sc) => sc.id === view.screen);
-  assert.deepEqual(ui.workspace[0].stepper.steps, program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => [sc.id, sc.title]));
+  // navigatorNames supplies clinical labels; screen IDs and order remain authoritative.
+  assert.deepEqual(ui.workspace[0].stepper.steps.map(([id]) => id), program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => sc.id));
+  assert.ok(ui.workspace[0].stepper.steps.every(([, label]) => label.length > 0));
   const nodes = walk([...ui.workspace, ...ui.side]);
   const sourceKind = (kind) => {
     if (kind === 'banner') return 'info';

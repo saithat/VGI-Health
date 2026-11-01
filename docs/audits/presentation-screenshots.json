@@ -1,0 +1,261 @@
+{
+  "scope": "Sixteen native semantic examples with matched before/after viewport captures. The growthUnits before tree is the archived pre-fix native projection; other before trees remove only layout wrappers.",
+  "images": [
+    {
+      "file": "app/shots/realism/present/schedule.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "6a564fa5e18bf28e2f8979ae8995ef727a7ec738633ccadc34f13f671fbb4529",
+      "semanticTree": "app/src/fixtures/presentations/schedule.json",
+      "semanticSha256": "77ee8759a7bdd83ac746afe9f283eb89276df3c4023c9ce7a35b8085f4a99a30"
+    },
+    {
+      "file": "app/shots/realism/present/schedule-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1e5f7b20613b6fe9ea27d6078a3218bdb63b5e42f3b5d7510fa7650f422d0fa9",
+      "semanticTree": "app/src/fixtures/presentations/schedule-before.json",
+      "semanticSha256": "46e64eb922d0fceab97c8973b65034e942b11ce88a9ac83b5c98be9b7e6d34f4"
+    },
+    {
+      "file": "app/shots/realism/present/trackBoard.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fcc9fb28b7e6b6b0e6fa0b1f06cc97ec1810a5d342478db52ad9a3334c0595b3",
+      "semanticTree": "app/src/fixtures/presentations/trackBoard.json",
+      "semanticSha256": "fb4670aa9df74847c5c42e42cc8796d7e10dbd3af56cadb6ccde5a1e367275e4"
+    },
+    {
+      "file": "app/shots/realism/present/trackBoard-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "70e0cf056e5a4054eba9e855e58b7d098fd1ed2e0f82e8a6edd629eed5b1b3b1",
+      "semanticTree": "app/src/fixtures/presentations/trackBoard-before.json",
+      "semanticSha256": "1caed967cb27591336153fbfcb2007a7140e79332f42a028394312f0fb493ad9"
+    },
+    {
+      "file": "app/shots/realism/present/orSchedule.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9418a52fdab76e4368ea1ff2cccfaf32c5b28c7a4b82c22371be40ae95d2e6ac",
+      "semanticTree": "app/src/fixtures/presentations/orSchedule.json",
+      "semanticSha256": "0f8a7fedc3e70aa8c8c5bdca45bb450161bcb8e952f93fd567f3fc15f3ec3903"
+    },
+    {
+      "file": "app/shots/realism/present/orSchedule-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "aa420b77046784511ae3b61eba9bb730e80ff9f5ee5d04f8f399cb5040c04954",
+      "semanticTree": "app/src/fixtures/presentations/orSchedule-before.json",
+      "semanticSha256": "bd2f38e49939d3c314dfe6c28bb66c1c3c2082694d9c1b2544029b96f64ac859"
+    },
+    {
+      "file": "app/shots/realism/present/worklist.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7c4a04e0aa45ef532eaa38194953abb605c00c339f7fd32775a985d2b8536c24",
+      "semanticTree": "app/src/fixtures/presentations/worklist.json",
+      "semanticSha256": "f52dd45d23cfa24463a86861d0b3feed998d5fbe810e45c797c775044db27800"
+    },
+    {
+      "file": "app/shots/realism/present/worklist-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "08ed9915aca1d6a94084dcbedc6b32f36b5b9b141f4510e4a47786b03781dbc8",
+      "semanticTree": "app/src/fixtures/presentations/worklist-before.json",
+      "semanticSha256": "2b3002933ab4db41edee47768a85e38276275277ee8cea37d8a6c792e740444a"
+    },
+    {
+      "file": "app/shots/realism/present/timeGrid.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7f1af8afc5a2886055ac3899cd8e2ef5dd54401bb5866d3d190f6e9fbd457e15",
+      "semanticTree": "app/src/fixtures/presentations/timeGrid.json",
+      "semanticSha256": "fe40893c0b93bebb562cd5080f751dd27a9d05d80b336f0cbf350b9dc116929a"
+    },
+    {
+      "file": "app/shots/realism/present/timeGrid-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "42fe70edc173c419d2dac872992f0edbaa83bd7242a89aa53c132c0a42aca3af",
+      "semanticTree": "app/src/fixtures/presentations/timeGrid-before.json",
+      "semanticSha256": "f2e9f9a461b42cc9e7ce31b27f5d1c59cce87f02a58c82c65553fd174276e8b1"
+    },
+    {
+      "file": "app/shots/realism/present/flowsheet.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "45495591866f4baf16f7ed87c8719f0a31c03c6c37eb67818cf76fadb0b6c592",
+      "semanticTree": "app/src/fixtures/presentations/flowsheet.json",
+      "semanticSha256": "4c9cd2a6515560835bd52bd54d64b338b7d4c1846fa47e16a58608cf5b5bb0eb"
+    },
+    {
+      "file": "app/shots/realism/present/flowsheet-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0d5415729cbfcc8dd7fa1934d44d30d9355066cc6046d8f5c190837e242eb7fb",
+      "semanticTree": "app/src/fixtures/presentations/flowsheet-before.json",
+      "semanticSha256": "5c1671fa5979885f776a527cee930d881a947c97ac07386d43514630a78da389"
+    },
+    {
+      "file": "app/shots/realism/present/folderList.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "919ac2ca784b4e5c56893d3463f8483801a6129cbd5bb72011b51b4b54919edb",
+      "semanticTree": "app/src/fixtures/presentations/folderList.json",
+      "semanticSha256": "37407e5083be2651d3aea61bd44040118740b00a962bb7fc8ef36a5afba823b1"
+    },
+    {
+      "file": "app/shots/realism/present/folderList-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0fa22ee2a280a125c0b2cfff424ad13bc4f22702b7de62bbb875863605e5fd51",
+      "semanticTree": "app/src/fixtures/presentations/folderList-before.json",
+      "semanticSha256": "752bee3c6a0750d55d50400f80ebfee1fa78ace0526c81a6f996fa49ff6653c8"
+    },
+    {
+      "file": "app/shots/realism/present/messages.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c13d830e9ff04bcfaa638704dec5ea6b8f6324d312ab083e4bb5d51e51bdb19a",
+      "semanticTree": "app/src/fixtures/presentations/messages.json",
+      "semanticSha256": "6389a35624bc0bf085b68156817160857a2765cc532a6a6574e1b0a4d8155464"
+    },
+    {
+      "file": "app/shots/realism/present/messages-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2318ac54b0339a6525b1441b12b1a4db9d92dba76c6aade485654dbe074f5d7c",
+      "semanticTree": "app/src/fixtures/presentations/messages-before.json",
+      "semanticSha256": "dc06b14fe7908ec002d433f4bafcde45979448aebb59362c928036e1ca6f3c78"
+    },
+    {
+      "file": "app/shots/realism/present/inBasket.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9bb272d1a37eab6469df822843fd964285e7340b073b91fdfe07966d8a6cfa97",
+      "semanticTree": "app/src/fixtures/presentations/inBasket.json",
+      "semanticSha256": "8309361678b9371022a2423d4b4d089fd45dcc74fb0e13f461ce4cf5284ef8f7"
+    },
+    {
+      "file": "app/shots/realism/present/inBasket-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "01f9527751ec8c34118412340445eea30649e8018f96b0c2fa0c462443477471",
+      "semanticTree": "app/src/fixtures/presentations/inBasket-before.json",
+      "semanticSha256": "142edba3140c81d8abd76ababb5c325654eeedb45f3665514a513bab8bbec423"
+    },
+    {
+      "file": "app/shots/realism/present/results.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "448367f93c17df301ce35d78dd14e5d7ea2eadb6058484bc4d1404cd5710e6cd",
+      "semanticTree": "app/src/fixtures/presentations/results.json",
+      "semanticSha256": "0fade33d5fb89045996e34e01a2d6ab9ddff997c43d9dcb06f52bfafb35d1d08"
+    },
+    {
+      "file": "app/shots/realism/present/results-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ee666c9913e14bf6c4da80d65d452d25a3295cc7c194b80142f682fa2d2f6c53",
+      "semanticTree": "app/src/fixtures/presentations/results-before.json",
+      "semanticSha256": "3e8bcb6d5a134418c2f2cc7467147ebb4a77261b4db078e894d34998b23ef656"
+    },
+    {
+      "file": "app/shots/realism/present/trend.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0a8477db71d1bc06636ee9a84d920fdee2b3c1312c2a26740163883193be3db5",
+      "semanticTree": "app/src/fixtures/presentations/trend.json",
+      "semanticSha256": "8ba90d3b18aad9fe66a5f05769627376f0c761613ae940d8674bbbac01b91070"
+    },
+    {
+      "file": "app/shots/realism/present/trend-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "617cb888b38e91333a8c660cd9781951559160cfa438d6f8941baa392dc31e64",
+      "semanticTree": "app/src/fixtures/presentations/trend-before.json",
+      "semanticSha256": "47e1b2aecdec9fd6470406ce5f4d91bffd599532f6fc510442518b8a7bcf1b06"
+    },
+    {
+      "file": "app/shots/realism/present/growth.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3f239596540abd684db48349d8684231bf0811936324a0264be9a547ba480abf",
+      "semanticTree": "app/src/fixtures/presentations/growth.json",
+      "semanticSha256": "8c53e85a5d7bf985b853408ec3f8120aa5b7740ce098de9740f678fefe979b95"
+    },
+    {
+      "file": "app/shots/realism/present/growth-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d4ac69a53b781309bb0b6faaf74f5b144c557cba5291f5bfa752a561bb160d5e",
+      "semanticTree": "app/src/fixtures/presentations/growth-before.json",
+      "semanticSha256": "093c690271d3ecff0466769d469fb45b671f3cb5d710c6a35f4133e580dcc5d5"
+    },
+    {
+      "file": "app/shots/realism/present/growthUnits.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "44068b09bb9706aa871410639b788b248b92b1b83ea9875e1a2cd1992bd47cb7",
+      "semanticTree": "app/src/fixtures/presentations/growthUnits.json",
+      "semanticSha256": "86e877fabffbac0804c09a084094a7a6055ad10fc55a630276c78c9bf88e49c9"
+    },
+    {
+      "file": "app/shots/realism/present/growthUnits-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "75fdcac9e863c0f38a40518e4b5df75a16675444c660c8c82ae27962e7e56a7f",
+      "semanticTree": "app/src/fixtures/presentations/growthUnits-before.json",
+      "semanticSha256": "c922a16791a904e5168d9fe0cd397e6ebc385ff69d0c97238a75b76bec0f8a4c"
+    },
+    {
+      "file": "app/shots/realism/present/notes.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "cbe234c1c4bf9c605c986951ca2f351bbf9bed55d2134c19866425f8022ba9c4",
+      "semanticTree": "app/src/fixtures/presentations/notes.json",
+      "semanticSha256": "de42d67e497e5c44c28b0add122df5009429f71a60fa0a7b82b653652c199190"
+    },
+    {
+      "file": "app/shots/realism/present/notes-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "7217cfae4ad217e1eb33bc0a2a5d7ae7cf8f16064a6f2e84c9ed533df3b9ab9b",
+      "semanticTree": "app/src/fixtures/presentations/notes-before.json",
+      "semanticSha256": "d49f65b766b427cadc09c6bf16b825b4d947fc774d7e7eae5d7fb4c2a4cca779"
+    },
+    {
+      "file": "app/shots/realism/present/table.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a41fcc7af823c44d5b3c7820f8a1311c5e834b875bf9c70318c4106ec2b8aa57",
+      "semanticTree": "app/src/fixtures/presentations/table.json",
+      "semanticSha256": "d49694d595ce2de50cab0d8a9427438ab86f8705ba39e79e81e151f0fbdab591"
+    },
+    {
+      "file": "app/shots/realism/present/table-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ca36c6ed40ebba8ac1637742f9d30af54dab8fd61070b7ae599b35f89a877274",
+      "semanticTree": "app/src/fixtures/presentations/table-before.json",
+      "semanticSha256": "79d3f11061edae338896b6459b4503e23aa1873e4b582fa6374bf4e9b237241a"
+    },
+    {
+      "file": "app/shots/realism/present/rowActions.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "47520da9426095041890e426c53eafd285a63f51e4f176dc072ba85461ad250f",
+      "semanticTree": "app/src/fixtures/presentations/rowActions.json",
+      "semanticSha256": "3ec9f94b8ac458cf0480f818cb0ad14a23130af451e2d49bc45584ed46cccdee"
+    },
+    {
+      "file": "app/shots/realism/present/rowActions-before.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "dded2b5ee5e93c98c4b86bc7ffd222952e8934d8e7d21b2491b0940084697abb",
+      "semanticTree": "app/src/fixtures/presentations/rowActions-before.json",
+      "semanticSha256": "f548aab17cf9dde14456123fe18742cf70812c43c9a15a008aa2969c26dd63e4"
+    }
+  ]
+}

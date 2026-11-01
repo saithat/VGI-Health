@@ -15,7 +15,7 @@ import Ehr.Canonical.W7Refills
 
 The vendor's out-of-the-box UI program for spec v1. Every clinician starts with
 it on day 1; the overnight agent then personalizes it. It covers workflows
-W1–W7 (BRIEF section 5) on 45 screens, starting from the patient workspace.
+W1–W7 (BRIEF section 5) on 46 screens, starting from the patient workspace.
 -/
 
 namespace Ehr.Canonical
@@ -32,7 +32,7 @@ def home : Screen :=
          (.panel, "encounterNotes", "Notes"), (.table, "currentMeds", "Medications"),
          (.panel, "allergyList", "Allergies"), (.table, "encounterHistory", "Encounters"),
          (.panel, "coverage", "Coverage"), (.table, "importedHistory", "History")] ++
-      [table s "schedule" "scheduleTasks" "Today's work",
+      [{ table s "schedule" "scheduleTasks" "Today's schedule" with tag := "present.schedule" },
        table s "openOrders" "openOrders" "Open orders",
        group s "work" "Activities" (collapsible := false)] ++
       ([("w1Rooming", "Schedule"),

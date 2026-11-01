@@ -18,18 +18,33 @@ wire form (`Html.toPage`) first.
 
 namespace Ehr.Render
 
-deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode, UiNode, UiScreen
+deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
+  UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
-  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, Display
+  BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, LabResultRow, ProblemRow, ImmRow,
+  EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, ScheduleRow, BoardRow,
+  MarOrderRow, AdministrationRow, ObservationRow
 
-/-- Old render fixtures predate notes/history; only absent lists default to empty. -/
+private def readObservationRow : Lean.Json → Except String ObservationRow := Lean.fromJson?
+
+/-- Older observation rows have no source category; malformed supplied categories still fail. -/
+instance (priority := 1100) : Lean.FromJson ObservationRow where
+  fromJson? j := readObservationRow (match j.getObjVal? "categories" with
+    | .ok _ => j
+    | .error _ => match j with
+      | .obj _ => j.setObjVal! "categories" (.arr #[])
+      | _ => j)
+
+deriving instance Lean.ToJson, Lean.FromJson for Display
+
+/-- Older render fixtures predate the additional display lists; only absent lists default to empty. -/
 private def readDisplay : Lean.Json → Except String Display := Lean.fromJson?
 
 instance (priority := 1100) : Lean.FromJson Display where
   fromJson? j := do
-    let j := ["notes", "history"].foldl (fun j key =>
+    let j := ["notes", "history", "schedule", "board", "marOrders", "administrations",
+      "observations", "labFlags", "labResults"].foldl (fun j key =>
       match j.getObjVal? key with
       | .ok _ => j
       | .error _ => match j with

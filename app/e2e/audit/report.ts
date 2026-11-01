@@ -14,7 +14,7 @@ export interface Control {
   status: "works" | "disabled-with-reason" | "dead" | "error";
   effect: string;
 }
-const directory = resolve("../docs/audits");
+const directory = resolve(process.env.AUDIT_REPORT_DIR ?? "../docs/audits");
 const escape = (s: string) => s.replaceAll("|", "\\|").replaceAll(/\s+/g, " ");
 export function writeReport(rows: Control[], scope: string) {
   mkdirSync(directory, { recursive: true });
@@ -67,6 +67,10 @@ export function writeReport(rows: Control[], scope: string) {
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
+        auditMode:
+          process.env.AUDIT_CANONICAL_BASELINE === "1"
+            ? "canonical-baseline"
+            : "deployed-context",
         revision:
           build?.revision ??
           execFileSync("git", ["rev-parse", "HEAD"], {
