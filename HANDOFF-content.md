@@ -171,4 +171,3 @@ The **83 L-group** record-level-completeness, qualified-authorization and
 release-access-policy rows retain their individual unencoded reasons; the
 139 out-of-scope rows remain documented. No remaining catalog row is silently
 omitted or relabeled as complete.
-
