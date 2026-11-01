@@ -137,10 +137,112 @@
     },
     "buttonRegression": "passed",
     "personaMatrix": {
-      "status": "running",
+      "status": "passed",
       "cases": 15,
       "semanticVariants": 2877,
-      "scope": "Fresh matrix for the final OR CSS fingerprint. The complete prior build is recorded at c812f4a; this pending run is not counted as a completed gate."
+      "byteDistinctTrees": 1099,
+      "browserChecksPassed": 2207,
+      "skippedDuplicateNarrowProbes": 3,
+      "coverageReuseChecksPassed": 19,
+      "context": "bf2f01607ad0aba90e711b4a190bc4de83dd4d817d1c2d4670973472e30760e7",
+      "scope": "Every native group/tab/alert variant for one appropriate World 2 task/patient per role across v1/v2/v3. Each byte-distinct tree checked at desktop and narrow widths; identical trees reused only under the same browser context.",
+      "distinctReceipt": "bda8c290-032a-4149-adae-3aa1be3b4964.coverage.json",
+      "distinctReceiptSha256": "8d17b615743816f45f82bd88e334158cd4f83090da7be25931ce5fd722578915",
+      "wholeVersionReceipt": "4987c3f9-18ed-460f-880a-3987300fbcd3.coverage.json",
+      "wholeVersionReceiptSha256": "9a4e553f86824a757ca9620b52fde9ebe9b9d158e9b12b4036d05826e093c7d2",
+      "inputManifestSha256": "ccd1d6854b0b593318fa1545d4cadf9fcd45c69dd547d748af2d238c934a6285",
+      "variantsByCase": [
+        {
+          "release": "v1",
+          "persona": "P1",
+          "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
+          "variants": 260
+        },
+        {
+          "release": "v2",
+          "persona": "P1",
+          "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
+          "variants": 260
+        },
+        {
+          "release": "v3",
+          "persona": "P1",
+          "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
+          "variants": 260
+        },
+        {
+          "release": "v1",
+          "persona": "P2",
+          "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
+          "variants": 113
+        },
+        {
+          "release": "v2",
+          "persona": "P2",
+          "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
+          "variants": 113
+        },
+        {
+          "release": "v3",
+          "persona": "P2",
+          "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
+          "variants": 113
+        },
+        {
+          "release": "v1",
+          "persona": "P3",
+          "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
+          "variants": 76
+        },
+        {
+          "release": "v2",
+          "persona": "P3",
+          "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
+          "variants": 76
+        },
+        {
+          "release": "v3",
+          "persona": "P3",
+          "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
+          "variants": 76
+        },
+        {
+          "release": "v1",
+          "persona": "P4",
+          "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
+          "variants": 153
+        },
+        {
+          "release": "v2",
+          "persona": "P4",
+          "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
+          "variants": 153
+        },
+        {
+          "release": "v3",
+          "persona": "P4",
+          "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
+          "variants": 153
+        },
+        {
+          "release": "v1",
+          "persona": "P5",
+          "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
+          "variants": 357
+        },
+        {
+          "release": "v2",
+          "persona": "P5",
+          "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
+          "variants": 357
+        },
+        {
+          "release": "v3",
+          "persona": "P5",
+          "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
+          "variants": 357
+        }
+      ]
     },
     "directImportedNotesAria": "passed; every displayed note body also equals its native source string",
     "fixtureTimestampOffsets": {
