@@ -1,6 +1,6 @@
 /**
  * The real `ehr` adapter against a stub binary: pins the ASSUMED command
- * lines and output handling (documented in src/ehr.ts and STATUS.md) so the
+ * lines and output handling (documented in src/ehr.ts and docs/STATUS.md) so the
  * Lean lane can diff its CLI against them.
  */
 import { chmod, readFile, writeFile } from 'node:fs/promises';

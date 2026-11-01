@@ -497,7 +497,7 @@ There are now 24 permanent mutations; content walks test all artifact actions.
 
 **Render:** add actual `infoContent` bindings for `resultAbnormalFlags` and all
 13 `controlledSigning*` ids. Their precise contracts are in catalog
-`displayContent`, the InfoSpec docstrings, and encoding-plan.md. Iterate every
+`displayContent`, the InfoSpec docstrings, and `docs/rules/catalog.md`. Iterate every
 selected prescription line; bind name/address/strength/form/directions/DEA to
 that artifact's captures and actual issue date to trusted artifact metadata.
 The earliest-fill value belongs to a later series member, never issue date.

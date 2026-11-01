@@ -1,4 +1,4 @@
-# Lean 4.35 browser WASM spike
+# Lean 4.35 browser WASM integration
 
 Measured 2026-10-31. Scope: BRIEF.md §2 option A and core-model.md §5,
 with a synchronous string-based `step` export. This does not change the spec,
