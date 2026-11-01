@@ -509,6 +509,12 @@ structure ObservationRow where
   status : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- A supplied practitioner name. Its logical identity is transport metadata. -/
+structure ClinicianRow where
+  id : UserId
+  name : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The patient's records as the page shows them. Computed in Lean from the
 FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first. -/
 structure Display where
@@ -538,6 +544,8 @@ structure Display where
   observations : List ObservationRow := []
   /-- Latest lab interpretation by code, computed in Lean. -/
   labFlags : List (String × String) := []
+  /-- Optional practitioner identities; the header requires a unique user match. -/
+  clinicians? : Option (List ClinicianRow) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- An empty display (no records). -/

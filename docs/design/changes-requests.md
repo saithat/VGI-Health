@@ -102,6 +102,16 @@ absence of technical controls in normal mode, with 1440×900 captures. The
 existing return-to-worklist action remains available as `Close chart` in normal
 sessions; only the technical drawer and saved-record tools require debug mode.
 
+
+SURG adds optional `Display.clinicians` from typed `ClinicianRow` projections of
+supplied Practitioner records. The live adapter appends the intact authenticated
+profile, replacing only a duplicate of that same resource identity. Lean's
+`uiClinicianViewer` requires a unique match to the permission-bearing `User.id`;
+missing/ambiguous names retain the role-only caption. `UiScreen.viewer` remains
+an ordinary optional string, so the painter and archived screen format need no
+new clinical logic. Human patient-identity confirmation, permissions and clinical
+facts remain independent of this displayed name.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

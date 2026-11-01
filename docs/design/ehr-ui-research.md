@@ -6,6 +6,19 @@ Research and implementation review: 2026-11-01, SURG lane. This is the shared ve
 
 ### Evidence and target layouts
 
+
+The signed-in clinician name is read from the authenticated FHIR
+[Practitioner profile](https://hl7.org/fhir/R4/practitioner.html), using its
+[HumanName](https://hl7.org/fhir/R4/datatypes.html#HumanName) text or official
+structured name. Lean requires a unique match to the permission-bearing user's
+ID before adding that name to the role label. Missing names, foreign identities
+and duplicate matches leave the role alone; no resource ID is substituted.
+The live adapter passes the intact authenticated profile, and Lean supplies the
+existing `UiScreen.viewer` text. This display metadata does not enter or confirm
+the human-only patient identity field. Supplied Practitioner references can also
+resolve their recorded human name rather than a transport path.
+
+
 The live clinic now uses the selected encounter's recorded setting. The
 [FHIR R4 encounter-class value set](https://hl7.org/fhir/R4/v3/ActEncounterCode/vs.html)
 defines ambulatory, emergency and inpatient classes independently of the
@@ -88,7 +101,7 @@ Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load
 
 The integrated shared shell adds the indigo signed-in role bar, blue chart strips, explicit recorded weight/date and isolation status. On desktop, the banner and navigator remain visible while the workspace scrolls; opening a section returns that workspace to its heading. This fixes the earlier task-focused screenshots where patient identity scrolled away. The only current-section marker is on the actual Lean navigation button. The final 1440×900 review covers all surgical and clinic screens below, with the pre-op banner's planned context and the consult queue's Received column explicitly checked.
 
-The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 42 before and 47 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the live after walk uses the integrated selected-encounter increment. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
+The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 43 before and 48 after images, including an additional pounds-weight signing view with sections expanded, two real-browser code-choice views, and live clinic selection/review views. The three live before images use the already-pushed `82f7c4d` app; the clinician-header before image is the real landing capture from `73192de`. The extra named-clinician view is a native/WASM identity fixture; the ordinary workflow and live views use their supplied clinician profiles. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
 
 ### Screen-by-screen visual review
 
@@ -96,6 +109,7 @@ Compared with Salem's navigator and brief-note examples, the improvement is prim
 
 | Screen | Before → after observation | After image |
 | --- | --- | --- |
+| Clinician identity | A role-only bar → the recorded clinician name and role, matched to the same signed-in user. The P5 source fixture resolves to Whitaker, James. A separate named Practitioner fixture checks identity binding without assuming the persona ID; missing or duplicate matches retain the role alone. | [Role-only before](../../app/shots/realism/surg/before/clinician-header-load.png), [source P5 after](../../app/shots/realism/surg/after/home-load.png), [identity fixture](../../app/shots/realism/surg/after/clinician-header-load.png) |
 | Surgeon landing | Generic schedule and a bank of activity links → actual dated OR request row with indication, real case-opening button and the surgeon's ordered activity preset. The first row-action review wrapped the label onto three lines; the final action column gives it enough width. | [OR landing](../../app/shots/realism/surg/after/home-load.png) |
 | OR Schedule | New dedicated activity. Room/start/procedure/indication/patient/surgeon/request status are visible in one row. Its opening control is the original Lean goto, placed in the Actions cell; clinical cells remain read-only. | [Case list](../../app/shots/realism/surg/after/w6Schedule-load.png) |
 | Consults | New request queue with its original opening button in the Actions cell. Requesting clinician, reason, urgency, owner and location are supplied records. The side panel shows consult context rather than an empty today's-OR card. | [Consult list](../../app/shots/realism/surg/after/w6Consults-load.png) |
@@ -206,6 +220,25 @@ checking every supplied row value. All proof/certification/simulation gates and
 archived replay pass again. Min-click/KLM measurements are regenerated and
 unchanged. The current [validation manifest](../audits/surg-realism-validation.json)
 binds the selected-encounter increment, artifact hashes and all 89 images. The refreshed shared control audit records 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; its fast regression gate passes. Coverage is bounded to 48 configurations per role, with per-role remaining checkpoints retained in the report.
+
+
+The clinician-identity increment adds a typed optional Practitioner projection,
+with exact native/WASM UI agreement for matched, foreign and duplicate profile
+fixtures. Named Lean examples also reject missing names, empty identities and
+Patient resources used as practitioner names. The source P5 fixture shows
+`Whitaker, James · General surgeon`; the authenticated live profile supplies
+`Dr. James Whitaker, MD, FACS · General surgeon`. No display name is hardcoded in
+the painter. All 91 before/after images are refreshed or retained with their
+baseline revisions recorded; the narrow identity fixture was also inspected.
+The source caption remains fully visible after wrapping onto its own line.
+
+The same proof, certification, full-world simulation and archived replay gates
+pass. App build/lint/226 tests and agent typecheck/lint/84 tests pass. The semantic
+viewer-caption assertion now checks Lean's exact supplied string; 46 states pass
+101 desktop/narrow checks with three fixture-dependent skips, without cache
+reuse. The 17 clinical/live/search/contrast tests pass, including actual saved
+Provenance binding and normal close-chart behavior. Click/KLM measurements are
+regenerated and unchanged. The refreshed six-role control audit and regression gate pass with 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors; the report retains the bounded configuration coverage and remaining checkpoints. [Current artifact-bound validation](../audits/surg-realism-validation.json).
 
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 

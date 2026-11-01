@@ -2153,6 +2153,14 @@ export interface ObservationRow {
 }
 
 /**
+ * A supplied practitioner name. Its logical identity is transport metadata.
+ */
+export interface ClinicianRow {
+  id: UserId;
+  name: string;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
@@ -2197,6 +2205,10 @@ export interface Display {
    * Latest lab interpretation by code, computed in Lean.
    */
   labFlags: [string, string][];
+  /**
+   * Optional practitioner identities; the header requires a unique user match.
+   */
+  clinicians?: ClinicianRow[];
 }
 
 /**

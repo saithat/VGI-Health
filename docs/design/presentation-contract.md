@@ -78,3 +78,9 @@ An ordinary button tagged `present.row|<info component ID>|<zero-based source ro
 The painter places these controls in the matching row for tables, schedules, boards, worklists, message lists, results, flowsheets, MARs and folder lists. The first matching info component with that row is used if a malformed program repeats the target ID. All source rows and multiple actions per row are retained in source order. Missing targets, invalid/out-of-range rows, unsupported chart/note layouts and markers outside a presentation retain the original control inline. No action is invented or dropped. Charts and notes continue to use adjacent ordinary controls. `PresentationFixtures.rowActionsProgram` is a complete example with actual goto targets and return controls; a row marker does not switch patients or create a new clinical event.
 
 Row indexes beyond JavaScript's exact integer transport range do not select a row wrapper; Lean emits the original ordinary control. This keeps an oversized source tag from making the entire JSON screen unusable. MAR headers may group the supplied dated-hour columns under their recorded date, while undated columns retain their complete labels. Narrow row labels still include the full supplied date and time.
+
+SURG's existing optional `UiScreen.viewer` can include the signed-in clinician's
+source name beside the role. Lean requires a unique `Display.clinicians` identity
+match to its permission-bearing user; absent/ambiguous profiles retain the role
+alone. The painter displays that supplied string and never selects a clinician,
+infers permission or pre-enters patient identity from it.

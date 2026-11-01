@@ -3,7 +3,7 @@
  * Initial-screen probes are independent; every navigation path uses real gotos.
  */
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdtemp, rm } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -23,6 +23,9 @@ const user = await read(`${source}/user.json`);
 const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
 assert.equal(projection.error, undefined);
 assert.deepEqual(projection, nativeFacts(bundle, context));
+const signedInProfiles = (projection.display.clinicians ?? []).filter(row => row.id === user.id);
+assert.equal(signedInProfiles.length, 1, 'The source fixture supplies the selected surgeon profile');
+const expectedViewer = `${signedInProfiles[0].name} · General surgeon`;
 function nodes(node) {
   if (node.section) return [node, ...node.section.children.flatMap(nodes)];
   if (node.columns) return [node, ...node.columns.children.flatMap(nodes)];
@@ -66,6 +69,41 @@ const report = { scope: 'P5, all releases; visible initial-state semantic button
   }
   report.selectedEncounterProjectionComparisons = 3;
 }
+// The clinician caption must use the permission-bearing user's unique identity.
+{
+  const specPath = fileURLToPath(new URL('releases/v1/spec.json', root));
+  const programPath = fileURLToPath(new URL('releases/v1/personas/P5.json', root));
+  const spec = await read(specPath), program = await read(programPath);
+  const actor = { id: 'display-clinician', role: 'surgeon' };
+  const profile = name => ({ resourceType: 'Practitioner', id: actor.id, name: [{ text: name }] });
+  const dir = await mkdtemp('/tmp/surg-clinician-');
+  try {
+    for (const [profiles, expected] of [
+      [[profile('Dr. Morgan Rivera')], 'Dr. Morgan Rivera · General surgeon'],
+      [[{ ...profile('Another clinician'), id: 'another-user' }], 'General surgeon'],
+      [[profile('Dr. Morgan Rivera'), profile('Ambiguous name')], 'General surgeon'],
+    ]) {
+      const input = { ...bundle, entry: [...(bundle.entry ?? []), ...profiles.map(resource => ({ resource }))] };
+      const output = JSON.parse(wasm.facts(JSON.stringify({ bundle: input, context })));
+      assert.deepEqual(output, nativeFacts(input, context));
+      const common = { spec, program, facts: output.facts, user: actor };
+      const state = JSON.parse(wasm.init(JSON.stringify(common)));
+      const ui = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: output.display, state })));
+      assert.equal(ui.viewer, expected);
+      for (const [name, value] of [['bundle', input], ['context', context], ['user', actor]])
+        await writeFile(`${dir}/${name}.json`, JSON.stringify(value));
+      execFileSync(fileURLToPath(new URL('lean/.lake/build/bin/ehr', root)), [
+        'render-screens', '--ui', '--spec', specPath, '--program', programPath,
+        '--fhir', `${dir}/bundle.json`, '--context', `${dir}/context.json`,
+        '--user', `${dir}/user.json`, '--out', `${dir}/ui`,
+      ], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
+      assert.deepEqual(ui, await read(`${dir}/ui/home.json`));
+      if (expected.includes('Rivera'))
+        await writeFile('/tmp/surg-clinician-header-ui.json', JSON.stringify(ui));
+    }
+  } finally { await rm(dir, { recursive: true, force: true }); }
+  report.clinicianIdentityProjectionComparisons = 3;
+}
 for (const release of ['v1', 'v2', 'v3']) {
   const programBytes = await readFile(new URL(`releases/${release}/personas/P5.json`, root), 'utf8');
   const program = JSON.parse(programBytes);
@@ -82,7 +120,7 @@ for (const release of ['v1', 'v2', 'v3']) {
     assert.equal(state.screen, screen.id);
     const ui = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: projection.display, state })));
     assert.equal(ui.error, undefined);
-    assert.equal(ui.viewer, 'General surgeon');
+    assert.equal(ui.viewer, expectedViewer);
     if (context.encounterKind === 'preop') {
       const source = projection.facts.infoPayloads?.find(p => p.info === 'scheduleTasks')?.rows[0]?.fields;
       const plannedRoom = source?.find(([key]) => key === 'Room')?.[1] ?? 'Not recorded';

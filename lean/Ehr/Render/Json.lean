@@ -24,7 +24,7 @@ deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, ProblemRow, ImmRow,
   EncRow, ProcRow, GrowthPoint, NoteRow, HistoryRow, ScheduleRow, BoardRow,
-  MarOrderRow, AdministrationRow, ObservationRow, Display
+  MarOrderRow, AdministrationRow, ObservationRow, ClinicianRow, Display
 
 /-- Older render fixtures predate the additional display lists; only absent lists default to empty. -/
 private def readDisplay : Lean.Json → Except String Display := Lean.fromJson?

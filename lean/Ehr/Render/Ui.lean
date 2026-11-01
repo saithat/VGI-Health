@@ -99,6 +99,17 @@ def uiViewer : Role → String
   | .rn => "Registered nurse"
   | .surgeon => "General surgeon"
 
+/-- The visible name requires the same unique identity as the permission-bearing
+user. Missing or ambiguous source names leave the clinical role alone. -/
+def uiClinicianViewer (user : User) (d : Display) : String :=
+  let role := uiViewer user.role
+  if user.id == "" then role else
+  match (d.clinicians?.getD []).filter (fun row => row.id == user.id) with
+  | [row] =>
+    let name := row.name.trimAscii.toString
+    if name == "" then role else name ++ " · " ++ role
+  | _ => role
+
 /-- Clinical banner content comes from Lean, so the painter need not infer it.
 An unavailable code status is explicit, never silently treated as full code. -/
 def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
@@ -503,7 +514,7 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
   let sources := uiSourceLabels cx
   let hints := uiEntryHints cx
   let choices := uiFieldChoices cx
-  { banner := uiClinicalBanner facts disp, viewer? := some (uiViewer user.role),
+  { banner := uiClinicalBanner facts disp, viewer? := some (uiClinicianViewer user disp),
     nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
     sourceLabels? := if sources.isEmpty then none else some sources,
     entryHints? := if hints.isEmpty then none else some hints,

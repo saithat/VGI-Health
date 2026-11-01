@@ -57,6 +57,17 @@ try {
     }
     process.stdout.write(`${screen}: captured\n`);
   }
+  if (process.env.EHR_REVIEW_EXTRA_UI) {
+    const ui = JSON.parse(await readFile(process.env.EHR_REVIEW_EXTRA_UI, 'utf8'));
+    await page.goto('http://127.0.0.1:4196/screen-check.html');
+    await page.waitForFunction(() => typeof window.renderUi === 'function');
+    await page.evaluate(screen => window.renderUi(screen), ui);
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `${out}/clinician-header-load.png`, animations: 'disabled' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: '/tmp/surg-clinician-header-narrow.png', animations: 'disabled' });
+    process.stdout.write('source clinician header: captured at desktop and narrow widths\n');
+  }
 } finally {
   if (browser) await browser.close();
   if (server.pid && server.exitCode === null) {

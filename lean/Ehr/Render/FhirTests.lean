@@ -33,6 +33,17 @@ def parsed := output clinical
 #guard patientIdOf ((entryResource (first clinical "entry")).setObjVal! "id" (.str "server-id")) == parsed.facts.patientId
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null
+
+/-- A profile may supply HumanName.text without separate given/family parts. -/
+def displayClinician : Json := json r#"{"resourceType":"Practitioner","id":"display-clinician","name":[{"use":"official","text":"Dr. Morgan Rivera"}]}"#
+/-- Resource identity alone never becomes a displayed clinician name. -/
+def unnamedClinician : Json := json r#"{"resourceType":"Practitioner","id":"opaque-clinician-id"}"#
+#guard (clinicianRows [displayClinician]).map (·.name) == ["Dr. Morgan Rivera"]
+#guard (clinicianRows [unnamedClinician]).isEmpty
+#guard (clinicianRows [displayClinician.setObjVal! "resourceType" (.str "Patient")]).isEmpty
+#guard (clinicianRows [displayClinician.setObjVal! "id" (.str "")]).isEmpty
+#guard practitionerName (json r#"{"name":[{"family":"Rivera","given":["Morgan"]}]}"#) == "Rivera, Morgan"
+#guard humanRef [displayClinician] (json r#"{"reference":"Practitioner/display-clinician"}"#) == "Dr. Morgan Rivera"
 #guard decodeBase64Utf8 "SGVsbG8KCs6xIPCfmIA=" == some "Hello\n\nα 😀"
 #guard decodeBase64Utf8 "" == some ""
 #guard decodeBase64Utf8 "YQ==" == some "a"

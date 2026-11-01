@@ -178,6 +178,7 @@ for (const file of fixtures)
     const bannerText = normalize(
       (await page.getByRole("banner").textContent()) ?? "",
     );
+    if (screen.viewer) expect(bannerText).toContain(normalize(screen.viewer));
     for (const [label, value] of screen.banner)
       if (value)
         expect(bannerText).toContain(

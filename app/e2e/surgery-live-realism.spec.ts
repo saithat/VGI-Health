@@ -54,6 +54,9 @@ test("surgical live review keeps readable receipts and the saved record binding"
   await page.getByRole("button", { name: "Open EHR", exact: true }).click();
   await expect(page.locator(".clinical-app")).toBeVisible();
   if (stage === "after") {
+    await expect(page.locator(".clinical-encounter")).toHaveText(
+      /^.+ · General surgeon$/,
+    );
     await expect(
       page.getByRole("banner", { name: "Patient banner", exact: true }),
     ).toContainText("AMB");
@@ -133,6 +136,9 @@ test("normal surgical clinic keeps technical save controls out of the patient wo
   await openClinic(page, "Terrance", false);
   await page.getByRole("button", { name: "Open EHR", exact: true }).click();
   await expect(page.locator(".clinical-app")).toBeVisible();
+  await expect(page.locator(".clinical-encounter")).toHaveText(
+    /^.+ · General surgeon$/,
+  );
   await expect(
     page.getByRole("button", { name: "Live encounter", exact: true }),
   ).toHaveCount(0);

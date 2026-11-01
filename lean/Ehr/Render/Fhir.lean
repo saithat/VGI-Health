@@ -201,6 +201,11 @@ def displayName (p : Json) : String :=
   let given := " ".intercalate (givenNames n)
   if fam == "" then given else if given == "" then fam else fam ++ ", " ++ given
 
+/-- A practitioner's supplied name text, else the official structured name. -/
+def practitionerName (r : Json) : String :=
+  let text := (str (officialName r) "text").trimAscii.toString
+  if text != "" then text else (displayName r).trimAscii.toString
+
 /-- First letter of the first given name and of the family name, upper case. -/
 def initials (p : Json) : String :=
   let n := officialName p
@@ -827,8 +832,8 @@ def humanRef (rs : List Json) (ref : Json) : String :=
   if display != "" then display else
     match referenced? rs ref with
     | none => ""
-    | some r => if resourceType r == "Patient" || resourceType r == "Practitioner"
-      then displayName r else str r "name"
+    | some r => if resourceType r == "Patient" then displayName r
+      else if resourceType r == "Practitioner" then practitionerName r else str r "name"
 
 /-- Age and sex are read only from the referenced patient. -/
 def refAgeSex (today : String) (rs : List Json) (ref : Json) : String :=
@@ -974,7 +979,8 @@ def periopReferenceName (rs : List Json) (ref : Json) : String :=
   | none => "Not recorded"
   | some r =>
     let name := if resourceType r == "Location" || resourceType r == "Organization"
-      then str r "name" else displayName r
+      then str r "name" else if resourceType r == "Practitioner"
+        then practitionerName r else displayName r
     if name == "" then "Not recorded" else name
 
 /-- Relative server references and normalized transaction fullUrls identify the
@@ -1090,6 +1096,18 @@ def surgicalPayloads (today : String) (rs : List Json) (p : Json) : List InfoPay
 def surgicalBindings (payloads : List InfoPayload) : List ArtifactBinding :=
   payloads.map fun p => { key := p.artifactKey, artifact := p.artifact, version := p.version }
 
+/-! ## Practitioner display identity -/
+
+/-- Only named Practitioner records can label the signed-in clinician. No
+resource ID, patient name or specialty is substituted for a missing name. -/
+def clinicianRows (rs : List Json) : List ClinicianRow :=
+  (ofType "Practitioner" rs).filterMap fun r =>
+    let id := str r "id"
+    let name := practitionerName r
+    if id == "" || name == "" then none else some { id, name }
+
+/-! ## Selected encounter context -/
+
 /-- Keep the selected encounter for contextual fields, while retaining all
 other record types. An unknown or foreign selection never becomes another visit. -/
 def encounterRecords (ctx : FactsContext) (rs : List Json) (p : Json) : List Json :=
@@ -1161,7 +1179,8 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     history := historyRows rs
     schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
     marOrders := marOrderRows rs, administrations := administrationRows rs
-    observations := observationRows rs, labFlags := labFlags rs }
+    observations := observationRows rs, labFlags := labFlags rs
+    clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

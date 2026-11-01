@@ -652,6 +652,7 @@
   ],
   "failures": [],
   "selectedEncounterProjectionComparisons": 3,
+  "clinicianIdentityProjectionComparisons": 3,
   "poundsEntry": {
     "target": "w6Sign.weight",
     "inputUnit": "kg",

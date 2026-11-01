@@ -80,7 +80,18 @@ export function projectLive(
   const projection: FactsOutput = JSON.parse(
     interp.facts(
       JSON.stringify({
-        bundle,
+        // Pass the authenticated FHIR profile intact; Lean binds its name to User.id.
+        bundle: {
+          ...bundle,
+          entry: [
+            ...(bundle.entry ?? []).filter(
+              (entry) =>
+                entry.resource?.resourceType !== "Practitioner" ||
+                entry.resource.id !== user.practitioner.id,
+            ),
+            { resource: user.practitioner },
+          ],
+        },
         context: factsContext(user, now, receipts, context),
       }),
     ),

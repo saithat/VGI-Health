@@ -47,6 +47,23 @@ def uiHistoricalVisitDisplay : Display :=
 #guard (uiClinicalBanner Tests.periopFacts uiHistoricalVisitDisplay).lookup "Location" == some "Previous clinic"
 #guard uiViewer .surgeon == "General surgeon"
 #guard uiViewer .rn == "Registered nurse"
+/-- A displayed name is bound to the user who carries the permissions. -/
+def clinicianHeaderUser : User := { id := "display-clinician", role := .surgeon }
+def clinicianHeaderDisplay : Display :=
+  { uiRoomCtx.disp with clinicians? := some [{ id := "display-clinician", name := "Dr. Morgan Rivera" }] }
+#guard uiClinicianViewer clinicianHeaderUser clinicianHeaderDisplay == "Dr. Morgan Rivera · General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "another-user" } clinicianHeaderDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser uiRoomCtx.disp == "General surgeon"
+/-- Ambiguous source identities and missing names do not select another person. -/
+def ambiguousClinicianDisplay : Display :=
+  { clinicianHeaderDisplay with clinicians? := some [
+    { id := "display-clinician", name := "Dr. Morgan Rivera" },
+    { id := "display-clinician", name := "Another clinician" }] }
+#guard uiClinicianViewer clinicianHeaderUser ambiguousClinicianDisplay == "General surgeon"
+#guard uiClinicianViewer clinicianHeaderUser
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "display-clinician", name := " " }] } == "General surgeon"
+#guard uiClinicianViewer { clinicianHeaderUser with id := "" }
+  { clinicianHeaderDisplay with clinicians? := some [{ id := "", name := "Unknown identity" }] } == "General surgeon"
 /-- A visible surgical diagnosis field receives choices without a default. -/
 def surgicalPickerElement : ElementSpec :=
   { id := "pickerDiagnosis", label := "Diagnosis", kind := .coded "icd10",
