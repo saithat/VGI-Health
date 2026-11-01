@@ -72,10 +72,9 @@ changes are merge resolutions retaining both lanes' export checks.
   `Ehr/Sim/PolicyTests.lean:31–32` fails canonical task completion and its floor
   assertion after 830 seconds of evaluation. Both assertions are unchanged.
   This is recorded in changes-requests.md; render cannot edit Sim/content.
-- The original background cells/sessions did not survive the restart. Cell 38
-  was stopped after the full-build failure to avoid repeating that expensive
-  failed build; its already-started Comparator process is finishing independently.
-  Logs: `/tmp/render-{final-build,targeted-build,comparator}.log`.
+- The original background cells/sessions did not survive the restart. Old cells
+  38 and 83 are finished/stopped; do not resume their old Lake session IDs.
+  Logs: `/tmp/render-{final-build,cached-build,comparator,kernel-check}.log`.
 - SDK symlinks still point to the authorized shared .tools SDK directories.
 - A performance regression on the folded orders screen is fixed: Ctx now stores
   one view with a dependent proof that it equals the actual interpreter output.
@@ -91,14 +90,31 @@ changes are merge resolutions retaining both lanes' export checks.
   native driver under `.tools/render-native` calls the exact exported Core/Render
   API functions, without implementing any clinical logic. The differential runner
   accepts its path through EHR_RENDER_NATIVE and records its binary hash.
+- Pushed `dadb423` (the exact view cache, WASM, samples) and `670a748` (second main
+  integration). Its generated manifest conflict was resolved by `make wasm`.
+  Final app build/lint/**152** tests, agent typecheck/lint/**31** tests, world
+  build/lint/**92** tests, generated-sample strict tsc, **15** browser checks
+  (3 intended skips), and **3** screenshot checks pass on the merged assets.
+- Four reduced-memory Node workers are active: sessions **89632, 48595, 52119,
+  42010**, shards 0–3 respectively. Each checks current then legacy corpus.
+  There is no active Lake build. Logs/reports are `/tmp/render-{current,legacy}-shard-{0,1,2,3}.{log,json}`.
+  All original indexes and all expanded scan probes survive the pre-split files.
+  `prepare-shards.py` and `audit-shards.py` make splitting/auditing reproducible.
+- pnpm 11 uses a worktree-local store here: set
+  `pnpm_config_store_dir="$PWD/.tools/pnpm-store"` for package commands; the
+  default external store is read-only in this sandbox.
+- A compiled replay of unchanged PolicyTests definitions reports missing
+  `ca-title22-70223-hp-24-hours:temporal026` / `:temporal027`, then the structured
+  display/action-label hard stop. The owning-lane request contains this diagnosis.
 
 ## Exactly what is left
 
-1. Finish Comparator, official exports for both canonical revisions, WASM build,
-   four differential shards per corpus with coverage/hash audits, wasm-check,
-   final app checks/screenshots and world tests. Attempt kernel check and record
-   the full-build blocker without weakening the failing assertions. Commit/push
-   generated assets and the final handoff with the required co-author footer.
+1. Finish the four differential shards per corpus, run their complete/disjoint
+   coverage and binary-hash audits, refresh final verification receipt/handoff,
+   and commit/push. The completed render kernel check covers the exported render
+   environment; whole-project build/check remain blocked by the unchanged Sim
+   assertion failures. Do not repeat the 830-second failed build without an
+   owning-lane fix or new evidence that its dependencies changed.
 2. **App owner:** paint nav pairs as clickable buttons with Event.click(comp),
    open available navigator groups by default, and include entries in fidelity.
    The old screen-ID/active-screen accordion default otherwise hides all entries.
@@ -113,6 +129,10 @@ changes are merge resolutions retaining both lanes' export checks.
 
 6. **Sim/content:** repair the canonical PolicyTests regression above; full build
    and whole-project kernel check must pass after that integration.
+7. **New main requirement (render/app):** implement the Lean `aria`/`AriaNode`
+   projection and its proofs/consumer added by BRIEF `f60a795`. Current proofs
+   cover UiScreen, and current expected ARIA is still TypeScript. This new work
+   is explicitly marked not started in TODO_PROOFS.md; no proof hole is hidden.
 
 All cross-lane requests are in docs/design/changes-requests.md. App's primary
 compact-list-cell painting is resolved by main d3e0860. No unfinished render proof.

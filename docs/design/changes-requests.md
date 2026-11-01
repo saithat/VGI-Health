@@ -1323,6 +1323,23 @@ spent 830 seconds evaluating before reporting these failures. Please repair the
 canonical/simulator integration while retaining both assertions. Render's
 targeted `lake build Ehr.Render` passes. Render has not edited Sim or content.
 
+A compiled replay of the **unchanged** `PolicyTests.canonicalDay` definitions
+confirms `completed = false` and reports the concrete blockers:
+`ca-title22-70223-hp-24-hours:temporal026` and `:temporal027` are missing, followed
+by `structured display or action label required` and `no reachable unmet goal`.
+Its actual trace has zero popups while the reported completed-task floor has one,
+which also explains the second assertion failure. Please supply truthful episode
+phase/encounter context and required structured data through the owning adapters;
+do not fabricate completed H&P evidence to enable an outpatient prescription.
+The diagnostic uses the real compiled `simulate`, not a replacement planner.
+
+**New main brief requirement (`f60a795`):** coordinate a Lean-owned
+`aria : UiScreen → AriaNode` contract and its app fidelity consumer. Existing
+render theorems are over UiScreen; `app/src/ehr/ui/fidelity.ts` still derives
+expected ARIA in TypeScript and retains the old nav interpretation. That is not
+a proved Lean ARIA projection. The new work is explicitly tracked in
+TODO_PROOFS.md, separately from the completed semantic render proofs.
+
 **WASM owner:** rebuild/refresh installed assets and source manifest after merging
 this content checkpoint. Core/Render runtime definitions and wire types were not
 changed here, but the manifest hashes content sources and is now stale. Native and

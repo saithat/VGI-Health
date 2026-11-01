@@ -49,3 +49,14 @@ semantic T11 distinguishes the requested full and compact record projections.
 applicable commit review, including when a compact sidebar is counted as shown.
 All revised semantic proofs compile and are axiom-audited; no render proof hole.
 The original full HTML/FHIR theorem statements remain unchanged.
+
+## Newly merged accessibility-tree requirement
+
+Main `f60a795` adds `aria : UiScreen → AriaNode` and proofs over that expected
+accessibility tree to BRIEF.md. That projection and its theorem surface are
+**not started**. The existing 35 render Comparator contracts cover the semantic
+UiScreen and legacy HTML/FHIR boundaries; they do not claim this new extension.
+The app still computes expected ARIA in TypeScript. A follow-up must define the
+Lean projection, prove its design contracts, and have the app fidelity gate
+consume it, including real nav click entries. No unfinished theorem declaration
+or proof hole has been added to the completed render modules.

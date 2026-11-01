@@ -107,13 +107,24 @@ function checkUi(ui, view, program, display, name) {
   if (ui.modal) assert.ok(walk([ui.modal]).some((n) => n.button?.role === 'ack' && n.button.enabled));
 }
 console.log(`Native/WASM facts match for all ${bundleCount} Synthea bundles.`);
-const allStates = data('states');
 const shardCount = Number(process.env.EHR_RENDER_SHARD_COUNT ?? 1);
 const shardIndex = Number(process.env.EHR_RENDER_SHARD_INDEX ?? 0);
 assert.ok(Number.isInteger(shardCount) && shardCount >= 1 && shardCount <= 8);
 assert.ok(Number.isInteger(shardIndex) && shardIndex >= 0 && shardIndex < shardCount);
-const stateIndices = allStates.flatMap((_, i) => i % shardCount === shardIndex ? [i] : []);
-const states = stateIndices.map((i) => allStates[i]);
+// Optional pre-split inputs keep four workers from each retaining the entire
+// large state corpus. Original indexes and every expanded scan probe survive.
+const shardInput = process.env.EHR_RENDER_SHARD_INPUT ? read(process.env.EHR_RENDER_SHARD_INPUT) : null;
+const allStates = shardInput ? null : data('states');
+const total = shardInput?.total ?? allStates.length;
+const stateIndices = Array.from({length: total}, (_, i) => i).filter((i) => i % shardCount === shardIndex);
+if (shardInput) {
+  assert.equal(shardInput.shardIndex, shardIndex);
+  assert.equal(shardInput.shardCount, shardCount);
+  assert.deepEqual(shardInput.stateIndices, stateIndices);
+}
+const states = shardInput?.states ?? stateIndices.map((i) => allStates[i]);
+assert.equal(states.length, stateIndices.length);
+const scanStates = shardInput?.scanStates ?? allStates.filter(([name]) => name.endsWith('-expanded'));
 let checkedStates = 0;
 for (const [name, state] of states) {
   const input = { ...common, display, state };
@@ -161,7 +172,7 @@ for (const id of ['w1Rooming', 'w1Orders', 'w1Sign']) {
 const scanElement = common.spec.elements.find((e) => e.kind?.scan?.target === 'wristband');
 assert.ok(scanElement);
 let scanChecked = false;
-for (const [name, state] of allStates.filter(([name]) => name.endsWith('-expanded'))) {
+for (const [name, state] of scanStates) {
   const screen = common.program.screens.find((s) => s.id === state.screen);
   const component = screen.components.find((c) => c.kind?.field?.element === scanElement.id);
   if (!component) continue;
@@ -186,6 +197,6 @@ for (const method of ['facts', 'render']) assert.ok(JSON.parse(ehr[method]('{}')
 if (process.env.EHR_RENDER_SHARD_REPORT) {
   const wasmSha256 = createHash('sha256').update(readFileSync('app/public/ehr/ehr-interp.wasm')).digest('hex');
   const nativeSha256 = createHash('sha256').update(readFileSync(nativeExecutable)).digest('hex');
-  writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total: allStates.length, wasmSha256, nativeSha256}));
+  writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total, wasmSha256, nativeSha256}));
 }
 console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);
