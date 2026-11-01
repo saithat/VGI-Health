@@ -58,6 +58,9 @@ importers:
       '@medplum/core':
         specifier: 5.2.13
         version: 5.2.13
+      '@medplum/fhirtypes':
+        specifier: 5.2.13
+        version: 5.2.13
       '@medplum/react':
         specifier: 5.2.13
         version: 5.2.13(@mantine/core@8.3.18(@mantine/hooks@8.3.18(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@8.3.18(react@18.3.1))(@mantine/notifications@8.3.18(@mantine/core@8.3.18(@mantine/hooks@8.3.18(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@8.3.18(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/spotlight@8.3.18(@mantine/core@8.3.18(@mantine/hooks@8.3.18(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@8.3.18(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@medplum/core@5.2.13)(@medplum/react-hooks@5.2.13(@medplum/core@5.2.13)(react@18.3.1))(jsqr@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(signature_pad@5.1.4)
@@ -743,6 +746,10 @@ packages:
     peerDependenciesMeta:
       pdfmake:
         optional: true
+
+  '@medplum/fhirtypes@5.2.13':
+    resolution: {integrity: sha512-873u3gRX/u/BWSm3jkKKOWo48B0GmmQ3PBEkaMZ/gf1rweHsGl7SF2CFDOG6o/xkrA8QjFB5UwGMUCVWbASbFw==}
+    engines: {node: ^22.18.0 || >=24.2.0}
 
   '@medplum/react-hooks@5.2.13':
     resolution: {integrity: sha512-XV26vQ60QQDiEkjgUZU6ex4X0LVAW/gJRB726kihZbcD+h/gaZoz0wy2O2sTpF/WrAE7E7sxBFrqdWGZ9dLz0g==}
@@ -2617,6 +2624,8 @@ snapshots:
       react: 18.3.1
 
   '@medplum/core@5.2.13': {}
+
+  '@medplum/fhirtypes@5.2.13': {}
 
   '@medplum/react-hooks@5.2.13(@medplum/core@5.2.13)(react@18.3.1)':
     dependencies:
