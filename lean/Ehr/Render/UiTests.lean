@@ -18,6 +18,12 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Source-defined numeric scales have choices without adding a captured value. -/
+def numericClinicalChoices := (uiFieldKind (.coded "esi"), uiFieldKind (.coded "pain-0-10"))
+#guard numericClinicalChoices.1 == "code:1|2|3|4|5"
+#guard numericClinicalChoices.2 == "code:0|1|2|3|4|5|6|7|8|9|10"
+#guard uiFieldKind (.coded "other-system") == "code"
+
 /-- Witness a real source item without comparing its complete FHIR payload.
 The interpreter builds these items by mapping its current screen components. -/
 theorem uiSourceItem_mem (cx : Ctx) (component : Component)

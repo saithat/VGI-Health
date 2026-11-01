@@ -119,7 +119,7 @@
        "provenance": null,
        "pendingConfirm": false,
        "label": "Pain (0–10)",
-       "kind": "code",
+       "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
        "humanOnly": true,
        "comp": "w1Rooming.painScore"}}]}},
   {"field":

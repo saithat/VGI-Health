@@ -160,6 +160,8 @@ section 10's open kind string. The painter does not reconstruct value sets. -/
 def uiFieldKind : ValueKind → String
   | .quantity _ | .medicationDose => "qty"
   | .coded "formulary" => "code:" ++ "|".intercalate (formulary.map (·.name))
+  | .coded "esi" => "code:1|2|3|4|5"
+  | .coded "pain-0-10" => "code:0|1|2|3|4|5|6|7|8|9|10"
   | .coded _ => "code"
   | .text => "text" | .flag => "flag" | .identity => "identity"
   | .scan _ => "scan" | .cosign => "cosign"

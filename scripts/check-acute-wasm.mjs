@@ -51,8 +51,25 @@ try {
     while (pending.length) {
       const screen = pending.shift(), state = states.get(screen);
       const input = { ...base, state };
-      equal('render-ui', input);
+      const screenUi = equal('render-ui', input);
       views++;
+      const scale = { w3Triage: ['triageAcuity', 'code:1|2|3|4|5', '3'],
+        w4Flowsheet: ['painReassessment', 'code:0|1|2|3|4|5|6|7|8|9|10', '4'] }[screen];
+      if (scale) {
+        const walk = nodes => nodes.flatMap(node => [node, ...walk(node.section?.children ?? node.columns?.children ?? node.presentation?.children ?? node.rowAction?.children ?? node.tabs?.body ?? [])]);
+        const field = walk(screenUi.workspace).find(node => node.field?.comp === `${screen}.${scale[0]}`)?.field;
+        assert.equal(field?.kind, scale[1]);
+        assert.equal(field?.value, null, `${scale[0]}: no default selection`);
+        assert.ok(!state.captured.some(item => item.element === scale[0]));
+        const entered = equal('step', { ...input, event: { enter: { comp: field.comp, value: { code: { c: scale[2] } } } } });
+        assert.equal(entered.result, 'ok');
+        const captured = entered.state.captured.find(item => item.element === scale[0]);
+        assert.equal(captured?.byHuman, true);
+        assert.equal(captured?.confirmed, true);
+        for (const key of ['receipts', 'commits', 'orderSlot']) assert.deepEqual(entered.state[key], state[key]);
+        equal('render-ui', { ...base, state: entered.state });
+        views++;
+      }
       if (['w3Provider', 'w4Mar'].includes(screen)) {
         const selected = equal('step', { ...input, event: { selectTab: { comp: `${screen}.chart`, idx: 6 } } });
         assert.equal(selected.result, 'ok');
@@ -93,8 +110,8 @@ try {
     }
     assert.equal(states.size, program.screens.length, `${persona}: every acute screen reachable`);
   }
-  assert.equal(views, 18);
-  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, 14 reachable screens (including 2 Home views), 2 Imaging tabs and 2 unconfirmed nursing outlines agree; navigation adds no human attestation or commits.\n');
+  assert.equal(views, 20);
+  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, 14 reachable screens (including 2 Home views), 2 Imaging tabs, 2 unconfirmed nursing outlines and 2 manually selected numeric scales agree; navigation adds no human attestation or commits.\n');
 } finally {
   rmSync(fixtures, { recursive: true, force: true });
 }

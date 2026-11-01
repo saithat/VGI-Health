@@ -1,3 +1,7 @@
+## Acute numeric-scale choices (2026-11-01)
+
+Lean now emits the existing code-option payload for the spec-defined ESI 1–5 and pain 0–10 scales. This fixes empty numeric menus without a default, capture, receipt, commit or clinical-rule change. Other unenumerated code systems keep free entry. Native/WASM and browser tests check exact options, no automatic selection and ordinary human code entry. No React choice-set inference or new control kind is introduced.
+
 ## Acute MAR SIG and PRN projection (2026-11-01)
 
 The acute MAR supplies full dosage directions as Instructions and preserves a coded PRN indication. Both valid FHIR asNeeded choices classify the modeled dosage instruction; only exact patient/encounter/order-linked administrations populate PRN history. The painter accepts Instructions and PRN indication as additive left-hand MAR metadata keys, preserving legacy Frequency support. Neither key is a time column or administration-detail record. No spec, clinical rule or original theorem statement changes.

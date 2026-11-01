@@ -145,6 +145,84 @@ for (const [screen, button, elements] of [
 }
 test.afterAll(() => rmSync(fixtures, { recursive: true, force: true }));
 
+for (const [persona, screen, element, count, choice] of [
+  ["P2", "w3Triage", "triageAcuity", 5, "3"],
+  ["P3", "w4Flowsheet", "painReassessment", 11, "4"],
+] as const) {
+  test(`${screen}: ${element} supplies its numeric choices without an automatic selection`, async ({
+    page,
+  }) => {
+    const base = {
+      spec: read(join(root, "releases/v1/spec.json")),
+      program: read(join(root, `releases/v1/personas/${persona}.json`)),
+      user: read(join(fixtures, `${persona}-user.json`)),
+      ...native<FactsOutput>("facts", {
+        bundle: read(join(fixtures, `${persona}.json`)),
+        context: read(join(fixtures, `${persona}-context.json`)),
+      }),
+    };
+    const input: RenderInput = { ...base, state: native<State>("init", base) };
+    const events: Event[] = [];
+    await page.exposeFunction("recordAcuteEvent", (event: Event) => {
+      events.push(event);
+    });
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    const paint = async () => {
+      const ui = native<UiScreen>("render-ui", input);
+      await page.evaluate(
+        (screen) =>
+          window.renderUi(screen, null, (event) => {
+            void window.recordAcuteEvent(event);
+          }),
+        ui,
+      );
+      expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+        expectedAria(ui),
+      );
+    };
+    const advance = async (count: number) => {
+      await expect.poll(() => events.length).toBe(count);
+      const next = native<StepOutput>("step", {
+        ...input,
+        event: events[count - 1],
+      });
+      expect(next.result).toBe("ok");
+      input.state = next.state;
+      await paint();
+    };
+    await paint();
+    await page
+      .locator(`button[data-comp-id="${input.state.screen}.nav.${screen}"]`)
+      .click();
+    await advance(1);
+    expect(
+      input.state.captured.find((item) => item.element === element),
+    ).toBeUndefined();
+    const field = page.locator(`input[data-comp-id="${screen}.${element}"]`);
+    await expect(field).toHaveValue("");
+    await field.click();
+    await expect(page.getByRole("option")).toHaveCount(count);
+    expect(events).toHaveLength(1);
+    const before = input.state;
+    await page.getByRole("option", { name: choice, exact: true }).click();
+    await advance(2);
+    expect(events[1]).toEqual({
+      enter: { comp: `${screen}.${element}`, value: { code: { c: choice } } },
+    });
+    expect(
+      input.state.captured.find((item) => item.element === element),
+    ).toMatchObject({
+      byHuman: true,
+      confirmed: true,
+      value: { code: { c: choice } },
+    });
+    expect(input.state.receipts).toEqual(before.receipts);
+    expect(input.state.commits).toEqual(before.commits);
+    await expect(field).toHaveValue(choice);
+  });
+}
+
 for (const [
   persona,
   start,
