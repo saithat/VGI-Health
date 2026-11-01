@@ -358,6 +358,14 @@ ISO payload timestamps formerly became a local date without their clock. The for
 
 This source passes build/lint, **226** app tests, **84** agent tests, **69** desktop/narrow app checks, **96** widget screenshot checks and the six direct canonical/Notes ARIA captures. The **81** default-suite skips are opt-in captures and duplicate narrow probes. Lean source and its **89** original theorem headers are unchanged from the prior fully audited checkpoint; `make wasm-check` confirms the same `dc8197ca…` hash. Certification was regenerated and remains **15/15**, with **18/18** bad programs rejected. The updated thirty-four viewport images, captured Notes tree and [review gallery](presentation-gallery.md) are committed. The final control and whole-persona browser passes follow on the frozen merged build.
 
+### Shared-banner data handoff
+
+The actual canonical chart review identified a provider-provenance issue outside the widget scope: the Synthea adult sample has no nominated care-provider reference, but `bannerOf` uses its first encounter participant as both PCP fallback and Attending. [FHIR Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) distinguish those associations. The evidence and a conservative source-mapping request are recorded in `changes-requests.md` for shared-shell ownership. The frozen presentation build leaves that mapping unchanged.
+
+### Frozen polished-build control gate
+
+The `e09bfbb` build passes the complete bounded audit again: **2,666** working interactions, **114** explained disabled states, **0** dead controls and **0** errors. The actual unsafe-allergy proposal is rejected and its counterexample replay passes. The fast control regression and **51** widget/standard ARIA checks also pass, with three duplicate narrow probes skipped. `docs/audits/presentation-verification.json` binds this source to the actual emitted app-code hash and native proof/build identity. The broader fifteen-case matrix is still running at this checkpoint; it is recorded as pending rather than counted as complete.
+
 ## Shared shell, visual system and UI browser
 
 Lane: `lane/app`, 1 Nov 2026. The shared painter remains a projection of Lean's `UiScreen`. The new indigo application bar, blue activity strips, tinted patient banner, role colors and green signing actions are original VGI choices; no source assets are included.

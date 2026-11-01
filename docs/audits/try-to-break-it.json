@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "UNSAFE (demo): remove the allergy panel from Administer medication and remove the worklist allergy group, panel and 'Mark allergies reviewed' button.",
+    "summary": "Remove all allergy panels and the allergy mark-reviewed button from the W4 administration path (w4Admin and w4Worklist).",
     "patch": [
       {
         "op": "remove",

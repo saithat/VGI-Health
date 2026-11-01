@@ -1,0 +1,153 @@
+{
+  "source": {
+    "build": {
+      "revision": "e09bfbbaea328b1e75b42183c98ca434a7bb25b5",
+      "mainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
+      "leanHash": "dc8197ca8c17f98cc8e7184f8954d816ac261e213401fad7d668f32b10b57234",
+      "builtAt": "2026-11-01T11:33:41.089Z"
+    },
+    "nativeSha256": "ccf55f6c2c97c60a4cfcd5b8143ff098f9003c0065dfbd6f84ea219bebab5e2e",
+    "appBinding": {
+      "schemaVersion": 1,
+      "appSha256": "1aec20567c32907e9c55969b800dd43553e551efc99ff3d3b56929397ecb0b51"
+    }
+  },
+  "checks": {
+    "defaultLeanBuild": "passed",
+    "kernelReplay": "passed",
+    "coreComparator": "passed",
+    "rendererComparatorStatements": 50,
+    "originalRenderTheoremHeadersUnchanged": 89,
+    "certification": {
+      "accepted": 15,
+      "total": 15,
+      "badRejected": 18,
+      "badTotal": 18
+    },
+    "world2": {
+      "completed": 1284,
+      "total": 1284,
+      "schedules": 50
+    },
+    "archiveRun1P3": {
+      "mismatches": 0,
+      "tasks": 424,
+      "events": 14658,
+      "baselineReplays": 3,
+      "baselineEvents": 137
+    },
+    "nativeWasm": {
+      "presentations": 16,
+      "factBundles": 324,
+      "canonicalVariants": 652
+    },
+    "clinicalFactsInvariance": {
+      "bundles": 324,
+      "unchanged": true,
+      "binarySha256": "ccf55f6c2c97c60a4cfcd5b8143ff098f9003c0065dfbd6f84ea219bebab5e2e",
+      "context": {
+        "today": "2026-10-31",
+        "now": 0,
+        "receipts": [],
+        "record": []
+      }
+    },
+    "efficiency": {
+      "taskMetricsAndNativePathsUnchanged": 27,
+      "workflowMetricGroupsUnchanged": 21
+    },
+    "appBuild": "passed",
+    "appLint": "passed",
+    "appUnitTests": 226,
+    "agentLint": "passed",
+    "agentTests": 84,
+    "appBrowser": {
+      "passed": 69,
+      "skipped": 81,
+      "skipScope": "Opt-in captures and duplicate narrow probes"
+    },
+    "widgetAria": {
+      "passed": 51,
+      "skipped": 3
+    },
+    "screenshots": {
+      "passed": 96,
+      "widths": [
+        1024,
+        1280,
+        1440
+      ],
+      "height": 900,
+      "committedPairs": 17
+    },
+    "directCanonicalAriaRoles": 5,
+    "buttons": {
+      "counts": {
+        "works": 2666,
+        "disabled-with-reason": 114,
+        "dead": 0,
+        "error": 0
+      },
+      "personas": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "RN2"
+      ],
+      "scope": "Bounded sample, at most 48 observed configurations per persona; not an exhaustive state census.",
+      "report": "buttons.json",
+      "reportSha256": "e113b4fe65278ca3b59e286e6b189ed9eafb2a90d1d240ac22fbadc0320fe45f",
+      "realUnsafeProposal": "Rejected for reviewsBeforeCommit; counterexample replay passed",
+      "sampledConfigurations": [
+        {
+          "persona": "P1",
+          "sampled": 25,
+          "remaining": 0
+        },
+        {
+          "persona": "P2",
+          "sampled": 14,
+          "remaining": 0
+        },
+        {
+          "persona": "P3",
+          "sampled": 48,
+          "remaining": 8
+        },
+        {
+          "persona": "P4",
+          "sampled": 23,
+          "remaining": 0
+        },
+        {
+          "persona": "P5",
+          "sampled": 39,
+          "remaining": 0
+        },
+        {
+          "persona": "RN2",
+          "sampled": 48,
+          "remaining": 8
+        }
+      ]
+    },
+    "buttonRegression": "passed",
+    "personaMatrix": {
+      "status": "running",
+      "cases": 15,
+      "semanticVariants": 2877,
+      "scope": "Every native group/tab/alert variant for one appropriate World 2 task/patient per role across v1/v2/v3. The pending broad run is not counted as a completed gate."
+    },
+    "directImportedNotesAria": "passed; every displayed note body also equals its native source string"
+  },
+  "handoffs": [
+    {
+      "area": "shared shell",
+      "status": "recorded",
+      "topic": "PCP/attending source provenance",
+      "location": "docs/design/changes-requests.md#presentation-handoff--banner-provider-provenance-1-nov-realism-review"
+    }
+  ]
+}

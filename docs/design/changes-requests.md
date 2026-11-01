@@ -2086,3 +2086,9 @@ landmark with one short message rather than a fabricated empty Record table.
 says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
 wording is normalized only when supplied. Source codes/text remain in accessible
 row labels and native tooltips; no FHIR resource or captured value is rewritten.
+
+## Presentation handoff — banner provider provenance (1 Nov realism review)
+
+For SHELL / semantic banner ownership: `Render/Fhir.lean:bannerOf` falls back from a missing `Patient.generalPractitioner` to the first encounter participant, then also labels that participant Attending. The adult Synthea sample used by the canonical capture has no `generalPractitioner` and only a `PPRF` participant type; the current frame consequently shows that encounter provider as PCP and Attending.
+
+Please keep the PCP tied to its supplied patient care-provider reference (resolving provided resources/display text) and use encounter-role evidence for the attending label. Missing assignments should remain explicit. [FHIR R4 Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) define those separate associations. This is a semantic data follow-up for the shared banner; no spec/guard relaxation or widget API change is requested. Presentation leaves that shared-shell mapping unchanged in its frozen build.

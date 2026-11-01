@@ -1,6 +1,6 @@
 # Button audit
 
-Generated 2026-11-01T10:58:14.039Z. Preview build; one Chromium worker.
+Generated 2026-11-01T11:48:32.484Z. Preview build; one Chromium worker.
 
 | Scope | Works | Disabled with reason | Dead | Error |
 |---|---:|---:|---:|---:|
@@ -41,7 +41,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
 | /?audit=buttons · P3 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P3 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -54,7 +54,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P4 · — | sign-in | P4 · Pediatric NP | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons · P4 · — | sign-in | P4 · Pediatric NP | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
 | /?audit=buttons · P4 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P4 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | worklist | Search Medplum | — | button / app | works | DOM changed |
@@ -66,7 +66,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
 | /?audit=buttons · P5 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P5 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -79,7 +79,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
 | /?audit=buttons · RN2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -92,7 +92,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
+| /?audit=buttons · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
 | /?audit=buttons · baseline · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · baseline · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · baseline · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -498,7 +498,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"depressionScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w1Rooming | /medplum/fhir/R4/Provenance/1874a10f-65a8-47f8-a9d9-90de8112f424 | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w1Rooming | /medplum/fhir/R4/Provenance/ea8d7576-0c4c-4d58-a2e8-eaea2b9df79b | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Back | w1Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Patient workspace | w1Rooming.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
@@ -528,7 +528,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w7Queue | Care gaps | w7Queue.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w1MedRec | /medplum/fhir/R4/Provenance/0268775f-4d87-42ed-a69f-63a00943f84f | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w1MedRec | /medplum/fhir/R4/Provenance/0f52431d-ffaa-4e48-b3ec-077e0e092d5f | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -683,7 +683,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w7Review | /medplum/fhir/R4/Provenance/329a4eaa-a1ac-40d3-ad01-1fa21a54ac53 | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w7Review | /medplum/fhir/R4/Provenance/c11f2d98-0173-4d1b-8478-efbaf005f12b | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Encounters | w7Review.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -775,7 +775,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"isolationScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P2 · canonical-P2 | w3Triage | /medplum/fhir/R4/Provenance/b89e43b9-c44c-4dbe-a10c-8cfd13469861 | — | button / app | works | DOM changed |
+| /?audit=buttons · P2 · canonical-P2 | w3Triage | /medplum/fhir/R4/Provenance/712f9188-caee-495d-9113-fdbd87d945ae | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Back | w3Triage.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Results | w3Triage.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -958,7 +958,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w4Worklist | Collapse section | w4Worklist.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Collapse section | w4Worklist.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Mark allergies reviewed (start of shift) | w4Worklist.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/4a0c9935-5227-4049-a8a8-3ab9b48eda4d | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/f8b8c07d-e1ec-4ca1-810f-43dfb69de4c0 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w4Worklist | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w4Worklist | Search chart | w4Worklist.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Back | w4Worklist.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
@@ -998,7 +998,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"element":"depressionScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/0939a080-0fb1-48bf-8d4f-ad916bae5956 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/c2ad4494-b3ad-4992-8cb5-9434d5dabca6 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w2Inbasket | Result | w2Inbasket.nav.w2Result | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w2Inbasket | Message patient | w2Inbasket.nav.w2Message | click / {"button":{"action":{"goto":{"screen":"w2Message"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1045,7 +1045,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/11485bbf-c036-4ce2-b548-675df4566450 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/b4d90b3e-ad1f-4dc3-b31c-954e4de6407a | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -1163,7 +1163,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w1MedRec | Immunizations | w1MedRec.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Coverage | w1MedRec.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/77a3479b-7992-452b-8420-2ad754420134 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/d2bd1a53-c6ae-4cf1-8594-552b9e7d247f | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -1275,7 +1275,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w7Review | /medplum/fhir/R4/Provenance/2adfdeba-f2fd-459d-9216-acc0715a53e0 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w7Review | /medplum/fhir/R4/Provenance/7a81f247-899d-4af5-8735-77ba5244d22e | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w7Review | Go to decision | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Collapse section | w3Triage.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
@@ -1292,7 +1292,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"element":"isolationScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w3Triage | /medplum/fhir/R4/Provenance/f8320666-2c74-4a12-8726-5c77c1819998 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w3Triage | /medplum/fhir/R4/Provenance/4253f60b-4d47-4b3c-9e75-cd6bd4a3f362 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w3Provider | Collapse section | w3Provider.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Provider | Search chart | w3Provider.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
@@ -1527,7 +1527,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w5Rooming | /medplum/fhir/R4/Provenance/f4dc23cd-986a-4fdf-aed7-612013c5dd1c | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w5Rooming | /medplum/fhir/R4/Provenance/3ec48f59-494d-4a8e-9c0a-a7db01cd40eb | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -1563,7 +1563,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w7Review | /medplum/fhir/R4/Provenance/14416f6c-75a9-46e9-8029-19d199b3edc3 | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w7Review | /medplum/fhir/R4/Provenance/03c7f769-f6a3-4b8c-88c9-65270462c1ce | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Encounters | w7Review.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1692,7 +1692,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w5Close | Confirm prefilled value | w5Close.exam | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Close | Confirm prefilled value | w5Close.anticipatoryGuidance | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"anticipatoryGuidance"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Immunizations | Record immunization | w5Immunizations.commit.recordImmunization | click / {"button":{"action":{"commit":{"commit":"recordImmunization"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w5Immunizations | /medplum/fhir/R4/Immunization/0b7c60d0-90c6-47a3-9588-2873d825a858 | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w5Immunizations | /medplum/fhir/R4/Immunization/029e0612-ab90-434c-938c-00ab37cf5e53 | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Immunizations | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | home | Consults | home.work.w1Rooming | click / {"button":{"action":{"goto":{"screen":"w1Rooming"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1726,7 +1726,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"depressionScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w1Rooming | /medplum/fhir/R4/Provenance/81b59231-4f35-415f-81d1-1873731bcb14 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w1Rooming | /medplum/fhir/R4/Provenance/438d7680-964f-435d-9703-beba88579652 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Back | w1Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Patient workspace | w1Rooming.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1770,7 +1770,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w6PreOp | Encounters | w6PreOp.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w1MedRec | /medplum/fhir/R4/Provenance/f0616520-c0a6-4de7-abaf-1fbd1bf133df | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w1MedRec | /medplum/fhir/R4/Provenance/bb9c892b-f771-433b-83a2-9e98f82971cb | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -2223,16 +2223,16 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w1Sign | Immunizations | w1Sign.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Sign | Coverage | w1Sign.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Sign op note | w6OpNote.commit.signOpNote | click / {"button":{"action":{"commit":{"commit":"signOpNote"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/DocumentReference/ebe8ebb7-d661-472a-b3f0-6ced3f44cf64 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/DocumentReference/48d85f32-b89b-4486-af33-445ed9d82bfa | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/Procedure/df05a7fe-f18c-4897-9c22-c2f140dd9129 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/Procedure/a2588b07-7fc8-4b7d-abe1-39b3d10d59b8 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Discharge patient | w6Discharge.commit.discharge | click / {"button":{"action":{"commit":{"commit":"discharge"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Condition/cae267ff-d6a1-4b55-8e56-4c790207330b | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Condition/85405103-1dcb-44c7-b61c-cf4682de6c86 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/DocumentReference/05a1dbad-059b-427c-9c26-7dc5c99911a8 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/DocumentReference/6af842fa-f36f-44e9-a12b-1d088743601c | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Encounter/30c1f464-a200-4855-b875-3b7a3036d0e7 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Encounter/7b7779bc-22c5-4810-b596-d9057fdc3b29 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | home | Collapse section | home.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | home | Ward: shift worklist and MAR | home.toolbar.ward | click / {"button":{"action":{"goto":{"screen":"w4Worklist"}}}} / lean | works | Lean state changed; result "ok" |
@@ -2261,7 +2261,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w4Worklist | Collapse section | w4Worklist.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Collapse section | w4Worklist.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Mark allergies reviewed (start of shift) | w4Worklist.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/289b63b6-64bf-43f3-848d-1d7a65867d65 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/a2da1d99-6959-4e2a-a82c-2ac783d8ac8a | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Search chart | w4Worklist.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Back | w4Worklist.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
@@ -2301,7 +2301,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"element":"depressionScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/60b8821e-24cd-4a66-832b-88442f57c693 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/e2bfa95b-8e51-4e69-bde1-f9a03d10b115 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w2Inbasket | Result | w2Inbasket.nav.w2Result | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w2Inbasket | Message patient | w2Inbasket.nav.w2Message | click / {"button":{"action":{"goto":{"screen":"w2Message"}}}} / lean | works | Lean state changed; result "ok" |
@@ -2348,7 +2348,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/23e76812-38a3-42de-86b4-ab09e88285fd | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/4c3447a2-4a99-494e-9308-237ef0eb8497 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -2466,7 +2466,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w1MedRec | Immunizations | w1MedRec.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Coverage | w1MedRec.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/7a552e96-2c38-4887-b377-2f034dfbeae0 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/d0e30c3c-5da3-48a4-9865-cbe58a5d3d53 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -2578,7 +2578,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w7Review | /medplum/fhir/R4/Provenance/af3d6a7a-2a28-4bf0-b925-863f861e4665 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w7Review | /medplum/fhir/R4/Provenance/5165d1cc-379f-4220-b061-4805fa426224 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w7Review | Go to decision | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Collapse section | w3Triage.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
@@ -2595,7 +2595,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"element":"isolationScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w3Triage | /medplum/fhir/R4/Provenance/79c17071-dc84-490c-8d0d-253b3a1a4e36 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w3Triage | /medplum/fhir/R4/Provenance/7c2ab6df-8f0e-4948-a878-c0cfa3db868c | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w3Provider | Collapse section | w3Provider.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Provider | Search chart | w3Provider.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
