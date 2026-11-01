@@ -648,6 +648,7 @@ stretch dashboard views → T7, then T6 → P4's immunization steps (keep weight
 - [ ] The app's screen logic is the Lean interpreter compiled to WASM (or option B, if the owner approved it). Native and WASM builds agree on thousands of random programs and click sequences.
 - [ ] Seeded bad programs 9–12 (alerts) fail with counterexamples. A1–A4 hold for every deployed version.
 - [ ] W7 (refill requests) is built and used in P1's simulated days.
+- [ ] Every visible control works or is removed (owner decision, Oct 31). `pnpm --filter app audit:buttons` clicks every enabled control on every route and EHR screen; each must have an observable effect, and each disabled control must show its reason. No click may throw. The report is in `docs/audits/buttons.md`, and a regression test blocks new dead controls.
 - [ ] The CURES and naloxone rules are in spec v1 with citations; bad programs 13–14 are rejected; `docs/regulations.md` maps every spec rule to its source.
 - [ ] Release v1.1: the new component kind is in the Lean semantics with proofs re-checked; all personalized UIs still pass; per-persona surfacing decisions are recorded.
 - [ ] The per-version screen check passes for every deployed version, and runs offline before deploy (a failing version is never deployed).
