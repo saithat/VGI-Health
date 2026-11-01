@@ -39,12 +39,13 @@ const roles: Record<string, string> = {
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 function LiveWorkspace({ workspace }: { workspace: Workspace }) {
   const { session, catalog, program, patient, persona, verdict } = workspace;
-  const { ui, state, view, result } = useSyncExternalStore(
+  const { ui, state, result } = useSyncExternalStore(
     session.subscribe,
     session.getSnapshot,
   );
   const [error, setError] = useState("");
   const [inspecting, setInspecting] = useState(false);
+  const view = inspecting ? session.getSnapshot().view : undefined;
   const dispatch = (event: Parameters<typeof session.dispatch>[0]) => {
     try {
       session.dispatch(event);
@@ -93,98 +94,101 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
             closeButtonProps={{ "aria-label": "Close inspector" }}
             size="lg"
           >
-            <div className="inspector-content">
-              <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
-                ← UI browser
-              </a>
-              <label>
-                Persona{" "}
-                <select
-                  aria-label="Persona"
-                  value={persona}
-                  onChange={(event) => {
-                    const id = event.currentTarget.value;
-                    navigate(
-                      ehrUrl(
-                        currentProgram(catalog, id, program.run),
-                        defaultPatient(catalog, id).id,
-                        id,
-                      ),
-                    );
-                  }}
+            {view && (
+              <div className="inspector-content">
+                <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
+                  ← UI browser
+                </a>
+                <label>
+                  Persona{" "}
+                  <select
+                    aria-label="Persona"
+                    value={persona}
+                    onChange={(event) => {
+                      const id = event.currentTarget.value;
+                      navigate(
+                        ehrUrl(
+                          currentProgram(catalog, id, program.run),
+                          defaultPatient(catalog, id).id,
+                          id,
+                        ),
+                      );
+                    }}
+                  >
+                    {personas.map((id) => (
+                      <option key={id}>{id}</option>
+                    ))}
+                  </select>
+                </label>
+                <details className="patient-switcher">
+                  <summary>
+                    {patient.name} · {patient.age} · {patient.encounterClass} ·
+                    Change patient
+                  </summary>
+                  <PatientPicker
+                    catalog={catalog}
+                    value={patient.id}
+                    onChange={(selected) =>
+                      navigate(ehrUrl(program, selected.id, persona))
+                    }
+                  />
+                </details>
+                <p>
+                  {program.release} · {program.path}
+                </p>
+                <Button
+                  size="xs"
+                  onClick={() => navigate(window.location.href)}
                 >
-                  {personas.map((id) => (
-                    <option key={id}>{id}</option>
-                  ))}
-                </select>
-              </label>
-              <details className="patient-switcher">
-                <summary>
-                  {patient.name} · {patient.age} · {patient.encounterClass} ·
-                  Change patient
-                </summary>
-                <PatientPicker
-                  catalog={catalog}
-                  value={patient.id}
-                  onChange={(selected) =>
-                    navigate(
-                      ehrUrl(program, selected.id, persona),
-                    )
+                  Reset episode
+                </Button>
+                <a
+                  href={
+                    program.run
+                      ? `/dashboard?run=${encodeURIComponent(program.run)}`
+                      : "/dashboard"
                   }
-                />
-              </details>
-              <p>
-                {program.release} · {program.path}
-              </p>
-              <Button size="xs" onClick={() => navigate(window.location.href)}>
-                Reset episode
-              </Button>
-              <a
-                href={
-                  program.run
-                    ? `/dashboard?run=${encodeURIComponent(program.run)}`
-                    : "/dashboard"
-                }
-              >
-                Dashboard
-              </a>
-              <h2>Current screen</h2>
-              <p>
-                {view.title} · {state.screen}
-              </p>
-              <p aria-live="polite">
-                Last step: {result === null ? "initialized" : pretty(result)}
-              </p>
-              <h2>Checker verdict</h2>
-              <p>{verdict.status}</p>
-              {verdict.output !== undefined && (
-                <pre>{pretty(verdict.output)}</pre>
-              )}
-              <h2>Enabled actions</h2>
-              <pre>{pretty(view.enabled)}</pre>
-              <h2>Blocked reasons</h2>
-              <pre>{pretty(view.blocked)}</pre>
-              <h2>Captured values · provenance</h2>
-              <pre data-testid="captured">{pretty(state.captured)}</pre>
-              <h2>Pending confirms</h2>
-              <pre>
-                {pretty(
-                  view.items
-                    .filter((item) => item.pendingConfirm)
-                    .map((item) => ({
-                      component: item.comp.id,
-                      value: item.value,
-                      provenance: item.provenance,
-                    })),
+                >
+                  Dashboard
+                </a>
+                <h2>Current screen</h2>
+                <p>
+                  {view.title} · {state.screen}
+                </p>
+                <p aria-live="polite">
+                  Last step: {result === null ? "initialized" : pretty(result)}
+                </p>
+                <h2>Checker verdict</h2>
+                <p>{verdict.status}</p>
+                {verdict.output !== undefined && (
+                  <pre>{pretty(verdict.output)}</pre>
                 )}
-              </pre>
-              <h2>Receipts</h2>
-              <pre>{pretty(state.receipts)}</pre>
-              <h2>Acknowledged alerts</h2>
-              <pre>{pretty(state.acked)}</pre>
-              <h2>Commit log</h2>
-              <pre data-testid="commits">{pretty(state.commits)}</pre>
-            </div>
+                <h2>Enabled actions</h2>
+                <pre>{pretty(view.enabled)}</pre>
+                <h2>Blocked reasons</h2>
+                <pre>{pretty(view.blocked)}</pre>
+                <h2>Captured values · provenance</h2>
+                <pre data-testid="captured">{pretty(state.captured)}</pre>
+                <h2>Pending confirms</h2>
+                <pre>
+                  {pretty(
+                    view.items
+                      .filter((item) => item.pendingConfirm)
+                      .map((item) => ({
+                        component: item.comp.id,
+                        value: item.value,
+                        provenance: item.provenance,
+                      })),
+                  )}
+                </pre>
+                <h2>Receipts</h2>
+                <pre>{pretty(state.receipts)}</pre>
+                <h2>Acknowledged alerts</h2>
+                <pre>{pretty(state.acked)}</pre>
+                <h2>Commit log</h2>
+                <pre data-testid="commits">{pretty(state.commits)}</pre>
+              </div>
+            )}
           </Drawer>
         </>
       )}

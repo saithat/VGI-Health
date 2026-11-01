@@ -114,7 +114,9 @@ function Counterexample({
   factory?: InterpFactory | undefined;
 }) {
   const [step, setStep] = useState(0);
-  const [manualEvents, setManualEvents] = useState<import("../../../lean/generated/ehr-types").Event[]>([]);
+  const [manualEvents, setManualEvents] = useState<
+    import("../../../lean/generated/ehr-types").Event[]
+  >([]);
   const path = rejection.check.counterexample ?? [];
   const events = [...path.slice(0, step), ...manualEvents];
   const event = path[step - 1];
@@ -139,14 +141,37 @@ function Counterexample({
         <p>{rejection.check.message ?? "No property message recorded."}</p>
       </div>
       <div className="dash-controls">
-        <button disabled={!step && !manualEvents.length} title={!step && !manualEvents.length ? "Already at the initial state" : undefined} onClick={() => { setStep(0); setManualEvents([]); }}>Reset path</button>
-        <button disabled={!step} title={!step ? "Already at the first event" : undefined} onClick={() => { setStep((n) => n - 1); setManualEvents([]); }}>
+        <button
+          disabled={!step && !manualEvents.length}
+          title={
+            !step && !manualEvents.length
+              ? "Already at the initial state"
+              : undefined
+          }
+          onClick={() => {
+            setStep(0);
+            setManualEvents([]);
+          }}
+        >
+          Reset path
+        </button>
+        <button
+          disabled={!step}
+          title={!step ? "Already at the first event" : undefined}
+          onClick={() => {
+            setStep((n) => n - 1);
+            setManualEvents([]);
+          }}
+        >
           Previous event
         </button>
         <button
           disabled={step >= path.length}
           title={step >= path.length ? "No more recorded events" : undefined}
-          onClick={() => { setStep((n) => n + 1); setManualEvents([]); }}
+          onClick={() => {
+            setStep((n) => n + 1);
+            setManualEvents([]);
+          }}
         >
           Next event
         </button>
@@ -160,8 +185,13 @@ function Counterexample({
             <button
               aria-current={step === 0 ? "step" : undefined}
               disabled={step === 0 && !manualEvents.length}
-              title={step === 0 && !manualEvents.length ? "Current state" : undefined}
-              onClick={() => { setStep(0); setManualEvents([]); }}
+              title={
+                step === 0 && !manualEvents.length ? "Current state" : undefined
+              }
+              onClick={() => {
+                setStep(0);
+                setManualEvents([]);
+              }}
             >
               Initial state
             </button>
@@ -171,8 +201,15 @@ function Counterexample({
               <button
                 aria-current={step === i + 1 ? "step" : undefined}
                 disabled={step === i + 1 && !manualEvents.length}
-                title={step === i + 1 && !manualEvents.length ? "Current event" : undefined}
-                onClick={() => { setStep(i + 1); setManualEvents([]); }}
+                title={
+                  step === i + 1 && !manualEvents.length
+                    ? "Current event"
+                    : undefined
+                }
+                onClick={() => {
+                  setStep(i + 1);
+                  setManualEvents([]);
+                }}
               >
                 {eventLabel(e)}
               </button>
@@ -192,7 +229,9 @@ function Counterexample({
             specVersion={rejection.record.specVersion}
             patch={rejection.patch}
             events={events}
-            onEvent={event => setManualEvents(current => [...current, event])}
+            onEvent={(event) =>
+              setManualEvents((current) => [...current, event])
+            }
             highlight={[...rejection.targets, comp]}
             factory={factory}
           />
@@ -435,8 +474,18 @@ function BeforeAfter({
       </p>
       <div className="dash-controls">
         <button
-          disabled={!step && JSON.stringify(beforeEvents) === JSON.stringify(prefix) && JSON.stringify(afterEvents) === JSON.stringify(prefix)}
-          title={!step && JSON.stringify(beforeEvents) === JSON.stringify(prefix) && JSON.stringify(afterEvents) === JSON.stringify(prefix) ? "Screens are already reset" : undefined}
+          disabled={
+            !step &&
+            JSON.stringify(beforeEvents) === JSON.stringify(prefix) &&
+            JSON.stringify(afterEvents) === JSON.stringify(prefix)
+          }
+          title={
+            !step &&
+            JSON.stringify(beforeEvents) === JSON.stringify(prefix) &&
+            JSON.stringify(afterEvents) === JSON.stringify(prefix)
+              ? "Screens are already reset"
+              : undefined
+          }
           onClick={() => {
             setStep(0);
             setBeforeEvents(prefix);
@@ -447,7 +496,13 @@ function BeforeAfter({
         </button>
         <button
           disabled={step >= max || !!rejection}
-          title={rejection ? "Use the counterexample path for a rejected proposal" : step >= max ? "No more task events recorded for these versions" : undefined}
+          title={
+            rejection
+              ? "Use the counterexample path for a rejected proposal"
+              : step >= max
+                ? "No more task events recorded for these versions"
+                : undefined
+          }
           onClick={() => {
             const next = step + 1;
             setStep(next);
@@ -616,21 +671,57 @@ function BreakPanel({
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<Rejection | null>(null);
   const attack = attacks.find((a) => a.id === selected) ?? attacks[0];
-  const [capability, setCapability] = useState({ available: false, reason: "Checking local agent…" });
+  const [capability, setCapability] = useState({
+    available: false,
+    reason: "Checking local agent…",
+  });
   const [request, setRequest] = useState("");
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
-  useEffect(() => { void breakCapability().then(c => setCapability({ available: c.available, reason: c.reason ?? "" })).catch(e => setCapability({ available: false, reason: String(e) })); }, []);
+  useEffect(() => {
+    void breakCapability()
+      .then((c) =>
+        setCapability({ available: c.available, reason: c.reason ?? "" }),
+      )
+      .catch((e) => setCapability({ available: false, reason: String(e) }));
+  }, []);
   async function attempt() {
     setPending(true);
     setMessage("Running agent and checker…");
     try {
-      const response = await submitBreakAttempt(persona, request, run.manifest.runId);
-      setMessage(`${response.verdict}: ${response.property ?? ""} ${response.message ?? response.agentSays}`);
-      const record = [...run.records].reverse().find(r => r.persona === persona);
-      if (record && response.candidate) setResult({ id: "live-attempt", label: response.request, summary: response.candidate.summary, record: { ...record, versionBefore: record.versionAfter }, check: { status: response.verdict, property: response.property, message: response.message, counterexample: response.counterexample, screens: null, verdict: null }, patch: response.candidate.patch, targets: [] });
-    } catch (error) { setMessage(error instanceof Error ? error.message : String(error)); }
-    finally { setPending(false); }
+      const response = await submitBreakAttempt(
+        persona,
+        request,
+        run.manifest.runId,
+      );
+      setMessage(
+        `${response.verdict}: ${response.property ?? ""} ${response.message ?? response.agentSays}`,
+      );
+      const record = [...run.records]
+        .reverse()
+        .find((r) => r.persona === persona);
+      if (record && response.candidate)
+        setResult({
+          id: "live-attempt",
+          label: response.request,
+          summary: response.candidate.summary,
+          record: { ...record, versionBefore: record.versionAfter },
+          check: {
+            status: response.verdict,
+            property: response.property,
+            message: response.message,
+            counterexample: response.counterexample,
+            screens: null,
+            verdict: null,
+          },
+          patch: response.candidate.patch,
+          targets: [],
+        });
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -640,12 +731,41 @@ function BreakPanel({
         counterexample on the EHR.
       </p>
       <p className="dash-note">
-        Recorded examples are always available. {capability.available ? "Live attempts use the local authenticated agent and real checker." : capability.reason}
+        Recorded examples are always available.{" "}
+        {capability.available
+          ? "Live attempts use the local authenticated agent and real checker."
+          : capability.reason}
       </p>
-      {capability.available && run.manifest.ehr.mode === "real" && <form onSubmit={e => { e.preventDefault(); void attempt(); }}>
-        <label>Live request <textarea value={request} maxLength={2000} onChange={e => setRequest(e.currentTarget.value)} /></label>
-        <button type="submit" disabled={pending || !request.trim()} title={pending ? "An attempt is running" : !request.trim() ? "Enter a request first" : undefined}>Run live attempt</button>
-      </form>}
+      {capability.available && run.manifest.ehr.mode === "real" && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void attempt();
+          }}
+        >
+          <label>
+            Live request{" "}
+            <textarea
+              value={request}
+              maxLength={2000}
+              onChange={(e) => setRequest(e.currentTarget.value)}
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={pending || !request.trim()}
+            title={
+              pending
+                ? "An attempt is running"
+                : !request.trim()
+                  ? "Enter a request first"
+                  : undefined
+            }
+          >
+            Run live attempt
+          </button>
+        </form>
+      )}
       {message && <p role="status">{message}</p>}
       <form
         className="break-form"
@@ -658,7 +778,10 @@ function BreakPanel({
           Recorded proposal{" "}
           <select
             value={attack?.id ?? ""}
-            disabled={!attacks.length} title={!attacks.length ? "No recorded proposals in this run" : undefined}
+            disabled={!attacks.length}
+            title={
+              !attacks.length ? "No recorded proposals in this run" : undefined
+            }
             onChange={(e) => {
               setSelected(e.currentTarget.value);
               setResult(null);
@@ -671,7 +794,11 @@ function BreakPanel({
             ))}
           </select>
         </label>
-        <button type="submit" disabled={!attack} title={!attack ? "No recorded proposal available" : undefined}>
+        <button
+          type="submit"
+          disabled={!attack}
+          title={!attack ? "No recorded proposal available" : undefined}
+        >
           Show recorded verdict
         </button>
       </form>
@@ -746,10 +873,18 @@ function VersionList({
         </span>
         <span>—</span>
         <span>0 clicks / 0s KLM</span>
-        <Badge tone={run.certs.has(`certs/${persona}/v0.json`) ? "pass" : ""}>
+        <Badge
+          tone={
+            run.certs.has(`certs/${persona}/v0.json`) ||
+            run.files?.includes(`certs/${persona}/v0.json`)
+              ? "pass"
+              : ""
+          }
+        >
           {run.manifest.ehr.mode === "fake"
             ? "MOCK certificate"
-            : run.certs.has(`certs/${persona}/v0.json`)
+            : run.certs.has(`certs/${persona}/v0.json`) ||
+                run.files?.includes(`certs/${persona}/v0.json`)
               ? "Certificate recorded"
               : "Certificate unavailable"}
         </Badge>
@@ -850,7 +985,9 @@ export function Dashboard({
   >(null);
   const [loadedFactory, setLoadedFactory] = useState<InterpFactory>();
   const interpFactory =
-    run?.manifest.ehr.mode === "fake" ? undefined : suppliedFactory ?? loadedFactory;
+    run?.manifest.ehr.mode === "fake"
+      ? undefined
+      : (suppliedFactory ?? loadedFactory);
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -928,11 +1065,28 @@ export function Dashboard({
     setDetail(null);
     setDetailError("");
     if (run && selection) {
-      Promise.all([loadRunDetails(run, selectedPersona), run.manifest.ehr.mode === "fake" || suppliedFactory ? Promise.resolve(null) : loadWasmInterp()])
-        .then(([data, interp]) => { if (active) { setDetail(data); if (interp) setLoadedFactory(() => () => interp); } })
-        .catch((error: unknown) => { if (active) setDetailError(error instanceof Error ? error.message : String(error)); });
+      Promise.all([
+        loadRunDetails(run, selectedPersona),
+        run.manifest.ehr.mode === "fake" || suppliedFactory
+          ? Promise.resolve(null)
+          : loadWasmInterp(),
+      ])
+        .then(([data, interp]) => {
+          if (active) {
+            setDetail(data);
+            if (interp) setLoadedFactory(() => () => interp);
+          }
+        })
+        .catch((error: unknown) => {
+          if (active)
+            setDetailError(
+              error instanceof Error ? error.message : String(error),
+            );
+        });
     }
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [run, selection, selectedPersona, suppliedFactory]);
   const record = selection?.record;
   return (
@@ -956,7 +1110,9 @@ export function Dashboard({
             ))}
           </select>
         </label>
-        <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>Open EHR</a>
+        <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>
+          Open EHR
+        </a>
       </header>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
@@ -983,10 +1139,18 @@ export function Dashboard({
                 key={p.id}
                 disabled={
                   !run?.manifest.personas.includes(p.id) ||
-                  !versionsFor(run, p.id).length || persona === p.id
+                  !versionsFor(run, p.id).length ||
+                  persona === p.id
                 }
                 aria-pressed={persona === p.id}
-                title={!run?.manifest.personas.includes(p.id) || !versionsFor(run, p.id).length ? "No recorded versions for this persona" : persona === p.id ? "Current persona" : p.name}
+                title={
+                  !run?.manifest.personas.includes(p.id) ||
+                  !versionsFor(run, p.id).length
+                    ? "No recorded versions for this persona"
+                    : persona === p.id
+                      ? "Current persona"
+                      : p.name
+                }
                 onClick={() => {
                   setPersona(p.id);
                   setSelection(null);
@@ -1069,7 +1233,9 @@ export function Dashboard({
         closeButtonProps={{ "aria-label": "Close decision record" }}
       >
         {detailError && <p role="alert">{detailError}</p>}
-        {selection && !detail && !detailError && <p role="status">Loading decision replay…</p>}
+        {selection && !detail && !detailError && (
+          <p role="status">Loading decision replay…</p>
+        )}
         {run && detail && selection && (
           <>
             <div className="dash-controls">
@@ -1133,7 +1299,9 @@ export function Dashboard({
         closeButtonProps={{ "aria-label": "Close EHR replay" }}
       >
         {detailError && <p role="alert">{detailError}</p>}
-        {selection && !detail && !detailError && <p role="status">Loading EHR replay…</p>}
+        {selection && !detail && !detailError && (
+          <p role="status">Loading EHR replay…</p>
+        )}
         {detail &&
           selection &&
           (screenMode === "pair" ? (

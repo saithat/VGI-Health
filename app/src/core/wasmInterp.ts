@@ -105,10 +105,15 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
 declare const __LEAN_HASH__: string;
 const instances = new Map<string, Promise<Interp>>();
 /** Shared by all routes and live encounters; one initialized WASM instance per tab. */
-export function loadWasmInterp(assetBase = `${import.meta.env.BASE_URL}ehr/`): Promise<Interp> {
+export function loadWasmInterp(
+  assetBase = `${import.meta.env.BASE_URL}ehr/`,
+): Promise<Interp> {
   let instance = instances.get(assetBase);
   if (!instance) {
-    instance = initialize(assetBase).catch(error => { instances.delete(assetBase); throw error; });
+    instance = initialize(assetBase).catch((error) => {
+      instances.delete(assetBase);
+      throw error;
+    });
     instances.set(assetBase, instance);
   }
   return instance;
@@ -129,7 +134,8 @@ async function initialize(
   } = await import(/* @vite-ignore */ loaderUrl);
   return createWasmInterp(
     await loader.loadEhrInterp({
-      locateFile: (filename) => new URL(`${filename}?v=${__LEAN_HASH__}`, base).href,
+      locateFile: (filename) =>
+        new URL(`${filename}?v=${__LEAN_HASH__}`, base).href,
     }),
   );
 }

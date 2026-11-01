@@ -22,7 +22,16 @@ const medplumProxy = {
 
 export default defineConfig({
   envDir: "..",
-  define: { __LEAN_HASH__: JSON.stringify(JSON.parse(readFileSync(new URL("./public/ehr/manifest.json", import.meta.url), "utf8")).leanSourceHash) },
+  define: {
+    __LEAN_HASH__: JSON.stringify(
+      JSON.parse(
+        readFileSync(
+          new URL("./public/ehr/manifest.json", import.meta.url),
+          "utf8",
+        ),
+      ).leanSourceHash,
+    ),
+  },
   server: { proxy: medplumProxy },
   preview: { proxy: medplumProxy },
   build: {

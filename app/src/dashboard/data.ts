@@ -73,6 +73,8 @@ export interface RunData {
 }
 export type ReadJson = (path: string) => Promise<unknown>;
 
+const runRequests = new Map<string, Promise<unknown>>();
+
 /** The only dashboard network boundary: same-origin recorded JSON under /runs/. */
 export const readRunJson: ReadJson = async (path) => {
   if (
@@ -80,9 +82,24 @@ export const readRunJson: ReadJson = async (path) => {
     path.split("/").includes("..")
   )
     throw new Error("Invalid recorded-run path");
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`Cannot load ${path} (${response.status})`);
-  return response.json();
+  let pending = runRequests.get(path);
+  if (!pending) {
+    const revalidate = /\/(?:index|default|summary)\.json$/.test(path);
+    pending = (async () => {
+      const response = await fetch(path);
+      if (!response.ok)
+        throw new Error(`Cannot load ${path} (${response.status})`);
+      return response.json();
+    })();
+    runRequests.set(path, pending);
+    void pending.then(
+      () => {
+        if (revalidate) runRequests.delete(path);
+      },
+      () => runRequests.delete(path),
+    );
+  }
+  return pending;
 };
 export async function loadRun(
   id: string,
@@ -145,26 +162,75 @@ export async function loadRun(
   return run;
 }
 /** Summary contains measured outcomes, never program trees, patient contexts or traces. */
-export async function loadRunSummary(id: string, read: ReadJson = readRunJson): Promise<RunData> {
-  const data = z.object({ manifest: manifestSchema, records: z.array(decisionRecordSchema), days: z.array(dayResultSchema), complexity: complexitySchema.nullable(), files: z.array(z.string()) }).parse(await read(`/runs/${id}/summary.json`));
-  if (data.manifest.runId !== id || data.records.some(r => r.runId !== id || !data.manifest.personas.includes(r.persona))) throw new Error("Summary belongs to another run");
-  data.records.sort((a, b) => a.night - b.night || a.persona.localeCompare(b.persona));
+export async function loadRunSummary(
+  id: string,
+  read: ReadJson = readRunJson,
+): Promise<RunData> {
+  const data = z
+    .object({
+      manifest: manifestSchema,
+      records: z.array(decisionRecordSchema),
+      days: z.array(dayResultSchema),
+      complexity: complexitySchema.nullable(),
+      files: z.array(z.string()),
+    })
+    .parse(await read(`/runs/${id}/summary.json`));
+  if (
+    data.manifest.runId !== id ||
+    data.records.some(
+      (r) => r.runId !== id || !data.manifest.personas.includes(r.persona),
+    )
+  )
+    throw new Error("Summary belongs to another run");
+  data.records.sort(
+    (a, b) => a.night - b.night || a.persona.localeCompare(b.persona),
+  );
   data.days.sort((a, b) => a.day - b.day);
   return { ...data, programs: new Map(), certs: new Map(), replay: null };
 }
 /** Hydrate only this persona when opening a decision or replay. */
-export async function loadRunDetails(run: RunData, persona: string, read: ReadJson = readRunJson): Promise<RunData> {
+export async function loadRunDetails(
+  run: RunData,
+  persona: string,
+  read: ReadJson = readRunJson,
+): Promise<RunData> {
   if (!run.files) return run;
-  const detail = { ...run, programs: new Map(run.programs), certs: new Map(run.certs), days: [...run.days] };
-  await Promise.all(run.files.map(async file => {
-    if (file === "replay.json") detail.replay = replaySchema.parse(await read(`/runs/${run.manifest.runId}/${file}`));
-    else if (file.startsWith(`programs/${persona}/`)) detail.programs.set(file, programSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`)));
-    else if (file.startsWith(`certs/${persona}/`)) detail.certs.set(file, certificateSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`)));
-    else if (new RegExp(`^days/day-\\d+/${persona}\\.json$`).test(file)) {
-      const day = dayResultSchema.parse(await read(`/runs/${run.manifest.runId}/${file}`));
-      detail.days = detail.days.filter(d => d.persona !== day.persona || d.day !== day.day).concat(day);
-    }
-  }));
+  const detail = {
+    ...run,
+    programs: new Map(run.programs),
+    certs: new Map(run.certs),
+    days: [...run.days],
+  };
+  await Promise.all(
+    run.files.map(async (file) => {
+      if (file === "replay.json")
+        detail.replay = replaySchema.parse(
+          await read(`/runs/${run.manifest.runId}/${file}`),
+        );
+      else if (file.startsWith(`programs/${persona}/`))
+        detail.programs.set(
+          file,
+          programSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (file.startsWith(`certs/${persona}/`))
+        detail.certs.set(
+          file,
+          certificateSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (new RegExp(`^days/day-\\d+/${persona}\\.json$`).test(file)) {
+        const day = dayResultSchema.parse(
+          await read(`/runs/${run.manifest.runId}/${file}`),
+        );
+        detail.days = detail.days
+          .filter((d) => d.persona !== day.persona || d.day !== day.day)
+          .concat(day);
+      }
+    }),
+  );
   return detail;
 }
 export function programAt(
@@ -187,17 +253,41 @@ export function testPoints(run: RunData, persona: string) {
     .sort((a, b) => a.day - b.day);
 }
 
-
-const breakCapabilitySchema = z.object({ available: z.boolean(), backend: z.string().nullable(), reason: z.string().nullable() });
+const breakCapabilitySchema = z.object({
+  available: z.boolean(),
+  backend: z.string().nullable(),
+  reason: z.string().nullable(),
+});
 export async function breakCapability() {
   const response = await fetch("/__dev/try-to-break-it");
-  if (!response.ok) throw new Error("Live attempts require the local Vite server.");
+  if (!response.ok)
+    throw new Error("Live attempts require the local Vite server.");
   return breakCapabilitySchema.parse(await response.json());
 }
-const liveBreakSchema = z.object({ request: z.string(), persona: z.string(), agentSays: z.string(), verdict: z.enum(["pass", "fail", "invalid-patch"]), property: z.string().nullable(), message: z.string().nullable(), counterexample: checkResultSchema.shape.counterexample, candidate: z.object({ summary: z.string(), patch: jsonPatchSchema }).nullable() });
-export async function submitBreakAttempt(persona: string, request: string, run: string) {
-  const response = await fetch("/__dev/try-to-break-it", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona, request, run }) });
+const liveBreakSchema = z.object({
+  request: z.string(),
+  persona: z.string(),
+  agentSays: z.string(),
+  verdict: z.enum(["pass", "fail", "invalid-patch"]),
+  property: z.string().nullable(),
+  message: z.string().nullable(),
+  counterexample: checkResultSchema.shape.counterexample,
+  candidate: z
+    .object({ summary: z.string(), patch: jsonPatchSchema })
+    .nullable(),
+});
+export async function submitBreakAttempt(
+  persona: string,
+  request: string,
+  run: string,
+) {
+  const response = await fetch("/__dev/try-to-break-it", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ persona, request, run }),
+  });
   const body: unknown = await response.json();
-  if (!response.ok) throw new Error(z.object({ error: z.string() }).parse(body).error);
+  if (!response.ok)
+    throw new Error(z.object({ error: z.string() }).parse(body).error);
   return liveBreakSchema.parse(body);
 }

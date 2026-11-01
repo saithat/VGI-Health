@@ -11,36 +11,42 @@ export function catalogPlugin(): Plugin {
       attach(server);
     },
     configurePreviewServer(server) {
+      if (process.env.VGI_AUDIT_UNCOMPRESSED_BASELINE === "1") return;
       attach(server);
     },
   };
   function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
-      let catalog: Promise<unknown> | undefined;
-      server.middlewares.use(async (req, res, next) => {
-        const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
-        if (
-          pathname !== "/catalog.json" &&
-          !/^\/(releases|programs|fixtures)\//.test(pathname)
-        )
-          return next();
-        try {
-          res.setHeader("Content-Type", "application/json");
-          if (pathname === "/catalog.json") {
-            await sendArtifact(req, res, pathname, Buffer.from(JSON.stringify(await (catalog ??= buildCatalog()))));
-          } else {
-            const directory = pathname.split("/")[1] ?? "";
-            const file = resolve(root, decodeURIComponent(pathname.slice(1)));
-            if (
-              !file.startsWith(resolve(root, directory) + sep) ||
-              !file.endsWith(".json")
-            )
-              throw new Error("Invalid static path");
-            await sendArtifact(req, res, pathname, file);
-          }
-        } catch {
-          res.statusCode = 404;
-          res.end(JSON.stringify({ error: "Offline artifact unavailable" }));
+    let catalog: Promise<unknown> | undefined;
+    server.middlewares.use(async (req, res, next) => {
+      const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
+      if (
+        pathname !== "/catalog.json" &&
+        !/^\/(releases|programs|fixtures)\//.test(pathname)
+      )
+        return next();
+      try {
+        res.setHeader("Content-Type", "application/json");
+        if (pathname === "/catalog.json") {
+          await sendArtifact(
+            req,
+            res,
+            pathname,
+            Buffer.from(JSON.stringify(await (catalog ??= buildCatalog()))),
+          );
+        } else {
+          const directory = pathname.split("/")[1] ?? "";
+          const file = resolve(root, decodeURIComponent(pathname.slice(1)));
+          if (
+            !file.startsWith(resolve(root, directory) + sep) ||
+            !file.endsWith(".json")
+          )
+            throw new Error("Invalid static path");
+          await sendArtifact(req, res, pathname, file);
         }
-      });
+      } catch {
+        res.statusCode = 404;
+        res.end(JSON.stringify({ error: "Offline artifact unavailable" }));
+      }
+    });
   }
 }

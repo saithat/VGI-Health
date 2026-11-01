@@ -98,55 +98,89 @@ export function runsPlugin(): Plugin {
   }
   return {
     name: "recorded-runs",
-    configureServer(server) { attach(server); },
-    configurePreviewServer(server) { attach(server); },
+    configureServer(server) {
+      attach(server);
+    },
+    configurePreviewServer(server) {
+      if (process.env.VGI_AUDIT_UNCOMPRESSED_BASELINE === "1") return;
+      attach(server);
+    },
   };
   function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
-      server.middlewares.use(async (req, res, next) => {
-        if (!req.url?.startsWith("/runs/")) {
-          next();
+    server.middlewares.use(async (req, res, next) => {
+      if (!req.url?.startsWith("/runs/")) {
+        next();
+        return;
+      }
+      try {
+        const url = new URL(req.url, "http://localhost");
+        if (url.pathname === "/runs/index.json") {
+          res.setHeader("Content-Type", "application/json");
+          await sendArtifact(
+            req,
+            res,
+            url.pathname,
+            Buffer.from(JSON.stringify(await index())),
+          );
           return;
         }
-        try {
-          const url = new URL(req.url, "http://localhost");
-          if (url.pathname === "/runs/index.json") {
-            res.setHeader("Content-Type", "application/json");
-            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify(await index())));
-            return;
-          }
-          if (url.pathname === "/runs/default.json") {
-            res.setHeader("Content-Type", "application/json");
-            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify({ runId: selectDefaultRun(await index()) })));
-            return;
-          }
-          const summary = /^\/runs\/([\w-]+)\/summary.json$/.exec(url.pathname);
-          if (summary) {
-            const id = summary[1] ?? "";
-            const entry = (await index()).find(r => r.id === id);
-            if (!entry) throw new Error("Unknown run");
-            const get = async (file: string) => JSON.parse(await readFile(resolve(root, id, file), "utf8"));
-            const records = [], days = [];
-            let complexity = null;
-            for (const file of entry.files) {
-              if (/^(decisions|break)\/.+\.json$/.test(file)) records.push(await get(file));
-              else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file)) days.push({ ...await get(file), trace: [] });
-              else if (file === "complexity.json") complexity = await get(file);
-            }
-            await sendArtifact(req, res, url.pathname, Buffer.from(JSON.stringify({ manifest: await get("manifest.json"), records, days, complexity, files: entry.files })));
-            return;
-          }
-          const file = resolve(root, decodeURIComponent(url.pathname.slice(6)));
-          if (!file.startsWith(root + sep) || !file.endsWith(".json")) {
-            res.statusCode = 403;
-            res.end("Invalid run path");
-            return;
-          }
+        if (url.pathname === "/runs/default.json") {
           res.setHeader("Content-Type", "application/json");
-          await sendArtifact(req, res, url.pathname, file);
-        } catch {
-          res.statusCode = 404;
-          res.end("Run file not found");
+          await sendArtifact(
+            req,
+            res,
+            url.pathname,
+            Buffer.from(
+              JSON.stringify({ runId: selectDefaultRun(await index()) }),
+            ),
+          );
+          return;
         }
-      });
+        const summary = /^\/runs\/([\w-]+)\/summary.json$/.exec(url.pathname);
+        if (summary) {
+          const id = summary[1] ?? "";
+          const entry = (await index()).find((r) => r.id === id);
+          if (!entry) throw new Error("Unknown run");
+          const get = async (file: string) =>
+            JSON.parse(await readFile(resolve(root, id, file), "utf8"));
+          const records = [],
+            days = [];
+          let complexity = null;
+          for (const file of entry.files) {
+            if (/^(decisions|break)\/.+\.json$/.test(file))
+              records.push(await get(file));
+            else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
+              days.push({ ...(await get(file)), trace: [] });
+            else if (file === "complexity.json") complexity = await get(file);
+          }
+          await sendArtifact(
+            req,
+            res,
+            url.pathname,
+            Buffer.from(
+              JSON.stringify({
+                manifest: await get("manifest.json"),
+                records,
+                days,
+                complexity,
+                files: entry.files,
+              }),
+            ),
+          );
+          return;
+        }
+        const file = resolve(root, decodeURIComponent(url.pathname.slice(6)));
+        if (!file.startsWith(root + sep) || !file.endsWith(".json")) {
+          res.statusCode = 403;
+          res.end("Invalid run path");
+          return;
+        }
+        res.setHeader("Content-Type", "application/json");
+        await sendArtifact(req, res, url.pathname, file);
+      } catch {
+        res.statusCode = 404;
+        res.end("Run file not found");
+      }
+    });
   }
 }
