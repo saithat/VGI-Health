@@ -21,7 +21,7 @@ it('runs five personas concurrently in one layout and replays/resumes determinis
  expect(resumed.timelines).toEqual(first.timelines);expect(await readFile(path.join(first.dir,'days/day-02/P4.json'),'utf8')).toBe(before);
  expect(backend.complete).not.toHaveBeenCalled();
  const manifest=JSON.parse(await readFile(path.join(first.dir,'manifest.json'),'utf8'));
- expect(manifest).toMatchObject({mode:'FAKE',parallel:true,personaWorkers:5,screenWorkersPerPersona:1,status:'completed'});
+ expect(manifest).toMatchObject({mode:'FAKE',parallel:true,personaWorkers:5,screenWorkersPerPersona:Math.max(1,Number.parseInt(process.env['EHR_SCREEN_WORKERS']??'1',10)||1),status:'completed'});
  await expect(runDays({...opts,llm:new ScriptedLlm(),runId:'FAKE-parallel',resume:true,parallel:false})).rejects.toThrow('parallel mode');
 });
 it('joins other workers before recording failure and resumes only the unfinished persona',async()=>{
