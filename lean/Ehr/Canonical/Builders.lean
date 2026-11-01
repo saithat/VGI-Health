@@ -61,6 +61,11 @@ def table (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) (size : Size := .normal) : Component :=
   mk s name (.table info) label parent tab size
 
+/-- Select a read-only clinical layout without changing its information or events.
+The presentation renderer recognizes this suffix; older renderers keep the table. -/
+def presentation (kind : String) (c : Component) : Component :=
+  { c with tag := c.tag ++ ".present." ++ kind }
+
 /-- A trend chart. -/
 def trend (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) : Component :=

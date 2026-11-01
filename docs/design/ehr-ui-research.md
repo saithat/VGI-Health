@@ -162,3 +162,60 @@ so it is not used for the cosigner.
 [FHIR Provenance](https://hl7.org/fhir/R4/provenance-definitions.html),
 [FHIR attester participant](https://hl7.org/fhir/R4B/valueset-provenance-participant-type.html),
 [FHIR MedicationRequest](https://hl7.org/fhir/R4/medicationrequest-definitions.html).
+
+## Canonical realism: P2 ED physician and P3 inpatient RN (acute care)
+
+Research and implementation lane: `lane/acute`, 2026-11-01. Public training materials establish patterns, not a universal installation. Vendor images were inspected outside the repository; no vendor screenshots, logos, or assets are included. The canonical keeps its hospital policies, role permissions, review requirements, and human actions.
+
+### Acute reference review
+
+- **Epic ED:** [Rady Children's ASAP resident manual, June 2021](https://ucsdpeds.com/wp-content/uploads/2023/04/Epic-Manual-2021.pdf), printed pp.2–5 and discharge sections. The inspected p.3 shows a compact patient table with bed, complaint, acuity, team, new results, lab and imaging progress; its selected chart has triage, home meds, allergies, prior visits and vitals alongside it. This supports a departmental table plus selected-chart summary, rather than large encounter cards. The manual distinguishes department filters, patient selection, provider note, orders, and disposition. We use original terminology and layouts; the synthetic ESI field remains ESI, not a CTAS conversion.
+- **Cerner ED:** [CST ED LaunchPoint overview](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm) documents a multi-patient landing view with room, LOS, acuity, assignment, complaint, vitals and order progress. [ED depart process](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_Depart_Process.htm) separates the clinical discharge/admission page, discharge documents and final encounter departure. A disposition decision must not imply that a patient physically left the department, a bed was assigned, or unsigned orders were transmitted.
+- **Epic inpatient:** [Riverside Adult Med Surg Nurse exercise booklet](https://otis3.riversidehealthcare.net/content/epic/inpatient/orientation%20materials/epic%20online%20exercise%20book.pdf), printed pp.3–7, 9–12. Brain tasks lead to chart activities; Summary/SBAR supports receiving report. Flowsheets use time columns and distinguish pending documentation from filed values. MAR training selects a due dose before documenting action, date/time and dose, with Given subsequently visible in the MAR. The workbook explicitly describes scan bypasses for its training environment; these are not adopted. Our actual wristband/medication scans and different-nurse check remain human-only.
+- **Cerner inpatient:** [MAR overview](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Medication_Administration_Record_%28MAR%29_Overview.htm) separates scheduled, unscheduled, PRN, continuous and discontinued medications, with order detail beside administration-time cells. Its reverse chronological default differs from some Epic views; our grid is labeled by supplied date/time, without claiming a universal direction. [Closed-loop medication administration](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Closed_Loop_Medication_Administration_Workflow.htm) documents wristband first, then medication, clinical parameters, witness where required and actual documentation; PRN response is later documentation. [CST inpatient admission](https://cstcernerhelp.healthcarebc.ca/Workflows/Inpatient/Admission_Transfer_Discharge/Admission_Inpatient.htm) also distinguishes admission orders, bed coordination, RN assignment and receiving-nurse tasks. Merely visiting an activity does not complete its task.
+
+### Target layouts and semantic contract
+
+All screens retain the same shared EHR and persona pre-set view. The clinical navigator uses actual destination names. Chart Review exposes Encounters, Notes, Results, Meds, Problems, Allergies and Imaging. Every action is an existing Lean button/field/tab event. The [presentation contract](presentation-contract.md) selects read-only layouts with `.present.<kind>` tag suffixes; clinical rows never contain file paths, component IDs, or fake Open controls.
+
+| Screen | Target reading order and original presentation |
+| --- | --- |
+| ED Track Board | Department table: room, patient, age/sex, complaint, ESI, arrival/LOS, RN/provider, lab/imaging progress and disposition; selected encounter triage summary; explicit Open selected encounter. `present.trackBoard`. |
+| Triage summary | Arrival/complaint/ESI; kg weight and complete vitals with units; isolation screening; allergy list and Mark reviewed. Provider reads triage before documenting its note. |
+| ED Provider Note | Triage context; HPI/ROS; exam; laboratory results and imaging; MDM/differential/ED course/plan; medication reconciliation; linked billing diagnosis and level of service; actual note signature. `present.results` and `present.table`. |
+| ED order sets | Named set choices, each draft medication line with its existing confirmations, then unsigned orders and Review and sign. No decorative inclusion checkboxes. |
+| ED Orders | Search, preference list, complete dose/prescription details, optional chart data, pending orders and Review and sign. Preserve real baseline composer length and existing new-line guard. |
+| ED Sign orders | Full order summary, allergies, current meds, kg dose check, CURES and controlled details, human identity immediately above signature, modal severe warnings. |
+| Disposition | Vital signs visible at commit; orders this visit; choice/diagnosis/condition; admission service/level for bed request; discharge instructions/follow-up. Set disposition records the actual modeled decision. |
+| Unit Census & MAR | Patient/shift-task worklist; orders requiring review; selected patient handoff; shift-start allergy review; Open selected patient's MAR. `present.worklist`. |
+| MAR | Medication, dose/unit, route, frequency and explicit date/time task cells; selected medication task; optional PRN/glucose/coagulation tabs; Document selected dose. `present.timeGrid`. No frequency-expanded invented times or active-order-to-Given inference. |
+| Medication administration | Ordered dose, allergies, relevant glucose/coagulation and PRN history in workspace; wristband then medication scan; independent check; pre-dose pain; action/site/reason; Record administration. Scanning never files a dose. |
+| Flowsheets | Prior observations by measure/unit/time; newly charted vital signs; PRN history and later pain reassessment; systems assessment; File assessment. `present.flowsheet`. Blank cells remain missing. |
+| Handoff / SBAR | Last report; explicit template producing drafts requiring review; Situation, Background, Assessment, Recommendation; outstanding tasks. No invented handoff-signature or claim of backend persistence from navigation. |
+
+The initial implementation deliberately retains the separate worklist/MAR/administration activities and all signing screens. Open groups do not add mandatory collapse/expand clicks. The existing identity validator expects initials/sex/age; wristband scanner tokens are separate. No spec, property, permission, temporal rule or clinical default is weakened.
+
+### Measurement and visual review
+
+Before/after evidence and screen-specific self-review are recorded with the acute screenshots and measurement report. Baseline P2/P3 simulation: all 20 world-2 schedules completed with zero incomplete tasks. Baseline complexity uses the current `releases/` explicitly, rather than archived run1 programs. The helper's default 8 GB virtual-memory ceiling fails to create a Lean worker on this host; `EHR_LEAN_MEMORY_KB=16000000 LEAN_NUM_THREADS=4 pnpm complexity --release-root releases` preserves the same search and metrics with a larger virtual address limit. This is not a change to KLM constants or the minimum-click search.
+
+First native checkpoint: 15/15 persona projections certify, all 17 active bad programs reject, all 1,284 world-2 tasks complete. W3 remains 57 clicks / 226 keys / 198.45 KLM seconds; W4 remains 25 clicks / 39 keys / 129.95 seconds in v1/v2/v3. Full evidence: [acute-complexity.json](acute-complexity.json). KLM is an estimate for the minimum-click replay, not an independently minimized time.
+
+Initial 1440×900 comparison (same Synthea chart, actual P2 physician/P3 RN roles):
+
+| Screen | Before → first checkpoint; honest remaining work |
+| --- | --- |
+| ED Track Board | Generic Department table and Open patient → explicitly departmental view and selected-encounter summary/action. Empty rows in this historical fixture are still inadequate; needs supplied department encounters and structured projection. |
+| Triage | Vitals before complaint/acuity → presenting complaint/arrival/ESI first, then unit-labeled vitals and infection/allergy review. Compact field alignment survives. |
+| ED Provider Note | Flat mixed clinical/billing fields → History, Exam, Results/Imaging, MDM, Med Rec, Billing in clinical order. No fabricated completed note. |
+| ED order sets | Generic set heading → ED preference sets; all existing draft rows and confirmations retained. Long per-field composers remain baseline friction. |
+| ED Orders | Same production-length search/composer path. No optimizer shortcuts or new mandatory prompts. |
+| ED Sign orders | Same full review/signature path; identity and severe-alert handling preserved. Required details remain readable and expanded. |
+| Disposition | Unstructured decision fields → decision, admission/bed request and discharge instruction sections with vitals visible. No claim that bed request allocates a bed. |
+| Unit Census & MAR | Generic due/overdue block → My patients shift tasks, orders requiring review, selected handoff and shift allergy review. Historical fixture still lacks a populated task census. |
+| MAR | Empty generic table → tagged time-grid plus selected medication detail and explicit Document selected dose. True grid/dated rows await presentation integration. |
+| Medication administration | Five rights plus loose fields → ordered wristband/medication scanning, independent check, pre-dose pain and administration documentation. Separate one-field sections are too tall in the first screenshot; compact them in the next pass. |
+| Flowsheets | Generic observations and loose reassessment → tagged time-oriented history, vitals with units, PRN history, pain response and systems assessment. Actual observed times must come from data. |
+| Handoff / SBAR | Loose SBAR fields → report section with the same template/confirmation semantics and outstanding-task context. No invented filing action. |
+
+Images and exact native semantic inputs: `app/shots/realism/acute/before/` and `after/`; reproducer: `scripts/acute-review.mjs`. The first fixture is a historical outpatient Synthea chart, so it does not substantiate acute encounter content or dose-task selection. A populated acute fixture and the shared presentation/shell integration remain necessary before calling the visual milestone complete.

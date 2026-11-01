@@ -1,0 +1,525 @@
+{
+  "workspace": [
+    {
+      "stepper": {
+        "steps": [
+          [
+            "w4Worklist",
+            "Unit Census & MAR"
+          ],
+          [
+            "w4Mar",
+            "MAR"
+          ],
+          [
+            "w4Admin",
+            "Administer medication"
+          ],
+          [
+            "w4Flowsheet",
+            "Flowsheet"
+          ],
+          [
+            "w4Handoff",
+            "Handoff"
+          ]
+        ],
+        "current": 3
+      }
+    },
+    {
+      "field": {
+        "value": null,
+        "unit": null,
+        "required": false,
+        "provenance": null,
+        "pendingConfirm": false,
+        "label": "Search chart",
+        "kind": "search",
+        "humanOnly": false,
+        "comp": "w4Flowsheet.chartSearch"
+      }
+    },
+    {
+      "info": {
+        "rows": [],
+        "label": "Prior observations",
+        "infoId": "flowsheetHistory",
+        "display": "table",
+        "comp": "w4Flowsheet.history"
+      }
+    },
+    {
+      "section": {
+        "title": "Vital signs",
+        "id": "w4Flowsheet.vitalsGroup",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w4Flowsheet.vitalsGroup",
+              "blockedReason": null
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "BP systolic",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.bpSystolic"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "BP diastolic",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.bpDiastolic"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Heart rate",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.heartRate"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Respiratory rate",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.respRate"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Temperature",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.temperature"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "SpO₂",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w4Flowsheet.spo2"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "info": {
+        "rows": [],
+        "label": "PRN doses this shift",
+        "infoId": "prnHistory",
+        "display": "table",
+        "comp": "w4Flowsheet.prn"
+      }
+    },
+    {
+      "field": {
+        "value": null,
+        "unit": null,
+        "required": true,
+        "provenance": null,
+        "pendingConfirm": false,
+        "label": "Pain reassessment (0–10)",
+        "kind": "code",
+        "humanOnly": true,
+        "comp": "w4Flowsheet.painReassessment"
+      }
+    },
+    {
+      "button": {
+        "role": "macro",
+        "label": "Copy forward last assessment",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.copyAssessment",
+        "blockedReason": null
+      }
+    },
+    {
+      "field": {
+        "value": null,
+        "unit": null,
+        "required": true,
+        "provenance": null,
+        "pendingConfirm": false,
+        "label": "Nursing assessment",
+        "kind": "text",
+        "humanOnly": false,
+        "comp": "w4Flowsheet.nursingAssessment"
+      }
+    },
+    {
+      "button": {
+        "role": "primary",
+        "label": "File assessment",
+        "hotkey": "Ctrl+Enter",
+        "enabled": false,
+        "comp": "w4Flowsheet.commit.chartAssessment",
+        "blockedReason": "entry required: BP systolic (mmHg)"
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Back",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.back",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Patient workspace",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.home",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Worklist",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.nav.w4Worklist",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "MAR",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.nav.w4Mar",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Handoff",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.nav.w4Handoff",
+        "blockedReason": null
+      }
+    },
+    {
+      "tabs": {
+        "selected": 0,
+        "labels": [
+          "New orders",
+          "Results",
+          "Notes",
+          "Encounters"
+        ],
+        "id": "w4Flowsheet.chart",
+        "body": [
+          {
+            "info": {
+              "rows": [],
+              "label": "New orders",
+              "infoId": "newOrders",
+              "display": "table",
+              "comp": "w4Flowsheet.chart.newOrders"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Next: handoff",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Flowsheet.toHandoff",
+        "blockedReason": null
+      }
+    }
+  ],
+  "title": "Flowsheet",
+  "side": [
+    {
+      "info": {
+        "rows": [],
+        "label": "Allergies",
+        "infoId": "allergyList",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"
+            ]
+          ]
+        ],
+        "label": "Active medications",
+        "infoId": "currentMeds",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Full-time employment (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Gingivitis (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Stress (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep apnea (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep disorder (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Medication review due (situation) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Essential hypertension (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic low back pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Anemia (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Prediabetes (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Impacted molars (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Housing unsatisfactory (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Educated to high school level (finding) (active)"
+            ]
+          ]
+        ],
+        "label": "Problems",
+        "infoId": "problemList",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Body Height 183.4 cm (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index (BMI) [Ratio] 27.77 kg/m2 (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 70 /min (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
+            ]
+          ]
+        ],
+        "label": "Recent vitals",
+        "infoId": "vitals",
+        "display": "list",
+        "comp": ""
+      }
+    }
+  ],
+  "nav": [],
+  "modal": null,
+  "banner": [
+    [
+      "Patient",
+      "Ankunding, Aaron Bruno"
+    ],
+    [
+      "DOB",
+      "Jul 3, 1968"
+    ],
+    [
+      "MRN",
+      "47839287"
+    ],
+    [
+      "Age / sex",
+      "58 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Laurena Anderson"
+    ],
+    [
+      "Coverage",
+      ""
+    ],
+    [
+      "Encounter",
+      "AMB"
+    ],
+    [
+      "Attending",
+      "Dr. Laurena Anderson"
+    ],
+    [
+      "Location",
+      "NORTHEAST BEHAVIORAL HEALTH LLC"
+    ],
+    [
+      "Allergies",
+      "No allergy records on file"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ]
+  ]
+}

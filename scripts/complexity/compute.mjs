@@ -10,8 +10,10 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
 // Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
+const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 8000000);
+if (!Number.isSafeInteger(leanMemoryKb) || leanMemoryKb < 1) throw new Error('EHR_LEAN_MEMORY_KB must be a positive integer');
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
+  ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], { timeout: 180000, ...options })
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');

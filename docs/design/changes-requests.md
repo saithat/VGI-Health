@@ -1990,3 +1990,31 @@ actual overnight agent run. Native `ehr simulate` reads the spec successfully.
 Resolved by the check lane: the generated-type boundary now accepts and preserves
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.
+
+## ACUTE-REALISM-2026-11-01: presentation aliases and selected work items
+
+Acute adopts the `presentation-contract.md` suffixes through
+`Canonical.presentation`: W3 board `edTrackBoard` → `present.trackBoard`,
+W4 shift queue `shiftWorklist` → `present.worklist`, MAR `marSchedule` →
+`present.timeGrid`, history `flowsheetHistory` → `present.flowsheet`, plus
+`present.results`, `present.table` and `present.trend` for existing reviews.
+Please preserve these existing spec info IDs as aliases to the typed FHIR
+projections. They must retain all supplied rows and honor explicit bound payloads.
+The single selected chart has a separate ordinary goto adjacent to each queue;
+no read-only cell claims to open another patient or select a medication.
+
+Remaining data needed beyond the initial presentation contract: triageSummary
+(current Encounter complaint/ESI/arrival and dated vitals), marDoseDetails
+(the selected MedicationRequest's ordered dose/unit/route/timing, separately
+from recorded MedicationAdministration actual values), prnHistory and
+handoffSummary. Missing selected-order identity must not select an arbitrary
+medication merely by drug name. The current FactsContext has no encounter or
+order ID selector. The live adapter already carries this context separately;
+please expose a shared typed selector before claiming exact selection across
+multiple same-drug orders. Never add an active-order-to-Given or generic
+frequency-to-due-time inference.
+
+`Canonical` uses original destination labels and explicit units, preserves
+all component IDs, scans, distinct-nurse checks, modal alerts, commit reviews
+and the separate worklist/MAR/administration path. No hospital spec changes
+are requested. Layout groups are open without extra navigation requirements.

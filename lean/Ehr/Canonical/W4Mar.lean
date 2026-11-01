@@ -23,13 +23,15 @@ open Ehr.Canonical
 
 /-- The W4 navigator (administration is reached from the MAR). -/
 def nav : List (ScreenId × String) :=
-  [("w4Worklist", "Worklist"), ("w4Mar", "MAR"), ("w4Flowsheet", "Flowsheet"),
-   ("w4Handoff", "Handoff")]
+  [("w4Worklist", "Unit Census & MAR"), ("w4Mar", "MAR"), ("w4Flowsheet", "Flowsheets"),
+   ("w4Handoff", "Handoff / SBAR")]
 
 /-- The chart-review tabs on W4 screens. -/
 def chart : List Block :=
-  [(.table, "newOrders", "New orders"), (.table, "labResults", "Results"),
-   (.panel, "priorNotes", "Notes"), (.table, "encounterHistory", "Encounters")]
+  [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
+   (.table, "labResults", "Results"), (.table, "currentMeds", "Meds"),
+   (.table, "problemList", "Problems"), (.panel, "allergyList", "Allergies"),
+   (.table, "imaging", "Imaging")]
 
 /-- The shell for a W4 screen. -/
 def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
@@ -38,15 +40,15 @@ def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
 start-of-shift allergy review. -/
 def worklist : Screen :=
   let s := "w4Worklist"
-  { id := s, title := "Shift worklist", workflow := "W4"
+  { id := s, title := "Unit Census & MAR", workflow := "W4"
     components := frame s ++ [
-      table s "work" "shiftWorklist" "Due and overdue",
-      table s "newOrders" "newOrders" "New orders since last shift",
-      panel s "handoff" "handoffSummary" "Last handoff",
-      group s "allergyGroup" "Allergies",
+      presentation "worklist" (table s "work" "shiftWorklist" "My patients — shift tasks"),
+      presentation "table" (table s "newOrders" "newOrders" "Orders requiring review"),
+      panel s "handoff" "handoffSummary" "Selected patient — handoff report",
+      group s "allergyGroup" "Shift allergy review" (collapsible := false),
       panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed (start of shift)" (parent := some "allergyGroup"),
-      goto s "toMar" "w4Mar" "Open MAR"
+      reviewBtn s "allergyList" "Mark allergies reviewed — shift start" (parent := some "allergyGroup"),
+      goto s "toMar" "w4Mar" "Open selected patient's MAR"
     ] }
 
 /-- The MAR grid, with PRN history, glucose, and coagulation labs on tabs. -/
@@ -54,76 +56,83 @@ def mar : Screen :=
   let s := "w4Mar"
   { id := s, title := "MAR", workflow := "W4"
     components := frame s ++ [
-      table s "grid" "marSchedule" "MAR time grid"] ++
+      presentation "timeGrid" (table s "grid" "marSchedule" "Medication administration record"),
+      panel s "selectedDose" "marDoseDetails" "Selected medication task"] ++
       tabStrip s "marTabs" "Details"
         [(.table, "prnHistory", "PRN history"), (.trend, "glucoseTrend", "Glucose"),
          (.table, "coagLabs", "Coagulation labs")] ++ [
-      goto s "openDue" "w4Admin" "Open due medication"
+      goto s "openDue" "w4Admin" "Document selected dose"
     ] }
 
 /-- Administration: dose details, allergies, glucose, coagulation labs, and
 PRN history on screen; alerts; scans; the double check; pain score; status. -/
 def admin : Screen :=
   let s := "w4Admin"
-  { id := s, title := "Administer medication", workflow := "W4"
+  { id := s, title := "Medication administration", workflow := "W4"
     components := frame s ++ [
-      panel s "dose" "marDoseDetails" "Dose details",
+      presentation "table" (table s "dose" "marDoseDetails" "Ordered dose and administration details"),
       panel s "allergies" "allergyList" "Allergies",
-      trend s "glucose" "glucoseTrend" "Blood glucose",
-      table s "coag" "coagLabs" "Coagulation labs",
-      table s "prn" "prnHistory" "PRN history",
+      presentation "trend" (trend s "glucose" "glucoseTrend" "Blood glucose — review before insulin"),
+      presentation "results" (table s "coag" "coagLabs" "Coagulation results — review before anticoagulants"),
+      presentation "table" (table s "prn" "prnHistory" "PRN administrations and response"),
       alertC s "alert.drugAllergy" "drugAllergyAdmin" "Drug–allergy match" (popup := false),
       alertC s "alert.highAlert" "highAlertAdmin" "High-alert medication: double check" (popup := false),
       alertC s "alert.minorInteraction" "minorInteractionPopup" "Interaction information"
         (popup := true),
-      group s "fiveRights" "Five rights",
-      field s "wristbandScan" "wristbandScan" "Scan wristband" (parent := some "fiveRights"),
-      field s "medScan" "medScan" "Scan medication" (parent := some "fiveRights"),
-      field s "highAlertCosign" "highAlertCosign" "Double check: second nurse",
-      field s "painScore" "painScore" "Pain score before dose (0–10)",
-      group s "documentation" "Documentation",
-      field s "adminStatus" "adminStatus" "Given / held / refused" (parent := some "documentation"),
-      field s "adminReason" "adminReason" "Reason / comment" (parent := some "documentation"),
-      field s "adminSite" "adminSite" "Site" (parent := some "documentation"),
+      group s "fiveRights" "Barcode medication verification" (collapsible := false),
+      field s "wristbandScan" "wristbandScan" "1. Scan patient wristband" (parent := some "fiveRights"),
+      field s "medScan" "medScan" "2. Scan medication barcode" (parent := some "fiveRights"),
+      group s "independentCheck" "High-alert independent double check" (collapsible := false),
+      field s "highAlertCosign" "highAlertCosign" "Second nurse — independent check" (parent := some "independentCheck"),
+      group s "pain" "Pain assessment before administration" (collapsible := false),
+      field s "painScore" "painScore" "Pain score before dose (0–10)" (parent := some "pain"),
+      group s "documentation" "Administration documentation" (collapsible := false),
+      field s "adminStatus" "adminStatus" "Action: given / held / refused" (parent := some "documentation"),
+      field s "adminSite" "adminSite" "Administration site (or not applicable)" (parent := some "documentation"),
+      field s "adminReason" "adminReason" "Reason / administration comment" (parent := some "documentation"),
       macroBtn s "heldNpo" "w4HeldNpo" "Document held: NPO",
       commitBtn s "administerMed" "Record administration",
-      goto s "toFlowsheet" "w4Flowsheet" "Next: flowsheet",
+      goto s "toFlowsheet" "w4Flowsheet" "Flowsheets / pain reassessment",
       goto s "toMar" "w4Mar" "Back to MAR"
     ] }
 
 /-- Flowsheet: vitals, pain reassessment, and the nursing assessment. -/
 def flowsheet : Screen :=
   let s := "w4Flowsheet"
-  { id := s, title := "Flowsheet", workflow := "W4"
+  { id := s, title := "Flowsheets", workflow := "W4"
     components := frame s ++ [
-      table s "history" "flowsheetHistory" "Prior observations",
-      group s "vitalsGroup" "Vital signs",
-      field s "bpSystolic" "bpSystolic" "BP systolic" (parent := some "vitalsGroup"),
-      field s "bpDiastolic" "bpDiastolic" "BP diastolic" (parent := some "vitalsGroup"),
-      field s "heartRate" "heartRate" "Heart rate" (parent := some "vitalsGroup"),
-      field s "respRate" "respRate" "Respiratory rate" (parent := some "vitalsGroup"),
-      field s "temperature" "temperature" "Temperature" (parent := some "vitalsGroup"),
-      field s "spo2" "spo2" "SpO₂" (parent := some "vitalsGroup"),
-      table s "prn" "prnHistory" "PRN doses this shift",
-      field s "painReassessment" "painReassessment" "Pain reassessment (0–10)",
+      presentation "flowsheet" (table s "history" "flowsheetHistory" "Recent observations by time"),
+      group s "vitalsGroup" "Vital signs — new documentation" (collapsible := false),
+      field s "bpSystolic" "bpSystolic" "BP systolic (mmHg)" (parent := some "vitalsGroup"),
+      field s "bpDiastolic" "bpDiastolic" "BP diastolic (mmHg)" (parent := some "vitalsGroup"),
+      field s "heartRate" "heartRate" "Heart rate (/min)" (parent := some "vitalsGroup"),
+      field s "respRate" "respRate" "Respiratory rate (/min)" (parent := some "vitalsGroup"),
+      field s "temperature" "temperature" "Temperature (°C)" (parent := some "vitalsGroup"),
+      field s "spo2" "spo2" "SpO₂ (%)" (parent := some "vitalsGroup"),
+      presentation "table" (table s "prn" "prnHistory" "PRN administrations"),
+      group s "pain" "Pain reassessment" (collapsible := false),
+      field s "painReassessment" "painReassessment" "Response after intervention (0–10)" (parent := some "pain"),
+      group s "assessment" "Shift nursing assessment" (collapsible := false),
       macroBtn s "copyAssessment" "w4CopyAssessment" "Copy forward last assessment",
-      field s "nursingAssessment" "nursingAssessment" "Nursing assessment",
+      field s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment"),
       commitBtn s "chartAssessment" "File assessment",
-      goto s "toHandoff" "w4Handoff" "Next: handoff"
+      goto s "toHandoff" "w4Handoff" "Handoff / SBAR"
     ] }
 
 /-- Handoff (SBAR). No commit: the summary is saved with the chart. -/
 def handoff : Screen :=
   let s := "w4Handoff"
-  { id := s, title := "Handoff", workflow := "W4"
+  { id := s, title := "Handoff / SBAR", workflow := "W4"
     components := frame s ++ [
       panel s "last" "handoffSummary" "Last handoff",
       macroBtn s "template" "w4HandoffTemplate" "SBAR template",
-      field s "handoffSituation" "handoffSituation" "Situation",
-      field s "handoffBackground" "handoffBackground" "Background",
-      field s "handoffAssessment" "handoffAssessment" "Assessment",
-      field s "handoffRecommendation" "handoffRecommendation" "Recommendation",
-      goto s "toWorklist" "w4Worklist" "Back to worklist"
+      group s "sbar" "Shift report — SBAR" (collapsible := false),
+      field s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar"),
+      field s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar"),
+      field s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar"),
+      field s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar"),
+      presentation "worklist" (table s "remainingTasks" "shiftWorklist" "Outstanding shift tasks"),
+      goto s "toWorklist" "w4Worklist" "Unit Census & MAR"
     ] }
 
 /-- The W4 macros. -/

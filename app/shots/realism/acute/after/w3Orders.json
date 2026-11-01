@@ -1,0 +1,1442 @@
+{
+  "workspace": [
+    {
+      "stepper": {
+        "steps": [
+          [
+            "w3TrackBoard",
+            "ED Track Board"
+          ],
+          [
+            "w3Triage",
+            "Triage summary"
+          ],
+          [
+            "w3Provider",
+            "ED Provider Note"
+          ],
+          [
+            "w3OrderSets",
+            "ED order sets"
+          ],
+          [
+            "w3Orders",
+            "Orders"
+          ],
+          [
+            "w3Sign",
+            "Sign orders"
+          ],
+          [
+            "w3Disposition",
+            "Disposition"
+          ]
+        ],
+        "current": 4
+      }
+    },
+    {
+      "field": {
+        "value": null,
+        "unit": null,
+        "required": false,
+        "provenance": null,
+        "pendingConfirm": false,
+        "label": "Search chart",
+        "kind": "search",
+        "humanOnly": false,
+        "comp": "w3Orders.chartSearch"
+      }
+    },
+    {
+      "field": {
+        "value": null,
+        "unit": null,
+        "required": false,
+        "provenance": null,
+        "pendingConfirm": false,
+        "label": "Find orders",
+        "kind": "search",
+        "humanOnly": false,
+        "comp": "w3Orders.orderSearch"
+      }
+    },
+    {
+      "info": {
+        "rows": [],
+        "label": "Catalog results",
+        "infoId": "orderCatalog",
+        "display": "table",
+        "comp": "w3Orders.catalog"
+      }
+    },
+    {
+      "section": {
+        "title": "Preference list",
+        "id": "w3Orders.prefList",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefList",
+              "blockedReason": null
+            }
+          },
+          {
+            "button": {
+              "role": "macro",
+              "label": "Acetaminophen 1 g PO",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefAcetaminophen",
+              "blockedReason": null
+            }
+          },
+          {
+            "button": {
+              "role": "macro",
+              "label": "Ibuprofen 600 mg PO",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefIbuprofen",
+              "blockedReason": null
+            }
+          },
+          {
+            "button": {
+              "role": "macro",
+              "label": "Ondansetron 8 mg IV",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefOndansetron",
+              "blockedReason": null
+            }
+          },
+          {
+            "button": {
+              "role": "macro",
+              "label": "Ceftriaxone 2 g IV",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefCeftriaxone",
+              "blockedReason": null
+            }
+          },
+          {
+            "button": {
+              "role": "macro",
+              "label": "Morphine 10 mg IV q4h PRN",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.prefMorphine",
+              "blockedReason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Dosing",
+        "id": "w3Orders.dosing",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.dosing",
+              "blockedReason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Medication",
+        "id": "w3Orders.medication",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.medication",
+              "blockedReason": null
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Enter Medication",
+              "kind": "code:amoxicillin|cefazolin|ceftriaxone|azithromycin|vancomycin|lisinopril|metformin|atorvastatin|warfarin|apixaban|enoxaparin|heparin|insulin glargine|insulin lispro|morphine|hydromorphone|oxycodone|hydrocodone-acetaminophen|tramadol|lorazepam|alprazolam|ondansetron|acetaminophen|ibuprofen|albuterol",
+              "humanOnly": false,
+              "comp": "w3Orders.drug"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Dose",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w3Orders.dose"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Dose unit",
+              "kind": "code:",
+              "humanOnly": false,
+              "comp": "w3Orders.doseUnit"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Route",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.route"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Frequency",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.freq"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "As needed (PRN)",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.prn"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Dispense",
+        "id": "w3Orders.dispense",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.dispense",
+              "blockedReason": null
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Duration",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.duration"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Dispense quantity",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w3Orders.quantity"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Refills",
+              "kind": "qty",
+              "humanOnly": false,
+              "comp": "w3Orders.refills"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Generic substitution allowed",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.substitution"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Pharmacy and diagnosis",
+        "id": "w3Orders.dx",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.dx",
+              "blockedReason": null
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Pharmacy",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.pharmacy"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Indication",
+              "kind": "text",
+              "humanOnly": false,
+              "comp": "w3Orders.indication"
+            }
+          },
+          {
+            "field": {
+              "value": null,
+              "unit": null,
+              "required": true,
+              "provenance": null,
+              "pendingConfirm": false,
+              "label": "Associated diagnosis (ICD-10)",
+              "kind": "code",
+              "humanOnly": false,
+              "comp": "w3Orders.orderDiagnosis"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Additional",
+        "id": "w3Orders.more",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Expand section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Orders.more",
+              "blockedReason": null
+            }
+          }
+        ]
+      }
+    },
+    {
+      "tabs": {
+        "selected": 0,
+        "labels": [
+          "Current meds",
+          "CURES report",
+          "Recent labs"
+        ],
+        "id": "w3Orders.orderInfo",
+        "body": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "Acetaminophen 325 MG Oral Tablet [Tylenol]"
+                  ],
+                  [
+                    "Instructions",
+                    "Every four to six hours (qualifier value)"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Apr 22, 2026 13:28"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Taylor Haley"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "lisinopril 10 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "1, 1x per 1 d"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Apr 22, 2026 13:28"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Taylor Haley"
+                  ]
+                ]
+              ],
+              "label": "Current meds",
+              "infoId": "currentMeds",
+              "display": "table",
+              "comp": "w3Orders.orderInfo.currentMeds"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "info": {
+        "rows": [],
+        "label": "Pending orders",
+        "infoId": "orderSummary",
+        "display": "table",
+        "comp": "w3Orders.pending"
+      }
+    },
+    {
+      "button": {
+        "role": "secondary",
+        "label": "Accept and add another order",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.newLine",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Back",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.back",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Patient workspace",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.home",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "ED Track Board",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.nav.w3TrackBoard",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Triage summary",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.nav.w3Triage",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "ED Provider Note",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.nav.w3Provider",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Order sets",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.nav.w3OrderSets",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Disposition",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.nav.w3Disposition",
+        "blockedReason": null
+      }
+    },
+    {
+      "tabs": {
+        "selected": 0,
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "id": "w3Orders.chart",
+        "body": [
+          {
+            "info": {
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 6, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "May 6, 2026 15:00"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 22, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 22, 2026 14:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 30, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 30, 2025 15:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 23, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 23, 2025 13:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 16, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 16, 2025 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up visit (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2024 15:10"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jun 27, 2024 14:24"
+                  ],
+                  [
+                    "End",
+                    "Jun 27, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jun 19, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 19, 2024 14:24"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 10, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 10, 2024 14:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jul 19, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 19, 2023 14:14"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jul 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2023 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jun 25, 2023 20:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 25, 2023 20:49"
+                  ],
+                  [
+                    "Reason",
+                    "Acute bronchitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2023 14:01"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency room admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "EMER"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 6, 2022 17:13"
+                  ],
+                  [
+                    "Reason",
+                    "Injury of neck (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Troy Carter"
+                  ],
+                  [
+                    "Location",
+                    "OAKS, THE"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Hospital admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 9, 2022 16:28"
+                  ],
+                  [
+                    "Reason",
+                    "Patient transfer to skilled nursing facility (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chung Collins"
+                  ],
+                  [
+                    "Location",
+                    "221 FITZGERALD DRIVE OPERATING COMPANY, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 13, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 13, 2022 14:08"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Mar 30, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 30, 2022 14:06"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Mar 23, 2022 04:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 23, 2022 04:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jan 29, 2022 12:28"
+                  ],
+                  [
+                    "End",
+                    "Jan 29, 2022 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Nov 30, 2021 12:28"
+                  ],
+                  [
+                    "End",
+                    "Nov 30, 2021 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ]
+              ],
+              "label": "Encounters",
+              "infoId": "encounterHistory",
+              "display": "table",
+              "comp": "w3Orders.chart.encounterHistory"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Review and sign",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.toSign",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Order sets",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3Orders.to.w3OrderSets",
+        "blockedReason": null
+      }
+    }
+  ],
+  "title": "Orders",
+  "side": [
+    {
+      "info": {
+        "rows": [],
+        "label": "Allergies",
+        "infoId": "allergyList",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"
+            ]
+          ]
+        ],
+        "label": "Active medications",
+        "infoId": "currentMeds",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Full-time employment (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Gingivitis (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Stress (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep apnea (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep disorder (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Medication review due (situation) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Essential hypertension (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic low back pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Anemia (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Prediabetes (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Impacted molars (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Housing unsatisfactory (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Educated to high school level (finding) (active)"
+            ]
+          ]
+        ],
+        "label": "Problems",
+        "infoId": "problemList",
+        "display": "list",
+        "comp": ""
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Record",
+              "Body Height 183.4 cm (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index (BMI) [Ratio] 27.77 kg/m2 (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 70 /min (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
+            ]
+          ]
+        ],
+        "label": "Recent vitals",
+        "infoId": "vitals",
+        "display": "list",
+        "comp": ""
+      }
+    }
+  ],
+  "nav": [],
+  "modal": null,
+  "banner": [
+    [
+      "Patient",
+      "Ankunding, Aaron Bruno"
+    ],
+    [
+      "DOB",
+      "Jul 3, 1968"
+    ],
+    [
+      "MRN",
+      "47839287"
+    ],
+    [
+      "Age / sex",
+      "58 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Laurena Anderson"
+    ],
+    [
+      "Coverage",
+      ""
+    ],
+    [
+      "Encounter",
+      "AMB"
+    ],
+    [
+      "Attending",
+      "Dr. Laurena Anderson"
+    ],
+    [
+      "Location",
+      "NORTHEAST BEHAVIORAL HEALTH LLC"
+    ],
+    [
+      "Allergies",
+      "No allergy records on file"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ]
+  ]
+}

@@ -3,12 +3,11 @@
   "releaseNaming": "integer",
   "suite": "union-workflows-v1",
   "releaseSource": {
-    "revision": "1fe8b353d389881906a00d55d2f544fb302206ce",
-    "directory": "programs/benchmarks/releases",
-    "reason": "Immutable release contracts and canonical source used by certified run1-P3; newer main release assets must not rewrite historical comparisons."
+    "directory": "releases",
+    "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
   },
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "ehrSha256": "2116e32e88e13c0bc687aeed24102c18cea1e85c537b97f13f4e02079199aa3d",
+  "ehrSha256": "fd2b6f37fe8eb65593727a0115e92b9f8205fb345cde106e5b8f075c47a7857d",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
@@ -3188,51 +3187,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -3361,42 +3315,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -3433,17 +3392,52 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
+            "klmSeconds": 198.45,
             "popups": 1,
             "requiredFields": 38,
-            "screens": 13
+            "screens": 12
           },
           "path": [
             [
@@ -3688,51 +3682,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -3861,42 +3810,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -3933,6 +3887,41 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
@@ -3940,7 +3929,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 58,
+            "clicks": 57,
             "episodePaths": [
               [
                 {
@@ -4184,51 +4173,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -4357,42 +4301,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -4428,6 +4377,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -4679,51 +4663,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -4852,42 +4791,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -4923,6 +4867,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -5172,51 +5151,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -5345,42 +5279,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -5416,6 +5355,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -5663,51 +5637,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -5836,42 +5765,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -5907,6 +5841,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -7249,14 +7218,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -7654,8 +7617,8 @@
           "keystrokeSpace": "navigationDirected",
           "metrics": {
             "clicks": 48,
-            "keystrokes": 249,
-            "klmSeconds": 177.05,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
             "popups": 0,
             "requiredFields": 32,
             "screens": 13
@@ -7668,14 +7631,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -8083,14 +8040,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -8498,14 +8449,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -8911,14 +8856,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -9311,7 +9250,7 @@
               }
             ],
             "keystrokeSpace": "navigationDirected",
-            "keystrokes": 249,
+            "keystrokes": 245,
             "path": [
               {
                 "click": {
@@ -9319,14 +9258,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -12539,10 +12472,10 @@
         {
           "workflow": "W3",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
-            "screens": 13,
+            "klmSeconds": 198.45,
+            "screens": 12,
             "requiredFields": 38,
             "popups": 1
           },
@@ -12578,8 +12511,8 @@
           "workflow": "W5",
           "metrics": {
             "clicks": 48,
-            "keystrokes": 249,
-            "klmSeconds": 177.05,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
             "screens": 13,
             "requiredFields": 32,
             "popups": 0
@@ -12633,10 +12566,10 @@
         }
       ],
       "total": {
-        "clicks": 241,
-        "keystrokes": 977,
-        "klmSeconds": 877.1,
-        "screens": 70,
+        "clicks": 240,
+        "keystrokes": 973,
+        "klmSeconds": 874.3,
+        "screens": 69,
         "requiredFields": 147,
         "popups": 4
       },
@@ -15822,51 +15755,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -15995,42 +15883,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -16067,17 +15960,52 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
+            "klmSeconds": 198.45,
             "popups": 1,
             "requiredFields": 38,
-            "screens": 13
+            "screens": 12
           },
           "path": [
             [
@@ -16322,51 +16250,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -16495,42 +16378,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -16567,6 +16455,41 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
@@ -16574,7 +16497,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 58,
+            "clicks": 57,
             "episodePaths": [
               [
                 {
@@ -16818,51 +16741,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -16991,42 +16869,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -17062,6 +16945,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -17313,51 +17231,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -17486,42 +17359,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -17557,6 +17435,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -17806,51 +17719,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -17979,42 +17847,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -18050,6 +17923,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -18297,51 +18205,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -18470,42 +18333,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -18541,6 +18409,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -19883,14 +19786,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -20288,8 +20185,8 @@
           "keystrokeSpace": "navigationDirected",
           "metrics": {
             "clicks": 48,
-            "keystrokes": 249,
-            "klmSeconds": 177.05,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
             "popups": 0,
             "requiredFields": 32,
             "screens": 13
@@ -20302,14 +20199,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -20717,14 +20608,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -21132,14 +21017,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -21545,14 +21424,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -21945,7 +21818,7 @@
               }
             ],
             "keystrokeSpace": "navigationDirected",
-            "keystrokes": 249,
+            "keystrokes": 245,
             "path": [
               {
                 "click": {
@@ -21953,14 +21826,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -25173,10 +25040,10 @@
         {
           "workflow": "W3",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
-            "screens": 13,
+            "klmSeconds": 198.45,
+            "screens": 12,
             "requiredFields": 38,
             "popups": 1
           },
@@ -25212,8 +25079,8 @@
           "workflow": "W5",
           "metrics": {
             "clicks": 48,
-            "keystrokes": 249,
-            "klmSeconds": 177.05,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
             "screens": 13,
             "requiredFields": 32,
             "popups": 0
@@ -25267,10 +25134,10 @@
         }
       ],
       "total": {
-        "clicks": 241,
-        "keystrokes": 977,
-        "klmSeconds": 877.1,
-        "screens": 70,
+        "clicks": 240,
+        "keystrokes": 973,
+        "klmSeconds": 874.3,
+        "screens": 69,
         "requiredFields": 147,
         "popups": 4
       },
@@ -28456,51 +28323,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -28629,42 +28451,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -28701,17 +28528,52 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
           "keystrokeSpace": "navigationDirected",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
+            "klmSeconds": 198.45,
             "popups": 1,
             "requiredFields": 38,
-            "screens": 13
+            "screens": 12
           },
           "path": [
             [
@@ -28956,51 +28818,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -29129,42 +28946,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -29201,6 +29023,41 @@
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
                 }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
               }
             ]
           ],
@@ -29208,7 +29065,7 @@
           "space": "navigationDirected",
           "supported": true,
           "native": {
-            "clicks": 58,
+            "clicks": 57,
             "episodePaths": [
               [
                 {
@@ -29452,51 +29309,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -29625,42 +29437,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -29696,6 +29513,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -29947,51 +29799,6 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.nav.w1Close"
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.levelOfService",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.followUp",
-                    "value": {
-                      "code": {
-                        "c": "other"
-                      }
-                    }
-                  }
-                },
-                {
-                  "enter": {
-                    "comp": "w1Close.patientInstructions",
-                    "value": {
-                      "text": {
-                        "s": "See note."
-                      }
-                    }
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.commit.signNote"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Close.nav.w1Orders"
-                  }
-                },
-                {
-                  "click": {
                     "comp": "w1Orders.newLine"
                   }
                 },
@@ -30120,42 +29927,47 @@
                 },
                 {
                   "click": {
-                    "comp": "w1Orders.toSign"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Verify.continue"
+                    "comp": "w1Orders.nav.w1Close"
                   }
                 },
                 {
                   "enter": {
-                    "comp": "w1Sign.patientIdReentry",
+                    "comp": "w1Close.levelOfService",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.followUp",
+                    "value": {
+                      "code": {
+                        "c": "other"
+                      }
+                    }
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w1Close.patientInstructions",
                     "value": {
                       "text": {
-                        "s": "BR/F/80"
+                        "s": "See note."
                       }
                     }
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "ack": {
-                    "alert": "doseRangeOrder"
+                    "comp": "w1Close.commit.signNote"
                   }
                 },
                 {
                   "click": {
-                    "comp": "w1Sign.commit.signOrders"
-                  }
-                },
-                {
-                  "click": {
-                    "comp": "w1Sign.home"
+                    "comp": "w1Close.home"
                   }
                 },
                 {
@@ -30191,6 +30003,41 @@
                 {
                   "click": {
                     "comp": "w3Disposition.commit.disposition"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Disposition.nav.w3Orders"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Orders.toSign"
+                  }
+                },
+                {
+                  "enter": {
+                    "comp": "w3Sign.patientIdReentry",
+                    "value": {
+                      "text": {
+                        "s": "BR/F/80"
+                      }
+                    }
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
+                  }
+                },
+                {
+                  "ack": {
+                    "alert": "doseRangeOrder"
+                  }
+                },
+                {
+                  "click": {
+                    "comp": "w3Sign.commit.signOrders"
                   }
                 }
               ]
@@ -30440,51 +30287,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -30613,42 +30415,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -30684,6 +30491,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -30931,51 +30773,6 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.nav.w1Close"
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.levelOfService",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.followUp",
-                  "value": {
-                    "code": {
-                      "c": "other"
-                    }
-                  }
-                }
-              },
-              {
-                "enter": {
-                  "comp": "w1Close.patientInstructions",
-                  "value": {
-                    "text": {
-                      "s": "See note."
-                    }
-                  }
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.commit.signNote"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Close.nav.w1Orders"
-                }
-              },
-              {
-                "click": {
                   "comp": "w1Orders.newLine"
                 }
               },
@@ -31104,42 +30901,47 @@
               },
               {
                 "click": {
-                  "comp": "w1Orders.toSign"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Verify.continue"
+                  "comp": "w1Orders.nav.w1Close"
                 }
               },
               {
                 "enter": {
-                  "comp": "w1Sign.patientIdReentry",
+                  "comp": "w1Close.levelOfService",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.followUp",
+                  "value": {
+                    "code": {
+                      "c": "other"
+                    }
+                  }
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w1Close.patientInstructions",
                   "value": {
                     "text": {
-                      "s": "BR/F/80"
+                      "s": "See note."
                     }
                   }
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "ack": {
-                  "alert": "doseRangeOrder"
+                  "comp": "w1Close.commit.signNote"
                 }
               },
               {
                 "click": {
-                  "comp": "w1Sign.commit.signOrders"
-                }
-              },
-              {
-                "click": {
-                  "comp": "w1Sign.home"
+                  "comp": "w1Close.home"
                 }
               },
               {
@@ -31175,6 +30977,41 @@
               {
                 "click": {
                   "comp": "w3Disposition.commit.disposition"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Disposition.nav.w3Orders"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Orders.toSign"
+                }
+              },
+              {
+                "enter": {
+                  "comp": "w3Sign.patientIdReentry",
+                  "value": {
+                    "text": {
+                      "s": "BR/F/80"
+                    }
+                  }
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
+                }
+              },
+              {
+                "ack": {
+                  "alert": "doseRangeOrder"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w3Sign.commit.signOrders"
                 }
               }
             ],
@@ -32517,14 +32354,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -32932,8 +32763,8 @@
           "keystrokeSpace": "navigationDirected",
           "metrics": {
             "clicks": 49,
-            "keystrokes": 254,
-            "klmSeconds": 181.4,
+            "keystrokes": 250,
+            "klmSeconds": 179.8,
             "popups": 0,
             "requiredFields": 33,
             "screens": 13
@@ -32946,14 +32777,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -33371,14 +33196,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -33796,14 +33615,8 @@
                   }
                 },
                 {
-                  "enter": {
-                    "comp": "w1Rooming.weight",
-                    "value": {
-                      "qty": {
-                        "tenths": 157,
-                        "unit": "kg"
-                      }
-                    }
+                  "confirm": {
+                    "comp": "w1Rooming.weight"
                   }
                 },
                 {
@@ -34219,14 +34032,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -34629,7 +34436,7 @@
               }
             ],
             "keystrokeSpace": "navigationDirected",
-            "keystrokes": 254,
+            "keystrokes": 250,
             "path": [
               {
                 "click": {
@@ -34637,14 +34444,8 @@
                 }
               },
               {
-                "enter": {
-                  "comp": "w1Rooming.weight",
-                  "value": {
-                    "qty": {
-                      "tenths": 157,
-                      "unit": "kg"
-                    }
-                  }
+                "confirm": {
+                  "comp": "w1Rooming.weight"
                 }
               },
               {
@@ -37927,10 +37728,10 @@
         {
           "workflow": "W3",
           "metrics": {
-            "clicks": 58,
+            "clicks": 57,
             "keystrokes": 226,
-            "klmSeconds": 199.65,
-            "screens": 13,
+            "klmSeconds": 198.45,
+            "screens": 12,
             "requiredFields": 38,
             "popups": 1
           },
@@ -37966,8 +37767,8 @@
           "workflow": "W5",
           "metrics": {
             "clicks": 49,
-            "keystrokes": 254,
-            "klmSeconds": 181.4,
+            "keystrokes": 250,
+            "klmSeconds": 179.8,
             "screens": 13,
             "requiredFields": 33,
             "popups": 0
@@ -38021,10 +37822,10 @@
         }
       ],
       "total": {
-        "clicks": 243,
-        "keystrokes": 987,
-        "klmSeconds": 885.8,
-        "screens": 70,
+        "clicks": 242,
+        "keystrokes": 983,
+        "klmSeconds": 883,
+        "screens": 69,
         "requiredFields": 149,
         "popups": 4
       },
