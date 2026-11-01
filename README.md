@@ -239,6 +239,88 @@ WebAssembly. Medplum is the only backend, and it stores FHIR resources. The
 React app does two jobs: it moves JSON between the two, and it draws the tree
 that Lean returns.
 
+```mermaid
+flowchart LR
+  subgraph BROWSER["Browser"]
+    direction TB
+    SHELL["React shell<br/>routes: / live, /ehr replay, /browse, /dashboard"]:::trusted
+    SESSION["session.ts / liveSession.ts<br/>holds the state string, stages commits"]:::trusted
+    WASM["ehr-interp.wasm (Lean 4.35 → C → Emscripten)<br/>facts · init · step · renderUi"]:::proved
+    PAINTER["Painter (Mantine)<br/>draws UiScreen, sends Lean Events"]:::checked
+    MAPPER["commitMapper.ts<br/>commit → one FHIR transaction"]:::trusted
+    SHELL --> SESSION
+    SESSION <-->|"JSON strings"| WASM
+    WASM -->|"UiScreen tree"| PAINTER
+    PAINTER -->|"Event"| SESSION
+    SESSION -->|"accepted commit"| MAPPER
+  end
+
+  subgraph VITE["App server (vite preview, :5173)"]
+    direction TB
+    PROXY["/medplum proxy"]:::trusted
+    LOGIN["/__dev/persona-password<br/>reads .env"]:::trusted
+    PLUGINS["runs · catalog · build.json<br/>try-to-break-it"]:::trusted
+  end
+
+  subgraph DOCKER["Docker Compose"]
+    direction TB
+    MEDPLUM["medplum-server 5.2.13<br/>FHIR R4 API :8103"]:::trusted
+    PG[("Postgres 16")]:::trusted
+    REDIS[("Redis 7")]:::trusted
+    MEDPLUM --- PG
+    MEDPLUM --- REDIS
+  end
+
+  subgraph DISK["Repository"]
+    direction TB
+    RUNS[("runs/ · releases/<br/>programs, certificates, trajectories")]:::trusted
+    CLI["native ehr binary (same Lean)<br/>check · deploy · simulate · render-screens"]:::proved
+    CLI -->|"writes"| RUNS
+  end
+
+  SESSION -->|"live: search, read, transaction"| PROXY --> MEDPLUM
+  SHELL -->|"live sign-in"| LOGIN
+  SHELL -->|"replay: recorded facts and runs"| PLUGINS --> RUNS
+  PLUGINS -->|"try to break it"| CLI
+
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
+  classDef trusted fill:#eeeeee,stroke:#777,color:#222
+```
+
+Colors as above: green is Lean that the proofs are about, blue is checked by the
+browser screen gate, grey is trusted.
+
+A save in live mode:
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor C as Clinician
+  participant P as Painter
+  participant S as liveSession
+  participant L as Lean WASM
+  participant M as Medplum
+  C->>P: click Sign
+  P->>S: Event
+  S->>L: step(spec, program, facts, user, state, event)
+  L-->>S: staged state (commitGuard decided)
+  alt no new commit
+    S->>L: renderUi(staged)
+    L-->>P: UiScreen
+  else exactly one new commit or review receipt
+    S->>M: POST transaction Bundle (commitMapper)
+    M-->>S: 200, resource locations
+    S->>M: reload patient bundle
+    M-->>S: Bundle
+    S->>L: facts(new bundle)
+    S->>L: renderUi(staged state, new facts)
+    L-->>P: UiScreen with stored data
+  else more than one write, or the transaction fails
+    S-->>P: error, staged state discarded
+  end
+```
+
 ### Lean in the browser
 
 - **Build.** `make wasm` runs `lake build <root>:c` for the API roots
