@@ -109,7 +109,7 @@ describe("real Synthea population", () => {
 it("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
   const schedules = run.days.flatMap((d) => PERSONAS.map((p) => d.schedules[p]));
   // One lake process for the entire contract test. Build Lean before running this suite.
-  const result = spawnSync("lake", ["env", "lean", "--run", "../world/test/lean/Contract.lean"], {
+  const result = spawnSync("sh", ["-c", "ulimit -v 8000000; export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536; exec lake env lean -j6 --run ../world/test/lean/Contract.lean"], {
     cwd: join(root, "lean"), input: schedules.map((s) => JSON.stringify(s)).join("\n") + "\n",
     encoding: "utf8", maxBuffer: 20 * 1024 * 1024, timeout: 60_000,
   });

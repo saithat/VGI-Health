@@ -3,7 +3,7 @@
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 APP_PORT ?= 5173
-LIVE_WORLD ?= runs/world/live
+LIVE_WORLD ?= runs/world/2
 LIVE_DAYS ?= 10
 LIVE_ARGS ?=
 SEED_ARGS ?=
@@ -25,14 +25,16 @@ run:
 	node scripts/demo-urls.mjs $(APP_PORT)
 	pnpm --filter app exec vite preview --host 127.0.0.1 --port $(APP_PORT) --strictPort
 
-# Generate a real local world, then run agent nights with an online LLM backend.
+# Run agent nights on the selected world; generate it only when absent.
 run-live:
 	@set -eu; \
 	if [ -n "$${ANTHROPIC_API_KEY:-}" ]; then backend=claude; \
 	elif command -v codex >/dev/null 2>&1; then backend=codex; \
 	else echo 'run-live needs ANTHROPIC_API_KEY or an authenticated codex CLI.' >&2; exit 1; fi; \
 	$(MAKE) infra-up; \
-	pnpm --filter world gen --seed 7 --days $(LIVE_DAYS) --out $(LIVE_WORLD); \
+	if [ ! -f "$(LIVE_WORLD)/world.json" ]; then \
+	  pnpm --filter world gen --seed 7 --days $(LIVE_DAYS) --out $(LIVE_WORLD); \
+	fi; \
 	pnpm --filter agent run-days --backend "$$backend" --world $(LIVE_WORLD) --days $(LIVE_DAYS) $(LIVE_ARGS)
 
 check:
