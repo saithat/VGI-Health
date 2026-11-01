@@ -1,3 +1,5 @@
+import { PresentationProvider } from "./presentations";
+import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect } from "react";
 import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
@@ -169,7 +171,7 @@ export function WorkflowNav({
   );
 }
 /** Presentation only. Clinical state, permitted actions and values belong to Lean. */
-export function UiScreenView({
+function StockUiScreenView({
   screen,
   onEvent,
 }: {
@@ -270,4 +272,8 @@ export function UiScreenView({
       </Modal.Root>
     </AppShell>
   );
+}
+
+export function UiScreenView(props: { screen: UiScreen; onEvent: Emit; presentations?: PresentationBundle | null }) {
+  return <PresentationProvider bundle={props.presentations ?? null}><StockUiScreenView screen={props.screen} onEvent={props.onEvent} /></PresentationProvider>;
 }

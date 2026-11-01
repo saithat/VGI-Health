@@ -18,7 +18,7 @@
  *
  * Set EHR_FAKE=1 to use the fake ehr (tests / smoke runs only; certifies nothing).
  */
-import releaseDaysConfig from "../../world/releases.json";
+import { RELEASE_IDS, RELEASE_DAYS } from './release-config.js';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
@@ -66,25 +66,29 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     args: argv,
     options: {
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
-      'run-id': { type: 'string' }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
-      model: { type: 'string' }, 'v2-day': { type: 'string' }, 'v3-day': { type: 'string' }, fhir: { type: 'string' },
+      'run-id': { type: 'string' }, resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
+      model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
-  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
+  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({
     days: intArg(values.days, 'days', 10),
+    resume: values.resume,
     llm,
     worldDir: resolveUserPath(values.world ?? 'runs/world/2'),
     ...(values['runs-root'] ? { runsRoot: resolveUserPath(values['runs-root']) } : {}),
     ...(values['run-id'] ? { runId: values['run-id'] } : {}),
     ...(values.personas ? { personas: values.personas.split(',').map((s) => s.trim()) } : {}),
     seedPolicy: seedPolicyArg(values['seed-policy']),
-    releaseDays: { v2: intArg(values['v2-day'], 'v2-day', releaseDaysConfig.v2), v3: intArg(values['v3-day'], 'v3-day', releaseDaysConfig.v3) },
+    releaseDays: { v2: intArg(values['feature-day'] ?? values['v2-day'], 'feature-day', RELEASE_DAYS.v2), v3: intArg(values['migration-day'] ?? values['v3-day'], 'migration-day', RELEASE_DAYS.v3) },
     ...(values.fhir ? { fhirBundles: values.fhir.split(',').map((f) => resolveUserPath(f.trim())) } : {}),
     log: (line) => console.log(line),
   });
   console.log(`\nrun ${summary.runId} -> ${summary.dir}`);
   console.log(`rejections logged: ${summary.rejections.length}; tempting-move kinds rejected: ${summary.seededRejectedKinds.join(', ') || 'none'}`);
+  console.log(`invalid patches: ${summary.invalidPatches.length}; screen assertion failures: ${summary.screenFailures.length}; infrastructure errors: ${summary.infrastructureErrors.length}`);
+  if (summary.infrastructureErrors.length) throw new Error(`${summary.infrastructureErrors.length} infrastructure errors; inspect manifest/decisions before continuing`);
+  if (summary.llmErrors.length) throw new Error(`${summary.llmErrors.length} LLM calls failed; see decision flags and llm/*.error.json`);
 }
 
 async function cmdTryToBreakIt(argv: string[]): Promise<void> {
@@ -92,7 +96,7 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
     args: argv,
     options: {
       persona: { type: 'string' }, request: { type: 'string' }, backend: { type: 'string' }, run: { type: 'string' },
-      world: { type: 'string' }, 'replay-from': { type: 'string' }, spec: { type: 'string' }, out: { type: 'string' }, model: { type: 'string' },
+      world: { type: 'string' }, 'replay-from': { type: 'string' }, spec: { type: 'string' }, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
     },
   });
   if (!values.persona || !values.request) throw new Error('--persona and --request are required');
@@ -111,11 +115,11 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
 
   const runStore = runDir ? new RunStore(runDir) : null;
   const deployed = runStore && existsSync(path.join(runStore.dir, 'programs', persona.id, 'deployed.json')) ? await runStore.login(persona.id) : null;
-  const release = await loadRelease(values.spec ?? deployed?.program.specVersion ?? 'v1', ehr);
-  const program = deployed?.program ?? personalize(release.personaCanonicals?.[persona.id] ?? release.canonical, params, persona.userId);
+  const release = await loadRelease(values.spec ?? deployed?.program.specVersion ?? RELEASE_IDS.base, ehr);
+  const program = deployed?.program ?? personalize(release.canonical, params, persona.userId);
 
   const outDir = opt(values.out) ?? runDir ?? path.join(REPO_ROOT, 'runs', `break-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
-  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model });
+  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const store = new RunStore(outDir);
   const res = await runTryToBreakIt(
     { runId: path.basename(outDir), store, ehr, screens: createScreenChecker(ehr), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
@@ -149,7 +153,7 @@ async function cmdNight(argv: string[]): Promise<void> {
     args: argv,
     options: {
       run: { type: 'string' }, persona: { type: 'string' }, night: { type: 'string' }, backend: { type: 'string' },
-      mode: { type: 'string' }, 'replay-from': { type: 'string' }, out: { type: 'string' }, model: { type: 'string' },
+      mode: { type: 'string' }, 'replay-from': { type: 'string' }, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
     },
   });
   if (!values.run || !values.persona || !values.night) throw new Error('--run, --persona and --night are required');
@@ -157,7 +161,7 @@ async function cmdNight(argv: string[]): Promise<void> {
     runDir: resolveUserPath(values.run),
     persona: values.persona,
     night: intArg(values.night, 'night', 1),
-    llm: createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model }),
+    llm: createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] }),
     ehr: createEhr(),
     mode: modeArg(values.mode),
     ...(values.out ? { outDir: resolveUserPath(values.out) } : {}),

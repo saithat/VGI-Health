@@ -40,7 +40,7 @@ export function readLlmRecords(runDir: string): LlmRecord[] {
     for (const name of readdirSync(d)) {
       const p = path.join(d, name);
       if (statSync(p).isDirectory()) walk(p);
-      else if (name.endsWith('.json')) out.push(llmRecordSchema.parse(JSON.parse(readFileSync(p, 'utf8'))));
+      else if (name.endsWith('.json') && !name.endsWith('.request.json') && !name.endsWith('.error.json')) out.push(llmRecordSchema.parse(JSON.parse(readFileSync(p, 'utf8'))));
     }
   };
   walk(path.join(runDir, 'llm'));

@@ -1,0 +1,53 @@
+{
+  "name": "bad-04-macro-override",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/04-macro-override.json",
+    "--prev",
+    "programs/bad/04-macro-override.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 249,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w3TrackBoard",
+        "w3OrderSets",
+        "w3Sign"
+      ],
+      "property": "humanOnlyKept",
+      "message": "macro badOverride clicks w3Sign.commit.signOrders, which performs commit signOrders; only a human may commit",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w3TrackBoard"
+          }
+        },
+        {
+          "click": {
+            "comp": "w3TrackBoard.nav.w3OrderSets"
+          }
+        },
+        {
+          "click": {
+            "comp": "w3OrderSets.toSign"
+          }
+        },
+        {
+          "click": {
+            "comp": "w3Sign.override"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w3TrackBoard\", \"w3OrderSets\", \"w3Sign\"],\n  \"property\": \"humanOnlyKept\",\n  \"message\":\n  \"macro badOverride clicks w3Sign.commit.signOrders, which performs commit signOrders; only a human may commit\",\n  \"counterexample\":\n  [{\"click\": {\"comp\": \"home.work.w3TrackBoard\"}},\n   {\"click\": {\"comp\": \"w3TrackBoard.nav.w3OrderSets\"}},\n   {\"click\": {\"comp\": \"w3OrderSets.toSign\"}},\n   {\"click\": {\"comp\": \"w3Sign.override\"}}]}}\n",
+  "stderr": ""
+}

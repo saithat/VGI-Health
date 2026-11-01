@@ -1,0 +1,20 @@
+{
+  "name": "P3-full-canonical",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "releases/v1/personas/P3.json",
+    "--prev",
+    "releases/v1/personas/P3.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 0,
+  "ms": 128,
+  "verdict": "ok",
+  "stdout": "\"ok\"\n",
+  "stderr": ""
+}

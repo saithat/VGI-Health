@@ -1,0 +1,22 @@
+{
+  "name": "P3-simulate",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "simulate",
+    "--spec",
+    "v1",
+    "--program",
+    "releases/v1/personas/P3.json",
+    "--persona",
+    "runs/world/1/personas/P3.json",
+    "--schedule",
+    "runs/world/1/schedules/day-01/P3.json",
+    "--world",
+    "runs/world/1",
+    "--seed",
+    "1000004"
+  ],
+  "exit": 0,
+  "ms": 1180,
+  "stderr": ""
+}

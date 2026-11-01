@@ -22,6 +22,20 @@ describe('certified role baselines', () => {
   });
   it.each(['id', 'owner', 'role'])('keeps fork %s immutable', key => {
     expect(() => applyToProgram(tinyProgram, [{ op: 'replace', path: `/${key}`,
-      value: key === 'role' ? 'np' : 'someone-else' }], { version: 2 })).toThrow(`program ${key}`);
+      value: key === 'role' ? 'np' : 'someone-else' }], { version: 2 })).toThrow(`metadata: ${key}`);
   });
+});
+it('all fifteen certified role presets bind the exact program hash and active release',async()=>{
+ const {loadWorld}=await import('../src/world.js');const {assertCertified}=await import('../src/certification.js');
+ const {tmp}=await import('./helpers.js');const {REPO_ROOT}=await import('../src/util.js');const path=await import('node:path');
+ const world=await loadWorld(path.join(REPO_ROOT,'runs/world/2')), ehr=createEhr({fake:false}), out=await tmp('role-hashes');
+ for(const id of ['v1','v2','v3']){
+ const release=await loadRelease(id,ehr);
+ for(const persona of ['P1','P2','P3','P4','P5']){
+ const preset=release.personaCanonicals?.[persona],params=world.personas.get(persona);if(!preset||!params)throw new Error('Missing role');
+ const program=personalize(preset,params,world.userId(persona));
+ const result=await ehr.deploy({specVersion:id,program,prev:program,canonical:preset,outDir:path.join(out,id,persona)});
+ expect(result.deployed).toBe(true);if(result.deployed)expect(()=>assertCertified(program,result.certificate,id,'real')).not.toThrow();
+ }
+ }
 });
