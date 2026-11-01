@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {extractionKey,cachedExtraction} from './context-cache.mjs';
 import { dailyCanonical, recordedWorld } from './daily-canonical.mjs';
 import { readFile, writeFile, readdir, mkdir, mkdtemp, rm, access } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
@@ -10,16 +11,15 @@ import { fileURLToPath } from 'node:url';
 import { loadEhrInterp } from '../../app/public/ehr/interp-loader.mjs';
 import { replayTrajectory } from '../../app/src/dashboard/trajectory-replay.ts';
 
-const root = path.resolve(import.meta.dirname, '../..');
+const defaultRoot = path.resolve(import.meta.dirname, '../..');
 const exec = promisify(execFile);
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const exists = async p => { try { await access(p); return true; } catch { return false; } };
 const write = (p, data) => writeFile(p, JSON.stringify(data) + '\n');
-const relative = p => path.relative(root, p).split(path.sep).join('/');
 const sha = async p => createHash('sha256').update(await readFile(p)).digest('hex');
 const stableForGeometry=value=>Array.isArray(value)?value.map(stableForGeometry):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stableForGeometry(value[k])])):value;
 const dateOf = day => `2026-11-${String(2 + Math.floor((day - 1) / 5) * 7 + (day - 1) % 5).padStart(2, '0')}`;
-export async function loadInterpreter() {
+export async function loadInterpreter(root = defaultRoot) {
   const wasm = await loadEhrInterp({ wasmBinary: await readFile(path.join(root, 'app/public/ehr/ehr-interp.wasm')) });
   // Match the app's string seam, keeping clinical data opaque.
   return {
@@ -33,13 +33,13 @@ export async function verifyTask(interp, task, spec, program) {
 }
 // Recheck the committed exact facts/seeds without a native build. The earlier
 // native check is retained as evidence, not reported as a newly executed check.
-export async function verifySavedTrajectories(runId) {
+export async function verifySavedTrajectories(runId, root = defaultRoot) {
   if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected --run <id>');
   const output = path.join(root, 'runs', runId, 'trajectories');
   const index = await read(path.join(output, 'index.json'));
   const previous = await read(path.join(output, 'verification.json'));
   if (index.runId !== runId || !index.tasks.length) throw new Error('Invalid trajectory index');
-  const interp = await loadInterpreter();
+  const interp = await loadInterpreter(root);
   const mismatches = [];
   let events = 0, verified = 0, baselineEvents = 0, baselineVerified = 0;
   for (const entry of index.tasks) {
@@ -65,9 +65,10 @@ export async function verifySavedTrajectories(runId) {
   if (mismatches.length) throw new Error(`Determinism failed: ${JSON.stringify(mismatches[0])}`);
   return verification;
 }
-export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
+export async function indexTrajectories({ root = defaultRoot, runDirectory, contextCache, runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
   if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run run1-P3');
-  const runDir = path.join(root, 'runs', runId);
+  const runDir = runDirectory ?? path.join(root, 'runs', runId);
+  const relative = p => path.relative(root, p.startsWith(runDir + path.sep) ? path.join(root, 'runs', runId, path.relative(runDir,p)) : p).split(path.sep).join('/');
   const manifest = await read(path.join(runDir, 'manifest.json'));
   if (manifest.ehr.mode !== 'real') throw new Error('Only real interpreter runs can be verified');
   const world = await recordedWorld({root,manifest});
@@ -104,9 +105,11 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     return { spec, file };
   }
   const {pointerTravel}=await import('../../app/src/metrics/geometry.ts');
-  const interp = await loadInterpreter();
+  const interp = await loadInterpreter(root);
   const work = await mkdtemp(path.join(tmpdir(), 'vgi-trajectories-'));
   const tasks = [], mismatches = [], baselineTasks = [];
+  const contextProvenance = contextCache && manifest.fingerprints?.world ? JSON.stringify({root,world,worldSha256:manifest.fingerprints.world,fixtures:manifest.fingerprints.fixtures,binary:await sha(binary),adapter:await sha(path.join(root,'scripts/trajectories/Contexts.lean')),modules:await Promise.all(['Ehr/Cli/Sim','Ehr/Sim/Policy','Ehr/Sim/Goals','Ehr/Core/Interp','Ehr/Core/Workspace','Ehr/Render/Fhir'].map(m=>sha(path.join(leanDir,'.lake/build/lib/lean',`${m}.olean`))))}) : null;
+  if(contextProvenance)await mkdir(contextCache,{recursive:true});
   let eventCount = 0, nativeEvents = 0, wasmEvents = 0;
   try {
     for (const dayFolder of (await readdir(path.join(runDir, 'days'))).sort()) {
@@ -121,11 +124,14 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
         const { spec, file: specPath } = await specFor(program.specVersion);
         const nativePath = path.join(work, 'contexts.json');
         const extract = async (scheduleFile, programFile, specFile, recordingFile) => {
-          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
+          const key=contextProvenance?extractionKey(contextProvenance,await Promise.all([scheduleFile,programFile,specFile,recordingFile].map(file=>readFile(file)))):null;
+          return cachedExtraction(contextProvenance?contextCache:null,key,async()=>{
+          await exec('lean', ['-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
             cwd: root, timeout: 180000, maxBuffer: 4e6,
-            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
+            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_STACK_SIZE_KB:'65536', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
           });
           return read(nativePath);
+          });
         };
         const recordedIds = new Set(day.tasks.map(t => t.task));
         if (schedule.tasks.length !== recordedIds.size || schedule.tasks.some(t => !recordedIds.has(t.id)) || day.trace.some(e => !recordedIds.has(e.task))) throw new Error(`Schedule/recording task mismatch: ${dayFolder} ${persona}`);

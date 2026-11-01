@@ -11,6 +11,8 @@
     "complexity": "node scripts/complexity/compute.mjs",
     "test:complexity": "node --test scripts/complexity/*.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts",
     "trajectories": "node scripts/trajectories/index.mjs",
-    "test:trajectories": "pnpm --filter agent exec tsx --test ../scripts/trajectories/index.test.mjs && pnpm --filter app exec playwright test trajectories.spec.ts --project=desktop --workers=1"
+    "test:trajectories": "pnpm --filter agent exec tsx --test ../scripts/trajectories/index.test.mjs && pnpm --filter app exec playwright test trajectories.spec.ts --project=desktop --workers=1",
+    "publish-partial": "node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/publish-partial.mjs",
+    "test:publish-partial": "node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/publish-partial.test.mjs"
   }
 }
