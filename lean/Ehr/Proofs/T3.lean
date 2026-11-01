@@ -1,17 +1,9 @@
 import Ehr.Proofs.Frame
 
 /-!
-# T3: human-only steps are never automated
-
-A macro runs as `Actor.macro`. Whatever event a macro step sends, and whatever
-the program, the spec, and the state are, the step:
-- does not commit (the list of commits is unchanged);
-- does not acknowledge an alert (the list of acknowledged alerts is unchanged);
-- does not create a review receipt;
-- does not capture a value for a human-only element (marked `humanOnly`, or of
-  kind `identity`, `scan`, or `cosign`).
-
-The same holds for a whole macro run started by a human click.
+T3: macros cannot add commits, alert acknowledgments, review receipts,
+or captures for human-only elements.
+The same limits hold for a whole macro started by a human click.
 -/
 
 namespace Ehr.Proofs

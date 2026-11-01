@@ -2,8 +2,10 @@ import Ehr.Check.RuleSound
 import Ehr.Check.PinSound
 import Ehr.Check.RequestSound
 
-/-! Completed semantic portions of T1. The remaining obligations are explicitly
-listed in TODO_PROOFS and HANDOFF-check; this module does not assert full T1. -/
+/-!
+Proved safety and layout portions of the checker result.
+These theorems do not prove general completion (T1).
+-/
 namespace Ehr.Check
 open Ehr Ehr.Props
 

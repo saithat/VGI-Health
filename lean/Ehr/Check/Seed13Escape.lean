@@ -1,8 +1,10 @@
 import Ehr.Canonical.BadTests
 
-/-! Diagnostic for the original seed-13 request. Removing the W1 CURES
-paths does not remove another workflow's real, prescriber-reviewed receipt.
-This counter-regression keeps the outstanding mutation issue reproducible. -/
+/-!
+Removing one workflow's CURES paths can leave another valid review receipt.
+This regression preserves that case so rejection cannot rely on the missing
+paths alone.
+-/
 namespace Ehr.Check
 open Ehr Ehr.Canonical Ehr.Canonical.Tests
 

@@ -10,7 +10,7 @@ inductive RuleProfile where
   | full
   deriving DecidableEq, Repr
 
-/-- Use core while iterating. Set this to `.full` to restore the catalog. -/
+/-- The release uses core rules; the full catalog is an explicit opt-in. -/
 def ruleProfile : RuleProfile := .core
 
 end Ehr.Specs

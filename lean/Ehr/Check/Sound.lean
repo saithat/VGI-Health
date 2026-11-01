@@ -10,6 +10,12 @@ import Ehr.Check.ScalarCompletion
 import Ehr.Check.FixedLineCompletion
 import Ehr.Check.DoseCompletionObstruction
 
+/-!
+Assemble the thirteen properties from checker acceptance and completion.
+Completion is proved here for named restricted programs; the general case
+remains an explicit assumption.
+-/
+
 namespace Ehr.Check
 open Ehr Ehr.Props
 
@@ -213,7 +219,7 @@ theorem prefill_macro_human_completion :
       orderLines filled = [(0, "amoxicillin"), (1, "warfarin")] ∧
       filled.captured.all (fun x => !x.confirmed) = true ∧ "recordReview" ∈ finished.commits := by decide
 
-/-- The former accepted counterexample is now rejected for its missing drug dependency. -/
+/-- The checker rejects a dose field with no drug dependency. -/
 theorem completion_dependency_rejected :
     check DoseCompletionObstruction.spec none DoseCompletionObstruction.program
       DoseCompletionObstruction.program ≠ .ok := DoseCompletionObstruction.rejected

@@ -2,27 +2,10 @@ import Ehr.Props.Basics
 import Ehr.Props.Navigation
 
 /-!
-# The properties a certified UI program has (BRIEF 7.2, properties 1–13)
-
-Each property is stated about the real interpreter. Most come in two kinds of
-parts:
-
-- **By construction.** The interpreter makes this true for *every* program,
-  good or bad. Lane A proves these about the interpreter (T0: the commit
-  guard; T3: human-only steps; A2, A3, A4: alerts). They are listed here so
-  that `Satisfies` says everything a clinician relies on.
-- **Needs the checker.** These depend on how the program is built (where
-  things are placed, what macros do). The checker tests them before a
-  program is deployed, and T1 proves that the test is enough.
-
-Some parts are about the program's text, not its runs (for example "a macro
-never tries to type the patient ID"). The interpreter would refuse such a
-step anyway; the checker still rejects the program, so a bad design is never
-deployed even when it would be harmless.
-
-`Satisfies spec prev canonical prog` is the conjunction of all thirteen. The
-semantic parts hold for every patient record and every user with the
-program's role.
+Thirteen requirements for UI programs, stated about the actual interpreter.
+Some hold for every program; others require checks on the program's structure.
+Satisfies requires all thirteen for every patient's facts and user of the role.
+Checker acceptance still needs a completion proof to establish all of Satisfies.
 -/
 
 namespace Ehr.Props
@@ -417,7 +400,7 @@ def SeverityTiers (spec : Spec) (prog : Program) : Prop :=
 
 /-! ## 13. Sane navigation
 
-`NavigationSane` is the render lane's decidable `Render.NavSane` over the actual
+`NavigationSane` uses `Render.NavSane` over the actual
 navigation tree. D1–D4 and D6 hold for every program by renderer theorems in
 `Ehr.Render.UiProofs`; they do not need additional checker rules.
 -/

@@ -1,26 +1,11 @@
 import Ehr.Core.Types
 
 /-!
-# Formulary (reference data)
-
-A small formulary used by the alert rules: drug classes, interactions,
-high-alert flags, and pediatric weight-based dose ranges (per dose).
-
-**This is reference data for a software demo, not clinical advice.** Values are
-simplified and rounded to tenths of mg/kg. Do not use them to treat patients.
-
-Conventions:
-- The key is the lowercase generic name (`DrugInfo.name`).
-- The first class is the therapeutic class used for duplicate-therapy checks;
-  the rest are used for allergy and interaction matching.
-- `minMgPerKgTenths`/`maxMgPerKgTenths` are per dose, in tenths of mg/kg.
-- `maxDoseMgTenths` is the absolute per-dose cap (0 means unspecified).
-  Caps match the existing world pediatric reference data (largest regimen cap).
-- `mmeFactorTenths` is the oral morphine-equivalent factor in tenths
-  (morphine 10, hydromorphone 40, oxycodone 15, hydrocodone 10, tramadol 2).
-- Schedule II–IV drugs carry the class `"controlled-II-IV"`; Schedule II drugs
-  also carry `"scheduleII"` for the zero-refills requirement.
-  `0`/`0` means "no weight-based range" (e.g. dosed in units, or adult-only).
+Demo drug classes, interactions, high-alert flags and pediatric dose ranges.
+Dose ranges use tenths of mg/kg per dose; caps use tenths of mg (0: no cap).
+The first class is used for duplicate therapy; remaining classes for matching.
+Morphine-equivalent factors use tenths. Schedule tags drive controlled-drug rules.
+These simplified reference values are not clinical advice.
 -/
 
 namespace Ehr

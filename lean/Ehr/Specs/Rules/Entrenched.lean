@@ -98,27 +98,27 @@ def review27 : ReviewReq where
   mode := .shownOnCommit
   when := .always
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched elements, with source labels on each item. -/
 def elements : List ElementSpec :=
   [suicideRiskLevel, suicideMitigationPlan, methotrexateTeachBack]
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched infos, with source labels on each item. -/
 def infos : List InfoSpec :=
   [resultAbnormalFlags]
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched commits, with source labels on each item. -/
 def commits : List CommitSpec :=
   [signSuicideRiskAssessment, documentMethotrexateDischarge]
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched entries, with source labels on each item. -/
 def entries : List EntryReq :=
   [entrie130, entrie131, entrie132]
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched reviews, with source labels on each item. -/
 def reviews : List ReviewReq :=
   [review27]
 
-/-- Product design property. Entrenched contributions, with source labels on each item. -/
+/-- Entrenched alerts, with source labels on each item. -/
 def alerts : List AlertSpec :=
   []
 

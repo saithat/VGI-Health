@@ -4,15 +4,10 @@ import Ehr.Proofs.T2
 import Ehr.Proofs.T6
 
 /-!
-# Proof audit
-
-For each main theorem: the axioms it uses (`#print axioms`), and the project
-definitions its statement depends on (`#spec_surface`), which a reviewer must
-read to know what the theorem means. Also the T3 examples (the hypotheses of
-`T3_macro_run` are satisfiable, and `MacroSafe` rejects a bad step).
-
-Allowed axioms: `propext`, `Classical.choice`, `Quot.sound`. No `sorry`
-(`sorryAx`) and no `native_decide` (`Lean.ofReduceBool`).
+Main theorem axioms and the definitions their statements depend on.
+Concrete examples show macro assumptions can hold and bad macros are rejected.
+Allowed axioms: propext, Classical.choice and Quot.sound;
+sorryAx and Lean.ofReduceBool are not allowed.
 -/
 
 open Lean Elab Command

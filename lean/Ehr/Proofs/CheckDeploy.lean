@@ -2,18 +2,9 @@ import Ehr.Check.Deploy
 import Ehr.Props.Examples
 
 /-!
-# T4: only certified versions are published
-
-`ehr deploy` carries out `deployPlan`. The theorems below are about that
-function, so they cover every spec (including one right after a vendor
-release), every program, and every previous version.
-
-- `T4_publish_only_if_ok`: a planned write to `current.json` or
-  `current.cert.json` happens only if the checker's verdict is `ok`.
-- `T4_published_certificate`: the published certificate is the certificate of
-  this spec and this program, with verdict `ok`.
-- `T4_rejected_not_published`: if the verdict is not `ok`, nothing is
-  published.
+T4: only accepted programs appear in planned current-version writes.
+Their planned certificate describes the checked spec, program and verdict.
+These claims cover the plan, not atomic file writes.
 -/
 
 namespace Ehr.Proofs

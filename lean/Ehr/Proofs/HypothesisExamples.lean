@@ -4,9 +4,10 @@ import Ehr.Proofs.Alerts
 import Ehr.Proofs.CheckDeploy
 import Ehr.Render.UiTests
 
-/-! Concrete applications of every formerly partial/missing main-theorem
-hypothesis witness in docs/VERIFICATION.md §4. Each application supplies all
-premises; render-owned files are left to their owning lane. -/
+/-!
+Concrete examples for the main theorems listed in docs/VERIFICATION.md.
+Each example supplies all assumptions required by the theorem it applies.
+-/
 namespace Ehr.Proofs.HypothesisExamples
 open Ehr Ehr.Props Ehr.Check Ehr.Examples.Tiny Ehr.Examples.TinyTests Ehr.Render
 

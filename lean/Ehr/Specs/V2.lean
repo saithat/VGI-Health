@@ -1,5 +1,10 @@
 import Ehr.Specs.V1
 import Ehr.Specs.Extends
+/-!
+Release v2 adds optional prior-authorization and service-order fields.
+It preserves the v1 entry and review requirements.
+-/
+
 namespace Ehr.Specs.V2
 open V1
 
@@ -17,8 +22,7 @@ def priorAuthRequest : ElementSpec where
   friction := .compliance
   fhirTarget := "ServiceRequest.extension.priorAuthRequest"
 
-/-- Product design property.
-Optional status display. The actual payer API is outside this demo.
+/-- Optional status display. The actual payer API is outside this demo.
 45 CFR 170.315(g)(31)–(33) are matching EHR certification criteria, not a law
 requiring this panel to be shown (docs/regulations.md §5.2). -/
 def priorAuthStatus : InfoSpec :=
@@ -48,8 +52,7 @@ def orderCode : ElementSpec where
   friction := .compliance
   fhirTarget := "ServiceRequest.code"
 
-/-- Product design property.
-v2 adds only optional content and its catalog tag; old requirements stay exact. -/
+/-- v2 adds only optional content and its catalog tag; old requirements stay exact. -/
 def specV2 : Spec :=
   { specV1 with
     version := "v2"
@@ -61,8 +64,7 @@ def specV2 : Spec :=
 -- The complete catalog adds inherited artifact contracts to this finite check.
 set_option maxRecDepth 16384 in
 set_option maxHeartbeats 2000000 in
-/-- Product design property.
-Every v1 rule is preserved by the optional-feature release. -/
+/-- Every v1 rule is preserved by the optional-feature release. -/
 theorem specV2_extends_specV1 : specV2.Extends specV1 := by decide
 #print axioms specV2_extends_specV1
 

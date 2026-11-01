@@ -2,24 +2,10 @@ import Ehr.Core.View
 import Ehr.Core.Navigation
 
 /-!
-# Property basics: episodes, reachable states, and what "shown" means
-
-The properties in `Ehr.Props.Properties` talk about the real interpreter
-(`Ehr.init`, `Ehr.step`, `Ehr.view`), the same code the app runs. This file
-names the few ideas they share.
-
-- An **episode** is one task: a spec, a UI program, one patient's facts, and
-  the signed-in user.
-- A state is **reachable** if some sequence of events gets there from the
-  start of the episode. Events may come from the human or from a macro, and
-  may be anything at all (a click on any ID, any typed value). Time may also
-  pass between events. This is more than any real user could do, so a
-  property that holds in every reachable state holds in every real one.
-- A component is **shown** when the interpreter's screen view says so. That
-  view is what the page is drawn from. It counts a component as shown only if
-  it is on the current screen, every group above it is open, every tab
-  container above it is on its tab, its visibility condition holds, and it is
-  not tiny (see `Ehr.compShown`).
+Shared property terms for the actual interpreter: init, step and view.
+An episode holds one spec, program, patient's facts and user.
+Reachable states include arbitrary human and macro events and passing time.
+Shown components obey screen, group, tab, visibility and size rules.
 -/
 
 namespace Ehr.Props

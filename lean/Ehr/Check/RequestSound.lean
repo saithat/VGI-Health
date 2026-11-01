@@ -22,7 +22,7 @@ private theorem setCaptured_keeps_confirmed (s : State) (new : Captured)
   · have hne : x.element ≠ priorAuthElement := by simpa [he] using hxe
     simp [hne, he, hl]
 
-/-- CR-6: request clicks preserve every previously confirmed capture exactly. -/
+/-- Request clicks preserve every previously confirmed capture exactly. -/
 theorem requestPriorAuth_preserves_confirmed (sp : Spec) (u : User) (actor : Actor) (s : State)
     (x : Captured) (hx : x ∈ s.captured) (hc : x.confirmed = true) :
     x ∈ (requestPriorAuth sp u actor s).1.captured := by
@@ -31,7 +31,7 @@ theorem requestPriorAuth_preserves_confirmed (sp : Spec) (u : User) (actor : Act
   all_goals
     apply setCaptured_keeps_confirmed s _ rfl rfl ?_ ?_ x hx hc <;> simp_all
 
-/-- CR-6: a request convenience action cannot introduce a never-policy or
+/-- A request convenience action cannot introduce a never-policy or
 human-only value; such captures must use ordinary human field entry. -/
 theorem requestPriorAuth_no_human_capture (sp : Spec) (u : User) (actor : Actor) (s : State) :
     ∀ x ∈ (requestPriorAuth sp u actor s).1.captured, ∀ el,

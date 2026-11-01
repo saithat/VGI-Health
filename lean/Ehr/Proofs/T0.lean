@@ -3,21 +3,9 @@ import Ehr.Examples.TinyTests
 import Ehr.Core.Tests
 
 /-!
-# T0: the hard stop
-
-For every spec, program, facts, user, actor, state, and event: if a step adds
-commit `c`, then the commit guard for `c` held in the state before the step.
-
-The guard (`commitGuard`, see `Ehr/Core/Guard.lean`) says:
-1. the user's role may perform `c`;
-2. every entry requirement for `c` that applies is met by a captured value that
-   is confirmed, valid (right unit, checked flag, matching identity, different
-   cosigner, matching scan), and, for a human-only element, entered by a human;
-3. every review requirement for `c` that applies is met: the info is shown on
-   the current screen, or (only where allowed) a valid receipt covers it;
-4. every interruptive alert concerning `c` is acknowledged for each key.
-
-`commitGuard_iff` states these four items as plain logic.
+T0: every new commit passed its guard in the state before the step.
+The guard checks role permission, entries, reviews, alerts and extra rules.
+commitGuard_iff exposes these checks as separate requirements.
 -/
 
 namespace Ehr.Proofs

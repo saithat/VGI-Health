@@ -1,13 +1,9 @@
 import Ehr.Core.Interp
 
 /-!
-# Screen view
-
-`view` describes the current screen for the app to paint: every component in
-order, whether it counts as shown, its nesting, its bound value, whether an
-alert fires, which components are enabled or blocked (with the reason), and
-the open popup. The app renders info contents (allergy rows, med lists) from
-FHIR; Lean decides presence and visibility.
+The current screen view: components, visibility, values and blocked actions.
+It also reports alert status and the open popup.
+The app draws this view; clinical information rows come from FHIR.
 -/
 
 namespace Ehr

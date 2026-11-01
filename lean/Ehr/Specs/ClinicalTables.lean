@@ -1,16 +1,19 @@
 import Ehr.Core.Types
 
-/-! Blueprint display schemas. These describe clinical adapter data, never
-invent rows, computed percentiles, doses or completion state. Existing mandatory
-review/display contracts are retained. The new optional views add no signature,
-waiver, receipt or safety rule. Adapter/row-coverage integration is CR-16/17. -/
+/-!
+Schemas for clinical display data supplied by the record adapter.
+These optional views retain existing signing and review requirements.
+They do not create clinical rows, doses, percentiles or completion evidence.
+-/
 namespace Ehr.Specs.ClinicalTables
 
+/-- Note rows retain author, encounter, status, narrative and source dates. -/
 def encounterNotes : InfoSpec :=
   { id := "encounterNotes", label := "Notes", version := "notesVersion",
     payload? := some { rowFields := ["date", "type", "author", "encounter",
       "title", "text", "status", "sourceDate", "shiftDays"] } }
 
+/-- History rows keep their source and are grouped by kind. -/
 def importedHistory : InfoSpec :=
   { id := "importedHistory", label := "History", version := "historyVersion",
     payload? := some { rowFields := ["kind", "item", "detail", "status", "source"], groupBy? := some "kind" } }

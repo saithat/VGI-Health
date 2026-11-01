@@ -1,5 +1,10 @@
 import Ehr.Props.Properties
 
+/-!
+Additional commit requirements for time, values, defaults and displays.
+These checks are independent of ordinary review receipts.
+-/
+
 namespace Ehr.Props
 open Ehr
 

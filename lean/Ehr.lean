@@ -43,3 +43,8 @@ import Ehr.Check.SimAudit
 import Ehr.Check.ProfileGoalsTests
 import Ehr.Check.DoseTests
 import Ehr.Check.EncounterRoleTests
+
+/-!
+Default library: interpreter, rule data, proofs and executable regressions.
+Importing it builds the modules used by the native app and checker.
+-/

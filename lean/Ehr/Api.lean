@@ -2,15 +2,10 @@ import Ehr.Core.Workspace
 import Ehr.JsonCompat
 
 /-!
-# API: JSON in, JSON out
-
-The functions the app (WASM) and the native CLI both call. Each record-level
-function (`runInit`, `runStep`, `runView`, `runBatchCase`) is a plain call to
-the interpreter. The string functions (`apiInit`, `apiStep`, `apiView`) only
-parse their JSON arguments, call the record-level function, and print JSON.
-
-On a parse error the string functions return `{"error": "<message>"}`.
-Events from the app are always `Actor.human`; macros run inside `step`.
+Shared JSON API for the app's WASM module and the native command-line tool.
+Record functions call the interpreter; string functions parse and print JSON.
+Parse failures return an error object. App events run as human actions;
+macros run inside the interpreter.
 -/
 
 namespace Ehr

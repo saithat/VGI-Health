@@ -2,21 +2,11 @@ import Ehr.Core.View
 import Ehr.Props.Defs
 
 /-!
-# Comparator challenge: statements of the main theorems (DRAFT)
-
-**Draft for owner review; not final.** Each theorem below is stated exactly
-as proved in `lean/Ehr/Proofs/*.lean` (extracted from those files), with its
-proof replaced by `sorry`. `lake comparator` (config: `comparator.json`)
-checks that the solution module `Solution` proves these same statements, with
-only the permitted axioms, and that the kernel accepts the proofs.
-
-The statements depend on the interpreter (`lean/Ehr/Core/*.lean`), the
-formulary, and the property definitions in `lean/Ehr/Props/Defs.lean`. Those
-are the trusted surface a reviewer must read (`#spec_surface` in
-`lean/Ehr/Proofs/Audit.lean` lists them).
-
-Theorems: T0 (hard stop), T2 (receipts), T3 (human-only steps), T6 (macros),
-A2 (no false alarms), A4 (severity tiers).
+Comparator statements for T0, T2, T3, T6, A2 and A4.
+The intentional sorry bodies are challenges; Solution imports the proved versions.
+Comparator checks the statements and permitted axioms against comparator.json.
+Trusted surface: Ehr/Core/*.lean, Ehr/Formulary.lean and Ehr/Props/Defs.lean.
+Review these definitions too; Ehr/Proofs/Audit.lean lists their dependencies.
 -/
 
 namespace Ehr.Proofs
@@ -130,8 +120,8 @@ theorem T3_prefill_never_human_only (sp : Spec) (prog : Program) (facts : Facts)
   sorry
 
 /-- **T6 (macros are their expansion).** Running a macro's steps gives the
-same state as the reference fold; its result is `ok` exactly when the fold does
-not stop; and when the fold stops at step `j` with result `r`, the macro's
+same state as the reference run; its result is `ok` exactly when the reference does
+not stop; and when the reference stops at step `j` with result `r`, the macro's
 result is `blocked (macroStopReason j r)`. -/
 theorem T6_macro_is_fold (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (steps : List MacroStep) : ∀ (i : Nat) (s : State),
@@ -142,7 +132,7 @@ theorem T6_macro_is_fold (sp : Spec) (prog : Program) (facts : Facts) (user : Us
       (runMacro sp prog facts user i s steps).2 = .blocked (macroStopReason j r)) := by
   sorry
 
-/-- The macro's result is `ok` only if the fold does not stop. -/
+/-- The macro result is `ok` exactly when the reference run does not stop. -/
 theorem runMacro_ok_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (steps : List MacroStep) (i : Nat) (s : State) :
     (runMacro sp prog facts user i s steps).2 = .ok ↔

@@ -1,14 +1,9 @@
 import Ehr.Core.View
 
 /-!
-# Property definitions (DRAFT, for owner review)
-
-Definitions that the statements of the main theorems use, beyond the
-interpreter itself. They live here, apart from the proofs, so that the
-Comparator challenge (`lean/Statements.lean`) and the proofs share them.
-
-Per BRIEF section 3, `lean/Ehr/Props/**` is owner-owned. This file is a draft
-written by lane A; the owner should review it before it is treated as final.
+Definitions shared by the theorem statements and their proofs.
+These extend the interpreter with review receipts, human waivers,
+alert tiers and the reference used to check macro behavior.
 -/
 
 namespace Ehr.Props
@@ -17,13 +12,14 @@ open Ehr
 
 /-! ## T2: receipts -/
 
-/-- A valid receipt for review requirement `rq`, in plain logic. -/
+/-- A receipt for the current data version, from an allowed role, within the
+permitted time window and not dated in the future. -/
 def ValidReceiptFor (sp : Spec) (facts : Facts) (s : State) (rq : ReviewReq) : Prop :=
   ∃ w roles, rq.mode = .shownOrReceipt w roles ∧
     ∃ r ∈ s.receipts, r.info = rq.info ∧ infoVersion sp facts rq.info = some r.dataVersion ∧
       r.time ≤ nowMin facts s ∧ nowMin facts s - r.time ≤ w ∧ r.role ∈ roles
 
-/-- A human-entered waiver for review requirement `rq`, in plain logic. -/
+/-- The named waiver has a nonempty, confirmed value entered by a human. -/
 def HumanWaiverFor (s : State) (rq : ReviewReq) : Prop :=
   ∃ e, rq.waivedBy? = some e ∧
     ∃ x ∈ s.captured, x.element = e ∧ x.byHuman = true ∧ x.confirmed = true ∧
@@ -36,7 +32,7 @@ not passive. -/
 def PopupNotPassive (sp : Spec) (s : State) : Prop :=
   ∀ a k, s.popup? = some (a, k) → ∃ al, sp.alert? a = some al ∧ al.tier ≠ .passive
 
-/-! ## T6: the reference semantics of a macro -/
+/-! ## T6: the reference macro run -/
 
 /-- What one macro step does, through the public interface: `setValue` and
 `click` send an event to `step` as `Actor.macro`; `goto` moves to the screen
@@ -48,9 +44,8 @@ def macroAct (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : Sta
   | .goto t => if s.popup?.isSome then (s, .blocked "popup: acknowledge the alert first")
                else goTo sp prog facts s t
 
-/-- The reference: fold `macroAct` over the steps, stopping at the first step
-that is not `ok`. Returns the final state and, if it stopped, the index of the
-step and its result. `i` is the index of the first step. -/
+/-- Run macroAct on each step and stop at the first result that is not ok.
+Return the final state and any failure index and result; i is the first index. -/
 def foldMacro (sp : Spec) (prog : Program) (facts : Facts) (user : User) :
     Nat → State → List MacroStep → State × Option (Nat × StepResult)
   | _, s, [] => (s, none)

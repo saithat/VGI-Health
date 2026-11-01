@@ -1,5 +1,10 @@
 import Ehr.Core.Types
 
+/-!
+Role presets choose workflow access, landing screens and public labels.
+Shared patient search and chart review remain available in every preset.
+-/
+
 namespace Ehr
 
 /-- The pre-set view for each persona. Unknown owners retain the vendor reference. -/

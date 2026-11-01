@@ -2,27 +2,19 @@ import Ehr.Sim.History
 import Ehr.Sim.Certificate
 
 /-!
-Certified minimum activations and typed characters, separately optimized.
-
-`full` includes goal-value entries/confirms, goal commits after chosen values
-are captured, all goto/tab/group moves, reviews, bounded order-line creation,
-and macros without Back clicks. It omits Back, scroll and search. Repeated
-identical review receipts are omitted. Clock remains fixed (no KLM time in this
-minimum-action model). The full captured list is preserved, not sorted.
-
-`goalDirected` forces the first shown unmet field, otherwise retaining all
-non-entry moves, as proposed in the handoff. `navigationDirected` additionally
-chooses BFS navigation to the next action. Exactness is among runs of the
-reported space, never a global optimality claim. Auto skips full above 12
-values, goalDirected above 15 values, and both above 20 screens; bounds and
-explicit --space selections remain available.
-
+Separate minimums for activations and typed characters at fixed time.
+full omits Back, scroll and search; goalDirected fixes first-field entry;
+navigationDirected also restricts routes to the next action.
+Each certificate applies only to the reported search space and bounds.
+Automatic search limits: full 12 values, goalDirected 15; both 20 screens.
 -/
 namespace Ehr.Sim
 open Ehr
 
+/-- The allowed moves for which a reported minimum is certified. -/
 inductive SearchSpace | full | goalDirected | navigationDirected
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson
+/-- Optimize activations or typed characters separately. -/
 inductive Objective | clicks | keystrokes
   deriving DecidableEq, Repr, Inhabited
 
@@ -33,6 +25,7 @@ def isScanEvent (ctx : Context) (s : State) : Event → Bool
         match el.kind with | .scan _ => true | _ => false
   | _ => false
 
+/-- Charge the selected objective for this event, treating scans separately. -/
 def eventWeight (ctx : Context) (obj : Objective) (s : State) (e : Event) : Nat :=
   let ops := if isScanEvent ctx s e then [.scan] else []
   match obj with | .clicks => activation e ops | .keystrokes => typedKeys e ops
@@ -44,6 +37,8 @@ def newReview (ctx : Context) (s : State) (i : InfoId) : Bool :=
       infoVersion ctx.sp ctx.facts i == some r.dataVersion &&
       r.time == nowMin ctx.facts s && r.user == ctx.user.id && r.role == ctx.user.role)
 
+/-- List bounded goal entries, commits, reviews, navigation, macros and alert acks;
+keep only events allowed by the interpreter. -/
 def fullMoves (ctx : Context) (s : State) : List Event :=
   let cs := shown ctx s
   let moves := cs.flatMap fun c => match c.kind with
@@ -76,7 +71,7 @@ def directedMoves (ctx : Context) (s : State) : List Event :=
       let ready := actions ctx s
       if !ready.isEmpty then ready else ((planNavigation ctx s).getD []).take 1
 
-/-- The handoff's broader goal-directed space: fixed first-field entry,
+/-- Fixed first-field entry,
 but all non-entry alternatives (navigation, reviews, commits, macros) remain. -/
 def goalDirectedMoves (ctx : Context) (s : State) (all : List Event) : List Event :=
   match s.popup? with
@@ -86,6 +81,7 @@ def goalDirectedMoves (ctx : Context) (s : State) (all : List Event) : List Even
     | some e => [e]
     | none => all.filter fun e => match e with | .enter .. | .confirm _ => false | _ => true
 
+/-- Select the reported move set after forgetting Back history. -/
 def searchMoves (ctx : Context) (space : SearchSpace) (s : State) : List Event :=
   let s := forgetHistory s
   let all := fullMoves ctx s
@@ -99,8 +95,10 @@ checked buckets; neither derived Hashable nor opaque machine hash is trusted. -/
 def hashString (s : String) : Nat :=
   s.toList.foldl (fun h c => (h * 1099511628211 + c.toNat) % 18446744073709551616) 14695981039346656037
 
+/-- Combine two hash parts within a 64-bit range. -/
 def mix (a b : Nat) : Nat := (a * 1099511628211 + b) % 18446744073709551616
 
+/-- Hash a value together with its kind and unit. -/
 def hashValue : Value → Nat
   | .qty n u => mix n (hashString u.name)
   | .text s => mix 1 (hashString s)
@@ -108,9 +106,11 @@ def hashValue : Value → Nat
   | .user s => mix 3 (hashString s)
   | .flag b => if b then 5 else 4
 
+/-- Add strings to a hash in list order. -/
 def hashStrings (seed : Nat) (xs : List String) : Nat :=
   xs.foldl (fun h s => mix h (hashString s)) seed
 
+/-- Hash the search state; full state equality still resolves collisions. -/
 def stateHash (s : State) : Nat := Id.run do
   let mut h := mix (hashString s.screen) (mix s.currentSlot s.clock)
   for x in s.captured do
@@ -135,18 +135,22 @@ def searchGraph (ctx : Context) (space : SearchSpace) (obj : Objective) : Certif
     weight := eventWeight ctx obj
     hash := stateHash }
 
+/-- A state, its cost from the start and the reversed event path. -/
 structure SearchNode where
   state : State
   cost : Nat
   revPath : List Event
 
+/-- Search nodes grouped in increasing cost order. -/
 abbrev SearchQueue := List (Nat × List SearchNode)
 
+/-- Replace this state's recorded distance without removing other states in its hash bucket. -/
 def putDistance (v : Certificate.Table State) (s : State) (n : Nat) : Certificate.Table State :=
   let hash := stateHash s
   let bucket := (v[hash]?).getD []
   v.insert hash ((s, n) :: bucket.filter (fun x => x.1 != s))
 
+/-- Insert a node into its cost bucket, preserving cost order. -/
 def insertBucket (n : SearchNode) : SearchQueue → SearchQueue
   | [] => [(n.cost, [n])]
   | (cost, bucket) :: rest =>
@@ -154,8 +158,10 @@ def insertBucket (n : SearchNode) : SearchQueue → SearchQueue
     else if n.cost < cost then (n.cost, [n]) :: (cost, bucket) :: rest
     else (cost, bucket) :: insertBucket n rest
 
+/-- Add a node to the search queue by cost. -/
 def enqueue (q : SearchQueue) (n : SearchNode) : SearchQueue := insertBucket n q
 
+/-- Search found a candidate, hit its bound, or exhausted the allowed states. -/
 inductive SearchOutcome
   | found (candidate : Certificate.Candidate State Event)
   | bounded
@@ -194,6 +200,7 @@ def certifiedSearch (ctx : Context) (space : SearchSpace) (obj : Objective) (sta
   | .found c => if Certificate.accept g start c then some c else none
   | _ => none
 
+/-- A certified cost and event path in the reported search space. -/
 structure Minimum where
   cost : Nat
   path : List Event

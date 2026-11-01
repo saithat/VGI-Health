@@ -1,12 +1,9 @@
 import Ehr.Check.Sound
 
 /-!
-# General T1 obligation, opt-in only
-
-This library records the exact general target. The missing drug dependency
-is now rejected; a general completion construction remains to be proved.
-It is absent from defaultTargets. The proof-hole version of the proposed lemma
-is recorded only in TODO_PROOFS.md, so no unfinished theorem enters any build.
+The exact general T1 completion requirement, without a supplied proof.
+This library is opt-in and absent from the default build.
+Rejecting the missing-drug case does not prove general completion.
 -/
 namespace Ehr.Check.Obligations
 open Ehr Ehr.Props

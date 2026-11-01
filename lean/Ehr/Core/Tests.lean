@@ -169,8 +169,7 @@ def actionRequestSpec : Spec :=
 
 namespace ScheduleII
 
-/-- Example adoption of 21 CFR 1306.12(a), kept here for the content lane to
-apply to its hospital specs: each Schedule II medication line has zero refills. -/
+/-- 21 CFR 1306.12(a): each Schedule II medication line has zero refills. -/
 def zeroRefills : EntryReq :=
   { commit := "signOrders", element := "refills", when := .drugClass "scheduleII",
     perOrderLine := true, allowed? := some ["0"] }

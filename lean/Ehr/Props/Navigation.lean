@@ -1,5 +1,10 @@
 import Ehr.Render.NavRules
 
+/-!
+Navigation requirements on the tree produced by the actual renderer.
+The property uses the same tree that clinicians see.
+-/
+
 namespace Ehr.Props
 open Ehr
 
