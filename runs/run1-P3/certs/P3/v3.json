@@ -1,0 +1,8 @@
+{
+  "specVersion": "v1.1",
+  "specHash": "fnv1a64:d32ece0d336ef38b",
+  "programHash": "fnv1a64:647a61b620f6f18a",
+  "verdict": "ok",
+  "checkerVersion": "check-1",
+  "time": "2026-11-01T00:50:21Z"
+}

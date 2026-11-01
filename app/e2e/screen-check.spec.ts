@@ -20,14 +20,14 @@ function componentIds(tree: Html): string[] {
   ];
 }
 for (const file of files)
-  test(`visible components: ${file}`, async ({ page }) => {
+  test(`visible components: ${file}`, async ({ page, baseURL }) => {
     const tree = htmlSchema.parse(JSON.parse(readFileSync(file, "utf8")));
     const expected = componentIds(tree);
     const browserErrors: string[] = [];
     const externalRequests: string[] = [];
     await page.route("**/*", (route) => {
       const url = new URL(route.request().url());
-      if (url.origin === "http://127.0.0.1:4179") return route.continue();
+      if (url.origin === new URL(baseURL ?? "http://127.0.0.1:4179").origin) return route.continue();
       externalRequests.push(url.origin);
       return route.abort();
     });
