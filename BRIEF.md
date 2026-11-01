@@ -427,7 +427,7 @@ Daily variability: volume (busy and quiet days), acuity, no-shows and add-ons, n
 
 ### 8.3 Fair comparison
 - **Clinical decisions are independent of the UI version.** Each scenario fixes what is ordered, given, or acknowledged, and the disposition. The interface changes only how long those choices take, so the world evolves identically under every UI version.
-- **Floor:** the clicks, keystrokes, and scrolls (and KLM time) of only the human-only steps plus the genuine clinical choices. Report every version as % above the floor, for each metric.
+- **Baseline vs theoretical minimum:** the *baseline* is the canonical UI (certified; Day 1 for everyone). The *theoretical minimum* (called "floor" in code and data) is the clicks, keystrokes, scrolls, and KLM time of only the human-only steps plus the genuine clinical choices. Report every version against both: the saving vs the baseline, and the % above the theoretical minimum.
 
 ### 8.4 Evaluation integrity (no leakage)
 - The agent learns from the traces of days ≤ d (**train**).
