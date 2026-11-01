@@ -42,7 +42,8 @@ theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : Use
       (∀ rq ∈ sp.entries, rq.commit = c → entryMet sp facts user s rq = true) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
-        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) := by
+        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) ∧
+      extraGuard sp prog facts s c = true := by
   sorry
 
 /-- **T0 (units and human-only steps).** If a step adds commit `c`, then for

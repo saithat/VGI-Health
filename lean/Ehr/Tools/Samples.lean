@@ -45,6 +45,23 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "signingPayloadContract" "PayloadContract" Ehr.CoreTests.StructuredDisplay.contract,
+  mk "signingPayload" "InfoPayload" Ehr.CoreTests.StructuredDisplay.payload,
+  mk "signingDisplayRequirement" "DisplayReq" Ehr.CoreTests.StructuredDisplay.requirement,
+  mk "signingDisplayView" "ScreenView" (view Ehr.CoreTests.StructuredDisplay.tinySpec
+    Ehr.CoreTests.StructuredDisplay.tinyProgram Ehr.CoreTests.StructuredDisplay.context
+    Tiny.user Ehr.CoreTests.StructuredDisplay.selected),
+  mk "orderExpiry" "ExpiryReq" Ehr.CoreTests.OrderExpiry.requirement,
+  mk "calendarMonthOrder" "OrderClock" Ehr.CoreTests.OrderExpiry.monthOrder,
+  mk "validatedNarrative" "ElementSpec" Ehr.CoreTests.ValueValidation.narrative,
+  mk "validationExamples" "Validation[]" [Validation.isoDate, .udiGs1,
+    .supplyDaysCeil "quantity" "dose" "freq", .doseByWeight "weight" 100 5000 .mg],
+  mk "minorPredicate" "ClinicalPredicate" Ehr.CoreTests.PatientPredicate.minor,
+  mk "minorFacts" "Facts" Ehr.CoreTests.PatientPredicate.minorFacts,
+  mk "minorEntry" "EntryReq" Ehr.CoreTests.PatientPredicate.minorEntry,
+  mk "temporalRequirement" "TemporalReq" Ehr.CoreTests.EventWindow.requirement,
+  mk "temporalFacts" "Facts" Ehr.CoreTests.EventWindow.context,
+  mk "temporalSpec" "Spec" Ehr.CoreTests.EventWindow.tinySpec,
   mk "scheduleIIRefillsRequirement" "EntryReq" Ehr.CoreTests.ScheduleII.zeroRefills,
   mk "scheduleIIRefillsSpec" "Spec" Ehr.CoreTests.ScheduleII.constrainedSpec,
   mk "sampleDisplay" "Display" Ehr.Render.Display.empty,

@@ -120,6 +120,36 @@ export type ValueKind =
   | "cosign";
 
 /**
+ * Closed, reviewable input/output constraints; no executable predicates.
+ */
+export type Validation =
+  | "nonempty"
+  | { codeMember: { system: string; version: string } }
+  | "isoDate"
+  | { token: { minLength: number; maxLength: number; alphabet: string } }
+  /** Text/code retains lexical input; leading/trailing zeros are forbidden when their flags are false. Ordinary quantities retain their numeric meaning. */
+  | { decimal: { maxFraction: number; leadingZeros: boolean; trailingZeros: boolean } }
+  | { quantityRange: { unit: UnitKind; minTenths: number; maxTenths: number } }
+  | { formulationUnit: { formulation: ElementId; pairs: [string, UnitKind][] } }
+  | { weightBand: { minKgTenths: number; maxKgTenths: number } }
+  | "gtin14"
+  /** GS1 UDI with mandatory (01), optional (17), (10), (21), in that order. */
+  | "udiGs1"
+  | { supplyDaysCeil: { quantity: ElementId; dose: ElementId; frequency: ElementId } }
+  | { doseByWeight: { weight: ElementId; factorTenths: number; capTenths: number; unit: UnitKind } }
+  | { and: { left: Validation; right: Validation } };
+
+/**
+ * Trusted, versioned terminology/product table. Membership is enforced,
+ * not inferred from a ValueKind.coded value-set name.
+ */
+export interface CodeTable {
+  system: string;
+  version: string;
+  codes: string[];
+}
+
+/**
  * A data element the spec knows about.
  */
 export interface ElementSpec {
@@ -148,6 +178,168 @@ export interface ElementSpec {
    * Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`.
    */
   fhirTarget: string;
+  validation?: Validation;
+  defaultValue?: string;
+}
+
+/**
+ * Closed patient/episode dimensions. Values retain their source coding.
+ */
+export type ClinicalField =
+  | "service"
+  | "payer"
+  | "setting"
+  | "homelessness"
+  | "pregnancy"
+  | "capacity"
+  | "consent";
+/** All values of `ClinicalField`. */
+export const ClinicalFieldValues = ["service", "payer", "setting", "homelessness", "pregnancy", "capacity", "consent"] as const;
+
+/**
+ * A current-version coded clinical fact with explicit record provenance.
+ */
+export interface ClinicalObservation {
+  code: string;
+  artifactKey: string;
+  artifact: string;
+  version: number;
+}
+
+export interface ClinicalAge {
+  years: number;
+  source: ClinicalObservation;
+}
+
+/**
+ * Named facts, not overloaded encounter-kind strings. Absence means unknown.
+ */
+export interface ClinicalFacts {
+  age?: ClinicalAge;
+  service?: ClinicalObservation;
+  payer?: ClinicalObservation;
+  setting?: ClinicalObservation;
+  homelessness?: ClinicalObservation;
+  pregnancy?: ClinicalObservation;
+  capacity?: ClinicalObservation;
+  consent?: ClinicalObservation;
+  risks: [string, ClinicalObservation][];
+  testResults: [string, ClinicalObservation][];
+}
+
+/**
+ * Closed applicability language. Evaluation is three-valued; unknown
+ * conservatively applies a requirement and fires an explicit unknown alert key.
+ */
+export type ClinicalPredicate =
+  | { ageBetween: { minYears: number; maxYears: number } }
+  | { factEquals: { field: ClinicalField; code: string } }
+  | { riskEquals: { risk: string; code: string } }
+  | { testEquals: { test: string; code: string } }
+  | { capturedCode: { element: ElementId; slot: number; code: string } }
+  | { and: { left: ClinicalPredicate; right: ClinicalPredicate } }
+  | { or: { left: ClinicalPredicate; right: ClinicalPredicate } }
+  | { not: { predicate: ClinicalPredicate } };
+
+/**
+ * Identifier categories with semantic meaning, independent of HTML layout.
+ */
+export type IdentifierCategory =
+  | "patient"
+  | "encounter"
+  | "order"
+  | "drug"
+  | "product"
+  | "prescriber"
+  | "pharmacy";
+/** All values of `IdentifierCategory`. */
+export const IdentifierCategoryValues = ["patient", "encounter", "order", "drug", "product", "prescriber", "pharmacy"] as const;
+
+export interface PayloadFieldReq {
+  field: string;
+  /**
+   * False availability explicitly skips this field; absent/unknown requires it.
+   */
+  ifAvailable: boolean;
+  kind?: ValueKind;
+  validation?: Validation;
+}
+
+/**
+ * Required fields and identifier categories, on every row when requested.
+ */
+export interface PayloadContract {
+  fields: PayloadFieldReq[];
+  identifiers: IdentifierCategory[];
+  rowFields: string[];
+  rowConstraints?: PayloadFieldReq[];
+  groupBy?: string;
+}
+
+export interface PayloadIdentifier {
+  category: IdentifierCategory;
+  system: string;
+  value: string;
+}
+
+export interface PayloadRow {
+  id: string;
+  slot: number;
+  fields: [string, string][];
+  availability?: [string, boolean][];
+}
+
+/**
+ * Trusted current-version data, not a declaration that a placeholder exists.
+ */
+export interface InfoPayload {
+  info: InfoId;
+  patient: string;
+  artifactKey: string;
+  artifact: string;
+  version: number;
+  fields: [string, string][];
+  identifiers: PayloadIdentifier[];
+  availability: [string, boolean][];
+  rows: PayloadRow[];
+}
+
+export interface WorkflowPhase {
+  workflow: string;
+  phase: string;
+}
+
+export type DisplayScope =
+  | { commit: { id: CommitId } }
+  | { phase: { workflow: string; name: string } };
+
+/**
+ * An independent display contract; no review receipt or waiver bypasses it.
+ */
+export interface DisplayReq {
+  info: InfoId;
+  scope: DisplayScope;
+  when?: ClinicalPredicate;
+  pinned: boolean;
+  /**
+   * Confirmed flags on each row's slot drive selection emphasis.
+   */
+  selectionElement?: ElementId;
+}
+
+export interface SelectedPayloadRow {
+  row: PayloadRow;
+  selected: boolean;
+}
+
+export interface PayloadGroup {
+  key: string;
+  rows: SelectedPayloadRow[];
+}
+
+export interface PayloadView {
+  source: InfoPayload;
+  groups: PayloadGroup[];
 }
 
 /**
@@ -161,6 +353,199 @@ export interface InfoSpec {
    * or `""` if it is not versioned.
    */
   version: string;
+  payload?: PayloadContract;
+}
+
+/**
+ * A named clinical or documentation event (completion and filing are distinct).
+ */
+export type EventId = string;
+
+/**
+ * Select current-version evidence through a caller-supplied artifact binding.
+ */
+export interface EventRef {
+  event: EventId;
+  artifactKey: string;
+}
+
+/**
+ * Elapsed minutes or hospital-calendar business dates crossed.
+ */
+export type TimeMetric =
+  | "minutes"
+  | { businessDays: { calendar: string } };
+
+/**
+ * Ordering is independent of the number of business dates crossed.
+ */
+export type TemporalDirection =
+  | "before"
+  | "after"
+  | "either";
+/** All values of `TemporalDirection`. */
+export const TemporalDirectionValues = ["before", "after", "either"] as const;
+
+/**
+ * Subject time minus anchor time must lie in these inclusive bounds.
+ * The deadline is an explicit offset from the anchor, in the same metric.
+ * Missing evidence always blocks; passing a deadline also exposes overdue status.
+ */
+export interface TemporalReq {
+  id: string;
+  when?: ClinicalPredicate;
+  subject: EventRef;
+  anchor: EventRef;
+  metric: TimeMetric;
+  /**
+   * Required for business-day windows, whose zero distance alone has no ordering.
+   */
+  direction?: TemporalDirection;
+  minOffset: number;
+  maxOffset: number;
+  deadline: number;
+}
+
+/**
+ * Current artifact identity/version, supplied by the record adapter.
+ */
+export interface ArtifactBinding {
+  key: string;
+  artifact: string;
+  version: number;
+}
+
+/**
+ * Trusted evidence, never manufactured by a UI click or typed attestation.
+ * Timestamps are UTC epoch minutes, including times before the epoch.
+ */
+export interface EventEvidence {
+  event: EventId;
+  patient: string;
+  episode: string;
+  actor: UserId;
+  artifact: string;
+  version: number;
+  time: number;
+  /**
+   * Only anchors may describe planned future events.
+   */
+  planned: boolean;
+}
+
+/**
+ * Hospital-local business dates as epoch-day numbers, with explicit coverage.
+ * The adapter owns timezone/holiday conversion; duplicate dates do not add days.
+ */
+export interface BusinessCalendar {
+  id: string;
+  firstDay: number;
+  lastDay: number;
+  workingDays: number[];
+  /**
+   * UTC-minute transition -> local offset in minutes. None denotes UTC;
+   * other zones require coverage before both endpoints, including DST changes.
+   */
+  utcOffsets?: [number, number][];
+}
+
+/**
+ * Status of an event obligation, also returned by the screen view.
+ */
+export type ObligationStatus =
+  | "met"
+  | "missing"
+  | "invalid"
+  | "overdue";
+/** All values of `ObligationStatus`. */
+export const ObligationStatusValues = ["met", "missing", "invalid", "overdue"] as const;
+
+export interface ObligationView {
+  commit: CommitId;
+  requirement: string;
+  status: ObligationStatus;
+}
+
+/**
+ * Durable order/detention identity, independent of UI slots and episodes.
+ */
+export type OrderInstanceId = string;
+
+export type ClockAnchor =
+  | "issued"
+  | "started"
+  | "firstFill";
+/** All values of `ClockAnchor`. */
+export const ClockAnchorValues = ["issued", "started", "firstFill"] as const;
+
+/**
+ * A hospital-local civil timestamp and its UTC instant. The timezone adapter
+ * supplies the offset; core verifies date validity and exact UTC conversion.
+ */
+export interface ClockStamp {
+  time: number;
+  year: number;
+  month: number;
+  day: number;
+  minuteOfDay: number;
+  utcOffsetMinutes: number;
+  zone: string;
+}
+
+/**
+ * Resolved calendar anniversary; timezone service resolves DST ambiguity.
+ * Core checks the anniversary date, wall time, zone, and UTC conversion.
+ */
+export interface MonthCutoff {
+  anchor: ClockAnchor;
+  months: number;
+  stamp: ClockStamp;
+}
+
+export interface ClockRenewal {
+  event: EventId;
+  time: number;
+  actor: UserId;
+  version: number;
+}
+
+/**
+ * Original anchors are record inputs. Navigation, transfer and renewal never
+ * write them. Renewal evidence belongs to this durable instance/current version.
+ */
+export interface OrderClock {
+  id: OrderInstanceId;
+  patient: string;
+  issued: ClockStamp;
+  started?: ClockStamp;
+  firstFill?: ClockStamp;
+  monthCutoffs: MonthCutoff[];
+  renewals: ClockRenewal[];
+}
+
+export type ExpiryDuration =
+  | { minutes: { duration: number } }
+  | { calendarMonths: { months: number } };
+
+export interface RenewalPolicy {
+  event: EventId;
+  validForMinutes: number;
+}
+
+/**
+ * Actions are blocked at expiry, including the exact cutoff instant.
+ * Renewal is allowed only when explicitly authorized; maximum original lifetime
+ * and reassessment remain independent requirements and cannot be reset.
+ */
+export interface ExpiryReq {
+  id: string;
+  orderKey: string;
+  anchor: ClockAnchor;
+  duration: ExpiryDuration;
+  when?: ClinicalPredicate;
+  renewal?: RenewalPolicy;
+  reassessment?: RenewalPolicy;
+  maxOriginalMinutes?: number;
 }
 
 /**
@@ -170,6 +555,9 @@ export interface CommitSpec {
   id: CommitId;
   label: string;
   roles: Role[];
+  temporal?: TemporalReq[];
+  expiry?: ExpiryReq[];
+  actionLabel?: string;
 }
 
 /**
@@ -193,7 +581,8 @@ export type When =
   /** Some order drug has a nonzero weight-based dose range. */
   | "weightBased"
   /** Naloxone should be offered (CA B&P Code §741): some order line's drug is an opioid, and the patient takes a benzodiazepine or the line's daily MME is 90 or more (an unknown dose, frequency, or MME factor counts as a risk). */
-  | "naloxoneRisk";
+  | "naloxoneRisk"
+  | { clinical: { predicate: ClinicalPredicate } };
 
 /**
  * An element that must be captured before a commit.
@@ -248,9 +637,8 @@ export type AlertCond =
   | "doseOutOfRange"
   | "weightInLb"
   | "careGap"
-  | "highAlertMed";
-/** All values of `AlertCond`. */
-export const AlertCondValues = ["drugAllergy", "interaction", "duplicateTherapy", "doseOutOfRange", "weightInLb", "careGap", "highAlertMed"] as const;
+  | "highAlertMed"
+  | { clinical: { predicate: ClinicalPredicate } };
 
 /**
  * Alert tier.
@@ -319,6 +707,7 @@ export interface Spec {
   reviews: ReviewReq[];
   alerts: AlertSpec[];
   design: DesignRules;
+  displays?: DisplayReq[];
 }
 
 /**
@@ -572,6 +961,19 @@ export interface Facts {
    * Kind of this episode, e.g. "preop". Absent means no encounter-kind match.
    */
   encounterKind?: string;
+  episodeId?: string;
+  /**
+   * Absolute time; the existing receipt clock retains its original meaning.
+   */
+  epochMinute?: number;
+  artifactBindings?: ArtifactBinding[];
+  eventEvidence?: EventEvidence[];
+  calendars?: BusinessCalendar[];
+  clinical?: ClinicalFacts;
+  codeTables?: CodeTable[];
+  orderClocks?: OrderClock[];
+  infoPayloads?: InfoPayload[];
+  phase?: WorkflowPhase;
 }
 
 /**
@@ -690,6 +1092,9 @@ export type StepResult =
  * One component as the app should paint it.
  */
 export interface ItemView {
+  payload?: PayloadView;
+  pinned?: boolean;
+  validationError?: string;
   comp: Component;
   /**
    * Counts as shown: on screen, ancestors open, visibility holds, not tiny,
@@ -740,6 +1145,7 @@ export interface ItemView {
  * The current screen as the app should paint it.
  */
 export interface ScreenView {
+  obligations?: ObligationView[];
   screen: ScreenId;
   title: string;
   /**
