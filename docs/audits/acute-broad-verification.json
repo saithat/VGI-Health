@@ -1,0 +1,135 @@
+{
+  "capturedAt": "2026-11-01T12:36:47.590969+00:00",
+  "codeRevision": "a6acb3bd06f1256bc16c2284c22d4789389c9a49",
+  "integratedMain": "062a4ef83519772f5a4ea0feba95ce09339c4239",
+  "builtAt": "2026-11-01T12:20:21.705Z",
+  "leanHash": "a6ad6b526c269dda04dc6809b0fdd94d7e58545b1a86a74eac1faa00a18fda96",
+  "counts": {
+    "works": 2677,
+    "disabled-with-reason": 115,
+    "dead": 0,
+    "error": 0
+  },
+  "byOwner": {
+    "app": {
+      "works": 425,
+      "disabled-with-reason": 74,
+      "dead": 0,
+      "error": 0
+    },
+    "lean": {
+      "works": 2252,
+      "disabled-with-reason": 41,
+      "dead": 0,
+      "error": 0
+    }
+  },
+  "clinicalConfigurationSamples": [
+    {
+      "persona": "P1",
+      "configurations": 25,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P2",
+      "configurations": 15,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P3",
+      "configurations": 48,
+      "queuedOutsideBudget": 8
+    },
+    {
+      "persona": "P4",
+      "configurations": 23,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "P5",
+      "configurations": 39,
+      "queuedOutsideBudget": 0
+    },
+    {
+      "persona": "RN2",
+      "configurations": 48,
+      "queuedOutsideBudget": 8
+    }
+  ],
+  "scope": "Six active live profiles, including saved P3/RN2 program lineage and canonical P1/P2/P4/P5. Current canonical P2/P3 across all three releases are separately covered by the acute native audit, current five-role ARIA comparisons and fixed world-2 task replay. The sampled control audit is not exhaustive clinical-state exploration.",
+  "requiredClinicalGates": "See acute-verification.json for 15 certifications, 18 rejected bad programs, 1,284 fixed tasks, zero archived replay mismatches, D1\u2013D6, kernel/Comparator/WASM and build/test identities.",
+  "liveAgentNegative": {
+    "backend": "Claude",
+    "property": "reviewsBeforeCommit",
+    "rejected": true,
+    "counterexampleReplayPassed": true
+  },
+  "fastRegression": {
+    "passed": true,
+    "evidenceSha256": "9b9e7a6e4076fc7eb2aa9c43b8ef02b7cc485c6d23b7303877b5a91ec16079dc"
+  },
+  "performance": {
+    "passed": true,
+    "scope": "One browser worker, local loopback and synthetic non-localhost Host; not slow-link measurements.",
+    "measurements": [
+      {
+        "host": "127.0.0.1",
+        "label": "cold dashboard",
+        "bytes": 273339,
+        "requests": 18,
+        "interactiveMs": 847,
+        "wasmRequests": 0
+      },
+      {
+        "host": "127.0.0.1",
+        "label": "EHR \u2192 dashboard",
+        "bytes": 901,
+        "requests": 9,
+        "interactiveMs": 221,
+        "wasmRequests": 0
+      },
+      {
+        "host": "127.0.0.1",
+        "label": "dashboard \u2192 EHR",
+        "bytes": 1051,
+        "requests": 4,
+        "interactiveMs": 125,
+        "wasmRequests": 0
+      },
+      {
+        "host": "vgi-audit.example.ts.net",
+        "label": "cold dashboard",
+        "bytes": 298765,
+        "requests": 18,
+        "interactiveMs": 242,
+        "wasmRequests": 0
+      },
+      {
+        "host": "vgi-audit.example.ts.net",
+        "label": "EHR \u2192 dashboard",
+        "bytes": 901,
+        "requests": 9,
+        "interactiveMs": 213,
+        "wasmRequests": 0
+      },
+      {
+        "host": "vgi-audit.example.ts.net",
+        "label": "dashboard \u2192 EHR",
+        "bytes": 1051,
+        "requests": 4,
+        "interactiveMs": 130,
+        "wasmRequests": 0
+      }
+    ],
+    "evidenceSha256": "f2a3b4307e50765e2b122cd2ddbe217264689a64063979e7ed5bd79ee3de076c"
+  },
+  "artifacts": {
+    "docs/audits/acute-verification.json": "6bdf3a7e1d3e7114e0908e97d0a1939d54030ca644ac90d0aeb784198cd9935c",
+    "docs/audits/buttons.json": "1f109b766b440bb8ea03c7f592e1ba53474d8fa80251dd9920565d5247daebac",
+    "docs/audits/buttons-app.json": "206e4ffd2c20216b223c6113c059ef450729c5eeca44f773afec31036e7dca0f",
+    "docs/audits/buttons-ehr.json": "c7ae052f30af371672712680da0395165633638e6107647456c24ca39e22e70b",
+    "docs/audits/try-to-break-it.json": "72c68b32331c96adbe0f587d64825ee4dd4a5b98d4a157a27a2f1035bafe42b5",
+    "docs/audits/performance-after.json": "28936f3b59871be190ac5fae7fed646345c08469804cd06b1bc359a2bb97e693"
+  },
+  "fullAuditLogSha256": "f7a8ca189aa18a058ab6022695ef7bc012c6313c59c7af4e7a1a76a79f5a6c33"
+}

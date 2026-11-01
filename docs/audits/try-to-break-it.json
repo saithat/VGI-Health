@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "UNSAFE (demo): remove the allergy panel from Administer medication and remove the worklist allergy group, panel and 'Mark allergies reviewed' button.",
+    "summary": "UNSAFE (demonstration): remove the allergy panel from the administer screen and remove the worklist allergy panel, its review button and its group.",
     "patch": [
       {
         "op": "remove",

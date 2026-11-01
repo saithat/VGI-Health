@@ -333,7 +333,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
@@ -633,7 +633,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
   },
   {
     "route": "/?audit=buttons",
