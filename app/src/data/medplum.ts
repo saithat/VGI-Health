@@ -1,4 +1,4 @@
-import { clinicalDate } from "./clinicalDate";
+import { clinicalDate, isClinicalDay } from "./clinicalDate";
 import { ClientStorage, MemoryStorage, MedplumClient } from "@medplum/core";
 import type {
   Bundle,
@@ -341,44 +341,150 @@ export async function loadPatientBundle(patientId: string): Promise<Bundle> {
   };
 }
 /** Read the dated, authored List membership separately from a patient chart. */
-export async function loadListContext(user: LiveUser, today: string): Promise<Bundle> {
+export async function loadListContext(
+  user: LiveUser,
+  today: string,
+): Promise<Bundle> {
   const persona = user.persona === "RN2" ? "P3" : user.persona;
-  const lists = (await searchResources("List", { date: today, _tag: `urn:vgi:world:realism|${persona}` }))
-    .filter((r) => r.resourceType === "List");
+  const lists = (
+    await searchResources("List", {
+      date: today,
+      _tag: `urn:vgi:world:realism|${persona}`,
+    })
+  ).filter((r) => r.resourceType === "List");
   if (!lists.length) {
     const work = await loadWorklist(user, today);
     const actor = resourceRef(user.practitioner).reference ?? "";
-    const messages = await searchResources("Communication", { recipient: actor });
+    const messages = await searchResources("Communication", {
+      recipient: actor,
+    });
     const members = [...work.resources, ...messages];
     const groups: [string, Resource[]][] = [
-      ["clinic-schedule", members.filter(r => r.resourceType === "Appointment")],
-      ["ed-census", members.filter(r => r.resourceType === "Encounter" && r.class.code === "EMER")],
-      ["my-patients", members.filter(r => r.resourceType === "Encounter" && r.class.code === "IMP")],
-      ["unit-census", members.filter(r => r.resourceType === "Encounter" && r.class.code === "IMP")],
-      ["or-schedule", members.filter(r => r.resourceType === "ServiceRequest")],
-      ["consults", members.filter(r => r.resourceType === "ServiceRequest")],
-      ["inbasket", members.filter(r => r.resourceType === "Task" || r.resourceType === "Communication")],
+      [
+        "clinic-schedule",
+        members.filter((r) => r.resourceType === "Appointment"),
+      ],
+      [
+        "ed-census",
+        members.filter(
+          (r) => r.resourceType === "Encounter" && r.class.code === "EMER",
+        ),
+      ],
+      [
+        "my-patients",
+        members.filter(
+          (r) => r.resourceType === "Encounter" && r.class.code === "IMP",
+        ),
+      ],
+      [
+        "unit-census",
+        members.filter(
+          (r) => r.resourceType === "Encounter" && r.class.code === "IMP",
+        ),
+      ],
+      [
+        "or-schedule",
+        members.filter(
+          (r) =>
+            r.resourceType === "ServiceRequest" &&
+            !r.code?.coding?.some((c) => c.code === "11429006"),
+        ),
+      ],
+      [
+        "consults",
+        members.filter(
+          (r) =>
+            r.resourceType === "ServiceRequest" &&
+            r.code?.coding?.some((c) => c.code === "11429006"),
+        ),
+      ],
+      [
+        "inbasket",
+        members.filter(
+          (r) =>
+            r.resourceType === "Task" || r.resourceType === "Communication",
+        ),
+      ],
     ];
-    const snapshots: Resource[] = groups.filter(([,rows]) => rows.length).map(([code,rows]) => ({ resourceType: "List", id: `live-${persona}-${code}`, status: "current", mode: "snapshot", date: today, code: { coding: [{ code }] }, meta: { tag: [{ system: "urn:vgi:world:realism", code: persona }] }, entry: rows.map(r => ({ item: resourceRef(r) })) }));
+    const snapshots: Resource[] = groups
+      .filter(([, rows]) => rows.length)
+      .map(([code, rows]) => ({
+        resourceType: "List",
+        id: `live-${persona}-${code}`,
+        status: "current",
+        mode: "snapshot",
+        date: today,
+        code: { coding: [{ code }] },
+        meta: { tag: [{ system: "urn:vgi:world:realism", code: persona }] },
+        entry: rows.map((r) => ({ item: resourceRef(r) })),
+      }));
     const patients = await searchPatients("");
-    return { resourceType: "Bundle", type: "collection", entry: [...snapshots, ...members, ...patients, ...work.locations].map(resource => ({resource})) };
+    return {
+      resourceType: "Bundle",
+      type: "collection",
+      entry: [...snapshots, ...members, ...patients, ...work.locations].map(
+        (resource) => ({ resource }),
+      ),
+    };
   }
-  const references = [...new Set(lists.flatMap((r) => r.entry?.flatMap((e) => e.item.reference ? [e.item.reference] : []) ?? []))];
-  const types: ResourceType[] = ["Appointment", "Encounter", "ServiceRequest", "Task", "Communication"];
-  const members = await Promise.all(references.map(async (reference) => {
-    const [kind, id] = reference.split("/");
-    const type = types.find((type) => type === kind);
-    if (!type || !id) throw new Error("Invalid department List reference");
-    return readResource(type, id);
-  }));
-  const patientRefs = [...new Set(members.flatMap((r) => {
-    if (r.resourceType === "Appointment") return r.participant.flatMap((p) => p.actor?.reference?.startsWith("Patient/") ? [p.actor.reference] : []);
-    if (r.resourceType === "Task") return r.for?.reference ? [r.for.reference] : [];
-    if (r.resourceType === "Encounter" || r.resourceType === "ServiceRequest" || r.resourceType === "Communication") return r.subject?.reference ? [r.subject.reference] : [];
-    return [];
-  }))];
-  const patients = await Promise.all(patientRefs.filter((ref) => /^Patient\/[A-Za-z0-9.-]+$/.test(ref)).map((ref) => readResource("Patient", ref.slice(8))));
-  return { resourceType: "Bundle", type: "collection", entry: [...lists, ...members, ...patients].map((resource) => ({ resource })) };
+  const references = [
+    ...new Set(
+      lists.flatMap(
+        (r) =>
+          r.entry?.flatMap((e) =>
+            e.item.reference ? [e.item.reference] : [],
+          ) ?? [],
+      ),
+    ),
+  ];
+  const types: ResourceType[] = [
+    "Appointment",
+    "Encounter",
+    "ServiceRequest",
+    "Task",
+    "Communication",
+  ];
+  const members = await Promise.all(
+    references.map(async (reference) => {
+      const [kind, id] = reference.split("/");
+      const type = types.find((type) => type === kind);
+      if (!type || !id) throw new Error("Invalid department List reference");
+      return readResource(type, id);
+    }),
+  );
+  const patientRefs = [
+    ...new Set(
+      members.flatMap((r) => {
+        if (r.resourceType === "Appointment")
+          return r.participant.flatMap((p) =>
+            p.actor?.reference?.startsWith("Patient/")
+              ? [p.actor.reference]
+              : [],
+          );
+        if (r.resourceType === "Task")
+          return r.for?.reference ? [r.for.reference] : [];
+        if (
+          r.resourceType === "Encounter" ||
+          r.resourceType === "ServiceRequest" ||
+          r.resourceType === "Communication"
+        )
+          return r.subject?.reference ? [r.subject.reference] : [];
+        return [];
+      }),
+    ),
+  ];
+  const patients = await Promise.all(
+    patientRefs
+      .filter((ref) => /^Patient\/[A-Za-z0-9.-]+$/.test(ref))
+      .map((ref) => readResource("Patient", ref.slice(8))),
+  );
+  return {
+    resourceType: "Bundle",
+    type: "collection",
+    entry: [...lists, ...members, ...patients].map((resource) => ({
+      resource,
+    })),
+  };
 }
 
 export const bundleResources = (bundle: Bundle): Resource[] =>
@@ -507,9 +613,14 @@ export async function loadWorklist(
           await Promise.all([
             searchResources("Appointment", {
               actor,
-              date: today,
               status: "booked,arrived,checked-in",
-            }),
+            }).then((rows) =>
+              rows.filter(
+                (r) =>
+                  r.resourceType === "Appointment" &&
+                  isClinicalDay(r.start, today),
+              ),
+            ),
             searchResources("Task", {
               owner: actor,
               status: "requested,received,accepted,ready,in-progress,on-hold",
