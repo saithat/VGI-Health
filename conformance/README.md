@@ -25,6 +25,9 @@ replay contexts. Ambiguous/missing historical specs are errors. In `run1-P3`,
 the original `v1.1` means the prior-auth feature and original `v2` means the
 antibiotic release. The actual historical specs and labels are retained; current
 specs are not substituted for them.
+The archive is evaluated using the current native interpreter with its original
+programs/specs; this is not a recreation of its historical executable. A separate
+test checks both FNV certificate bindings for all eight archived revisions.
 
 The command writes `runs/<id>/conformance.json` atomically and an adjacent Markdown
 matrix. It also prints the matrix and observed failures. JSON contains the
@@ -40,7 +43,7 @@ artifact. Comma-separated substrings and `--out <file>` are supported.
 ## What is tested
 
 `clinical.mjs` contains hand-written obligations, synthetic patient facts and
-legitimate values. `scenarios.mjs` contains 193 scenarios. They do not derive
+legitimate values. `scenarios.mjs` contains 194 scenarios. They do not derive
 expected requirements, alert triggers or allowed roles from checker decisions.
 The coverage test compares this independently maintained list with the exported
 core entries, reviews and alerts, so a newly introduced rule requires a test.

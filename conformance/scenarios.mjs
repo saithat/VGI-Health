@@ -518,3 +518,21 @@ add('epcs.details-content', 'Law: controlled-prescription details at signing', '
   for (const marker of ['oxycodone', 'mg', 'q6h', '14', '0']) assert(serialized.includes(marker), `EPCS details missing ${marker}`);
   d.finish('signOrders'); return { d, observed: 'Controlled drug, mg dose, frequency, quantity and zero refills present in native semantic UI; signed' };
 });
+
+add('weight.linked-source-refresh', 'Hospital dosing weight / declared source linkage', 'Correcting weight to 20 kg refreshes or invalidates an earlier 70 kg link; mismatched values cannot be signed',
+  t => supports(t, 'signOrders') && t.program.screens.some(s => s.components.some(c => field('dosingWeight')(c) && c.kind.field.prefill?.linked?.element === 'weight')), f => {
+    const ctx = context('signOrders'), d = f.prefix(ctx, 'dosingWeight');
+    d.enter('weight', qty(200, 'kg'));
+    const c = d.find(field('dosingWeight'), 'linked dosing weight after source correction');
+    if (d.capture('dosingWeight') && !d.capture('dosingWeight').confirmed)
+      d.step({ confirm: { comp: c.id } }, 'try confirming the existing dosing-weight copy');
+    prepare(d, ctx, ['weight']);
+    const mismatch = JSON.stringify(d.capture('weight')?.value) !== JSON.stringify(d.capture('dosingWeight')?.value);
+    if (mismatch) {
+      d.clickCommit('signOrders');
+      assert(!d.state.commits.includes('signOrders'), 'Signed with current weight 20 kg but confirmed linked dosing weight 70 kg');
+      // A blocking implementation must still offer a consistent legitimate path.
+      d.enter('dosingWeight', qty(200, 'kg'));
+    }
+    d.finish('signOrders'); return { d, observed: 'Superseded link refreshed or refused; consistent corrected kg path completed' };
+  });
