@@ -78,9 +78,9 @@ export function table(report) {
   return rows.join('\n') + '\n';
 }
 
-export async function runSuite({ targets, binary, runId = null, selected }) {
+export async function runSuite({ targets, binary, runId = null, selected, catalog = scenarioCatalog }) {
   const native = new Native(binary);
-  const scenarios = scenarioCatalog.filter(s => !selected || selected.split(',').some(part => s.id.includes(part)));
+  const scenarios = catalog.filter(s => !selected || selected.split(',').some(part => s.id.includes(part)));
   const report = { schemaVersion: 1, suite: 'held-out-core-rule-conformance', runId,
     generatedAt: new Date().toISOString(), independentOfChecker: true, deploymentGate: false,
     boundary: 'Native interpreter + FHIR projection. Does not exercise browser painter, persistence, or shell patient-selection wiring.',

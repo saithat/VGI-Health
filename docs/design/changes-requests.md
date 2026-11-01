@@ -10,6 +10,31 @@ was changed by this lane. Exact-program cases, adversarial runtime copies and
 FHIR adapter probes are labeled separately. Run totals and per-revision traces
 are in [run1-P3/conformance.json](../../runs/run1-P3/conformance.json).
 
+### CONFORMANCE-5 → core/content/app: a deny decision bypasses the reason via the approval action
+
+**Trigger and attempt.** A metformin refill request; complete the ordinary refill
+protocol, quantity, refills, pharmacy and reviews. Set `refillDecision = deny`,
+leave `refillDenyReason` absent, then click the semantic `approveRefill` action.
+**Expected:** every route that effects a denial requires its reason.
+**Observed:** `approveRefill` enters `State.commits` with a confirmed deny decision
+and no denial reason. The supplemental
+[23-target evaluation](../../conformance/results/refill-denial-run1-P3.json)
+finds this on all six current P1/P4 canonicals; other personas have no refill
+workflow and are explicitly not applicable.
+
+This is not merely a misleading action label. `app/src/data/commitMapper.ts`,
+the `approveRefill` deny/denied branch, calls `finishTask`, which records the deny
+decision as the completed Task's business status. The native suite does not
+execute database persistence, but this is the actual mapper route it would use.
+The core requires the reason on `denyRefill`, while its `approveRefill` entry
+lacks the full-profile approve/modify-only value constraint. The separate
+dedicated-denial omission tests pass while this alternate route fails.
+
+**Request:** retain the denial reason across action routes, or constrain the
+approval action to approve/modify and preserve the dedicated, reasoned denial
+path. Ordinary approvals and legitimate denials must both remain completable.
+No existing failed outcome is replaced by this additional regression scenario.
+
 ### CONFORMANCE-1 → core/check/content: CURES exemptions validate neither membership nor eligibility
 
 **Trigger and attempt.** A Schedule II oxycodone order in a pre-op encounter,
