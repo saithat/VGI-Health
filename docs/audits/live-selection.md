@@ -24,3 +24,7 @@ The live regression tests assert the landing identity, visible clinical date, po
 ## Local validation
 
 Native checker rebuilt after the main merge; app build and lint, 292 app tests, 95 agent tests, and WASM freshness passed. The preview's `.env` also selected an older ignored native-checker cache; it was refreshed atomically from the rebuilt executable. No Medplum service was stopped or reset.
+
+After integrating `32369320`, all nine live paths and their landing/chart ARIA checks pass again. App tests remain 292/292 and agent tests 95/95. Static desktop UI fidelity passes. The opt-in shared realism review separately exposes an imported-note alias regression in main's new patient-scope filter; the exact fixture, reference forms and required fix are recorded in `docs/design/changes-requests.md`. The existing assertion remains intact.
+
+The final sampled control audit passed for all five live role landings: 45 working controls, 0 explained disabled controls, zero dead controls and zero errors. One landing configuration per persona is sampled; repeated patient-opening actions use the first, middle and last rows. The nine live path regressions separately cover each requested clinical destination. Desktop static ARIA/ui-check passed 21 tests; browser history passed three tests. The full optional realism capture remains blocked only by the imported-note alias issue above.

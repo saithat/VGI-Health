@@ -988,7 +988,19 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               tag: el.tagName,
             })),
         );
-        for (const target of targets) {
+        // Department rows share one source action; exercise the first, middle
+        // and last patient rather than refetching hundreds of identical charts.
+        const patientRows = targets.filter((target) =>
+          target.comp?.startsWith("workspace.open|"),
+        );
+        const sampledRows = new Set(
+          sampleIndices(patientRows.length).map((index) => patientRows[index]),
+        );
+        for (const target of targets.filter(
+          (target) =>
+            !target.comp?.startsWith("workspace.open|") ||
+            sampledRows.has(target),
+        )) {
           if (!target.clinical) continue;
           const destination = target.comp
             ? destinations.get(`${screen}:${target.comp}`)
