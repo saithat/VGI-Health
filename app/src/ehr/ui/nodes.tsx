@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   Alert,
   Badge,
@@ -133,9 +133,13 @@ export function StepperNode({ node }: Props<"stepper">) {
           }
         >
           <span className="step-number" aria-hidden="true">
-            {index < node.current ? "✓" : String(index + 1).padStart(2, "0")}
+            {index + 1}
           </span>
-          <span>{label}</span>
+          <Tooltip label={label} withArrow>
+            <span className="step-label" title={label} tabIndex={0}>
+              {label}
+            </span>
+          </Tooltip>
         </li>
       ))}
     </ol>
@@ -492,6 +496,7 @@ export function AlertNode({ node }: Props<"alert">) {
 }
 export function ButtonNode({ node, onEvent }: Props<"button">) {
   const primary = node.role === "primary";
+  const reasonId = useId();
   return (
     <div className={`clinical-action${primary ? " primary-action" : ""}`}>
       <Tooltip
@@ -515,6 +520,9 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
             }
             disabled={!node.enabled}
             aria-label={node.label}
+            aria-describedby={
+              !node.enabled && node.blockedReason ? reasonId : undefined
+            }
             title={node.enabled ? undefined : (node.blockedReason ?? undefined)}
             data-comp-id={node.comp}
             data-event={
@@ -546,7 +554,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
         </span>
       </Tooltip>
       {!node.enabled && node.blockedReason && (
-        <Text size="xs" c="dimmed" className="clinical-blocked">
+        <Text id={reasonId} size="xs" className="clinical-blocked">
           {node.blockedReason}
         </Text>
       )}

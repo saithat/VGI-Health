@@ -12,6 +12,7 @@ const data = (name) => read(resolve(directory, `${name}.json`));
 const ehr = await loadEhrInterp();
 assert.ok(ehr.exports.includes('ehr_facts'));
 assert.ok(ehr.exports.includes('ehr_render'));
+assert.ok(ehr.exports.includes('ehr_render_ui'));
 const native = (command, input) => JSON.parse(execFileSync('lean/.lake/build/bin/ehr', [command], {
   input: JSON.stringify(input), maxBuffer: 32 * 1024 * 1024,
 }));
@@ -32,10 +33,68 @@ for (const file of readdirSync('fixtures/synthea').filter((f) => f.endsWith('.js
 const { facts, display } = native('facts', { bundle: read(fixture), context });
 const common = { spec: data('spec'), program: data('program'), user: data('user'), facts };
 assert.deepEqual(JSON.parse(ehr.init(JSON.stringify(common))), native('init', common));
+function walk(nodes) {
+  return nodes.flatMap((node) => {
+    if (node.section) return [node, ...walk(node.section.children)];
+    if (node.columns) return [node, ...walk(node.columns.children)];
+    if (node.tabs) return [node, ...walk(node.tabs.body)];
+    return [node];
+  });
+}
+function checkUi(ui, view, program, display, name) {
+  assert.deepEqual(ui.banner.slice(0, 3), [['Patient', display.banner.name], ['DOB', display.banner.dob], ['MRN', display.banner.mrn]], name);
+  assert.equal(ui.title, view.title);
+  assert.deepEqual(ui.nav.flatMap(([, entries]) => entries.map(([id]) => id)).sort(), program.screens.map((sc) => sc.id).sort());
+  const screen = program.screens.find((sc) => sc.id === view.screen);
+  assert.deepEqual(ui.workspace[0].stepper.steps, program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => [sc.id, sc.title]));
+  const nodes = walk(ui.workspace);
+  const sourceKind = (kind) => {
+    if (kind === 'banner') return 'info';
+    if (kind === 'tabs') return 'tabs';
+    const tag = Object.keys(kind)[0];
+    return ({ panel: 'info', table: 'info', trend: 'info', priorAuth: 'info', group: 'section', macro: 'button', search: 'field' })[tag] ?? tag;
+  };
+  const sourceKeys = nodes.flatMap((node) => {
+    const tag = Object.keys(node)[0];
+    const props = node[tag];
+    const id = props.comp ?? props.id;
+    if (!id || (tag === 'button' && ['toggle', 'confirm'].includes(props.role))) return [];
+    return [`${id}:${tag}`];
+  });
+  assert.deepEqual(sourceKeys.sort(), view.items.filter((it) => it.shown).map((it) => `${it.comp.id}:${sourceKind(it.comp.kind)}`).sort(), `${name}: every shown component exactly once`);
+  for (const node of nodes) {
+    if (node.button) {
+      assert.ok(node.button.label.length, name);
+      assert.equal(node.button.enabled, view.enabled.includes(node.button.comp), name);
+      if (!node.button.enabled) assert.ok(node.button.blockedReason?.length, name);
+      if (node.button.role === 'primary') assert.ok(view.items.some((it) => it.shown && it.comp.id === node.button.comp && it.comp.kind?.button?.action?.commit), name);
+    }
+    if (node.field) {
+      assert.ok(node.field.label.length, name);
+      const item = view.items.find((it) => it.comp.id === node.field.comp);
+      assert.equal(node.field.humanOnly, item.humanOnly);
+      assert.equal(node.field.pendingConfirm, item.pendingConfirm);
+      assert.equal(node.field.provenance, item.provenance ?? null);
+      if (item.pendingConfirm) assert.ok(nodes.some((n) => n.button?.role === 'confirm' && n.button.comp === item.comp.id));
+    }
+  }
+  assert.equal(ui.side[0].info.rows.length, display.allergies.length);
+  assert.equal(ui.side[1].info.rows.length, display.meds.length);
+  assert.equal(ui.side[2].info.rows.length, display.problems.length);
+  assert.equal(ui.side[3].info.rows.length, new Set(display.vitals.map((r) => r.code)).size);
+  if (ui.modal) assert.ok(walk([ui.modal]).some((n) => n.button?.role === 'ack' && n.button.enabled));
+}
+console.log(`Native/WASM facts match for all ${bundleCount} Synthea bundles.`);
 const states = data('states');
+let checkedStates = 0;
 for (const [name, state] of states) {
   const input = { ...common, display, state };
   assert.deepEqual(JSON.parse(ehr.render(JSON.stringify(input))), native('render', input), name);
+  const ui = JSON.parse(ehr.call('ehr_render_ui', JSON.stringify(input)));
+  assert.deepEqual(ui, native('render-ui', input), `${name} semantic UI`);
+  checkUi(ui, JSON.parse(ehr.view(JSON.stringify(input))), common.program, display, name);
+  checkedStates++;
+  if (checkedStates % 250 === 0) console.log(`Matched ${checkedStates}/${states.length} HTML + semantic UI variants.`);
 }
 // A real canonical RN scan must accept the interpreter's identity and reject
 // an unrelated Medplum resource address. The painter emits the same Value.code.
@@ -62,5 +121,6 @@ for (const [name, state] of states.filter(([name]) => name.endsWith('-expanded')
   break;
 }
 assert.ok(scanChecked, 'a shown canonical RN wristband field was exercised');
+assert.ok(JSON.parse(ehr.call('ehr_render_ui', '{}')).error);
 for (const method of ['facts', 'render']) assert.ok(JSON.parse(ehr[method]('{}')).error);
-console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical page variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);
+console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);

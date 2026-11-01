@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import {
   Accordion,
   AppShell,
@@ -99,10 +100,10 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
                 <Badge
                   key={label}
                   color={
-                    /no known|nkda/i.test(value)
-                      ? "teal"
-                      : /not recorded/i.test(value)
-                        ? "yellow"
+                    !value.trim() || /not recorded/i.test(value)
+                      ? "yellow"
+                      : /no known|nkda/i.test(value)
+                        ? "gray"
                         : "red"
                   }
                   variant="filled"
@@ -190,6 +191,10 @@ export function UiScreenView({
     stepper && "stepper" in stepper
       ? stepper.stepper.steps[stepper.stepper.current]?.[0]
       : undefined;
+  // A new screen starts at its heading. Ordinary field updates retain position.
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [active, screen.title]);
   return (
     <AppShell
       className="clinical-app"

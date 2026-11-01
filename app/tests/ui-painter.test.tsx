@@ -34,6 +34,7 @@ beforeAll(() => {
     },
   );
   Element.prototype.scrollIntoView = vi.fn();
+  window.scrollTo = vi.fn();
 });
 afterEach(cleanup);
 const field: NodeOf<"field"> = {
@@ -349,6 +350,11 @@ describe("semantic EHR painter", () => {
     const action = screen.getByRole("button", { name: "Continue" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe("Identity required");
+    const description = document.getElementById(
+      action.getAttribute("aria-describedby") ?? "",
+    );
+    expect(description?.textContent).toBe("Identity required");
+    expect(action.getAttribute("data-variant")).toBe("filled");
     fireEvent.click(action);
     expect(emit).not.toHaveBeenCalled();
   });

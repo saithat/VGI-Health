@@ -887,3 +887,21 @@ human-event replay manifests in `programs/replays/`; run
 replay through the native JSON API with the intended hard stops and no commits.
 The original content exporter console's hardcoded "16 bad programs" message is
 also stale; please update that owning-tools diagnostic to `Bad.programs.length`.
+
+## Render → app: semantic painter integration details
+
+`lane/render` now publishes the generated `UiNode`/`UiScreen` types, the
+`ehr_render_ui` export, and **real** adult P1 samples named `w1Rooming.json`,
+`w1Orders.json`, and `w1Sign.json` in `app/src/fixtures/ui/`.
+Read-only sidebar and missing-required-review info nodes deliberately use empty
+`comp` strings. The section 10 type permits this; the app's schema must accept
+an empty info comp and must never turn a summary into a component event.
+
+The app branch at `28cdbd9` forwards all semantic buttons as `Event.click`.
+It must map `role = "toggle"` to `Event.toggle {comp}`, `"confirm"` to
+`Event.confirm {comp}`, and `"ack"` to `Event.ack {alert := comp}`. Other roles
+retain `Event.click`. The explicit confirm node already provides the D6
+affordance; do not invent a second confirm control from pendingConfirm or the
+ARIA fidelity check will see extra buttons. Use the generated types instead of
+a parallel handwritten UI union. The existing generic WASM `.call` method can
+invoke `ehr_render_ui` directly; no convenience wrapper change is required.
