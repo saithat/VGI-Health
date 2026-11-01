@@ -89,7 +89,7 @@ describe("semantic EHR painter", () => {
       </MantineProvider>,
     );
     fireEvent.click(
-      screen.getByRole("button", { name: "Open rooming", exact: true }),
+      screen.getByRole("button", { name: "Open rooming" }),
     );
     expect(emit.mock.calls).toEqual([
       [{ click: { comp: "actual.goto.component" } }],
