@@ -41,6 +41,52 @@ Start with these files, in order:
 | The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: deterministic Lean policies; clicks, scrolls and straight-line mouse travel at 1440×900 | `Sim/` |
 | The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
 
+## What "proved" means here, and the gap to real deployment
+
+For readers who build software but don't use formal verification: a **proof**
+is like a test that covers every possible input at once. Lean checks it
+mechanically, so it can't be "mostly right". The guarantee only covers the
+code the theorem talks about, though. Everything around that code is tested
+or trusted, as in any other system.
+
+```mermaid
+flowchart TB
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
+  classDef trusted fill:#eeeeee,stroke:#777,color:#222
+  classDef gap fill:#fde2e1,stroke:#b42318,color:#5c100b
+
+  U["👩‍⚕️ Clinician"]:::gap
+  B["Browser + React drawing<br/>🔵 tested: accessibility tree = Lean's screen tree;<br/>every control works (button audit)"]:::checked
+  W["WebAssembly build of the Lean code<br/>⚪ trusted: Lean compiler + Emscripten;<br/>🔵 tested: native and WASM agree on every recorded event"]:::trusted
+  I["Lean interpreter: screen contents, events, signing<br/>🟢 proved for every patient, user and click sequence:<br/>no sign-off without required entries, reviews and alert acks;<br/>automation can't do human-only steps; alerts only when true"]:::proved
+  C["Nightly checker on each AI-proposed UI<br/>🟢 proved: acceptance implies 12 of 13 safety properties;<br/>🟡 'every task can be finished': proved for common cases only"]:::proved
+  R["Hospital rules (CURES, naloxone, kg weight, …)<br/>⚪ written by hand and reviewed; 🔴 not proved complete or clinically right"]:::trusted
+  F["FHIR mapping + Medplum database<br/>⚪ trusted, tested (not proved)"]:::trusted
+
+  U --> B --> W --> I --> F
+  C -. "only accepted UIs reach clinicians" .-> I
+  R --> C
+  R --> I
+
+  subgraph GAPS["🔴 Gaps before real-world deployment"]
+    direction TB
+    G1["Rules: only the core rule set is on;<br/>a hospital must review completeness and clinical content"]:::gap
+    G2["Users: savings are from simulated clinicians,<br/>not a study with real staff"]:::gap
+    G3["Integration: Medplum, not Epic or Oracle Health;<br/>no SSO, audit, uptime or security review"]:::gap
+    G4["Proof gaps: general 'task can be finished',<br/>crash-safe deploy, browser drawing itself"]:::gap
+    G5["Regulation: clinical decision support and<br/>software-as-medical-device review not done"]:::gap
+  end
+```
+
+**How to read it.** Green is guaranteed by a Lean proof for all inputs. Blue is
+checked by tests or per-program checks: strong evidence, but only for what was
+run. Grey is trusted, like any compiler, library or database. Red is not
+covered, and is listed so nobody mistakes the demo for a deployable product.
+The key design choice is that the AI agent is never trusted: whatever it
+proposes, only UIs the checker accepts reach clinicians, and the interpreter
+enforces the signing rules even then.
+
 ## Architecture
 
 One Lean code base is the single source of truth. It is compiled twice: to a
@@ -164,8 +210,8 @@ use `pnpm install && make run`. The dashboard includes the recorded `run1-P3`
 trajectory; its archived replay preserves the recorded clinical events.
 Use `make run APP_PORT=5187` if the default port is occupied.
 
-See [DEMO](docs/DEMO.md), [current status](docs/STATUS.md), and the
-[clean-clone check](docs/CLEAN-CLONE.md). `make wasm-check` checks the committed
+See [DEMO](docs/DEMO.md). A clean-clone test (`scripts/clean-clone-test.sh`) clones
+local HEAD, installs and serves it offline. `make wasm-check` checks the committed
 WASM source binding; `make wasm` rebuilds it using the local toolchain.
 
 The trusted system includes the reviewed hospital spec, Lean and Emscripten,

@@ -130,7 +130,7 @@
     ],
     "wholeProjectKernelCheck": "blocked until owning-lane build regression is fixed; render export checked separately"
   },
-  "remainingWork": "docs/STATUS.md",
+  "remainingWork": "README.md",
   "validationToolSha256": {
     "lean/Ehr/Render/test-wasm.mjs": "e1c2472d4cba72ff2fcb1732eed4109e1e782f884034168e49c265211efd84ae",
     "lean/Ehr/Render/prepare-shards.py": "24aa2f5e7419bbe9b39f5030fdf2ec77823abdf709ffda221b68512c5de9fe4d",

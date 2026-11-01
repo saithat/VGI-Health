@@ -145,7 +145,7 @@ facts and display in production. `packageExtensions` repairs Medplum's undeclare
 4. Do decision records include alternatives and predicted/measured savings?
 5. Does each rendered commit screen match Lean's banner, review and dose-check requirements?
 
-This lane changes no Lean specs, properties or statements. See [project status](../docs/STATUS.md)
+This lane changes no Lean specs, properties or statements. See the [root README](../README.md)
 for integration dependencies and test coverage.
 
 ## Recorded-run demo dashboard

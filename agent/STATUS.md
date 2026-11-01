@@ -122,7 +122,7 @@ No verification run data is committed.
 
 Verification: 15/15 current certified canonicals have complete real Chromium
 geometry (world/2; v1 day 2, v2 day 4, v3 day 8); baseline numbers and bindings are
-in docs/STATUS.md. A deliberately FAKE
+in the root README.md. A deliberately FAKE
 night through the real binary deployed composites/presentation/shortcut changes,
 with full screen gates and 12/12 identical trees reused on the next check. An
 8-day × 5-persona FAKE run plus exact replay measured all 422 tasks across both

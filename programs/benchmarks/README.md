@@ -23,7 +23,7 @@ Ehr goal derivation, joint certified search, interpreter and KLM functions.
 `EHR_FAKE=1` is rejected. A bounded or failed search stops computation; it never
 becomes a zero or a claimed minimum. Commands time out rather than hang forever.
 For restricted pnpm stores, add `--config.verify-deps-before-run=false` before
-`complexity`, as described in docs/STATUS.md.
+`complexity`, as described in the root README.md.
 
 ## Cases
 

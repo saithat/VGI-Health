@@ -291,4 +291,4 @@ ordered chunks and resolves references between them; interrupted loads resume
 on a rerun. It never resets the server or changes active worklists. All imported
 patients are searchable by every live persona. See the
 [import guide](../scripts/synthetic-hospital/README.md) and
-[Phase 2 plan](../docs/STATUS.md).
+[root README](../README.md).

@@ -93,7 +93,7 @@ Fixtures are uncompressed JSON, below the 10 MB budget. The Vite catalog adds a
 validated bundlePath and source for both cohorts; its development server and
 production output serve identical JSON. The browser has a source filter.
 This imports notes and history into Medplum and replay bundles; the certified
-chart's full Notes/history presentation is planned in [docs/STATUS.md](../../docs/STATUS.md).
+chart's full Notes/history presentation is described in the [root README](../../README.md).
 
 Browser verification after starting Vite on 5195:
 `node scripts/synthetic-hospital/verify-live.mjs`. Uses one browser, sequential

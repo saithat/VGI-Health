@@ -572,7 +572,7 @@ existing interpreter events.
 The shared shell still needs its role/weight/isolation banner and activity-tab
 polish, and the tagged structured widgets will replace the generic drawing when
 the presentation lane is integrated. Those integration points are recorded in
-[changes-requests.md](changes-requests.md#amb-realism-integration-2026-11-01).
+the coordination log (since removed).
 
 ### Verified ambulatory milestone
 
@@ -770,7 +770,7 @@ The Cornell medication-review screenshot above places a named medication beside 
 
 Main integration `062a4ef` contributes clinical text/sig formatting, quiet unstructured empty states, contextual placeholders and denser framing. Typed pickers, source row placement, growth references, explicit confirmation and receipt feedback remain. Medication-direction formatting is applied consistently to legacy and structured medication tables, with complete original text retained in accessible labels/tooltips.
 
-The shared painter requested source footer order in `changes-requests.md`. Lean now places the original Back / Patient workspace controls after the optional Chart Review tabs for AMB screens. The semantic renderer partitions its source nodes for drawing and proves that every node and semantic atom remains present. Program component order stays stable, preserving directed search and KLM paths. Every original action and component remains. The left navigator remains available while reading the chart.
+The shared painter requested source footer order in the coordination log (since removed). Lean now places the original Back / Patient workspace controls after the optional Chart Review tabs for AMB screens. The semantic renderer partitions its source nodes for drawing and proves that every node and semantic atom remains present. Program component order stays stable, preserving directed search and KLM paths. Every original action and component remains. The left navigator remains available while reading the chart.
 
 | Screen | Before | After |
 | --- | --- | --- |
@@ -1050,7 +1050,7 @@ This source passes build/lint, **226** app tests, **84** agent tests, **69** des
 
 ### Shared-banner data handoff
 
-The actual canonical chart review identified a provider-provenance issue outside the widget scope: the Synthea adult sample has no nominated care-provider reference, but `bannerOf` uses its first encounter participant as both PCP fallback and Attending. [FHIR Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) distinguish those associations. The evidence and a conservative source-mapping request are recorded in `changes-requests.md` for shared-shell ownership. The frozen presentation build leaves that mapping unchanged. The final long-note capture also shows the patient banner/application bar above the viewport after scrolling into the note. A second Shell handoff links that exact capture and asks to retain patient context while chart content scrolls. The native banner remains in the tree and the note text remains complete; the final presentation build keeps the tested shared-shell layout.
+The actual canonical chart review identified a provider-provenance issue outside the widget scope: the Synthea adult sample has no nominated care-provider reference, but `bannerOf` uses its first encounter participant as both PCP fallback and Attending. [FHIR Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) distinguish those associations. The evidence and a conservative source-mapping request are recorded in the coordination log (since removed) for shared-shell ownership. The frozen presentation build leaves that mapping unchanged. The final long-note capture also shows the patient banner/application bar above the viewport after scrolling into the note. A second Shell handoff links that exact capture and asks to retain patient context while chart content scrolls. The native banner remains in the tree and the note text remains complete; the final presentation build keeps the tested shared-shell layout.
 
 ### Frozen polished-build control gate
 
@@ -1190,7 +1190,7 @@ Terminology cross-check: [SNOMED International's fully specified name guide](htt
 | Screen | Before → after | Review against the existing shell research |
 | --- | --- | --- |
 | P1 Orders | Repeated semantic tags and `1, 1x per 1 d`, generic code placeholders, empty Record table → readable medication directions, context placeholders and “Search to add orders”. | Persistent clinical context and local preference/entry groups stay distinct. Denser four-column entry still has persistent labels, units and readable 12 px minimum text. |
-| P3 MAR | Empty table frames and scattered bare navigation links → short empty lines and bordered navigation action bars. | No administrations are invented for an empty source chart. The typed MAR widget remains the presentation lane's scope. Footer placement needs the semantic content request recorded in `changes-requests.md`. |
+| P3 MAR | Empty table frames and scattered bare navigation links → short empty lines and bordered navigation action bars. | No administrations are invented for an empty source chart. The typed MAR widget remains the presentation lane's scope. Footer placement needs the semantic content request recorded in the coordination log (since removed). |
 | P2 Triage | Verbose problem labels and excess section padding → clean names, compact section framing and sentence-case fields. | Source acuity, measurements, human-only states and reviews stay intact; no clinical values are inferred in React. |
 | P4 Rooming | Repeated terminology tags and generic field prompts → cleaner clinical context and compact measurement entry beside the full growth series. | The source growth table remains complete. Narrative and numeric clinical values are not rounded or rewritten. |
 | P5 Brief Op Note | Generic selects, repeated prompts and loose spacing → contextual procedure/diagnosis selectors, concise headings and dense template fields. | Op-note content and required fields are unchanged. The sign action retains its actual blocked reason. |
@@ -1250,7 +1250,7 @@ unit tests and do not change clinical source values.
 | Review item | Shared rendering result |
 | --- | --- |
 | A1 | Missing banner metadata shares a quiet line; age/sex uses “83 y.o. F”; AMB/EMER/IMP have readable encounter names. Recorded allergies remain red, unknown allergy status stays amber, and absence never becomes NKA. |
-| A2 | Source patient context is retained on list activities. The precise semantic request is in `changes-requests.md`; suppressing it now would violate the banner contract. |
+| A2 | Source patient context is retained on list activities. The precise semantic request is in the coordination log (since removed); suppressing it now would violate the banner contract. |
 | A3 | Decorative chart/encounter breadcrumb and default duplicate role caption are removed. Desktop chart search sits beside the heading through geometry only, preserving source/ARIA order. Narrow layouts keep it in flow. Semantic toolbar and Chart Review-only tab placement are requested. |
 | A4 | Known vital rows become compact same-time readouts. BP pairs require matching metadata, explicit equal units and unambiguous numeric components; empty future grid cells remain empty. Original rows remain accessible. MAR detail lines retain ordered/recorded dose, units, route, instructions, schedule, site and reason. |
 | A5 | Explicit status display aliases include Scheduled, Pending, In progress, Final and Prelim. No active resource is relabeled Arrived or Roomed. Distinct status columns remain until the content lane supplies precise labels. |
@@ -1392,7 +1392,7 @@ links carry persona, program and chart day only. Timeline days follow the
 committed simulation calendar (including the weekend), independent of patient
 selection. Patient opening and list-versus-chart semantics remain owned by the
 Lean content/transport lane; the precise historical-program integration request
-is in `changes-requests.md`.
+is in the coordination log (since removed).
 
 The final P4 Rooming review exposed redundant vertical toolbar space. Its two
 chrome captions now remain visible alongside the source groups in one wrapping

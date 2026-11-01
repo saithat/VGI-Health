@@ -1,6 +1,6 @@
 /**
  * World directory loader. ASSUMED layout (the world lane has not published
- * one yet; keep in sync with docs/STATUS.md):
+ * one yet; keep in sync with README.md):
  *
  *   runs/world/<seed>/world.json                 { seed, days, personas: ["P1",...], users?: {P1: "<userId>"} }
  *   runs/world/<seed>/personas/<P>.json          PersonaParams

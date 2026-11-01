@@ -195,7 +195,7 @@ clock or change clinical deadlines. It checks deterministic replay, all eight fl
 every completed task, and exact interruption retention. It records all incomplete
 tasks; `--require-complete` additionally fails on those scenarios. This distinction
 matters when a schedule requests work absent from its chosen spec/program.
-Current integration blockers and exact remaining work are in `docs/STATUS.md`.
+Current status is in the root `README.md`.
 
 `verify_proofs.py` writes temporary Comparator challenge statements and exports
 both their proved counterparts and the standard primitive declarations. Only
