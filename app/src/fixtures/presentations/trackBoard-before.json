@@ -102,7 +102,9 @@
   ["Last encounter", "EMER"],
   ["Last provider", "Nora Shah, MD"],
   ["Last location", "ED 04"],
-  ["Allergies", "Amoxicillin"],
+  ["Encounter type", ""],
+  ["Department", ""],
+  ["Allergies", "Amoxicillin — Hives (moderate)"],
   ["Code status", "Full code"],
   ["Weight", "82.4 kg · Nov 1, 2026 06:00"],
   ["Isolation", "Not recorded"]]}

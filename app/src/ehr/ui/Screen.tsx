@@ -220,6 +220,7 @@ export function WorkflowNav({
     <AppShell.Navbar
       component="nav"
       aria-label="Clinical navigation"
+
       className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
       p="sm"
     >
@@ -275,10 +276,6 @@ export function WorkflowNav({
             </ul>
           </section>
         ))}
-      </div>
-      <div className="nav-footer">
-        <span className="status-dot" aria-hidden="true" />
-        <Text size="xs">Encounter workspace</Text>
       </div>
     </AppShell.Navbar>
   );

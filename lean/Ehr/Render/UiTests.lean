@@ -113,6 +113,20 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Source-defined numeric scales have choices without adding a captured value. -/
+def numericClinicalChoices := (uiFieldKind (.coded "esi"), uiFieldKind (.coded "pain-0-10"))
+#guard numericClinicalChoices.1 == "code:1|2|3|4|5"
+#guard numericClinicalChoices.2 == "code:0|1|2|3|4|5|6|7|8|9|10"
+#guard uiFieldKind (.coded "other-system") == "code"
+
+/-- Witness a real source item without comparing its complete FHIR payload.
+The interpreter builds these items by mapping its current screen components. -/
+theorem uiSourceItem_mem (cx : Ctx) (component : Component)
+    (hc : component ∈ cx.prog.compsOf cx.s.screen) :
+    itemView cx.sp cx.facts cx.s (cx.prog.compsOf cx.s.screen) component ∈ cx.v.items := by
+  rw [Ctx.v_exact]
+  exact List.mem_map.mpr ⟨component, hc, rfl⟩
+
 /-- A public caption accompanies the original pending weight field. -/
 def publicWeightSourceExample : String := uiFieldSourceText uiRoomCtx "record:weightToday"
 #guard publicWeightSourceExample == "Source: Chart weight recorded today · chart as of " ++ uiRoomCtx.disp.asOf
@@ -131,7 +145,7 @@ def unknownRecordSourceExample : String := uiFieldSourceText uiRoomCtx "record:p
 
 example : (uiWeightItem.comp.id, publicWeightSourceExample) ∈ uiFieldSources uiRoomCtx :=
   uiFieldSources_shown uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    "record:weightToday" (by decide) (by decide) rfl (by decide)
+    "record:weightToday" (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl (by decide)
 
 /-- Current documentation is separate from old chart notes and preserves entry status. -/
 def enteredVisitNoteCtx : Ctx :=
@@ -267,6 +281,7 @@ def nativeUnitReviewCtx : Ctx :=
   | .field _ _ kind _ _ _ _ human _ => kind == "textarea" && human == uiWeightItem.humanOnly
   | _ => false
 
+
 -- Input updates rebuild the dependent cache; a rooming view cannot leak
 -- into a sign state. The equality also holds for every arbitrary context.
 #guard uiRoomCtx.v.screen == uiRoomCtx.s.screen
@@ -282,7 +297,7 @@ example : ∃ comp label display, UiPresent
     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s)
     (.info comp label uiReview.info display (uiRows uiSignCtx uiReview.info)) := by
   exact D2_commit_review uiSignCtx uiReview (by decide) (by decide) uiSignItem
-    (by decide) (by decide) (by decide)
+    (uiSourceItem_mem uiSignCtx _ (by decide)) (by decide) (by decide)
 
 example : ∀ n, UiPresent
     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s) n ∨
@@ -308,7 +323,7 @@ example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp u
 
 example : UiPresent uiScreenTest (uiField uiRoomCtx uiWeightItem "weight") :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).1
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).1
 
 -- The real weight prefill is pending: confirmation is not a vacuous branch.
 example : uiWeightItem.pendingConfirm = true := by decide
@@ -316,7 +331,7 @@ example : UiPresent uiScreenTest
     (.button "weightField" "Confirm prefilled value" "confirm" (uiEnabled uiRoomCtx "weightField")
       (uiBlocked uiRoomCtx "weightField") none) :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).2.2 (by decide)
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).2.2 (by decide)
 
 -- Empty labels are repaired, rather than rendering an unnamed field/button.
 example : uiLabel "" "Clinical entry" ≠ "" := uiLabel_nonempty _ _ (by decide)
@@ -493,6 +508,27 @@ def uiCurrentNavCtx : Ctx :=
 #guard uiActiveNav uiCurrentNavCtx == some "shell.nav.current"
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 
+/-- An explicit activity navigator removes only the generated progress strip. -/
+def uiActivityNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.map fun c =>
+      if c.id == "shell.nav" then { c with tag := "shell.layout.activities.navigator" } else c } } }
+
+/-- Render the actual source navigator with all its original controls. -/
+def uiActivityNavScreen := renderUi uiActivityNavCtx.sp uiActivityNavCtx.prog uiActivityNavCtx.facts
+  uiActivityNavCtx.disp uiActivityNavCtx.user uiActivityNavCtx.s
+
+#guard uiActivityNavScreen.nav == uiShellScreen.nav
+#guard Lean.toJson (uiAtomsList uiActivityNavScreen.workspace) ==
+  Lean.toJson ((uiAtomsList uiShellScreen.workspace).filter
+    (fun node => match node with | .stepper _ _ => false | _ => true))
+
+/-- A layout hint without a usable navigation control keeps the original overview. -/
+def uiActivityEmptyNavCtx : Ctx :=
+  { uiActivityNavCtx with viewCache := ⟨_, rfl⟩, prog := { uiActivityNavCtx.prog with screens := uiActivityNavCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.filter (·.id != "shell.nav.next") } } }
+#guard !(uiProgress uiActivityEmptyNavCtx).isEmpty
+
 /-- Flat canonical navigation tags keep their existing event and move to the shell. -/
 def uiFlatNavCtx : Ctx :=
   { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
@@ -620,5 +656,14 @@ def uiSearchNoteSummary := uiSearchSummary
 #guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "Shift days").length == 1)
 #guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Weight" != none
 #guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Isolation" == some "Not recorded"
+
+/-- Encounter codes receive readable clinical labels without changing source facts. -/
+def emergencyClassExample := uiEncounterClass "EMER"
+#guard emergencyClassExample == "Emergency"
+#guard uiEncounterClass "IMP" == "Inpatient"
+#guard uiEncounterClass "OBSENC" == "Observation"
+#guard uiEncounterClass "local-class" == "local-class"
+#guard ((uiBanner { Display.empty with banner := { Display.empty.banner with sex := "F" } }).lookup "Age / sex") ==
+  some "Age not recorded / F"
 
 end Ehr.Render

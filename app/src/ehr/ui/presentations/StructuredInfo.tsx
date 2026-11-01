@@ -47,7 +47,14 @@ function isStatus(key: string, kind: UiPresentationKind): boolean {
       key,
     ) ||
     (kind === "timeGrid" &&
-      !["Medication", "Dose", "Route", "Frequency"].includes(key))
+      ![
+        "Medication",
+        "Dose",
+        "Route",
+        "Frequency",
+        "Instructions",
+        "PRN indication",
+      ].includes(key))
   );
 }
 /** Preserve every key and duplicate cell; header order comes directly from Lean. */

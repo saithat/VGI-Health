@@ -45,9 +45,18 @@ def presetLandings : String → List (ScreenId × String)
              ("w1Rooming", "Clinic Schedule"), ("w2Inbasket", "In Basket: Results")]
   | _ => []
 
+/-- ED and ward clinicians sign in to their department activity. Existing
+custom start screens and the other role presets keep their declared start. -/
+def presetStart (owner : String) (fallback : ScreenId) : ScreenId :=
+  if fallback != "home" then fallback else match owner with
+  | "P2" => "w3TrackBoard"
+  | "P3" => "w4Worklist"
+  | _ => fallback
+
 /-- A schedule row opens its encounter; Schedule remains the activity's name. -/
 def presetLandingControlLabel (owner target activity : String) : String :=
   if ["P1", "P4"].contains owner && ["w1Rooming", "w5Rooming"].contains target
   then "Open encounter" else activity
+
 
 end Ehr

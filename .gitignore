@@ -32,6 +32,8 @@ app/shots/*
 app/shots/realism/*
 !app/shots/realism/present/
 !app/shots/final/
+# Local content-addressed screen-gate receipts
+runs/screen-check-cache/
 
 # Pinned Synthetic Hospital upstream downloads
 .cache/synthetic-hospital/

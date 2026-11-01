@@ -1,0 +1,344 @@
+{
+  "capturedAt": "2026-11-01T12:19:18.285084+00:00",
+  "baseRevision": "7c8b4a9",
+  "headBeforeCommit": "7c8b4a90074b1ea0a82e22eff76cba68e71ce12b",
+  "sourceTreeDirty": true,
+  "leanHash": "a6ad6b526c269dda04dc6809b0fdd94d7e58545b1a86a74eac1faa00a18fda96",
+  "binarySha256": "15af695a2187850f094d5a7608395d043255b26e89a006fbfe42a6ded563db5b",
+  "scope": "Patient-scoped acute charts: 18 supplied-source views, five live role baselines and 36 acute screen/release control samples. Not exhaustive clinical-state exploration or a complete department census.",
+  "gates": {
+    "build": {
+      "status": "pass",
+      "evidenceSha256": "b39cbc6b8a1c31a25f20bd33d4794d5bfdb5ad272bb78fc5d00ef7ddba4bc4f5",
+      "marker": "Build completed successfully (355 jobs)."
+    },
+    "certify": {
+      "status": "pass",
+      "evidenceSha256": "35277c829d90151b25d48d98d49e608c7742efeb77f62d33ad190ea1868fb87e",
+      "marker": "Personas 15/15; bad rejected 18/18"
+    },
+    "world": {
+      "status": "pass",
+      "evidenceSha256": "e10f93be8d13da1695bcd3e37fcb4a4b23b3fd7990857694dbbced575f000bfb",
+      "marker": "1,284/1,284 tasks complete"
+    },
+    "kernel": {
+      "status": "pass",
+      "evidenceSha256": "7e6bab03f798e2d38fdde77b83a58eb8d0b915b510b044854f306630dcb92044",
+      "marker": "Lean default kernel accepts the solution"
+    },
+    "comparator": {
+      "status": "pass",
+      "evidenceSha256": "584154972f988b2882e1d1ab354071db980f6577a85f8587944b45c45a8881b1",
+      "marker": "Your solution is okay!"
+    },
+    "render-comparator": {
+      "status": "pass",
+      "evidenceSha256": "d57f6ff8644b0db64660caf576049fd4253a55e9c35765349670089f07fc2b34",
+      "marker": "Your solution is okay!"
+    },
+    "api-diff": {
+      "status": "pass",
+      "evidenceSha256": "5283c74695c2735901c158f08278a46f254430f9e3a1fef81b5860e0d94a6153",
+      "marker": "690 canonical HTML + semantic UI variants"
+    },
+    "widgets": {
+      "status": "pass",
+      "evidenceSha256": "7f41cd2c91fc3fd5254c776f75299344c99d745f29916f0d172b058423acbd0a",
+      "marker": "16 presentations"
+    },
+    "chart-search": {
+      "status": "pass",
+      "evidenceSha256": "c84bc1f101ef5aae7be6c8f3a68d13f0bd5507efc29255aec69b0eff9bfadba8",
+      "marker": "324/324 patients"
+    },
+    "acute-wasm": {
+      "status": "pass",
+      "evidenceSha256": "1c71f36085c01eed263cc28b833f9778bbf9d9b6d8a608088e9818286f6b27c0",
+      "marker": "14 reachable screens"
+    },
+    "trajectories": {
+      "status": "pass",
+      "evidenceSha256": "00c0603f41b293c9b700f54adb2d5ebdbe602952796c01e228fccb25874b4de2",
+      "marker": "0 mismatches"
+    },
+    "app-build": {
+      "status": "pass",
+      "evidenceSha256": "53f8978998f9608aca3834907a9e5e9617cdd3810d43b3766f41a12861501fe4",
+      "marker": "built in"
+    },
+    "live": {
+      "status": "pass",
+      "evidenceSha256": "e95a7c73735211890fb2fb2f96f51dbec082bfb05efe58088dfc505f4c80e8da",
+      "marker": "6 passed"
+    },
+    "unit": {
+      "status": "pass",
+      "evidenceSha256": "c005915a692828922bf237ea6098ead9690645f67a57599d6c861fd09b75efdd",
+      "marker": "226 passed"
+    },
+    "agent": {
+      "status": "pass",
+      "evidenceSha256": "d19287d9f3278826531f940b662a2199fe6544942c0691ff81d8769746ce9ea0",
+      "marker": "84 passed"
+    },
+    "browser": {
+      "status": "pass",
+      "evidenceSha256": "e573d64127d8c6cad4f1bd89d9ef275127df713715d9d47f00a90953a628e32d",
+      "marker": "27 passed"
+    },
+    "five-roles": {
+      "status": "pass",
+      "evidenceSha256": "5445337d016d910a05dd87aaffe0afaa912c59aa904f69fa1e470e7294c9e03a",
+      "marker": "1 passed"
+    },
+    "aria": {
+      "status": "pass",
+      "evidenceSha256": "31a32dd461e3d0b1c1b9ac50d7bebf20c7b12aa0320752e12e8e5cc38f059ba6",
+      "marker": "45 passed"
+    },
+    "wasm-check": {
+      "status": "pass",
+      "evidenceSha256": "386b304efd71b7e281f7c0906feca2c05ca10ed46a478cbad1c839c487ede2c7",
+      "marker": "WASM assets current"
+    }
+  },
+  "world": {
+    "schedules": 50,
+    "tasks": 1284,
+    "completed": 1284
+  },
+  "controls": {
+    "screens": 36,
+    "clicked": 357,
+    "tabs": 228,
+    "searches": 39,
+    "disabled": 23
+  },
+  "api": {
+    "bundles": 324,
+    "renderVariants": 690,
+    "wasmSha256": "2a00bea046587c84eb8263fd5aeadec6aa1dffaf67fabb915cea9397fe7f8aef",
+    "inputIdentities": {
+      "directory": "/tmp/vgi-acute-sig-api",
+      "compiledCanonicalIdentical": true,
+      "variantCount": 690,
+      "files": {
+        "clinical-ui-cases.json": "f6dfa40251f100fc8b416e9198c6b8e9cf412aab3e16ecfa86053adb9ead01a4",
+        "context.json": "c2fe4044324fcdeb202144e7943d5056c09f68908b6fa03cec42f0dbdeb361a7",
+        "p1-input-w1Orders.json": "b9b2933c65869c6c5f3fe3cc54a55e6423610e691dcafec9a820c462a5c11dee",
+        "p1-input-w1Rooming.json": "fc6f8ada9f518f8021fc044da9a3788e1ce22b4737af8ceb0a9328afb06e1905",
+        "p1-input-w1Sign.json": "c01e7f772acf66096001d32f27c73aa539ee0a5a05e6b5efa8d2f04d234debf6",
+        "program.json": "e85c1731840eb2a539309dd025fdb00014687860fb25628d022b49e47d1c31eb",
+        "spec.json": "0c7eee283c080c73616411fed41cfd683f292fb1517afffb141502684dfe6ba1",
+        "states.json": "d911b376f4f17b1dc37aad8c24e6fd363d01d9b4e56d15bd157ea081a8ebd661",
+        "user.json": "bd163bf11c11420d49e32cbfde61db1a7c6e40a315f5fafebff68f780c4c7a16",
+        "w1Orders.json": "13a4047321a9c830715b3fbfcf4dd67ec6931747badd5635b295d1d935f2de45",
+        "w1Rooming.json": "0ff57aadc97d999e111deb15edde8bbcdd16e4da29605a3bd239c3b05790f8fa",
+        "w1Sign.json": "3dad7d35403854f4c90a0df8eb0ca44bde3a871fa37d988231d4bdfb968d9077"
+      }
+    }
+  },
+  "preservation": {
+    "baseRevision": "7c8b4a9",
+    "specs": [
+      {
+        "release": "v1",
+        "sha256": "e7f6b1f58b61f836213c09b88f3e6105c482f4fdacd367ce31f4ba9769c06ffc",
+        "identical": true
+      },
+      {
+        "release": "v2",
+        "sha256": "8f53c8f79c65e78a55fc1824011278ff6899abb0ee293dcbeced7d8128c80ac3",
+        "identical": true
+      },
+      {
+        "release": "v3",
+        "sha256": "0f95e8f858dd4115e815e6fd5503afa8cbcedb2b128b0eac447321e43c65bbc3",
+        "identical": true
+      }
+    ],
+    "theoremHeaders": [
+      {
+        "file": "lean/Ehr/Render/UiProofs.lean",
+        "unchanged": 39
+      },
+      {
+        "file": "lean/Ehr/Render/PanelProofs.lean",
+        "unchanged": 8
+      },
+      {
+        "file": "lean/Ehr/Render/FhirProofs.lean",
+        "unchanged": 15
+      },
+      {
+        "file": "lean/Ehr/Proofs/RenderExamples.lean",
+        "unchanged": 16
+      },
+      {
+        "file": "lean/Ehr/Proofs/HypothesisExamples.lean",
+        "unchanged": 15
+      }
+    ]
+  },
+  "rendererComparatorStatements": 51,
+  "metrics": {
+    "all21PayloadsUnchanged": true,
+    "acuteW3": "57 clicks / 198.45 KLM seconds",
+    "acuteW4": "25 clicks / 129.95 KLM seconds",
+    "reportSha256": "28bf9920cb616bc27b09b1efb3cc68ca3abcb83719ac32a0d690b6b4db7ed878"
+  },
+  "visualCounts": {
+    "acuteViews": 18,
+    "acutePhotographs": 36,
+    "focusedBrowserPassed": 27,
+    "focusedBrowserSkipped": 7,
+    "fiveRoleComparisons": 5,
+    "ariaPassed": 45,
+    "ariaSkipped": 3
+  },
+  "marReview": {
+    "beforeIdentities": {
+      "baseRevision": "7c8b4a9",
+      "nativeSha256": "78ecbdf745ea8900e9e5a1a11cc7fdee5281978ae529ea5b43d600b0a2796195",
+      "runtimeWasmSha256": "628a3aee306db9b48b389af0f8654d6bc007f75ddef2c63a002f43ac5863254e",
+      "patientBundleSha256": "2645e92aba0db3200f579688ccec6d559bf561eb9312d7ed5fa06471c16333c8",
+      "beforeUiSha256": "39fedb6419a28ed4a62e2ebd693548c08a70a905440f8e85b060937e74d2c6f5",
+      "beforeImageSha256": "053671dfd00063d7ecdd7114e486a5d4a7a9f28725835e569354833b095e24ae"
+    },
+    "sameSourceReaderComparison": {
+      "prnRowsBefore": 0,
+      "prnRowsAfter": 1,
+      "beforeMar": {
+        "Medication": "acetaminophen",
+        "Dose": "650 mg",
+        "Route": "PO",
+        "Frequency": "650 mg by mouth every 6 hours as needed for pain",
+        "Category": "Not recorded",
+        "Order status": "active",
+        "2026-11-02 07:00 -08:00": "Given \u00b7 07:30 \u00b7 650 mg \u00b7 PO",
+        "2026-11-02 08:00 -08:00": "",
+        "2026-11-02 09:00 -08:00": "",
+        "2026-11-02 10:00 -08:00": "",
+        "2026-11-02 11:00 -08:00": "",
+        "2026-11-02 12:00 -08:00": "",
+        "2026-11-02 13:00 -08:00": "",
+        "2026-11-02 14:00 -08:00": "",
+        "2026-11-02 15:00 -08:00": "",
+        "2026-11-02 16:00 -08:00": "",
+        "2026-11-02 17:00 -08:00": ""
+      },
+      "afterMar": {
+        "Medication": "acetaminophen",
+        "Dose": "650 mg",
+        "Route": "PO",
+        "Instructions": "650 mg by mouth every 6 hours as needed for pain",
+        "PRN indication": "Pain",
+        "Category": "PRN",
+        "Order status": "active",
+        "2026-11-02 07:00 -08:00": "Given \u00b7 07:30 \u00b7 650 mg \u00b7 PO",
+        "2026-11-02 08:00 -08:00": "",
+        "2026-11-02 09:00 -08:00": "",
+        "2026-11-02 10:00 -08:00": "",
+        "2026-11-02 11:00 -08:00": "",
+        "2026-11-02 12:00 -08:00": "",
+        "2026-11-02 13:00 -08:00": "",
+        "2026-11-02 14:00 -08:00": "",
+        "2026-11-02 15:00 -08:00": "",
+        "2026-11-02 16:00 -08:00": "",
+        "2026-11-02 17:00 -08:00": ""
+      },
+      "actualAdministrationAfter": {
+        "Medication": "acetaminophen",
+        "Recorded dose": "650",
+        "Unit": "mg",
+        "Route": "PO",
+        "Site": "",
+        "Recorded time": "Nov 2, 2026 07:30",
+        "Status": "Given",
+        "Reason": ""
+      }
+    }
+  },
+  "navigationReview": {
+    "identity": {
+      "x": 54,
+      "y": 66,
+      "width": 217.046875,
+      "height": 24
+    },
+    "visibleAtCenter": true,
+    "hit": "mantine-focus-auto patient-name m_b6d8b162 mantine-Text-root",
+    "header": "150"
+  },
+  "integratedMainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
+  "screenshots": {
+    "after/w3Disposition-task.png": "d20f302e5ec5b2744bdaa196277c528d7a20f972702314df3f0ef995e0b1d19e",
+    "after/w3Disposition.png": "1188fbc23c0325cc48d730128afc174c46e53ff943b947817d8ee97cf0a8f54e",
+    "after/w3OrderSets-task.png": "d53972e5a8bf0146f451326d12b8c8976a72d75f451ae09aba2e4501182f9a29",
+    "after/w3OrderSets.png": "d53972e5a8bf0146f451326d12b8c8976a72d75f451ae09aba2e4501182f9a29",
+    "after/w3Orders-task.png": "ccf03339504638b8194ada5efd35f2cbcaf900a433026cffc035762998eed221",
+    "after/w3Orders.png": "fbc19fe31a8e87e4262854508c56068dfa653b9f4961a58d84c1dc539425aee2",
+    "after/w3Provider-chart-imaging-task.png": "c1009b781967a8a68526f94fd4126ea504f58fb9a49ab7b87630f4ee0b1d4648",
+    "after/w3Provider-chart-imaging.png": "1e7c8fe974914629d1e9965fa8bdc80f7897a2aa083aef73ad8a65782751accf",
+    "after/w3Provider-chart-results-task.png": "8a47bb8bc22f8066055bae347220cb51748db12bfa64bd404584af8f9c700d5a",
+    "after/w3Provider-chart-results.png": "1e7c8fe974914629d1e9965fa8bdc80f7897a2aa083aef73ad8a65782751accf",
+    "after/w3Provider-task.png": "60377e0e44ffa60ab26f27b670e95131864c1822426ffedba3aa43aae47e6897",
+    "after/w3Provider.png": "1e7c8fe974914629d1e9965fa8bdc80f7897a2aa083aef73ad8a65782751accf",
+    "after/w3Sign-task.png": "db92cb57944357288ef24aa5f0b9a50a8e07775b8f9787a66319a9ad8fe9007f",
+    "after/w3Sign.png": "e5ec7d69484c12a4db812a33bab155a88f856c5e59ba04158b665245c6a44930",
+    "after/w3TrackBoard-task.png": "00d81d1c3672886aa7ebf173aa7bc8db810c5f9bfc4ef1f03febb0cc39c59ff1",
+    "after/w3TrackBoard.png": "00d81d1c3672886aa7ebf173aa7bc8db810c5f9bfc4ef1f03febb0cc39c59ff1",
+    "after/w3Triage-task.png": "c51b47e303714b9ad517bc3a20b77ba4fd590cc45f8c915d3dcfbdd59a3f0555",
+    "after/w3Triage.png": "c51b47e303714b9ad517bc3a20b77ba4fd590cc45f8c915d3dcfbdd59a3f0555",
+    "after/w4Admin-task.png": "adabaf198241d827346e1ad00cadcf5805ee4950efcac60733ee40aed89f8000",
+    "after/w4Admin.png": "bae27b59744a84179b151b736fd63d1961ddf13e731ff101290f19f6640f7a2a",
+    "after/w4Flowsheet-outline-task.png": "1d6769b8a7f4c2a6674741cabbd2c46ee6a6f101782ab08c92c967d0c40ce551",
+    "after/w4Flowsheet-outline.png": "cd9c74a07640c26b5088eae52e7f0df87400e824b7035a74d30130c0128840c8",
+    "after/w4Flowsheet-task.png": "5dcb7f62fa049bf6a6a864ca402dc98a09d47333e50ddf9573f6bf1e34242aa1",
+    "after/w4Flowsheet.png": "cd9c74a07640c26b5088eae52e7f0df87400e824b7035a74d30130c0128840c8",
+    "after/w4Handoff-outline-task.png": "84ffef513c07eee5e8901bc8dbe8b7db03e95442c488e056a3cefc20394316d1",
+    "after/w4Handoff-outline.png": "78946fdc86b1afda8ce1dfe9744ce7cd55c0df09bff788dbc61cb1988e3a1b63",
+    "after/w4Handoff-task.png": "80b50805a74b638319d6780225dce706b41a555a42fa5d320733ab809cebbe1c",
+    "after/w4Handoff.png": "80b50805a74b638319d6780225dce706b41a555a42fa5d320733ab809cebbe1c",
+    "after/w4Mar-chart-imaging-task.png": "59e54e7bd8c9b4785d468d8864ab4dc997a3f90c38e6f5ede6030b2502232c33",
+    "after/w4Mar-chart-imaging.png": "12d656a9d5783017487a4cd2d93b368ec8652be48e828e1dacdf89b832115457",
+    "after/w4Mar-chart-results-task.png": "790f344302aaf37f1a0c3dfc4198170be0fdda1b443a53de97a08fb0ecb635e5",
+    "after/w4Mar-chart-results.png": "12d656a9d5783017487a4cd2d93b368ec8652be48e828e1dacdf89b832115457",
+    "after/w4Mar-task.png": "12d656a9d5783017487a4cd2d93b368ec8652be48e828e1dacdf89b832115457",
+    "after/w4Mar.png": "12d656a9d5783017487a4cd2d93b368ec8652be48e828e1dacdf89b832115457",
+    "after/w4Worklist-task.png": "9f6080d8720906202d74ce0138d1f5d306677ea6c49a04a8c63dd30dfb6b7911",
+    "after/w4Worklist.png": "9f6080d8720906202d74ce0138d1f5d306677ea6c49a04a8c63dd30dfb6b7911",
+    "details/w3Provider-imaging-panel.png": "a747bc8e561bdae160623d48351c2787f2650fa6abdf5cbecb3972dab457d179",
+    "details/w4Mar-sig-prn-after.png": "48706ba30ff15ad60b2a770141344b08ebb0028bfa2cc5aab57839f97b2baead",
+    "roles-sig/browse-narrow.png": "980de9e4d0067d55b26341147ea85015daaca21f6eea21fe5c61a028391f5434",
+    "roles-sig/browse.png": "82dc503b5193fbe348c54d41246c6c3ea655f61d5382f67c7cfe3bf4ce3f83ef",
+    "roles-sig/chart-notes.png": "643ec6d2ca60677b19e9ced0ac5e619c50b47031e30bf8aec502dd4a667f56f1",
+    "roles-sig/dashboard.png": "a0a8cf836a8c68761575bc713b5b98eb54485571ed50792e40b7a5388f85549b",
+    "roles-sig/home-medications.png": "1fbd34b61a2bf31607c4f68a1fee3b0e1129bf8d1537975cd3887edafcdf6cc0",
+    "roles-sig/interruptive-alert.png": "f2b31b90806353ac2edbe48f587089c54b5b8ac28ee1c2a8a8e3f383920ba216",
+    "roles-sig/w1Orders.png": "aa3bdfa960067a76e4f4a88f99af2c0bff2a493fe480ebb15d2c21f9069efd30",
+    "roles-sig/w3Triage.png": "fd0daa57dd6190b2efe3f4d5dc211045a36cfe1204823ba0bf2efe96a2d6ddc8",
+    "roles-sig/w4Mar.png": "6a8042766b484f8aa9a20cfd55fec35de8f9a1a5a217f9c63b9975de3ce71d88",
+    "roles-sig/w5Growth.png": "5f09f4f40d198e6bbd2de98023de8f369838c4fa657ba6cbffc551ef7075b4a0",
+    "roles-sig/w6PreOp.png": "011637f29e9dd2a0ed8bc103cceb9cd20a280d545f9b2c4749c90c6f67a2eb56"
+  },
+  "sourceFiles": {
+    "lean/Ehr/Render/Fhir.lean": "187a21281a0284d0ca4927f4f205eb3c3dd0c480785fff905410b3e4e5077fe6",
+    "lean/Ehr/Render/Ui.lean": "3bcaed323a6adb2691fe7d3a5d3d4b67a2ba2e66b3a1373b70b01e940cf1b66d",
+    "lean/Ehr/Canonical/W3Ed.lean": "7d1e6ee6e788ae558a76a04313438885c28fce9a570df74d377e38c79fe4c305",
+    "lean/Ehr/Canonical/W4Mar.lean": "f6bb9c054f774c8567e0b2dd30007fa06d40794c2154c646454f976981f21c9f",
+    "lean/Ehr/Render/FhirAcuteTests.lean": "ff1c09537f8129a1690c6138990dda11f201dfd78570ca6f8e2acce11990d14b",
+    "lean/Ehr/Render/ObservationTests.lean": "d42d76e379b649de2129e1c9ba8f5782f249d8896bbe27572a990368b1cf5b50",
+    "lean/Ehr/Render/TestData/clinical.json": "53cf73a83b6843dcb206c472d82b8b218c5cbe10ca7b040be3365fe5e8995f49",
+    "app/src/ehr/ui/clinical.css": "0616df471a48f25df7ebc8405a6f2918938c43bec8332bd0783e4b86bb618070",
+    "app/e2e/acute-banner.spec.ts": "9470f34b02d377df48ceefb52dbd1f7d30f510ff00ce0fa1f6d0c4077b5c5fe7",
+    "app/e2e/acute-actions.spec.ts": "f479cf15af197d1923fe4d183aec44e77a4d233af26714f226c5c5b3853882cb",
+    "scripts/check-acute-wasm.mjs": "646cb556e4d4e8c90a28118ac5880f1e776b2ebfccbc8d5f0ed3771f57b1766b",
+    "scripts/acute-review-fixtures.mjs": "2fecc78b13ab7f5215cf4d53a3aafa99b185a8d58826e043e3b88c6a016f98f4",
+    "scripts/trajectories/index.mjs": "67f6d0ab7992a1e31a393aa554740af76ae19795a62c36d1c56ce20d5c0baf27",
+    "app/src/ehr/ui/nodes.tsx": "a2ee8c7c497a2e6a29e0eccdc4f2513a8a9c7f7ccf3f013e12463700840d6987",
+    "app/src/ehr/ui/Screen.tsx": "b8aa0c03ac70bd6c259d23d45bd37b5fec6c39597e80200ae45c6624e30bc4cd",
+    "app/live/medplum.test.ts": "404d4f26dba7c8e8ecf9e14373bae49d9846498c4f6ef1a7e55c0e5cda02af70"
+  }
+}

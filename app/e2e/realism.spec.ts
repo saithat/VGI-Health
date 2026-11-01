@@ -23,7 +23,7 @@ function infoNodes(nodes: UiNode[]): NodeOf<"info">[] {
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
   test.setTimeout(120000);
-  const folder = `shots/realism/shell/${process.env.REALISM_SHOTS}`;
+  const folder = process.env.REALISM_OUTPUT_DIR ?? `shots/realism/shell/${process.env.REALISM_SHOTS}`;
   mkdirSync(folder, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const [name, route] of [
@@ -66,6 +66,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       await expect(
         navigator.locator("button[data-comp-id]").first(),
       ).toBeVisible();
+
       await expect(navigator).not.toHaveClass(/empty-navigator/);
     }
     const destination = page.locator(
@@ -104,9 +105,16 @@ test("shared shell and browser visual review", async ({ page }) => {
       (p) => p.id === "sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
     if (!patient) throw new Error("Missing source note-review patient");
-    if (!(await enterPatientChart(page, patient.mrn ?? patient.name))) await page.locator('[data-comp-id="home.work.w1Rooming"][data-event]').click();
+    if (!(await enterPatientChart(page, patient.mrn ?? patient.name)))
+      await page
+        .locator('[data-comp-id="home.work.w1Rooming"][data-event]')
+        .click();
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
-    const note = page.locator('[data-info-id="encounterNotes"] li, [data-info-id="priorNotes"] li').first();
+    const note = page
+      .locator(
+        '[data-info-id="encounterNotes"] li, [data-info-id="priorNotes"] li',
+      )
+      .first();
     await expect(note).toBeVisible();
     const semantic = await page.evaluate(
       () => window.__buttonAuditSession?.snapshot().ui,
@@ -132,12 +140,16 @@ test("shared shell and browser visual review", async ({ page }) => {
         .allTextContents(),
     ).toEqual(expectedBodies);
     await note.scrollIntoViewIfNeeded();
+
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
-    await page.locator(".clinical-home-meds, [data-info-id=currentMeds]").first().scrollIntoViewIfNeeded();
+    await page
+      .locator(".clinical-home-meds, [data-info-id=currentMeds]")
+      .first()
+      .scrollIntoViewIfNeeded();
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/home-medications.png`,

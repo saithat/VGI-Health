@@ -5,7 +5,7 @@ import type { UiNode } from "../../src/ehr/ui/types";
 import type { Control } from "./report";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
-import { Audit, selector } from "./driver";
+import { Audit, selector, dismissNotifications } from "./driver";
 import { writeLiveAttempt, writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
@@ -61,6 +61,7 @@ function controlShape(nodes: UiNode[]): unknown[] {
     if ("valueSet" in node) return controlShape(node.valueSet.children);
     if ("chartReferences" in node)
       return controlShape(node.chartReferences.children);
+
     if ("rowAction" in node) return controlShape(node.rowAction.children);
     return [];
   });
@@ -91,6 +92,7 @@ function controlKeys(nodes: UiNode[]): string[] {
     if ("valueSet" in node) return controlKeys(node.valueSet.children);
     if ("chartReferences" in node)
       return controlKeys(node.chartReferences.children);
+
     if ("rowAction" in node) return controlKeys(node.rowAction.children);
     return [];
   });
@@ -669,10 +671,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       .waitFor({ state: "hidden", timeout: 30000 });
     // Prior actions can leave Saved toasts over the next restored list row.
     // Dismiss them through their real controls before timing an isolated click.
-    for (const notification of await page
-      .locator(".mantine-Notification-closeButton")
-      .all())
-      if (await notification.isVisible()) await notification.click();
+    await dismissNotifications(page);
     const resourceClose = page.getByRole("button", {
       name: "Close saved resource",
       exact: true,
