@@ -97,6 +97,21 @@ theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String
   | nil => simp
   | cons b bs ih => simp [ih]
 
+/-- Every source node survives footer placement exactly as supplied. -/
+theorem uiPlaceFooter_node_mem (cx : Ctx) (nodes : List UiNode) (node : UiNode) :
+    node ∈ uiPlaceFooter cx nodes ↔ node ∈ nodes := by
+  unfold uiPlaceFooter
+  by_cases h : uiFooterNode cx node = true <;> simp [h]
+
+/-- Footer placement retains all semantic atoms, including arbitrary containers. -/
+@[simp] theorem uiPlaceFooter_mem (cx : Ctx) (nodes : List UiNode) (node : UiNode) :
+    node ∈ uiAtomsList (uiPlaceFooter cx nodes) ↔ node ∈ uiAtomsList nodes := by
+  have atoms (ns : List UiNode) : uiAtomsList ns = ns.flatMap uiAtoms := by
+    induction ns with
+    | nil => simp [uiAtomsList]
+    | cons n ns ih => simp [uiAtomsList, ih]
+  simp only [atoms, List.mem_flatMap, uiPlaceFooter_node_mem]
+
 /-- Nesting a container never changes its own semantic nodes or loses children. -/
 theorem uiItem_atoms (cx : Ctx) (it : ItemView) (kids : List UiNode) :
     uiAtomsList (uiItem cx it kids) =
@@ -215,7 +230,7 @@ theorem T10_ui_shown (cx : Ctx) (it : ItemView) (hi : it ∈ cx.v.items)
     exact Or.inl (Or.inl (Or.inr (Or.inl (Or.inl h))))
   · have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) n).mpr
         ⟨it, hi, hs, by simp [uiInWorkspace, hb, hv, hd], hn⟩
-    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
+    simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inl (Or.inl (Or.inl (Or.inr (Or.inl h))))
 
 /-- Read-only additions are clinical info or the visit-progress overview. -/
@@ -278,7 +293,7 @@ Only the clinical shell, progress overview and read-only supplements are added. 
 theorem uiPresent_source (cx : Ctx) (n : UiNode)
     (hn : UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s) n) :
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
-  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append,
+  simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem,
     List.mem_append, List.mem_singleton] at hn
   rcases hn with ((((hn | (hn | hn)) | hn) | hn) | hn)
   · exact Or.inr (uiProgress_readOnly cx n hn)
@@ -392,7 +407,7 @@ theorem T11_ui_full_info (cx : Ctx) (it : ItemView) (i : InfoId)
   obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it i hw hi
   refine ⟨label, display, ?_⟩
   have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs, hw, hn⟩
-  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
+  simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
   exact Or.inr (Or.inl h)
 
 /-- D2: every required review is in the workspace with full rows. A compact
@@ -406,7 +421,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
     obtain ⟨label, display, hn⟩ := uiWorkspace_info cx it r.info hs.1.2 hs.2
     refine ⟨it.comp.id, label, display, ?_⟩
     have h := (uiComponentsWhere_mem cx (uiInWorkspace cx) _).mpr ⟨it, hm, hs.1.1, hs.1.2, hn⟩
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inr (Or.inl h)
   · refine ⟨"", uiLabel (infoLabel cx r.info) (uiLabel (infoLabel cx r.info) "Clinical information"), (if uiOrderInfo r.info then "table" else "list"), ?_⟩
     have hm : uiInfo cx "" (infoLabel cx r.info) r.info "list" ∈ uiMissingReviews cx := by
@@ -422,7 +437,7 @@ theorem D2_workspace_required (cx : Ctx) (r : ReviewReq) (hr : r ∈ uiRequiredR
         · simpa only [uiAtomsList_cons] using List.mem_append_left (uiAtomsList ns) ha
         · simpa only [uiAtomsList_cons] using List.mem_append_right (uiAtoms n) (ih ht atom ha)
     have h := atoms_mem _ _ hm (uiInfo cx "" (infoLabel cx r.info) r.info "list") (by simp [uiInfo, uiAtoms])
-    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, List.mem_append]
+    simp only [UiWorkspacePresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem, List.mem_append]
     exact Or.inr (Or.inr h)
 
 /-- D2 also implies presence in the complete screen. -/

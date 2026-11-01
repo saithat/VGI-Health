@@ -186,6 +186,8 @@ def ambulatoryShell (s : ScreenId) (nav : List (ScreenId × String))
       { c with parent? := some (cid s "encounterNavigator") }
     else if c.id == cid s "chart" then
       { c with tag := "layout.focusedWorkspace" }
+    else if c.id == cid s "back" || c.id == cid s "home" then
+      { c with tag := c.tag ++ ".layout.footer" }
     else c
 
 /-- In Basket landing views put their original folder actions beside the

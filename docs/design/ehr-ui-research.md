@@ -533,7 +533,7 @@ The Cornell medication-review screenshot above places a named medication beside 
 
 Main integration `062a4ef` contributes clinical text/sig formatting, quiet unstructured empty states, contextual placeholders and denser framing. Typed pickers, source row placement, growth references, explicit confirmation and receipt feedback remain. Medication-direction formatting is applied consistently to legacy and structured medication tables, with complete original text retained in accessible labels/tooltips.
 
-The shared painter requested source footer order in `changes-requests.md`. Lean now places the original Back / Patient workspace controls after the optional Chart Review tabs for AMB screens. This is a stable partition of the source components, with a membership theorem and the existing field-preservation witness reproved against it. Every original action and component remains. The left navigator remains available while reading the chart.
+The shared painter requested source footer order in `changes-requests.md`. Lean now places the original Back / Patient workspace controls after the optional Chart Review tabs for AMB screens. The semantic renderer partitions its source nodes for drawing and proves that every node and semantic atom remains present. Program component order stays stable, preserving directed search and KLM paths. Every original action and component remains. The left navigator remains available while reading the chart.
 
 | Screen | Before | After |
 | --- | --- | --- |

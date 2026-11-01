@@ -469,8 +469,19 @@ def uiProgress (cx : Ctx) : List UiNode :=
   if cx.v.items.any (fun it => it.shown && uiTagIs it.comp.tag "layout.clinicalActivity") then []
   else [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)]
 
+/-- Root return controls opt into footer placement through source metadata. -/
+def uiFooterNode (cx : Ctx) (node : UiNode) : Bool :=
+  match node with
+  | .button id .. => cx.v.items.any fun it =>
+      it.comp.id == id && it.comp.parent?.isNone && (it.comp.tag.splitOn ".").contains "footer"
+  | _ => false
+
+/-- Layout changes semantic drawing order, never the program's action order. -/
+def uiPlaceFooter (cx : Ctx) (nodes : List UiNode) : List UiNode :=
+  nodes.filter (fun node => !uiFooterNode cx node) ++ nodes.filter (uiFooterNode cx)
+
 def uiWorkspace (cx : Ctx) : List UiNode :=
-  uiProgress cx ++ (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  uiProgress cx ++ uiPlaceFooter cx (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/

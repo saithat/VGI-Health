@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "28b88683d9e4a7c4bdf2c22184188fcb50fce3500641f86d078842c88cd70ce2",
+  "leanSourceHash": "bfc6ac982ad4f421a6ca4f19a02e5699c20696989c355c3185d036b54ba54a47",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -9,9 +9,9 @@
     "lean/Ehr/Basic.lean": "5d7e91bcd447619494283a65448d52ba9392552f088d0d710a8be3222d36008d",
     "lean/Ehr/Canonical/BadPrograms.lean": "c33d55bb7b7788731265743ff56cec38845921bcf0ee171d5b6592b3a6a2041a",
     "lean/Ehr/Canonical/BadTests.lean": "357690a6adf3ee927400feffae94678dc959abfb2c2132bfab411757a7da4ff8",
-    "lean/Ehr/Canonical/Blueprint.lean": "4a2cb969c7117831b76c9b0d078cf910a67c2a3fd916d239d7d5de6b21f52586",
+    "lean/Ehr/Canonical/Blueprint.lean": "716bd3585809280e2cc96048437c2aef30757cdae3a6a95090bf1339c4dc06dc",
     "lean/Ehr/Canonical/BlueprintTests.lean": "fb1355b2cf4a4aa2994d77849a84f133532746ec195823f9aa169676e504f8e7",
-    "lean/Ehr/Canonical/Builders.lean": "fbe190da1c4dc1000217f64aaa68285c861187165e2a70802343adc0e91fcc9d",
+    "lean/Ehr/Canonical/Builders.lean": "b1eb1e25506b0fe8aa70b9740938892d6cf06894b0f8f4522561a4789fe2a659",
     "lean/Ehr/Canonical/CoreBadTests.lean": "e8df3cc9eb0a714f0483b36b3c145f66abc48c36dfbbf94146d3c367e30b52fc",
     "lean/Ehr/Canonical/CorePlacements.lean": "2201134f20eed5b890dfe40e0fb3383c55e9101b0364ea239895904562abc6be",
     "lean/Ehr/Canonical/CoreReleaseTests.lean": "0ad525f96ad124cd10ecdf6f3d72d689aa6175c8a33a25294d6d977337b13055",
@@ -84,7 +84,7 @@
     "lean/Ehr/Check/NavigationSound.lean": "18002cd04f0787479428d43686e757705e6457a095b609a1453c42bcb9c5b82a",
     "lean/Ehr/Check/NavigationTests.lean": "303237c4e84d4e9a564a9ccb07430620917cb47991de7ec3f99d8f22ff0dd8cc",
     "lean/Ehr/Check/PartialSound.lean": "a9ed0863f76539141f4ce5f415562b622e45df2949dab3dcfa3a59ec32a2295a",
-    "lean/Ehr/Check/PatchWitness.lean": "753f48b21807edbeac2b7d9d187bc1be19d63d8508f488d9007fa611e6629aa2",
+    "lean/Ehr/Check/PatchWitness.lean": "545b608b0862e505a74535cd61e42f8b39e03ec86c91bbdc3e10ba2c29b13d72",
     "lean/Ehr/Check/PinSound.lean": "ea701ec6cb8f895aec012db4e6c3337295914ee887e2474a6352fa085df71a5d",
     "lean/Ehr/Check/PopupRequests.lean": "10627cc3860ead5a8a722dce38c68a4720d43a045751c7038882bd9b9a721b76",
     "lean/Ehr/Check/ProfileGoalsTests.lean": "2d10fe1ff98e97bb36641b22e874590e04b8212289280b311e77bebaf15ccf2a",
@@ -190,10 +190,10 @@
     "lean/Ehr/Render/Presentations.lean": "abd6216c02e484e6744cbe02991844573c7875197641cda5b609c3fa69eacde4",
     "lean/Ehr/Render/Proofs.lean": "73e66422de77c8db330c53937c340f8ea7892523f264275dea1b093731bf4a4e",
     "lean/Ehr/Render/Types.lean": "9886072f0cbec0e6d3982eebfed24eb4012fde2f1552373e538025bc927a5ebf",
-    "lean/Ehr/Render/Ui.lean": "6ff1a4bbad4e69b20e241600a4d19ff07c0f309dd7d9fca3ebb81f145ca820cc",
+    "lean/Ehr/Render/Ui.lean": "3723feaf683d642ba25e38ed1378bf6d8cbccb42fdd5b262601ceb65de5333a4",
     "lean/Ehr/Render/UiContracts.lean": "43f88ba5446573415c93e84fe1fb782253e309ffefb894d9622340adbebfe569",
     "lean/Ehr/Render/UiData.lean": "060ad1ce1582d7e852341ee4a57499090816e854caa4ce1571d93ff263fe466b",
-    "lean/Ehr/Render/UiProofs.lean": "200c9f74f4b3fcac61ffccfe454bc193c2fdcfccc1b1a5fb1517b17ffcf49a7d",
+    "lean/Ehr/Render/UiProofs.lean": "a4144e6a2a22920e8a87ed9de75af9a502ca960fa589314a61da35d57c83a995",
     "lean/Ehr/Render/UiTests.lean": "ec00aee3b8e7a725084c57d049f5483eee0eabf806080b7d2be615fb442e6e3f",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
@@ -251,7 +251,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "cfdbf92c240e996df3e1c7c63b65645c376f55d4bf09979fa1af3538a3f21e09",
+    "ehr-interp.wasm": "739aa196f3256840d624c8db244b8230909d1638ec481f5cb0395a5fc95cf37e",
     "interp-loader.mjs": "898e0bd0c37b3520c95f7cdd78cefd6c23d17ef225275544c49cbcbd6d1f5b14",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }
