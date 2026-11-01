@@ -278,7 +278,7 @@ inductive PageNode
 structure BannerInfo where
   /-- `"Family, Given Middle"`. -/
   name : String
-  /-- Medical record number (Patient.identifier of type `MR`; else the id). -/
+  /-- Medical record number (Patient.identifier of type `MR`), empty if absent. -/
   mrn : String
   /-- Date of birth, `YYYY-MM-DD`. -/
   dob : String
@@ -296,6 +296,8 @@ structure BannerInfo where
   attending : String
   /-- Location or service provider of the latest encounter. -/
   location : String
+  /-- Latest body-weight Observation: tenths, recorded unit and date. -/
+  weight? : Option (Nat × UnitKind × String) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- One AllergyIntolerance. -/
@@ -578,6 +580,8 @@ inductive UiNode
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
   banner : List (String × String)
+  /-- Signed-in clinical role, supplied by the same Lean user as permissions. -/
+  viewer? : Option String := none
   nav : List (String × List (String × String))
   /-- The declared navigator component that opens the current screen, if any. -/
   activeNav? : Option CompId := none

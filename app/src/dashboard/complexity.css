@@ -1,7 +1,7 @@
 .workflow-complexity {
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--clinical-border);
   border-radius: 3px;
-  background: #ffffff;
+  background: var(--clinical-surface);
   padding: 8px 12px;
 }
 .complexity-controls {
@@ -17,7 +17,7 @@
   font-size: 12px;
 }
 .complexity-method {
-  color: #526171;
+  color: var(--clinical-muted);
   font-size: 12px;
   line-height: 16px;
 }
@@ -29,10 +29,10 @@
   margin: 8px 0;
 }
 .floor-key {
-  border-bottom: 2px dashed #243341;
+  border-bottom: 2px dashed var(--clinical-ink);
 }
 .expert-key {
-  border-bottom: 2px solid #825300;
+  border-bottom: 2px solid var(--clinical-yellow-ink);
 }
 .complexity-plot-scroll {
   overflow-x: auto;
@@ -48,7 +48,7 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  fill: #243341;
+  fill: var(--clinical-ink);
 }
 .complexity-multiples {
   display: grid;
@@ -57,7 +57,7 @@
 }
 .complexity-multiples article {
   min-width: 0;
-  border: 1px solid #cbd5df;
+  border: 1px solid var(--clinical-border);
   border-radius: 3px;
   padding: 8px;
 }
@@ -71,7 +71,7 @@
   font-size: 12px;
 }
 .complexity-numbers {
-  border-top: 1px solid #cbd5df;
+  border-top: 1px solid var(--clinical-border);
 }
 .complexity-numbers table {
   min-width: 740px;

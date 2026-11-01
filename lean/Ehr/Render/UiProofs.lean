@@ -103,7 +103,8 @@ theorem D1_landmark (sp prog facts disp user s) :
     ("Patient", disp.banner.name) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("DOB", uiDate disp.banner.dob) ∈ (renderUi sp prog facts disp user s).banner ∧
     ("MRN", disp.banner.mrn) ∈ (renderUi sp prog facts disp user s).banner := by
-  simp [renderUi, uiClinicalBanner, uiBanner]
+  by_cases hp : facts.encounterKind? == some "preop" <;>
+    simp [renderUi, uiClinicalBanner, uiEncounterBanner, uiBanner, hp]
 
 /-- Every actual nav entry is precisely one shown, enabled goto component. -/
 theorem uiNav_mem (cx : Ctx) (n : UiNode) :
@@ -407,6 +408,11 @@ theorem uiItem_honest (cx : Ctx) (it : ItemView) (hm : it ∈ cx.v.items)
     intro hp
     cases action <;> simp [actionRole] at hp
     exact ⟨it, hm, hs, rfl, _, hk⟩
+  case search scope =>
+    rcases hn with rfl | hn
+    · trivial
+    · split at hn <;> simp [uiAtoms] at hn
+      subst n; trivial
   case group coll start =>
     by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
       by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
@@ -565,8 +571,10 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
       by_cases hg : uiNavGroup it = true <;> by_cases hc : coll = true <;>
         by_cases he : it.expanded = true <;> by_cases ht : uiColumnTag it.comp.tag = true <;>
         simp_all [uiColumnChildren, uiAtoms]
-    · obtain ⟨_, rfl, _⟩ := hi
-      exact uiLabel_nonempty _ _ (by decide)
+    · rcases hi with hi | hi
+      · obtain ⟨_, rfl, _⟩ := hi
+        exact uiLabel_nonempty _ _ (by decide)
+      · split at hi <;> simp [uiAtoms] at hi
   · simp [UiReadOnly] at hr
 
 /-- A shown Notes component retains every narrative and metadata field. -/

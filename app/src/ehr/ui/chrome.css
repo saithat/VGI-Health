@@ -1,0 +1,90 @@
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  padding: 8px 20px;
+  background: var(--clinical-appbar);
+  color: white;
+}
+.app-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 0.6px;
+  font-size: 16px;
+}
+.app-wordmark span {
+  font-weight: 400;
+}
+.app-header-divider {
+  height: 22px;
+  border-left: 1px solid #b7caed;
+}
+.app-workspace-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.app-header-context {
+  margin-left: auto;
+  padding: 3px 9px;
+  border: 1px solid #b7caed;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.app-activities {
+  display: flex;
+  gap: 4px;
+  padding: 0 20px;
+  background: var(--clinical-activity);
+  border-bottom: 1px solid var(--clinical-control);
+}
+.app-activities a,
+.app-activities > span {
+  padding: 8px 16px;
+  color: var(--clinical-ink);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+}
+.app-activities [aria-current] {
+  background: white;
+  color: var(--clinical-primary);
+  border-bottom-color: var(--clinical-primary);
+}
+.app-header h1.app-workspace-name {
+  margin: 0;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+}
+.app-header-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+}
+.app-header-context a {
+  color: white;
+}
+@media (max-width: 760px) {
+  .app-header {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .app-header-context {
+    margin-left: 0;
+  }
+  .app-activities {
+    padding: 0 8px;
+  }
+  .app-activities a,
+  .app-activities > span {
+    padding: 8px 12px;
+  }
+}

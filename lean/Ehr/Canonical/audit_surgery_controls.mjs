@@ -53,6 +53,14 @@ for (const release of ['v1', 'v2', 'v3']) {
     assert.equal(state.screen, screen.id);
     const ui = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: projection.display, state })));
     assert.equal(ui.error, undefined);
+    assert.equal(ui.viewer, 'General surgeon');
+    if (context.encounterKind === 'preop') {
+      const source = projection.facts.infoPayloads?.find(p => p.info === 'scheduleTasks')?.rows[0]?.fields;
+      const plannedRoom = source?.find(([key]) => key === 'Room')?.[1] ?? 'Not recorded';
+      assert.equal(ui.banner.find(([key]) => key === 'Encounter context')?.[1], 'Preoperative chart review');
+      assert.equal(ui.banner.find(([key]) => key === 'Planned OR')?.[1], plannedRoom);
+      assert.ok(!ui.banner.some(([key]) => ['Encounter', 'Attending', 'Location'].includes(key)));
+    }
     assert.ok(ui.nav.length <= 12);
     assert.equal(new Set(ui.nav.map(([title]) => title)).size, ui.nav.length);
     for (const [, items] of ui.nav) {
@@ -115,6 +123,9 @@ for (const release of ['v1', 'v2', 'v3']) {
   const context = await read(`${source}/consult-context.json`);
   const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
   assert.equal(projection.error, undefined);
+  const request = projection.facts.infoPayloads?.find(p => p.info === 'consultRequest')?.rows[0]?.fields;
+  assert.ok(request?.some(([key, value]) => key === 'Received' && value));
+  assert.ok(!request?.some(([key]) => key === 'Due'));
   const common = { spec, program, facts: projection.facts, user };
   const step = (state, event) => JSON.parse(wasm.step(JSON.stringify({ ...common, state, event })));
   const render = state => JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: projection.display, state })));

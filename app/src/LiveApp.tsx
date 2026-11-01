@@ -1,3 +1,4 @@
+import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
@@ -5,6 +6,7 @@ import {
   Button,
   Drawer,
   Group,
+  Modal,
   Paper,
   Stack,
   Text,
@@ -16,7 +18,12 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import { loadCatalog, readArtifact, verifyRecordedBuild, programSpecPath } from "./browser/data";
+import {
+  loadCatalog,
+  readArtifact,
+  verifyRecordedBuild,
+  programSpecPath,
+} from "./browser/data";
 import {
   availableBeds,
   bundleResources,
@@ -25,6 +32,7 @@ import {
   loadWorklist,
   quickSignIn,
   readResource,
+  readSavedResource,
   searchPatients,
   signOut,
   startEncounter,
@@ -94,24 +102,32 @@ const personaLabels: Record<string, string> = {
 /** Program shown in live mode: the persona's latest certified personalized
 version from a recorded run, the persona's canonical projection if none
 exists yet, or the original canonical baseline. */
-async function liveProgram(persona: string, baseline: boolean): Promise<{ spec: unknown; program: unknown; presentations?: PresentationBundle | null }> {
+async function liveProgram(
+  persona: string,
+  baseline: boolean,
+): Promise<{
+  spec: unknown;
+  program: unknown;
+  presentations?: PresentationBundle | null;
+}> {
   if (baseline)
     return {
       spec: await readArtifact("/releases/v3/spec.json"),
-      program: await readArtifact("/releases/v3/canonical.json"),
+      program: await readArtifact(`/releases/v3/personas/${persona}.json`),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
     (p) =>
-      p.persona === persona &&
-      p.deployed &&
-      p.run !== null &&
-      p.run !== "mock",
+      p.persona === persona && p.deployed && p.run !== null && p.run !== "mock",
   );
   if (deployed) {
     const program = await readArtifact(`/${deployed.path}`);
     const presentations = await verifyRecordedBuild(deployed.path, program);
-    return { presentations, spec: await readArtifact(programSpecPath(deployed)), program };
+    return {
+      presentations,
+      spec: await readArtifact(programSpecPath(deployed)),
+      program,
+    };
   }
   return {
     spec: await readArtifact("/releases/v3/spec.json"),
@@ -126,6 +142,7 @@ function Login({
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [baselinePersona, setBaselinePersona] = useState("P1");
   async function login(persona: string, baseline: boolean) {
     setPending(true);
     setError("");
@@ -147,8 +164,8 @@ function Login({
           Choose a clinician
         </Title>
         <Text mb="lg">
-          Each opens that clinician's current certified EHR. Changes save to
-          the local Medplum server.
+          Each opens that clinician's current certified EHR. Changes save to the
+          local Medplum server.
         </Text>
         {error && (
           <Alert role="alert" color="red" mb="md">
@@ -162,16 +179,36 @@ function Login({
               variant="light"
               justify="flex-start"
               disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
               onClick={() => void login(persona, false)}
             >
               {personaLabels[persona]}
             </Button>
           ))}
+          <label className="baseline-persona-picker">
+            Baseline clinician
+            <select
+              aria-label="Baseline clinician"
+              value={baselinePersona}
+              onChange={(event) =>
+                setBaselinePersona(event.currentTarget.value)
+              }
+            >
+              {Object.entries(personaLabels)
+                .filter(([id]) => id !== "RN2")
+                .map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {label}
+                  </option>
+                ))}
+            </select>
+          </label>
           <Button
             mt="md"
             variant="outline"
             disabled={pending}
-            onClick={() => void login("P1", true)}
+            title={pending ? "Loading Medplum data" : undefined}
+            onClick={() => void login(baselinePersona, true)}
           >
             Original canonical EHR (baseline)
           </Button>
@@ -187,28 +224,42 @@ function Chart({
   presentations,
   session,
   onClose,
+  viewer,
 }: {
   presentations: PresentationBundle | null;
   session: Session;
   onClose: () => void;
+  viewer: string;
 }) {
   const { ui } = useSyncExternalStore(session.subscribe, session.getSnapshot);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [panel, setPanel] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
+  const [resourceOpen, setResourceOpen] = useState(false);
+  const [savedResource, setSavedResource] = useState<Resource>();
+  const [resourceError, setResourceError] = useState("");
+  function viewResource(link: string) {
+    setResourceOpen(true);
+    setSavedResource(undefined);
+    setResourceError("");
+    void readSavedResource(link)
+      .then(setSavedResource)
+      .catch((error: unknown) => setResourceError(errorText(error)));
+  }
   return (
     <>
       <div
         aria-busy={pending}
         ref={(el) => {
-          if (el) el.inert = pending || panel;
+          if (el) el.inert = pending || panel || resourceOpen;
         }}
       >
         {ui ? (
           <UiScreenView
             presentations={presentations}
             screen={ui}
+            viewer={viewer}
             onEvent={(event) => {
               if (pending) return;
               setError("");
@@ -227,9 +278,14 @@ function Chart({
                           <ul>
                             {result.links.map((link) => (
                               <li key={link}>
-                                <a href={link} target="_blank" rel="noreferrer">
+                                <Button
+                                  size="compact-xs"
+                                  variant="subtle"
+                                  data-resource-link={link}
+                                  onClick={() => viewResource(link)}
+                                >
                                   {new URL(link).pathname}
-                                </a>
+                                </Button>
                               </li>
                             ))}
                           </ul>
@@ -252,11 +308,18 @@ function Chart({
         )}
       </div>
       <div className="live-controls">
-        <Button size="xs" loading={pending} onClick={() => setPanel(true)}>
+        <Button
+          size="xs"
+          loading={pending}
+          title={pending ? "Saving encounter changes" : undefined}
+          onClick={() => setPanel(true)}
+        >
           Live encounter
         </Button>
       </div>
       <Drawer
+        transitionProps={{ duration: 0 }}
+        zIndex={1100}
         opened={panel}
         onClose={() => setPanel(false)}
         title="Live Medplum encounter"
@@ -279,9 +342,14 @@ function Chart({
               <ul>
                 {links.map((link) => (
                   <li key={link}>
-                    <a href={link} target="_blank" rel="noreferrer">
+                    <Button
+                      size="compact-xs"
+                      variant="subtle"
+                      data-resource-link={link}
+                      onClick={() => viewResource(link)}
+                    >
                       {new URL(link).pathname}
-                    </a>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -293,6 +361,30 @@ function Chart({
           <a href="/dashboard">Demo / replay dashboard</a>
         </Stack>
       </Drawer>
+      <Modal
+        transitionProps={{ duration: 0 }}
+        opened={resourceOpen}
+        onClose={() => setResourceOpen(false)}
+        title="Saved Medplum resource"
+        size="xl"
+        zIndex={1200}
+        closeButtonProps={{ "aria-label": "Close saved resource" }}
+      >
+        {resourceError ? (
+          <Alert role="alert" color="red">
+            {resourceError}
+          </Alert>
+        ) : savedResource ? (
+          <pre
+            aria-label="Saved resource JSON"
+            style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
+          >
+            {JSON.stringify(savedResource, null, 2)}
+          </pre>
+        ) : (
+          <p role="status">Loading saved resource…</p>
+        )}
+      </Modal>
     </>
   );
 }
@@ -434,6 +526,13 @@ function SelectEncounter({
         <Group>
           <Button
             disabled={!encounter || pending || starting}
+            title={
+              !encounter
+                ? "Select or start an encounter first"
+                : pending || starting
+                  ? "Loading encounter"
+                  : undefined
+            }
             onClick={() => {
               if (encounter)
                 onOpen({
@@ -452,6 +551,13 @@ function SelectEncounter({
             variant="default"
             loading={starting}
             disabled={pending}
+            title={
+              starting
+                ? "Creating encounter"
+                : pending
+                  ? "Loading Medplum data"
+                  : undefined
+            }
             onClick={() => {
               setStarting(true);
               setError("");
@@ -489,7 +595,9 @@ function Home({
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selection, setSelection] = useState<Selection>();
   const [session, setSession] = useState<Session>();
-  const [presentations, setPresentations] = useState<PresentationBundle | null>(null);
+  const [presentations, setPresentations] = useState<PresentationBundle | null>(
+    null,
+  );
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
@@ -589,6 +697,7 @@ function Home({
       <Chart
         presentations={presentations}
         session={session}
+        viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
         onClose={() => {
           setSession(undefined);
           setSelection(undefined);
@@ -600,7 +709,7 @@ function Home({
     <main className="browser-page live-home">
       <nav aria-label="Workspace">
         <strong>
-          VGI HEALTH · LIVE · {user.persona}
+          VGI HEALTH · LIVE · {clinicianRoleNames[user.persona] ?? "Clinician"}
           {baseline ? " · ORIGINAL CANONICAL" : ""}
         </strong>
         <a href="/browse">Demo / replay</a>
@@ -646,7 +755,14 @@ function Home({
             }
           }}
         />
-        <Button variant="light" onClick={() => setRevision((r) => r + 1)}>
+        <Button
+          variant="light"
+          onClick={() => {
+            setWorklist(undefined);
+            setRevision((r) => r + 1);
+            notifications.show({ message: "Worklist refreshed" });
+          }}
+        >
           Refresh worklist
         </Button>
       </Group>
@@ -747,6 +863,13 @@ function Home({
                         disabled={
                           pending || !ref?.reference?.startsWith("Patient/")
                         }
+                        title={
+                          pending
+                            ? "Loading patient"
+                            : !ref?.reference?.startsWith("Patient/")
+                              ? "No patient is linked to this work item"
+                              : undefined
+                        }
                         onClick={() => {
                           if (ref?.reference)
                             void select(ref.reference.slice(8), r);
@@ -797,7 +920,16 @@ function Home({
                   <Button
                     size="xs"
                     variant="subtle"
-                    disabled={pending}
+                    disabled={
+                      pending || !m.subject.reference?.startsWith("Patient/")
+                    }
+                    title={
+                      pending
+                        ? "Loading patient"
+                        : !m.subject.reference?.startsWith("Patient/")
+                          ? "No patient is linked to this medication"
+                          : undefined
+                    }
                     onClick={() => {
                       if (m.subject.reference?.startsWith("Patient/"))
                         void select(m.subject.reference.slice(8), m);
@@ -818,7 +950,12 @@ function Home({
           setPending(true);
           setError("");
           void searchPatients(query)
-            .then(setPatients)
+            .then((results) => {
+              setPatients(results);
+              notifications.show({
+                message: `${results.length} patients found`,
+              });
+            })
             .catch((e: unknown) => setError(errorText(e)))
             .finally(() => setPending(false));
         }}
@@ -829,7 +966,11 @@ function Home({
           value={query}
           onChange={(e) => setQuery(e.currentTarget.value)}
         />
-        <Button type="submit" loading={pending}>
+        <Button
+          type="submit"
+          loading={pending}
+          title={pending ? "Searching Medplum" : undefined}
+        >
           Search Medplum
         </Button>
       </form>
@@ -839,6 +980,7 @@ function Home({
             <Button
               variant="subtle"
               disabled={pending}
+              title={pending ? "Loading Medplum data" : undefined}
               onClick={() => void select(p.id ?? "")}
             >
               {nameOf(p)} · {p.birthDate}
@@ -880,7 +1022,9 @@ function Home({
 }
 export function LiveApp() {
   const [user, setUser] = useState<LiveUser>();
-  const [baseline, setBaseline] = useState(false);
+  const [baseline, setBaseline] = useState(
+    () => sessionStorage.getItem("vgi.baseline") === "1",
+  );
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
@@ -906,11 +1050,16 @@ export function LiveApp() {
         <Home
           user={user}
           baseline={baseline}
-          onLogout={() => setUser(undefined)}
+          onLogout={() => {
+            sessionStorage.removeItem("vgi.baseline");
+            setBaseline(false);
+            setUser(undefined);
+          }}
         />
       ) : (
         <Login
           onLogin={(next, isBaseline) => {
+            sessionStorage.setItem("vgi.baseline", isBaseline ? "1" : "0");
             setBaseline(isBaseline);
             setUser(next);
           }}

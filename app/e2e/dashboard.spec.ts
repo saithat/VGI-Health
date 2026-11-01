@@ -46,7 +46,7 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
   ).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByRole("region", { name: "Version history" }),
-  ).toContainText("v7 · Night 8");
+  ).toContainText("rev 7 · Night 8");
   await checkLayout(page);
   if (testInfo.project.name === "desktop") {
     await mkdir("shots", { recursive: true });
@@ -56,7 +56,7 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
     });
   }
 
-  const version = page.getByRole("button", { name: /^v3 · Night 4/ });
+  const version = page.getByRole("button", { name: /^rev 3 · Night 4/ });
   await expect(version).toHaveAccessibleName(/vs previous:.*vs baseline:/);
   await version.click();
   const drawer = page.getByRole("dialog");
@@ -73,10 +73,10 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
     exact: true,
   });
   await expect(
-    pair.getByRole("heading", { name: "Before · v2", exact: true }),
+    pair.getByRole("heading", { name: "Before · rev 2", exact: true }),
   ).toBeVisible();
   await expect(
-    pair.getByRole("heading", { name: "After · v3", exact: true }),
+    pair.getByRole("heading", { name: "After · rev 3", exact: true }),
   ).toBeVisible();
   await expect(pair.locator(".ehr-shell")).toHaveCount(2);
   if (testInfo.project.name === "desktop")
@@ -128,10 +128,10 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
     exact: true,
   });
   await expect(
-    migration.getByRole("heading", { name: "Before · v4", exact: true }),
+    migration.getByRole("heading", { name: "Before · rev 4", exact: true }),
   ).toBeVisible();
   await expect(
-    migration.getByRole("heading", { name: "After · v5", exact: true }),
+    migration.getByRole("heading", { name: "After · rev 5", exact: true }),
   ).toBeVisible();
   await expect(migration.locator(".ehr-shell")).toHaveCount(2);
   await expect(migration.getByRole("alert")).toHaveCount(0);

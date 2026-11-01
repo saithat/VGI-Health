@@ -1,9 +1,9 @@
 body {
   margin: 0;
-  background: #e9eef3;
-  color: #20354a;
+  background: var(--clinical-canvas, #f3f5f7);
+  color: var(--clinical-ink, #243341);
   font:
-    12px/1.5 Inter,
+    13px/1.5 system-ui,
     sans-serif;
 }
 .live-controls {
@@ -65,7 +65,7 @@ body {
   justify-content: center;
   flex-direction: column;
   gap: 25px;
-  background: #e9eef3;
+  background: var(--clinical-canvas, #f3f5f7);
 }
 .signin-brand {
   font-size: 25px;
@@ -80,59 +80,6 @@ body {
 }
 .workspace-toolbar a {
   color: #e2f6ff;
-}
-.browser-page {
-  max-width: 1280px;
-  margin: auto;
-  padding: 24px;
-  font-size: 14px;
-}
-.browser-page nav {
-  display: flex;
-  gap: 30px;
-}
-.browser-page h1 {
-  font-size: 30px;
-}
-.patient-picker {
-  border: 1px solid #b8cbd5;
-  padding: 16px;
-  margin: 16px 0;
-  background: white;
-}
-.patient-picker label {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.patient-picker select {
-  max-width: 100%;
-}
-.patient-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 12px 0;
-}
-.program-groups {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
-  gap: 20px;
-}
-.program-groups section {
-  background: white;
-  padding: 20px;
-  border: 1px solid #cbd8e3;
-  border-radius: 6px;
-}
-.program-groups li {
-  margin: 10px 0;
-  overflow-wrap: anywhere;
-}
-.program-groups small {
-  display: block;
-  color: #526e7b;
 }
 .patient-switcher,
 .workspace-source {
@@ -212,4 +159,37 @@ body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   margin: 0;
+}
+
+.workspace-toolbar {
+  background: var(--clinical-appbar);
+  color: white;
+}
+.workspace-toolbar a {
+  color: white;
+}
+.baseline-persona-picker {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 14px;
+}
+.baseline-persona-picker select {
+  padding: 7px 8px;
+  min-height: 32px;
+  border: 1px solid var(--clinical-control);
+  border-radius: 4px;
+  background: white;
+  color: var(--clinical-ink);
+  font: inherit;
+}
+.signin-brand {
+  color: var(--clinical-appbar);
+}
+.worklist-table th {
+  background: var(--clinical-activity);
+}
+.worklist-table tbody tr:nth-child(even) {
+  background: var(--clinical-hover);
 }

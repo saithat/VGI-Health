@@ -9,6 +9,7 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   baseURL,
 }) => {
   test.setTimeout(120000);
+  const desktop = (page.viewportSize()?.width ?? 0) > 700;
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.route("**/*", (route) =>
@@ -62,6 +63,8 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       title ?? "",
     );
+    if (desktop)
+      await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
     current = target ?? "";
     await expect(control(page, `${current}.nav.${current}`)).toHaveAttribute(
       "aria-current",
@@ -72,6 +75,10 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   const findings = control(page, "w6OpNote.opFindings", "enter");
   await expect(findings).toHaveJSProperty("tagName", "TEXTAREA");
   await findings.fill("Operative findings:\nDocumented by the surgeon.");
+  await control(page, "w6OpNote.opSpecimens", "enter").scrollIntoViewIfNeeded();
+  if (desktop)
+    await expect(page.getByRole("banner")).toBeInViewport({ ratio: 1 });
+  await expect(page.getByRole("banner")).toContainText("General surgeon");
   await control(page, "w6OpNote.nav.w6Rounding").click();
   await control(page, "w6Rounding.nav.w6OpNote").click();
   await expect(findings).toHaveValue(

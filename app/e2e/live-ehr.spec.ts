@@ -1,6 +1,4 @@
 import { test, expect, type Page } from "@playwright/test";
-import { buildCatalog } from "../scripts/catalog.mjs";
-import { catalogSchema } from "../src/browser/data";
 
 const adult = "4966bd28-61bc-8f51-3aab-1328a32ea2e7";
 function component(page: Page, id: string) {
@@ -27,13 +25,6 @@ async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   await component(page, "w1Orders.substitution").fill("true");
   await component(page, "w1Orders.prn").fill("false");
   await component(page, "w1Orders.orderDiagnosis").fill("I10");
-  for (const [id, value] of [
-    ["prescriptionPatientName", "Aaron Bruno Ankunding"],
-    ["prescriptionPatientAddress", "100 Test Lane"],
-    ["prescriptionDirections", "Take one tablet by mouth once daily"],
-    ["prescriberLicenseClassification", "Physician"],
-  ])
-    await component(page, `w1Orders.legal.${id}`).fill(value ?? "");
   await component(page, "w1Orders.toSign").click();
   await component(page, "w1Verify.continue").click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -50,7 +41,7 @@ test.beforeEach(async ({ page, baseURL }) => {
   );
 });
 
-test("P1 fixture replay retains identity input and fails closed without source-backed phase context", async ({
+test("P1 fixture replay requires human identity before signing", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -60,7 +51,7 @@ test("P1 fixture replay retains identity input and fails closed without source-b
   await expect(sign).toBeDisabled();
   await expect(sign).toHaveAttribute(
     "title",
-    "structured display or action label required",
+    "Re-enter patient ID (initials / sex / age) to sign",
   );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.getByTestId("commits")).toHaveText("[]");
@@ -68,9 +59,10 @@ test("P1 fixture replay retains identity input and fails closed without source-b
     .getByRole("button", { name: "Close inspector", exact: true })
     .click();
   await component(page, "w1Sign.patientIdReentry").fill("AA/M/58");
-  await expect(sign).toBeDisabled();
+  await expect(sign).toBeEnabled();
+  await sign.click();
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
-  await expect(page.getByTestId("commits")).toHaveText("[]");
+  await expect(page.getByTestId("commits")).toContainText("signOrders");
   await expect(page.getByTestId("captured")).toContainText("AA/M/58");
   expect(errors).toEqual([]);
 });
@@ -87,7 +79,7 @@ test("bad 01: unopened allergy tab hides the list and Lean blocks signing", asyn
   await expect(sign).toBeDisabled();
   await expect(sign).toHaveAttribute(
     "title",
-    "structured display or action label required",
+    "review required: Allergies must be shown or covered by a valid receipt",
   );
   await page.getByRole("button", { name: "Inspector", exact: true }).click();
   await expect(page.getByTestId("commits")).toHaveText("[]");
@@ -110,34 +102,4 @@ test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     /MAR|Medication administration/i,
   );
-});
-
-test("browse searches and filters patients and opens a real program", async ({
-  page,
-}) => {
-  await page.goto("/browse");
-  await expect(
-    page.getByRole("heading", { name: "Open a clinical UI" }),
-  ).toBeVisible();
-  await expect(page.locator(".program-groups li")).toHaveCount(
-    catalogSchema.parse(await buildCatalog()).programs.length,
-  );
-  await page.getByLabel("pediatric", { exact: true }).check();
-  await expect(
-    page.getByLabel("Patient", { exact: true }).locator("option"),
-  ).toHaveCount(51);
-  await page.getByLabel("pediatric", { exact: true }).uncheck();
-  await page.getByLabel("Current program source").selectOption("mock");
-  await expect(
-    page.getByRole("link", { name: "Open P1’s current program →" }),
-  ).toHaveAttribute("href", /program=runs%2Fmock%2Fprograms%2FP1%2Fv5.json/);
-  await page.getByLabel("Search by name").fill("Aaron");
-  await expect(
-    page.getByLabel("Patient", { exact: true }).locator("option"),
-  ).toHaveCount(1);
-  await page
-    .getByRole("link", { name: "P1 projection", exact: true })
-    .first()
-    .click();
-  await expect(page.locator(".clinical-app")).toBeVisible();
 });

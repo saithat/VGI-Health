@@ -46,13 +46,13 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   ).toBeVisible();
   await expect(view.getByLabel("Replay position")).not.toHaveText("1 / 69");
   await view.getByRole("button", { name: "Pause", exact: true }).click();
-  await view.getByLabel("Compare baseline v0").check();
+  await view.getByLabel("Compare baseline rev 0").check();
   await expect(
     page
-      .frameLocator('iframe[title="Baseline v0 EHR"]')
+      .frameLocator('iframe[title="Baseline rev 0 EHR"]')
       .getByRole("banner", { name: "Patient banner" }),
   ).toBeVisible();
-  await view.getByLabel("Compare baseline v0").uncheck();
+  await view.getByLabel("Compare baseline rev 0").uncheck();
   // Jump across both episode resets and a clinical alert, keeping the controls usable.
   await view.getByLabel("Replay event").fill("30");
   await expect(frame.getByRole("dialog")).toBeVisible();
@@ -75,7 +75,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
   ).toHaveCount(1);
   await expect(
-    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · v5 \/ v3/ }),
+    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · rev 5 \/ v3/ }),
   ).toBeVisible();
   await expect(
     frame.getByRole("banner", { name: "Patient banner" }),

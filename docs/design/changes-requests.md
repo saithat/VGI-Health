@@ -53,11 +53,18 @@ This fixes the prior pounds-entry dead end without converting, confirming, or
 changing captured state in the renderer. D6's raw provenance and flags are
 unchanged. A real-WASM probe records the human kg entry in `surg-controls.json`.
 
-Shell/data integration still needs an explicit selected-encounter projection:
-the seeded OR ServiceRequest supplies the case and planned room, but no active
-perioperative Encounter. `bannerOf` currently shows the latest historical
-encounter's class/attending/location. Do not infer an actual admission or current
-location from the OR order. The surgeon's case summary is separately labeled.
+The seeded OR ServiceRequest supplies the case and planned room, but no active
+perioperative Encounter. For explicit pre-op facts, Lean now labels the banner
+`Preoperative chart review`, `Planned OR` and `Surgeon`, using the existing
+patient/version-bound request payload. It no longer presents the previous
+ambulatory class/attending/location as this surgical episode. This does not
+create an admission, assert the patient is in the OR, or invent an encounter
+selector. A future active-encounter source should remain distinct from the
+request. Consult `authoredOn` is labeled `Received`, never a due deadline.
+
+`UiScreen.viewer` optionally supplies the signed-in clinical role from the same
+Lean `User` used for permissions. The shell uses that label; user IDs stay in
+proof/transport metadata. Legacy saved screens may omit the optional field.
 
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
@@ -1951,6 +1958,36 @@ rendering about 1.4 seconds in a Node WASM measurement. The app now computes
 legacy HTML and the inspection view lazily, with immutable snapshot inputs.
 Please continue profiling semantic rendering/structured-payload checks in Lean;
 UI logic remains there. No files under lean/ were edited for these changes.
+
+## Visible control audit handoff (lane/app, 2026-10-31)
+
+The owner requires every visible enabled control to produce an observable effect
+within approximately two seconds. The app shell audit and fixes are in
+`docs/audits/buttons.md`. The precise clinical inventory, including program,
+screen, component id, label, action, and observed result, is generated in
+[`ehr-dead-controls.md`](../audits/ehr-dead-controls.md).
+
+**Content lane:** resolve the precise components in the generated inventory.
+Chart-search inputs currently echo the query without results or a clinical state
+change, even when the interpreter reports `ok`; remove them or implement search.
+Any confirmation, selected tab, or repeated action listed as `ignored` or unchanged
+needs meaningful behavior or an explicitly disabled reason. Retain actual clinical
+guards; the audit must not invent patient evidence to make a commit clickable.
+Commit paths blocked by missing phase/temporal/source contracts remain content/core
+integration work. Runtime nav metadata has landed: the former Patient workspace
+placeholder now navigates successfully, and Navigator/Sidebar placeholders are
+absent from the current projection. This supersedes the earlier blanket request
+to remove those labels.
+
+**Render lane status after main's d932551:** nav pairs now contain real goto
+component IDs. The app dispatches those IDs with Event.click, opens available
+groups by default and omits empty groups. Stepper overview pairs still contain
+screen destinations, so they remain static and are listed with null component
+IDs in the inventory. Supply click metadata or an explicitly informational or
+disabled treatment for those steps. No screen ID is converted into an invented
+click. The final audit uses the newly committed cached-view WASM without a Lean
+build.
+
 ## CHECK-2026-11-01: current baseline and evidence-domain obstruction
 
 This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for

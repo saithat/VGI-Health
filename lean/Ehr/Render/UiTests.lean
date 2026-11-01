@@ -33,6 +33,20 @@ def uiSurgicalCaseCtx : Ctx :=
 #guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Procedure" ==
   some "Laparoscopic appendectomy"
 #guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Status" == some "active"
+/-- A planned surgical request cannot inherit a historical visit's location. -/
+def uiPreopBannerFacts : Facts := { Tests.periopFacts with encounterKind? := some "preop" }
+def uiHistoricalVisitDisplay : Display :=
+  { uiRoomCtx.disp with banner := { uiRoomCtx.disp.banner with
+      encounterClass := "AMB", attending := "Previous clinician", location := "Previous clinic" } }
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Encounter context" ==
+  some "Preoperative chart review"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Planned OR" == some "Not recorded"
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Location" == none
+#guard (uiClinicalBanner uiPreopBannerFacts uiHistoricalVisitDisplay).lookup "Attending" == none
+#guard uiCaseValue { uiPreopBannerFacts with patientId := "another-patient" } "Room" == "Not recorded"
+#guard (uiClinicalBanner Tests.periopFacts uiHistoricalVisitDisplay).lookup "Location" == some "Previous clinic"
+#guard uiViewer .surgeon == "General surgeon"
+#guard uiViewer .rn == "Registered nurse"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
@@ -319,5 +333,49 @@ def uiNotesCtx : Ctx :=
 #guard (uiRows uiNotesCtx "surgicalHistory").length == 1
 #guard uiRows uiNotesCtx "currentMeds" == uiRows uiRoomCtx "currentMeds"
 #guard uiNotesCtx.facts.receipts == uiRoomCtx.facts.receipts
+
+/-- A real shown search input, independent from clinical capture. -/
+def uiSearchCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, prog := { uiRoomCtx.prog with
+      screens := uiRoomCtx.prog.screens.map fun screen =>
+        if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+          [{ id := "chartSearch", label := "Search chart", kind := .search "chart", tag := "search" }] }
+        else screen } }
+
+def uiSearchEntered : State × StepResult :=
+  enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+    uiSearchCtx.s "chartSearch" (.text "Acetaminophen")
+
+#guard uiSearchEntered.2 == .ok
+#guard uiSearchEntered.1.captured == uiSearchCtx.s.captured
+#guard uiSearchEntered.1.commits == uiSearchCtx.s.commits
+#guard uiSearchEntered.1.receipts == uiSearchCtx.s.receipts
+#guard uiSearchEntered.1.searchQueries? == some [("chartSearch", "Acetaminophen")]
+#guard (uiSearchRows uiSearchCtx "formulary" "METFORMIN").any (fun row =>
+  row.any (fun pair => (pair.2.splitOn "metformin").length > 1))
+#guard uiSearchRows uiSearchCtx "chart" "no-such-record-xxxxxxxx" == [[("Search", "No matching records")]]
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchEntered.1 "chartSearch" (.text "")).1.searchQueries? == none
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s "hiddenSearch" (.text "metformin")).2 == .ignored
+#guard (stepEvent uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s (.search "legacy abstract search")).1 == uiSearchCtx.s
+#guard match (Lean.toJson uiSearchCtx.s).getObjVal? "searchQueries" with
+  | .error _ => true
+  | .ok _ => false
+#guard match (Lean.fromJson? (Lean.toJson uiSearchCtx.s) : Except String State) with
+  | .ok state => state == uiSearchCtx.s
+  | .error _ => false
+
+/-- Search snippets omit source plumbing and preserve matching clinical text. -/
+def uiSearchNoteSummary := uiSearchSummary
+  [("Date", "2026-10-31"), ("Type", "Progress note"), ("Encounter", "urn:uuid:opaque"),
+   ("Title", "Unknown"), ("Text", "Current medications include lisinopril daily."),
+   ("Source date", "2020-03-15"), ("Shift days", "Unknown")] "lisinopril"
+#guard uiSearchNoteSummary.any (fun pair => (pair.2.splitOn "Excerpt: ").length > 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "urn:uuid:").length == 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "Shift days").length == 1)
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Weight" != none
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Isolation" == some "Not recorded"
 
 end Ehr.Render

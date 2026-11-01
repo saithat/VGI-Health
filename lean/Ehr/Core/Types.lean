@@ -855,6 +855,8 @@ structure State where
   expanded : List CompId
   /-- Selected tab per tabs component (default 0). -/
   tabSel : List (CompId × Nat)
+  /-- Queries entered into shown search components. Absent in legacy episodes. -/
+  searchQueries? : Option (List (CompId × String)) := none
   /-- The alert popup currently shown, with its key. -/
   popup? : Option (AlertId × String) := none
   /-- The order line that `Slot.current` fields are bound to. -/

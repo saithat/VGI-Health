@@ -108,6 +108,11 @@ def periopCholecystectomy : Json := (periopOrder.setObjVal! "code"
 #guard periopIndicationText (json r#"{"text":"Unspecified abdominal pain"}"#) == "Unspecified abdominal pain"
 #guard (surgicalCaseRows "2026-11-01" [periopOrder] periopPatient).isEmpty
 #guard (surgicalConsultRows [periopConsult, periopOtherPatient] periopPatient).length == 1
+/-- A request's authored time is not a due deadline. -/
+def periopReceivedConsult := periopConsult.setObjVal! "authoredOn" (.str "2026-10-31T10:15:00Z")
+#guard (surgicalConsultRows [periopReceivedConsult] periopPatient).head!.lookup "Received" ==
+  some "2026-10-31T10:15:00Z"
+#guard (surgicalConsultRows [periopReceivedConsult] periopPatient).head!.lookup "Due" == none
 #guard (surgicalConsultRows [periopConsult.setObjVal! "status" (.str "completed")] periopPatient).isEmpty
 #guard (surgicalConsentRows [periopConsent] periopPatient).head!.lookup "Document status" == some "active"
 #guard !(surgicalConsentRows [periopConsent] periopPatient).any (fun row => row.any (fun cell => cell.2 == "Verified" || cell.2 == "Time-out complete"))
@@ -120,4 +125,12 @@ def periopFacts := factsOf context [periopPatient, periopOrder, periopConsent] p
 #guard !periopReferenceMatches .null .null
 #guard periopReferenceMatches (periopPatient.setObjVal! "id" (.str "urn:uuid:case-patient"))
   (json r#"{"reference":"urn:uuid:case-patient"}"#)
+/-- Logical resource identity is not a medical record number. -/
+def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-resource-id"}"#
+#guard mrnOf patientWithoutMrn == ""
+#guard patientIdOf patientWithoutMrn == "opaque-resource-id"
+#guard parsed.display.banner.weight?.map (fun (weight, unit, _) => (weight, unit)) == parsed.facts.weightToday?
+#guard (output emptyBundle).display.banner.weight? == none
+#guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none
+
 end Ehr.Render.Tests
