@@ -45,7 +45,11 @@ export default defineConfig({
   preview: { proxy: medplumProxy },
   build: {
     rollupOptions: {
-      input: { app: "index.html", screenCheck: "screen-check.html" },
+      input: {
+        app: "index.html",
+        screenCheck: "screen-check.html",
+        trajectoryFrame: "trajectory-frame.html",
+      },
     },
   },
   plugins: [

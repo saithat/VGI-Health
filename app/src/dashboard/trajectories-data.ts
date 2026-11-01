@@ -30,7 +30,8 @@ const metrics = z.object({
   keystrokes: nat,
   scrolls: nat,
   klmDeciSec: nat,
-  mouseTravelPx:z.number().nonnegative().nullable().optional(),scrollPx:z.number().nonnegative().nullable().optional(),
+  mouseTravelPx: z.number().nonnegative().nullable().optional(),
+  scrollPx: z.number().nonnegative().nullable().optional(),
   completed: z.boolean(),
 });
 const fields = {
@@ -135,3 +136,41 @@ export const trajectorySchema = z
   });
 export type TrajectoryIndex = z.infer<typeof trajectoryIndexSchema>;
 export type TrajectoryEntry = TrajectoryIndex["tasks"][number];
+
+// Optional measured geometry accompanies new runs. Older archives remain valid.
+const point = z.object({ x: z.number().finite(), y: z.number().finite() });
+export const replayGeometrySchema = z.object({
+  schemaVersion: z.literal(1),
+  programHash: z.string(),
+  componentsSha256: z.string().exactOptional(),
+  appSha256: z.string(),
+  viewport: z.object({ width: z.literal(1440), height: z.literal(900) }),
+  states: z.array(
+    z.object({
+      screen: z.string(),
+      state: z.string(),
+      sample: z.string().exactOptional(),
+      viewport: z.object({ width: z.number(), height: z.number() }),
+      components: z.record(
+        z.string(),
+        z.object({
+          center: point,
+          reveal: point,
+          chain: z.array(z.string()),
+          offsets: z.record(z.string(), point),
+        }),
+      ),
+      scrollers: z.record(
+        z.string(),
+        z.object({
+          maxX: z.number(),
+          maxY: z.number(),
+          width: z.number(),
+          height: z.number(),
+        }),
+      ),
+    }),
+  ),
+  aliases: z.record(z.string(), z.array(z.string())).exactOptional(),
+  source: z.enum(["chromium", "recorded-fixture"]),
+});
