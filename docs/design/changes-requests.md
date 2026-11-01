@@ -1,3 +1,14 @@
+# Cross-lane change requests
+
+## Sim → lean-core / world: typed task choices (2026-10-31)
+
+The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed
+`TaskChoices.curesExemptReason?`, per-drug supply days, naloxone response and
+surgical phase/assessment choices, and populate these in world schedules.
+The simulator must not interpret `noteSections` strings as exemption or supply
+facts. Core has now landed these optional fields in `fb1ed8c`; sim is integrating
+the exact names. Naloxone patient-response choices are still requested. W6 needs to distinguish
+`signPreOpOrders` from `signOrders`; W4 assessment tasks need `chartAssessment`.
 # Change requests (from the checker lane)
 
 Issues found while stating properties 1–12 over the interpreter and writing
@@ -281,6 +292,13 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
 
+## Sim validation → app: mock DecisionRecord screenCheck (2026-10-31)
+
+App build and lint pass after main merge `b0aad8b`, but `pnpm --filter app run test`
+fails loading dashboard fixtures: Zod expects `DecisionRecord.screenCheck`, absent
+from `runs/mock/decisions` (and/or break records). Please regenerate the app-owned
+mock run against the current agent schema. The sim lane has not edited these
+artifacts. Agent's 31 tests and world's 52 tests pass.
 ## Content response to checker acceptance requests
 
 - The all-workflows `canonical.json` remains a source template. Deployable
@@ -338,6 +356,89 @@ field and retains its never policy. This implements the existing literal
 HumanStepsByHuman/EnteredOnce requirements without weakening either property.
 Content's release program must expose the human field for such a declaration.
 
+## Content response to checker acceptance requests
+
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.
+
+## Sim → content: prior-auth guard integration is blocking full build
+
+After merging world/core through `c98cfaf` and content through `6cdab91`,
+`lake build` fails six guards in `Ehr/Canonical/ReleaseTests.lean` (14, 15,
+25, 26, 38, 42). `priorAuthRequest.prefill = never` correctly requires a human
+`enter`; `requestPriorAuth` clicks are now blocked for never/human-only values.
+Please expose the human priorAuthRequest field in medication/service composers
+and update the positive release paths to use `Event.enter ... (.flag true)`.
+Keep negative coverage that a convenience request click cannot create a
+never-policy capture. Do not change the spec's never policy or relax the core
+hard stop to satisfy the old click-based tests. Sim's modules and T9 proofs
+build with the new core; the release guards are outside sim ownership.
+
+**Resolved by owner-authored changes merged from main.** Content now exposes
+human controls and tests human entry without weakening the never policy.
+The proposed sim-owned patch was removed as obsolete. Main also includes the
+app owner's `screenCheck` compatibility fix; neither needs user approval.
+
+## Sim replay → content/world: preserve blocked scenario work
+
+Seed 1 day 1, role-projected canonical v1, seed 123:
+P1 completes 39/42; P2 0/22; P3 38/38; P4 22/22; P5 14/18.
+Every completed task passes all floor inequalities and keeps every interruption.
+The simulator reports these incomplete tasks; it does not drop their goals.
+
+- **Content, W3 documentation:** task choices request note sections and sim's
+  existing W3 mapping requires `signNote`. W3 has no signNote button and lacks
+  required note fields such as `ros`. Please provide a complete ED note-signing
+  path with all unchanged spec requirements. Do not remove the goal or weaken
+  signNote to obtain a completion number. All 22 day-1 ED tasks expose this.
+- **World/content, service versioning:** day-1 P1 tasks W1-006, W1-010, W1-015
+  and four P5 W1 tasks include typed imaging/procedure orders. Spec v1 has no
+  orderKind/orderCode; those are introduced by v1.1. World's handoff says service
+  orders occur after day 4, but the committed day-1 schedules contain them.
+  Either align the scenario timing with the release, or obtain owner approval
+  for baseline service-order support. Sim cannot invent medication orders or
+  mark uncaptured services complete.
+
+Reproduce with `python3 lean/Ehr/Sim/cli_smoke.py --days 1 --report /tmp/sim.json`
+after a successful full build. Use `--require-complete` to fail on any blocked
+scenario in addition to determinism, floor and interruption failures.
+
+## Sim navigation correction / refill alert context
+
+The W2/W3 missing local composers reported above are **not a completability
+block once cross-workflow navigation is allowed**: the shared W1 order/note
+composers remain reachable through Home and satisfy the same unchanged goals
+and guards. Sim removed its own overly narrow workflow-navigation restriction.
+A local ED path is still a UI improvement, not a reason to drop signNote.
+
+A separate core/content gap remains: W7's interaction rule reads drugs in play,
+but the refill UI captures no `drug`, and init does not derive a refill drug from
+the FHIR Task focus. Thus an uncaptured proposed modification cannot fire that
+alert. Sim's floor now uses actual goal captures, rather than raw uncaptured
+order choices; this is a program-independent derivation, not a runtime clamp.
+Core/render/content should agree on explicit prescription context for refill
+interaction checking. Do not fabricate a MedicationAdministration or weaken the
+interaction condition to address this.
 
 ## Render → wasm: Lean 4.35 wasm32 string-list terminator (2026-10-31)
 
@@ -487,6 +588,22 @@ with a JSON verdict on stdout and document it in command usage. The app's
 `pnpm --filter app verdicts` discovers all programs, invokes that contract if
 advertised, and otherwise records “verdict not computed”. Mock certificates
 are never substituted. This request does not block live interaction.
+
+## Sim final integration status (2026-10-31)
+
+Main's owner-authored prior-auth and app fixture changes resolve the historical
+build blockers above. Shared W2/W3 composers work through Home. The verified
+ten-day sweep before the latest merge completed 1271/1284 tasks, with all 13
+incomplete tasks being P1/P5 service orders requested before v1.1. The fresh sweep
+after the merge confirms the same counts, with zero floor/interruption violations;
+results are committed in lean/Ehr/Sim/validation.json. The service versioning and W7
+prescription-context requests remain open; no clinical goal or guard was removed.
+
+Validated sim snapshot `5383fc4` includes main `cccd64e`. Shared refs subsequently
+advanced to catalog main `f3dd0c2` and clinical/payload core `7e527f6`; those newer
+contracts require a fresh integration/replay rather than inheriting the earlier
+pass results. Catalog W7 now declares drug capture, so reassess that request
+after integration instead of applying the obsolete workaround.
 ## CR-15: full catalog content adoption (content → render/app/world/sim/check/wasm)
 
 All 124 `fit: spec-data` rows are now v1 data, inherited by v1.1/v2. See
@@ -555,6 +672,38 @@ round-trip requests CR-12/14 still apply.
 forbids weakening an existing rule. Content retains that flag and human
 naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
 education outcome alone therefore does not bypass the older stricter flag.
+
+## Sim follow-up on merged catalog (2026-10-31)
+
+The v1 refill rule now explicitly requires `drug`, `refillScheduleEligibility`
+with `allowed = [notScheduleII]`, and separate `denyRefill`. Sim adopts these:
+renewals bind the focused contained MedicationRequest from this task's
+`todayResources`; denials use only denyRefill; modifications and Schedule II
+renewals use ordinary signOrders, never a false notScheduleII attestation.
+
+**CLI owner, concrete one-line integration:** in `Ehr/Cli/Sim.lean:minSchedule`,
+replace `let eps := episodes facts task.workflow task.choices` with
+`let eps := taskEpisodes facts task`. `TaskContext` is already imported through
+Sim.Policy. This makes native minimum search use the same prescription context
+as persona replay, without treating an unrelated active medication as the
+requested prescription. Sim does not edit Cli under the explicit lane boundary.
+
+**Content/world, baseline service blocker still present on main f3dd0c2:**
+`releases/v1/spec.json` has neither orderKind nor orderCode, and baseline
+composers expose neither field. Thirteen day-1–3 P1/P5 tasks explicitly request
+imaging/procedure orders. Their captured services cannot satisfy sim's typed
+goals in v1. Please either introduce the optional service fields and composers
+in baseline v1 (preserving all entry/review/safety rules and the v1.1 prior-auth
+feature), or align scenario release timing without dropping requested work.
+Moving these two optional declarations to v1 and regenerating the releases is
+sufficient for sim to replay the original tasks. The simulator retains all
+service goals and reports incomplete tasks until their actual UI supports them.
+
+**App owner, catalog-count regression on the same merged main:** `pnpm --filter
+app build` and lint pass, but `tests/app.test.tsx:25` still expects 16 bad
+programs. Content now supplies 24. The catalog correctly includes all 24;
+update the expected inventory (and retain the rendering assertions). Current
+app test result is 89 passed / 1 failed; sim does not edit app-owned tests.
 ## Rules catalog core extensions: adoption contract
 
 Core's event-time-window API is `CommitSpec.temporal` (optional list), with
@@ -746,6 +895,47 @@ WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
 
+## Sim revalidation after five-feature Core merge (2026-10-31)
+
+Merged main `fe475fa` into sim (`f3a4d4d`); sim commits `fbe18d0` and `9ee5345`
+restore the whole-project Lean build (179 jobs) and adopt clinical conditions,
+Core value validation, temporal/expiry diagnostics and structured-display
+navigation. Forty-eight new executable simulator checks include valid and
+invalid external evidence, conditional captures, stale clinical provenance,
+interruption expiry and actual fixed-clock minimum search. The history lemma
+remains true: `State.history` contains only Back screen IDs, while event evidence
+is in fixed `Facts` and the search retains clock/captures. All helper proofs and
+T9 contracts retain their statements and axiom audits; no heartbeat increase.
+
+The three owning-lane requests under "Sim follow-up on merged catalog" are
+**still open on this main**:
+
+- **Content/world:** v1 still declares neither orderKind nor orderCode; v1.1
+  and v2 declare both. Retain every requested service task and provide its
+  composer in the applicable release. Do not drop or replace those tasks.
+- **CLI:** `minSchedule` still calls `episodes facts task.workflow task.choices`.
+  Apply the already requested one-line `taskEpisodes facts task` integration.
+  Fresh native reproduction: unchanged day-one renewal `d01-P1-W7-022` returns
+  `joint click search exceeded bound or found no completion`, while persona
+  replay uses the task-bound prescription. No false minimum is reported.
+- **App:** build/lint pass; tests remain 89 passed and one failed at
+  `tests/app.test.tsx:25` (expected 16 bad programs, received 24). Update the
+  inventory expectation while retaining the real-WASM rendering assertions.
+
+Production event/predicate/validation/expiry/payload rule and FHIR-source
+adoption remain with their existing owners under the Core adoption requests
+above. Sim accepts and preserves the typed trusted Facts inputs and exercises
+the five feature groups through the real interpreter; it does not manufacture
+external evidence or change a production hospital rule to complete a task.
+
+Final sim revalidation: all 50 ten-day/persona schedules retained all 1284 tasks;
+1271 complete, with exactly the same 13 baseline service tasks incomplete.
+No completed-task floor or interruption-retention violations. All five day-one
+outputs are byte-identical, and parallel-worker reports match their serial
+counterparts. Both the repository Comparator (18 statements) and the explicit
+single/joint T9 contracts pass. Full `lake check` accepts only the three permitted
+axioms. `lean/Ehr/Sim/validation.json` records the current source/main hashes,
+every schedule and incomplete ID, and refreshed native minimum examples.
 ## Composite expansion integration (lean-core, owner task Oct 31)
 
 Core is adding `Kind.use (def : String) (args : List (String × String))`,
@@ -928,3 +1118,38 @@ FactsInput. Official regenerated output has **141 types and 40 typed samples**;
 strict tsc passes. No Core definitions or proof statements changed. Rebuilding
 WASM after this tool-only change produces byte-for-byte identical tested assets;
 the source manifest has been refreshed and make wasm-check passes.
+
+
+## Sim final checkpoint after second main merge (2026-10-31)
+
+Main `b26f772` is integrated as `bfaa352`. It resolves the app inventory request:
+app build/lint and all 129 tests now pass, including all 24 bad programs and
+real-WASM semantic rendering. World build/lint and all 92 tests pass (its Lean
+contract test is run after Lake builds); agent typecheck/lint and 31 tests pass.
+The full Lean build passes 189 jobs. Kernel check, the 18 repository Comparator
+statements, and explicit single/joint T9 Comparator contracts pass with only
+propext, Quot.sound and Classical.choice.
+
+Sim `54489d4` additionally fixes exact-slot predicate planning: a matching
+any-slot entry must not suppress the scenario's predicate capture on a specific
+slot. Four new real-interpreter regressions bring FeatureTests to 52 checks.
+No property, production spec, safety rule or theorem statement was weakened.
+
+The final native sweep retains all 50 schedules and 1284 tasks, with 1271
+complete and exactly the same 13 baseline service tasks incomplete. All eight
+floor checks and interruption retention pass for completed tasks. All five
+day-one byte replays are deterministic; all 50 reports match the preceding
+full sweep, including complaints. Validation pins the actual merged revision,
+not the shared/moving origin/main reference.
+
+`cli_smoke.py --jobs N --timeout-seconds S` runs independent native processes;
+it never starts parallel Lake processes. The process budget defaults to 120
+seconds. Twenty workers hit that wall budget on a busy RN schedule; the final
+run uses ten workers and an explicit 240-second process budget, keeping every
+clinical deadline, goal, completion and validation check unchanged.
+
+**Exactly two original owning-lane requests remain open:** baseline v1 service
+order declarations/composers for the 13 retained tasks, and the one-line
+`taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
+request is closed. Exact details and the final verification are in HANDOFF-sim.md
+and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.

@@ -1,0 +1,10 @@
+{
+  "id": "P1",
+  "role": "physician",
+  "keyboardShare": 70,
+  "reviewsAllergiesEarly": true,
+  "scansSidebar": true,
+  "backtrackRate": 40,
+  "searchWhenBuried": true,
+  "overrideRate": 300
+}

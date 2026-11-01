@@ -1,0 +1,10 @@
+{
+  "id": "P4",
+  "role": "np",
+  "keyboardShare": 45,
+  "reviewsAllergiesEarly": true,
+  "scansSidebar": true,
+  "backtrackRate": 50,
+  "searchWhenBuried": true,
+  "overrideRate": 250
+}
