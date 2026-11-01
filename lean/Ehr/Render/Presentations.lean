@@ -52,7 +52,9 @@ def uiRowTarget? (tag : String) : Option (CompId × Nat) := do
   if tag == "" then none else match tag.splitOn "|" with
   | [head, target, row] =>
     if !(head == "present.row" || head.endsWith ".present.row") || target == "" then none
-    else some (target, ← row.toNat?)
+    else
+      let index ← row.toNat?
+      if index ≤ 9007199254740991 then some (target, index) else none
   | _ => none
 
 /-- The original semantic control is retained with all of its event metadata. -/

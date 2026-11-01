@@ -377,6 +377,15 @@
 .presentation-mar th {
   font-size: 12px;
 }
+.presentation-mar .mar-day-heading {
+  text-align: center;
+  background: var(--clinical-banner, #e8eef2);
+  border-right: 1px solid var(--p-border);
+}
+.presentation-mar .mar-hour-heading {
+  text-align: center;
+  padding: 5px 2px;
+}
 @media (max-width: 900px) {
   .presentation-chart svg text {
     font-size: 28px;

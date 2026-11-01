@@ -20,6 +20,17 @@ export function MarGrid({
   const columns = [
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
   ].filter((key) => !detailKeys.has(key));
+  const hours = columns.map((key) => {
+    const match = /^(.*\S)\s+(\d{2}:\d{2})$/.exec(key);
+    return { key, day: match?.[1] ?? "", label: match?.[2] ?? key };
+  });
+  const dated = hours.some((hour) => hour.day !== "");
+  const groups: { day: string; key: string; count: number }[] = [];
+  for (const hour of hours) {
+    const previous = groups.at(-1);
+    if (hour.day && previous?.day === hour.day) previous.count += 1;
+    else groups.push({ day: hour.day, key: hour.key, count: 1 });
+  }
   const documentation = node.rows.flatMap((row) => {
     const medication =
       row.find(([key]) => key === "Medication")?.[1] ?? "Medication";
@@ -38,13 +49,38 @@ export function MarGrid({
         >
           <thead>
             <tr>
-              <th scope="col">Medication / order details</th>
-              {columns.map((key) => (
-                <th key={key} scope="col">
-                  {key}
-                </th>
-              ))}
+              <th scope="col" rowSpan={dated ? 2 : 1}>
+                Medication / order details
+              </th>
+              {dated
+                ? groups.map((group) => (
+                    <th
+                      key={group.key}
+                      scope={group.day ? "colgroup" : "col"}
+                      colSpan={group.count}
+                      rowSpan={group.day ? 1 : 2}
+                      className={group.day ? "mar-day-heading" : undefined}
+                    >
+                      {group.day || group.key}
+                    </th>
+                  ))
+                : columns.map((key) => (
+                    <th key={key} scope="col">
+                      {key}
+                    </th>
+                  ))}
             </tr>
+            {dated && (
+              <tr>
+                {hours
+                  .filter((hour) => hour.day)
+                  .map((hour) => (
+                    <th key={hour.key} scope="col" className="mar-hour-heading">
+                      {hour.label}
+                    </th>
+                  ))}
+              </tr>
+            )}
           </thead>
           <tbody>
             {node.rows.length === 0 && (

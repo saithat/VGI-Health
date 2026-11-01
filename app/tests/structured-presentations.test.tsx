@@ -233,6 +233,53 @@ describe("structured clinical data boundary", () => {
     ).toContain(record);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
+  it("keeps separate MAR day groups and preserves an undated column", () => {
+    paint([
+      {
+        presentation: {
+          kind: "timeGrid",
+          children: [
+            {
+              info: {
+                comp: "mar",
+                label: "MAR",
+                infoId: "mar",
+                display: "table",
+                rows: [
+                  [
+                    ["Medication", "Example medication"],
+                    ["Nov 1, 2026 08:00", "Given · 08:12"],
+                    ["Nov 1, 2026 09:00", "Held · 09:05"],
+                    ["Nov 2, 2026 08:00", "Scheduled · 08:00"],
+                    ["Time not recorded", "Not given"],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(
+      screen
+        .getByRole("columnheader", { name: "Nov 1, 2026" })
+        .getAttribute("colspan"),
+    ).toBe("2");
+    expect(
+      screen
+        .getByRole("columnheader", { name: "Nov 2, 2026" })
+        .getAttribute("colspan"),
+    ).toBe("1");
+    expect(screen.getAllByRole("columnheader", { name: "08:00" })).toHaveLength(
+      2,
+    );
+    expect(
+      screen.getByRole("columnheader", {
+        name: "Time not recorded",
+      }),
+    ).toBeTruthy();
+    expect(screen.getByText("Not given")).toBeTruthy();
+  });
   it("keeps unlike units in separate trend images and preserves nonnumeric results", () => {
     paint([
       {

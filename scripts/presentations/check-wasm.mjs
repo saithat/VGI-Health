@@ -26,6 +26,14 @@ for (const [kind, input] of corpus) {
       assert.deepEqual(actual, native('step', stepInput));
       assert.equal(actual.state.screen, target);
     }
+    for (const index of ['9007199254740992', '9'.repeat(512)]) {
+      const oversized = structuredClone(input);
+      oversized.program.screens[0].components.find(node => node.id === 'open-mar').tag = `present.row|records|${index}`;
+      const screen = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(oversized)));
+      assert.deepEqual(screen, native('render-ui', oversized));
+      const original = screen.workspace[1].presentation.children[0].section.children.find(node => node.button?.comp === 'open-mar');
+      assert.equal(original?.button.label, 'Open MAR');
+    }
   } else {
     assert.equal(result.workspace[1].presentation.kind, kind);
     assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);

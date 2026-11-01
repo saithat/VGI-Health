@@ -61,6 +61,10 @@ def firstRowTarget := uiRowTarget? "ward.present.row|worklist-records|0"
 #guard uiRowTarget? "present.row||1" == none
 #guard uiRowTarget? "unrelated|records|1" == none
 
+/-- Oversized transport indexes leave the ordinary control intact. -/
+def oversizedRowTarget := uiRowTarget? "present.row|records|9007199254740992"
+#guard oversizedRowTarget == none
+
 /-- Row placement retains the event, label and enabled state exactly. -/
 theorem row_action_presence_example (control : UiNode) :
     uiAtoms (uiWrapRow "present.row|records|0" control) = uiAtoms control := by simp
