@@ -1,9 +1,12 @@
+import { RevisionDetails } from "./RevisionDetails";
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { Button, Switch } from "@mantine/core";
 import { navigate } from "../navigation";
 import { AppHeader } from "../ehr/ui/AppHeader";
 import { ClinicalIcon } from "../ehr/ui/Icons";
+import { chartDateForTimelineDay } from "../data/worldChart";
+import { formatDisplayValue } from "../ehr/ui/display";
 import { loadRunSummary, type RunData } from "../dashboard/data";
 import {
   ehrUrl,
@@ -87,12 +90,10 @@ function Timeline({
   catalog,
   run,
   verdicts,
-  patient,
 }: {
   catalog: Catalog;
   run?: RunData | undefined;
   verdicts: Verdicts;
-  patient: string;
 }) {
   const nodes = useMemo(
     () => personas.flatMap((persona) => timelineNodes(catalog, run, persona)),
@@ -210,7 +211,7 @@ function Timeline({
                     <>
                       <a
                         className="release-node"
-                        href={ehrUrl(program, patient, "P1")}
+                        href={ehrUrl(program, "P1", release.day)}
                         title={release.summary}
                       >
                         {release.id}
@@ -271,7 +272,7 @@ function Timeline({
                           onMouseEnter={() => setSelectedKey(nodeKey(node))}
                           onKeyDown={(event) => move(event, node)}
                           onClick={() =>
-                            navigate(ehrUrl(node.program, patient, persona))
+                            navigate(ehrUrl(node.program, persona, node.day))
                           }
                         >
                           <span className="timeline-dot" aria-hidden="true">
@@ -339,12 +340,23 @@ function Timeline({
                 ? `${selected.program.release} certified baseline`
                 : `${selected.persona} rev ${selected.program.version}`}
             </h3>
+            <p className="browser-muted">
+              Chart date{" "}
+              {formatDisplayValue(
+                chartDateForTimelineDay(selected.day, catalog.referenceDate),
+              )}
+            </p>
             <CertificateBadge
               program={selected.program}
               verdicts={verdicts}
               run={run}
             />
             <p>{selected.summary}</p>
+            <RevisionDetails
+              key={nodeKey(selected)}
+              node={selected}
+              run={run}
+            />
             <div className="timeline-measure">
               <strong>
                 Measured change vs{" "}
@@ -410,7 +422,9 @@ function Timeline({
               fullWidth
               size="xs"
               onClick={() =>
-                navigate(ehrUrl(selected.program, patient, selected.persona))
+                navigate(
+                  ehrUrl(selected.program, selected.persona, selected.day),
+                )
               }
             >
               Open this revision
@@ -439,7 +453,6 @@ function Timeline({
 export function Browse() {
   const query = new URLSearchParams(window.location.search);
   const [catalog, setCatalog] = useState<Catalog>();
-  const patient = "";
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [run, setRun] = useState<RunData>();
   const [verdicts, setVerdicts] = useState<Verdicts>({});
@@ -551,7 +564,8 @@ export function Browse() {
           <>
             <div className="browse-context">
               <span>
-                Choose a role view, then find the patient inside the EHR.
+                Choose a chart day on the timeline. Select a patient inside the
+                EHR.
               </span>
               {run?.manifest.ehr.mode === "fake" && (
                 <span className="browser-badge warning">
@@ -562,17 +576,9 @@ export function Browse() {
             {runId && !run && !runError ? (
               <p role="status">Loading recorded deployments…</p>
             ) : (
-              <Timeline
-                catalog={catalog}
-                run={run}
-                verdicts={verdicts}
-                patient={patient}
-              />
+              <Timeline catalog={catalog} run={run} verdicts={verdicts} />
             )}
-            <div
-              className="browse-lower"
-              style={{ gridTemplateColumns: "1fr" }}
-            >
+            <div className="browse-lower">
               <section
                 className="browser-panel program-panel"
                 aria-labelledby="program-title"
@@ -580,7 +586,7 @@ export function Browse() {
                 <div className="browser-section-heading">
                   <ClinicalIcon name="lock" />
                   <h2 id="program-title">Certified role views</h2>
-                  <span>Patient selection opens inside each view</span>
+                  <span>Open at the role’s landing activity</span>
                 </div>
                 <div className="program-grid-scroll">
                   <table className="program-grid">
@@ -643,7 +649,6 @@ export function Browse() {
                                       component="a"
                                       href={ehrUrl(
                                         program,
-                                        patient,
                                         persona === "vendor" ? "P1" : persona,
                                       )}
                                       size="compact-xs"
@@ -689,7 +694,7 @@ export function Browse() {
                                   />
                                   <Button
                                     component="a"
-                                    href={ehrUrl(latest, patient)}
+                                    href={ehrUrl(latest)}
                                     size="compact-xs"
                                     title={latest.path}
                                   >
@@ -746,7 +751,7 @@ export function Browse() {
                         component="a"
                         size="compact-xs"
                         variant="outline"
-                        href={ehrUrl(program, patient)}
+                        href={ehrUrl(program)}
                         title={program.path}
                       >
                         Open example
@@ -796,10 +801,7 @@ export function Browse() {
                               className="recorded-revision-card"
                               key={program.path}
                             >
-                              <a
-                                href={ehrUrl(program, patient)}
-                                title={program.path}
-                              >
+                              <a href={ehrUrl(program)} title={program.path}>
                                 rev {program.version}
                                 {program.deployed ? " · deployed" : ""}
                               </a>

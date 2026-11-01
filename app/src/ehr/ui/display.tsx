@@ -69,32 +69,39 @@ export function DisplayValue({ value }: { value: string }) {
 
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
-  const status = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
+  const status = (value.split(/[·\n]/)[0] ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]/g, " ");
   if (/^(l|low)$/.test(status)) return "blue";
   if (/^(h|high)$/.test(status)) return "red";
   if (/^(hh|ll|a|abnormal)$/.test(status)) return "red";
-  if (/^(critical|urgent|stat|overdue)(?:$|\s)/.test(status)) return "red";
+  if (/^(critical|urgent|stat|overdue|rejected)(?:$|\s)/.test(status))
+    return "red";
   if (
-    /^(signed|reviewed|complete|completed|given|done|results? available|report available)(?:$|\s)/.test(
+    /^(signed|final|certified|reviewed|complete|completed|given|done|results? available|report available)(?:$|\s)/.test(
       status,
     )
   )
     return "green";
   if (
-    /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on-hold|roomed|arrived)(?:$|\s)/.test(
+    /^(due|due-soon|due soon|unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on hold|roomed|arrived)(?:$|\s)/.test(
       status,
     )
   )
     return "yellow";
   if (
-    /^(in progress|in-progress|due|booked|ordered|requested|unread)(?:$|\s)/.test(
+    /^(in progress|in-progress|booked|ordered|requested)(?:$|\s)/.test(status)
+  )
+    return "blue";
+  if (
+    /^(in basket|in-basket|cosign|cosign required|awaiting cosign|unread|refused|declined)(?:$|\s)/.test(
       status,
     )
   )
-    return "blue";
-  if (/^(refused|declined)(?:$|\s)/.test(status)) return "violet";
+    return "violet";
   if (
-    /^(future|scheduled|stopped|discontinued|cancelled|canceled|not given|not-done|not due|not charted|not documented)(?:$|\s)/.test(
+    /^(draft|future|scheduled|stopped|discontinued|cancelled|canceled|not given|not done|not due|not charted|not documented)(?:$|\s)/.test(
       status,
     )
   )
@@ -105,11 +112,36 @@ export function severityTone(severity: string): ClinicalTone {
   // The legacy wire supplies tiers here. Color is a presentation cue; it never
   // changes clinical severity text, modality, acknowledgment or enabled state.
   if (severity === "interruptive") return "red";
-  if (severity === "removable") return "yellow";
+  if (/^(removable|passive|fyi|notice|information|info|bpa)$/i.test(severity))
+    return "yellow";
   if (/^(severe|critical|error|high|danger)$/.test(severity.toLowerCase()))
     return "red";
   if (/^(warning|caution|moderate)$/.test(severity.toLowerCase()))
-    return "yellow";
+    return "orange";
   if (/^(success|successful)$/.test(severity.toLowerCase())) return "green";
+  return "blue";
+}
+
+/** Header accents describe the supplied section type, never a clinical finding. */
+export function sectionTone(label: string): ClinicalTone {
+  if (/allerg|precaution|critical|alert/i.test(label)) return "red";
+  if (
+    /in basket|message|cosign|note|history|instruction|education/i.test(label)
+  )
+    return "violet";
+  if (
+    /medication|\bmar\b|pharmacy|immuniz|census|worklist|flowsheet|ward/i.test(
+      label,
+    )
+  )
+    return "green";
+  if (/result|lab|imaging|triage|acuity|track board|emergency/i.test(label))
+    return "orange";
+  if (
+    /order|assessment|plan|disposition|procedure|surg|operative|or schedule/i.test(
+      label,
+    )
+  )
+    return "yellow";
   return "blue";
 }

@@ -7,11 +7,16 @@ import type {} from "../src/ehr/offline";
 import { readFileSync } from "node:fs";
 
 test("populated native clinician screen review", async ({ page }) => {
-  test.skip(!process.env.PUNCH_SHOTS, "Opt-in native screen review");
+  test.skip(
+    !process.env.PUNCH_SHOTS && !process.env.COLOR_DENSITY_SHOTS,
+    "Opt-in native screen review",
+  );
   await page.setViewportSize({ width: 1440, height: 900 });
-  const folder = `shots/realism/punch/${process.env.PUNCH_SHOTS}/populated`;
+  const folder = process.env.COLOR_DENSITY_SHOTS
+    ? `shots/realism/color-density/${process.env.COLOR_DENSITY_SHOTS}`
+    : `shots/realism/punch/${process.env.PUNCH_SHOTS}/populated`;
   mkdirSync(folder, { recursive: true });
-  for (const [persona, screen, name] of [
+  const screens = [
     ["P1", "home", "P1-schedule"],
     ["P1", "w1Orders", "P1-orders"],
     ["P2", "w3TrackBoard", "P2-track-board"],
@@ -21,11 +26,25 @@ test("populated native clinician screen review", async ({ page }) => {
     ["P4", "w5Growth", "P4-growth"],
     ["P5", "w6Schedule", "P5-OR-schedule"],
     ["P5", "w6OpNote", "P5-op-note"],
-  ]) {
-    const ui = uiScreenSchema.parse(
-      JSON.parse(readFileSync(`src/fixtures/punch/${name}.json`, "utf8")),
+  ];
+  if (process.env.COLOR_DENSITY_SHOTS)
+    screens.push(
+      ["P4", "w5Rooming", "P4-rooming"],
+      ["P1", "w1Sign", "P1-alert"],
     );
-    expect(ui.screen ?? screen, `${persona} source identity`).toBe(screen);
+  for (const [persona, screen, name] of screens) {
+    const ui = uiScreenSchema.parse(
+      JSON.parse(
+        readFileSync(
+          name === "P1-alert"
+            ? "src/fixtures/ui/p1-alert.json"
+            : `src/fixtures/punch/${name}.json`,
+          "utf8",
+        ),
+      ),
+    );
+    if (name !== "P1-alert")
+      expect(ui.screen ?? screen, `${persona} source identity`).toBe(screen);
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await page.evaluate((ui) => window.renderUi(ui), ui);

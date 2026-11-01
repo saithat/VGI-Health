@@ -1,5 +1,122 @@
 # Cross-lane change requests
 
+## RULE CONFORMANCE findings — owner-side held-out evaluation (2026-11-01)
+
+The behavioral suite is [conformance/](../../conformance/README.md). It uses the
+native interpreter, not checker verdicts as expected outcomes. The separate
+[checker audit](../../conformance/results/certifications.json) freshly accepted
+all 15 current role canonicals. No spec, property, interpreter or deployment gate
+was changed by this lane. Exact-program cases, adversarial runtime copies and
+FHIR adapter probes are labeled separately. Run totals and per-revision traces
+are in [run1-P3/conformance.json](../../runs/run1-P3/conformance.json).
+
+### CONFORMANCE-5 → core/content/app: a deny decision bypasses the reason via the approval action
+
+**Trigger and attempt.** A metformin refill request; complete the ordinary refill
+protocol, quantity, refills, pharmacy and reviews. Set `refillDecision = deny`,
+leave `refillDenyReason` absent, then click the semantic `approveRefill` action.
+**Expected:** every route that effects a denial requires its reason.
+**Observed:** `approveRefill` enters `State.commits` with a confirmed deny decision
+and no denial reason. The supplemental
+[23-target evaluation](../../conformance/results/refill-denial-run1-P3.json)
+finds this on all six current P1/P4 canonicals; other personas have no refill
+workflow and are explicitly not applicable.
+
+This is not merely a misleading action label. `app/src/data/commitMapper.ts`,
+the `approveRefill` deny/denied branch, calls `finishTask`, which records the deny
+decision as the completed Task's business status. The native suite does not
+execute database persistence, but this is the actual mapper route it would use.
+The core requires the reason on `denyRefill`, while its `approveRefill` entry
+lacks the full-profile approve/modify-only value constraint. The separate
+dedicated-denial omission tests pass while this alternate route fails.
+
+**Request:** retain the denial reason across action routes, or constrain the
+approval action to approve/modify and preserve the dedicated, reasoned denial
+path. Ordinary approvals and legitimate denials must both remain completable.
+No existing failed outcome is replaced by this additional regression scenario.
+
+### CONFORMANCE-1 → core/check/content: CURES exemptions validate neither membership nor eligibility
+
+**Trigger and attempt.** A Schedule II oxycodone order in a pre-op encounter,
+5 mg every six hours, zero refills, a documented surgical procedure at a general
+acute-care facility. Suppress only the CURES report panel in a program copy, then
+human-enter either `surgery-7-day` with an eight-day directed supply or the code
+`invented-exemption`. Complete the ordinary entries and acknowledge actual alerts.
+
+**Expected:** neither attempt waives CURES; the eligible seven-day surgical
+scenario is the positive control. **Observed:** both bad exemptions permit
+`signOrders`. The [separate probe check](../../conformance/results/cures-probe-check.json)
+also returns `ok` for the P1 v3 program with only CURES report panels removed.
+The suite does not claim the modified program carries the original certificate.
+
+`Core/Guard.lean:waived` accepts any confirmed, nonempty human value. The core
+`ValueKind.coded` name supplies no terminology-membership or facility/procedure/
+supply eligibility check. This is the existing CR-11 limitation, now exercised
+behaviorally by `cures.unknown-exemption` and `cures.procedure-eight-day`.
+**Request:** encode the approved exemption value set and the modeled eligibility
+predicates, with the required clinical/facility/supply evidence, and retain the
+legitimate seven-day path. This is a rule-modeling gap, not a contradiction of a
+theorem that only promises the current simplified waiver semantics.
+
+### CONFORMANCE-2 → FHIR/core/shell: mixed-patient chart input is not defensively scoped
+
+**Trigger and attempt.** Open patient B with a Bundle containing B's Patient and
+weight plus one active AllergyIntolerance explicitly referencing patient A. Its
+unique text is `HELDOUT_A_PRIVATE_ALLERGY`. Call native `ehr facts`, then initialize
+the actual program for B. **Expected:** reject the mixed chart or exclude A's
+clinical resource. **Observed:** B's projected `display.allergies` contains A's
+allergy (`patient-switch.chart-scoping`). The original certified program is used
+unchanged; this is labeled an `adapter-probe`.
+
+`Render/Fhir.lean:parseBundle` selects the first Patient and passes the entire
+resource list to `factsOf`/`displayOf`; allergy projection does not check the
+resource's patient reference. **Request:** scope clinical chart resources to the
+selected patient before producing facts/display rows, while retaining intentional
+multi-patient worklist payloads separately. Test shell selection/race behavior
+after patient selection lands. This probe does **not** demonstrate that today's
+live loader actually returns a mixed bundle. Native `init` independently passes
+the clean A→B reset scenario: captures, acknowledgements, commits and review
+receipts do not carry over.
+
+### CONFORMANCE-3 → core/content: linked dosing weight can retain a superseded source
+
+`entry.signOrders.dosingWeight` exposes a linked copy created while today's
+record-derived weight is still unconfirmed. Entering the source weight later
+does not refresh or confirm that existing copy. The configured `linked:weight`
+field therefore does not immediately carry the newly confirmed source value.
+This first observation alone is a confirmation/link behavior gap, not proof of
+an unsafe commit.
+
+`weight.linked-source-refresh` and the [stronger native reproduction](../../conformance/results/linked-weight-reproduction.json)
+corrects the source to 20 kg after a 70 kg linked copy was created, explicitly
+confirms the existing linked copy, completes the remaining ordinary fields, and
+signs the original accepted P1 v3 program. It records the final source and linked
+captures and every concrete event. `prefillField` refuses to revisit an existing
+capture; `enterCore` updates only the entered element; `confirmCore` confirms the
+old value without revalidating it against its declared linked source.
+
+**Request:** define and enforce the intended source-version/value behavior for
+linked captures when a source changes. Invalidate or refresh stale dependents,
+and ensure a late source correction has a legitimate completing path. Preserve
+both the declared linkage and required-unit checks. No owner-owned rule was
+weakened to make this case pass.
+
+### CONFORMANCE-4 → product/core: an empty medication episode can be signed
+
+`workflow.empty-medication-signing` enters the matching patient-ID re-entry,
+confirmed kg weight and dosing weight, then attempts `signOrders` before any
+drug is selected. **Expected workflow behavior:** refuse the empty medication
+episode. **Observed:** `signOrders` is added to `State.commits` on the unchanged
+accepted program. `entryMet` quantifies per-line requirements over `orderLines`,
+which is empty until a drug capture exists.
+
+This expectation is deliberately stricter than the encoded per-line contract;
+the result does not establish an unsafe MedicationRequest write. **Request:**
+decide whether empty signing should be a no-op or a refused action, and express
+that workflow contract without blocking legitimate imaging/procedure-only
+signing. The ordinary drug-entry case separately instantiates a medication line
+and verifies that replacing its drug with an empty code is refused.
+
 ## SURG → presentation / shell: perioperative views (2026-11-01)
 
 W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
@@ -2371,3 +2488,28 @@ To canonical/presentation lanes, against main `81691fb`:
 
 All changes here are presentation only; no FHIR facts, clinical requirements,
 permissions, human-only flags, input values or commit/review rules change.
+
+### Shell → content: in-EHR patient opening integration (1 Nov, 07:53)
+
+The browser now opens a persona/program/day only. It has no external patient
+picker and emits no patient query parameter. Timeline `day=0..10` uses the
+committed world calendar (`chartDateForTimelineDay`); it never selects a patient.
+The replay inspector's external patient switcher is also removed.
+
+Please land the declared `openPatient` action and replay/live patient-loading
+transport on main. The shell will merge it and exercise picking different rows
+inside Schedule / Track Board / Unit Census / OR Schedule. Keep the initial
+landing activity and list-versus-chart banner/Chart Review placement semantic;
+the painter must not infer list mode from screen-title strings or suppress source
+controls. Historical recorded programs remain immutable: please specify their
+supported patient-opening path when they lack the new action. No browser-side
+patching of archived programs is authorized.
+
+Follow-up after reading the in-progress Workspace integration: the
+`patientSelection` opt-in deliberately preserves old program behavior. The owner
+also requires historical revision nodes to start at a list with in-EHR patient
+selection. Frozen run1-P3 programs omit that flag, so removing the external picker
+alone leaves those historical revisions without a patient-changing path. Please
+provide a proof-covered workspace entry mode for historical programs without
+rewriting their recorded JSON/certificates. The shell will not inject the flag or
+invent React-only patient controls.

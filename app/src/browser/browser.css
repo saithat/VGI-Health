@@ -160,7 +160,7 @@
 }
 .timeline-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 248px;
+  grid-template-columns: minmax(0, 1fr) 320px;
 }
 .timeline-canvas {
   position: relative;
@@ -389,7 +389,7 @@
 }
 .browse-lower {
   display: grid;
-  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 16px;
   margin: 18px 0;
@@ -621,7 +621,7 @@
     grid-row: span 3;
   }
   .browse-lower {
-    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
   .program-grid th,
   .program-grid td {
@@ -772,3 +772,25 @@
 .recorded-revisions > strong {
   flex-basis: 100%;
 }
+.revision-inspection { margin: 12px 0; font-size: 12px; line-height: 17px; }
+.revision-inspection section + section { border-top: 1px solid var(--clinical-border); margin-top: 10px; padding-top: 8px; }
+.revision-inspection h4 { margin: 0 0 5px; font-size: 13px; }
+.revision-diff-list { max-height: 290px; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--clinical-border); border-radius: 3px; }
+.revision-diff-list article { padding: 6px; }
+.revision-diff-list article + article { border-top: 1px solid var(--clinical-border); }
+.revision-diff-list dl { margin: 5px 0 0; }
+.revision-diff-list dl > div { padding: 4px 5px; border-left: 3px solid var(--clinical-gray-ink); background: var(--clinical-gray-tint); }
+.revision-diff-list dl > div + div { border-left-color: var(--clinical-green-ink); background: var(--clinical-green-tint); margin-top: 4px; }
+.revision-diff-list dt { font-weight: 650; }
+.revision-diff-list dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+.revision-inspection summary { cursor: pointer; color: var(--clinical-primary); margin-top: 6px; }
+.revision-inspection pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; font-size: 12px; }
+.revision-rejected { padding-left: 17px; max-height: 240px; overflow: auto; }
+.revision-rejected > li { margin-bottom: 8px; }
+.revision-rejected b { color: var(--clinical-red-ink); }
+.revision-recheck { padding: 8px; background: var(--clinical-yellow-tint); border: 1px solid var(--clinical-yellow-ink); }
+
+.revision-inspection { grid-column: 1 / -1; }
+.revision-check-result { padding: 5px 6px; border-left: 3px solid var(--clinical-yellow-ink); background: white; }
+.revision-check-result[data-check-status="pass"] { color: var(--clinical-green-ink); border-left-color: var(--clinical-green-ink); }
+.revision-check-result[data-check-status="fail"] { color: var(--clinical-red-ink); border-left-color: var(--clinical-red-ink); }

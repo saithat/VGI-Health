@@ -1,3 +1,4 @@
+import { CURRENT_RELEASE } from "./core/currentRelease";
 import { worldWorkDate } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
@@ -115,8 +116,10 @@ async function liveProgram(
 }> {
   if (baseline)
     return {
-      spec: await readArtifact("/releases/v3/spec.json"),
-      program: await readArtifact(`/releases/v3/personas/${persona}.json`),
+      spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
+      program: await readArtifact(
+        `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
+      ),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
@@ -133,8 +136,10 @@ async function liveProgram(
     };
   }
   return {
-    spec: await readArtifact("/releases/v3/spec.json"),
-    program: await readArtifact(`/releases/v3/personas/${persona}.json`),
+    spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
+    program: await readArtifact(
+      `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
+    ),
   };
 }
 

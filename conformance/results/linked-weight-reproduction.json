@@ -1,0 +1,859 @@
+{
+  "case": "Confirmed linked dosing weight can retain a superseded source",
+  "binarySha256": "a8d7b3d83142d8e719e247868dc1d888690f606d0a016d7a38fc7bac53ba925d",
+  "programPath": "releases/v3/personas/P1.json",
+  "specPath": "releases/v3/spec.json",
+  "programSha256": "1d79b4e87f13a4fb9078f4da795a9621a55039c89c3ca9a449724cab483f2dd9",
+  "facts": {
+    "patientId": "heldout-A",
+    "identity": {
+      "initials": "HA",
+      "sex": "F",
+      "ageYears": 42
+    },
+    "allergyVersion": 3,
+    "allergyClasses": [],
+    "medsVersion": 4,
+    "notesVersion": 2,
+    "historyVersion": 1,
+    "currentMedClasses": [],
+    "weightToday": [
+      700,
+      "kg"
+    ],
+    "careGaps": [],
+    "abnormalResult": false,
+    "now": 20000,
+    "receipts": [],
+    "record": [
+      [
+        "appointmentReason",
+        "Held-out visit"
+      ],
+      [
+        "preferredPharmacy",
+        "community"
+      ]
+    ]
+  },
+  "trace": [
+    {
+      "intent": "navigate toward element visitDiagnosis",
+      "event": {
+        "click": {
+          "comp": "home.work.w1Rooming"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Rooming",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element visitDiagnosis",
+      "event": {
+        "click": {
+          "comp": "w1Rooming.nav.w1Exam"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Exam",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter visitDiagnosis",
+      "event": {
+        "enter": {
+          "comp": "w1Exam.visitDiagnosis",
+          "value": {
+            "code": {
+              "c": "J18.9"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Exam",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Exam.nav.w1Orders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Orders.toSign"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Verify",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Verify.continue"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter patientIdReentry",
+      "event": {
+        "enter": {
+          "comp": "w1Sign.patientIdReentry",
+          "value": {
+            "text": {
+              "s": "HA/F/42"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element weight",
+      "event": {
+        "click": {
+          "comp": "w1Sign.nav.w1Rooming"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Rooming",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter weight",
+      "event": {
+        "enter": {
+          "comp": "w1Rooming.weight",
+          "value": {
+            "qty": {
+              "tenths": 700,
+              "unit": "kg"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Rooming",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter weight",
+      "event": {
+        "enter": {
+          "comp": "w1Rooming.weight",
+          "value": {
+            "qty": {
+              "tenths": 200,
+              "unit": "kg"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Rooming",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward linked dosing weight",
+      "event": {
+        "click": {
+          "comp": "w1Rooming.nav.w1Orders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "confirm the already-linked dosing weight after source correction",
+      "event": {
+        "confirm": {
+          "comp": "w1Orders.dosingWeight"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element visitDiagnosis",
+      "event": {
+        "click": {
+          "comp": "w1Orders.nav.w1Exam"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Exam",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter visitDiagnosis",
+      "event": {
+        "enter": {
+          "comp": "w1Exam.visitDiagnosis",
+          "value": {
+            "code": {
+              "c": "J18.9"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Exam",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Exam.nav.w1Orders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Orders.toSign"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Verify",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element patientIdReentry",
+      "event": {
+        "click": {
+          "comp": "w1Verify.continue"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter patientIdReentry",
+      "event": {
+        "enter": {
+          "comp": "w1Sign.patientIdReentry",
+          "value": {
+            "text": {
+              "s": "HA/F/42"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward linked element dosingWeight",
+      "event": {
+        "click": {
+          "comp": "w1Sign.nav.w1Orders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter drug",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.drug",
+          "value": {
+            "code": {
+              "c": "metformin"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter dose",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.dose",
+          "value": {
+            "qty": {
+              "tenths": 5000,
+              "unit": "mg"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter doseUnit",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.doseUnit",
+          "value": {
+            "code": {
+              "c": "mg"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter route",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.route",
+          "value": {
+            "code": {
+              "c": "oral"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter freq",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.freq",
+          "value": {
+            "code": {
+              "c": "bid"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter duration",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.duration",
+          "value": {
+            "code": {
+              "c": "7-days"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter quantity",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.quantity",
+          "value": {
+            "qty": {
+              "tenths": 140,
+              "unit": "none"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter refills",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.refills",
+          "value": {
+            "qty": {
+              "tenths": 0,
+              "unit": "none"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter indication",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.indication",
+          "value": {
+            "text": {
+              "s": "Held-out documented clinical findings"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter pharmacy",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.pharmacy",
+          "value": {
+            "code": {
+              "c": "community"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter substitution",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.substitution",
+          "value": {
+            "code": {
+              "c": "false"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "enter prn",
+      "event": {
+        "enter": {
+          "comp": "w1Orders.prn",
+          "value": {
+            "code": {
+              "c": "false"
+            }
+          }
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward commit signOrders",
+      "event": {
+        "click": {
+          "comp": "w1Orders.toSign"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Verify",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward commit signOrders",
+      "event": {
+        "click": {
+          "comp": "w1Verify.continue"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "attempt signOrders",
+      "event": {
+        "click": {
+          "comp": "w1Sign.commit.signOrders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Sign",
+      "commits": [
+        "signOrders"
+      ],
+      "popup": null
+    }
+  ],
+  "finalState": {
+    "acked": [],
+    "captured": [
+      {
+        "byHuman": false,
+        "confirmed": false,
+        "element": "chiefComplaint",
+        "provenance": "record:appointmentReason",
+        "slot": 0,
+        "value": {
+          "text": {
+            "s": "Held-out visit"
+          }
+        }
+      },
+      {
+        "byHuman": false,
+        "confirmed": true,
+        "element": "dosingWeight",
+        "provenance": "linked:weight",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 700,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "byHuman": false,
+        "confirmed": true,
+        "element": "orderDiagnosis",
+        "provenance": "linked:visitDiagnosis",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "J18.9"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "weight",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 200,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "visitDiagnosis",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "J18.9"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "patientIdReentry",
+        "slot": 0,
+        "value": {
+          "text": {
+            "s": "HA/F/42"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "drug",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "metformin"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "dose",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 5000,
+            "unit": "mg"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "doseUnit",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "mg"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "route",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "oral"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "freq",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "bid"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "duration",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "7-days"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "quantity",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 140,
+            "unit": "none"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "refills",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 0,
+            "unit": "none"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "indication",
+        "slot": 0,
+        "value": {
+          "text": {
+            "s": "Held-out documented clinical findings"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "pharmacy",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "community"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "substitution",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "false"
+          }
+        }
+      },
+      {
+        "byHuman": true,
+        "confirmed": true,
+        "element": "prn",
+        "slot": 0,
+        "value": {
+          "code": {
+            "c": "false"
+          }
+        }
+      }
+    ],
+    "clock": 0,
+    "commits": [
+      "signOrders"
+    ],
+    "currentSlot": 0,
+    "expanded": [
+      "home.activityTabs",
+      "home.work",
+      "w1Rooming.encounterNavigator",
+      "w1Rooming.reason",
+      "w1Rooming.vitalsGroup",
+      "w1Rooming.allergyGroup",
+      "w1Rooming.intake",
+      "w1Rooming.phq",
+      "w1MedRec.encounterNavigator",
+      "w1MedRec.rows",
+      "w1Hpi.encounterNavigator",
+      "w1Hpi.noteTools",
+      "w1Hpi.historyNote",
+      "w1Hpi.systems",
+      "w1Exam.encounterNavigator",
+      "w1Exam.physical",
+      "w1Exam.assessment",
+      "w1Orders.encounterNavigator",
+      "w1Orders.prefList",
+      "w1Orders.dosing",
+      "w1Orders.medication",
+      "w1Orders.dispense",
+      "w1Orders.dx",
+      "w1Orders.controlled",
+      "w1Labs.servicePriorAuth",
+      "w1Labs.encounterNavigator",
+      "w1Labs.labOrder",
+      "w1Verify.encounterNavigator",
+      "w1Sign.encounterNavigator",
+      "w1Sign.signature.signOrders",
+      "w1Close.encounterNavigator",
+      "w1Close.billing",
+      "w1Close.followup",
+      "w1Close.avs",
+      "w2Inbasket.inBasketColumns",
+      "w2Inbasket.encounterNavigator",
+      "w2Inbasket.messages",
+      "w2Inbasket.selected",
+      "w2Result.encounterNavigator",
+      "w2Result.followup",
+      "w2Message.encounterNavigator",
+      "w2Message.templates",
+      "w2Message.draft",
+      "w7Queue.inBasketColumns",
+      "w7Queue.encounterNavigator",
+      "w7Queue.messages",
+      "w7Queue.selected",
+      "w7Review.encounterNavigator",
+      "w7Decision.encounterNavigator",
+      "w7Decision.decisionGroup"
+    ],
+    "history": [
+      "w1Verify",
+      "w1Orders",
+      "w1Sign",
+      "w1Verify",
+      "w1Orders",
+      "w1Exam",
+      "w1Orders",
+      "w1Rooming",
+      "w1Sign",
+      "w1Verify",
+      "w1Orders",
+      "w1Exam",
+      "w1Rooming",
+      "home"
+    ],
+    "receipts": [],
+    "screen": "w1Sign",
+    "tabSel": []
+  },
+  "sourceWeight": {
+    "byHuman": true,
+    "confirmed": true,
+    "element": "weight",
+    "slot": 0,
+    "value": {
+      "qty": {
+        "tenths": 200,
+        "unit": "kg"
+      }
+    }
+  },
+  "linkedDosingWeight": {
+    "byHuman": false,
+    "confirmed": true,
+    "element": "dosingWeight",
+    "provenance": "linked:weight",
+    "slot": 0,
+    "value": {
+      "qty": {
+        "tenths": 700,
+        "unit": "kg"
+      }
+    }
+  },
+  "checker": "Original canonical accepted in certifications.json; no program or spec mutation"
+}

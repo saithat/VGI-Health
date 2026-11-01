@@ -111,3 +111,8 @@ export async function prepareWorldChart(
     : undefined;
   return { bundle: { ...bundle, entry }, worldContext };
 }
+
+/** Timeline days follow the committed simulation calendar, including weekends. */
+export function chartDateForTimelineDay(day: number, fallback: string): string {
+  return dates[day === 0 ? 0 : day - 1] ?? fallback;
+}

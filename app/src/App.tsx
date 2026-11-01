@@ -3,6 +3,7 @@ import {
   worldDirectory,
   worldSchedule,
   worldWorkDate,
+  chartDateForTimelineDay,
 } from "./data/worldChart";
 import { keepFocusedTask, selectedRowSource } from "./data/patientDirectory";
 import { clinicianRoleNames } from "./ehr/ui/personas";
@@ -16,7 +17,6 @@ import { createSession } from "./core/session";
 import type { Interp } from "./core/interp";
 import {
   currentProgram,
-  defaultPatient,
   ehrUrl,
   loadCatalog,
   personas,
@@ -122,11 +122,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                       onChange={(event) => {
                         const id = event.currentTarget.value;
                         navigate(
-                          ehrUrl(
-                            currentProgram(catalog, id, program.run),
-                            defaultPatient(catalog, id).id,
-                            id,
-                          ),
+                          ehrUrl(currentProgram(catalog, id, program.run), id),
                         );
                       }}
                     >
@@ -221,7 +217,15 @@ export function App() {
       const release = query.get("release") ?? program.release;
       if (!["v1", "v2", "v3"].includes(release))
         throw new Error("Unknown release");
-      const workDate = query.get("date") ?? (await worldWorkDate());
+      const dayParam = query.get("day");
+      if (dayParam !== null && !/^(?:[0-9]|10)$/.test(dayParam))
+        throw new Error("Unknown chart day");
+      const defaultDate = await worldWorkDate();
+      const workDate =
+        query.get("date") ??
+        (dayParam === null
+          ? defaultDate
+          : chartDateForTimelineDay(Number(dayParam), defaultDate));
       const daySchedule = await worldSchedule(persona, workDate);
       const [interp, spec, source, verdicts] = await Promise.all([
         (interpreter ??= loadWasmInterp()),
@@ -370,10 +374,15 @@ export function App() {
           },
         });
         const canonicalUrl = new URL(
-          ehrUrl({ ...program, release }, "", persona),
+          ehrUrl(
+            { ...program, release },
+            persona,
+            dayParam === null ? undefined : Number(dayParam),
+          ),
           window.location.href,
         );
         canonicalUrl.searchParams.delete("patient");
+        if (query.has("date")) canonicalUrl.searchParams.set("date", workDate);
         if (query.get("inspect") === "1")
           canonicalUrl.searchParams.set("inspect", "1");
         if (query.get("audit") === "buttons")
