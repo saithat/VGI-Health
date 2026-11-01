@@ -59,7 +59,7 @@ test("surgical live review keeps readable receipts and the saved record binding"
     );
     await expect(
       page.getByRole("banner", { name: "Patient banner", exact: true }),
-    ).toContainText("AMB");
+    ).toContainText("Office Visit");
     await expect(
       page.getByRole("banner", { name: "Patient banner", exact: true }),
     ).not.toContainText("Preoperative chart review");
@@ -150,7 +150,7 @@ test("normal surgical clinic keeps technical save controls out of the patient wo
     .click();
   await expect(
     page.getByRole("banner", { name: "Patient banner", exact: true }),
-  ).toContainText("AMB");
+  ).toContainText("Office Visit");
   await page
     .getByRole("button", { name: "Mark allergies reviewed", exact: true })
     .click();

@@ -170,3 +170,48 @@ replace generic code prompts. Empty info renders as a named accessibility note
 with one short line; an empty allergy list is not an NKA assertion. Adjacent
 navigation actions form bordered bars in their supplied order. Clinical Inspector
 chrome requires the explicit `inspect=1` query parameter.
+
+## Meaningful color and production density — 1 Nov, owner review
+
+This section supersedes the earlier chrome and spacing targets. The application
+bar is dark navy/teal `#183D48` (white text); white work surfaces and neutral
+`#F0F3F4` storyboard prevent a uniformly blue workspace. Source navigation becomes
+a compact, wrapping activity toolbar on desktop. Every source destination remains
+visible, in source/keyboard order. Search, fields and clinical actions remain real
+semantic controls. Small rounded tab corners follow the supplied Epic reference.
+
+| Meaning | Ink / tint | Additional signal |
+| --- | --- | --- |
+| Recorded allergy, interruptive alert, overdue, rejected, high/critical result | `#9C2833` / `#FCECEE` | Allergy/alert text, overdue/rejected word, H/critical flag; abnormal values bold |
+| Warning / caution; results section accent | `#94400B` / `#FFF0E4` | Warning text or section heading |
+| Passive FYI/BPA notice; pending, needs action, held, due soon | `#825300` / `#FFF3D6` | Notice/status text; no inferred timing |
+| Signed, final, certified, given | `#256348` / `#EAF5EE` | Explicit source status |
+| Low result / ordinary navigation | `#245A81` / `#E8F1F8` | L flag / named destination |
+| In Basket, cosign, notes/history section | `#65448B` / `#F1ECF7` | Folder/cosign status or section title |
+| Draft, cancelled, future/stopped | `#526171` / `#EDF0F3` | Explicit source status |
+
+ESI 1–5 retain their numbers and use red, orange, yellow, green, blue respectively.
+Recorded allergies use a filled red banner badge with white text; unknown allergy
+status stays amber and explicit NKA stays neutral. No absent allergy list becomes
+NKA. Selected/current rows use a blue tint and solid edge only when an explicit
+selection attribute is supplied; hover is distinct and never asserts selection.
+Section and activity accents follow their supplied clinical names (medications
+green, results orange, notes/history purple, orders/plan amber), never a guessed
+clinical state. Mantine and CSS consume the same tokens; all ink/tint and filled
+pairs are unit-tested at >=4.5:1, with rendered contrast checked separately.
+
+Body and table text is 12–13 px. Ordinary single-line table rows are 23–25 px
+(3 px vertical, 5 px horizontal cell padding); multiline clinical content grows.
+Inputs are 28 px, ordinary buttons >=26 px, scanner fields retain 44 px. Panel
+padding is 5–6 px, gaps 5–6 px; at 1440 px direct fields use four columns and
+section fields wrap at 190 px. The summary rail is 166 px. Nothing is clipped or
+removed to meet a density target. Narrow layouts retain wrapping and all controls.
+The source tree still determines which activities, banner and tabs exist.
+
+References: the owner-provided Epic Hyperspace inpatient screenshot (viewed, not
+copied), [CST ED LaunchPoint](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm),
+[CST MAR statuses](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Statuses_on_the_MAR.htm),
+and [MAR summary](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Medications/MAR_Summary/MAR_Summary_Overview.htm).
+CST uses red overdue tasks and yellow current-time columns; its given/PRN colors
+vary by view. Our green given/amber held/yellow due-soon mapping is the owner's
+explicit VGI convention, not a claim that all vendors use identical colors.

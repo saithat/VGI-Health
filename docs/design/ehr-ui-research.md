@@ -1392,3 +1392,39 @@ deployed-context sample records 2,806 working interactions, 114 explained
 disabled states, zero dead controls and zero errors; its real unsafe agent
 proposal was rejected and the counterexample replayed successfully. Both scopes
 and their exact build identities are preserved separately.
+
+### Shared shell: meaningful color and density (1 Nov owner review)
+
+Viewed the owner-supplied Epic Hyperspace inpatient image locally; no image or
+vendor assets copied. Its useful patterns are a compact toolbar, rounded activity
+tabs, a narrow storyboard, strong allergy/precaution headings and dense cards.
+Fresh references: [CST ED LaunchPoint](https://cstcernerhelp.healthcarebc.ca/Applications/FirstNet/ED_LaunchPoint/ED_LaunchPoint_Overview.htm)
+uses narrow throughput colors, red critical-alert cells, and explicitly recommends
+reducing toolbar rows. [MAR statuses](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/MAR/Statuses_on_the_MAR.htm)
+uses red overdue tasks; [MAR Summary](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Medications/MAR_Summary/MAR_Summary_Overview.htm)
+uses yellow current-time columns. Vendor installations differ: VGI's green given,
+amber held and yellow due-soon statuses follow the owner's requested convention.
+
+The ten before/after pairs in `app/shots/realism/color-density/` use identical,
+immutable native source trees (the nine punch fixtures plus `p1-alert.json`). All
+are 1440×900. These deliberately isolate painter effects; source content issues
+in archived inputs (single-patient lists, social-history problems, surgical
+case/template mismatch) are not concealed or clinically corrected by CSS.
+
+| Screen | Before / after review |
+| --- | --- |
+| P1 Schedule | Smaller rail and rows reveal more source records; chart labels remain readable. The frozen fixture still has a single appointment and a patient banner; list-mode semantics are a content-lane follow-up. |
+| P1 Orders | Colored medication/plan sections and horizontal source navigation free width. Four-column field groups prevent seven squeezed labels across one row. Required fields and preferences remain visible. |
+| P2 Track Board | Compact bed/status columns, orange numbered ESI 2, green returned results. No fabricated urgency or additional beds. |
+| P2 Triage | Orange triage and red allergy headings separate safety review from measurements. The amber pending weight and confirmation remain conspicuous and actionable. |
+| P3 MAR | Red overdue, green given, amber held remain labeled. Medication details wrap compactly within one cell; every dose/route/category/status remains visible. |
+| P3 Flowsheet | Dense time columns and 23–25 px ordinary rows show the observation grid and documentation together. Multiline assessment grows naturally. |
+| P4 Growth | Filled red recorded-allergy banner, green growth heading, compact measurement rows. Curves retain readable right-edge labels; no percentile is inferred. |
+| P5 OR Schedule | Orange schedule and amber case accents; narrower summary and compact rows. The frozen fixture's content limitations are documented rather than hidden. |
+| P5 Op Note | Amber procedure/findings sections, purple note destinations, compact four-column clinical fields. Narrative fields retain readable height. |
+| P1 Interruptive Alert | Strong red modal title with white text; acknowledgment remains modal, visible and keyboard operable. The archived broad navigator wraps and scrolls normally. |
+
+Self-review caught a tall archived toolbar obscuring content during scrolling;
+the desktop navigation now scrolls with the document rather than pinning over
+records. No source control was hidden to solve it. Clinical font minimum remains
+12 px. Source/ARIA equality, text contrast and visibility are checked independently.

@@ -1,3 +1,4 @@
+import { sectionTone } from "./display";
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
 import { useLayoutEffect, useRef } from "react";
@@ -134,6 +135,15 @@ export function PatientBanner({
                         : "red"
                   }
                   variant="light"
+                  data-allergy-state={
+                    allergyDisplay(value) === "Allergies not on file"
+                      ? "unknown"
+                      : /^No Known (?:Drug )?Allergies/.test(
+                            allergyDisplay(value),
+                          )
+                        ? "none"
+                        : "recorded"
+                  }
                   className={`allergy-badge${allergyDisplay(value) === "Allergies not on file" ? " allergy-unknown" : ""}`}
                   size="lg"
                   title={value}
@@ -224,7 +234,12 @@ export function WorkflowNav({
       </Text>
       <div className="workflow-groups">
         {available.map(([group, items]) => (
-          <section key={group} className="workflow-group" aria-label={group}>
+          <section
+            key={group}
+            className="workflow-group"
+            data-section-tone={sectionTone(group)}
+            aria-label={group}
+          >
             <h2 className="nav-group-title">
               <ClinicalIcon
                 name={
@@ -246,6 +261,7 @@ export function WorkflowNav({
                     type="button"
                     aria-current={id === active ? "page" : undefined}
                     className="clinical-nav-link"
+                    data-section-tone={sectionTone(label)}
                     data-comp-id={id}
                     data-event="click"
                     aria-label={label}
