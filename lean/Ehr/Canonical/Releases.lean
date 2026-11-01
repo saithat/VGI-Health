@@ -74,9 +74,14 @@ def withAntibioticDefaults (p : Program) : Program :=
 column, and an always-open MAR indication row. These are additive changes. -/
 def canonicalV2 : Program :=
   let fields := withAntibioticDefaults (withAntibioticFields canonicalV1_1)
-  let summaries := ["w1Sign", "w3Sign", "w5Sign", "w6Sign"].foldl (fun p id =>
-    p.updateScreen id fun s => s.insertAfter (cid id "orders")
-      [table id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
+  let signing := fields.screens.filter fun s => s.components.any fun c => match c.kind with
+    | .button (.commit k) => k == "signOrders" || Specs.V1.issuanceCommits.contains k
+    | _ => false
+  let summaries := signing.foldl (fun p sc => p.updateScreen sc.id fun s =>
+    let anchor := if s.components.any (·.id == cid s.id "orders") then cid s.id "orders"
+      else cid s.id "legal.orderSummary"
+    s.insertAfter anchor
+      [table s.id "antibioticIndications" "abxIndication" "Order indications (per antibiotic line)"]) fields
   { summaries.updateScreen "w4Admin" (fun s => s.insertAfter "w4Admin.dose"
       [panel s.id "antibioticIndication" "abxIndication" "Antibiotic indication"]) with
     version := 3, specVersion := "v2" }

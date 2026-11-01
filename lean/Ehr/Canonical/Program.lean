@@ -1,4 +1,5 @@
 import Ehr.Specs.V1
+import Ehr.Canonical.Rules
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
 import Ehr.Canonical.W3Ed
@@ -47,10 +48,8 @@ def home : Screen :=
 /-- Workflow-scoped passive reminders remain inline on every targeted screen.
 Existing local components retain their ids for regression patches. -/
 def withWorkflowAlerts (s : Screen) : Screen :=
-  let rules := if s.workflow == "W1" then
-      [("careGapsInline", "Care gaps due"), ("duplicateTherapyInline", "Possible duplicate therapy")]
-    else if s.workflow == "W5" then [("immunizationsDueInline", "Immunizations due")]
-    else []
+  let rules := (Specs.V1.specV1.alerts.filter fun a =>
+    a.tier == .passive && a.screens.contains s.workflow).map fun a => (a.id, a.label)
   { s with components := s.components ++ rules.filterMap fun (a, label) =>
       if s.components.any (fun c => match c.kind with | .alert b _ => a == b | _ => false)
       then none
@@ -77,8 +76,8 @@ def canonicalV1 : Program where
   role := .physician
   specVersion := "v1"
   start := "home"
-  screens := ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
-    W5.screens ++ W6.screens ++ W7.screens).map (withRequiredLinks ∘ withWorkflowAlerts)
+  screens := (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
+    W5.screens ++ W6.screens ++ W7.screens)).map (withRequiredLinks ∘ withWorkflowAlerts)
   macros := W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros
 

@@ -2,108 +2,132 @@
 
 ## Content-owned work remaining
 
-**Nothing left.** The owner's CURES correction is complete in `58aac6f`: the
-shared value set now uses `surgery-7-day`, replacing `surgery-5-day`, and the docstrings
-state the nonrefillable seven-day limit and qualifying facility/procedure.
-The other descriptions were checked against `docs/rules/ca-statutes.json`
-and its cited official §11165.4(c) bulk text. Facility administration, the
-general acute care hospital ED, terminally ill hospice patients and the
-timely-access exception now have precise statutory conditions. The separate
-ED buprenorphine branch and other unmodeled cases remain explicitly outside
-the documented subset. No guard or safety property was weakened.
+**Nothing left.** Owner-requested catalog encoding is complete in `387e51c`
+(source rules, canonical support and eight new permanent mutations) and
+`6334088` (release coverage, exports, source map and statistics). Both commits
+were pushed to `origin/lane/content`. Main and `origin/lane/rules-encode` were
+merged first at `c0a6541`.
 
-Human composer-event regressions cover the corrected code in all three
-releases. `ehr cures-exemptions-export` generates the actual shared list at
-`releases/cures-exemptions.json`; existing spec exports contain only its
-value-set name. Membership and exemption eligibility are still core/check
-work in CR-11, not guarantees supplied by these content exports.
+- All **124** `fit: spec-data` catalog rules are represented in v1: CMS 24,
+  Title 22 42, California statutes 23, federal Rx/vaccine 31, entrenched 4.
+  The five modules under `lean/Ehr/Specs/Rules/` contribute the lists v1
+  concatenates. Every new source item has Law/Entrenched labels, citations
+  and catalog ids. Shared encodings carry every citation. `catalog.json`
+  records actual `encodedIn` ids, or an explicit reason for the 264
+  core-feature and 139 out-of-scope rules. It also records pending renderer
+  bindings and dormant Schedule V/GHB branches instead of implying coverage.
+- All previous v1 declarations, requirements, alerts and design rules remain
+  exact prefixes of the new exports. No property or safety rule was changed.
+  The stricter old `naloxoneEducation` flag remains required alongside the
+  new human education-outcome enum; this intentional deviation from the
+  plan's replacement suggestion is documented in CR-15 and the catalog.
+- Canonical content now has 82 screens, 224 elements, 58 infos, 45 commits,
+  grouped expanded artifact/prescription sections and required review panels
+  before commit buttons. Shared service links preserve patient/episode and
+  Back navigation. Fixed order-set rows receive their own prescription fields.
+  Each dedicated medication issuance/authorization inherits all ordinary
+  signing entries, pre-op guards, reviews and signing alerts. Existing friction
+  remains. These are content/visibility declarations, not payload certificates.
+- W7 captures the requested drug and human notScheduleII eligibility before
+  approval, adds a distinct denial action requiring a denial decision/reason,
+  and routes new prescriptions through w7Orders → w7Sign/signOrders. The human
+  attestation is not an automatic determination of legal eligibility.
+- V1_1 imports V1 and V2 imports V1_1. Both `Extends` proofs still use
+  `decide`; `#print axioms` reports only permitted `propext`. No unfinished
+  content proofs. V2 indication captures and sign summaries also cover the new
+  prescribing variants; all new artifact actions have completing human walks
+  in each release, including an old-release-negative/new-release-positive
+  antibiotic example.
+- All 24 permanent seeds are exported and covered by interpreter/structural
+  regressions. New seeds 17–24 remove restraint care-plan, op technique,
+  vaccine-provider address, MAR time and controlled-product strength; hide the
+  signing notice; omit telehealth consent; or default human refill eligibility.
+  Prohibited standing/PRN restraint values also have hard-stop regressions.
+  These are not the check lane's semantic rejection lemmas or certificates.
+- The previous seven-day CURES correction, vaccine/VIS fields, Schedule II
+  zero-refill rule, human signing and all sixteen original seeds remain intact.
 
-Main `95c7c21` was fetched and merged first. It includes the earlier Schedule
-II/source-label work (`ec31352`) and world's matching Schedule II class tags.
+## Reproduction and validation
 
-- `scheduleIIRefillsEntry signOrders` adds a per-line `refills` requirement
-  under `.drugClass "scheduleII"`, with `allowed? := some ["0"]`. No prior
-  requirement was removed. v1.1/v2 inherit it unchanged. Core's actual class
-  spelling is `scheduleII`, not the earlier requested `controlled-II`.
-- Seed 16 confirms its default of three on an otherwise complete controlled
-  order. The guard blocks signing. Its sign screen has no correction route;
-  tests check the absent navigation and ignored out-of-screen entry. Restoring
-  canonical navigation permits a human correction to zero. Mixed-line,
-  new-line-stop, Schedule III/IV exclusion and release-inheritance tests pass.
-- EPCS remains a `shownOnCommit` review with no receipt or waiver, factored as
-  `controlledRxReview`. Seed 15 blocks even after an actual interpreter-created
-  order-summary receipt. Expanding the sign-screen details repairs the display.
-  Interpreter macro-signing prohibition and its T3/T6 basis are cited.
-- Vaccine manufacturer, lot, administering provider, VIS-given attestation and
-  VIS edition date are required before recording. Omission/false-VIS tests
-  block. The edition date is now correctly classified as compliance, not an
-  optional accidental prompt. VIS labels specify before vaccination.
-- All 250 spec docstrings have the owner's source-class labels. Existing scans
-  are Entrenched (Leapfrog BCMA); two identifiers are Entrenched (Joint
-  Commission NPG.01.01.01). Re-entry, second-nurse checks, kg-only weight and
-  v2 indication remain hospital policy. No new guidance/accreditation rules.
-- Citations, release notes, generated statistics, all release/persona exports
-  and permanent seeds are current. No unfinished content proofs. Both concrete
-  `Spec.Extends` proofs still use `decide`; `#print axioms` reports no axioms.
-  They are not the check lane's general T8 theorem.
+From the root, run `python lean/Ehr/Specs/Rules/encode.py`. Then run, sequentially:
+
+```sh
+cd lean
+lake build
+lake check
+lake comparator
+lake exe export-content
+cd ..
+python lean/Ehr/Canonical/export_rules.py
+```
+
+The last script audits every proposed entry (scope, allowed values), every
+review (shownOnCommit/no waiver), item references, release prefix inheritance
+and catalog status against the actual Lean JSON. It regenerates root `STATS.md`,
+`programs/canonical/STATS.md` and the source map in `docs/regulations.md`.
+The older export executable's console message still says 16 seeds; its actual
+export loop writes all 24, which the audit checks.
+
+Validation:
+
+- Full `lake build` passes all canonical, 24-seed, new-artifact and release guards.
+- Final `lake check` passes: the default kernel accepts the complete solution,
+  with only `propext`, `Quot.sound` and `Classical.choice`.
+- Comparator accepts all 18 frozen statements; no statements or properties edited.
+- Both extension theorems and the existing main theorems have axiom audits;
+  no new axioms, sorry, admit or native_decide were introduced.
+- Lean exports round-trip every spec/program. A fresh `/tmp` export plus the
+  audit yields **48 byte-identical artifacts**. Native `ehr spec-export` agrees
+  with all three specs; the separate CURES-code export agrees with its saved file.
+- All **309** new source-item docstrings have source-class and catalog-id labels.
+- App build/lint/tests pass (**90**); agent typecheck/lint/tests pass (**31**);
+  world build/lint/tests pass (**92**). Tests were rerun after regenerating exports.
+- `git diff --check` passes.
+
+Use `pnpm --config.store-dir=/tmp/vgi-content-pnpm-store --filter <pkg> run <script>`.
+Never run two Lake processes at once.
 
 ## Exactly what remains in other lanes
 
-Requests and evidence are in `docs/design/changes-requests.md`.
+The actionable consolidated request is **CR-15** in
+`docs/design/changes-requests.md`; earlier CR-10–14 remain where noted.
 
-- **Agent:** accept `When.drugClass`, preserve `EntryReq.allowed`, and accept
-  `Action.requestPriorAuth` (CR-12). Current exported specs fail parsing at
-  `entries[16].when`; v1.1/v2 programs fail on request buttons, despite all
-  existing agent tests passing. Round-trip actual release/persona exports.
-- **Render/app:** populate `orderSummary` with actual patient, drug, dose,
-  quantity, directions and refills (CR-14). Merged renderer currently falls
-  back to an empty-content message. Also populate actual per-order/FHIR
-  `abxIndication` sign/MAR data (CR-10). Visibility alone is not data fidelity.
-- **World/app/sim:** supply vaccine inventory manufacturer, provider and VIS
-  edition date, and complete statutory dates/provider details in FHIR writes.
-  The captured flag is an attestation, not proof of actual VIS delivery timing.
-  Manual provider entry is supported; no unsupported auto-link was invented.
-- **World/app/sim:** pass true `encounterKind: "preop"` for pre-op episodes
-  (CR-13), so ordinary `signOrders` enforces consent, H&P and anticoagulants.
-- **Core/check:** terminology membership and statutory exemption eligibility
-  (CR-11); nonempty codes alone do not prove membership in `abxIndicationCodes`
-  or `curesExemptionCodes`. Validate procedure/facility, directed supply, no
-  refills, terminal illness and alternate-user availability where applicable.
-  The shared CURES export is content data, not a validated waiver predicate.
-- **Check:** certify the fifteen real persona canonicals and reject all sixteen
-  seeds with replayable counterexamples/required semantic lemmas, preserving
-  workflow-scoped passive targets, enter-once, record-source constraints and
-  allowed values. No production checker exists in this merged worktree.
-  Content regression predicates are not a checker soundness theorem.
-- **WASM/app:** rebuild the interpreter assets with the allowed-value guard;
-  test native/WASM and rendered hard stops for nonzero and mixed-line refills.
-- **Controlled refill adapter boundary:** W7's separate `approveRefill`
-  decision uses `refillRefills` and `medToGive`, not signing order lines. The
-  new per-line rule does not certify that separate decision. An adapter that
-  creates a modified controlled prescription must route through `signOrders`
-  or request an explicit equivalent rule; do not claim full refill compliance.
+- **Render/app:** implement actual live payload bindings for all 13
+  controlledSigning* panels and resultAbnormalFlags, including every selected
+  prescription/result row, actual issue date, full identity, strength/form,
+  directions and DEA details; render the exact legal notice immediately above
+  Sign. The merged `infoContent` still falls back to an empty message for these
+  ids. Existing orderSummary fidelity (CR-14) and actual v2 abxIndication rows
+  (CR-10) also remain. Abstract visibility alone does not establish any of this.
+- **Core/world formulary owners:** introduce correct controlled-V and ghb
+  tags only when actual supported products exist, with mirrored reference data.
+  Today's finite formulary has neither class, so those encoded branches are
+  dormant. Existing Schedule II tags and albuterol caps are already synchronized.
+- **App/world/sim adapters:** map the new CommitSpec ids to exclusive artifact
+  effects and persist every field's FHIR target; supply trusted dates/provider/
+  inventory data; preserve separate refill-denial and prescription-issuance
+  effects. Start/reset a fresh artifact episode for later physical events.
+  Existing captured flags are not proof of all doses, shifts or restraint
+  episodes. ISO labels do not validate dates, deadlines or expiry. Pass true
+  encounterKind=preop in surgical episodes (CR-13).
+- **Core/check:** preserve the guard semantics while considering artifact
+  scoping for currentLineComplete, which currently checks every per-line
+  requirement across commits. Content exposes earliestFillDate and controlled
+  readiness on composers to keep that stricter stop completable. Terminology
+  membership and CURES exemption eligibility still need CR-11 work.
+- **Check:** certify all 15 persona canonicals against the matching release,
+  reject all 24 seeds with replayable counterexamples/semantic lemmas, and
+  preserve human steps, allowed values, source constraints, enter-once and
+  workflow-scoped passive alerts. No production checker exists in this worktree;
+  content does not claim checker soundness, general T8, or certification.
+- **Agent:** preserve drugClass, EntryReq.allowed and requestPriorAuth, then
+  round-trip every actual release/persona export. Current real-release parsing
+  fails at entries[16].when; v1.1/v2 programs fail at prior-auth action kinds,
+  despite the existing 31-test suite passing (CR-12/14). Do not remove constraints
+  or panels to satisfy the older validator.
+- **WASM/app:** rebuild the interpreter assets and exercise the actual expanded
+  specs/programs, native/WASM equivalence, legal hard stops and rendered panels.
 
-Deployment uses `releases/<version>/personas/P1.json` … `P5.json`, matching the
-role; `canonical.json` is an all-workflows authoring template, not a certificate.
-
-## Validation
-
-- `cd lean && lake build`: passes canonical, all sixteen seed, and release guards.
-- `lake check`: passes; permitted axioms only (`propext`, `Quot.sound`,
-  `Classical.choice`), rerun after the CURES correction.
-- `lake comparator`: passes all eighteen frozen statements.
-- `lake exe export-content`: every object round-trips in Lean. A fresh export
-  root produces 39 byte-identical files. Native `ehr spec-export` matches all
-  three saved specs and their exact zero-refill constraint. The separate shared
-  CURES code export matches native output byte for byte and contains the five
-  corrected codes. Its CLI rejects extra arguments.
-- Source-label audit: all 250 spec docstrings labeled; `git diff --check` clean.
-- App build/lint/tests: pass (90 tests).
-- Agent typecheck/lint/tests: pass (31 tests); actual-export schema gaps above.
-- World build/lint/tests: pass (92 tests); main resolved the prior missing
-  Schedule II class tags and full-formulary equality failure.
-
-For the writable pnpm store use
-`pnpm --config.store-dir=/tmp/vgi-content-pnpm-store --filter <pkg> run <script>`.
-Never run two Lake processes at once. Do not weaken rules/tests to fix an
-owning-lane integration mismatch.
+`releases/<version>/personas/P1.json` … `P5.json` are the deployment candidates.
+The all-workflows canonical is an authoring template; none of these exports is
+a production checker certificate.
