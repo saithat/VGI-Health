@@ -1,6 +1,6 @@
 {"verdict": "ok",
- "time": "2026-11-01T00:55:33Z",
- "specVersion": "v1.1",
- "specHash": "fnv1a64:d32ece0d336ef38b",
- "programHash": "fnv1a64:1ac39e1ff45822c9",
+ "time": "2026-11-01T01:00:59Z",
+ "specVersion": "v2",
+ "specHash": "fnv1a64:1ba021f93a20bfc7",
+ "programHash": "fnv1a64:9fa437a9c37c0a1c",
  "checkerVersion": "check-1"}
