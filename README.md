@@ -401,6 +401,14 @@ use `pnpm install && make run`. The dashboard includes the recorded `run1-P3`
 trajectory; its archived replay preserves the recorded clinical events.
 Use `make run APP_PORT=5187` if the default port is occupied.
 
+A run writes into `runs/<id>/` as it goes. `pnpm publish-partial --run <id>
+--into <id>-live [--watch]` publishes the completed days and nights to a
+separate snapshot. That snapshot holds the replay, the trajectory index with its
+native-vs-WASM check, and the complexity data. The publisher only reads the
+running source. Once the writer has stopped, `--in-place` finalizes the run
+itself. Both modes need `TMPDIR` on the same filesystem as `runs/`, because
+publication is an atomic rename.
+
 See [DEMO](docs/DEMO.md). A clean-clone test (`scripts/clean-clone-test.sh`) clones
 local HEAD, installs and serves it offline. `make wasm-check` checks the committed
 WASM source binding; `make wasm` rebuilds it using the local toolchain.
