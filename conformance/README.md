@@ -86,6 +86,10 @@ for a legitimate workflow fails with “Workflow impossible”. Layout/id mutati
 tests and a native `run-batch` replay verify this behavior. Required workflows
 are fixed per persona independently of the tested layout, so deleting the last
 button cannot silently make a mandatory workflow “not applicable”.
+Passive care-gap/duplicate-therapy rules explicitly target W1, and immunization
+reminders target W5. They do not become ED W3 obligations merely because an ED
+program also has a sign-note action. Workflow applicability is fixed separately
+from control discovery and checked against all 15 reviewed baselines.
 
 ## Evidence boundaries
 

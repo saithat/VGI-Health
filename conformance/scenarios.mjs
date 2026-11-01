@@ -1,5 +1,5 @@
 import { Driver, Failure, assert, field, commit, info, alert } from './driver.mjs';
-import { entries, roles, personaCommits, reviews, linked, orderLine, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
+import { entries, roles, personaCommits, personaWorkflows, reviews, linked, orderLine, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
 
 const hasElement = (target, id) => target.spec.elements.some(e => e.id === id);
 const supports = (target, id) => (personaCommits[target.persona] ?? Object.keys(entries).filter(c => roles[c].includes(target.program.role))).includes(id);
@@ -284,7 +284,8 @@ for (const [id, cm, variant] of [
   ['careGapsInline', 'signNote', { facts: facts({ careGaps: ['screening-due'] }) }],
   ['duplicateTherapyInline', 'signOrders', { facts: facts({ currentMedClasses: ['biguanide'] }) }],
   ['immunizationsDueInline', 'recordImmunization', { facts: facts({ careGaps: ['vaccine-due'] }) }],
-]) add(`alert.passive.${id}`, `A1/A4 passive ${id}`, 'Firing passive alert shown inline; clicking it never opens a popup', t => supports(t, cm), f => {
+]) add(`alert.passive.${id}`, `A1/A4 passive ${id}`, 'Firing passive alert shown inline on its declared W1/W5 workflow; clicking it never opens a popup', t =>
+  supports(t, cm) && (personaWorkflows[t.persona] ?? t.program.screens.map(s => s.workflow)).includes(id === 'immunizationsDueInline' ? 'W5' : 'W1'), f => {
   const ctx = context(cm, variant), d = f.prefix(ctx); d.atCommit(cm);
   // The declaration targets W1/W5; inspect every reachable screen in that
   // workflow, not an ID or a label in the current canonical layout.

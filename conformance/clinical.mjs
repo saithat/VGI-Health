@@ -36,6 +36,8 @@ export const personaCommits = { P1: ['signOrders', 'signNote', 'ackResult', 'app
   P2: ['signOrders', 'signNote', 'disposition'], P3: ['administerMed', 'chartAssessment'],
   P4: ['signOrders', 'signNote', 'recordImmunization', 'ackResult', 'approveRefill', 'denyRefill'],
   P5: ['signOrders', 'signNote', 'ackResult', 'signOpNote', 'discharge'] };
+export const personaWorkflows = { P1: ['W1', 'W2', 'W7'], P2: ['W3'], P3: ['W4'],
+  P4: ['W2', 'W5', 'W7'], P5: ['W1', 'W2', 'W6'] };
 export const reviews = {
   signOrders: ['allergyList', 'currentMeds', 'doseCheck', 'curesReport', 'orderSummary', 'anticoagulantList'],
   ackResult: ['resultDetail', 'resultTrend'], approveRefill: ['relevantLabs', 'lastVisit', 'adherence'],
