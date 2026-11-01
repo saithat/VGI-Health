@@ -1,4 +1,5 @@
 import Ehr.Check.Rules
+import Ehr.Props.Navigation
 import Ehr.Check.ReplayContext
 
 /-!
@@ -45,6 +46,20 @@ structure Rule where
   property : String
   passes : Bool
   explain : Unit → Option Finding
+
+/-- Explain D5 using exactly the renderer's navigation groups and labels. -/
+def navigationFinding (p : Program) : Option Finding :=
+  let nav := Render.uiNav p
+  if ¬ (nav.map (·.1)).Nodup then
+    some { property := "navigation", message := "D5: navigation group labels are not unique" }
+  else if 12 < nav.length then
+    some { property := "navigation", message := s!"D5: navigation has {nav.length} groups (maximum 12)" }
+  else match nav.find? (fun g => decide (¬ (g.2.map (·.2)).Nodup ∨ 12 < g.2.length)) with
+    | some g => some { property := "navigation", message :=
+        s!"D5: navigation group {g.1} has duplicate labels or {g.2.length} entries (maximum 12)" }
+    | none =>
+      (p.screens.find? fun sc => !nav.any (fun g => g.2.any (·.1 == sc.id))).map fun sc =>
+        { property := "navigation", message := s!"D5: screen {sc.id} is absent from navigation", screen? := some sc.id }
 
 /-- The first component (in screen order) for which `bad` gives a message. -/
 def findComp (prog : Program) (bad : Screen → Component → Option String) :
@@ -338,7 +353,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           let moved := movedTags p prog
           some { property := "budgets"
                  message := s!"{moved.length} components moved since the previous version (budget {spec.design.stabilityBudget}): {", ".intercalate moved}" }
-        | none => none }
+        | none => none },
+    { property := "navigation", passes := decide (NavigationSane prog)
+      explain := fun _ => navigationFinding prog }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

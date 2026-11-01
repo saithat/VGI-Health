@@ -58,3 +58,7 @@ D5 is intentionally **not** a universal renderer theorem: `NavSane spec prog`
 is decidable and ready for checker integration. P1 currently fails the 12-entry
 per-group limit; content/checker integration is requested, with no weakened rule.
 No unfinished render proof remains.
+
+D5: `accepted_navigation` proves unique labels, twelve-group/item limits and
+no orphan screen on the actual `Render.uiNav` tree. It is an additional
+Comparator challenge, independent of unfinished general T1.

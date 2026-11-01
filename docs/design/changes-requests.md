@@ -1229,3 +1229,12 @@ has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
 `programs/bad/` now contains 24. Please update that source test to the current
 24-seed catalog (or derive the reviewed catalog expectation). Render did not
 edit app-owned tests or reduce catalog scope. The other 89 app tests pass.
+
+CHECK-D5 update after merging b26f772: renderer `uiNav` is now available, and
+check's `NavigationSane`/`accepted_navigation` use that exact function. The rule
+is enabled; the earlier missing-function dependency is resolved. Content/render
+must fix the actual navigation failures listed below; the twelve-entry limit
+and duplicate-label checks are not relaxed.
+- All five personas, all three releases (same screen inventory): workflow `W1` has 14 entries.
+- All five personas, all three releases (same screen inventory): workflow `W3` has 17 entries.
+- All five personas, all three releases (same screen inventory): workflow `W6` has 18 entries.

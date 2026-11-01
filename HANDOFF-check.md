@@ -58,27 +58,32 @@ features have been merged; main was fetched again after those features landed.
    tested but still needs the intended semantic stranded-refills proof.
    All eight new legal seeds have mutation-specific negative implementations.
 
-6. **App verdict generation / stale assertion (app ownership).** The app's
+6. **App verdict generation (app ownership).** The app's
    `pnpm --filter app verdicts` script omits required `--canonical`; it also
    incorrectly labels exit-1 violation JSON as a checker failure. The exact
-   minimal patch is in changes-requests.md. A separate async question requests
-   an ownership exception for those fixes and the stale 16→24 bad-count test.
-   Do not assume silence is approval. The unchanged upstream app verdict file remains a placeholder. The exact script
-   run produced 70 invocation failures (saved in
-   `/tmp/vgi-check-script-failure-verdicts.json`); those were not published as
-   verdicts. Regenerate through the corrected real script after approval/owning-lane repair.
+   minimal patch is in changes-requests.md. The async ownership-exception
+   question remains pending; do not assume silence is approval. The stale
+   16→24 assertion was fixed upstream and all 129 updated app tests now pass.
+   The unchanged app verdict file remains a placeholder. The script's 70
+   invocation failures were saved in `/tmp/vgi-check-script-failure-verdicts.json`
+   and were not published as verdicts. Regenerate through the corrected real
+   script after approval/owning-lane repair.
 
-7. **New D5 navigation integration.** Latest main adds semantic UI tree/D5
-   documentation, but the current renderer/types do not yet expose its actual
-   grouped navigation. Check must validate that actual tree (unique labels,
-   12-group/item limits, no orphans), not a separate guessed navigation model.
-   See CHECK-D5.
+7. **D5 canonical navigation fixes (content/render).** The checker integration
+   is now complete: `NavigationSane` and `accepted_navigation` inspect the real
+   `Render.uiNav`, with a strict rule for unique labels, twelve-group/item
+   limits and no orphan screens. Current canonical groups W1/W3/W6 contain
+   14/17/18 screens respectively. Fix grouping/presentation without relaxing D5.
+   New main also supplies optional source-only component definitions; runtime
+   `use`/expansion integration is still a core pending patch, not something
+   check claims to support before its owning API lands.
 
 ## Completed in this continuation
 
 - T8 old-obligations projection, directly from actual checker acceptance:
   `T8_checked_old_obligations`, `T8_v1_to_v1_1`, `T8_v1_1_to_v2`.
   Does not assume unfinished T1. `T8_unqualified_false` is retained.
+- D5 acceptance soundness over the actual semantic renderer navigation.
 - Core guard/clinical-alert safety proof compatibility and expanded contract
   safety, plus actual human-entry construction lemmas.
 - Seeds 8/9 timeout fix: closed local component/macro witnesses compile in

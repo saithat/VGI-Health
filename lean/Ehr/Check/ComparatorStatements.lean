@@ -1,6 +1,7 @@
 import Ehr.Check.ReplayTypes
 import Ehr.Props.OldObligations
 import Ehr.Props.Contracts
+import Ehr.Props.Navigation
 import Ehr.Specs.V2
 
 /-! Comparator challenge statements for the completed semantic checker clauses.
@@ -96,6 +97,10 @@ theorem T8_v1_1_to_v2 {prev : Option Program} {canonical p : Program}
     (hs : check Specs.V2.specV2 prev canonical p = .ok) :
     ∀ facts user, user.role = p.role →
       OldObligations Specs.V1_1.specV1_1 ⟨Specs.V2.specV2, p, facts, user⟩ := by
+  sorry
+
+theorem accepted_navigation (sp : Spec) (prev : Option Program) (can p : Program)
+    (h : check sp prev can p = .ok) : NavigationSane p := by
   sorry
 
 end Ehr.Check

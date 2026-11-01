@@ -4,6 +4,7 @@ import Ehr.Check.MonotonicityObstruction
 import Ehr.Check.Monotonicity
 import Ehr.Check.ContractSound
 import Ehr.Check.ContractTests
+import Ehr.Check.NavigationSound
 import Ehr.Check.EntryConstruction
 import Ehr.Check.RejectionObstruction
 import Ehr.Check.RequestSound
@@ -19,6 +20,8 @@ import Ehr.Check.AlertSound
 import Ehr.Check.ValueTests
 import Ehr.Check.ValueWitness
 import Ehr.Check.Sound
+import Ehr.Check.AdditionalBadProofs
+import Ehr.Check.MissingBadProofs
 import Ehr.Check.SeedTests
 import Ehr.Check.Seed13Escape
 import Ehr.Props.Examples
@@ -27,6 +30,7 @@ namespace Ehr.Check.Tests
 open Ehr Ehr.Check Ehr.Props Ehr.Examples.Tiny Ehr.Props.Examples
 
 #guard check spec none goodProgram goodProgram == .ok
+example : NavigationSane goodProgram := accepted_navigation spec none goodProgram goodProgram (by decide)
 #guard match firstFinding (rules spec none goodProgram program) with
   | some f => f.property == "noFalseAlarms" && (counterexample spec program f).2.2
   | none => false

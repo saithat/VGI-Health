@@ -1,5 +1,4 @@
-import Ehr.Check.AdditionalBadProofs
-import Ehr.Check.MissingBadProofs
+import Ehr.Canonical.BadPrograms
 import Ehr.Check.Check
 
 /-! Permanent seeded regressions. Until content's template passes on its own,

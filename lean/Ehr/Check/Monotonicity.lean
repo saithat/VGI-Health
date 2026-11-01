@@ -1,5 +1,6 @@
 import Ehr.Props.OldObligations
 import Ehr.Check.ContractSound
+import Ehr.Check.NavigationSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.MonotonicityObstruction
 import Ehr.Specs.V2

@@ -20,7 +20,8 @@
     "Ehr.Check.accepted_contracts",
     "Ehr.Check.T8_checked_old_obligations",
     "Ehr.Check.T8_v1_to_v1_1",
-    "Ehr.Check.T8_v1_1_to_v2"
+    "Ehr.Check.T8_v1_1_to_v2",
+    "Ehr.Check.accepted_navigation"
   ],
   "definition_names": [],
   "permitted_axioms": [
