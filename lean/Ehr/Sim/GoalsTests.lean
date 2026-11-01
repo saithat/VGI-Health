@@ -55,4 +55,17 @@ def happy : State :=
 #guard !goalsMet spec facts user gAmox
   (runAll spec program facts user .human happy [.click "backButton", .enter "doseField" (.qty 2500 .mg)])
 
+-- An incompatible explicit dose stays fixed; no accepted-value substitution.
+def incompatibleDose : ValueGoal :=
+  { element := "dose", slot? := some 0, value? := some (.qty 50000 .units), commit := "signOrders" }
+#guard (checkFit spec facts user incompatibleDose).1 == incompatibleDose
+#guard !(checkFit spec facts user incompatibleDose).2.isEmpty
+#guard !goalsMet spec facts user { gAmox with values := [incompatibleDose] } happy
+
+-- Refill dose follows the focused prescription rather than a placeholder.
+#guard taskValue facts user { orders := [warf] } none
+  { id := "refillDose", label := "Refill dose", kind := .quantity .mg,
+    enteredBy := [.physician], prefill := .never, friction := .safety,
+    fhirTarget := "MedicationRequest.dosageInstruction" } == some (.qty 30 .mg)
+
 end Ehr.Sim.GoalsTests

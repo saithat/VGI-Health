@@ -42,16 +42,32 @@ def meds : TaskChoices := { administer := [opioid, GoalsTests.warf], noteSection
 #guard (episodes facts .W4 meds).map (fun ep => taskCommits Specs.V1.specV1 .W4 ep.choices) ==
   [["administerMed"], ["administerMed"], ["chartAssessment"]]
 
+/-- Keep the catalog regression's original federal bindings explicit while
+production temporarily uses core. These are the actual catalog declarations,
+including the per-line stop from the series artifact. -/
+def catalogSpec : Spec := { Specs.V1.specV1 with
+  elements := Specs.V1.specV1.elements ++ [
+    Specs.Rules.Federal.refillScheduleEligibility, Specs.Rules.Federal.earliestFillDate]
+  entries := Specs.V1.specV1.entries ++ [Specs.Rules.Federal.entrie118,
+    Specs.Rules.Federal.entrie119, Specs.Rules.Federal.entrie123]
+  commits := Specs.V1.specV1.commits ++ [Specs.Rules.Federal.signScheduleIISeries] }
+def catalogProgram : Program := { Canonical.canonicalV1 with
+  screens := Canonical.canonicalV1.screens.map fun sc =>
+    if sc.id == "w7Decision" then { sc with components := sc.components ++ [
+      Canonical.field sc.id "requestedDrug" "drug" "Requested drug",
+      Canonical.field sc.id "eligibility" "refillScheduleEligibility" "Refill schedule eligibility"] }
+    else sc }
+
 /-- The current spec binds refill approval to the requested drug. Its
 interaction floor follows that capture. A modification is a new prescription
 and must pass ordinary signing, including Schedule II's zero-refill gate. -/
-def refillGoals := deriveGoals Specs.V1.specV1 facts user .W7
+def refillGoals := deriveGoals catalogSpec facts user .W7
   { refill? := some "approve", orders := [GoalsTests.warf] } [GoalsTests.warf] none
 #guard refillGoals.values.any (fun g => g.element == "drug" && g.value? == some (.code "warfarin"))
 #guard refillGoals.values.any (fun g => g.element == "refillScheduleEligibility" &&
   g.value? == some (.code "notScheduleII"))
 def interactingFacts := { facts with currentMedClasses := ["nsaid"] }
-def interactingRefill := deriveGoals Specs.V1.specV1 interactingFacts user .W7
+def interactingRefill := deriveGoals catalogSpec interactingFacts user .W7
   { refill? := some "approve", orders := [GoalsTests.warf] } [GoalsTests.warf] none
 #guard interactingRefill.expectedAcks == [("interactionRefill", "warfarin@" ++ toString facts.medsVersion)]
 def modifiedRefill := deriveGoals Specs.V1.specV1 facts user .W7
@@ -60,7 +76,7 @@ def modifiedRefill := deriveGoals Specs.V1.specV1 facts user .W7
 #guard modifiedRefill.values.any (fun g => g.element == "dose" && g.value? == some (.qty 50 .mg))
 #guard modifiedRefill.values.any (fun g => g.element == "refills" && g.value? == some (.qty 0 .none))
 #guard !modifiedRefill.values.any (·.element == "refillScheduleEligibility")
-def multiControlled := deriveGoals Specs.V1.specV1 facts user .W1
+def multiControlled := deriveGoals catalogSpec facts user .W1
   { orders := [opioid, GoalsTests.warf] } [opioid, GoalsTests.warf] none
 -- Advancing must satisfy Core's cross-artifact line stop. The last line
 -- needs no series-only date when it is signed as an ordinary prescription.
@@ -90,7 +106,7 @@ def renewalTask : Task := {
 #guard (taskChoices { renewalTask with choices := {
   refill? := some "modify", orders := [{ GoalsTests.warf with doseTenths := 20 }] } }).orders.map
   (·.doseTenths) == [20]
-def renewalDay := simulate Specs.V1.specV1 Canonical.canonicalV1
+def renewalDay := simulate catalogSpec catalogProgram
   { PolicyTests.p1 with backtrackRate := 0 }
   { PolicyTests.schedule with tasks := [renewalTask] } (fun _ => interactingFacts) 123
 #guard let day := renewalDay

@@ -10,6 +10,7 @@
  * After the last day, each deployed change gets its TEST measurement: day
  * night+2 (never used to select it) replayed on the old and new versions.
  */
+import releaseDaysConfig from "../../world/releases.json";
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { LlmAgent } from './agent.js';
@@ -87,7 +88,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const ehr = opts.ehr ?? createEhr();
   const world = await loadWorld(opts.worldDir);
   const personaIds = (opts.personas ?? world.manifest.personas).filter((p) => world.personas.has(p));
-  const releaseDays = opts.releaseDays ?? { v1_1: 4, v2: 7 };
+  const releaseDays = opts.releaseDays ?? releaseDaysConfig;
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });

@@ -137,6 +137,7 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
   | .flag => some (.flag true)
   | _ =>
     if el.id == weightElement || el.id == "dosingWeight" then weightKgGoal facts
+    else if el.id == "refillDose" then choices.orders.head?.bind (orderValue "dose")
     else if el.id == "painScore" || el.id == "painReassessment" then choices.painScore?.map (fun n => .code (toString n))
     else if (el.id == "refillReason" || el.id == "refillDenyReason") then
       choices.refillReason?.bind (parseValue el.kind)
@@ -248,14 +249,13 @@ def dedupGoals (gs : List ValueGoal) : List ValueGoal :=
   (gs.foldl (fun acc g =>
     if acc.any (fun h => h.element == g.element && h.slot? == g.slot?) then acc else g :: acc) []).reverse
 
-/-- Replace values that the element kind can never accept by "any value", and
-say why. -/
+/-- Preserve explicit clinical choices even when the spec cannot accept them.
+An incompatible choice must remain incomplete, never become a different dose. -/
 def checkFit (sp : Spec) (facts : Facts) (user : User) (g : ValueGoal) : ValueGoal × List String :=
   match g.value?, sp.element? g.element with
   | some v, some el =>
     if valueSatisfies facts user el.kind v then (g, [])
-    else ({ g with value? := none },
-          [s!"choice for {g.element} does not fit the spec ({repr v}); using any accepted value"])
+    else (g, [s!"choice for {g.element} does not fit the spec ({repr v}); preserving chosen value"])
   | _, none => (g, [s!"element {g.element} is not in the spec"])
   | none, _ => (g, [])
 

@@ -2,6 +2,7 @@
  * Shared machinery for building one simulated day: id allocation, seeded
  * random streams, the patient picker, and task construction.
  */
+import { PRIOR_AUTH_RELEASE_DAY } from "./releases";
 import { SHIFTS } from "./calendar";
 import { clinicalObservation, type ClinicalObservation } from "./fhir";
 import type { PatientProfile } from "./patients";
@@ -172,6 +173,9 @@ export class DayBuild {
   ): Task {
     this.seq[persona] += 1;
     const id = `d${String(this.day).padStart(2, "0")}-${persona}-${workflow}-${String(this.seq[persona]).padStart(3, "0")}`;
+    // Filter after scenario generation so release gating consumes no random draws.
+    const orders = (c.orders ?? []).filter((o) =>
+      this.day >= PRIOR_AUTH_RELEASE_DAY || (o.kind ?? "medication") === "medication");
     const task: Task = {
       id,
       day: this.day,
@@ -179,7 +183,7 @@ export class DayBuild {
       workflow,
       patientId,
       startMin: Math.max(0, Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
-      choices: choices(c),
+      choices: choices({ ...c, orders }),
       todayResources: [...todayResources, ...(c.observations ?? []).map((o, i) => clinicalObservation(`${id}-clinical-${i}`, patientId, this.day, SHIFTS[persona].startClock + startMin, o))],
       interruptions,
     };

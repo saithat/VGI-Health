@@ -1,0 +1,501 @@
+{
+  "day": 7,
+  "persona": "P5",
+  "load": "normal",
+  "tasks": [
+    {
+      "id": "d07-P5-W1-002",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "669a8933-462a-3896-6874-e0d7c4a00c07",
+      "startMin": 90,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-003",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "3c4cf4b1-d2cc-2bec-cb9a-167f9cddaf5a",
+      "startMin": 115,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P5-W1-004",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "9213a7c2-a82e-a1de-9190-548fa8bdf67b",
+      "startMin": 140,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-005",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "868e5286-1551-b118-03f6-1b8c6a6c19c7",
+      "startMin": 165,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-006",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "78e5b04f-7d5c-4e06-ed9a-2ac3bfc8a6f1",
+      "startMin": 190,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-007",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "9e937da7-1921-8752-9ee8-83a22ee5b4fd",
+      "startMin": 215,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-008",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "4966bd28-61bc-8f51-3aab-1328a32ea2e7",
+      "startMin": 240,
+      "choices": {
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "inguinal-hernia"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-009",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "133ff30c-3b00-b94f-0483-cc71afc0d8dc",
+      "startMin": 265,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-010",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+      "startMin": 290,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-011",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "b5c8cec1-8415-25cf-b544-c19e84761e14",
+      "startMin": 315,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-012",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "d25a0360-5edb-4bc5-42a7-a07e67f50e63",
+      "startMin": 390,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-013",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "0b08d61c-27f1-501b-86a5-e5be9e8216a2",
+      "startMin": 415,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "assessmentPlan"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W6-001",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W6",
+      "patientId": "e4e9b21f-7954-3ef7-53aa-e188bbd8e5f1",
+      "startMin": 434,
+      "choices": {
+        "orders": [
+          {
+            "drug": "morphine",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q4h",
+            "prn": true
+          },
+          {
+            "drug": "ondansetron",
+            "doseTenths": 40,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          },
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "q8h",
+            "prn": false
+          },
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "consultNote",
+          "imagingReview",
+          "labReview",
+          "surgicalDecision"
+        ],
+        "disposition": "admit",
+        "w6Step": "consult"
+      },
+      "todayResources": [
+        {
+          "resourceType": "DiagnosticReport",
+          "id": "d07-P5-W6-001-imaging",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                  "code": "RAD",
+                  "display": "Radiology"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "text": "Ultrasound right upper quadrant"
+          },
+          "subject": {
+            "reference": "Patient/e4e9b21f-7954-3ef7-53aa-e188bbd8e5f1"
+          },
+          "effectiveDateTime": "2026-11-10T13:27:00-08:00",
+          "issued": "2026-11-10T14:07:00-08:00",
+          "conclusion": "Acute calculous cholecystitis",
+          "conclusionCode": [
+            {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "65275009",
+                  "display": "Acute calculous cholecystitis"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d07-P5-W6-001-wbc",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "category": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                  "code": "laboratory",
+                  "display": "Laboratory"
+                }
+              ]
+            }
+          ],
+          "code": {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "6690-2",
+                "display": "Leukocytes [#/volume] in Blood by Automated count"
+              }
+            ],
+            "text": "Leukocytes [#/volume] in Blood by Automated count"
+          },
+          "subject": {
+            "reference": "Patient/e4e9b21f-7954-3ef7-53aa-e188bbd8e5f1"
+          },
+          "effectiveDateTime": "2026-11-10T13:02:00-08:00",
+          "issued": "2026-11-10T14:02:00-08:00",
+          "interpretation": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                  "code": "H",
+                  "display": "High"
+                }
+              ]
+            }
+          ],
+          "valueQuantity": {
+            "value": 13.9,
+            "unit": "10*3/uL",
+            "system": "http://unitsofmeasure.org",
+            "code": "10*3/uL"
+          },
+          "referenceRange": [
+            {
+              "low": {
+                "value": 4.5,
+                "unit": "10*3/uL",
+                "system": "http://unitsofmeasure.org",
+                "code": "10*3/uL"
+              },
+              "high": {
+                "value": 11,
+                "unit": "10*3/uL",
+                "system": "http://unitsofmeasure.org",
+                "code": "10*3/uL"
+              }
+            }
+          ]
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P5-W1-014",
+      "day": 7,
+      "persona": "P5",
+      "workflow": "W1",
+      "patientId": "d27367bc-7af3-1b46-f249-9547e446bb1d",
+      "startMin": 440,
+      "choices": {
+        "orders": [
+          {
+            "kind": "imaging",
+            "code": "ultrasound-abdominal-wall",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          },
+          {
+            "kind": "procedure",
+            "code": "open-umbilical-hernia-repair",
+            "drug": "",
+            "doseTenths": 0,
+            "unit": "none",
+            "route": "",
+            "freq": "",
+            "prn": false,
+            "indication": "umbilical-hernia"
+          }
+        ],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "hpi",
+          "exam",
+          "imagingReview",
+          "assessmentPlan",
+          "surgicalPlanning",
+          "consentDiscussion"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    }
+  ]
+}

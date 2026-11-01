@@ -1936,3 +1936,44 @@ a particular failure. P5 also reports an incompatible dose unit and fallback to
 an accepted value; clinical-choice fidelity needs review even when a task completes.
 P4's complete day-1 schedule does not discharge universal pre-op completability.
 See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
+
+
+## SIM-WORLD2-DOSE-2026-10-31: incompatible medication units need core/content change
+
+World choices and formulary correctly use units for heparin and insulin, and
+mcg for inhaled albuterol. `Specs/V1.lean` declares `dose` as `quantity mg`
+(and labels it Dose (mg)); `doseUnit` is a separate coded input. Insulin/heparin
+units cannot be converted to mg without drug/product-specific data. Fractional
+mg such as albuterol 180 mcg also cannot be represented by tenths of mg.
+`Sim/Goals.checkFit` previously erased these choices and substituted an accepted
+mg value, falsely reporting completion. The simulator now preserves the chosen
+value and reports the actual obstruction.
+
+Requested core/content change: supply a unit-aware dose input/guard that accepts
+the chosen medication's units and precision, consistently across exported specs,
+canonicals, dose alerts and FHIR writes. Preserve dimensional checks and clinical
+values; do not permit arbitrary units or reinterpret units as mg. This lane is
+restricted to Sim/world/config/docs and will not edit those owner-owned modules.
+The world2 validation records each affected task and chosen dose precisely.
+
+Validation on world 2: **38 / 1,284** tasks remain incomplete, all with this
+specific dose obstruction; P1 has 4, P2 has 29, P5 has 5. P3/P4 complete all tasks;
+P4 has no pre-op tasks. `lean/Ehr/Sim/validation-world2.json` contains every
+blocked task ID and its exact drug/dose/unit choices. The per-day table is in
+`docs/STATUS.md`. No service-order release mismatch remains.
+
+
+## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
+
+Agent lane: `agent/src/lean-types.ts` `whenSchema` rejects
+`releases/v1/spec.json` `entries[16].when = {drugClass:{cls:"scheduleII"}}`.
+The current spec also carries `allowed:["0"]`, which must be preserved by the
+agent boundary. A `make -n run-live` validation unexpectedly executed the compound
+recipe because it contains recursive Make, reached real agent loading, and failed
+with `entries.16.when: Invalid input` before any LLM call or deployment. The sole
+incidental manifest was removed.
+
+Requested change: adopt current generated Lean types/validators at the agent
+boundary, preserving all spec fields and Schedule II constraints. New-run defaults
+now select world 2, but this separate schema mismatch must be fixed before an
+actual overnight agent run. Native `ehr simulate` reads the spec successfully.

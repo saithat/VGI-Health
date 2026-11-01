@@ -1,3 +1,4 @@
+import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { describe, expect, it } from "vitest";
 import { getString } from "../src/json";
 import { isControlled, serviceOrder } from "../src/formulary";
@@ -36,11 +37,12 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("typed decisions (%s)", (index) =>
 
   it("emits P1/P5 imaging and procedures after the v1.1 release, with no medication administrations", () => {
     for (const persona of ["P1", "P5"]) for (const kind of ["imaging", "procedure"]) {
-      expect(tasks.some((t) => t.persona === persona && t.day >= 4 && t.choices.orders.some((o) => o.kind === kind)), `${persona} ${kind}`).toBe(true);
+      expect(tasks.some((t) => t.persona === persona && t.day >= PRIOR_AUTH_RELEASE_DAY && t.choices.orders.some((o) => o.kind === kind)), `${persona} ${kind}`).toBe(true);
     }
     for (const t of tasks) {
       expect(t.choices.administer.every((o) => o.kind === undefined || o.kind === "medication")).toBe(true);
       for (const o of t.choices.orders.filter((o) => o.kind === "imaging" || o.kind === "procedure")) {
+        expect(t.day).toBeGreaterThanOrEqual(PRIOR_AUTH_RELEASE_DAY);
         expect(o).toMatchObject({ drug: "", doseTenths: 0, unit: "none", route: "", freq: "", prn: false });
         expect(o.code).toBeTruthy();
         expect(o.indication).toBeTruthy();

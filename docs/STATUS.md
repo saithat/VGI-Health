@@ -74,6 +74,70 @@ The remaining simulator problems are recorded in
 [changes-requests.md](design/changes-requests.md); `Sim/**` was not edited.
 Details and hashes: `lean/Ehr/Check/{certification-report,sim-smoke-report}.json`.
 
+## Simulator: world revision 2 (2026-10-31)
+
+`runs/world/2` uses seed **1**, ten days and the same 174 Synthea fixtures as
+world 1. Service orders are omitted before the v1.1 release on day 4. A regression
+compares every task and world state with world 1: only those early service choices
+change; random draws, task IDs, timings, counts and all states remain identical.
+`world/releases.json` supplies release-day defaults to generator and agent.
+New generator outputs, agent `run-days` without `--world`, and `make seed` select
+world 2. `make run-live` also defaults to world 2 and only generates a selected
+world if absent, so it does not overwrite the committed replay. Explicit world
+arguments still work. Recorded `run1-P3` and its trajectories continue
+to refer to world 1; no world-1 artifact was edited.
+
+Dose fidelity exposed a spec obstruction: `dose` only accepts tenths of mg;
+heparin/insulin choices use units, and albuterol 180 mcg needs more precision.
+The simulator now preserves incompatible choices instead of substituting an
+arbitrary accepted dose. Core/content changes are requested under
+`SIM-WORLD2-DOSE-2026-10-31` in [changes-requests.md](design/changes-requests.md).
+Active-release validation (seed **7** for simulator policy; completed / incomplete):
+
+| Day | Release | P1 | P2 | P3 | P4 | P5 |
+|---|---|---:|---:|---:|---:|---:|
+| 1 | v1 | 42/0 | 19/3 | 38/0 | 22/0 | 17/1 |
+| 2 | v1 | 40/0 | 17/1 | 51/0 | 20/0 | 13/1 |
+| 3 | v1 | 34/1 | 15/3 | 44/0 | 19/0 | 19/0 |
+| 4 | v1.1 | 39/1 | 11/2 | 41/0 | 17/0 | 10/1 |
+| 5 | v1.1 | 22/1 | 17/3 | 37/0 | 19/0 | 17/0 |
+| 6 | v1.1 | 41/0 | 17/4 | 32/0 | 18/0 | 11/0 |
+| 7 | v2 | 40/0 | 15/3 | 54/0 | 17/0 | 13/1 |
+| 8 | v2 | 39/0 | 9/6 | 38/0 | 15/0 | 11/1 |
+| 9 | v2 | 39/0 | 8/4 | 44/0 | 12/0 | 11/0 |
+| 10 | v2 | 38/1 | 14/0 | 45/0 | 16/0 | 9/0 |
+
+**1,246 / 1,284 complete; 38 incomplete.** Every incomplete task retains an
+unrepresentable chosen dose: heparin/insulin in `units`, or albuterol **180 mcg**
+(which is **0.18 mg**, beyond the field's tenths-of-mg precision). This is a
+spec/input obstruction, not a navigation failure. All exact task IDs, orders,
+doses, complaints and input hashes are in
+[`validation-world2.json`](../lean/Ehr/Sim/validation-world2.json). These 38 tasks
+cannot complete faithfully until the requested core/content change lands.
+No task was dropped and no safety rule was changed. P4 has **zero pre-op tasks**;
+all 15 pre-op tasks belong to P5 (their IDs are included in the report). `.cosign`
+continues using the simulated second clinician; no NP permission workaround.
+
+Simulator fixes also bind `refillDose` to the focused prescription instead of a
+placeholder, attribute goal complaints to task IDs, and report impossible
+explicit values before searching unrelated screens. The catalog integration
+regressions retain their original Federal rules in an explicit test fixture,
+so they still run while the production profile is temporarily core.
+
+Validation: day-1 deterministic replay; **zero floor violations** and **zero
+interruption violations** across all 50 schedules. Default Lean build and all
+simulator test modules pass; world **93 tests**, build/typecheck and lint pass;
+agent **31 tests**, typecheck and lint pass; seed script **7 tests** pass.
+Reproduce with `python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 2 --report
+lean/Ehr/Sim/validation-world2.json` (native processes inherit the 8,000,000 KiB
+virtual memory cap). `--require-complete` intentionally fails until the dose
+obstruction is resolved.
+
+A separate agent-lane blocker remains before actual overnight runs:
+`agent/src/lean-types.ts` rejects the active spec's Schedule II `drugClass`
+condition (`entries[16].when`). See `SIM-WORLD2-AGENT-SCHEMA-2026-10-31` in
+[changes-requests.md](design/changes-requests.md). Native simulation is unaffected.
+
 ## Current state
 
 ### Agent loop
