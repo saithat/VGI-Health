@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": 1,
+  "runId": "run1-P3",
+  "night": 7,
+  "persona": "P3",
+  "owner": "P3",
+  "mode": "nightly",
+  "specVersion": "v2",
+  "versionBefore": 5,
+  "versionAfter": 6,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P3",
+    "trainDays": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "programVersion": 5,
+    "totals": {
+      "tasks": 297,
+      "completed": 297,
+      "clicks": 4510,
+      "keystrokes": 6845,
+      "scrolls": 6018,
+      "popups": 145,
+      "overrides": 9,
+      "searches": 0,
+      "backtracks": 322,
+      "klmDeciSec": 470473
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 38,
+          "completed": 38,
+          "clicks": 565,
+          "keystrokes": 820,
+          "scrolls": 877,
+          "popups": 12,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 46,
+          "klmDeciSec": 66067
+        }
+      },
+      {
+        "day": 2,
+        "load": "normal",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 51,
+          "completed": 51,
+          "clicks": 783,
+          "keystrokes": 1167,
+          "scrolls": 1248,
+          "popups": 23,
+          "overrides": 1,
+          "searches": 0,
+          "backtracks": 62,
+          "klmDeciSec": 82687
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 1,
+        "metrics": {
+          "tasks": 44,
+          "completed": 44,
+          "clicks": 636,
+          "keystrokes": 972,
+          "scrolls": 941,
+          "popups": 20,
+          "overrides": 1,
+          "searches": 0,
+          "backtracks": 48,
+          "klmDeciSec": 60835
+        }
+      },
+      {
+        "day": 4,
+        "load": "quiet",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 41,
+          "completed": 41,
+          "clicks": 629,
+          "keystrokes": 978,
+          "scrolls": 944,
+          "popups": 23,
+          "overrides": 2,
+          "searches": 0,
+          "backtracks": 40,
+          "klmDeciSec": 65655
+        }
+      },
+      {
+        "day": 5,
+        "load": "normal",
+        "programVersion": 3,
+        "metrics": {
+          "tasks": 37,
+          "completed": 37,
+          "clicks": 577,
+          "keystrokes": 912,
+          "scrolls": 837,
+          "popups": 24,
+          "overrides": 2,
+          "searches": 0,
+          "backtracks": 33,
+          "klmDeciSec": 63903
+        }
+      },
+      {
+        "day": 6,
+        "load": "busy",
+        "programVersion": 4,
+        "metrics": {
+          "tasks": 32,
+          "completed": 32,
+          "clicks": 552,
+          "keystrokes": 850,
+          "scrolls": 433,
+          "popups": 25,
+          "overrides": 2,
+          "searches": 0,
+          "backtracks": 40,
+          "klmDeciSec": 58313
+        }
+      },
+      {
+        "day": 7,
+        "load": "normal",
+        "programVersion": 5,
+        "metrics": {
+          "tasks": 54,
+          "completed": 54,
+          "clicks": 768,
+          "keystrokes": 1146,
+          "scrolls": 738,
+          "popups": 18,
+          "overrides": 1,
+          "searches": 0,
+          "backtracks": 53,
+          "klmDeciSec": 73013
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 77,
+      "keystrokes": 135.3,
+      "scrolls": 0,
+      "klmDeciSec": 261.3
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W4",
+        "tasks": 297,
+        "avgClicks": 15.2,
+        "avgKeystrokes": 23,
+        "avgScrolls": 20.3,
+        "avgKlmSec": 158.4
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w4Admin",
+        "events": 4361,
+        "klmSec": 27089.3,
+        "share": 0.582
+      },
+      {
+        "screen": "w1Rooming",
+        "events": 3133,
+        "klmSec": 10163.8,
+        "share": 0.219
+      },
+      {
+        "screen": "w4Flowsheet",
+        "events": 1476,
+        "klmSec": 5336.1,
+        "share": 0.115
+      },
+      {
+        "screen": "home",
+        "events": 928,
+        "klmSec": 1367.8,
+        "share": 0.029
+      },
+      {
+        "screen": "w4Worklist",
+        "events": 597,
+        "klmSec": 1256,
+        "share": 0.027
+      },
+      {
+        "screen": "w4Mar",
+        "events": 359,
+        "klmSec": 774.4,
+        "share": 0.017
+      },
+      {
+        "screen": "w3Triage",
+        "events": 73,
+        "klmSec": 269.2,
+        "share": 0.006
+      },
+      {
+        "screen": "w4Handoff",
+        "events": 27,
+        "klmSec": 68.7,
+        "share": 0.001
+      },
+      {
+        "screen": "w3TrackBoard",
+        "events": 9,
+        "klmSec": 22.8,
+        "share": 0
+      },
+      {
+        "screen": "w2Inbasket",
+        "events": 7,
+        "klmSec": 17.6,
+        "share": 0
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 110,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [],
+    "alertOverrides": [
+      {
+        "alert": "highAlertAdmin",
+        "popups": 130
+      },
+      {
+        "alert": "minorInteractionPopup",
+        "popups": 15
+      }
+    ],
+    "totalOverrides": 9,
+    "backtracks": [
+      {
+        "screen": "w1Rooming",
+        "count": 198
+      },
+      {
+        "screen": "w1MedRec",
+        "count": 6
+      },
+      {
+        "screen": "w4Handoff",
+        "count": 18
+      },
+      {
+        "screen": "w4Worklist",
+        "count": 8
+      },
+      {
+        "screen": "w6PostOp",
+        "count": 6
+      },
+      {
+        "screen": "w4Flowsheet",
+        "count": 9
+      },
+      {
+        "screen": "w2Inbasket",
+        "count": 7
+      },
+      {
+        "screen": "w6Discharge",
+        "count": 6
+      },
+      {
+        "screen": "w5Rooming",
+        "count": 4
+      },
+      {
+        "screen": "w7Queue",
+        "count": 3
+      },
+      {
+        "screen": "w6PreOp",
+        "count": 5
+      },
+      {
+        "screen": "w1Exam",
+        "count": 3
+      },
+      {
+        "screen": "w6Consult",
+        "count": 2
+      },
+      {
+        "screen": "w1Hpi",
+        "count": 3
+      },
+      {
+        "screen": "w1Labs",
+        "count": 3
+      },
+      {
+        "screen": "w3TrackBoard",
+        "count": 4
+      },
+      {
+        "screen": "w6OpNote",
+        "count": 5
+      },
+      {
+        "screen": "w6Rounding",
+        "count": 3
+      },
+      {
+        "screen": "w4Mar",
+        "count": 3
+      },
+      {
+        "screen": "w1Orders",
+        "count": 5
+      },
+      {
+        "screen": "w1Close",
+        "count": 1
+      }
+    ],
+    "complaints": [],
+    "orderMix": []
+  },
+  "hypothesis": "Administration consumes 58.2% of observed time, with several full-size review panels before documentation. Flowsheet work consumes another 11.5%, with its entry fields below navigation and sidebar content. P3's 10% keyboard share favors reducing scrolling. Existing allergy receipts offer a smaller presentation saving; zero reprompts support no claim of saved confirmation clicks.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p3-compact-admin-review",
+        "summary": "Compact administration review panels while keeping every required item shown.",
+        "moveType": "composeTaskView",
+        "rationale": "Targets the largest time sink, w4Admin (58.2%). Compact dose details, antibiotic indication, glucose, coagulation labs and PRN history reduce the distance to scans and documentation. All remain always visible, outside groups and tabs, and non-tiny. Zero components change screen, parent or tab.",
+        "targets": [
+          "w4Admin.dose",
+          "w4Admin.antibioticIndication",
+          "w4Admin.glucose",
+          "w4Admin.coag",
+          "w4Admin.prn"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.dose]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.antibioticIndication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.glucose]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.coag]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.prn]/size",
+            "value": "compact"
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 40,
+          "klmDeciSec": 800
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          6,
+          7
+        ],
+        "before": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1320,
+          "keystrokes": 1996,
+          "scrolls": 1173,
+          "popups": 43,
+          "overrides": 3,
+          "searches": 0,
+          "backtracks": 93,
+          "klmDeciSec": 131348
+        },
+        "after": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1320,
+          "keystrokes": 1996,
+          "scrolls": 1173,
+          "popups": 43,
+          "overrides": 3,
+          "searches": 0,
+          "backtracks": 93,
+          "klmDeciSec": 131348
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p3-flowsheet-task-first",
+        "summary": "Place assessment entry and filing immediately after the flowsheet patient banner.",
+        "moveType": "reorder",
+        "rationale": "Flowsheet work accounts for 11.5% of observed time. Render vitals, PRN context, pain reassessment, assessment and the human filing action before general navigation and chart context. Existing field policies, macro contents and parent relationships remain intact. These are render-order changes only, using zero stability-budget moves.",
+        "targets": [
+          "w4Flowsheet"
+        ],
+        "patch": [
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.vitalsGroup]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.banner]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpSystolic]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.vitalsGroup]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpDiastolic]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpSystolic]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.heartRate]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpDiastolic]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.respRate]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.heartRate]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.temperature]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.respRate]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.spo2]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.temperature]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.prn]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.spo2]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.painReassessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.prn]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.copyAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.painReassessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.nursingAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.copyAssessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.commit.chartAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.nursingAssessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.toHandoff]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.commit.chartAssessment]+"
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 32,
+          "klmDeciSec": 640
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          6,
+          7
+        ],
+        "before": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1320,
+          "keystrokes": 1996,
+          "scrolls": 1173,
+          "popups": 43,
+          "overrides": 3,
+          "searches": 0,
+          "backtracks": 93,
+          "klmDeciSec": 131348
+        },
+        "after": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1319,
+          "keystrokes": 1996,
+          "scrolls": 937,
+          "popups": 43,
+          "overrides": 3,
+          "searches": 0,
+          "backtracks": 94,
+          "klmDeciSec": 128726
+        },
+        "saving": {
+          "clicks": 1,
+          "keystrokes": 0,
+          "scrolls": 118,
+          "klmDeciSec": 1311
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p3-admin-allergy-receipt",
+        "summary": "Use valid RN allergy-review receipts to shorten the administration screen.",
+        "moveType": "useReceipt",
+        "rationale": "The evidence records 110 allergy receipts, and early shift allergy review is already prominent. The administration review rule explicitly permits an RN receipt within 720 minutes. The panel returns whenever the receipt is absent, expired or invalidated by a data change. With zero observed reprompts, predict only modest scrolling savings.",
+        "targets": [
+          "w4Admin.allergies"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.allergies]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "allergyList"
+              }
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 8,
+          "klmDeciSec": 160
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "fail",
+        "property": "reviewsBeforeCommit",
+        "message": "allergyList is not shown on screen w4Admin when administerMed is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+        "counterexample": [
+          {
+            "click": {
+              "comp": "home.toolbar.ward"
+            }
+          },
+          {
+            "click": {
+              "comp": "w4Worklist.toolbar.mar"
+            }
+          },
+          {
+            "click": {
+              "comp": "w4Mar.toolbar.openDue"
+            }
+          },
+          {
+            "click": {
+              "comp": "w4Admin.commit.administerMed"
+            }
+          }
+        ],
+        "screens": [
+          "home",
+          "w4Worklist",
+          "w4Mar",
+          "w4Admin"
+        ],
+        "verdict": {
+          "violation": {
+            "property": "reviewsBeforeCommit",
+            "message": "allergyList is not shown on screen w4Admin when administerMed is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+            "counterexample": [
+              {
+                "click": {
+                  "comp": "home.toolbar.ward"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w4Worklist.toolbar.mar"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w4Mar.toolbar.openDue"
+                }
+              },
+              {
+                "click": {
+                  "comp": "w4Admin.commit.administerMed"
+                }
+              }
+            ],
+            "screens": [
+              "home",
+              "w4Worklist",
+              "w4Mar",
+              "w4Admin"
+            ]
+          }
+        }
+      },
+      "trainEstimate": null,
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p3-passive-minor-interaction",
+        "summary": "Present the removable interaction notice inline without an immediate popup.",
+        "moveType": "collapseOptional",
+        "rationale": "minorInteractionPopup produced 15 popups across seven train days. Its removable tier permits passive presentation. This isolated change preserves the notice and leaves both certified interruptive administration alerts, their popup=false settings, scans and cosign requirements untouched.",
+        "targets": [
+          "w4Admin.alert.minorInteraction"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.alert.minorInteraction]/kind/alert/popup",
+            "value": false
+          }
+        ],
+        "predicted": {
+          "clicks": 2,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 100
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          6,
+          7
+        ],
+        "before": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1320,
+          "keystrokes": 1996,
+          "scrolls": 1173,
+          "popups": 43,
+          "overrides": 3,
+          "searches": 0,
+          "backtracks": 93,
+          "klmDeciSec": 131348
+        },
+        "after": {
+          "tasks": 86,
+          "completed": 86,
+          "clicks": 1310,
+          "keystrokes": 1996,
+          "scrolls": 1168,
+          "popups": 38,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 93,
+          "klmDeciSec": 131086
+        },
+        "saving": {
+          "clicks": 5,
+          "keystrokes": 0,
+          "scrolls": 3,
+          "klmDeciSec": 131
+        }
+      },
+      "componentsMoved": 0
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p3-flowsheet-task-first"
+    ],
+    "rationale": "Training estimates show 118 fewer scrolls, 1 fewer click, and 131.1 seconds saved per day—the largest measured benefit. The reorder moves zero components against the budget of 8 and predictably helps P3's scrolling-heavy workflow by placing entry and filing directly after the patient banner.",
+    "rejectedAlternatives": [
+      {
+        "id": "p3-compact-admin-review",
+        "reason": "Passes with zero moves, but training shows no time or interaction savings."
+      },
+      {
+        "id": "p3-admin-allergy-receipt",
+        "reason": "Fails reviewsBeforeCommit and is ineligible for deployment."
+      },
+      {
+        "id": "p3-passive-minor-interaction",
+        "reason": "Saves only 13.1 seconds per training day; keep this unrelated alert change separate from the workflow optimization."
+      }
+    ],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 0,
+    "keystrokes": 0,
+    "scrolls": 32,
+    "klmDeciSec": 640
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [
+          "p3-flowsheet-task-first"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.vitalsGroup]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.banner]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpSystolic]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.vitalsGroup]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpDiastolic]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpSystolic]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.heartRate]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.bpDiastolic]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.respRate]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.heartRate]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.temperature]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.respRate]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.spo2]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.temperature]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.prn]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.spo2]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.painReassessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.prn]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.copyAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.painReassessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.nursingAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.copyAssessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.commit.chartAssessment]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.nursingAssessment]+"
+          },
+          {
+            "op": "move",
+            "from": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.toHandoff]",
+            "path": "/screens/[id=w4Flowsheet]/components/[id=w4Flowsheet.commit.chartAssessment]+"
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 8,
+      "load": "normal",
+      "before": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 575,
+        "keystrokes": 857,
+        "scrolls": 563,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 48204
+      },
+      "after": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 575,
+        "keystrokes": 857,
+        "scrolls": 446,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 46917
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 117,
+        "klmDeciSec": 1287
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 77.5,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 231
+        },
+        "after": {
+          "clicks": 77.5,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 222.1
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "validation day 8: 128.7s saved, 0 clicks, 0 keystrokes, 117 scrolls"
+  },
+  "measured": {
+    "validation": {
+      "day": 8,
+      "load": "normal",
+      "before": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 575,
+        "keystrokes": 857,
+        "scrolls": 563,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 48204
+      },
+      "after": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 575,
+        "keystrokes": 857,
+        "scrolls": 446,
+        "popups": 14,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 47,
+        "klmDeciSec": 46917
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 117,
+        "klmDeciSec": 1287
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 77.5,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 231
+        },
+        "after": {
+          "clicks": 77.5,
+          "keystrokes": 124.9,
+          "scrolls": 0,
+          "klmDeciSec": 222.1
+        }
+      }
+    },
+    "test": null,
+    "minClicks": [],
+    "predictionHeld": true,
+    "predictionNote": "predicted 64s/day saved; validation replay measured 128.7s (held = measured >= 50% of predicted)"
+  },
+  "userResponse": {
+    "response": "accepted",
+    "probability": 0.05,
+    "reason": "simulated user kept the change (revert p=0.05)"
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "fnv1a64:1ba021f93a20bfc7",
+    "programHash": "fnv1a64:3097545a3c7994dd",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-01T01:05:19Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-run/fixtures/synthea/Leanne_Harber_c61efda8.json"
+    ],
+    "pages": 696,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "696 page trees passed"
+  },
+  "deployed": {
+    "version": 6,
+    "program": "programs/P3/v6.json",
+    "certificate": "certs/P3/v6.json"
+  },
+  "outcome": "deployed",
+  "release": null,
+  "flags": [],
+  "llmCalls": [
+    {
+      "callId": "night-07/P3/propose-0",
+      "purpose": "propose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 344703,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-07/P3/propose-0.json"
+    },
+    {
+      "callId": "night-07/P3/choose-0",
+      "purpose": "choose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 8510,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-07/P3/choose-0.json"
+    }
+  ],
+  "createdAt": "2026-11-01T01:01:00.596Z"
+}
