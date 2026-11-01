@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import { dryFixture } from './dry-fixture.js';
 /** One deliberately FAKE, zero-LLM-cost night through the real EHR and browser gates. */
 import path from 'node:path';
@@ -10,9 +11,9 @@ import { RecordingLlm } from './backends/recording.js';
 import type { JsonLlm } from './backends/types.js';
 import { createEhr } from './ehr.js';
 import { deployVersion, makeHoldout, runNight, userResponse, type LoopDeps } from './night.js';
-import { fieldElement, infoOf, gotoOf } from './program.js';
+import { fieldElement, infoOf, gotoOf, applyToProgram, componentsMoved } from './program.js';
 import { recordingEhr } from './recording-ehr.js';
-import { programSchema, type LlmCandidate } from './schema.js';
+import { programSchema, toCandidate, type LlmCandidate } from './schema.js';
 import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, resolveUserPath, writeJson } from './util.js';
@@ -21,7 +22,9 @@ import { loadWorld } from './world.js';
 const { values } = parseArgs({ options: { out: { type: 'string' } } });
 const out = values.out ? resolveUserPath(values.out) : await mkdtemp(path.join(tmpdir(), 'vgi-FAKE-dry-run-'));
 if (out.startsWith(path.join(REPO_ROOT, 'runs') + path.sep)) throw new Error('Dry run output must be outside runs/; it is not real run evidence');
+if (existsSync(path.join(out, 'manifest.json'))) throw new Error('Choose an empty dry-run output directory; existing evidence is never overwritten');
 await mkdir(out, { recursive: true });
+process.env['EHR_SCREEN_CACHE_DIR'] = path.join(out, 'screen-cache');
 const specVersion = path.join(out, 'tiny-spec.json');
 await writeJson(specVersion, tinySpec);
 const world = await loadWorld(path.join(REPO_ROOT, 'runs/world/2'));
@@ -29,7 +32,7 @@ const params = world.personas.get('P1');
 const schedule = await world.schedule(1, 'P1');
 const patient = schedule?.tasks.find((t) => t.workflow === 'W1') ?? schedule?.tasks[0];
 if (!params || !patient) throw new Error('world-2 fixture missing');
-const current = programSchema.parse({ ...dryFixture(), version: 0, owner: 'dry-run', id: 'FAKE-dry-run' });
+const current = programSchema.parse({ ...dryFixture(), version: 0, specVersion, owner: 'dry-run', id: 'FAKE-dry-run' });
 const targetScreen = current.screens.find((s) => s.id === 'sign');
 const panel = targetScreen?.components.find((c) => infoOf(c) === 'allergyList');
 const navScreen = current.screens.find((s) => s.components.some((c) => gotoOf(c)));
@@ -62,7 +65,9 @@ const deps: LoopDeps = { runId: 'FAKE-dry-run', store, ehr,
   screens: createScreenChecker(ehr, { bundles: [path.join(REPO_ROOT, 'fixtures/synthea/Ashly_Rippin_149fcc1f.json')], artifactsDir: path.join(out, 'screens') }),
   agent: new LlmAgent(new RecordingLlm(backend, out)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: 2 };
 // Fix the simulated preference fixture before execution; no clinical rule/metric is overridden.
-while (userResponse(deps, 1, 'P1', 0).response === 'reverted') deps.worldSeed++;
+const planned = toCandidate({ id: 'dry-change', summary: 'fixture', moveType: 'shortcut', rationale: 'fixture', targets: [], patch, predicted: { clicks: 0, keystrokes: 0, scrolls: 0, klmDeciSec: 0 } }, 'llm');
+const moved = componentsMoved(current, applyToProgram(current, planned.patch, { version: 1, specVersion }).program);
+while (userResponse(deps, 1, 'P1', moved).response === 'reverted') deps.worldSeed++;
 await writeJson(path.join(out, 'manifest.json'), { runId: deps.runId, mode: 'FAKE', backend: 'scripted', model: backend.model, ehr: { mode: 'real', binary: ehr.binary }, warning: 'FAKE zero-cost wiring fixture; no LLM calls and no clinical performance evidence', world: world.dir, days: 2, nights: 1, personas: ['P1'], committedRunData: false });
 const preflight = await ehr.check({ specVersion, program: current, prev: current, canonical: current });
 if (preflight !== 'ok') throw new Error(`Tiny fixture rejected: ${JSON.stringify(preflight)}`);

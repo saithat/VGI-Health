@@ -59,8 +59,9 @@ A stub-CLI test verifies this with zero API calls.
 
 ## Verification
 
-Latest unit suites: 46 agent tests, 165 app tests; agent typecheck/lint and app
-build/typecheck/lint pass. The native composite test certifies the expansion and
+Latest unit suites: 46 agent tests, 165 app tests and 93 world tests; all
+typechecks/lints and the app production build pass. The Lean default build
+passes (315 jobs, six workers, 8 GB virtual-memory ceiling). The native composite test certifies the expansion and
 rejects a hidden required review. Replay/fake nightly tests cover all personas,
 release modes, rejection, atomic failure, resume and train/holdout separation.
 
@@ -68,14 +69,14 @@ Zero-cost single-night integration command (output outside runs/, never commit i
 
 ```sh
 pnpm --filter app build
-pnpm --filter agent dry-run --out /tmp/vgi-agent-FAKE-dry-run
+pnpm --filter agent dry-run
 ```
 
 The dry runner uses the unchanged Lean Tiny spec with a repaired, certifiable
 teaching UI and one synthetic task. Its manifest says **FAKE**, uses a scripted
 backend, costs zero LLM calls, and uses the real native EHR and production screen
 checks. Its candidate combines a composite, a sandboxed presentation and a hotkey.
-Dry-run result: pending final integration check.
+Dry-run result: **deployed v1** at `/tmp/vgi-agent-FAKE-dry-run` (FAKE manifest, real EHR, zero LLM cost). Both v0/v1 whole-version production gates passed (9 exported states / 3 distinct trees each, both widths). The real simulator completes the one fixture task before and after. Native verdict is ok; the non-empty presentation bundle and editable source are bound in the v1 sidecar. Command journal: 3 check, 2 deploy, 2 min-clicks, 2 render-screens, 5 simulate. No dry-run data is committed.
 
 ## Future real commands — orchestrator only, after pending main merges
 
