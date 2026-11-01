@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../release-config.js';
 /**
  * FAKE fixtures for EHR_FAKE=1 (tests and offline smoke runs only).
  *
@@ -12,7 +13,7 @@ const PRESCRIBERS = ['physician', 'np', 'surgeon'] as const;
 
 function baseSpec(): Spec {
   return {
-    version: 'v1',
+    version: RELEASE_IDS.base,
     elements: [
       { id: 'patientIdReentry', label: 'Patient ID re-entry', kind: 'identity', enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'never', friction: 'safety', humanOnly: true, fhirTarget: 'Provenance' },
       { id: 'weight', label: 'Weight (kg)', kind: { quantity: { unit: 'kg' } }, enteredBy: ['physician', 'np', 'surgeon', 'rn'], prefill: 'recordConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'Observation.valueQuantity' },
@@ -86,15 +87,15 @@ function baseSpec(): Spec {
 
 export function fakeSpec(version: string): Spec {
   const spec = baseSpec();
-  if (version === 'v1') return spec;
+  if (version === RELEASE_IDS.base) return spec;
   // v1.1: optional prior-auth feature, new component kind, no new requirements.
-  spec.version = 'v1.1';
+  spec.version = RELEASE_IDS.feature;
   spec.infos.push({ id: 'priorAuth', label: 'Prior-authorization status', version: '' });
   spec.design.catalog.push('priorAuthStatus');
-  if (version === 'v1.1') return spec;
-  if (version !== 'v2') throw new Error(`fake spec: unknown version ${version}`);
+  if (version === RELEASE_IDS.feature) return spec;
+  if (version !== RELEASE_IDS.migration) throw new Error(`fake spec: unknown version ${version}`);
   // v2: antibiotic indication required and shown to nurses.
-  spec.version = 'v2';
+  spec.version = RELEASE_IDS.migration;
   spec.elements.push({ id: 'abxIndication', label: 'Antibiotic indication', kind: { coded: { valueSet: 'abx-indications' } }, enteredBy: [...PRESCRIBERS], prefill: 'defaultConfirm', friction: 'compliance', humanOnly: false, fhirTarget: 'MedicationRequest.reasonCode' });
   spec.infos.push({ id: 'abxIndication', label: 'Antibiotic indication', version: '' });
   spec.entries.push({ commit: 'signOrders', element: 'abxIndication', when: { orderClass: { cls: 'antibiotic' } }, perOrderLine: true });
@@ -247,7 +248,7 @@ function canonicalV1(): Program {
       commit('w6-dc', 'discharge', 'Discharge'),
     ]),
   ];
-  return { id: 'canonical', version: 0, owner: 'canonical', role: 'physician', specVersion: 'v1', start: 'home', screens, macros: [] };
+  return { id: 'canonical', version: 0, owner: 'canonical', role: 'physician', specVersion: RELEASE_IDS.base, start: 'home', screens, macros: [] };
 }
 
 function addTo(program: Program, screenId: string, comps: Component[], before?: string): void {
@@ -260,12 +261,12 @@ function addTo(program: Program, screenId: string, comps: Component[], before?: 
 
 export function fakeCanonical(version: string): Program {
   const p = canonicalV1();
-  if (version === 'v1') return p;
-  p.specVersion = 'v1.1';
+  if (version === RELEASE_IDS.base) return p;
+  p.specVersion = RELEASE_IDS.feature;
   p.version = 1;
   addTo(p, 'w1-orders', [c('w1-priorauth', { priorAuthStatus: { scope: 'imaging,specialtyMed' } }, { label: 'Prior authorization', tag: 'priorAuthPanel' })], 'w1-go-sign');
-  if (version === 'v1.1') return p;
-  p.specVersion = 'v2';
+  if (version === RELEASE_IDS.feature) return p;
+  p.specVersion = RELEASE_IDS.migration;
   p.version = 2;
   const ind = (id: string) => field(id, 'abxIndication', { kind: { field: { element: 'abxIndication', slot: 'current', prefill: 'none' } } });
   addTo(p, 'w1-orders', [ind('w1-indication')], 'w1-dup');
@@ -277,7 +278,7 @@ export function fakeCanonical(version: string): Program {
 }
 
 export const FAKE_RELEASE_NOTES: Record<string, string> = {
-  'v1.1': [
+  [RELEASE_IDS.feature]: [
     '# Release v1.1: Prior-authorization status (FAKE fixture)',
     'R1.1-1: New component kind `priorAuthStatus` shows payer prior-auth status for imaging and specialty meds.',
     'R1.1-2: A "request prior auth" action writes only a ServiceRequest/Task.',

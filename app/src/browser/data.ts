@@ -1,3 +1,4 @@
+import { presentationBundleSchema, type PresentationBundle } from "../ehr/ui/presentation-types";
 import { assertBuildBinding, buildBindingSchema, contentHash } from "../core/buildBinding";
 import { z } from "zod";
 
@@ -106,17 +107,28 @@ export const verdictsSchema = z.object({
 });
 
 /** New run certificates bind their complete program and installed build; old recordings retain historical provenance. */
-export async function verifyRecordedBuild(programPath: string, program: unknown): Promise<void> {
+export async function verifyRecordedBuild(programPath: string, program: unknown): Promise<PresentationBundle | null> {
   const match = /^runs\/([\w-]+)\/programs\/(P[1-5])\/v(\d+)\.json$/.exec(programPath);
-  if (!match) return;
+  if (!match) return null;
   const [, run, persona, version] = match;
   const manifest = z.object({ buildBindingRequired: z.boolean().optional() }).parse(await readArtifact(`/runs/${run}/manifest.json`));
-  if (!manifest.buildBindingRequired) return;
+  if (!manifest.buildBindingRequired) return null;
   const [binding, certificate, build, wasm] = await Promise.all([
     readArtifact(`/runs/${run}/certs/${persona}/v${version}.build.json`).then((v) => buildBindingSchema.parse(v)),
     readArtifact(`/runs/${run}/certs/${persona}/v${version}.json`),
     readArtifact("/build.json").then((v) => z.object({ appSha256: z.string() }).parse(v)),
     readArtifact("/ehr/manifest.json").then((v) => z.object({ assets: z.record(z.string(), z.string()) }).parse(v)),
   ]);
-  await assertBuildBinding(binding, { appSha256: build.appSha256, wasmSha256: wasm.assets["ehr-interp.wasm"] ?? "", componentsSha256: await contentHash([]) }, program, certificate);
+  if (binding.sourceProgramSha256) {
+    const source = await readArtifact(`/runs/${run}/programs/${persona}/v${version}.source.json`);
+    if (await contentHash(source) !== binding.sourceProgramSha256) throw new Error("Certified source program mismatch");
+  }
+  const emptyHash = await contentHash([]);
+  const presentations = binding.componentsSha256 === emptyHash ? null : presentationBundleSchema.parse(await readArtifact(`/runs/${run}/programs/${persona}/v${version}.components.json`));
+  if (presentations) {
+    const identity = z.object({ owner: z.string(), version: z.number() }).parse(program);
+    if (presentations.owner !== identity.owner || presentations.version !== identity.version) throw new Error("Presentation manifest belongs to another version");
+  }
+  await assertBuildBinding(binding, { appSha256: build.appSha256, wasmSha256: wasm.assets["ehr-interp.wasm"] ?? "", componentsSha256: presentations ? await contentHash(presentations) : emptyHash }, program, certificate);
+  return presentations;
 }

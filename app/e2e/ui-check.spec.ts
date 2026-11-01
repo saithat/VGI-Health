@@ -1,3 +1,4 @@
+import { presentationBundleSchema } from "../src/ehr/ui/presentation-types";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
@@ -19,12 +20,13 @@ const fixtures = supplied.length
   : readdirSync("src/fixtures/ui")
       .filter((name) => name.endsWith(".json"))
       .map((name) => resolve("src/fixtures/ui", name));
+const presentations = process.env.EHR_PRESENTATION_BUNDLE ? presentationBundleSchema.parse(JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, "utf8"))) : null;
 const minimum = Number(process.env.EHR_MIN_FONT_PX ?? 12);
 if (!Number.isFinite(minimum) || minimum < 12)
   throw new Error("Legibility minimum must be at least 12px");
 
 async function render(page: Page, screen: UiScreen) {
-  await page.evaluate((screen) => window.renderUi(screen), screen);
+  await page.evaluate(({ screen, presentations }) => window.renderUi(screen, presentations), { screen, presentations });
   await page.evaluate(() => document.fonts.ready);
   // Accordion uses transitions. Wait for every expected region to settle.
   await page.waitForTimeout(220);

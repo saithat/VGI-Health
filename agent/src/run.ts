@@ -10,7 +10,7 @@
  * After the last day, each deployed change gets its TEST measurement: day
  * night+2 (never used to select it) replayed on the old and new versions.
  */
-import releaseDaysConfig from "../../world/releases.json";
+import { RELEASE_IDS, RELEASE_DAYS } from './release-config.js';
 import { mkdir, readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -96,7 +96,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
-  const releaseDays = opts.releaseDays ?? releaseDaysConfig;
+  const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
@@ -111,6 +111,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   };
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
     createdAt: z.string(), world: z.string(), backend: z.string(), personas: z.array(z.string()),
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
     releaseDays: z.object({ v1_1: z.number(), v2: z.number() }), seedPolicy: z.string(),
@@ -120,6 +121,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
     if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
         JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
@@ -128,6 +130,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   }
   const manifestData = {
     status: 'initializing',
+    releaseIds: RELEASE_IDS,
     buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
@@ -145,7 +148,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     releases.set(id, r);
     return r;
   };
-  let inForce = await release('v1');
+  let inForce = await release(RELEASE_IDS.base);
 
   // Fail with every initial obstruction before spending browser/model time. No bypass.
   if (ehr.mode === 'real') {
@@ -218,7 +221,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (day === opts.days) break;
 
     // Night `day`: the release (if any) takes effect at the next login.
-    const nextRelease = day + 1 === releaseDays.v1_1 ? await release('v1.1') : day + 1 === releaseDays.v2 ? await release('v2') : null;
+    const nextRelease = day + 1 === releaseDays.v1_1 ? await release(RELEASE_IDS.feature) : day + 1 === releaseDays.v2 ? await release(RELEASE_IDS.migration) : null;
     for (const [id, view] of views) {
       const { program: current } = await store.login(id);
       const nightInput = {
@@ -236,7 +239,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
           if (candidate.candidate.seeded) seedState.injected++;
         }
         res = { record, deployed: record.deployed ? programs.get(id)?.get(record.versionAfter) ?? null : null };
-      } else if (next?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next });
+      } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...nightInput, next });
       else if (next) res = await runMigration(deps, { ...nightInput, next });
       else res = await runNight(deps, nightInput);
       const r = res.record;

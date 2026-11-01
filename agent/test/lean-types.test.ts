@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../src/release-config.js';
 import { readFileSync } from 'node:fs';
 import { REPO_ROOT } from '../src/util.js';
 /**
@@ -26,7 +27,7 @@ describe('validators vs Lean-written samples', () => {
   });
 
   it('real vendor specs and programs round-trip without dropping constrained values or release actions', () => {
-    for (const version of ['v1', 'v1.1', 'v2']) {
+    for (const version of [RELEASE_IDS.base, RELEASE_IDS.feature, RELEASE_IDS.migration]) {
       const spec: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/spec.json`, 'utf8'));
       same(specSchema.parse(spec), spec);
       for (const file of ['canonical', ...['P1', 'P2', 'P3', 'P4', 'P5'].map(id => `personas/${id}`)]) {

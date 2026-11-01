@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../release-config.js';
 /**
  * FAKE `ehr` (EHR_FAKE=1): FOR TESTS AND OFFLINE SMOKE RUNS ONLY.
  *
@@ -266,7 +267,7 @@ function commitClicks(s: Screen): Event[] {
 function reviewApplies(when: Spec['reviews'][number]['when'], s: Screen, spec: Spec, commit: string): boolean {
   if (when === 'always') return true;
   if (when === 'abnormalResult') return commit === 'ackResult';
-  if (isRecord(when) && 'medClass' in when) return spec.version === 'v2' && s.workflow === 'W4';
+  if (isRecord(when) && 'medClass' in when) return spec.version === RELEASE_IDS.migration && s.workflow === 'W4';
   return false;
 }
 

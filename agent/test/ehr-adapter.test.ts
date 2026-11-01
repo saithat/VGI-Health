@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../src/release-config.js';
 /**
  * The real `ehr` adapter against a stub binary: pins the native command
  * lines and output handling (documented in src/ehr.ts and STATUS.md) so the
@@ -11,7 +12,7 @@ import { fakeSchedule, FAKE_PERSONAS } from '../src/fake/world.js';
 import { tmp } from './helpers.js';
 
 const VIOLATION = { violation: { property: 'UnitsRight', message: 'lb', counterexample: [{ click: { comp: 'b' } }], screens: ['s'] } };
-const CERT = { specVersion: 'v1', specHash: 'h', programHash: 'p', verdict: 'ok', checkerVersion: 'stub', time: 't' };
+const CERT = { specVersion: RELEASE_IDS.base, specHash: 'h', programHash: 'p', verdict: 'ok', checkerVersion: 'stub', time: 't' };
 const DAY = { day: 1, persona: 'P1', programVersion: 0, trace: [], tasks: [], floor: [], complaints: [] };
 
 async function stub(dir: string, verdictOk: boolean): Promise<{ bin: string; log: string }> {
@@ -34,7 +35,7 @@ esac
 }
 
 describe('ehr CLI adapter (stub binary)', () => {
-  const program = fakeCanonical('v1');
+  const program = fakeCanonical(RELEASE_IDS.base);
   const persona = FAKE_PERSONAS[0];
   const schedule = fakeSchedule(1, 'P1', 7);
 
@@ -43,11 +44,11 @@ describe('ehr CLI adapter (stub binary)', () => {
     const { bin, log } = await stub(dir, true);
     const ehr = createEhr({ fake: false, binary: bin });
     expect(ehr.mode).toBe('real');
-    expect(await ehr.check({ specVersion: 'v1', program, prev: program, canonical: program })).toBe('ok');
-    expect(await ehr.deploy({ specVersion: 'v1', program, prev: program, canonical: program, outDir: dir })).toEqual({ deployed: true, certificate: CERT });
+    expect(await ehr.check({ specVersion: RELEASE_IDS.base, program, prev: program, canonical: program })).toBe('ok');
+    expect(await ehr.deploy({ specVersion: RELEASE_IDS.base, program, prev: program, canonical: program, outDir: dir })).toEqual({ deployed: true, certificate: CERT });
     if (!persona) throw new Error('persona');
-    expect((await ehr.simulate({ specVersion: 'v1', program, persona, schedule, worldDir: '/w', seed: 3 })).day).toBe(1);
-    expect((await ehr.minClicks({ specVersion: 'v1', program, schedule, worldDir: '/w' })).tasks[0]?.clicks).toBe(6);
+    expect((await ehr.simulate({ specVersion: RELEASE_IDS.base, program, persona, schedule, worldDir: '/w', seed: 3 })).day).toBe(1);
+    expect((await ehr.minClicks({ specVersion: RELEASE_IDS.base, program, schedule, worldDir: '/w' })).tasks[0]?.clicks).toBe(6);
     expect(await ehr.runBatch([{ spec: {}, program: {}, facts: {}, user: {}, events: [] }])).toEqual([{ case: 0, index: 0 }, { case: 0, index: 1 }]);
     expect((await ehr.specExport('tiny')).version).toBe('tiny-1');
     const lines = (await readFile(log, 'utf8')).trim().split('\n');
@@ -63,8 +64,8 @@ describe('ehr CLI adapter (stub binary)', () => {
     const dir = await tmp('stub-bad');
     const { bin } = await stub(dir, false);
     const ehr = createEhr({ fake: false, binary: bin });
-    expect(await ehr.check({ specVersion: 'v1', program, prev: program, canonical: program })).toEqual(VIOLATION);
-    expect(await ehr.deploy({ specVersion: 'v1', program, prev: program, canonical: program, outDir: dir })).toEqual({ deployed: false, verdict: VIOLATION });
+    expect(await ehr.check({ specVersion: RELEASE_IDS.base, program, prev: program, canonical: program })).toEqual(VIOLATION);
+    expect(await ehr.deploy({ specVersion: RELEASE_IDS.base, program, prev: program, canonical: program, outDir: dir })).toEqual({ deployed: false, verdict: VIOLATION });
   });
 
   it('refuses fake certification outside the unit-test environment', () => {
@@ -83,6 +84,6 @@ describe('ehr CLI adapter (stub binary)', () => {
 
   it('explains a missing binary', async () => {
     const ehr = createEhr({ fake: false, binary: '/nonexistent/ehr' });
-    await expect(ehr.check({ specVersion: 'v1', program, prev: program, canonical: program })).rejects.toThrow(/not found/);
+    await expect(ehr.check({ specVersion: RELEASE_IDS.base, program, prev: program, canonical: program })).rejects.toThrow(/not found/);
   });
 });

@@ -1,3 +1,5 @@
+import { expandProgram } from './composites.js';
+import { compilePresentations } from './presentation-compiler.js';
 import path from 'node:path';
 import { bindBuild, installedBuild } from './build-binding.js';
 import { promptContext } from './manual.js';
@@ -93,6 +95,8 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
   let program: Program;
   try {
     program = applyToProgram(base, patch, { version: gate.nextVersion, specVersion: gate.specVersion }).program;
+    expandProgram(program);
+    compilePresentations(program);
   } catch (e) {
     return { program: null, check: invalidPatch(e) };
   }

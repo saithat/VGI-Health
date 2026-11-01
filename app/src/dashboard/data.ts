@@ -68,6 +68,7 @@ export interface RunData {
   records: DecisionRecord[];
   days: DayResult[];
   programs: Map<string, Program>;
+  sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
   complexity: ComplexityData | null;
@@ -113,6 +114,7 @@ export async function loadRun(
     records: [],
     days: [],
     programs: new Map(),
+    sources: new Map(),
     certs: new Map(),
     replay: null,
     complexity: null,
@@ -128,6 +130,8 @@ export async function loadRun(
         run.days.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
+      else if (/^programs\/[\w-]+\/v\d+\.source\.json$/.test(file))
+        run.sources?.set(file.replace(/\.source\.json$/, '.json'), programSchema.parse(await get(file)));
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
@@ -150,7 +154,8 @@ export function programAt(
   persona: string,
   version: number,
 ): Program {
-  const program = run.programs.get(`programs/${persona}/v${version}.json`);
+  const key = `programs/${persona}/v${version}.json`;
+  const program = run.sources?.get(key) ?? run.programs.get(key);
   if (!program)
     throw new Error(`Missing recorded program ${persona}/v${version}`);
   return program;

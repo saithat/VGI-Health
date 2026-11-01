@@ -1,3 +1,4 @@
+import { RELEASE_IDS, releaseModule } from './release-config.js';
 /**
  * Spec versions, canonical programs, and vendor release inputs.
  *
@@ -27,7 +28,6 @@ export interface Release {
   fake: boolean;
 }
 
-const LEAN_MODULE: Record<string, string> = { v1: 'V1', 'v1.1': 'V1_1', v2: 'V2' };
 
 async function readText(file: string): Promise<string | null> {
   return existsSync(file) ? readFile(file, 'utf8') : null;
@@ -40,11 +40,11 @@ export async function loadRelease(id: string, ehr: EhrClient, root: string = REP
   const dir = path.join(root, 'releases', id);
   const specFile = path.join(dir, 'spec.json');
   const spec = existsSync(specFile) ? await readJson(specFile, specSchema) : await ehr.specExport(id);
-  const candidates = [path.join(dir, 'canonical.json'), ...(id === 'v1' ? [path.join(root, 'programs', 'canonical', 'v0.json')] : [])];
+  const candidates = [path.join(dir, 'canonical.json'), ...(id === RELEASE_IDS.base ? [path.join(root, 'programs', 'canonical', 'v0.json')] : [])];
   const canonicalFile = candidates.find((f) => existsSync(f));
   if (!canonicalFile) throw new Error(`no canonical program for release ${id} (looked in ${candidates.join(', ')})`);
   const canonical = await readJson(canonicalFile, programSchema);
-  const moduleName = LEAN_MODULE[id];
+  const moduleName = releaseModule(id);
   const leanSpecSource = moduleName ? await readText(path.join(root, 'lean', 'Ehr', 'Specs', `${moduleName}.lean`)) : null;
   return { id, specVersion: id, spec, canonical, notes: (await readText(path.join(dir, 'RELEASE_NOTES.md'))) ?? '', leanSpecSource, fake: false };
 }

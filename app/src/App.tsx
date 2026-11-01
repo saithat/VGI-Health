@@ -1,3 +1,4 @@
+import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert, Button, Drawer } from "@mantine/core";
 import { UiScreenView } from "./ehr/ui/Screen";
@@ -21,6 +22,7 @@ import {
 
 type Session = ReturnType<typeof createSession>;
 interface Workspace {
+  presentations: PresentationBundle | null;
   session: Session;
   catalog: Catalog;
   program: ProgramEntry;
@@ -68,7 +70,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
         }}
       >
         {ui ? (
-          <UiScreenView screen={ui} onEvent={dispatch} />
+          <UiScreenView screen={ui} onEvent={dispatch} presentations={workspace.presentations} />
         ) : (
           <Alert color="red" role="alert">
             The semantic renderer is unavailable. Rebuild the EHR WASM assets.
@@ -228,7 +230,7 @@ export function App() {
           .then((data) => verdictsSchema.parse(data))
           .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
-      await verifyRecordedBuild(program.path, source);
+      const presentations = await verifyRecordedBuild(program.path, source);
       const facts = JSON.parse(
         interp.facts(
           JSON.stringify({
@@ -256,6 +258,7 @@ export function App() {
       if (active) {
         setWorkspace({
           session,
+          presentations,
           catalog,
           program: { ...program, release },
           patient,

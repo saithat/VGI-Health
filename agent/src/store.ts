@@ -1,3 +1,8 @@
+import { presentationBundleSchema } from '../../app/src/ehr/ui/presentation-types.js';
+import { existsSync } from 'node:fs';
+import { expandProgram } from './composites.js';
+import { compilePresentations } from './presentation-compiler.js';
+import { REPO_ROOT } from './util.js';
 /**
  * Run directory layout:
  *   runs/<run-id>/manifest.json
@@ -20,10 +25,10 @@ import {
 } from './schema.js';
 import { pad2, readJson, writeJson, writeJsonAtomic } from './util.js';
 
-export const deployedPointerSchema = z.object({ version: z.number().int().nonnegative(), program: z.string(), certificate: z.string(), build: z.string().optional() });
+export const deployedPointerSchema = z.object({ version: z.number().int().nonnegative(), program: z.string(), certificate: z.string(), build: z.string().optional(), source: z.string().optional(), components: z.string().optional() });
 
 export class RunStore {
-  constructor(readonly dir: string) {}
+  constructor(readonly dir: string, private readonly customRoot = path.join(REPO_ROOT, 'app/src/ehr/ui/custom')) {}
 
   programPath(persona: string, version: number): string { return path.join(this.dir, 'programs', persona, `v${version}.json`); }
   certPath(persona: string, version: number): string { return path.join(this.dir, 'certs', persona, `v${version}.json`); }
@@ -32,14 +37,39 @@ export class RunStore {
   rel(p: string): string { return path.relative(this.dir, p); }
 
   /** Store a certified version and point login at it. */
-  async deploy(persona: string, program: Program, certificate: Certificate, build?: BuildBinding): Promise<{ version: number; program: string; certificate: string; build?: string }> {
+  async deploy(persona: string, program: Program, certificate: Certificate, build?: BuildBinding): Promise<{ version: number; program: string; certificate: string; build?: string; source?: string; components?: string }> {
+    const currentPointerFile = path.join(this.dir, 'programs', persona, 'deployed.json');
+    if (existsSync(currentPointerFile)) {
+      const current = await readJson(currentPointerFile, deployedPointerSchema);
+      if (program.version <= current.version) throw new Error('Published versions are immutable; deploy a new version');
+    }
     const programFile = this.programPath(persona, program.version);
     const certFile = this.certPath(persona, program.version);
-    await writeJsonAtomic(programFile, program);
+    const executable = expandProgram(program);
+    const components = compilePresentations(program);
+    if (build) {
+      buildBindingSchema.parse(build);
+      if (build.programSha256 !== sha256(stableStringify(executable)) || build.componentsSha256 !== sha256(stableStringify(components ?? []))) throw new Error('Staged build does not bind the executable/component bundle');
+    }
+    const sourceFile = programFile.replace(/\.json$/, '.source.json');
+    const componentsFile = programFile.replace(/\.json$/, '.components.json');
+    await writeJsonAtomic(sourceFile, program);
+    if (components) {
+      if (!/^[\w-]+$/.test(program.owner)) throw new Error('Unsafe presentation owner path');
+      await writeJsonAtomic(componentsFile, components);
+      const customDir = path.join(this.customRoot, program.owner, `v${program.version}`);
+      for (const component of components.components) {
+        const { writeFile, mkdir } = await import('node:fs/promises');
+        await mkdir(customDir, { recursive: true });
+        await writeFile(path.join(customDir, `${component.name}.tsx`), component.source);
+      }
+      await writeJsonAtomic(path.join(customDir, 'manifest.json'), components);
+    }
+    await writeJsonAtomic(programFile, executable);
     await writeJsonAtomic(certFile, certificate);
     const buildFile = certFile.replace(/\.json$/, '.build.json');
     if (build) await writeJsonAtomic(buildFile, buildBindingSchema.parse(build));
-    const pointer = { version: program.version, program: this.rel(programFile), certificate: this.rel(certFile), ...(build ? { build: this.rel(buildFile) } : {}) };
+    const pointer = { version: program.version, program: this.rel(programFile), certificate: this.rel(certFile), source: this.rel(sourceFile), ...(components ? { components: this.rel(componentsFile) } : {}), ...(build ? { build: this.rel(buildFile) } : {}) };
     await writeJsonAtomic(path.join(this.dir, 'programs', persona, 'deployed.json'), pointer);
     return pointer;
   }
@@ -54,7 +84,14 @@ export class RunStore {
       if (binding.programSha256 !== sha256(stableStringify(program)) || binding.certificateSha256 !== sha256(stableStringify(certificate)))
         throw new Error('Deployed program/certificate no longer match their build binding');
     }
-    return { program, certificate };
+    const source = pointer.source ? await readJson(path.join(this.dir, pointer.source), programSchema) : program;
+    if (pointer.build) {
+      const binding = await readJson(path.join(this.dir, pointer.build), buildBindingSchema);
+      if (binding.sourceProgramSha256 && binding.sourceProgramSha256 !== sha256(stableStringify(source))) throw new Error('Source program no longer matches its build binding');
+      const components = pointer.components ? await readJson(path.join(this.dir, pointer.components), presentationBundleSchema) : [];
+      if (binding.componentsSha256 !== sha256(stableStringify(components))) throw new Error('Components no longer match the build binding');
+    }
+    return { program: source, certificate };
   }
 
   async writeDecision(record: DecisionRecord): Promise<string> {
@@ -72,6 +109,8 @@ export class RunStore {
   }
 
   readProgram(persona: string, version: number): Promise<Program> {
-    return readJson(this.programPath(persona, version), programSchema);
+    const executable = this.programPath(persona, version);
+    const source = executable.replace(/\.json$/, '.source.json');
+    return readJson(existsSync(source) ? source : executable, programSchema);
   }
 }

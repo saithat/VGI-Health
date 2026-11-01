@@ -1,4 +1,19 @@
 {
   "v1_1": 4,
-  "v2": 7
+  "v2": 7,
+  "ids": {
+    "base": "v1",
+    "feature": "v1.1",
+    "migration": "v2"
+  },
+  "leanModules": {
+    "base": "V1",
+    "feature": "V1_1",
+    "migration": "V2"
+  },
+  "legacyIds": {
+    "base": "v1",
+    "feature": "v1.1",
+    "migration": "v2"
+  }
 }

@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../src/release-config.js';
 import { readFile } from 'node:fs/promises';
 import { runDays } from '../src/run.js';
 import { RunStore } from '../src/store.js';
@@ -25,7 +26,7 @@ it('resumes an unfinished night without repeating completed days, decisions or L
   expect((await store.readDecision(1, 'P3')).llmCalls).toEqual(decision.llmCalls);
   expect(resumed.timelines[0]?.days.map(day => day.day)).toEqual([1, 2, 3]);
   expect(resumed.timelines[0]?.nights.map(night => night.night)).toEqual([1, 2]);
-  expect((await store.readDecision(2, 'P3')).specVersion).toBe('v2');
+  expect((await store.readDecision(2, 'P3')).specVersion).toBe(RELEASE_IDS.migration);
   expect((await store.login('P3')).certificate.verdict).toBe('ok');
 });
 

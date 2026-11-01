@@ -26,6 +26,7 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
     sources: sources.map((file) => [file, digest(readFileSync(resolve(appDir, file)))]),
     browser: digest(readFileSync(chromium.executablePath())),
     playwright: digest(readFileSync(resolve(appDir, "node_modules/@playwright/test/package.json"))),
+    presentations: process.env.EHR_PRESENTATION_BUNDLE ? digest(readFileSync(process.env.EHR_PRESENTATION_BUNDLE)) : null,
     node: process.version, platform: process.platform,
     minimumFont: process.env.EHR_MIN_FONT_PX ?? "12", projects: ["desktop", "narrow"],
   });

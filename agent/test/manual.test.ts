@@ -1,10 +1,11 @@
+import { RELEASE_IDS } from '../src/release-config.js';
 import { capabilitiesManual, formalRuleContext, promptContext } from '../src/manual.js';
 import { sha256 } from '../src/program.js';
 import { createEhr } from '../src/ehr.js';
 import { loadRelease, releaseForPersona } from '../src/releases.js';
 
 it('generates the core manual and persona rules from active formal sources with reproducible hashes', async () => {
-  const release = await releaseForPersona(await loadRelease('v1', createEhr({ fake: false })), 'P3');
+  const release = await releaseForPersona(await loadRelease(RELEASE_IDS.base, createEhr({ fake: false })), 'P3');
   const c = promptContext(release.spec, release.canonical);
   expect(c.manualHash).toBe(sha256(capabilitiesManual()));
   expect(c.ruleContextHash).toBe(sha256(formalRuleContext(release.spec, release.canonical)));

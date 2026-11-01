@@ -31,6 +31,8 @@
  * EHR_FAKE=1 swaps in `createFakeEhr()` (src/fake/ehr-fake.ts): plausible,
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.
  */
+import { expandProgram } from './composites.js';
+import { programSchema } from './schema.js';
 import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
@@ -128,7 +130,7 @@ class CliEhr implements EhrClient {
       const paths: Record<string, string> = {};
       for (const [name, value] of Object.entries(files)) {
         const p = path.join(dir, `${name}.json`);
-        await writeJson(p, value);
+        await writeJson(p, ['program', 'prev', 'canonical'].includes(name) ? expandProgram(programSchema.parse(value)) : value);
         paths[name] = p;
       }
       return await fn(paths);

@@ -1,3 +1,4 @@
+import { RELEASE_IDS } from '../src/release-config.js';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { bindBuild } from '../src/build-binding.js';
@@ -8,8 +9,8 @@ import { tmp } from './helpers.js';
 it('publishes a complete bound version through one pointer and rejects changed artifacts at login', async () => {
   const dir = await tmp('bound-publication');
   const store = new RunStore(dir);
-  const program = fakeCanonical('v1');
-  const certificate = { specVersion: 'v1', specHash: 's', programHash: 'p', verdict: 'ok' as const, checkerVersion: 'test', time: 'now' };
+  const program = fakeCanonical(RELEASE_IDS.base);
+  const certificate = { specVersion: RELEASE_IDS.base, specHash: 's', programHash: 'p', verdict: 'ok' as const, checkerVersion: 'test', time: 'now' };
   const build = { appSha256: 'a'.repeat(64), wasmSha256: 'b'.repeat(64), componentsSha256: 'c'.repeat(64) };
   const pointer = await store.deploy('P1', program, certificate, bindBuild(build, program, certificate));
   expect(pointer.build).toBe('certs/P1/v0.build.json');

@@ -1,3 +1,4 @@
+import { expandProgram } from './composites.js';
 /**
  * Step 1 (observe): summarize TRAIN days into the evidence the LLM sees.
  * Also: metric aggregation shared by pre-screen, validation, and the record.
@@ -91,7 +92,7 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
 
   for (const d of days) {
     const prog = programs.get(d.result.programVersion) ?? current;
-    const comps = componentById(prog);
+    const comps = componentById(expandProgram(prog));
     let prevTask = '';
     let prevT = 0;
     const enteredPerTask = new Map<string, Map<string, Set<string>>>();

@@ -29,12 +29,18 @@ export class CodexLlm implements JsonLlm {
   readonly model: string;
   private readonly explicitModel: string | null;
 
-  constructor(opts: { model?: string; binary?: string; timeoutMs?: number } = {}) {
+  constructor(opts: { model?: string; binary?: string; timeoutMs?: number; serviceTier?: string; reasoningEffort?: string } = {}) {
+    this.serviceTier = opts.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? null;
+    this.reasoningEffort = opts.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high';
+    if (this.serviceTier !== null && !['fast', 'flex', 'default'].includes(this.serviceTier)) throw new Error('Invalid Codex service tier');
+    if (!['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(this.reasoningEffort)) throw new Error('Invalid reasoning effort');
     this.explicitModel = opts.model ?? process.env['CODEX_MODEL'] ?? null;
     this.model = this.explicitModel ?? configuredModel() ?? 'codex-default';
     this.binary = opts.binary ?? process.env['CODEX_BIN'] ?? 'codex';
     this.timeoutMs = opts.timeoutMs ?? 20 * 60_000;
   }
+  private readonly serviceTier: string | null;
+  private readonly reasoningEffort: string;
   private readonly binary: string;
   private readonly timeoutMs: number;
 
@@ -45,7 +51,7 @@ export class CodexLlm implements JsonLlm {
       const outFile = path.join(dir, 'out.json');
       await writeFile(schemaFile, JSON.stringify(req.schema));
       const args = [
-        'exec', '--json', '-c', `model_reasoning_effort="${process.env['CODEX_REASONING_EFFORT'] ?? 'high'}"`, '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
+        'exec', '--json', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
         '--skip-git-repo-check', '-C', dir, ...(this.explicitModel ? ['-m', this.explicitModel] : []), '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
@@ -57,7 +63,7 @@ export class CodexLlm implements JsonLlm {
       } catch {
         throw new Error(`codex backend: last message for ${req.callId} is not JSON`);
       }
-      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: process.env['CODEX_REASONING_EFFORT'] ?? 'high' }, transcript };
+      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier }, transcript };
     } finally {
       await rm(dir, { recursive: true, force: true });
     }

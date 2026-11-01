@@ -18,6 +18,7 @@
  * component kinds added by vendor releases (`FutureKind`).
  */
 import { z } from 'zod';
+import { presentationSourceSchema, type PresentationSource } from '../../app/src/ehr/ui/presentation-types.js';
 import type * as L from '../../lean/generated/ehr-types.js';
 
 const nat = z.number().int().nonnegative();
@@ -87,7 +88,7 @@ export type FutureKind = { [ctor: string]: unknown };
 export type Kind = L.Kind | FutureKind;
 export type Component = Omit<L.Component, 'kind'> & { kind: Kind };
 export type Screen = Omit<L.Screen, 'components'> & { components: Component[] };
-export type Program = Omit<L.Program, 'screens' | 'componentDefs'> & { screens: Screen[]; componentDefs?: { name: string; params: string[]; body: Component[] }[] };
+export type Program = Omit<L.Program, 'screens' | 'componentDefs'> & { screens: Screen[]; componentDefs?: { name: string; params: string[]; body: Component[] }[]; presentationComponents?: PresentationSource[] };
 
 const slotSchema: z.ZodType<L.Slot> = z.union([z.literal('current'), z.object({ fixed: z.object({ n: nat }) })]);
 const prefillSchema: z.ZodType<L.Prefill> = z.union([
@@ -148,6 +149,7 @@ export const programSchema: z.ZodType<Program> = z.object({
   start: str,
   screens: z.array(z.object({ id: str.min(1), title: str, workflow: str, components: z.array(componentSchema) })),
   macros: z.array(z.object({ id: str.min(1), label: str, steps: z.array(macroStepSchema) })),
+  presentationComponents: z.array(presentationSourceSchema).exactOptional(),
   componentDefs: z.array(z.object({ name: str.min(1), params: z.array(str), body: z.array(componentSchema) })).exactOptional(),
 });
 

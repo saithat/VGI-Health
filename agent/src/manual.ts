@@ -1,3 +1,4 @@
+import { RELEASE_MODULES } from './release-config.js';
 /** Generated from the checked-in formal sources; never reads simulation holdouts. */
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
@@ -25,11 +26,11 @@ function properties(): string {
 function designRules(): string {
   return read('docs/design/core-model.md').split('**Minimal design rules')[1]?.split('Nothing else')[0] ?? '';
 }
-function specDocs(): { text: string; declaration: string }[] {
-  return ['V1', 'V1_1', 'V2', 'Rules/Federal'].flatMap((name) => {
+function specDocs(): { text: string; declaration: string; name: string; origin: string }[] {
+  return [...Object.values(RELEASE_MODULES), 'Rules/Federal'].flatMap((name) => {
     const source = read(`lean/Ehr/Specs/${name}.lean`);
     return [...source.matchAll(/\/--\s*([\s\S]*?)\s*-\/\s*(?:def|private def)\s+(\w+)([\s\S]*?)(?=\n(?:\/--|def |private def |end |theorem )|$)/g)]
-      .map((m) => ({ text: `${m[1] ?? ''} [lean/Ehr/Specs/${name}.lean:${m[2] ?? ''}]`, declaration: m[3] ?? '' }));
+      .map((m) => ({ origin: name, name: m[2] ?? '', text: `${m[1] ?? ''} [lean/Ehr/Specs/${name}.lean:${m[2] ?? ''}]`, declaration: m[3] ?? '' }));
   });
 }
 
@@ -41,11 +42,17 @@ export function formalRuleContext(spec: Spec, program: Program): string {
   const reviews = spec.reviews.filter((e) => commits.has(e.commit));
   const ids = new Set([...entries.map((e) => e.element), ...reviews.map((e) => e.info), ...commits]);
   const labels = [...spec.elements, ...spec.infos, ...spec.commits].filter((e) => ids.has(e.id)).map((e) => ({ id: e.id, label: e.label }));
-  const citations = specDocs().filter((d) => [...ids].some((id) => d.declaration.includes(`"${id}"`))).map((d) => d.text);
+  const citations = specDocs().flatMap((d) => {
+    if (d.origin.startsWith('Rules/') && ruleProfile() === 'core') {
+      if (!commits.has('denyRefill') || !d.declaration.includes('"denyRefill"')) return [];
+      return [`${d.text.split('\n')[0]} Only the exported denyRefill obligation is enforced; the rest of the catalog narrative is switched off. [${d.origin}:${d.name}]`];
+    }
+    return [...ids].some((id) => d.declaration.includes(`"${id}"`) || new RegExp(`\\b${id}\\b`).test(d.declaration)) ? [d.text] : [];
+  });
   return [`Rule profile: ${ruleProfile()}. ${profileLine()}`, `Role ${program.role}; workflows ${[...new Set(program.screens.map((s) => s.workflow))].join(', ')}.`,
     'Enforced entries, reviews, alerts, labels and policy citations (the complete active spec is also supplied):',
     JSON.stringify({ commits: spec.commits.filter((c) => commits.has(c.id)), entries, reviews, alerts: spec.alerts.filter((a) => commits.has(a.commit)), labels, budgets: spec.design }), ...citations,
-    'The active encounter-role policy permits only physicians/surgeons to sign pre-op orders; an NP cannot bypass it. Any attending co-signature is human-only; a simulated attending may supply one in replay only when the formal policy permits, never through designer automation.'].join('\n\n');
+    'All co-signatures are human-only. A simulated attending is not designer automation and never authorizes bypassing an active encounter-role rule.'].join('\n\n');
 }
 
 function programVocabulary(): string {
@@ -75,8 +82,8 @@ One canonical EHR serves everyone. Each persona's v0 is the canonical with that 
 Rule profile: ${ruleProfile()}. ${profileLine()}\n
 ## What you can change\n
 Program screens, start navigation, components, labels, grouping, tabs, visibility, density, shortcuts, copies, provenance prefills, receipts, defaults with confirmation, and guarded macros. Use the generated Program/Kind/Macro types as the exact vocabulary (lean/generated/ehr-types.ts). JSON Patch examples: add a copied button with copyOf; change a panel from normal to compact; link an autoLinked field to its source.\n
-Composite source templates are planned through componentDefs and kind.use. This checkout declares componentDefs but has no Kind.use/Program.expand yet, so composite proposals cannot deploy until that formal support lands. Example: componentDefs [{name:"summary",params:["info"],body:[{id:"panel",kind:{panel:{info:"{{info}}"}},label:"Summary",tab:0,visibility:"always",size:"normal",tag:"summary"}]}], then kind {use:{name:"summary",args:[["info","currentMeds"]]}}. The use component id namespaces expanded ids. No nested use in template bodies.\n
-Presentation components may draw an existing UiNode subtree differently, with events only through its mapped callback. They require a sandbox manifest, component bundle hash, type/lint checks and whole-version ARIA/visibility checks before deployment. If that pipeline is unavailable, presentation proposals cannot deploy.\n
+Composite source templates use componentDefs and kind.use. The agent expands them into existing native kinds, then the real checker certifies the complete executable expansion. Source and expanded executable are saved separately and bound by hashes; the app and trajectory/complexity tools consume the certified executable. Native Lean Kind.use/Program.expand is still an upstream request; no new native semantic kind is invented here. Example: componentDefs [{name:"summary",params:["info"],body:[{id:"panel",kind:{panel:{info:"{{info}}"}},label:"Summary",tab:0,visibility:"always",size:"normal",tag:"summary"}]}], then kind {use:{name:"summary",args:[["info","currentMeds"]]}}. The use component id namespaces expanded ids. No nested use in template bodies.\n
+Presentation components are declared in the source Program's presentationComponents array: {name:"Review", key:"info" or "composite:summary", source:"...TSX..."}. They live at app/src/ehr/ui/custom/<owner>/v<N>/<Name>.tsx with a per-version manifest. A fail-closed compiler accepts a declarative TSX subset: named imports of Box/Stack/Group/Paper/Flex from @mantine/core, and UiNodeView plus type PresentationProps from @ehr/presentation. Export one pure function Review({node,onEvent}: PresentationProps), returning literal layout wrappers around exactly one <UiNodeView node={node} onEvent={onEvent} />. No other JavaScript is executed: the checked TSX lowers to a typed layout manifest. No functions, hooks, globals, dynamic expressions, spread props, DOM, network, storage, timers, unsafe HTML or remapped events. Layout props have a typed allowlist. This deliberately supports layout and density changes; arbitrary React logic and new semantic behavior are unavailable. The build-bound bundle includes source and compiled layout; the real complete-version ARIA/visibility/legibility/no-cover harness paints that bundle before atomic deployment. Example source: import {Paper} from '@mantine/core'; import {UiNodeView,type PresentationProps} from '@ehr/presentation'; export default function Review({node,onEvent}:PresentationProps){return <Paper p="xs" withBorder><UiNodeView node={node} onEvent={onEvent}/></Paper>;}\n
 ## Exact generated UI-program vocabulary\n\n\`\`\`typescript\n${programVocabulary()}\n\`\`\`\n\n## What you cannot change\n
 Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.\n
 ## Enforced properties 1–13, A1–A4\n

@@ -8,6 +8,7 @@ export const buildBindingSchema = z.object({
   componentsSha256: digest,
   programSha256: digest,
   certificateSha256: digest,
+  sourceProgramSha256: digest.optional(),
 });
 export type BuildBinding = z.infer<typeof buildBindingSchema>;
 export function stableJson(value: unknown): string {

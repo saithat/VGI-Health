@@ -1,3 +1,4 @@
+import { RELEASE_IDS, LEGACY_RELEASE_IDS } from './release-config.js';
 /**
  * Re-run ONE night of an existing run for one persona (live demos: "run this
  * night again with Claude"), without touching the original run. The night's
@@ -35,6 +36,7 @@ const manifestSchema = z.object({
   runId: z.string(),
   days: z.number().int(),
   world: z.string(),
+  releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
   releaseDays: z.object({ v1_1: z.number().int(), v2: z.number().int() }),
 });
 
@@ -71,7 +73,8 @@ export async function rerunNight(args: {
   }
 
   const rd = manifest.releaseDays;
-  const inForceId = args.night >= rd.v2 ? 'v2' : args.night >= rd.v1_1 ? 'v1.1' : 'v1';
+  const ids = manifest.releaseIds ?? LEGACY_RELEASE_IDS;
+  const inForceId = args.night >= rd.v2 ? ids.migration : args.night >= rd.v1_1 ? ids.feature : ids.base;
   const auto: Exclude<NightMode, 'auto'> = args.night + 1 === rd.v1_1 ? 'surface-feature' : args.night + 1 === rd.v2 ? 'migrate' : 'nightly';
   const mode = !args.mode || args.mode === 'auto' ? auto : args.mode;
   const release = await loadRelease(inForceId, args.ehr);
@@ -87,8 +90,8 @@ export async function rerunNight(args: {
     holdout: makeHoldout(deps, persona, await world.schedule(args.night + 1, args.persona)),
   };
   let result: NightResult;
-  if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease('v1.1', args.ehr) });
-  else if (mode === 'migrate') result = await runMigration(deps, { ...input, next: await loadRelease('v2', args.ehr) });
+  if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease(RELEASE_IDS.feature, args.ehr) });
+  else if (mode === 'migrate') result = await runMigration(deps, { ...input, next: await loadRelease(RELEASE_IDS.migration, args.ehr) });
   else result = await runNight(deps, input);
   return { result, outDir };
 }

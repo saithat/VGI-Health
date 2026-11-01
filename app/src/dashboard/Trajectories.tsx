@@ -1,3 +1,4 @@
+import type { PresentationBundle } from "../ehr/ui/presentation-types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MantineProvider } from "@mantine/core";
@@ -18,16 +19,19 @@ import { replayTrajectory, type Trajectory } from "./trajectory-replay";
 import "./trajectories.css";
 
 type Loaded = {
+  presentations: PresentationBundle | null;
   task: Trajectory;
   program: Program;
   spec: unknown;
   display: unknown;
 };
 function SemanticFrame({
+  presentations,
   screen,
   highlight,
   title,
 }: {
+  presentations: PresentationBundle | null;
   screen: UiScreen;
   highlight?: string | undefined;
   title: string;
@@ -85,7 +89,7 @@ function SemanticFrame({
               },
             }}
           >
-            <UiScreenView screen={screen} onEvent={() => {}} />
+            <UiScreenView screen={screen} onEvent={() => {}} presentations={presentations} />
           </MantineProvider>,
           doc.body,
         )}
@@ -156,6 +160,7 @@ function Playback({
         </p>
       )}
       <SemanticFrame
+        presentations={loaded.presentations}
         title={`${label} EHR`}
         screen={result.screen}
         highlight={highlight}
@@ -191,7 +196,7 @@ function TaskPlayback({
         readArtifact(`/${task.context.specPath}`),
         readArtifact(`/${task.context.fixtureFile}`),
       ]);
-      await verifyRecordedBuild(task.context.programPath, program);
+      const presentations = await verifyRecordedBuild(task.context.programPath, program);
       const bundle = trajectoryBundleSchema.parse(fixture);
       const parsedProgram = programSchema.parse(program);
       let resources: { resourceType: string; id?: string | undefined }[] =
@@ -227,6 +232,7 @@ function TaskPlayback({
       return {
         task,
         program: parsedProgram,
+        presentations,
         spec,
         display: projection.display,
       };

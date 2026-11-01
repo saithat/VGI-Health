@@ -1,3 +1,4 @@
+import { compilePresentations } from './presentation-compiler.js';
 /**
  * Offline per-version SCREEN CHECK (owner principle: nothing is checked at
  * runtime; every version is verified before the clinician logs in).
@@ -57,9 +58,9 @@ export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bund
   return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir);
 }
 
-function run(cmd: string, args: string[], cwd: string, onOutput?: (chunk: string) => void): Promise<{ code: number; output: string }> {
+function run(cmd: string, args: string[], cwd: string, onOutput?: (chunk: string) => void, env: NodeJS.ProcessEnv = process.env): Promise<{ code: number; output: string }> {
   return new Promise((resolve) => {
-    const child = spawn(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(cmd, args, { cwd, env, stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '';
     const keep = (d: Buffer) => { const chunk = d.toString(); output = (output + chunk).slice(-200_000); onOutput?.(chunk); };
     child.stdout.on('data', keep);
@@ -90,6 +91,9 @@ class CliScreenChecker implements ScreenChecker {
     }
     const dir = await mkdtemp(path.join(tmpdir(), 'screens-'));
     try {
+      const components = compilePresentations(input.program);
+      const componentFile = path.join(dir, 'components.json');
+      if (components) await writeFile(componentFile, JSON.stringify(components));
       const files: string[] = [];
       for (const [i, bundle] of this.bundles.entries()) {
         try {
@@ -116,7 +120,7 @@ class CliScreenChecker implements ScreenChecker {
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); });
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env, EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };

@@ -1,0 +1,27 @@
+import { dryFixture } from '../src/dry-fixture.js';
+import path from 'node:path';
+import { existsSync } from 'node:fs';
+import { tinySpec } from '../../lean/generated/ehr-samples.js';
+import { createEhr, DEFAULT_EHR_BIN } from '../src/ehr.js';
+import { infoOf } from '../src/program.js';
+import { tmp } from './helpers.js';
+import { writeJson } from '../src/util.js';
+it.skipIf(!existsSync(DEFAULT_EHR_BIN))('real checker certifies the full expansion and rejects a hidden required composite review', async () => {
+  const directory = await tmp('native-composite');
+  const specVersion = path.join(directory, 'spec.json');
+  await writeJson(specVersion, tinySpec);
+  const source = dryFixture();
+  const screen = source.screens.find((s) => s.id === 'sign');
+  const original = screen?.components.find((c) => infoOf(c) === 'allergyList');
+  if (!screen || !original) throw new Error('fixture panel');
+  const bodyTemplate = { ...original, id: 'body' };
+  delete bodyTemplate.parent;
+  source.componentDefs = [{ name: 'review', params: [], body: [bodyTemplate] }];
+  original.kind = { use: { name: 'review', args: [] } };
+  const ehr = createEhr({ fake: false });
+  expect(await ehr.check({ specVersion, program: source, prev: source, canonical: source })).toBe('ok');
+  const body = source.componentDefs[0]?.body[0];
+  if (!body) throw new Error('body');
+  body.size = 'tiny';
+  expect(await ehr.check({ specVersion, program: source, prev: source, canonical: source })).not.toBe('ok');
+});
