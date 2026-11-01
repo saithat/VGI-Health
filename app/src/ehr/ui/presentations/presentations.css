@@ -77,10 +77,30 @@
   font-variant-numeric: tabular-nums;
 }
 .table-schedule th:nth-child(2),
-.table-schedule td:nth-child(2),
-.table-trackBoard th:nth-child(2),
-.table-trackBoard td:nth-child(2) {
+.table-schedule td:nth-child(2) {
   width: 17%;
+}
+.table-trackBoard [data-column="Patient"] {
+  width: 13%;
+}
+.table-trackBoard [data-column="Chief complaint"] {
+  width: 14%;
+}
+.table-trackBoard [data-column="Room"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Age/sex"],
+.table-trackBoard [data-column="Acuity"],
+.table-trackBoard [data-column="Arrival"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Status"] {
+  width: 9%;
+}
+.table-trackBoard th,
+.table-trackBoard td {
+  padding-left: 6px;
+  padding-right: 6px;
 }
 .table-schedule th:nth-child(6),
 .table-schedule td:nth-child(6) {
@@ -107,6 +127,21 @@
 }
 .table-messages th:nth-child(6) {
   width: 14%;
+}
+.table-results [data-column="Test"] {
+  width: 28%;
+}
+.table-results [data-column="Unit"] {
+  width: 9%;
+}
+.table-results [data-column="Flag"] {
+  width: 6%;
+}
+.table-flowsheet [data-column="Measure"] {
+  width: 28%;
+}
+.table-flowsheet [data-column="Unit"] {
+  width: 9%;
 }
 .table-timeGrid th,
 .table-timeGrid td,

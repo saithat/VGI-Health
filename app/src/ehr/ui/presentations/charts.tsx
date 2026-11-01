@@ -18,6 +18,35 @@ function number(value: string): number | undefined {
   const n = Number(value);
   return Number.isFinite(n) ? n : undefined;
 }
+/** Tick spacing affects geometry only; it never supplies a clinical reference range. */
+function numericAxis(min: number, max: number) {
+  const padding = (max - min) * 0.06 || Math.abs(max) * 0.01 || 1;
+  const interval = (max - min + 2 * padding) / 4;
+  const power = 10 ** Math.floor(Math.log10(interval));
+  const step =
+    ([1, 2, 2.5, 5, 10].find((n) => n * power >= interval) ?? 10) * power;
+  const start = Math.floor((min - padding) / step);
+  const end = Math.ceil((max + padding) / step);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start)
+    return { low: min, high: max, ticks: [...new Set([min, max])] };
+  const decimals = Math.max(0, 1 - Math.floor(Math.log10(step)));
+  return {
+    low: start * step,
+    high: end * step,
+    ticks: Array.from({ length: end - start + 1 }, (_, i) =>
+      Number(
+        decimals > 100
+          ? ((start + i) * step).toPrecision(15)
+          : ((start + i) * step).toFixed(decimals),
+      ),
+    ),
+  };
+}
+function fraction(value: number, low: number, high: number) {
+  if (low === high) return 0.5;
+  const scale = Math.max(Math.abs(low), Math.abs(high)) || 1;
+  return (value / scale - low / scale) / (high / scale - low / scale);
+}
 /** Geometry only: unlike measures and units always occupy different charts. */
 function seriesFor(node: Info, kind: "trend" | "growth"): Series[] {
   const groups = new Map<string, Series>();
@@ -128,12 +157,9 @@ export function ClinicalChart({
           }),
           { xmin: Infinity, xmax: -Infinity, ymin: Infinity, ymax: -Infinity },
         );
-        const yrange = ymax - ymin || Math.abs(ymax) * 0.1 || 1;
-        const low = ymin - yrange * 0.12,
-          high = ymax + yrange * 0.12;
-        const x = (n: number) =>
-          xmin === xmax ? 344 : 64 + ((n - xmin) / (xmax - xmin)) * 560;
-        const y = (n: number) => 200 - ((n - low) / (high - low)) * 162;
+        const { low, high, ticks: valueTicks } = numericAxis(ymin, ymax);
+        const x = (n: number) => 64 + fraction(n, xmin, xmax) * 560;
+        const y = (n: number) => 200 - fraction(n, low, high) * 162;
         const path = (points: Point[]) =>
           points.map((p) => `${x(p.x)},${y(p.y)}`).join(" ");
         const lower = s.references.get("5th"),
@@ -146,19 +172,19 @@ export function ClinicalChart({
             ? path(lower) + " " + path([...upper].reverse())
             : undefined;
         const recorded = [...new Set(s.points.map((point) => point.x))];
+        const tickLimit = kind === "growth" ? 6 : 5;
         const recordedTicks =
-          recorded.length <= 5
+          recorded.length <= tickLimit
             ? recorded
-            : [0, 1, 2, 3, 4].map(
-                (i) =>
-                  recorded[Math.round((i * (recorded.length - 1)) / 4)] ?? xmin,
+            : Array.from(
+                { length: tickLimit },
+                (_, i) =>
+                  recorded[
+                    Math.round((i * (recorded.length - 1)) / (tickLimit - 1))
+                  ] ?? xmin,
               );
-        const ticks =
-          kind === "growth"
-            ? xmin === xmax
-              ? [xmin]
-              : [0, 1, 2, 3, 4].map((i) => xmin + ((xmax - xmin) * i) / 4)
-            : recordedTicks;
+        // Ages use supplied measurement points, not interpolated fractional months.
+        const ticks = recordedTicks.length ? recordedTicks : [xmin];
         const sourceTick = (value: number) => {
           if (kind === "growth") return String(Number(value.toFixed(1)));
           if (!s.timeBased) return String(Math.round(value) + 1);
@@ -167,15 +193,19 @@ export function ClinicalChart({
           const human =
             /^([A-Za-z]{3}) (\d{1,2}), \d{4}(?: (\d{2}:\d{2}))?$/.exec(label);
           if (human)
-            return xmax - xmin < 86_400_000 && human[3]
-              ? human[3]
-              : `${human[1]} ${human[2]}`;
+            return recorded.length === 1
+              ? label
+              : xmax - xmin < 86_400_000 && human[3]
+                ? human[3]
+                : `${human[1]} ${human[2]}`;
           // Labels retain the supplied wall date/time; geometry never rewrites them through UTC.
           const iso = /^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2}))?/.exec(label);
           return iso
-            ? xmax - xmin < 86_400_000 && iso[2]
-              ? iso[2]
-              : (iso[1] ?? label)
+            ? recorded.length === 1
+              ? `${iso[1]}${iso[2] ? ` ${iso[2]}` : ""}`
+              : xmax - xmin < 86_400_000 && iso[2]
+                ? iso[2]
+                : (iso[1] ?? label)
             : label;
         };
         const aria = `${node.label}: ${s.name}${s.unit ? ` (${s.unit})` : ""}`;
@@ -198,9 +228,8 @@ export function ClinicalChart({
               {band && (
                 <polygon points={band} className="chart-reference-band" />
               )}
-              {[0, 1, 2, 3, 4].map((i) => {
-                const value = low + ((high - low) * i) / 4,
-                  py = y(value);
+              {valueTicks.map((value, i) => {
+                const py = y(value);
                 return (
                   <g key={i}>
                     <line
@@ -211,7 +240,7 @@ export function ClinicalChart({
                       className="chart-grid"
                     />
                     <text x="56" y={py + 4} textAnchor="end">
-                      {Number(value.toPrecision(3))}
+                      {value}
                     </text>
                   </g>
                 );

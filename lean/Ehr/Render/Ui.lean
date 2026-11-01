@@ -106,7 +106,10 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "problemList" => cx.disp.problems.map problemCells
     | "labs" | "labResults" | "resultTrend" =>
       if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
-      cx.disp.labs.flatMap fun r =>
+      if !cx.disp.labResults.isEmpty then
+        let labels := (cx.disp.labResults.map (fun r => (r.name, r.code))).eraseDups
+        cx.disp.labResults.map (labResultCells labels)
+      else cx.disp.labs.flatMap fun r =>
         [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
          ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
         r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
@@ -364,21 +367,26 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
   it.comp.kind != .banner && !uiNavButton cx it && !uiSideAt cx it.comp.id
 
 
+/-- Only a shown source component can request an overview workspace. -/
+def uiOverview (cx : Ctx) : Bool :=
+  cx.v.items.any (fun it => it.shown && uiOverviewTag it.comp.tag)
+
 /-- The program can dedicate its workspace to a wide grid. -/
 def uiWideWorkspace (cx : Ctx) : Bool :=
   cx.v.items.any fun it => it.shown && (it.comp.tag.splitOn ".").contains "wideWorkspace"
 
 /-- Automatic summaries are optional layout supplements. Authored panels are separate. -/
 def uiSummaryPairs (cx : Ctx) : List (String × String) :=
-  if uiWideWorkspace cx then [] else
+  if uiWideWorkspace cx || uiOverview cx then [] else
     [("allergyList", "Allergies"), ("currentMeds", "Active medications"),
      ("problemList", "Problems"), ("vitals", "Recent vitals")]
 
 /-- Fallback summaries are read-only and are emitted only for information not
-already present in the program's side column. -/
+already present in the program's side column. Overview screens omit these
+automatic supplements; every explicit source component remains present. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
-    (if uiWideWorkspace cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+    (if uiWideWorkspace cx || uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
     (uiSummaryPairs cx).filterMap fun (i, label) =>

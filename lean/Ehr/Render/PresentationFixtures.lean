@@ -22,7 +22,8 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
     id := "presentation-example", start := "example", screens :=
       [{ id := "example", title, workflow := "W1", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "records", kind := .table info, label := title, tag := "present." ++ kind.tag }] }] }
+         { id := "records", kind := .table info, label := title,
+           tag := (if [.schedule, .trackBoard, .orSchedule, .messages].contains kind then "layout.overview." else "") ++ "present." ++ kind.tag }] }] }
 
 /-- A normal source group supplies both panes of an In Basket screen. -/
 def inBasketProgram : Program :=
@@ -30,7 +31,7 @@ def inBasketProgram : Program :=
     id := "in-basket-example", start := "example", screens :=
       [{ id := "example", title := "In Basket", workflow := "W2", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.columns" },
+         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.overview.layout.columns" },
          { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
          { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
 
@@ -86,9 +87,11 @@ def main (args : List String) : IO Unit := do
       let rt := Fhir.resourceType r
       let subject := Fhir.str (Fhir.field r "subject") "reference"
       if rt == "Encounter" then
-        if kind == .trackBoard then Fhir.str (Fhir.field r "class") "code" == "EMER"
+        if kind == .trackBoard then Fhir.str (Fhir.field r "class") "code" == "EMER" && subject == "Patient/" ++ selected
         else Fhir.str r "id" == "inpatient" && selected == "p1"
       else if rt == "Appointment" then kind == .schedule
+      else if rt == "Observation" && kind == .flowsheet then
+        subject == "Patient/" ++ selected && (Fhir.categoryCodes r).any (fun code => code == "vital-signs" || code == "exam")
       else subject == "" || subject == "Patient/" ++ selected
     let resources := resources.filter (fun r => Fhir.resourceType r == "Patient" && Fhir.str r "id" == selected) ++
       resources.filter (fun r => Fhir.resourceType r != "Patient" || Fhir.str r "id" != selected)
@@ -105,7 +108,12 @@ def main (args : List String) : IO Unit := do
         bindings := bindings ++ [{ key := info, artifact := "example-" ++ info, version := 1 }]
     let facts := { facts with infoPayloads? := some payloads, artifactBindings? := some bindings, record := ("codeStatus", "Full code") :: facts.record }
     let prog := program kind info title
-    let user : User := { id := "visual-review", role := .physician }
+    let role : Role := match kind with
+      | .worklist | .timeGrid | .flowsheet => .rn
+      | .growth => .np
+      | .orSchedule | .notes => .surgeon
+      | _ => .physician
+    let user : User := { id := "visual-review", role }
     let state := init Examples.Tiny.spec prog facts user
     let input : RenderInput := { spec := Examples.Tiny.spec, program := prog, facts, display, user, state }
     inputs := inputs ++ [(kind.tag, input)]
@@ -118,7 +126,8 @@ def main (args : List String) : IO Unit := do
     let screen := runRenderUi input
     IO.FS.writeFile (out / "inBasket.json") (toJson screen).pretty
     IO.FS.writeFile (out / "inBasket-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
-    let input := { base with program := rowActionsProgram, state := init base.spec rowActionsProgram base.facts base.user }
+    let user := { base.user with role := .rn }
+    let input := { base with program := rowActionsProgram, user, state := init base.spec rowActionsProgram base.facts user }
     inputs := inputs ++ [("rowActions", input)]
     let screen := runRenderUi input
     for (control, target) in [("open-mar", "mar-detail"), ("open-pain", "pain-detail"), ("open-vitals", "vitals-detail")] do

@@ -43,6 +43,11 @@ def uiWrapInfo (kind : Option UiPresentationKind) (node : UiNode) : UiNode :=
 def uiColumnTag (tag : String) : Bool :=
   tag == "layout.columns" || tag.endsWith ".layout.columns"
 
+/-- An explicit overview hint omits only automatic chart-side summaries. -/
+def uiOverviewTag (tag : String) : Bool :=
+  let parts := tag.splitOn "."
+  (parts.zip parts.tail).any (fun (a, b) => a == "layout" && b == "overview")
+
 /-- Columns change layout only; every child remains present in source order. -/
 def uiColumnChildren (tag : String) (children : List UiNode) : List UiNode :=
   if uiColumnTag tag then [.columns children] else children
@@ -62,6 +67,18 @@ def uiWrapRow (tag : String) (node : UiNode) : UiNode :=
   match uiRowTarget? tag with
   | some (target, row) => .rowAction target row [node]
   | none => node
+
+/-- Clinical test codes distinguish identical labels only when necessary. -/
+def labResultLabel (labels : List (String × String)) (r : LabResultRow) : String :=
+  let name := if r.name == "" then "Laboratory result" else r.name
+  if labels.any (fun (otherName, code) => otherName == r.name && code != r.code) then
+    name ++ " (" ++ (if r.code == "" then "code not recorded" else r.code) ++ ")"
+  else name
+
+/-- Every displayed lab record uses its own source value, unit, interval and flag. -/
+def labResultCells (labels : List (String × String)) (r : LabResultRow) : List (String × String) :=
+  [("Test", labResultLabel labels r), ("Value", r.value), ("Unit", r.unit),
+   ("Flag", r.flag), ("Range", r.refRange), ("Recorded", uiDate r.date), ("Status", r.status)]
 
 /-- Human-facing schedule columns, without FHIR references or resource IDs. -/
 def scheduleCells (r : ScheduleRow) : List (String × String) :=
@@ -133,7 +150,8 @@ def flowsheetCells (d : Display) : List (List (String × String)) :=
   keys.map fun (measure, unit) =>
     [("Measure", measure), ("Unit", unit)] ++
     (d.observations.filter (fun r => r.measure == measure && r.unit == unit)).map
-      (fun r => (gridTime r.time, r.value ++ (if r.status == "" then "" else " · " ++ r.status)))
+      (fun r => (gridTime r.time, r.value ++
+        (if r.status == "" || r.status == "final" then "" else " · " ++ r.status)))
 
 /-- New queue IDs accept an explicit trusted payload, otherwise typed FHIR rows.
 A present empty payload stays empty; it does not silently fall back to chart data. -/

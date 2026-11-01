@@ -1978,6 +1978,20 @@ export interface LabRow {
 }
 
 /**
+ * One recorded laboratory result with its own value, unit and report metadata.
+ */
+export interface LabResultRow {
+  code: string;
+  name: string;
+  value: string;
+  unit: string;
+  date: string;
+  refRange: string;
+  flag: string;
+  status: string;
+}
+
+/**
  * One Condition.
  */
 export interface ProblemRow {
@@ -2197,6 +2211,10 @@ export interface Display {
    * Latest lab interpretation by code, computed in Lean.
    */
   labFlags: [string, string][];
+  /**
+   * Full per-observation results, including qualitative values and components.
+   */
+  labResults: LabResultRow[];
 }
 
 /**

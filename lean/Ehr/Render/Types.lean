@@ -370,6 +370,18 @@ structure LabRow where
   trend : List TrendPoint
   deriving DecidableEq, Repr, Inhabited
 
+/-- One recorded laboratory result with its own value, unit and report metadata. -/
+structure LabResultRow where
+  code : String
+  name : String
+  value : String
+  unit : String
+  date : String
+  refRange : String
+  flag : String
+  status : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- One Condition. -/
 structure ProblemRow where
   id : String
@@ -538,6 +550,8 @@ structure Display where
   observations : List ObservationRow := []
   /-- Latest lab interpretation by code, computed in Lean. -/
   labFlags : List (String × String) := []
+  /-- Full per-observation results, including qualitative values and components. -/
+  labResults : List LabResultRow := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- An empty display (no records). -/
