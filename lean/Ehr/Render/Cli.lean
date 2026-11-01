@@ -8,10 +8,11 @@ open Lean
 
 def usage : String :=
   "ehr render-screens --spec <spec.json|v1|tiny> --program <program.json|canonical|tiny> " ++
-  "--fhir <bundle.json> [--user <user.json>] [--today YYYY-MM-DD] [--context <context.json>] --out <dir>"
+  "--fhir <bundle.json> [--ui] [--user <user.json>] [--today YYYY-MM-DD] [--context <context.json>] --out <dir>"
 
 def options : List String → Except String (List (String × String))
   | [] => .ok []
+  | "--ui" :: rest => return ("--ui", "true") :: (← options rest)
   | key :: value :: rest => do
     if !["--spec", "--program", "--fhir", "--user", "--today", "--context", "--out"].contains key then
       throw s!"unknown option {key}"
@@ -119,6 +120,10 @@ def run (args : List String) : IO UInt32 := do
         -- A duplicate or sanitized-colliding screen id must not overwrite a page.
         if names.contains name then throw (IO.userError s!"duplicate output name: {name}")
         names := name :: names
+        if opts.lookup "--ui" == some "true" then
+          IO.FS.writeFile (dir / (name ++ ".json")) (toJson (renderUi sp prog facts disp user state)).pretty
+          count := count + 1
+          continue
         let tree := (render sp prog facts disp user state).toPage
         IO.FS.writeFile (dir / (name ++ ".json")) (toJson tree).pretty
         IO.FS.writeFile (dir / (name ++ ".html")) ("<!doctype html><meta charset=\"utf-8\"><link rel=\"stylesheet\" href=\"ehr.css\">" ++ tree.toHtmlString)

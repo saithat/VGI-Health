@@ -446,6 +446,12 @@ Each night, for each persona:
 
 **Allowed moves:** compose task views; copy frequent actions to a toolbar; reorder or merge sections; bring buried information onto the screen where it's needed; pre-fill with provenance (FHIR SDC style); satisfy prompts with valid receipts; create macros or order-set bundles with guards; add defaults the human confirms; add keyboard or scan shortcuts; collapse panels that are not required.
 
+**New components (owner decision, Oct 31):** the agent may create
+- composite components (`componentDefs`) built from existing kinds, whose meaning is their expansion, so every proof carries over;
+- presentation-only React components that draw an existing node kind or composite in a new way: sandboxed by lint/type rules, verified per version by the ARIA fidelity, visibility, and legibility checks, and deployed atomically with the program.
+
+The agent gets a capabilities manual every night (what it can and can't change, every property and design rule in plain words, the persona's spec rules with citations, budgets, deployment rules, real accepted and rejected examples). It must never touch core or backend behavior: the Lean interpreter, checker, spec, properties, data layer, or FHIR writes.
+
 **Forbidden moves:** edit specs; automate or pre-fill human-only steps; hide required information; write outside the spec; exceed the budgets.
 
 **Demo modes:**

@@ -76,6 +76,7 @@ def main (args : List String) : IO UInt32 := do
   | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
   | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | "render-screens" :: rest => Render.Cli.run rest
+  | ["render-ui"] => stdinCommand Render.RenderInput Render.UiScreen Render.runRenderUi
   | ["render"] => stdinCommand Render.RenderInput Render.PageNode Render.runRender
   | ["facts"] =>
     match decodeJson Render.Fhir.FactsInput (← readStdin) with

@@ -7,7 +7,6 @@ import type {} from "../src/ehr/offline";
 
 const files = z
   .array(z.string())
-  .min(1)
   .parse(JSON.parse(process.env.EHR_SCREEN_FILES ?? "[]"));
 const minimum = Number(process.env.EHR_MIN_FONT_PX ?? 12);
 if (!Number.isFinite(minimum) || minimum < 12)

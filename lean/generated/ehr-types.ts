@@ -815,6 +815,16 @@ export interface Component {
 }
 
 /**
+ * A source-only template. String fields may use `{{param}}` placeholders.
+ * Bodies cannot contain `use`; expansion is finite and structural.
+ */
+export interface ComponentDef {
+  name: string;
+  params: string[];
+  body: Component[];
+}
+
+/**
  * A screen. List order of `components` is render order.
  */
 export interface Screen {
@@ -857,6 +867,7 @@ export interface Program {
   start: ScreenId;
   screens: Screen[];
   macros: Macro[];
+  componentDefs?: ComponentDef[];
 }
 
 /**
@@ -2030,6 +2041,32 @@ export interface Display {
   encounters: EncRow[];
   procedures: ProcRow[];
   growth: GrowthPoint[];
+}
+
+/**
+ * Semantic EHR nodes. Only the selected tab body is emitted.
+ */
+export type UiNode =
+  | { section: { id: string; title: string; children: UiNode[] } }
+  | { columns: { children: UiNode[] } }
+  | { tabs: { id: string; labels: string[]; selected: number; body: UiNode[] } }
+  | { stepper: { steps: [string, string][]; current: number } }
+  | { field: { comp: CompId; label: string; kind: string; value: string | null; unit: string | null; provenance: string | null; pendingConfirm: boolean; humanOnly: boolean; required: boolean } }
+  | { info: { comp: CompId; label: string; infoId: InfoId; display: string; rows: [string, string][][] } }
+  | { alert: { comp: CompId; alertId: AlertId; label: string; severity: string } }
+  | { button: { comp: CompId; label: string; role: string; enabled: boolean; blockedReason: string | null; hotkey: string | null } }
+  | { text: { s: string } };
+
+/**
+ * A semantic screen. The banner is the first and sole banner landmark.
+ */
+export interface UiScreen {
+  banner: [string, string][];
+  nav: [string, [string, string][]][];
+  title: string;
+  workspace: UiNode[];
+  side: UiNode[];
+  modal: UiNode | null;
 }
 
 /**

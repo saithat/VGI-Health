@@ -1,5 +1,5 @@
 // This list is populated by build-ehr.sh from the actual Lean C exports.
-export const leanExports = ["ehr_facts", "ehr_init_envelope", "ehr_render", "ehr_step_envelope", "ehr_view_envelope"];
+export const leanExports = ["ehr_facts", "ehr_init_envelope", "ehr_render", "ehr_render_ui", "ehr_step_envelope", "ehr_view_envelope"];
 
 export async function loadEhrInterp(options = {}) {
   const { default: createModule } = await import('./ehr-interp.mjs');
