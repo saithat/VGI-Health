@@ -259,7 +259,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     });
     // Sample catalog links across the vendor reference, projections and run versions.
     audit.screen = "replay inspector";
-    await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+    await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
     await page.locator(".clinical-app").waitFor();
     await audit.click(
       page.getByRole("button", { name: "Inspector", exact: true }),
@@ -278,14 +278,14 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       "app",
     );
     await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
       await page.locator(".clinical-app").waitFor();
       await page
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
     });
     await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&persona=P1");
+      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
       await page.locator(".clinical-app").waitFor();
       await page
         .getByRole("button", { name: "Inspector", exact: true })

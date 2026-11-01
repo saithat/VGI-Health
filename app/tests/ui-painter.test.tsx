@@ -117,7 +117,7 @@ describe("semantic EHR painter", () => {
       name: "Home medications (reported)",
     });
     expect(medications.textContent).toContain(
-      "Propylthiouracil100 mg PO TIDreportedactive",
+      "Propylthiouracil: 100 mg PO TIDreportedactive",
     );
     expect(medications.textContent).not.toContain("Unknown");
     expect(
@@ -280,7 +280,7 @@ describe("semantic EHR painter", () => {
     expect(
       screen.getByRole("combobox", { name: "Clinical value" }),
     ).toBeTruthy();
-    expect(screen.getByText("No records on file")).toBeTruthy();
+    expect(screen.getByRole("note", { name: "Allergies" })).toBeTruthy();
   });
   it("renders list records as compact inline values without record tables", () => {
     const { container } = paint([
@@ -515,6 +515,31 @@ describe("semantic EHR painter", () => {
       { enter: { comp: "entry", value: { code: { c: "E11.9" } } } },
       { enter: { comp: "route", value: { code: { c: "IV" } } } },
     ]);
+  });
+  it("keeps raw medication choices in events while showing cleaned clinical captions", () => {
+    const emit = vi.fn();
+    const raw = "Amoxicillin 250 MG Oral Capsule";
+    const model: UiNode = { field: { ...field, comp: "drug", label: "Enter Medication", kind: `code:${raw}`, value: null } };
+    const original = JSON.stringify(model);
+    paint([model], emit);
+    const medication = screen.getByRole("combobox", { name: "Enter Medication" });
+    expect(medication.getAttribute("placeholder")).toBe("Search medications");
+    expect(screen.getByText("Medication")).toBeTruthy();
+    fireEvent.click(medication);
+    fireEvent.click(screen.getByRole("option", { name: "Amoxicillin 250 mg oral capsule" }));
+    expect(emit.mock.calls).toEqual([[{ enter: { comp: "drug", value: { code: { c: raw } } } }]]);
+    expect(JSON.stringify(model)).toBe(original);
+  });
+  it("groups adjacent navigation controls without changing their order, identity or events", () => {
+    const emit = vi.fn();
+    const controls = ["Back", "Patient workspace", "Review and sign"].map((label, index) =>
+      ({ button: { ...button, comp: `nav-${index}`, role: "nav", label } }));
+    const { container } = paint(controls, emit);
+    expect(container.querySelectorAll(".clinical-navigation-bar")).toHaveLength(1);
+    expect(Array.from(container.querySelectorAll("[data-comp-id]")).map((node) => node.getAttribute("data-comp-id")))
+      .toEqual(["nav-0", "nav-1", "nav-2"]);
+    controls.forEach(({ button }) => fireEvent.click(screen.getByRole("button", { name: button.label })));
+    expect(emit.mock.calls.map(([event]) => event)).toEqual(controls.map(({ button }) => ({ click: { comp: button.comp } })));
   });
   it("uses an explicit sibling confirm node as the pending field's single affordance", () => {
     const emit = vi.fn();

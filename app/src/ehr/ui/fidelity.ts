@@ -67,6 +67,7 @@ export function expectedNodeAria(
       ];
     }
     case "info" in node:
+      if (node.info.rows.length === 0) return [entry("note", node.info.label)];
       return node.info.display === "summary"
         ? []
         : node.info.display === "list"
@@ -168,6 +169,7 @@ const roles = new Set([
   "main",
   "complementary",
   "region",
+  "note",
   "dialog",
   "textbox",
   "combobox",

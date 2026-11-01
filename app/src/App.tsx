@@ -86,7 +86,8 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
           </Alert>
         )}
       </div>
-      {window.location.pathname === "/ehr" && (
+      {window.location.pathname === "/ehr" &&
+        new URLSearchParams(window.location.search).get("inspect") === "1" && (
         <>
           {!inspecting && (
             <Button
@@ -281,10 +282,13 @@ export function App() {
             status: "verdict not computed",
           },
         });
+        const canonicalUrl = new URL(ehrUrl({ ...program, release }, patient.id, persona), window.location.href);
+        if (query.get("inspect") === "1") canonicalUrl.searchParams.set("inspect", "1");
+        if (query.get("audit") === "buttons") canonicalUrl.searchParams.set("audit", "buttons");
         window.history.replaceState(
           null,
           "",
-          ehrUrl({ ...program, release }, patient.id, persona),
+          canonicalUrl.pathname + canonicalUrl.search,
         );
       }
     }

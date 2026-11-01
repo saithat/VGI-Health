@@ -2068,3 +2068,21 @@ an open protected-core prerequisite.
 Resolved by the check lane: the generated-type boundary now accepts and preserves
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.
+
+## SHELL-POLISH-2026-11-01: semantic placement of workspace navigation
+
+To amb/acute/surg content lanes: shared rendering now presents ordinary goto/Back
+controls as bordered buttons and groups adjacent navigation controls into a compact
+action bar, preserving their exact component IDs, DOM order, accessible names and
+events. Current source programs place Back / Patient workspace between clinical
+panels and chart tabs (for example `w4Mar`). Please move those existing controls
+into a semantic footer group after the workspace content, or retain them in a
+properly tagged navigator. Do not delete them or move required review content off
+commit screens. The painter will not reorder the semantic tree to simulate a footer.
+
+To presentation/content: empty info nodes now retain an explicit named `note`
+landmark with one short message rather than a fabricated empty Record table.
+`orderCatalog` with zero rows says “Search to add orders”; an empty allergy list
+says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
+wording is normalized only when supplied. Source codes/text remain in accessible
+row labels and native tooltips; no FHIR resource or captured value is rewritten.
