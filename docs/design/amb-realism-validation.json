@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "2e6cef00087795b2d5badbd9e5f5d00b37dd6938",
+  "sourceRevisionAtValidation": "598c7b2eb6eb54386a8f16b779d82e07885b26a2",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "27ccde8c7bc2a8289712332f6dcc8e4803d3f7d7ba773705569b0745d53709b1",
-  "nativeBinarySha256": "eee72c7fa5d006a10a176d2e3462183db292da463ca5568d6add3a554e6a8dc6",
+  "leanSourceHash": "5cf5b9accbb6ebf4c0e36a7c11f0d81972cbe174ef29af0cf7aa7d20ad1a01cd",
+  "nativeBinarySha256": "d4f763ed048f430f96ef5ecaf81cd214d6eed282d1d939042c8ef7502cd2e17d",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "3689bab17b1427998f96eac308bd5524fded98918aa7b93085b38aac261818c0"
+    "reportSha256": "8d4ec01bf502f552bb549bcd62591196827f734f62ef0abcc4109887317c7a6f"
   },
   "world2": {
     "world": "runs/world/2",
@@ -36,7 +36,7 @@
         "completed": 42,
         "tasks": 42,
         "clicks": 1095,
-        "klmDeciSec": 56536
+        "klmDeciSec": 56184
       },
       {
         "persona": "P1",
@@ -45,7 +45,7 @@
         "completed": 40,
         "tasks": 40,
         "clicks": 785,
-        "klmDeciSec": 44872
+        "klmDeciSec": 44674
       },
       {
         "persona": "P1",
@@ -54,7 +54,7 @@
         "completed": 35,
         "tasks": 35,
         "clicks": 621,
-        "klmDeciSec": 38021
+        "klmDeciSec": 37933
       },
       {
         "persona": "P1",
@@ -63,7 +63,7 @@
         "completed": 40,
         "tasks": 40,
         "clicks": 852,
-        "klmDeciSec": 46020
+        "klmDeciSec": 45712
       },
       {
         "persona": "P1",
@@ -81,7 +81,7 @@
         "completed": 41,
         "tasks": 41,
         "clicks": 826,
-        "klmDeciSec": 45549
+        "klmDeciSec": 44988
       },
       {
         "persona": "P1",
@@ -90,7 +90,7 @@
         "completed": 40,
         "tasks": 40,
         "clicks": 906,
-        "klmDeciSec": 47181
+        "klmDeciSec": 46994
       },
       {
         "persona": "P1",
@@ -99,7 +99,7 @@
         "completed": 39,
         "tasks": 39,
         "clicks": 778,
-        "klmDeciSec": 44519
+        "klmDeciSec": 44310
       },
       {
         "persona": "P1",
@@ -108,7 +108,7 @@
         "completed": 39,
         "tasks": 39,
         "clicks": 663,
-        "klmDeciSec": 35227
+        "klmDeciSec": 35007
       },
       {
         "persona": "P1",
@@ -117,7 +117,7 @@
         "completed": 39,
         "tasks": 39,
         "clicks": 765,
-        "klmDeciSec": 39920
+        "klmDeciSec": 39788
       },
       {
         "persona": "P2",
@@ -483,25 +483,25 @@
     "failures": []
   },
   "nativeButtons": {
-    "checked": 237,
-    "enabled": 229,
-    "disabledWithReason": 8,
+    "checked": 277,
+    "enabled": 266,
+    "disabledWithReason": 11,
     "includesLandingScreens": true
   },
   "browser": {
-    "screens": 24,
+    "screens": 30,
     "viewport": {
       "width": 1440,
       "height": 900
     },
-    "beforeScreens": 23,
+    "beforeScreens": 29,
     "signatureViews": 2,
     "fidelity": {
-      "passed": 57,
+      "passed": 69,
       "intentionalViewportSkips": 3
     },
     "diagnosisPickerViews": 2,
-    "scrolledContextViews": 2
+    "scrolledContextViews": 3
   },
   "archived": {
     "run": "run1-P3",
@@ -518,7 +518,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 216,
+    "appTests": 217,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -526,21 +526,26 @@
   },
   "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened.",
   "structuredPresentations": {
-    "upstream": "b4b5043",
+    "upstream": "10517bc",
     "nativeWasmFixtures": 15,
-    "renderTheoremsCompared": 48,
-    "frozenStatementSha256": "4139e00df9e9cd4fede62267c8a005028421efaa73b90959529ca15eb0492c55",
+    "renderTheoremsCompared": 51,
+    "frozenStatementSha256": "126c87d43ea9be944d32b3aa8563720a74edb9831a7c5cd6afcba19ae0ecf00f",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 116
+    "originalHeadersUnchanged": 123
   },
   "ambulatoryMetadata": {
-    "nativeWasmScreens": 26,
-    "pickers": 39,
+    "nativeWasmScreens": 34,
+    "pickers": 42,
     "selectedReferenceCurves": 12,
     "vendorReferenceCurves": 24,
     "publishedSamples": 2916,
     "unknownPopulationCase": true,
-    "referenceGeneratorReproduced": true
+    "referenceGeneratorReproduced": true,
+    "responseEntryChecks": 2,
+    "additionalRoleProbes": [
+      "P4/W2",
+      "P4/W7"
+    ]
   },
   "clinicalFrame": {
     "sourceProgressOptOut": true,
@@ -548,5 +553,23 @@
     "desktopPinnedContext": true,
     "explicitPcpAssignment": true,
     "sourcePoundsRetainedWithKgDisplay": true
+  },
+  "refillViews": {
+    "comparisonSchemaSatisfied": true,
+    "sourceCellsPreservedByTheorem": true,
+    "completedMatchingDispensesOnly": true,
+    "latestLabTiesAndUnknownDatesRetained": true,
+    "fullChartHistoryRetained": true
+  },
+  "clinicalPrimitiveComparison": {
+    "patients": 324,
+    "baselineRevision": "add0d2e",
+    "mismatches": 0,
+    "exclusions": [
+      "supporting infoPayloads",
+      "artifactBindings",
+      "record version aliases"
+    ],
+    "report": "docs/design/amb-realism-clinical-facts.json"
   }
 }

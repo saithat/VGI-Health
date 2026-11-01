@@ -13,9 +13,9 @@
   "after": {
     "suite": "union-workflows-v1",
     "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-    "ehrSha256": "eee72c7fa5d006a10a176d2e3462183db292da463ca5568d6add3a554e6a8dc6",
+    "ehrSha256": "d4f763ed048f430f96ef5ecaf81cd214d6eed282d1d939042c8ef7502cd2e17d",
     "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
-    "reportSha256": "2d9c7885c5e4cd7f83eab2f7517f1864a9dbf7f64b5703044a1ec2b4be775bf9"
+    "reportSha256": "ffc703bc34ad900b359fc61ab72f50d30f0eae8cbd12ec45ad4b858a1df810d4"
   },
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
@@ -358,5 +358,5 @@
     }
   ],
   "integration": "Structured clinical presentations from eb6703e; original before measurements retained.",
-  "latestImplementationRevision": "2e6cef00087795b2d5badbd9e5f5d00b37dd6938"
+  "latestImplementationRevision": "598c7b2eb6eb54386a8f16b779d82e07885b26a2"
 }
