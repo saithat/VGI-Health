@@ -19,7 +19,7 @@
     },
     "releases/v1/personas/P4.json": {
       "status": "certified",
-      "sha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
+      "sha256": "1cdefc0fa0a70ade5d7436a742a63b3d37b33fd88d7470b3c26bf8f902a8ea24",
       "output": "ok"
     },
     "releases/v1/personas/P5.json": {
@@ -44,7 +44,7 @@
     },
     "releases/v1.1/personas/P4.json": {
       "status": "certified",
-      "sha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
+      "sha256": "dc41b35954376b74c6ae66bea0d92737726f114689c68445c228ddc0bfd25bd0",
       "output": "ok"
     },
     "releases/v1.1/personas/P5.json": {
@@ -69,7 +69,7 @@
     },
     "releases/v2/personas/P4.json": {
       "status": "certified",
-      "sha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
+      "sha256": "9ae630579003e9e5b44e36819414869bfa6d86ccda6ca563945e423d17bee031",
       "output": "ok"
     },
     "releases/v2/personas/P5.json": {
@@ -260,7 +260,7 @@
     },
     "programs/bad/06-stale-weight.json": {
       "status": "rejected",
-      "sha256": "baca1c9d18c2d26a1411d32c0eeadd6c724f28e6cf1fe7ce1ff0fde8ab7990fb",
+      "sha256": "46ef504e6158d4cc3ff7b1c975b98ff33cac8642fef6605e330fe309caa3de67",
       "output": {
         "violation": {
           "screens": [
@@ -592,7 +592,7 @@
     },
     "programs/bad/33-np-preop-macro.json": {
       "status": "rejected",
-      "sha256": "656da39447a52ada177c503f05dcd4a58be9a9b09fbc97e6b38a49500f979c00",
+      "sha256": "7f990ab8b8b59a3013aca869bdbd19e01c4fb90551f2fe889a80b6d3f2d7b545",
       "output": {
         "violation": {
           "screens": [
@@ -622,19 +622,52 @@
         }
       }
     },
+    "programs/bad/34-prefilled-attending.json": {
+      "status": "rejected",
+      "sha256": "64e16354afde342bb1e1e510ba5c57c796a0b7a5629a3cb3eb78f1941a0b51b6",
+      "output": {
+        "violation": {
+          "screens": [
+            "home",
+            "w5Rooming",
+            "w5Orders",
+            "w5Sign"
+          ],
+          "property": "humanOnlyKept",
+          "message": "field w5Sign.attendingCosign on screen w5Sign prefills attendingCosign, which a human must enter every time",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w5Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w5Rooming.nav.w5Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w5Orders.toSign"
+              }
+            }
+          ]
+        }
+      }
+    },
     "releases/v1/canonical.json": {
       "status": "reference",
-      "sha256": "47e835e67a1debbe5c693c4a78e2610c285d57c8f1cb329d7ee4fa6b24bf11ae",
+      "sha256": "611a5a12157ef8dcf84c7f02d9ff6eb21e4ef7b9ab8281af3ca5cb071dcb0338",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v1.1/canonical.json": {
       "status": "reference",
-      "sha256": "d43667c1218dc5ebb5337f5e7c4c584fe89e323eabbff86f376fc635e2a8505a",
+      "sha256": "f8303485b1a47c91a938cb621017495f42c252d7454338adf1de44ba51def340",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "4033403911ce3b341d1fdfaea44f00a6213eada418cd324f0eb519792ca3580a",
+      "sha256": "f236a4074ff772dc8da10231afa824a5397c220f35a7781e1ddf9f9a51e0fccc",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

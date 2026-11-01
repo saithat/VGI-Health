@@ -663,6 +663,7 @@ def ownVisible (sp : Spec) (facts : Facts) (s : State) (c : Component) : Bool :=
   c.size != .tiny &&
     match c.visibility with
     | .always => true
+    | .encounter kind => encounterMatches facts.encounterKind? kind
     | .unlessReceipt i => !hasValidReceipt sp facts s i
 
 /-- The parent lets the child through: an expanded (or non-collapsible) group,

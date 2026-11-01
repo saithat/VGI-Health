@@ -149,6 +149,7 @@ theorem pinnedForReview_sound (ep : Episode) (s : State) (rq : ReviewReq)
   intro _
   cases hv : c.visibility with
   | always => exact Or.inl (shown (by simp [ownVisible, hsize, hv]))
+  | encounter kind => simp [hv] at hvis
   | unlessReceipt i =>
     simp only [hv, Bool.and_eq_true, beq_iff_eq] at hvis
     obtain ⟨rfl, hsafe⟩ := hvis

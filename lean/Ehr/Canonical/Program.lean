@@ -88,6 +88,16 @@ def withRequiredReviews (s : Screen) : Screen :=
       ((Specs.V1.specV1.info? id).map (·.label) |>.getD id)
   { s with components := s.components.take 1 ++ panels ++ s.components.drop 1 }
 
+/-- Pending NP pre-op orders expose their attending response beside the summary. -/
+def withAttendingCosign (s : Screen) : Screen :=
+  if !s.components.any (fun c => c.kind == .button (.commit "signOrders")) then s else
+  let response := { field s.id "attendingCosign" "attendingCosign"
+    "Attending co-signature (pre-op orders)" with visibility := .encounter "preop" }
+  let before := s.components.takeWhile fun c => match c.kind with
+    | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true
+  { s with components := before ++ [response] ++ s.components.dropWhile fun c => match c.kind with
+    | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true }
+
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
   id := "canonical"
@@ -99,7 +109,7 @@ def canonicalV1 : Program where
   screens := (Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
     W5.screens ++ W6.screens ++ W7.screens
     if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment)).map
-      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews)
+      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews ∘ withAttendingCosign)
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)
 

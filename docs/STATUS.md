@@ -49,12 +49,12 @@ expiry and pinned displays, are encoded and compiled but switched off.
 
 | Release/profile | Elements | Commits | Entries | Reviews | Alerts |
 |---|---:|---:|---:|---:|---:|
-| v1 core | 123 | 11 | 82 | 21 | 15 |
-| v1 full | 283 | 95 | 870 | 486 | 77 |
-| v1.1 core | 126 | 11 | 82 | 21 | 15 |
-| v1.1 full | 286 | 95 | 870 | 486 | 77 |
-| v2 core | 127 | 11 | 93 | 22 | 15 |
-| v2 full | 287 | 95 | 881 | 487 | 77 |
+| v1 core | 124 | 11 | 82 | 21 | 15 |
+| v1 full | 284 | 95 | 870 | 486 | 77 |
+| v1.1 core | 127 | 11 | 82 | 21 | 15 |
+| v1.1 full | 287 | 95 | 870 | 486 | 77 |
+| v2 core | 128 | 11 | 93 | 22 | 15 |
+| v2 full | 288 | 95 | 881 | 487 | 77 |
 
 Restore by setting `ruleProfile := .full` in `lean/Ehr/Specs/Profile.lean`, then
 running `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake build EhrHeavy)`.
@@ -64,7 +64,7 @@ listed in [TODO_PROOFS.md](../TODO_PROOFS.md). General checker/interpreter/deplo
 renderer proofs and three Tiny kernel rejection proofs remain in the default.
 Full-profile persona/blueprint checks passed; the heavy proof suite is unfinished.
 
-Default rebuild after the encounter-role change and render-lane merge: **27.04 s**, peak
+Default rebuild after the cosignature spec change: **35.95 s**, peak
 process RSS **1.63 GiB**. The W7 denial proof covers every `TaskChoices` value
 whose refill choice is `deny`, with only `propext` in its axiom audit.
 `cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake exe profile-goals)`
@@ -76,9 +76,9 @@ The generated evidence is `lean/Ehr/Check/profile-goals-report.json`.
 wrapper retains its sandbox and supplies the six workers and 64 MiB stacks that
 Comparator otherwise clears. `lake check` also passes with that wrapper.
 Generated TS types include `EncounterRoleRule` and optional `encounterRoles`.
-`make wasm` rebuilt the assets in **7.93 s** using the warm cache;
+`make wasm` rebuilt the assets in **7.10 s** using the warm cache;
 `make wasm-check` passes. The runtime includes the new guard and merged renderer.
-App tests pass **153/153**; agent tests pass **32/32**. The pnpm 11 automatic
+App tests pass **154/154**; agent tests pass **32/32**. The pnpm 11 automatic
 pre-run install was disabled with `pnpm_config_verify_deps_before_run=false`
 to use the existing dependencies. The real native/WASM refusal and semantic
 button reason match in all three releases; rerun
@@ -89,23 +89,41 @@ Certification is **15/15 persona baselines**, including D5. The three shared
 they mix clinician roles and are recorded as **reference**, not deployable
 single-role programs. Verdicts mark the persona projections **certified**.
 
-Hospital policy (not law), owner decision 2026-10-31: only physicians and
-surgeons sign pre-op orders. The optional `CommitSpec.encounterRoles` rule
-uses the same matcher as `When.encounter`; the guard reports
-"Pre-op orders are signed by a physician or surgeon". The three pre-op entry
-requirements and their entry permissions are unchanged. Completion and depth
-exclude only forbidden role/encounter contexts. `np_preop_never_signs` proves
-refusal for every program, state and event. Named executable P4 clinic,
-P4 pre-op refusal and P5 pre-op success witnesses run in the default build.
-`Statements.lean` changes only `commitGuard_iff`'s role conjunct from `roleOk`
-to `commitRoleOk sp facts user c`; the remaining statements are unchanged.
+Hospital policy (not law), owner decision 2026-10-31: physicians and surgeons
+sign pre-op orders directly. An NP's pending pre-op order needs a confirmed,
+human, distinct-user `attendingCosign`. The optional encounter rule declares
+that route. Only consentVerified, hpUpdate and medsToHold use `EntryReq.waivedBy`;
+their entry permissions stay unchanged. Physicians cannot enter the NP-only
+cosign field. The guard, checker and role views share the encounter matcher.
+`np_preop_without_cosign_never_signs` proves the general refusal; T3 proves
+macros and prefills cannot supply the attending response. Executable examples
+cover NP clinic, NP pre-op with/without response, physician refusal to enter the
+cosign, and surgeon direct signing. Attending responses add 1–5 seeded minutes
+to task wall-time, with no NP clicks or keys. See
+[cosignature research and modeling choices](design/ehr-ui-research.md#cosignature).
 
-All **17/17 core bad programs** fail their expected property with valid
-navigation replays, including the NP pre-op macro bypass attempt; 16 catalog
+One canonical EHR serves everyone. Each persona's v0 is the canonical with that
+role's permissions and pre-set view (`forPersona`). The overnight agent edits
+only that persona's fork. Vendor releases merge into every fork and are
+re-certified. “The canonical is certified” means every role's view passes.
+
+`Statements.lean` now supplies state to `commitRoleOk`; `T0_entry_values` adds
+an explicit no-attestation hypothesis because an authorized attending can
+replace those three scalar entries. Quantity, per-line and cosign requirements
+cannot be waived; their safety theorem statements are unchanged.
+
+All **18/18 core bad programs** fail their expected property with valid
+navigation replays, including the NP pre-op macro and attending-prefill attempts; 16 catalog
 seeds remain full-only. Run `python lean/Ehr/Check/certify.py --bad-only` for the
 fast differential regression. The full command records the 15 persona checks,
 previous-release comparisons and three master-reference records. Seed 13 still
 removes all CURES routes; the old W1-only mutation had a valid receipt escape.
+
+Cosignature day-1 smoke on world 2 (seed 7): P1 **42/0**, P2 **19/3**,
+P3 **38/0**, P4 **22/0**, P5 **17/1** completed/incomplete. The remaining four
+are the incompatible dose units tracked below. The named NP pre-op simulation
+also completes, records a 1–5 minute attending response, and checks operator
+floors and seed reproducibility. World 2 has 15 pre-op tasks, all P5; P4 has none.
 
 Day-1 simulator smoke (world 1, seed 7), completed / incomplete:
 
@@ -161,8 +179,8 @@ doses, complaints and input hashes are in
 [`validation-world2.json`](../lean/Ehr/Sim/validation-world2.json). These 38 tasks
 cannot complete faithfully until the requested core/content change lands.
 No task was dropped and no safety rule was changed. P4 has **zero pre-op tasks**;
-all 15 pre-op tasks belong to P5 (their IDs are included in the report). `.cosign`
-continues using the simulated second clinician; no NP permission workaround.
+all 15 pre-op tasks belong to P5 (their IDs are included in the report). `.cosign` uses a simulated second clinician. NP pre-op orders now use the
+explicit attending route described above.
 
 Simulator fixes also bind `refillDose` to the focused prescription instead of a
 placeholder, attribute goal complaints to task IDs, and report impossible

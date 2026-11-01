@@ -2,6 +2,12 @@
 
 This is the contract every lane builds against. It sits under `BRIEF.md`. The Lean types below give the **authoritative shape**: fix syntax and deriving details as needed, but get orchestrator/owner approval for any change in meaning. Once implemented, the Lean files (`lean/Ehr/Core/*.lean`) are the source of truth, and TS types are generated from them.
 
+One canonical EHR serves everyone. Each persona starts at v0 with that canonical's
+role permissions and pre-set view (`forPersona`). The overnight agent edits only
+that persona's fork. Vendor releases merge into every fork, followed by
+re-certification. “The canonical is certified” means every role's view passes;
+the shared master is a reference template, not a deployable single-role program.
+
 ## 1. Design principle: safety by construction, plus a checker for the rest
 
 The interpreter (Lean, compiled to WASM for the app and native for the pipeline) enforces safety for **every** program:

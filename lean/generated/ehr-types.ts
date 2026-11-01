@@ -555,6 +555,7 @@ export interface EncounterRoleRule {
   encounter: string;
   roles: Role[];
   reason: string;
+  cosign?: ElementId;
 }
 
 /**
@@ -613,6 +614,10 @@ export interface EntryReq {
    * some [] permits no value. For numeric refills, some ["0"] permits only zero.
    */
   allowed?: string[];
+  /**
+   * A human attestation may replace a scalar text/flag entry; never a quantity or per-line entry.
+   */
+  waivedBy?: ElementId;
 }
 
 /**
@@ -761,6 +766,7 @@ export type Action =
  * valid receipt for `i`.
  */
 export type Visibility =
+  | { encounter: { kind: string } }
   | "always"
   | { unlessReceipt: { info: InfoId } };
 
@@ -1427,6 +1433,8 @@ export interface TraceEvent {
   event: Event;
   ops: Op[];
   result: StepResult;
+  actor?: string;
+  responseDelayMinutes?: number;
 }
 
 /**
@@ -1443,6 +1451,7 @@ export interface TaskMetrics {
   backtracks: number;
   klmDeciSec: number;
   completed: boolean;
+  wallTimeMinutes?: number;
 }
 
 /**

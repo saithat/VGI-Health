@@ -66,10 +66,10 @@ export const specSchema: z.ZodType<L.Spec> = z.object({
   commits: z.array(dropNulls(['encounterRoles'], z.object({
     id: str, label: str, roles: z.array(roleSchema),
     encounterRoles: z.array(z.object({
-      encounter: str, roles: z.array(roleSchema), reason: str,
+      encounter: str, roles: z.array(roleSchema), reason: str, cosign: str.exactOptional(),
     })).exactOptional(),
   }))),
-  entries: z.array(z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean() })),
+  entries: z.array(z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), waivedBy: str.exactOptional() })),
   reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.object({
     id: str, label: str,
@@ -128,7 +128,7 @@ export const componentSchema: z.ZodType<Component> = dropNulls(['parent', 'hotke
   label: str.default(''),
   parent: str.exactOptional(),
   tab: nat.default(0),
-  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) })]).default('always'),
+  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) }), z.object({ encounter: z.object({ kind: str }) })]).default('always'),
   size: z.enum(['normal', 'compact', 'tiny']).default('normal'),
   hotkey: str.exactOptional(),
   tag: str.default(''),
