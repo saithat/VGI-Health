@@ -8,6 +8,7 @@ import Ehr.Check.AlertSound
 import Ehr.Check.NavigationSound
 import Ehr.Check.ScalarCompletion
 import Ehr.Check.FixedLineCompletion
+import Ehr.Check.DoseCompletionObstruction
 
 namespace Ehr.Check
 open Ehr Ehr.Props
@@ -83,6 +84,13 @@ theorem fixed_lines_pending_nonempty :
     orderLines s = [(0, "amoxicillin"), (1, "warfarin")] ∧
       entriesOk sp Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user s "recordReview" = false := by
   decide
+
+/-- The current checker has an accepted, non-completable program: the
+unrestricted completion implication needs a checker repair before proof. -/
+theorem completion_acceptance_counterexample :
+    ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p :=
+  ⟨DoseCompletionObstruction.spec, DoseCompletionObstruction.program,
+    DoseCompletionObstruction.accepted, DoseCompletionObstruction.not_completable⟩
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where

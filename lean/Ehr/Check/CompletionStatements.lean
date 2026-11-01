@@ -12,4 +12,9 @@ theorem satisfies_of_checked_fixed_lines (k : ValueKind) (r : Role) (m : ReviewM
     Satisfies (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) := by
   sorry
 
+/-- An actual accepted counterexample refutes unrestricted completion soundness. -/
+theorem completion_acceptance_counterexample :
+    ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p := by
+  sorry
+
 end Ehr.Check
