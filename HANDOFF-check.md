@@ -82,10 +82,14 @@ features have been merged; main was fetched again after those features landed.
 
 - T8 old-obligations projection, directly from actual checker acceptance:
   `T8_checked_old_obligations`, `T8_v1_to_v1_1`, `T8_v1_1_to_v2`.
-  Does not assume unfinished T1. `T8_unqualified_false` is retained.
+  Does not assume unfinished T1. Includes the actual old static human/unit/alert
+  predicates, using a proved old-element lookup preservation lemma.
+  `T8_unqualified_false` is retained.
 - D5 acceptance soundness over the actual semantic renderer navigation.
 - Completion reachability is cached once per check. `cached_completion_eq`
   proves exact equality with the original algorithm for every program.
+  Popup pair checks filter request components first; `filteredPopupRequests_iff`
+  proves exact equivalence with the original safety property.
 - Core guard/clinical-alert safety proof compatibility and expanded contract
   safety, plus actual human-entry construction lemmas.
 - Seeds 8/9 timeout fix: closed local component/macro witnesses compile in

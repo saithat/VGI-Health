@@ -1,5 +1,6 @@
 import Ehr.Check.Rules
 import Ehr.Props.Navigation
+import Ehr.Check.PopupRequests
 import Ehr.Check.ReplayContext
 
 /-!
@@ -225,7 +226,7 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         | some (a, .passive) => some s!"A4: alert {c.id} on screen {scr.id} makes the passive alert {a} pop up; passive alerts are shown inline only"
         | _ => none },
     -- 11. A3: no repeat interruptions
-    { property := "noRepeatInterruptions", passes := decide (PopupRequestedOnce spec prog)
+    { property := "noRepeatInterruptions", passes := decide (FilteredPopupRequests spec prog)
       explain := fun _ => compFinding "noRepeatInterruptions" prog false fun scr c =>
         match popupTier spec c with
         | some (a, .interruptive) =>

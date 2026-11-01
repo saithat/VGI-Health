@@ -69,7 +69,7 @@ theorem accepted_structural (sp : Spec) (prev : Option Program) (can p : Program
     hu, _, hlink, _, _, _, _, _, _, hstable⟩
   exact ⟨(inCatalog_iff sp p).mp hcat, of_decide_eq_true hids,
     of_decide_eq_true hpi, of_decide_eq_true href, of_decide_eq_true hw,
-    of_decide_eq_true hpassive, of_decide_eq_true hrepeat, of_decide_eq_true hint, of_decide_eq_true hal,
+    of_decide_eq_true hpassive, (filteredPopupRequests_iff sp p).mp (of_decide_eq_true hrepeat), of_decide_eq_true hint, of_decide_eq_true hal,
     of_decide_eq_true hhuman, of_decide_eq_true hu, of_decide_eq_true hlink,
     of_decide_eq_true hstable.1⟩
 

@@ -5,6 +5,7 @@ import Ehr.Check.Monotonicity
 import Ehr.Check.ContractSound
 import Ehr.Check.ContractTests
 import Ehr.Check.NavigationSound
+import Ehr.Check.NavigationTests
 import Ehr.Check.EntryConstruction
 import Ehr.Check.RejectionObstruction
 import Ehr.Check.RequestSound

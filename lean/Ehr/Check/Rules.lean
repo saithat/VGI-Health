@@ -145,7 +145,8 @@ def openReach (prog : Program) (a : ScreenId) : List ScreenId :=
 
 /-- Compute each declared screen's open reachability once per check. -/
 def openReachTable (prog : Program) : List (ScreenId × List ScreenId) :=
-  prog.screens.map fun scr => (scr.id, openReach prog scr.id)
+  let edges := openGotoEdges prog
+  prog.screens.map fun scr => (scr.id, (bfs prog edges scr.id).map (·.1))
 
 /-- Reuse a table entry, with the original search as a total fallback. -/
 def tableReach (prog : Program) (table : List (ScreenId × List ScreenId))
