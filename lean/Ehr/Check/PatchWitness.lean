@@ -180,7 +180,8 @@ theorem canonical_keeps_plain_field (c : Component)
     (noLink : el.linkedFrom? = none) (noRecord : el.recordFact? = none) :
     HasComponent canonicalV1 c := by
   obtain ⟨s, hs, hc⟩ := member
-  refine ⟨_, List.mem_map.mpr ⟨s, hs, rfl⟩, ?_⟩
+  refine ⟨_, List.mem_map.mpr ⟨_, List.mem_append_left _ (List.mem_map.mpr ⟨s, hs, rfl⟩), rfl⟩, ?_⟩
+  apply Canonical.Density.augment_keeps
   have split : c ∈ s.components.take 1 ∨ c ∈ s.components.drop 1 := by
     rw [← List.mem_append, List.take_append_drop]
     exact hc

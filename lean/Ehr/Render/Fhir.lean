@@ -2328,7 +2328,7 @@ def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option St
 
 
 /-- The facts the spec needs. -/
-def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
+def baseFactsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
   let allergies := rs.filter isAllergy
   let meds := rs.filter isMedRequest
@@ -2424,6 +2424,152 @@ theorem chartResource_mem {b r : Json} (h : r ∈ chartResourcesOfBundle b) : r 
   split at h
   · contradiction
   · exact (List.mem_filter.mp h).1
+
+/-! Compact chart previews are separate, explicitly bounded views. Full records remain
+in their existing info IDs. These payloads never create receipts or clinical captures. -/
+
+/-- Parse a source clock for display windows, preserving an explicit numeric offset. -/
+def chartMinute (date : String) (fallback : Nat := 0) : Option Int := do
+  let (year, month, day) ← ymd date
+  let hour := ((sub date 11 2).toNat?).getD (fallback / 60)
+  let minute := ((sub date 14 2).toNat?).getD (fallback % 60)
+  let suffix := sub date (date.length - 6) 6
+  let offset := if date.length ≥ 25 && sub suffix 3 1 == ":" && (suffix.startsWith "+" || suffix.startsWith "-") then
+    let n := ((sub suffix 1 2).toNat?.getD 0) * 60 + ((sub suffix 4 2).toNat?.getD 0)
+    if suffix.startsWith "-" then -(Int.ofNat n) else Int.ofNat n
+    else 0
+  stampMinute {
+    time := 0, year, month, day, minuteOfDay := hour * 60 + minute,
+    utcOffsetMinutes := offset, zone := "source" }
+
+/-- A strict, non-future 72-hour source result window. Unknown dates stay in full Results. -/
+def chartRecent (ctx : FactsContext) (date : String) : Bool :=
+  match chartMinute ctx.today (ctx.now % 1440), chartMinute date with
+  | some now, some recorded => recorded ≤ now && now - recorded ≤ 4320
+  | _, _ => false
+
+#guard chartRecent { today := "2026-11-02", now := 540 } "2026-10-30T09:00:00Z"
+#guard !chartRecent { today := "2026-11-02", now := 540 } "2026-10-30T08:59:00Z"
+#guard !chartRecent { today := "2026-11-02", now := 540 } "2026-11-02T09:01:00Z"
+#guard chartRecent { today := "2026-11-02", now := 540 } "2026-11-02T14:30:00+05:30"
+
+/-- Labeled source summaries and role context for the chart Index and storyboard. -/
+def chartPayloads (ctx : FactsContext) (rs : List Json) (p : Json) (f : Facts) (d : Display) : List InfoPayload :=
+  let enc := (latestEncounter (encounterRecords ctx rs p)).getD .null
+  let present := fun value => if value == "" then "Not recorded" else value
+  let pair := fun label value => [("Detail", label), ("Value", present value)]
+  let encounter := encRow enc
+  let los := match (if encounter.stop == "" then chartMinute ctx.today (ctx.now % 1440) else chartMinute encounter.stop), chartMinute encounter.start with
+    | some stop, some start => if start ≤ stop then
+        toString ((stop - start) / 1440) ++ "d " ++ toString (((stop - start) % 1440) / 60) ++ "h " ++
+        (if encounter.stop == "" then "(snapshot)" else "(recorded stay)") else "Not recorded"
+    | _, _ => "Not recorded"
+  let weight := (bannerWeightOf ctx.today rs).map (fun (n, unit, date) =>
+    let kg := match unit with | .kg => some n | .g => some (n / 1000) | .lb => some ((n * 45359237 + 50000000) / 100000000) | _ => none
+    (kg.map (fun n => toString (n / 10) ++ "." ++ toString (n % 10) ++ " kg · " ++ date)).getD "Not recorded") |>.getD "Not recorded"
+  let identity := [pair "Name" d.banner.name, pair "Age / sex" (if isoDateValid d.banner.dob then toString d.banner.ageYears ++ " / " ++ d.banner.sex else "Not recorded"),
+    pair "MRN" d.banner.mrn, pair "DOB" d.banner.dob]
+  let team := [pair "PCP" d.banner.pcp, pair "Attending" d.banner.attending] ++
+    (arr enc "participant").map (fun r => pair (ccText (first r "type")) (humanRef rs (field r "individual"))) ++
+    (ofType "CareTeam" rs).flatMap (fun r => (arr r "participant").map fun part =>
+      pair (ccText (first part "role")) (humanRef rs (field part "member")))
+  let encounterRows := [pair "Encounter" (ccText (first enc "type")), pair "Department" (ccText (field enc "serviceType")),
+    pair "Location" encounter.location, pair "Admitted / start" encounter.start, pair "LOS" los, pair "Status" (str enc "status")]
+  let notes := (newestFirst (·.date) d.notes).take 5 |>.map fun r =>
+    [("Date", r.date), ("Type", r.noteType), ("Author", r.author), ("Title", r.title),
+     ("Text", sub r.text 0 280 ++ if r.text.length > 280 then "… (excerpt; full note in Chart Review)" else ""), ("Status", r.status)]
+  let meds := d.meds.take 8 |>.map fun r => [("Medication", r.name), ("Directions", r.sig), ("Status", r.status), ("Prescriber", r.prescriber)]
+  let problems := (d.problems.filter fun r => r.status != "resolved" && r.status != "inactive" && r.abatement == "").take 8 |>.map fun r =>
+    [("Problem", r.name), ("Onset", r.onset), ("Status", r.status)]
+  let recent := d.labResults.filter (fun r => chartRecent ctx r.date) |>.take 15 |>.map fun r =>
+    [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Flag", r.flag), ("Range", r.refRange), ("Recorded", r.date), ("Status", r.status)]
+  let activeOrders := (newestFirst (str · "authoredOn") (rs.filter fun r => ["MedicationRequest", "ServiceRequest"].contains (resourceType r) &&
+    ["active", "on-hold", "draft"].contains (str r "status"))).map fun r =>
+      [("Order", if resourceType r == "MedicationRequest" then medName r else ccText (field r "code")),
+       ("Directions", if resourceType r == "MedicationRequest" then sigText r else str r "occurrenceDateTime"),
+       ("Status", str r "status"), ("Ordered", str r "authoredOn")]
+  let carePlan := (ofType "CarePlan" rs).flatMap fun r =>
+    [("Plan", str r "title"), ("Detail", str r "description"), ("Status", str r "status")] ::
+    (arr r "activity").map (fun a => [("Plan", ccText (field (field a "detail") "code")),
+      ("Detail", str (field a "detail") "description"), ("Status", str (field a "detail") "status")])
+  let imaging := (rs.filter fun r => resourceType r == "ImagingStudy" ||
+    (resourceType r == "DiagnosticReport" && (arr r "category").any (fun c => hasCode c "RAD"))).map fun r =>
+      [("Study", ccText (field r "code")), ("Date", let date := str r "effectiveDateTime"; if date == "" then str r "started" else date),
+       ("Conclusion", str r "conclusion"), ("Status", str r "status")]
+  let observations := d.observations.filter fun r => r.categories.contains "intake-output" ||
+    (r.measure.toLower.splitOn "intake").length > 1 || (r.measure.toLower.splitOn "output").length > 1
+  let lines := (ofType "DeviceUseStatement" rs).map fun r =>
+    [("Device", humanRef rs (field r "device")), ("Status", str r "status"), ("Recorded", str r "recordedOn")]
+  let pharmacy := (rs.filter isMedRequest).filterMap fun r =>
+    let name := Ambulatory.prescriptionPharmacy rs r
+    if name == "" then none else some (pair "Pharmacy" name)
+  let careGaps := f.careGaps.map fun gap =>
+    [("Task", (([("influenzaVaccine", "Influenza vaccination review"), ("colorectalScreening", "Colorectal screening review"),
+      ("hba1cMonitoring", "HbA1c monitoring review")] : List (String × String)).lookup gap).getD gap),
+     ("Status", "Chart reminder"), ("Due", "Verify source / eligibility")]
+  let completed := (rs.filter fun r => ["Observation", "DiagnosticReport"].contains (resourceType r) &&
+    ["final", "amended", "corrected"].contains (str r "status")).flatMap (fun r => (arr r "basedOn").map (str · "reference"))
+  let pending := (ofType "ServiceRequest" rs).filter (fun r => str r "status" == "active" &&
+    !["full-code", "dnr", "no-isolation", "contact-precautions", "droplet-precautions"].contains (firstCode (field r "code")) &&
+    !completed.contains ("ServiceRequest/" ++ str r "id")) |>.map fun r =>
+      [("Order", ccText (field r "code")), ("Requested", str r "authoredOn"), ("Priority", str r "priority"),
+       ("Status", "Active order; no linked final result in supplied chart")]
+  let schedule := d.marOrders.map fun r => [("Medication", r.medication), ("Dose", r.dose), ("Route", r.route),
+    ("Frequency", r.frequency), ("Scheduled", "; ".intercalate r.scheduled), ("Status", r.status)]
+  let due := d.marOrders.flatMap fun r => (r.scheduled.filter fun time =>
+    match chartMinute ctx.today (ctx.now % 1440), chartMinute time with
+    | some now, some scheduled => now - 60 ≤ scheduled && scheduled ≤ now + 60
+    | _, _ => false).map fun time =>
+      [("Due", time), ("Medication", r.medication), ("Dose", r.dose), ("Route", r.route), ("Status", r.status)]
+  let prnOrders := (rs.filter isMedRequest).filter fun r => (arr r "dosageInstruction").any fun di =>
+    field di "asNeededBoolean" == Json.bool true || field di "asNeededCodeableConcept" != Json.null
+  let prn := (d.administrations.filter fun r => prnOrders.any fun order =>
+    r.orderId == "MedicationRequest/" ++ str order "id" || r.orderId == str order "id").map fun r =>
+      [("Medication", r.medication), ("Dose", r.dose), ("Route", r.route), ("Time", r.time), ("Status", r.status), ("Reason", r.reason)]
+  let views : List (InfoId × List (List (String × String))) :=
+    [("chartMarSchedule", schedule), ("chartPendingResults", pending), ("chartStatus", [pair "Chart snapshot" ctx.today, pair "Encounter" (ccText (first enc "type")),
+       pair "Department" (ccText (field enc "serviceType")), pair "Status" (str enc "status")]), ("chartMarDue", due), ("chartPRN", prn), ("chartQuickView", identity ++ encounterRows ++ team), ("chartProblems", problems), ("chartMeds", meds),
+     ("chartRecentResults", recent), ("chartVitals", ((newestFirst (·.time) (d.observations.filter (fun r => r.categories.contains "vital-signs"))).take 15).reverse.map fun r =>
+       [("Measure", r.measure), ("Value", r.value), ("Unit", r.unit), ("Recorded", r.time)]),
+     ("chartCareGaps", careGaps ++ Ambulatory.forecastRows rs),
+     ("chartImmunizations", (d.immunizations.take 8).map fun r => [("Vaccine", r.vaccine), ("Date", r.date), ("Status", r.status)]),
+     ("chartNotes", notes), ("chartOrders", activeOrders.take 12), ("chartOpenOrders", activeOrders), ("chartImaging", imaging.take 8), ("chartImagingAll", imaging),
+     ("chartSocial", (d.history.filter (fun r => r.kind == "Social history")).take 8 |>.map fun r =>
+       [("Finding", r.item), ("Detail", r.detail), ("Status", r.status)]),
+     ("chartEncounters", (d.encounters.take 8).map fun r => [("Encounter", r.encType), ("Date", r.start), ("Reason", r.reason), ("Provider", r.provider)]),
+     ("chartCarePlan", carePlan ++
+       (if field enc "hospitalization" == Json.null then [] else
+         [pair "Admission source" (ccText (field (field enc "hospitalization") "admitSource")),
+          pair "Disposition" (ccText (field (field enc "hospitalization") "dischargeDisposition")),
+          pair "Destination" (humanRef rs (field (field enc "hospitalization") "destination"))])), ("chartED", encounterRows ++ [pair "Chief complaint" encounter.reason] ++
+       (arr enc "statusHistory").map (fun r => [("Status", str r "status"), ("Start", str (field r "period") "start"), ("End", str (field r "period") "end")])),
+     ("chartIO", (observations.take 15).map fun r => [("Measure", r.measure), ("Value", r.value), ("Unit", r.unit), ("Recorded", r.time)]),
+     ("chartLines", lines ++ [pair "Isolation" ((f.record.lookup "isolation").getD "")] ++
+       ((ofType "ServiceRequest" rs).filter (fun r => str r "status" == "active" &&
+         ((ccText (field r "code")).toLower.splitOn "precaution").length > 1)).map (fun r => pair "Precaution" (ccText (field r "code")))),
+     ("chartProcedure", (surgicalCaseRows ctx.today rs p).map SurgicalCaseRow.cells ++
+       ((d.procedures.take 3).map fun r => [("Procedure", r.name), ("Recorded", r.date), ("Status", r.status)]) ++
+       [pair "Postoperative day" ((f.record.lookup "postoperativeDay").getD "")]),
+     ("storyIdentity", identity), ("storyPrecautions", [pair "Code status" ((f.record.lookup "codeStatus").getD ""), pair "Isolation" ((f.record.lookup "isolation").getD "")] ++
+       ((ofType "ServiceRequest" rs).filter (fun r => str r "status" == "active" &&
+         ((ccText (field r "code")).toLower.splitOn "precaution").length > 1)).map (fun r => pair "Precaution" (ccText (field r "code")))),
+     ("storyTeam", team), ("storyEncounter", encounterRows), ("storyWeight", [pair "Measured weight" weight]),
+     ("storyMedCount", [pair "Active/on-hold orders" (toString d.meds.length)]),
+     ("storyLastNote", notes.take 1), ("storyPharmacy", pharmacy.eraseDups),
+     ("chartReports", [[("Reports", "Department reports are informational in this offline demonstration."), ("Chart date", ctx.today)]])]
+  let version := listVersion rs
+  views.map fun (info, rows) => {
+    info, patient := patientIdOf p, artifactKey := "chart:" ++ info,
+    artifact := "FHIR chart preview:" ++ info, version,
+    rows := rows.zipIdx.map fun (fields, slot) => { id := info ++ "." ++ toString slot, slot, fields } }
+
+/-- Full patient facts with optional version-bound, read-only chart previews. -/
+def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
+  let f := baseFactsOf ctx rs p
+  let previews := chartPayloads ctx rs p f (displayOf ctx rs p)
+  { f with
+    infoPayloads? := some ((f.infoPayloads?.getD []) ++ previews),
+    artifactBindings? := some ((f.artifactBindings?.getD []) ++ surgicalBindings previews) }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

@@ -20,7 +20,7 @@ GROUPS = {
     'PresentationProofs': ('Ehr.Render.Fhir', ['T11_schedule', 'T11_board', 'T11_administration', 'T11_observation', 'T11_observation_component', 'observationRows_length', 'T11_lab_result', 'T11_lab_component', 'labResultRows_length']),
     'Proofs': ('Ehr.Render', ['T10_shown', 'T10_no_tiny', 'T10_page_safe', 'T10_disabled', 'T10_only_shown', 'T10_info']),
     'CommitProofs': ('Ehr.Render', ['T10_commit_enabled']),
-    'FhirProofs': ('Ehr.Render.Fhir', ['T11_note', 'noteRows_complete', 'T11_allergy', 'T11_med', 'T5_weight', 'T5_allergyVersion', 'T5_version_order_independent']),
+    'FhirProofs': ('Ehr.Render.Fhir', ['chart_previews_preserve_clinical_facts', 'T11_note', 'noteRows_complete', 'T11_allergy', 'T11_med', 'T5_weight', 'T5_allergyVersion', 'T5_version_order_independent']),
     'PanelProofs': ('Ehr.Render', ['T11_notes_rendered', 'T11_allergy_fhir_page', 'T11_med_fhir_page']),
     'UiProofs': ('Ehr.Render', ['uiWrapRow_atoms', 'uiColumnChildren_atoms', 'uiProgress_readOnly', 'uiNotes_complete', 'D1_landmark', 'D2_workspace_required', 'D2_required_info', 'D2_commit_review', 'D3_honest_actions', 'D3_all_buttons', 'D4_interruptive_modal', 'D4_passive_no_modal', 'D4_passive_inline', 'D6_clear_fields', 'D6_field_labels', 'T10_ui_shown', 'T10_ui_only_shown', 'T10_ui_hidden', 'T11_ui_info', 'T11_ui_full_info', 'T11_ui_allergy_rows', 'T11_ui_med_rows', 'T11_ui_allergy_fhir', 'T11_ui_med_fhir']),
     'PrefillProofs': ('Ehr.Render', ['T11_pending_prefill']),

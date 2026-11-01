@@ -140,7 +140,8 @@ def bind (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) : State :=
     else if c.bound? == c.patient? then s
     else
       let fresh := Ehr.init sp p f u
-      let entered := (goTo sp p f fresh (c.target?.getD p.start)).1
+      let first := if p.screens.any (·.id == "chartSummary") then "chartSummary" else c.target?.getD p.start
+      let entered := (goTo sp p f fresh first).1
       { entered with clock := s.clock, patientContext? := some { c with bound? := c.patient? } }
 
 /-- Workspace navigation cannot acknowledge a clinical popup or operate without a patient. -/
