@@ -67,6 +67,20 @@ describe('ehr CLI adapter (stub binary)', () => {
     expect(await ehr.deploy({ specVersion: 'v1', program, prev: program, canonical: program, outDir: dir })).toEqual({ deployed: false, verdict: VIOLATION });
   });
 
+  it('refuses fake certification outside the unit-test environment', () => {
+    const nodeEnv = process.env['NODE_ENV'];
+    const vitest = process.env['VITEST'];
+    try {
+      process.env['NODE_ENV'] = 'production';
+      delete process.env['VITEST'];
+      expect(() => createEhr({ fake: true })).toThrow(/only available in unit tests/);
+      expect(createEhr({ fake: false }).mode).toBe('real');
+    } finally {
+      if (nodeEnv === undefined) delete process.env['NODE_ENV']; else process.env['NODE_ENV'] = nodeEnv;
+      if (vitest === undefined) delete process.env['VITEST']; else process.env['VITEST'] = vitest;
+    }
+  });
+
   it('explains a missing binary', async () => {
     const ehr = createEhr({ fake: false, binary: '/nonexistent/ehr' });
     await expect(ehr.check({ specVersion: 'v1', program, prev: program, canonical: program })).rejects.toThrow(/not found/);

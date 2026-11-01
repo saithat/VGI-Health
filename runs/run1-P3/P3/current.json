@@ -1,6 +1,6 @@
-{"version": 1,
+{"version": 2,
  "start": "home",
- "specVersion": "v1",
+ "specVersion": "v1.1",
  "screens":
  [{"workflow": "shell",
    "title": "Patient workspace",

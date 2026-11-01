@@ -50,7 +50,7 @@ async function record(name, action) {
   } catch (error) { if (!page.isClosed()) await page.screenshot({ path: `${out}/${name}-error.png`, fullPage: true }); await context.close(); throw error; }
 }
 async function dashboard(page, view) {
-  await page.goto(`${base}/dashboard?${new URLSearchParams({ run, view })}`);
+  await page.goto(`${base}/dashboard?${new URLSearchParams({ run, view, persona })}`);
   await expect(page.getByRole('heading', { name: view, exact: true })).toBeVisible();
   await pause(page);
 }

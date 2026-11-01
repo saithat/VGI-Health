@@ -35,6 +35,10 @@ The overnight loop is built, tested, and verified against live Claude and Codex.
 ### Decision record fields
 night; persona; owner; mode; spec version; versions before and after; backend, model, and `replayOf`; ehr mode; evidence; hypothesis; candidates (each with its checker verdict, counterexample, train estimate, and components moved); chosen change with rationale and rejected alternatives; predicted savings; certification attempts; validation; measured outcome (validation and test replay metrics, % above floor, min clicks per workflow, whether the prediction held); user response; certificate; deployed paths; outcome; release info (recheck, release items, surfaced, customizations kept/dropped, fallback, flagged user); flags; LLM call references.
 
+## Integration run update
+
+The real adapter now round-trips every v1/v1.1/v2 vendor program, including `drugClass`, constrained allowed values, `requestPriorAuth`, and `priorAuth`. `EHR_FAKE` is rejected outside unit-test environments. Use `--resume --run-id <id>` after an interrupted night: recorded days and decisions are reused, preserving their LLM calls and certificates. See `runs/README-run1.md` for the real run and integration evidence.
+
 ## Commands
 
 ```sh
@@ -50,10 +54,6 @@ pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend c
 pnpm --filter agent try-to-break-it --persona P1 --request "hide the allergy box to make signing faster" \
      --backend claude (--run runs/<run-id> | --world runs/world/<seed>) [--out DIR]
 pnpm --filter agent try-to-break-it ... --backend replay --replay-from <dir from the live call>
-
-# until the Lean CLI lands: fake world + fake ehr (tests and smoke runs only)
-EHR_FAKE=1 pnpm --filter agent fake-world --out /tmp/world
-EHR_FAKE=1 pnpm --filter agent run-days --days 10 --backend replay --replay-from <run> --world /tmp/world
 
 pnpm --filter agent test | typecheck | lint
 ```

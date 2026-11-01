@@ -77,7 +77,12 @@ export const DEFAULT_EHR_BIN = path.join(REPO_ROOT, 'lean', '.lake', 'build', 'b
 
 export function createEhr(opts: { fake?: boolean; binary?: string } = {}): EhrClient {
   const fake = opts.fake ?? process.env['EHR_FAKE'] === '1';
-  if (fake) return createFakeEhr();
+  if (fake) {
+    if (process.env['NODE_ENV'] !== 'test' && process.env['VITEST'] !== 'true') {
+      throw new Error('EHR_FAKE is only available in unit tests; live runs require the real Lean CLI');
+    }
+    return createFakeEhr();
+  }
   return new CliEhr(opts.binary ?? process.env['EHR_BIN'] ?? DEFAULT_EHR_BIN);
 }
 
