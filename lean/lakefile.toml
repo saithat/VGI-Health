@@ -36,3 +36,7 @@ root = "Ehr.Tools.ProfileGoals"
 [[lean_lib]]
 name = "VerificationAudit"
 roots = ["Audit.SpecSurface"]
+
+# Exact unproved general T1 proposition, for opt-in proof development only.
+[[lean_lib]]
+name = "CompletionObligations"

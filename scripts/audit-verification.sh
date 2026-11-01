@@ -17,7 +17,7 @@ os.environ['LEAN_PATH'] = str(lib) + ':' + os.environ.get('LEAN_PATH', '')
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
 def fingerprint():
     files = sorted([*p('Ehr').rglob('*.lean'), *p('Audit').rglob('*.lean'),
-                    p('Solution.lean'), p('Statements.lean'), p('comparator.json'),
+                    p('Solution.lean'), p('Statements.lean'), p('CompletionObligations.lean'), p('comparator.json'),
                     p('lakefile.toml'), p('lean-toolchain'), p('lake-manifest.json')])
     return hashlib.sha256(b''.join(str(f).encode() + b'\0' + f.read_bytes() for f in files)).hexdigest()
 before = fingerprint()
@@ -84,7 +84,8 @@ bundles = list(buckets.items())
 parts = [[j for j, (members, _) in enumerate(bundles, 1) if i in members] for i in range(len(groups))]
 assert all(set(items) == {item for j in parts[i] for item in bundles[j-1][1]}
            for i, items in enumerate(groups)), 'Surface grouping lost a definition'
-lines = [f'Generated at `{commit}`. Source SHA-256: `{before}`.', '',
+lines = [f'Generated with Git HEAD `{commit}`. Audited source SHA-256: `{before}`. '
+         'The source hash includes uncommitted source changes; HEAD identifies the checkout base.', '',
          f'{len(axioms)} theorems audited; {len(surfaces)} statement surfaces; {len(groups)} distinct lists; '
          f'{sum(len(items) for _, items in bundles)} distinct definitions/types overall; '
          f'{min(map(len, groups))}–{max(map(len, groups))} per statement. '
@@ -100,7 +101,7 @@ for name, items in surfaces.items():
     axs = ', '.join({'propext':'P', 'Classical.choice':'C', 'Quot.sound':'Q'}[a] for a in axioms.get(name, []))
     lines.append(f'| `{name}` | {source(name)} | S{group_ids[tuple(items)]} / {len(items)} | {axs or ("none" if name in axioms else "definition")} |')
 for i, items in enumerate(groups, 1):
-    lines += ['', f'**S{i} ({len(items)}):** ' + ', '.join(f'[B{j}](#audit-b{j})' for j in parts[i-1])]
+    lines += ['', (f'**S{i} ({len(items)}):** ' + ', '.join(f'[B{j}](#audit-b{j})' for j in parts[i-1])).rstrip()]
 for j, (_, items) in enumerate(bundles, 1):
     lines += ['', f'<a id="audit-b{j}"></a>', '<details>', f'<summary>B{j}: {len(items)} shared definitions and types</summary>', '',
               ', '.join('`' + x + '`' for x in items), '', '</details>']

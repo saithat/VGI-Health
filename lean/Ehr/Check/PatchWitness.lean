@@ -28,6 +28,7 @@ theorem componentAt_facts (cs : List Component) (i : Nat) (id : CompId) (kind : 
   | none => simp [he] at h
   | some c => simpa [he] using h
 
+/-- A component occurrence supplies its screen/component pair in allComps. -/
 theorem hasComponent_pair {p : Program} {c : Component} (h : HasComponent p c) :
     ∃ sc ∈ allComps p, sc.2 = c := by
   obtain ⟨s, hs, hc⟩ := h
@@ -46,6 +47,7 @@ theorem hasComponent_forPersona (sp : Spec) (p : Program) (owner : String) (role
   refine ⟨List.mem_filter.mpr ⟨hc, allowed⟩, ?_⟩
   cases hk : c.kind <;> simp_all [macroOf?]
 
+/-- Updating a screen retains a component when the update retains every occurrence. -/
 theorem hasComponent_updateScreen (p : Program) (id : ScreenId) (f : Screen → Screen)
     (c : Component) (h : HasComponent p c)
     (kept : ∀ s, c ∈ s.components → c ∈ (f s).components) :
@@ -54,12 +56,14 @@ theorem hasComponent_updateScreen (p : Program) (id : ScreenId) (f : Screen → 
   refine ⟨_, List.mem_map.mpr ⟨s, hs, rfl⟩, ?_⟩
   split <;> simp_all
 
+/-- Inserting components after an ID retains every existing component. -/
 theorem insertAfter_keeps (s : Screen) (id : CompId) (extra : List Component)
     (c : Component) (h : c ∈ s.components) : c ∈ (s.insertAfter id extra).components := by
   apply List.mem_flatMap.mpr
   refine ⟨c, h, ?_⟩
   split <;> simp
 
+/-- Dropping another component ID retains this component. -/
 theorem dropComp_keeps (s : Screen) (id : CompId) (c : Component)
     (h : c ∈ s.components) (different : c.id ≠ id) : c ∈ (s.dropComp id).components := by
   exact List.mem_filter.mpr ⟨h, by simpa using different⟩
@@ -68,6 +72,7 @@ theorem dropComp_keeps (s : Screen) (id : CompId) (c : Component)
 theorem hasComponent_seed (n : Nat) (p : Program) (c : Component)
     (h : HasComponent p c) : HasComponent (Bad.seed n p) c := h
 
+/-- Adding a macro leaves every existing component occurrence intact. -/
 theorem hasComponent_addMacro (p : Program) (m : Macro) (c : Component)
     (h : HasComponent p c) : HasComponent (p.addMacro m) c := h
 

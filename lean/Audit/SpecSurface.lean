@@ -4,6 +4,8 @@ import Ehr.Check.Sound
 import Ehr.Proofs.CheckDeploy
 import Ehr.Render.UiProofs
 import Ehr.Check.TinyRejections
+import Ehr.Proofs.HypothesisExamples
+import Ehr.Proofs.RenderExamples
 
 /-! Opt-in reviewer audit. Follows statement types and definition bodies, never
 proof bodies, for the surface; follows proofs separately for the axiom audit.
@@ -161,3 +163,35 @@ end VerificationAudit
 -- Property 6 has no acceptance theorem. Audit its definition explicitly.
 #spec_surface Ehr.Props.Completable
 #spec_surface Ehr.Props.Satisfies
+
+#spec_surface Ehr.Check.human_finish_ready
+#audit_axioms Ehr.Check.human_finish_ready
+#spec_surface Ehr.Check.Scalar.completable
+#audit_axioms Ehr.Check.Scalar.completable
+#spec_surface Ehr.Check.satisfies_of_checked_scalar
+#audit_axioms Ehr.Check.satisfies_of_checked_scalar
+#spec_surface Ehr.Check.scalar_identity_satisfies
+#audit_axioms Ehr.Check.scalar_identity_satisfies
+
+#spec_surface Ehr.Proofs.HypothesisExamples.cosign_distinct_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.cosign_distinct_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.receipt_sound_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.receipt_sound_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.shown_review_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.shown_review_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.shown_alert_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.shown_alert_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.popup_step_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.popup_step_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.sign_button_honest_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.sign_button_honest_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.all_buttons_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.all_buttons_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.weight_label_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.weight_label_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.publish_ok_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.publish_ok_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.published_certificate_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.published_certificate_instance
+#spec_surface Ehr.Proofs.HypothesisExamples.rejected_not_published_instance
+#audit_axioms Ehr.Proofs.HypothesisExamples.rejected_not_published_instance

@@ -99,9 +99,9 @@ def CommitCapturesAll (ep : Episode) : Prop :=
   EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →
     ∀ rq ∈ ep.spec.entries, rq.commit = c → EntryMetIn ep s rq
 
-/-- A confirmed value is never asked for again. Navigating, opening groups or
-tabs, reviewing, acknowledging, or confirming keep every confirmed value;
-only typing a new value, or running a macro, changes one. By construction. -/
+/-- Confirmed captures are retained by non-entry events. A human macro-button
+click without an open popup is excluded because it may run entry steps.
+This clause preserves stored values and permits deliberate re-entry. -/
 def EnteredOnce (ep : Episode) : Prop :=
   EveryStep ep fun s actor e =>
     (∀ cid v, e ≠ .enter cid v) →
@@ -109,9 +109,9 @@ def EnteredOnce (ep : Episode) : Prop :=
       clickedMacro? ep.spec ep.prog ep.facts s cid = none ∨ s.popup?.isSome) →
     ∀ x ∈ s.captured, x.confirmed = true → x ∈ (ep.next actor s e).captured
 
-/-- A field for an auto-linked element (e.g. the diagnosis on an order,
-linked from the visit diagnosis) copies the linked element, so the human
-never types it twice. Needs the checker. -/
+/-- Every field for an auto-linked element declares a linked prefill from
+that element's named source (e.g. an order diagnosis from the visit diagnosis).
+Needs the checker. -/
 def LinkedNotRetyped (spec : Spec) (prog : Program) : Prop :=
   ∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
     el.prefill = .autoLinked → ∃ src ∈ el.linkedFrom?, f.2.2 = .linked src
@@ -120,9 +120,9 @@ instance (spec : Spec) (prog : Program) : Decidable (LinkedNotRetyped spec prog)
   unfold LinkedNotRetyped; infer_instance
 
 /-- **Property 2, captures all, once.** Every commit captures each required
-element (by construction), a confirmed value is never asked for again (by
-construction), and auto-linked elements are never retyped (checker). Units
-are in property 7. -/
+element (by construction), confirmed captures survive the specified
+non-entry events (by construction), and auto-linked fields declare their
+source prefill (checker). Units are in property 7. -/
 def CapturesAllOnce (spec : Spec) (prog : Program) : Prop :=
   LinkedNotRetyped spec prog ∧
   ∀ facts user, user.role = prog.role →
@@ -204,8 +204,8 @@ def OnlyHumanCommitsAndAcks (ep : Episode) : Prop :=
         ∃ comp ∈ ep.prog.compsOf s.screen, comp.id = cid ∧ comp.kind = .button (.commit c)) ∧
     ((ep.next actor s e).acked ≠ s.acked → actor = .human ∧ ∃ a, e = .ack a)
 
-/-- When a commit happens, every cosign it needs names a second user, not
-the signed-in one. By construction (T0). -/
+/-- At commit, every applicable whole-episode cosign requirement has a
+human-entered capture naming a user other than the signed-in user. T0. -/
 def CosignIsSecondUser (ep : Episode) : Prop :=
   EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →
     ∀ rq ∈ ep.spec.entries, rq.commit = c → ∀ el, ep.spec.element? rq.element = some el →
@@ -264,18 +264,18 @@ def Completable (spec : Spec) (canonical prog : Program) : Prop :=
 
 /-! ## 7. Units -/
 
-/-- When a commit happens, every required quantity counts only in the spec's
-unit: a weight in lb never satisfies a weight in kg. By construction (T0). -/
+/-- At commit, each applicable whole-episode quantity requirement has a
+confirmed capture in the element's declared unit. A weight in lb cannot
+satisfy a requirement declared in kg. By construction (T0). -/
 def CommitUnitsRight (ep : Episode) : Prop :=
   EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →
     ∀ rq ∈ ep.spec.entries, rq.commit = c → ∀ el u, ep.spec.element? rq.element = some el →
       el.kind = .quantity u → Applies ep s rq.when → ¬ rq.perOrderLine →
         ∃ x ∈ s.captured, x.element = el.id ∧ x.confirmed = true ∧ ∃ t, x.value = .qty t u
 
-/-- A quantity field is prefilled from the record only from `weightToday`,
-which keeps the unit it was recorded in. Other record values are bare numbers
-with no unit or date (e.g. a weight in lb, or yesterday's weight), so they may
-not fill a quantity. Needs the checker. -/
+/-- A quantity field's named record prefill source must be `weightToday`.
+The interpreter preserves that record's unit; the commit checks the required
+unit separately. Needs the checker. -/
 def QuantityPrefillsKeepUnits (spec : Spec) (prog : Program) : Prop :=
   ∀ sc ∈ allComps prog, ∀ f ∈ fieldOf? sc.2.kind, ∀ el ∈ spec.element? f.1,
     isQuantity el.kind = true → ∀ fact ∈ recordFactOf? f.2.2, fact = "weightToday"
@@ -283,8 +283,10 @@ def QuantityPrefillsKeepUnits (spec : Spec) (prog : Program) : Prop :=
 instance (spec : Spec) (prog : Program) : Decidable (QuantityPrefillsKeepUnits spec prog) := by
   unfold QuantityPrefillsKeepUnits; infer_instance
 
-/-- **Property 7, units.** Weight in kg only, and the dose check uses kg
-(the interpreter's dose check reads only kg weights). -/
+/-- **Property 7, units.** Whole-episode quantity requirements use their
+declared units at commit, and quantity record prefills use `weightToday`.
+Native medication-dose compatibility has its separate interpreter theorem
+`committed_dose_native`. -/
 def UnitsRight (spec : Spec) (prog : Program) : Prop :=
   QuantityPrefillsKeepUnits spec prog ∧
   ∀ facts user, user.role = prog.role → CommitUnitsRight ⟨spec, prog, facts, user⟩
