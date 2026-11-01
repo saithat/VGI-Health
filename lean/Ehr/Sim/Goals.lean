@@ -138,7 +138,8 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
   | _ =>
     if el.id == weightElement || el.id == "dosingWeight" then weightKgGoal facts
     else if el.id == "painScore" || el.id == "painReassessment" then choices.painScore?.map (fun n => .code (toString n))
-    else if (el.id == "refillReason" || el.id == "refillDenyReason") then choices.refillReason?.map .text
+    else if (el.id == "refillReason" || el.id == "refillDenyReason") then
+      choices.refillReason?.bind (parseValue el.kind)
     else if el.id == "curesExemptionReason" then
       (taskCuresReason choices).map .code
     else if el.id == "naloxoneOffer" then some (.code
@@ -192,7 +193,16 @@ def taskCommits (sp : Spec) (wf : Workflow) (ch : TaskChoices) : List CommitId :
         (if ch.w6Step? == some .discharge || ch.disposition? == some "discharge" then ["discharge"] else []) ++
         (if ch.w6Step? == some .discharge || ch.w6Step? == some .preop || ch.w6Step? == some .postop ||
           (ch.noteSections.filter (· != "opNote")).isEmpty then [] else ["signNote"])
-    | .W7 => if ch.refill?.isSome then ["approveRefill"] else []
+    | .W7 => match ch.refill? with
+      | some "deny" => ["denyRefill"]
+      | some "modify" => orders
+      | some "approve" =>
+        -- Schedule II renewals are new prescriptions, never an eligibility
+        -- attestation claiming that a known Schedule II drug is not one.
+        if ch.orders.isEmpty then []
+        else if ch.orders.any (fun o => inClass o.drug "scheduleII") then orders
+        else ["approveRefill"]
+      | _ => []
   cand.filter fun c => (sp.commit? c).isSome
 
 /-! ## Required values -/
@@ -289,23 +299,30 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       match sp.element? rq.element with
       | some el => entryGoals facts user choices med? orders hyp0 el rq
       | none => []
+  -- Core's currentLineComplete checks every per-line requirement, including
+  -- other signing artifacts, before advancing. These captures are necessary
+  -- to reach a later chosen slot, even on an ordinary prescription task.
+  let advance := if !commits.contains "signOrders" then [] else
+    sp.entries.filter (fun rq => rq.perOrderLine && !commits.contains rq.commit) |>.flatMap fun rq =>
+      match sp.element? rq.element with
+      | none => []
+      | some el =>
+        (entryGoals facts user choices med? orders hyp0 el { rq with commit := "signOrders" }).filter
+          (fun g => g.slot?.any (fun n => n + 1 < orders.length))
   let explicitChoices : List ValueGoal :=
     let pain := match choices.painScore?, commits.head? with
       | some score, some cm =>
         if wf == .W4 && choices.administer.isEmpty then [] else
         [{ element := "painScore", value? := some (.code (toString score)), commit := cm }]
       | _, _ => []
-    let refillDose := if wf == .W7 && choices.refill? == some "modify" then
-      choices.orders.take 1 |>.map fun o =>
-        { element := "refillDose", value? := orderValue "dose" o, commit := "approveRefill" }
+    let reason := if wf == .W7 then match choices.refillReason?, commits.head? with
+      | some reason, some cm =>
+        let e := if choices.refill? == some "deny" then "refillDenyReason" else "refillNote"
+        [{ element := e, value? := some ((sp.element? e).bind
+            (fun el => parseValue el.kind reason) |>.getD (.text reason)), commit := cm }]
+      | _, _ => []
       else []
-    let reason := if wf == .W7 then match choices.refillReason? with
-      | some reason => [{
-          element := (if choices.refill? == some "deny" then "refillDenyReason" else "refillNote"),
-          value? := some (.text reason), commit := "approveRefill" }]
-      | none => []
-      else []
-    pain ++ refillDose ++ reason
+    pain ++ reason
   let waiver := sp.reviews.flatMap fun rq =>
     if !commits.contains rq.commit || !whenHolds facts hyp0 rq.when then [] else
     match rq.waivedBy?, taskCuresReason choices with
@@ -315,14 +332,14 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
     if o.kind?.getD .medication == .medication then [] else
     ["orderKind", "orderCode"].map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
-  let checked := (dedupGoals (raw ++ explicitChoices ++ services)).map fun g =>
+  let checked := (dedupGoals (raw ++ advance ++ explicitChoices ++ services)).map fun g =>
     let (g, problems) := checkFit sp facts user g
     let (g, constraints) := constrainGoal sp facts user hyp0 g
     (g, problems ++ constraints)
   let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
   -- Final alerts use the values actually required by this task, not uncaptured
-  -- order choices (for example a refill modification with no drug goal).
+  -- order choices. Refill approval now explicitly requires the requested drug.
   let hyp := hypothetical [] values
   let acks := sp.alerts.flatMap fun al =>
     if al.tier == .interruptive && commits.contains al.commit then

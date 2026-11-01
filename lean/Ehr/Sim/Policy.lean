@@ -1,4 +1,5 @@
 import Ehr.Sim.Interaction
+import Ehr.Sim.TaskContext
 
 /-!
 Deterministic persona policy. Clinical goals are fixed outside the UI. Each
@@ -218,7 +219,10 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     let facts := { raw with
       now := task.startMin,
       receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
-    let eps := episodes facts task.workflow task.choices
+    let eps := taskEpisodes facts task
+    if eps.isEmpty then
+      day := { day with complaints := day.complaints ++
+        [s!"{task.id}: no clinical episode; refill approval requires a focused prescription or explicit order"] }
     let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
     let nActions := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions

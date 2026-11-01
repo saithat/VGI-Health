@@ -672,3 +672,35 @@ round-trip requests CR-12/14 still apply.
 forbids weakening an existing rule. Content retains that flag and human
 naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
 education outcome alone therefore does not bypass the older stricter flag.
+
+## Sim follow-up on merged catalog (2026-10-31)
+
+The v1 refill rule now explicitly requires `drug`, `refillScheduleEligibility`
+with `allowed = [notScheduleII]`, and separate `denyRefill`. Sim adopts these:
+renewals bind the focused contained MedicationRequest from this task's
+`todayResources`; denials use only denyRefill; modifications and Schedule II
+renewals use ordinary signOrders, never a false notScheduleII attestation.
+
+**CLI owner, concrete one-line integration:** in `Ehr/Cli/Sim.lean:minSchedule`,
+replace `let eps := episodes facts task.workflow task.choices` with
+`let eps := taskEpisodes facts task`. `TaskContext` is already imported through
+Sim.Policy. This makes native minimum search use the same prescription context
+as persona replay, without treating an unrelated active medication as the
+requested prescription. Sim does not edit Cli under the explicit lane boundary.
+
+**Content/world, baseline service blocker still present on main f3dd0c2:**
+`releases/v1/spec.json` has neither orderKind nor orderCode, and baseline
+composers expose neither field. Thirteen day-1–3 P1/P5 tasks explicitly request
+imaging/procedure orders. Their captured services cannot satisfy sim's typed
+goals in v1. Please either introduce the optional service fields and composers
+in baseline v1 (preserving all entry/review/safety rules and the v1.1 prior-auth
+feature), or align scenario release timing without dropping requested work.
+Moving these two optional declarations to v1 and regenerating the releases is
+sufficient for sim to replay the original tasks. The simulator retains all
+service goals and reports incomplete tasks until their actual UI supports them.
+
+**App owner, catalog-count regression on the same merged main:** `pnpm --filter
+app build` and lint pass, but `tests/app.test.tsx:25` still expects 16 bad
+programs. Content now supplies 24. The catalog correctly includes all 24;
+update the expected inventory (and retain the rendering assertions). Current
+app test result is 89 passed / 1 failed; sim does not edit app-owned tests.

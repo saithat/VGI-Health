@@ -99,6 +99,21 @@ Interruptions are assigned before UI-dependent random draws and retained when a
 faster UI skips entries. A fuel bound and commit retry cap prevent loops; stuck
 tasks and rejected/stale receipt reasons are complaints, not successes.
 
+`TaskContext.lean` binds a renewal to the focused contained MedicationRequest
+in the current task's `todayResources`, validating both patient references.
+Missing or ambiguous prescription context cannot complete approval. The drug
+is a human UI capture, with the spec's eligibility attestation and interaction
+alerts; it is never installed as administration context. Denials use denyRefill.
+Modifications and Schedule II renewals use ordinary signOrders with its full
+prescription gates. Explicit modification and denial reasons remain goals.
+The CLI minimum adapter must call `taskEpisodes`, as persona replay does;
+its cross-lane adoption request is in `docs/design/changes-requests.md`.
+
+Before advancing past an earlier medication line, goal derivation also retains
+Core's per-line requirements from other signing artifacts. This includes the
+series earliest-fill capture required by the current cross-artifact line stop;
+it does not add that series-only field to an ordinary final line.
+
 W4 uses separate medication episodes plus an assessment episode when requested.
 W5 uses separate vaccine episodes plus the medical/note episode. Captures,
 commits and alert acknowledgments reset per episode; patient review receipts
