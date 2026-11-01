@@ -2361,3 +2361,28 @@ To canonical/presentation lanes, against main `81691fb`:
 
 All changes here are presentation only; no FHIR facts, clinical requirements,
 permissions, human-only flags, input values or commit/review rules change.
+
+### Shell → content: in-EHR patient opening integration (1 Nov, 07:53)
+
+The browser now opens a persona/program/day only. It has no external patient
+picker and emits no patient query parameter. Timeline `day=0..10` uses the
+committed world calendar (`chartDateForTimelineDay`); it never selects a patient.
+The replay inspector's external patient switcher is also removed.
+
+Please land the declared `openPatient` action and replay/live patient-loading
+transport on main. The shell will merge it and exercise picking different rows
+inside Schedule / Track Board / Unit Census / OR Schedule. Keep the initial
+landing activity and list-versus-chart banner/Chart Review placement semantic;
+the painter must not infer list mode from screen-title strings or suppress source
+controls. Historical recorded programs remain immutable: please specify their
+supported patient-opening path when they lack the new action. No browser-side
+patching of archived programs is authorized.
+
+Follow-up after reading the in-progress Workspace integration: the
+`patientSelection` opt-in deliberately preserves old program behavior. The owner
+also requires historical revision nodes to start at a list with in-EHR patient
+selection. Frozen run1-P3 programs omit that flag, so removing the external picker
+alone leaves those historical revisions without a patient-changing path. Please
+provide a proof-covered workspace entry mode for historical programs without
+rewriting their recorded JSON/certificates. The shell will not inject the flag or
+invent React-only patient controls.
