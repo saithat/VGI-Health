@@ -21,3 +21,6 @@ infra/synthea/output/
 playwright-report/
 test-results/
 
+
+# Clinical UI review screenshots
+app/shots/

@@ -22,7 +22,7 @@ describe("offline live UI catalog", () => {
     }
     expect(
       catalog.programs.filter((program) => program.group === "Bad programs"),
-    ).toHaveLength(16);
+    ).toHaveLength(24);
     expect(
       catalog.programs.filter((program) => program.run === "mock").length,
     ).toBeGreaterThan(20);

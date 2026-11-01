@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Alert, Badge, Box, Button, Checkbox, Group, Kbd, NumberInput, Paper, Select, SimpleGrid, Stack, Table, Tabs, Text, TextInput, Tooltip } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { entryEvent } from "./events";
@@ -7,10 +8,10 @@ export type Emit = (event: Event) => void;
 type Props<K extends ParametersKey> = { node: NodeOf<K>; onEvent: Emit };
 type ParametersKey = "section" | "columns" | "tabs" | "stepper" | "field" | "info" | "alert" | "button" | "text";
 export function UiChildren({ nodes, onEvent }: { nodes: UiNode[]; onEvent: Emit }) {
-  return <>{nodes.map((node, i) => <UiNodeView key={i} node={node} onEvent={onEvent} />)}</>;
+  return <>{nodes.map((node, i) => <UiNodeView key={i} node={node} onEvent={onEvent} confirmProvided={"field" in node && nodes.some((other) => "button" in other && other.button.role === "confirm" && other.button.comp === node.field.comp)} />)}</>;
 }
 export function SectionNode({ node, onEvent }: Props<"section">) {
-  return <Paper component="section" role="region" aria-label={node.title} withBorder className="clinical-section">
+  return <Paper component="section" data-section-id={node.id} role="region" aria-label={node.title} withBorder className="clinical-section">
     <div className="clinical-section-title"><h2>{node.title}</h2></div>
     <Stack gap="sm" className="clinical-section-body"><UiChildren nodes={node.children} onEvent={onEvent} /></Stack>
   </Paper>;
@@ -35,13 +36,16 @@ export function StepperNode({ node }: Props<"stepper">) {
     <span className="step-number" aria-hidden="true">{index < node.current ? "✓" : String(index + 1).padStart(2, "0")}</span><span>{label}</span>
   </li>)}</ol>;
 }
-export function FieldNode({ node, onEvent }: Props<"field">) {
+export function FieldNode({ node, onEvent, confirmProvided = false }: Props<"field"> & { confirmProvided?: boolean }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
     if (event) onEvent(event);
   };
   const kind = node.kind.split(":")[0];
-  const special = ["identity", "scan", "cosign"].includes(kind ?? "") ? kind : undefined;
+  const special = kind === "user" || kind === "cosign" ? "cosign"
+    : kind === "identity" || /identity|re[- ]?enter|re[- ]?entry/i.test(node.label) ? "identity"
+    : kind === "scan" || /scan|barcode/i.test(node.label) ? "scan" : undefined;
   const common = {
     label: node.label, "aria-label": node.label, required: node.required, size: "xs" as const,
     "data-comp-id": node.comp, "data-event": "enter", className: "clinical-control",
@@ -51,15 +55,15 @@ export function FieldNode({ node, onEvent }: Props<"field">) {
   return <Box className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}`}>
     <Group gap={6} justify="space-between" wrap="wrap" mb={node.humanOnly || special ? 5 : 0}>
       {special && <Text size="xs" fw={600} c="dimmed">{special === "identity" ? "Verify patient identity" : special === "scan" ? "Barcode verification" : "Second clinician verification"}</Text>}
-      {node.humanOnly && <Badge className="human-lock" size="sm" variant="light" color="slate" leftSection={<span aria-hidden="true">▣</span>}>Human entry only</Badge>}
+      {node.humanOnly && <Badge className="human-lock" size="sm" variant="light" color="gray" leftSection={<span aria-hidden="true">▣</span>}>Human entry only</Badge>}
     </Group>
     {kind === "flag" ? <Checkbox {...common} checked={node.value === "true"} onChange={(e) => send(e.currentTarget.checked)} />
       : ["quantity", "qty", "number"].includes(kind ?? "") ? <NumberInput {...common} value={node.value ?? ""} onChange={send} decimalScale={1} min={0} hideControls inputMode="decimal" rightSection={node.unit && node.unit !== "none" ? <Text size="xs" c="dimmed">{node.unit}</Text> : null} rightSectionWidth={58} />
-      : kind === "coded" || kind === "code" ? <Select {...common} searchable clearable data={codes} value={node.value} placeholder="Select or search code" onChange={(value) => send(value ?? "")} {...(options.length ? {} : { onSearchChange: send })} nothingFoundMessage="Enter a code" />
-      : <TextInput {...common} value={node.value ?? ""} onChange={(e) => send(e.currentTarget.value)} autoComplete="off" placeholder={special === "identity" ? "Re-enter patient identifiers" : special === "scan" ? "Scan or enter barcode" : special === "cosign" ? "Enter clinician ID" : "Enter value"} leftSection={special === "scan" ? <span aria-hidden="true">▥</span> : undefined} />}
+      : kind === "coded" || kind === "code" ? <Select {...common} role="combobox" aria-expanded={dropdownOpen} onDropdownOpen={() => setDropdownOpen(true)} onDropdownClose={() => setDropdownOpen(false)} rightSection={<span aria-hidden="true">⌄</span>} searchable data={codes} value={node.value} placeholder="Select or search code" onChange={(value) => send(value ?? "")} {...(options.length ? {} : { onSearchChange: send })} nothingFoundMessage="Enter a code" />
+      : <TextInput {...common} value={node.value ?? ""} onChange={(e) => send(e.currentTarget.value)} autoComplete="off" placeholder={kind === "search" ? "Search the patient chart" : special === "identity" ? "Re-enter patient identifiers" : special === "scan" ? "Scan or enter barcode" : special === "cosign" ? "Enter clinician ID" : "Enter value"} leftSection={special === "scan" ? <span aria-hidden="true">▥</span> : undefined} />}
     {(node.provenance || node.pendingConfirm) && <Group gap={6} mt={6} wrap="wrap">
       {node.provenance && <Badge variant="light" color="gray" size="sm" className="provenance-chip">{node.provenance}</Badge>}
-      {node.pendingConfirm && <Button size="compact-xs" variant="light" color="amber" aria-label={`Confirm ${node.label}`} data-comp-id={node.comp} data-event="confirm" onClick={() => onEvent({ confirm: { comp: node.comp } })}>Confirm</Button>}
+      {node.pendingConfirm && !confirmProvided && <Button size="compact-xs" variant="light" color="yellow" aria-label={`Confirm ${node.label}`} data-comp-id={node.comp} data-event="confirm" onClick={() => onEvent({ confirm: { comp: node.comp } })}>Confirm</Button>}
     </Group>}
   </Box>;
 }
@@ -74,7 +78,7 @@ export function InfoNode({ node }: Props<"info">) {
   const values = node.rows.flatMap((row) => row.filter(([key]) => /value|result|weight/i.test(key)).map(([, value]) => Number.parseFloat(value))).filter(Number.isFinite);
   const low = Math.min(...values), range = Math.max(...values) - low || 1;
   const points = values.map((value, index) => `${10 + index * 280 / Math.max(1, values.length - 1)},${62 - (value - low) * 48 / range}`).join(" ");
-  return <div className={`clinical-info info-${node.display}`} data-comp-id={node.comp}>
+  return <div className={`clinical-info info-${node.display}`} data-comp-id={node.comp || undefined} data-info-id={node.infoId}>
     <Text component="h3" className="clinical-info-label" size="xs" fw={650}>{node.label}</Text>
     {node.rows.length === 0 ? <Text size="xs" c="dimmed">No records on file</Text>
       : node.display === "list" ? <ul aria-label={node.label} className="clinical-info-list">{node.rows.map((row, index) => <li key={index}>{row.map(([key, value]) => <span key={key}><span className="record-label">{key}: </span>{value}</span>)}</li>)}</ul>
@@ -90,7 +94,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
   const primary = node.role === "primary";
   return <div className={`clinical-action${primary ? " primary-action" : ""}`}>
     <Tooltip label={node.blockedReason ?? "Unavailable"} disabled={node.enabled} multiline maw={360} withArrow>
-      <span className="button-tooltip-target"><Button size="xs" variant={primary ? "filled" : node.role === "macro" ? "light" : "subtle"} disabled={!node.enabled} aria-label={node.label} title={node.enabled ? undefined : node.blockedReason ?? undefined} data-comp-id={node.comp} data-event="click" onClick={() => onEvent({ click: { comp: node.comp } })} rightSection={node.hotkey ? <Kbd aria-hidden="true" size="xs">{node.hotkey}</Kbd> : undefined}>{node.label}</Button></span>
+      <span className="button-tooltip-target"><Button size="xs" variant={primary ? "filled" : node.role === "ack" ? "filled" : node.role === "macro" ? "light" : "subtle"} disabled={!node.enabled} aria-label={node.label} title={node.enabled ? undefined : node.blockedReason ?? undefined} data-comp-id={node.comp} data-event={node.role === "ack" ? "ack" : node.role === "confirm" ? "confirm" : "click"} onClick={() => onEvent(node.role === "ack" ? { ack: { alert: node.comp } } : node.role === "confirm" ? { confirm: { comp: node.comp } } : { click: { comp: node.comp } })} rightSection={node.hotkey ? <Kbd aria-hidden="true" size="xs">{node.hotkey}</Kbd> : undefined}>{node.label}</Button></span>
     </Tooltip>
     {!node.enabled && node.blockedReason && <Text size="xs" c="dimmed" className="clinical-blocked">{node.blockedReason}</Text>}
   </div>;
@@ -102,13 +106,13 @@ function unreachable(node: never): never {
   throw new Error(`Unknown semantic UI node: ${String(node)}`);
 }
 /** Exhaustive dispatch: extending the wire union requires a matching component. */
-export function UiNodeView({ node, onEvent }: { node: UiNode; onEvent: Emit }) {
+export function UiNodeView({ node, onEvent, confirmProvided = false }: { node: UiNode; onEvent: Emit; confirmProvided?: boolean }) {
   switch (true) {
     case "section" in node: return <SectionNode node={node.section} onEvent={onEvent} />;
     case "columns" in node: return <ColumnsNode node={node.columns} onEvent={onEvent} />;
     case "tabs" in node: return <TabsNode node={node.tabs} onEvent={onEvent} />;
     case "stepper" in node: return <StepperNode node={node.stepper} onEvent={onEvent} />;
-    case "field" in node: return <FieldNode node={node.field} onEvent={onEvent} />;
+    case "field" in node: return <FieldNode node={node.field} onEvent={onEvent} confirmProvided={confirmProvided} />;
     case "info" in node: return <InfoNode node={node.info} onEvent={onEvent} />;
     case "alert" in node: return <AlertNode node={node.alert} onEvent={onEvent} />;
     case "button" in node: return <ButtonNode node={node.button} onEvent={onEvent} />;

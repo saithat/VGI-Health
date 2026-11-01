@@ -16,6 +16,7 @@ export function fieldValue(field: NodeOf<"field">, raw: string | number | boolea
   return { text: { s: String(raw) } };
 }
 export function entryEvent(field: NodeOf<"field">, raw: string | number | boolean): Event | undefined {
+  if (field.kind === "search") return { search: { query: String(raw) } };
   const value = fieldValue(field, raw);
   return value ? { enter: { comp: field.comp, value } } : undefined;
 }
