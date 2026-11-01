@@ -105,18 +105,38 @@ export class RunStore {
   }
 
   /** A durable decision precedes the only publication point. Safe after a process crash. */
-  async recover(persona: string): Promise<void> {
+  async recover(persona: string, cleanup=false): Promise<void> {
     const pending = path.join(this.dir, 'pending', `${persona}.json`);
-    if (!existsSync(pending)) return;
+    if (!existsSync(pending)) {if(cleanup)await this.cleanStaging(persona);return;}
     const tx = z.object({night:z.number(),pointer:deployedPointerSchema}).parse(JSON.parse(await (await import('node:fs/promises')).readFile(pending, 'utf8')));
     const file = this.decisionPath(tx.night, persona);
-    if (!existsSync(file)) return; // uncommitted staging; the interrupted night will retry
+    if (!existsSync(file)) {if(cleanup){await this.cleanStaging(persona);await (await import('node:fs/promises')).rm(pending,{force:true});}return;}
     const record = await readJson(file, decisionRecordSchema);
-    if (!record.deployed || record.versionAfter !== tx.pointer.version) return;
+    if (!record.deployed || record.versionAfter !== tx.pointer.version) {if(cleanup){await this.cleanStaging(persona);await (await import('node:fs/promises')).rm(pending,{force:true});}return;}
     const current = path.join(this.dir, 'programs', persona, 'deployed.json');
     const old = existsSync(current) ? await readJson(current, deployedPointerSchema) : null;
     if (!old || old.version < tx.pointer.version) await writeJsonAtomic(current, tx.pointer);
     await (await import('node:fs/promises')).rm(pending);
+    if(cleanup)await this.cleanStaging(persona);
+  }
+
+  private async cleanStaging(persona:string):Promise<void>{
+    const fs=await import('node:fs/promises');
+    const directory=path.join(this.dir,'programs',persona), pointerFile=path.join(directory,'deployed.json');
+    const current=existsSync(pointerFile)?(await readJson(pointerFile,deployedPointerSchema)).version:-1;
+    if(!existsSync(directory))return;
+    const versions=new Set((await fs.readdir(directory)).flatMap(file=>{const m=/^v(\d+)\./.exec(file);return m?[Number(m[1])]:[];}));
+    for(const version of versions){
+      if(version<=current)continue;
+      const source=path.join(directory,`v${version}.source.json`), executable=path.join(directory,`v${version}.json`);
+      const owner=existsSync(source)||existsSync(executable)?(await readJson(existsSync(source)?source:executable,programSchema)).owner:null;
+      for(const name of await fs.readdir(directory))if(name===`v${version}.json`||name.startsWith(`v${version}.`))await fs.rm(path.join(directory,name),{force:true});
+      const certs=path.join(this.dir,'certs',persona);
+      if(existsSync(certs))for(const name of await fs.readdir(certs))if(name===`v${version}.json`||name.startsWith(`v${version}.`))await fs.rm(path.join(certs,name),{force:true});
+      for(const kind of ['native','certifications'])await fs.rm(path.join(this.dir,kind,persona,`v${version}`),{recursive:true,force:true});
+      if(owner&&/^[\w-]+$/.test(owner))await fs.rm(path.join(this.customRoot,owner,`v${version}`),{recursive:true,force:true});
+      await writeJson(path.join(this.dir,'recovery',`${persona}-v${version}.json`),{persona,version,reason:'Discarded unpublished staging during resume',timestamp:new Date().toISOString()});
+    }
   }
 
   readDecision(night: number, persona: string): Promise<DecisionRecord> {

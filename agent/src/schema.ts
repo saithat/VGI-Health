@@ -280,7 +280,7 @@ export const screenCheckResultSchema = z.object({
 });
 
 export const outcomeSchema = z.enum([
-  'llm-error', 'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
+  'error', 'infrastructure-error', 'llm-error', 'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
   'user-reverted', 'migrated', 'migration-fallback', 'recertified', 'surfaced', 'not-surfaced',
   'break-attempt-rejected', 'break-attempt-passed',
 ]);
@@ -327,6 +327,7 @@ export const decisionRecordSchema = z.object({
     validation: replayDaySchema.nullable(),
     /** Filled after the run from a later day never used to select this change. */
     test: replayDaySchema.nullable(),
+    testNoAgent: replayDaySchema.nullable().optional(),
     minClicks: z.array(z.object({ workflow: str, before: z.number(), after: z.number() })),
     predictionHeld: z.boolean().nullable(),
     predictionNote: str,

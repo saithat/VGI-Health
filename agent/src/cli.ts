@@ -86,7 +86,8 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   });
   console.log(`\nrun ${summary.runId} -> ${summary.dir}`);
   console.log(`rejections logged: ${summary.rejections.length}; tempting-move kinds rejected: ${summary.seededRejectedKinds.join(', ') || 'none'}`);
-  console.log(`invalid patches: ${summary.invalidPatches.length}; screen infrastructure errors: ${summary.infrastructureErrors.length}`);
+  console.log(`invalid patches: ${summary.invalidPatches.length}; screen assertion failures: ${summary.screenFailures.length}; infrastructure errors: ${summary.infrastructureErrors.length}`);
+  if (summary.infrastructureErrors.length) throw new Error(`${summary.infrastructureErrors.length} infrastructure errors; inspect manifest/decisions before continuing`);
   if (summary.llmErrors.length) throw new Error(`${summary.llmErrors.length} LLM calls failed; see decision flags and llm/*.error.json`);
 }
 
