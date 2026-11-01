@@ -1,4 +1,6 @@
 import Ehr.Canonical.Builders
+import Ehr.Canonical.W1Visit
+import Ehr.Core.Navigation
 
 /-!
 # W6: surgical day (P5, general surgeon)
@@ -48,10 +50,12 @@ def chart : List Block :=
 /-- A real navigator group survives blueprint cleanup, so case links are not
 repeated as an unlabeled bank of footer buttons. -/
 def frame (s : ScreenId) : List Component :=
+  let consultation := ["w6Consults", "w6Consult", "w6ConsultClose"].contains s
   shell s [] [] chart ++
-    [{ group s "caseSummary" "Surgical case" (collapsible := false) with
+    [{ group s "caseSummary" (if consultation then "Consult context" else "Surgical case") (collapsible := false) with
         tag := cid s "perioperative.sidebar" },
-     panel s "caseSummary.procedure" "scheduleTasks" "Case" (parent := some "caseSummary")] ++
+     panel s "caseSummary.procedure" (if consultation then "consultRequest" else "scheduleTasks")
+       (if consultation then "Request" else "Case request") (parent := some "caseSummary")] ++
     [{ group s "caseNavigation" "Surgical navigator" (collapsible := false) with
         tag := cid s "navigator" }] ++
     nav.map (fun (target, label) =>
@@ -63,7 +67,7 @@ def schedule : Screen :=
   let s := "w6Schedule"
   { id := s, title := "OR Schedule", workflow := "W6"
     components := frame s ++ [
-      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases"),
+      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases — request status"),
       goto s "openCase" "w6PreOp" "Open selected case",
       goto s "consults" "w6Consults" "Consults",
       goto s "clinic" "w1Rooming" "Surgical clinic",
@@ -254,7 +258,7 @@ def rounding : Screen :=
   { id := s, title := "Rounding", workflow := "W6"
     components := frame s ++ [
       table s "events" "overnightEvents" "Overnight events",
-      panel s "vitals" "vitals" "Vital signs (24 h)",
+      panel s "vitals" "vitals" "Recorded vital signs",
       table s "labs" "labResults" "Labs",
       table s "activeOrders" "openOrders" "Active orders",
       group s "soap" "Surgery progress note" (collapsible := false),
@@ -347,31 +351,42 @@ def screens : List Screen :=
 tab and note prompts appropriate to consultation and postoperative follow-up. -/
 def clinicView (sc : Screen) : Screen :=
   if sc.workflow != "W1" then sc else
+  let entries := W1.nav ++ (if W1.nav.any (·.1 == sc.id) then [] else [(sc.id, sc.title)])
+  let chartItems := sc.components.filter (·.parent? == some (cid sc.id "chart"))
+  let surgicalTab := if sc.components.any (fun c => match c.kind with
+      | .panel "surgicalHistory" | .table "surgicalHistory" => true | _ => false) then [] else
+    [panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
+      (parent := some "chart") (tab := (chartItems.map (·.tab)).foldl max 0 + 1)]
   { sc with components :=
       [{ group sc.id "visitNavigation" "Visit navigator" (collapsible := false) with
           tag := cid sc.id "navigator" }] ++
-      sc.components.map (fun c =>
-      if c.id.startsWith (cid sc.id "nav.") then
-        { c with parent? := some (cid sc.id "visitNavigation") }
-      else match c.kind with
+      entries.map (fun (target, label) =>
+        goto sc.id ("nav." ++ target) target label (parent := some "visitNavigation")) ++
+      (sc.components.filter (fun c => !c.id.startsWith (cid sc.id "nav."))).map (fun c => match c.kind with
       | .field e _ _ =>
         let label := if e == "chiefComplaint" then "Reason for visit / postoperative concern"
           else if e == "exam" then "Examination / surgical site"
           else if e == "assessmentPlan" then "Assessment and surgical plan" else c.label
         { c with label, tag := if ["hpi", "ros", "exam", "assessmentPlan", "patientInstructions"].contains e
             then c.tag ++ ".multiline" else c.tag }
-      | _ => c) ++
-      [goto sc.id ("nav." ++ sc.id) sc.id sc.title (parent := some "visitNavigation"),
-       panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
-        (parent := some "chart") (tab := 9)] }
+      | _ => c) ++ surgicalTab }
 
 /-- The surgeon's landing page is an OR list with a real selected-case action.
 This is the role's preset view of the shared workspace, not another workflow. -/
 def workspaceView (sc : Screen) : Screen :=
   if sc.id != "home" then sc else
-  { sc with components := sc.components.flatMap fun c =>
+  let activities := (presetLandings "P5").filterMap fun (target, _) =>
+    sc.components.find? (fun c => c.id.startsWith (cid sc.id "work.") && c.kind == .button (.goto target))
+  let rec orderActivities : List Component → List Component → List Component
+    | [], _ => []
+    | c :: cs, remaining =>
+      if c.id.startsWith (cid sc.id "work.") then match remaining with
+        | [] => orderActivities cs []
+        | next :: rest => next :: orderActivities cs rest
+      else c :: orderActivities cs remaining
+  { sc with components := (orderActivities sc.components activities).flatMap fun c =>
       if c.id == cid sc.id "schedule" then
-        [presented "orSchedule" { c with label := "Today's OR cases" },
+        [presented "orSchedule" { c with label := "Today's OR cases — request status" },
          goto sc.id "openSelectedCase" "w6PreOp" "Open selected case"]
       else if c.id == cid sc.id "work" then [{ c with tag := cid sc.id "navigator" }]
       else [c] }

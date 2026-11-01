@@ -25,6 +25,18 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
       patient: "7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf",
     })}`,
   );
+  const nav = page.locator("nav [data-comp-id]");
+  await expect(nav).toHaveCount(4);
+  expect(
+    await nav.evaluateAll((nodes) =>
+      nodes.map((n) => n.getAttribute("data-comp-id")),
+    ),
+  ).toEqual([
+    "home.work.w6Schedule",
+    "home.work.w6Consults",
+    "home.work.w1Rooming",
+    "home.work.w2Inbasket",
+  ]);
   await control(page, "home.openSelectedCase").click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Preprocedure",
@@ -84,6 +96,21 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await control(page, "w6Sign.nav.w6Schedule").click();
   await control(page, "w6Schedule.clinic").click();
   await control(page, "w1Rooming.nav.w1Hpi").click();
+  expect(
+    await nav.evaluateAll((nodes) =>
+      nodes.map((n) => n.getAttribute("data-comp-id")),
+    ),
+  ).toEqual(
+    [
+      "w1Rooming",
+      "w1MedRec",
+      "w1Hpi",
+      "w1Exam",
+      "w1Orders",
+      "w1Labs",
+      "w1Close",
+    ].map((target) => `w1Hpi.nav.${target}`),
+  );
   await expect(control(page, "w1Hpi.nav.w1Hpi")).toHaveAttribute(
     "aria-current",
     "page",

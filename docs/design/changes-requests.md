@@ -35,6 +35,26 @@ grouped into a Visit navigator in the preset; no clinical binding is changed.
 Do not put consent or anticoagulant review copies in a permanent sidebar: doing
 so could accidentally satisfy a shown-review requirement on every screen.
 
+`UiScreen.sourceLabels` optionally supplies readable source text for field
+provenance. The original field provenance stays byte-for-byte identical for D6;
+the generic painter looks up the supplied label. Unknown source identifiers are
+never exposed as clinical text. The painter's fixed `Active encounter` badge was
+removed because it asserted a status without a Lean/FHIR source. Desktop
+navigators stay in view while the clinical document scrolls.
+
+`UiScreen.entryHints` supplies per-component guidance for recorded weight units.
+Metric weight controls emit kg and leave incompatible recorded numbers out of
+the editable kg value; the original value/unit remains visible in the hint.
+This fixes the prior pounds-entry dead end without converting, confirming, or
+changing captured state in the renderer. D6's raw provenance and flags are
+unchanged. A real-WASM probe records the human kg entry in `surg-controls.json`.
+
+Shell/data integration still needs an explicit selected-encounter projection:
+the seeded OR ServiceRequest supplies the case and planned room, but no active
+perioperative Encounter. `bannerOf` currently shows the latest historical
+encounter's class/attending/location. Do not infer an actual admission or current
+location from the OR order. The surgeon's case summary is separately labeled.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

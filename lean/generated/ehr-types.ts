@@ -2070,6 +2070,81 @@ export interface HistoryRow {
 }
 
 /**
+ * One scheduled appointment, with human-readable participants only.
+ */
+export interface ScheduleRow {
+  time: string;
+  patient: string;
+  ageSex: string;
+  visitType: string;
+  status: string;
+  complaint: string;
+  provider: string;
+  location: string;
+}
+
+/**
+ * One encounter on a department board. Missing assignments stay empty.
+ */
+export interface BoardRow {
+  room: string;
+  patient: string;
+  ageSex: string;
+  complaint: string;
+  acuity: string;
+  arrival: string;
+  nurse: string;
+  provider: string;
+  disposition: string;
+  status: string;
+}
+
+/**
+ * A medication order and its explicitly recorded scheduled timestamps.
+ */
+export interface MarOrderRow {
+  /**
+   * Transport identity used only to join administrations; never shown.
+   */
+  id: string;
+  medication: string;
+  dose: string;
+  route: string;
+  frequency: string;
+  status: string;
+  scheduled: string[];
+}
+
+/**
+ * An actual MedicationAdministration, never inferred from an order.
+ */
+export interface AdministrationRow {
+  /**
+   * Referenced order identity; never a visible clinical column.
+   */
+  orderId: string;
+  medication: string;
+  dose: string;
+  route: string;
+  site: string;
+  time: string;
+  status: string;
+  reason: string;
+  performer: string;
+}
+
+/**
+ * An Observation series point, including pain, assessments and I&O.
+ */
+export interface ObservationRow {
+  measure: string;
+  value: string;
+  unit: string;
+  time: string;
+  status: string;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
@@ -2105,12 +2180,43 @@ export interface Display {
   growth: GrowthPoint[];
   notes: NoteRow[];
   history: HistoryRow[];
+  schedule: ScheduleRow[];
+  board: BoardRow[];
+  marOrders: MarOrderRow[];
+  administrations: AdministrationRow[];
+  observations: ObservationRow[];
+  /**
+   * Latest lab interpretation by code, computed in Lean.
+   */
+  labFlags: [string, string][];
 }
+
+/**
+ * Read-only clinical layouts. Their child info retains every source row.
+ */
+export type UiPresentationKind =
+  | "table"
+  | "schedule"
+  | "trackBoard"
+  | "orSchedule"
+  | "worklist"
+  | "timeGrid"
+  | "flowsheet"
+  | "folderList"
+  | "messages"
+  | "results"
+  | "trend"
+  | "growth"
+  | "notes";
+/** All values of `UiPresentationKind`. */
+export const UiPresentationKindValues = ["table", "schedule", "trackBoard", "orSchedule", "worklist", "timeGrid", "flowsheet", "folderList", "messages", "results", "trend", "growth", "notes"] as const;
 
 /**
  * Semantic EHR nodes. Only the selected tab body is emitted.
  */
 export type UiNode =
+  /** A layout hint around ordinary semantic nodes; never a visibility filter. */
+  | { presentation: { kind: UiPresentationKind; children: UiNode[] } }
   | { section: { id: string; title: string; children: UiNode[] } }
   | { columns: { children: UiNode[] } }
   | { tabs: { id: string; labels: string[]; selected: number; body: UiNode[] } }
@@ -2131,6 +2237,14 @@ export interface UiScreen {
    * The declared navigator component that opens the current screen, if any.
    */
   activeNav?: CompId;
+  /**
+   * Readable labels for prefill sources; raw provenance remains on each field.
+   */
+  sourceLabels?: [string, string][];
+  /**
+   * Entry guidance for a field, including recorded values in another unit.
+   */
+  entryHints?: [CompId, string][];
   title: string;
   workspace: UiNode[];
   side: UiNode[];

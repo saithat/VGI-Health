@@ -53,7 +53,7 @@ def json (s : String) : Json := (Json.parse s).toOption.getD .null
 #guard (noteAttachmentText .null).startsWith "Note body unavailable"
 def note : Json := json r#"{"resourceType":"DocumentReference","id":"n","status":"superseded","docStatus":"amended","date":"2026-01-02","author":[{"display":"A"},{"display":"B"}],"context":{"encounter":[{"reference":"Encounter/1"},{"display":"Clinic"}]},"extension":[{"url":"urn:vgi:synthetic-hospital:original-date","valueDate":"2020-01-01"},{"url":"urn:vgi:synthetic-hospital:shift-days","valueInteger":-12}],"content":[{"attachment":{"title":"First","contentType":"text/plain","data":"YQ=="}},{"attachment":{"title":"Second","contentType":"text/plain","data":"Yg=="}}]}"#
 #guard (noteRow note).author == "A, B"
-#guard (noteRow note).encounter == "Encounter/1, Clinic"
+#guard (noteRow note).encounter == "Not recorded, Clinic"
 #guard (noteRow note).text == "Attachment 1: First\na\n\nAttachment 2: Second\nb"
 #guard (noteRow note).status == "superseded / amended"
 #guard (noteRow note).sourceDate == "2020-01-01"

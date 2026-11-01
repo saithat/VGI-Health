@@ -70,6 +70,80 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("keeps a recorded pounds hint separate from the blank kg entry and submits kg", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            entryHints: [
+              ["weight", "Recorded value: 160 lb. Enter the weight in kg."],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  comp: "weight",
+                  label: "Weight",
+                  kind: "qty",
+                  unit: "kg",
+                  value: null,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(onEvent).not.toHaveBeenCalled();
+    expect(
+      screen.getByText("Recorded value: 160 lb. Enter the weight in kg."),
+    ).toBeTruthy();
+    const input = screen.getByRole("textbox", { name: "Weight" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected a weight input");
+    expect(input.value).toBe("");
+    fireEvent.change(input, { target: { value: "80" } });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "weight", value: { qty: { tenths: 800, unit: "kg" } } },
+    });
+  });
+  it("paints Lean's source label while retaining the original field and confirm action", () => {
+    const view = uiScreenSchema.parse(rooming);
+    const onEvent = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            sourceLabels: [
+              ["record:internalSource", "From chart — Recorded weight"],
+            ],
+            workspace: [
+              {
+                field: {
+                  ...field,
+                  provenance: "record:internalSource",
+                  pendingConfirm: true,
+                },
+              },
+            ],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    expect(screen.getByText("From chart — Recorded weight")).toBeTruthy();
+    expect(screen.queryByText("record:internalSource")).toBeNull();
+    expect(screen.queryByText("Active encounter")).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirm Clinical value" }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({ confirm: { comp: field.comp } });
+  });
   it("dispatches the component IDs declared by Lean navigation", () => {
     const onEvent = vi.fn();
     const view = uiScreenSchema.parse(rooming);

@@ -1,3 +1,4 @@
+import type { UiPresentationKind } from "../../../../lean/generated/ehr-types";
 import type { UiNode, UiScreen } from "./types";
 
 export interface AriaEntry {
@@ -22,15 +23,21 @@ function nest(parent: AriaEntry, children: AriaEntry[]): AriaEntry[] {
 export function expectedNodeAria(
   node: UiNode,
   confirmProvided = false,
+  presentation?: UiPresentationKind,
 ): AriaEntry[] {
   switch (true) {
+    case "presentation" in node:
+      return expectedChildrenAria(
+        node.presentation.children,
+        node.presentation.kind,
+      );
     case "section" in node:
       return nest(
         entry("region", node.section.title),
-        expectedChildrenAria(node.section.children),
+        expectedChildrenAria(node.section.children, presentation),
       );
     case "columns" in node:
-      return expectedChildrenAria(node.columns.children);
+      return expectedChildrenAria(node.columns.children, presentation);
     case "tabs" in node:
       return [
         ...nest(
@@ -39,7 +46,7 @@ export function expectedNodeAria(
         ),
         ...nest(
           entry("tabpanel", node.tabs.labels[node.tabs.selected] ?? ""),
-          expectedChildrenAria(node.tabs.body),
+          expectedChildrenAria(node.tabs.body, presentation),
         ),
       ];
     case "stepper" in node:
@@ -67,6 +74,36 @@ export function expectedNodeAria(
       ];
     }
     case "info" in node:
+      if (presentation) {
+        if (presentation === "folderList" || presentation === "notes")
+          return [entry("list", node.info.label)];
+        const names = new Set<string>();
+        if (presentation === "trend" || presentation === "growth") {
+          for (const row of node.info.rows) {
+            const value = (key: string) =>
+              row.find(([name]) => name === key)?.[1] ?? "";
+            const numeric = (s: string) => /^-?\d+(?:\.\d+)?$/.test(s.trim());
+            if (presentation === "growth") {
+              if (!numeric(value("Age (months)"))) continue;
+              if (numeric(value("Weight (kg)")))
+                names.add(`${node.info.label}: Weight (kg)`);
+              if (numeric(value("Height (cm)")))
+                names.add(`${node.info.label}: Height (cm)`);
+              if (value("Percentile") && numeric(value("Value")))
+                names.add(
+                  `${node.info.label}: ${value("Series")}${value("Unit") ? ` (${value("Unit")})` : ""}`,
+                );
+            } else if (numeric(value("Value")))
+              names.add(
+                `${node.info.label}: ${value("Test") || value("Measure") || node.info.label}${value("Unit") ? ` (${value("Unit")})` : ""}`,
+              );
+          }
+        }
+        return [
+          ...[...names].map((name) => entry("img", name)),
+          entry("table", node.info.label),
+        ];
+      }
       return node.info.display === "summary"
         ? []
         : node.info.display === "list"
@@ -100,7 +137,10 @@ export function expectedNodeAria(
       return exhaust(node);
   }
 }
-function expectedChildrenAria(nodes: UiNode[]): AriaEntry[] {
+function expectedChildrenAria(
+  nodes: UiNode[],
+  presentation?: UiPresentationKind,
+): AriaEntry[] {
   return nodes.flatMap((node) =>
     expectedNodeAria(
       node,
@@ -111,6 +151,7 @@ function expectedChildrenAria(nodes: UiNode[]): AriaEntry[] {
             other.button.role === "confirm" &&
             other.button.comp === node.field.comp,
         ),
+      presentation,
     ),
   );
 }

@@ -4,6 +4,7 @@ import { UiChildren, type Emit } from "./nodes";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { clinicalCssVariables } from "./theme";
+import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 
@@ -178,6 +179,13 @@ export function UiScreenView({
 }) {
   const modal = screen.modal;
   const active = screen.activeNav;
+  const draw = (nodes: UiNode[]) => (
+    <SourceLabelsContext.Provider value={screen.sourceLabels ?? []}>
+      <EntryHintsContext.Provider value={screen.entryHints ?? []}>
+        <UiChildren nodes={nodes} onEvent={onEvent} />
+      </EntryHintsContext.Provider>
+    </SourceLabelsContext.Provider>
+  );
   // A new screen starts at its heading. Ordinary field updates retain position.
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -212,20 +220,17 @@ export function UiScreenView({
               </Text>
               <Title order={1}>{screen.title}</Title>
             </div>
-            <Badge color="gray" size="md">
-              Active encounter
-            </Badge>
           </div>
           <div
             className={`clinical-workspace${screen.side.length ? " with-side" : ""}`}
           >
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
-                <UiChildren nodes={screen.side} onEvent={onEvent} />
+                {draw(screen.side)}
               </aside>
             )}
             <div className="clinical-workspace-body">
-              <UiChildren nodes={screen.workspace} onEvent={onEvent} />
+              {draw(screen.workspace)}
             </div>
           </div>
           <div className="workspace-footer">
@@ -258,7 +263,7 @@ export function UiScreenView({
           <Modal.Body>
             {modal && (
               <div className="clinical-modal-body" data-autofocus tabIndex={-1}>
-                <UiChildren nodes={[modal]} onEvent={onEvent} />
+                {draw([modal])}
               </div>
             )}
           </Modal.Body>

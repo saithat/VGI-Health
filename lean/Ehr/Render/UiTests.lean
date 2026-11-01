@@ -22,10 +22,25 @@ def chartClopidogrel : MedRow where
 
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
+#guard uiSourceText uiRoomCtx "record:unmappedInternalId" == "From chart"
+#guard uiSourceText uiRoomCtx "linked:unmappedInternalId" == "Linked value"
+#guard uiSourceText uiRoomCtx "macro" == "From template / preference list"
+#guard uiSourceText uiRoomCtx "default" == "Default value"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
     { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"), label := "Weight", tag := "weight" }
+/-- A pounds record cannot be displayed or resubmitted as a kg input value. -/
+def uiPoundsWeightItem : ItemView :=
+  { uiWeightItem with value? := some (.qty 1600 .lb) }
+#guard match uiField uiRoomCtx uiPoundsWeightItem "weight" with
+  | .field _ _ _ value unit provenance pending human _ =>
+    value.isNone && unit == some "kg" && provenance == uiPoundsWeightItem.provenance? &&
+      pending == uiPoundsWeightItem.pendingConfirm && human == uiPoundsWeightItem.humanOnly
+  | _ => false
+#guard (uiEntryHint uiRoomCtx uiPoundsWeightItem).any (fun text =>
+  text.startsWith "Recorded value: 160" && text.endsWith "lb. Enter the weight in kg.")
+#guard uiEntryHint uiRoomCtx uiWeightItem == none
 def uiSignItem : ItemView :=
   itemView uiSignCtx.sp uiSignCtx.facts uiSignCtx.s (uiSignCtx.prog.compsOf uiSignCtx.s.screen)
     { id := "signButton", kind := .button (.commit "signOrders"), label := "Sign", hotkey? := some "Ctrl+Enter", tag := "sign" }

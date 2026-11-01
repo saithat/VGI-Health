@@ -586,7 +586,7 @@ def knownText (s : String) : String := if s == "" then "Unknown" else s
 
 def refText (r : Json) : String :=
   let d := str r "display"
-  if d != "" then d else str r "reference"
+  if d != "" then d else "Not recorded"
 
 def isDocumentReference (r : Json) : Bool := resourceType r == "DocumentReference"
 
@@ -803,6 +803,147 @@ def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
     attending := encProvider
     location := (encRow enc).location }
 
+/-! ## Structured display projections -/
+
+/-- Resolve a reference against the supplied bundle, without guessing a patient. -/
+def referenced? (rs : List Json) (ref : Json) : Option Json :=
+  let key := str ref "reference"
+  if key == "" then none else rs.find? fun r =>
+    str r "id" != "" && (str r "id" == key || key == resourceType r ++ "/" ++ str r "id")
+
+/-- Human-readable reference text. Internal FHIR references are never displayed. -/
+def humanRef (rs : List Json) (ref : Json) : String :=
+  let display := str ref "display"
+  if display != "" then display else
+    match referenced? rs ref with
+    | none => ""
+    | some r => if resourceType r == "Patient" || resourceType r == "Practitioner"
+      then displayName r else str r "name"
+
+/-- Age and sex are read only from the referenced patient. -/
+def refAgeSex (today : String) (rs : List Json) (ref : Json) : String :=
+  match referenced? rs ref with
+  | some p => if resourceType p == "Patient" && str p "birthDate" != ""
+      then s!"{ageYears (str p "birthDate") today} / {sexOf p}" else ""
+  | none => ""
+
+/-- Appointment participants supply patient, clinician and location displays. -/
+def appointmentActor (rs : List Json) (r : Json) (kind : String) : Json :=
+  ((arr r "participant").map (field · "actor")).find? (fun actor =>
+    (str actor "reference").startsWith (kind ++ "/") ||
+      ((referenced? rs actor).map resourceType).getD "" == kind) |>.getD .null
+
+/-- A day-list row from an Appointment. A booked appointment is not a signed visit. -/
+def scheduleRow (today : String) (rs : List Json) (r : Json) : ScheduleRow :=
+  let patient := appointmentActor rs r "Patient"
+  { time := str r "start", patient := humanRef rs patient
+    ageSex := refAgeSex today rs patient
+    visitType := ccText (field r "appointmentType")
+    status := str r "status", complaint := ccText (first r "reasonCode")
+    provider := humanRef rs (appointmentActor rs r "Practitioner")
+    location := humanRef rs (appointmentActor rs r "Location") }
+
+/-- All supplied appointments in chronological order, without a hidden row limit. -/
+def scheduleRows (today : String) (rs : List Json) : List ScheduleRow :=
+  oldestFirst (·.time) ((ofType "Appointment" rs |>.filter (fun r => str r "status" != "entered-in-error")).map (scheduleRow today rs))
+
+/-- An Encounter participant assigned to the supplied participation code. -/
+def encounterParticipant (rs : List Json) (r : Json) (code : String) : String :=
+  let p := (arr r "participant").find? fun p =>
+    (arr p "type").any (hasCode · code)
+  (p.map fun p => humanRef rs (field p "individual")).getD ""
+
+/-- A board row from Encounter. Priority text is not relabeled as an ESI score. -/
+def boardRow (today : String) (rs : List Json) (r : Json) : BoardRow :=
+  let subject := field r "subject"
+  { room := humanRef rs (field (first r "location") "location")
+    patient := humanRef rs subject, ageSex := refAgeSex today rs subject
+    complaint := ccText (first r "reasonCode"), acuity := ccText (field r "priority")
+    arrival := str (field r "period") "start"
+    nurse := ""
+    provider := encounterParticipant rs r "ATND"
+    disposition := ccText (field (field r "hospitalization") "dischargeDisposition")
+    status := str r "status" }
+
+/-- All department encounters supplied by the caller. -/
+def boardRows (today : String) (rs : List Json) : List BoardRow :=
+  oldestFirst (·.arrival) ((ofType "Encounter" rs |>.filter (fun r => str r "status" != "entered-in-error")).map (boardRow today rs))
+
+/-- A quantity with its recorded unit, without conversion. -/
+def quantityLabel (q : Json) : String :=
+  qtyText q ++ (if qtyUnitText q == "" then "" else " " ++ qtyUnitText q)
+
+/-- Order detail and explicit timing events only. Frequency is never expanded. -/
+def marOrderRow (r : Json) : MarOrderRow :=
+  let di := first r "dosageInstruction"
+  { id := str r "id", medication := medName r
+    dose := quantityLabel (field (first di "doseAndRate") "doseQuantity")
+    route := ccText (field di "route"), frequency := sigText r
+    status := str r "status"
+    scheduled := (arr r "dosageInstruction").flatMap fun d =>
+      (arr (field d "timing") "event").filterMap fun t =>
+        match t with | .str s => some s | _ => none }
+
+/-- Current MedicationRequests, including held orders, as MAR order rows. -/
+def marOrderRows (rs : List Json) : List MarOrderRow :=
+  (rs.filter fun r => isMedRequest r && medCurrent r).map marOrderRow
+
+/-- Preserve administration status; only completed administrations say Given. -/
+def administrationStatus (s : String) : String :=
+  match s with
+  | "completed" => "Given" | "not-done" => "Not given" | "on-hold" => "Held"
+  | "in-progress" => "In progress" | "stopped" => "Stopped" | _ => s
+
+/-- Actual dose, site, performer, time and reason from MedicationAdministration. -/
+def administrationRow (rs : List Json) (r : Json) : AdministrationRow :=
+  let dosage := field r "dosage"
+  { orderId := str (field r "request") "reference"
+    medication := medName r, dose := quantityLabel (field dosage "dose")
+    route := ccText (field dosage "route"), site := ccText (field dosage "site")
+    time := let t := str r "effectiveDateTime"
+      if t != "" then t else str (field r "effectivePeriod") "start"
+    status := administrationStatus (str r "status")
+    reason := "; ".intercalate ((arr r "statusReason").map ccText)
+    performer := ", ".intercalate ((arr r "performer").map fun p => humanRef rs (field p "actor")) }
+
+/-- Actual administration records; entered-in-error records are excluded. -/
+def administrationRows (rs : List Json) : List AdministrationRow :=
+  oldestFirst (·.time) ((ofType "MedicationAdministration" rs |>.filter
+    (fun r => str r "status" != "entered-in-error")).map (administrationRow rs))
+
+/-- One clinical Observation, including integer and boolean assessments. -/
+def observationRow (r : Json) : ObservationRow :=
+  let (value, unit, _) := obsValue r
+  let value := if value != "" then value else
+    match field r "valueInteger" with
+    | .num n => toString n
+    | _ => match field r "valueBoolean" with
+      | .bool b => if b then "Yes" else "No"
+      | _ => "Not recorded"
+  { measure := ccText (field r "code"), value, unit, time := obsWhen r, status := str r "status" }
+
+/-- Each clinical Observation retains its own time, unit, value and status. -/
+def observationRows (rs : List Json) : List ObservationRow :=
+  oldestFirst (·.time) ((rs.filter isObservation).map observationRow)
+
+/-- Lab flag from source interpretation, else numeric comparison in Lean.
+The existing demo reference-range policy is unchanged. -/
+def labFlag (r : Json) : String :=
+  let source := ((arr r "interpretation").flatMap codings).map (str · "code")
+  let explicit := source.find? (abnormalCodes.contains ·)
+  match explicit with
+  | some flag => flag
+  | none => match (labPoint r).hundredths?, (labPoint r).range? with
+    | some value, some (lo, hi) => if value < lo then "L" else if hi < value then "H" else ""
+    | _, _ => ""
+
+/-- Latest interpretation for each analyte, matching labRows' latest result. -/
+def labFlags (rs : List Json) : List (String × String) :=
+  let labs := rs.filter isLab
+  ((labs.map (fun r => firstCode (field r "code"))).eraseDups).filterMap fun code =>
+    (latestBy obsWhen (labs.filter (fun r => firstCode (field r "code") == code))).map
+      (fun r => (code, labFlag r))
+
 /-! ## Facts and display -/
 
 /-! ## Perioperative chart projections
@@ -969,7 +1110,10 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
     growth := growthPoints dob rs
     notes := noteRows rs
-    history := historyRows rs }
+    history := historyRows rs
+    schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
+    marOrders := marOrderRows rs, administrations := administrationRows rs
+    observations := observationRows rs, labFlags := labFlags rs }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

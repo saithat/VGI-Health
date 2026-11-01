@@ -12,8 +12,9 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[3]
 LEAN = ROOT / 'lean'
-AUDIT = ROOT / '.tools/render-proof-audit'
+AUDIT = Path(os.environ.get('EHR_RENDER_AUDIT_DIR', ROOT / 'lean/.lake/render-proof-audit'))
 GROUPS = {
+    'PresentationProofs': ('Ehr.Render.Fhir', ['T11_schedule', 'T11_board', 'T11_administration', 'T11_observation']),
     'Proofs': ('Ehr.Render', ['T10_shown', 'T10_no_tiny', 'T10_page_safe', 'T10_disabled', 'T10_only_shown', 'T10_info']),
     'CommitProofs': ('Ehr.Render', ['T10_commit_enabled']),
     'FhirProofs': ('Ehr.Render.Fhir', ['T11_note', 'noteRows_complete', 'T11_allergy', 'T11_med', 'T5_weight', 'T5_allergyVersion', 'T5_version_order_independent']),

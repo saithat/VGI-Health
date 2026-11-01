@@ -3,6 +3,7 @@ import { z } from "zod";
 /** §10 wire format: Lean's externally tagged constructors, without FHIR interpretation. */
 export type Pair = [string, string];
 export type { UiNode, UiScreen } from "../../../../lean/generated/ehr-types";
+import { UiPresentationKindValues } from "../../../../lean/generated/ehr-types";
 import type { UiNode, UiScreen } from "../../../../lean/generated/ehr-types";
 export type NodeOf<K extends keyof UnionKeys> = Extract<
   UiNode,
@@ -14,6 +15,12 @@ const label = z.string().min(1);
 const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
+    z.strictObject({
+      presentation: z.strictObject({
+        kind: z.enum(UiPresentationKindValues),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
     z.strictObject({
       section: z.strictObject({
         id: label,
@@ -84,11 +91,16 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     banner: z.array(pair),
     nav: z.array(z.tuple([label, z.array(pair)])),
     activeNav: label.optional(),
+    sourceLabels: z.array(pair).optional(),
+    entryHints: z.array(pair).optional(),
     title: label,
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
   })
-  .transform(({ activeNav, ...screen }) =>
-    activeNav === undefined ? screen : { ...screen, activeNav },
-  );
+  .transform(({ activeNav, sourceLabels, entryHints, ...screen }) => ({
+    ...screen,
+    ...(activeNav === undefined ? {} : { activeNav }),
+    ...(sourceLabels === undefined ? {} : { sourceLabels }),
+    ...(entryHints === undefined ? {} : { entryHints }),
+  }));

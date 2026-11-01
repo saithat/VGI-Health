@@ -1,5 +1,5 @@
 import Ehr.Core.Navigation
-import Ehr.Render.UiData
+import Ehr.Render.Presentations
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
 The interpreter resolves visibility exactly once. Nesting consumes no item:
@@ -10,6 +10,41 @@ namespace Ehr.Render
 
 /-- Empty program labels receive a readable label without changing their identity. -/
 def uiLabel (s fallback : String) : String := if s = "" then fallback else s
+
+/-- Source identifiers remain proof metadata; clinicians see the source's name. -/
+def uiSourceText (cx : Ctx) (source : String) : String :=
+  if source.startsWith "record:" then
+    let key := (source.drop 7).toString
+    let name := ((cx.sp.elements.find? (·.recordFact? == some key)).map (·.label)).getD ""
+    "From chart" ++ (if name == "" then "" else " — " ++ name)
+  else if source.startsWith "linked:" then
+    let key := (source.drop 7).toString
+    let name := ((cx.sp.element? key).map (·.label)).getD ""
+    "Linked value" ++ (if name == "" then "" else " — " ++ name)
+  else if source == "macro" then "From template / preference list"
+  else if source == "default" then "Default value"
+  else "Prefilled value"
+
+/-- Every visible source gets a display label without changing its capture. -/
+def uiSourceLabels (cx : Ctx) : List (String × String) :=
+  ((cx.v.items.filter (·.shown)).filterMap fun it =>
+    it.provenance?.map fun source => (source, uiSourceText cx source)).eraseDups
+
+/-- A recorded non-kg value stays visible while the kg input awaits human entry.
+This is display guidance, never a conversion or a confirmation. -/
+def uiEntryHint (cx : Ctx) (it : ItemView) : Option String :=
+  match it.comp.kind, it.value? with
+    | .field e _ _, some (.qty n unit) =>
+      if (cx.sp.element? e).any (·.kind == .quantity .kg) && unit != .kg then
+        some ("Recorded value: " ++ valueText (.qty n unit) ++ " " ++ unitName unit ++
+          ". Enter the weight in kg.")
+      else none
+    | _, _ => none
+
+/-- Hints belong to their existing field and add no interpreter action. -/
+def uiEntryHints (cx : Ctx) : List (CompId × String) :=
+  (cx.v.items.filter (·.shown)).filterMap fun it =>
+    (uiEntryHint cx it).map (fun hint => (it.comp.id, hint))
 
 def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
@@ -69,44 +104,46 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
-  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match i with
-  | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
-  | "allergyList" => cx.disp.allergies.map allergyCells
-  | "currentMeds" => cx.disp.meds.map medCells
-  | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
-  | "importedHistory" => cx.disp.history.map historyCells
-  | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
-  | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
-  | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
-  | "vitals" => cx.disp.vitals.map vitalCells
-  | "problemList" => cx.disp.problems.map problemCells
-  | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
-      [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
-       ("Recorded", uiDate r.date), ("Abnormal", toString r.abnormal)] ::
-      r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
-        ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
-  | "anticoagulants" | "anticoagulantList" =>
-      (cx.disp.meds.filter uiAntithrombotic).map medCells
-  | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
-      [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
-  | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
-      [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
-       ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
-  | "procedures" => cx.disp.procedures.map fun r =>
-      [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
-  | "growthChart" => cx.disp.growth.map fun r =>
-      [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
-       ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
-       ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]
-  | "doseCheck" =>
-      [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
-        |>.getD "No confirmed kg weight available")] ::
-      (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
-        ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
-  | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
-  | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
-      then "Requested" else "Not requested")]]
-  | _ => uiPayloadRows cx i
+  if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i else match structuredRows? cx i with
+  | some rows => rows
+  | none => match i with
+    | "patientBanner" => [uiClinicalBanner cx.facts cx.disp]
+    | "allergyList" => cx.disp.allergies.map allergyCells
+    | "currentMeds" => cx.disp.meds.map medCells
+    | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
+    | "importedHistory" => cx.disp.history.map historyCells
+    | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
+    | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
+    | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
+    | "vitals" => cx.disp.vitals.map vitalCells
+    | "problemList" => cx.disp.problems.map problemCells
+    | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
+        [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
+         ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
+        r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
+          ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
+    | "anticoagulants" | "anticoagulantList" =>
+        (cx.disp.meds.filter uiAntithrombotic).map medCells
+    | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
+        [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
+    | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
+        [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
+         ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
+    | "procedures" => cx.disp.procedures.map fun r =>
+        [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
+    | "growthChart" => (cx.disp.growth.map fun r =>
+        [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
+         ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
+         ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]) ++ uiPayloadRows cx i
+    | "doseCheck" =>
+        [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
+          |>.getD "No confirmed kg weight available")] ::
+        (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
+          ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
+    | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
+    | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
+        then "Requested" else "Not requested")]]
+    | _ => uiPayloadRows cx i
 where
   valueTextQty (n : Nat) : String := s!"{n / 10}.{n % 10}"
 
@@ -147,9 +184,10 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
     else if kind == .text && it.comp.tag.endsWith ".multiline" then "textarea"
     else uiFieldKind kind
-  let unit := if kind == .medicationDose then want else
+  let metricWeight := kind == .quantity .kg
+  let unit := if kind == .medicationDose || metricWeight then want else
     match it.value? with | some (.qty _ u) => u | _ => want
-  let value := if kind == .medicationDose &&
+  let value := if (kind == .medicationDose || metricWeight) &&
     it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
     then none else it.value?.map valueText
   .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
@@ -235,6 +273,7 @@ def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × Str
   if uiSideAt cx id && !uiOrderInfo i then uiSummaryRows cx i else uiRows cx i
 
 def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
+  uiWrapInfo (if uiSideAt cx it.comp.id then none else presentationKind? it.comp.tag i) <|
   .info it.comp.id (uiTitledLabel cx it (uiLabel it.comp.label (uiLabel (infoLabel cx i) "Clinical information")) "Records" "Clinical information") i
     (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
@@ -342,7 +381,11 @@ the single shell landmark and are excluded from workspace and side components. -
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }
+  let sources := uiSourceLabels cx
+  let hints := uiEntryHints cx
   { banner := uiClinicalBanner facts disp, nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
+    sourceLabels? := if sources.isEmpty then none else some sources,
+    entryHints? := if hints.isEmpty then none else some hints,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

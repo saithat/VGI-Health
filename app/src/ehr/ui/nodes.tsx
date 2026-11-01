@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useContext, useId, useState } from "react";
 import {
   Alert,
   Badge,
@@ -24,6 +24,11 @@ import { entryEvent } from "./events";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue, severityTone, statusTone } from "./display";
 import { clinicalTokens } from "./theme";
+import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
+import {
+  PresentationContext,
+  StructuredInfo,
+} from "./presentations/StructuredInfo";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -145,6 +150,10 @@ export function FieldNode({
   confirmProvided = false,
 }: Props<"field"> & { confirmProvided?: boolean }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const sourceLabels = useContext(SourceLabelsContext);
+  const entryHint = useContext(EntryHintsContext).find(
+    ([comp]) => comp === node.comp,
+  )?.[1];
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
     if (event) onEvent(event);
@@ -167,6 +176,8 @@ export function FieldNode({
     "data-comp-id": node.comp,
     "data-event": "enter",
     className: "clinical-control",
+    description: entryHint,
+    descriptionProps: { className: "clinical-entry-hint" },
   };
   const options = node.kind
     .split(":")
@@ -296,7 +307,13 @@ export function FieldNode({
               size="sm"
               className="provenance-chip"
             >
-              <DisplayValue value={node.provenance} />
+              <DisplayValue
+                value={
+                  sourceLabels.find(
+                    ([source]) => source === node.provenance,
+                  )?.[1] ?? "Prefilled value"
+                }
+              />
             </Badge>
           )}
           {node.pendingConfirm && !confirmProvided && (
@@ -389,6 +406,8 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
   );
 }
 export function InfoNode({ node }: Props<"info">) {
+  const presentation = useContext(PresentationContext);
+  if (presentation) return <StructuredInfo node={node} kind={presentation} />;
   const values = node.rows
     .flatMap((row) =>
       row
@@ -601,6 +620,12 @@ export function UiNodeView({
   confirmProvided?: boolean;
 }) {
   switch (true) {
+    case "presentation" in node:
+      return (
+        <PresentationContext.Provider value={node.presentation.kind}>
+          <UiChildren nodes={node.presentation.children} onEvent={onEvent} />
+        </PresentationContext.Provider>
+      );
     case "section" in node:
       return <SectionNode node={node.section} onEvent={onEvent} />;
     case "columns" in node:

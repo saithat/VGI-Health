@@ -444,6 +444,11 @@
 .provenance-chip .mantine-Badge-label {
   white-space: normal;
 }
+.clinical-entry-hint {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--clinical-muted);
+}
 .clinical-info {
   min-width: 0;
 }
@@ -764,4 +769,24 @@
 .clinical-info[data-info-id="encounterNotes"] td,
 .clinical-info[data-info-id="priorNotes"] td {
   white-space: pre-wrap;
+}
+
+/* Perioperative review panes retain every record in a local scroll area. */
+.clinical-info[data-info-id="labResults"][data-comp-id^="w6"] .presentation-table-wrap {
+  max-height: 320px;
+  overflow: auto;
+}
+.clinical-info[data-info-id="vitals"][data-comp-id^="w6"] {
+  max-height: 240px;
+  overflow: auto;
+}
+
+@media (min-width: 701px) {
+  .clinical-app .clinical-navbar {
+    position: sticky;
+    top: 0;
+    min-height: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+  }
 }

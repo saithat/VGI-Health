@@ -14,7 +14,9 @@ if (!source || !['before', 'after'].includes(stage)) throw new Error('Supply a s
 const out = `${root}/app/shots/realism/surg/${stage}`;
 // A baseline checkout can supply its own painter for a true before image.
 const painterRoot = process.env.EHR_REVIEW_APP_ROOT ?? root;
-const server = spawn('pnpm', ['--filter', 'app', 'exec', 'vite', '--host', '127.0.0.1', '--port', '4196', '--strictPort'], { cwd: painterRoot, stdio: 'ignore', detached: true });
+const server = spawn(process.execPath, [`${root}/app/node_modules/vite/bin/vite.js`, '--host', '127.0.0.1', '--port', '4196', '--strictPort'], { cwd: `${painterRoot}/app`, stdio: ['ignore', 'ignore', 'pipe'], detached: true });
+let startup = '';
+server.stderr.on('data', chunk => { startup = (startup + chunk).slice(-5000); });
 let browser;
 try {
   let ready = false;
@@ -23,7 +25,7 @@ try {
     if (ready) break;
     await new Promise(resolve => setTimeout(resolve, 200));
   }
-  if (!ready) throw new Error('Review server did not start');
+  if (!ready) throw new Error(`Review server did not start: ${startup}`);
   await mkdir(out, { recursive: true });
   browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -36,12 +38,13 @@ try {
     ['w6Consult', 'w6Consult.chiefComplaint'], ['w6ConsultClose', 'w6ConsultClose.levelOfService'],
     ['w6PreOp', 'w6PreOp.hpUpdate'], ['w6Orders', 'w6Orders.drug'],
     ['w6Sign', 'w6Sign.patientIdReentry'], ['w6OpNote', 'w6OpNote.opPreopDiagnosis'],
+    ['w6Sign-pounds', 'w6Sign.weight'],
     ['w6PostOp', 'w6PostOp.postOpDiet'], ['w6Rounding', 'w6Rounding.progressNote'],
     ['w6Discharge', 'w6Discharge.dischargeInstructions'],
   ]) {
     let bytes;
     try { bytes = await readFile(`${source}/${screen}.json`, 'utf8'); }
-    catch (error) { if (error.code === 'ENOENT' && ['w6Schedule', 'w6Consults'].includes(screen)) continue; throw error; }
+    catch (error) { if (error.code === 'ENOENT' && ['w6Schedule', 'w6Consults', 'w6Sign-pounds'].includes(screen)) continue; throw error; }
     const ui = JSON.parse(bytes);
     await page.goto('http://127.0.0.1:4196/screen-check.html');
     await page.waitForFunction(() => typeof window.renderUi === 'function');
@@ -56,5 +59,8 @@ try {
   }
 } finally {
   if (browser) await browser.close();
-  if (server.pid) process.kill(-server.pid, 'SIGTERM');
+  if (server.pid && server.exitCode === null) {
+    process.kill(-server.pid, 'SIGTERM');
+    await new Promise(resolve => server.once('exit', resolve));
+  }
 }

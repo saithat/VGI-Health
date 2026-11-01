@@ -1,0 +1,572 @@
+{
+  "validatedAt": "2026-11-01T08:45:17.014020+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; structured presentation integration",
+  "baselineCommit": "add0d2e",
+  "mainIntegratedThrough": "45a49d5",
+  "presentationIntegratedThrough": "eb6703e",
+  "leanSourceHash": "fa6b9dfecb389814ff3a89555982904f26953fd6156e70439279a41a50ad18a7",
+  "binarySha256": "181fc2a9843ea64342b1214ef7dd46f6eb7671520f3300cf39f1d88f2a92dce6",
+  "programs": {
+    "v1": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
+    "v2": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
+    "v3": "5576d19a82265b69def2328b6a5fd2dc3a41464ac3453952482be507ab0dc1ec"
+  },
+  "certification": {
+    "personaProjections": 15,
+    "passed": 15,
+    "badRejected": 18,
+    "report": "lean/Ehr/Check/certification-report.json"
+  },
+  "world2": {
+    "schedules": 50,
+    "tasks": 1284,
+    "completed": 1284,
+    "incomplete": 0
+  },
+  "proofs": {
+    "defaultBuild": true,
+    "lakeCheck": true,
+    "permittedAxioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ],
+    "rootComparator": 18,
+    "checkerComparator": 21,
+    "renderComparator": 43,
+    "D1_D6": "preserved; D5 certified overview plus actual P5 navigator bounds/uniqueness probes"
+  },
+  "browser": {
+    "clinicalWalk": true,
+    "semanticScreenStates": 45,
+    "projects": [
+      "desktop 1440x1000",
+      "narrow 390x844"
+    ],
+    "testsPassed": 99,
+    "fixtureDependentSkipped": 3,
+    "failures": 0,
+    "minimumFontPx": 12
+  },
+  "controls": {
+    "releaseScreens": 72,
+    "enabled": 1030,
+    "explainedDisabled": 29,
+    "alternateTabs": 537,
+    "failures": 0,
+    "poundsEntry": {
+      "target": "w6Sign.weight",
+      "inputUnit": "kg",
+      "initiallyBlank": true,
+      "recordedPoundsRetainedInHint": true,
+      "humanEntryAccepted": true,
+      "automaticConversion": false
+    }
+  },
+  "app": {
+    "build": true,
+    "lint": true,
+    "tests": 170
+  },
+  "agent": {
+    "tests": 41,
+    "typecheck": true,
+    "lint": true
+  },
+  "nativeWasmPresentationComparisons": 13,
+  "archivedRun1P3": {
+    "tasks": 424,
+    "events": 14658,
+    "baselineTasks": 3,
+    "baselineEvents": 137,
+    "mismatches": 0
+  },
+  "metrics": "docs/design/surg-realism-metrics.json",
+  "screenshots": [
+    {
+      "file": "app/shots/realism/surg/after/home-load.png",
+      "sha256": "c87b68b5f1688d7c01be75c4388265152471aa214ac174ed12973e12d8e4f46c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Close-load.png",
+      "sha256": "9951199cf0f10854219c88d39b9afd8c3f79587d090fa4d8c18f95bdd329355e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Close-task.png",
+      "sha256": "c2f3ab31b18e98d583e8cabf3a2b96197fe7ae46f6faa146a5c4bf590b6415a1",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Exam-load.png",
+      "sha256": "2a4a59ce63966c9eb1e625e9d2ba6bb4a55aa960a347877af34afb44501bde32",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Exam-task.png",
+      "sha256": "2a4a59ce63966c9eb1e625e9d2ba6bb4a55aa960a347877af34afb44501bde32",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Hpi-load.png",
+      "sha256": "892a5b6c25ceac5e55ab0b355f706b266041fdb904cee4c6cc1774fe07d80778",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Hpi-task.png",
+      "sha256": "a3e1bcadeb8f609da7401144d1c4755696d6835ae75c071748b52c170ca5767e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Labs-load.png",
+      "sha256": "f71b15d1f009916e98767b5bd199c8bb1e28fda1e770577d373428a19baf2895",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Labs-task.png",
+      "sha256": "f71b15d1f009916e98767b5bd199c8bb1e28fda1e770577d373428a19baf2895",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1MedRec-load.png",
+      "sha256": "776f5b49682d514d6614ec3f74c47b62ff7ad9b50fb6bdaaf633b4792cf27bcc",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1MedRec-task.png",
+      "sha256": "7d9cbaa322265577e933f0fe3c63c3382349781dd072264e4d6967c584203b32",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Orders-load.png",
+      "sha256": "e222b3dab3020082596cc5bd6f41f43bc3bcfb2c1593381b43f3922f7443e8fc",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Orders-task.png",
+      "sha256": "5269e9bc0ad536194eba0cb30417baff4573b556a7d20dcee63d0846a6f4da64",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Rooming-load.png",
+      "sha256": "88037b334475ebe7673e78b07ad3eaae5955c07d6d4dade82a9c5741f8b7c06c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Rooming-task.png",
+      "sha256": "8daa7a9bdd7ba54c40a4df0fae2c6a062639b5b491f17d916dbc9e2e3dbaf0c0",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Sign-load.png",
+      "sha256": "6e8637eb55576bedb013df2a9fa4548ab193ef72a141a9f025de33ace03bf5e3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Sign-task.png",
+      "sha256": "737ce5149faa58212a351015381c001b059a6d3f77a6fac1bc15721238dcb574",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Verify-load.png",
+      "sha256": "4d104b19bd5124d6739dba77fcb714f3291a98722e7f178ce9eaff61c69e2380",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w1Verify-task.png",
+      "sha256": "4d104b19bd5124d6739dba77fcb714f3291a98722e7f178ce9eaff61c69e2380",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Consult-load.png",
+      "sha256": "b2d21997ff332b29fa6673863918df6f913ce2690aea573336aaa02abf585a56",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Consult-task.png",
+      "sha256": "2ed594eeb76c82552020fa361da2b6af5171560176c4bdbb3ddcb2ac4c28f300",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6ConsultClose-load.png",
+      "sha256": "7359e1cf400c3e533d6845791327d7093e1a149ec428319c8fa62f702a03a805",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6ConsultClose-task.png",
+      "sha256": "7359e1cf400c3e533d6845791327d7093e1a149ec428319c8fa62f702a03a805",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Consults-load.png",
+      "sha256": "125d6894b355180f0fcc731e71039a5df7e43d9a2ec9e999ed80881da1d8bc15",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Discharge-load.png",
+      "sha256": "7e74d3d6bdc97b50d7df219155b290933daaef698aa7664c34dfab38acb04be7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Discharge-task.png",
+      "sha256": "5e435c4c2a8017f83df72e28f635af4e3090f0dd3f9c9790ab9b0ce28a782b1d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6OpNote-load.png",
+      "sha256": "892b8b132ccb8cd584aecf4bcd65bcac15a0072d7c54f54882621598657184bd",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6OpNote-task.png",
+      "sha256": "da023a03c8dda852cf2a5d4157432ef6144d821fe0981660e6c59593e6f9ada0",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Orders-load.png",
+      "sha256": "fb700c56ae409864832085df6c927be4a5fa751b966123db206328364da1f0e2",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Orders-task.png",
+      "sha256": "ee8a7f7c5305a93c5220c5e72cadb75df143e554c5deb8803f9665c34083d52f",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6PostOp-load.png",
+      "sha256": "1a5aa1b05829414eef936d6cf10f86149018a4282d7e4128ec36230c73de6be3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6PostOp-task.png",
+      "sha256": "1a5aa1b05829414eef936d6cf10f86149018a4282d7e4128ec36230c73de6be3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6PreOp-load.png",
+      "sha256": "45e6cc9eeb5c62493b49f7dbaeae111ec53f98ee5c044ab0a28296f1754d8721",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6PreOp-task.png",
+      "sha256": "e0fbd4ea89affafb653464540a74ad9ed97ce5236f429a29c9e5a35ea8a4b14c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Rounding-load.png",
+      "sha256": "2b22cb4433d811114c77d0ab3a51db1da52455a8ff443426c72dd488489bed76",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Rounding-task.png",
+      "sha256": "2e2e64819354d2beaeba3d37ab06f8836de50d7d5ba5883f98db09e5746afd7a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Schedule-load.png",
+      "sha256": "ea98392c94c9d24d7ef1ed64d7d79c4f11ef99ab793d2d08f4b05fab0ed7b62c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Sign-load.png",
+      "sha256": "7455b8bb55183a3b5be9cf8034ef94228ac7d80a43b077d55ab460d10d74c524",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Sign-pounds-load.png",
+      "sha256": "4e64cabae5977b7d3cdf6153a6d8420b9ce06e698c8260f42129aead2b77958d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Sign-pounds-task.png",
+      "sha256": "a4b02d0c9ed3ecb5c5946e9d8f60001eb808bec2ac064307a43a16880360fd37",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/after/w6Sign-task.png",
+      "sha256": "fdc5ceba83366581160d94e680c15fc83f138f54c73e7c3d90ac424cda31b4b3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/home-load.png",
+      "sha256": "f3b441e35018497dfefd471e499a3b7d79f1f6c469b1a3aca2968c746d3b3991",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Close-load.png",
+      "sha256": "c3f5b0ce2b0145b57f607bd127231f934285ffeb103dd1185ffc5b0f61b1f335",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Close-task.png",
+      "sha256": "ec424b05dbfcb0d833b6c8361aca915acdc083800959063549bbca0ce13e237c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Exam-load.png",
+      "sha256": "c6a877cca64b2d4d24d5b64eda800958d66ef10db3070c0bf29d371c97b325c4",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Exam-task.png",
+      "sha256": "a61a7255e81ee1cad6eb76e96e05d5807d6772d5fb990b919480871705dd4f2b",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Hpi-load.png",
+      "sha256": "8164bb54959badbc4b8f95bbe7ac0e3a3b3d5b512a01645b11f616e74918f869",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Hpi-task.png",
+      "sha256": "7425d5605e0bb1b3cfd2fc9e670c19320a51639800507294c74ffe31b045f790",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Labs-load.png",
+      "sha256": "3d16c57ec9ab537054d9659d6859cafac81d01a794844746477525097ddb1a45",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Labs-task.png",
+      "sha256": "3d16c57ec9ab537054d9659d6859cafac81d01a794844746477525097ddb1a45",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1MedRec-load.png",
+      "sha256": "d759c2fd34bdf955384c9d802e83fcdf52c8d1b376aa4fcc33b66a1e302d15ce",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1MedRec-task.png",
+      "sha256": "e888b47a2a2e406f987172cc65a46a2fb4b23769c21cfb40f784c87c3d4c180f",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Orders-load.png",
+      "sha256": "9ff23a5989991c25a06f975d6577b4d6eb67f668637f91730adfda6482e499f7",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Orders-task.png",
+      "sha256": "51fa35712ab1d21e48da847460572ab73d485992e4f2895990ffb740460cc730",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Rooming-load.png",
+      "sha256": "71a1a7380d3f081b456b420513f2603f84b7d850f48b3f3368186121cfc35991",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Rooming-task.png",
+      "sha256": "85c56b66829eaebb523538aea0d308e764d4e483c2deb3736cdcd2159b1a1013",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Sign-load.png",
+      "sha256": "93737ecd0e09e6ee678d049cac5ef2d28ffcdc07ec8f417cbfcf1cacf6cb741a",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Sign-task.png",
+      "sha256": "ec2ab1df740c9cd64ad5777818368c7f9ce64a6e71efe1ba34c67850d5f91c96",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Verify-load.png",
+      "sha256": "f5c93868baaef2f38e93f800bf200165815c6a69eeaa19165119eff669b23745",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w1Verify-task.png",
+      "sha256": "87246e925967dd8b4e7d76656ee59b33aba9f0285982648d4bf3d304102bc75c",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Consult-load.png",
+      "sha256": "95f7442ad7607ba2cd3e662d56f2d3b02908c5c6f8a345e6516cc2aa16130424",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Consult-task.png",
+      "sha256": "a43473837e78abf5f0d7d079b61610f32c1daa8cac7c21853fd5287097145d71",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6ConsultClose-load.png",
+      "sha256": "323bf26c21b7295446bb89f049a90fb547f97b7a0848ad441c4168dc7d18988f",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6ConsultClose-task.png",
+      "sha256": "cb1fc3beadd1beaba2ac9de3221e115a2b3eb984abc41534a1b99158750e422d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Discharge-load.png",
+      "sha256": "665d94ea8eeabaf59b7c49f8233128f3b24d5a7160481561be9fc3daeca94c15",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Discharge-task.png",
+      "sha256": "13008e70812154113e67b41ff59922c066b94150d467eb5cb9f9bbc9a38eb69d",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6OpNote-load.png",
+      "sha256": "678fbdc9cb211355caaf31bad6bc5c2d672a92224f9065551633081db42db119",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6OpNote-task.png",
+      "sha256": "eedb9f9a5b0b3d8261687686f23299768f442600f3461781227560add4de47fa",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Orders-load.png",
+      "sha256": "b241464acbcad44cff565134d26202687f51c8bc3e86ff8f791b684cf7096098",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Orders-task.png",
+      "sha256": "c65851bec025ee3ab5a5a102b9f76c03f1ddda34efc1e8cfb54487ad246b2104",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6PostOp-load.png",
+      "sha256": "a4da67bb07707f2861a71cc853e96e0007dd1cf41150625222af7c7e9113b1f3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6PostOp-task.png",
+      "sha256": "a4da67bb07707f2861a71cc853e96e0007dd1cf41150625222af7c7e9113b1f3",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6PreOp-load.png",
+      "sha256": "7123a38173de1c6f04c22477ab389dadafb53b19e3d77894112d81566b01adaa",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6PreOp-task.png",
+      "sha256": "7ef4e76a00f65135d529e3d243cc08ee968145c33beb5ab840f16863510bff8e",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Rounding-load.png",
+      "sha256": "c32dad4753d15e18fa3f9b52588423558445a25777ea09afd68584538279e523",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Rounding-task.png",
+      "sha256": "b4eb5188e8f4a3cee73eee0410716386a78af35d8a45dfab53c2df2d100d39a6",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Sign-load.png",
+      "sha256": "5a81f91a23465d12e79d1ff3cfc62e50b1f6a8e0d7f1d7b05b0e107ffb8b27f1",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Sign-pounds-load.png",
+      "sha256": "2f6c4230092e7d88b50a695068c08638cdd487769e240567d303399521c3a246",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Sign-pounds-task.png",
+      "sha256": "ad24690f9f3cf97da1f253cda2f094b8bb3e0879b981d26a5d36ce26bf79ede8",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "file": "app/shots/realism/surg/before/w6Sign-task.png",
+      "sha256": "354271f186f9fc4e142c0834934753a54a888b3d1c7c23a2a9bde15d8c8c057c",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "limits": [
+    "The seeded OR request supplies planned room/surgeon, not an active perioperative Encounter. Selected-encounter banner integration is recorded in docs/design/changes-requests.md.",
+    "The patient-scoped canonical shows supplied records for the selected chart; it does not invent a departmental patient-switch action.",
+    "KLM is a model estimate. Directed benchmark search does not establish a global minimum."
+  ]
+}

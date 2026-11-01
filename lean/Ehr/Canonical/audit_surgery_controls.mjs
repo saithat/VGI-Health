@@ -64,6 +64,12 @@ for (const release of ['v1', 'v2', 'v3']) {
       assert.ok(ui.nav.some(([, items]) => items.some(([id]) => id === ui.activeNav)));
     }
     const shown = [...ui.workspace, ...ui.side, ...(ui.modal ? [ui.modal] : [])].flatMap(nodes);
+    for (const { field } of shown.filter(n => n.field?.provenance)) {
+      const label = ui.sourceLabels?.find(([source]) => source === field.provenance)?.[1];
+      assert.ok(label?.trim());
+      assert.notEqual(label, field.provenance);
+      assert.ok(!/record:|linked:/.test(label));
+    }
     const buttons = shown.filter(n => n.button).map(n => n.button);
     buttons.push(...ui.nav.flatMap(([, items]) => items.map(([comp, label]) => ({ comp, label, role: 'nav', enabled: true }))));
     let enabled = 0, disabled = 0, tabChanges = 0;
@@ -87,6 +93,43 @@ for (const release of ['v1', 'v2', 'v3']) {
     }
     report.screens.push({ release, screen: screen.id, programSha256: createHash('sha256').update(programBytes).digest('hex'), enabled, disabled, tabChanges });
   }
+}
+// The seeded consult has an explicitly recorded pounds weight. Exercise the
+// corrected input against real state; this probe does not sign clinical orders.
+{
+  const program = await read(new URL('releases/v1/personas/P5.json', root));
+  const spec = await read(new URL('releases/v1/spec.json', root));
+  const bundle = await read(`${source}/consult-bundle.json`);
+  const context = await read(`${source}/consult-context.json`);
+  const projection = JSON.parse(wasm.facts(JSON.stringify({ bundle, context })));
+  assert.equal(projection.error, undefined);
+  const common = { spec, program, facts: projection.facts, user };
+  const step = (state, event) => JSON.parse(wasm.step(JSON.stringify({ ...common, state, event })));
+  const render = state => JSON.parse(wasm.call('ehr_render_ui', JSON.stringify({ ...common, display: projection.display, state })));
+  let state = JSON.parse(wasm.init(JSON.stringify(common)));
+  for (const event of route(program, 'w6Sign')) {
+    const result = step(state, event);
+    assert.equal(result.result, 'ok');
+    state = result.state;
+  }
+  const before = render(state);
+  const weight = before.workspace.flatMap(nodes).find(n => n.field?.comp === 'w6Sign.weight')?.field;
+  assert.ok(weight);
+  assert.equal(weight.unit, 'kg');
+  assert.equal(weight.value, null);
+  assert.ok(before.entryHints?.some(([comp, text]) => comp === weight.comp && text.includes('lb.')));
+  const result = step(state, { enter: { comp: weight.comp, value: { qty: { tenths: 800, unit: 'kg' } } } });
+  assert.equal(result.result, 'ok');
+  const capture = result.state.captured.find(c => c.element === 'weight' && c.slot === 0);
+  assert.equal(capture.value.qty.unit, 'kg');
+  assert.equal(capture.byHuman, true);
+  assert.equal(capture.confirmed, true);
+  const after = render(result.state);
+  const entered = after.workspace.flatMap(nodes).find(n => n.field?.comp === weight.comp)?.field;
+  assert.equal(Number(entered.value), 80);
+  assert.ok(!after.entryHints?.some(([comp]) => comp === weight.comp));
+  report.poundsEntry = { target: 'w6Sign.weight', inputUnit: 'kg', initiallyBlank: true,
+    recordedPoundsRetainedInHint: true, humanEntryAccepted: true, automaticConversion: false };
 }
 await writeFile(destination, JSON.stringify(report, null, 2) + '\n');
 console.log(`${report.screens.length} P5 release/screens: ${report.screens.reduce((n, s) => n + s.enabled, 0)} enabled buttons, ${report.screens.reduce((n, s) => n + s.disabled, 0)} explained disabled buttons, ${report.screens.reduce((n, s) => n + s.tabChanges, 0)} alternate tabs; ${report.failures.length} failures`);
