@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "releaseNaming": "integer",
   "suite": "union-workflows-v1",
   "releaseSource": {
     "revision": "1fe8b353d389881906a00d55d2f544fb302206ce",
@@ -7,7 +8,7 @@
     "reason": "Immutable release contracts and canonical source used by certified run1-P3; newer main release assets must not rewrite historical comparisons."
   },
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "ehrSha256": "2bf87f75ee5992ea11769fa5b5e42e943cdc2a386666bf343833f5793418ed08",
+  "ehrSha256": "2116e32e88e13c0bc687aeed24102c18cea1e85c537b97f13f4e02079199aa3d",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
@@ -12650,8 +12651,8 @@
     },
     {
       "version": 1,
-      "label": "v1.1",
-      "specVersion": "v1.1",
+      "label": "v2",
+      "specVersion": "v2",
       "tasks": [
         {
           "id": "benchmark-W1-1",
@@ -25284,8 +25285,8 @@
     },
     {
       "version": 2,
-      "label": "v2",
-      "specVersion": "v2",
+      "label": "v3",
+      "specVersion": "v3",
       "tasks": [
         {
           "id": "benchmark-W1-1",

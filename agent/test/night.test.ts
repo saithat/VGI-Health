@@ -30,7 +30,7 @@ beforeAll(async () => {
   world = await fakeWorld(4);
   runsRoot = await tmp('runs');
   // Releases pushed out of the window so these nights are all nightly-mode.
-  const common = { days: 4, worldDir: world, runsRoot, releaseDays: { v1_1: 99, v2: 99 } };
+  const common = { days: 4, worldDir: world, runsRoot, releaseDays: { v2: 99, v3: 99 } };
   recorded = await runDays({ ...common, llm: new ScriptedLlm(), runId: 'recorded', ehr: markingEhr() });
   replayed = await runDays({ ...common, llm: new ReplayLlm(recorded.dir), runId: 'replayed', ehr: markingEhr() });
 });

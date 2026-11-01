@@ -152,7 +152,7 @@ def priorAuthCaptured (s : State) : Bool :=
   s.captured.any fun x =>
     x.element == priorAuthElement && x.slot == s.currentSlot && x.confirmed
 
-/-- Request prior authorization for the current order line (release v1.1).
+/-- Request prior authorization for the current order line (release v2).
 It writes only the `"priorAuthRequest"` element, on the current slot, under the
 same rules as entering a value: the element must be in the spec and the role
 must be allowed; a macro may not do it if the element is human-only or

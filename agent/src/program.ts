@@ -33,6 +33,9 @@ export function applyToProgram(
     const first = parsed.error.issues[0];
     throw new Error(`patched program is not a valid Program: ${first ? `${first.path.join('.')}: ${first.message}` : 'invalid'}`);
   }
+  for (const key of ['id', 'owner', 'role'] as const) {
+    if (parsed.data[key] !== program[key]) throw new Error(`patch may not change program ${key}`);
+  }
   const out: Program = { ...parsed.data, version: next.version };
   if (next.specVersion !== undefined) out.specVersion = next.specVersion;
   return { program: out, resolved };

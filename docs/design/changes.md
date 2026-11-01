@@ -180,7 +180,7 @@ Several were made stricter; those are marked **(stricter)**.
    had two alert rules with the same ID, the theorem speaks about the first.
    The checker's well-formedness check should require unique alert IDs.
 
-## Release v1.1 support (BRIEF 9b)
+## Release v2 support (BRIEF 9b)
 
 1. **`Kind.priorAuth (info : InfoId)`**: the prior-authorization status of the
    current order line. It counts as showing `info`, like a panel (`showsInfo`).
@@ -195,11 +195,11 @@ Several were made stricter; those are marked **(stricter)**.
    the current slot has no order.
 3. **Catalog tags.** `Kind.catalogTag` gives each kind's tag; a
    `button requestPriorAuth` has the tag `"priorAuth"` too, so both parts of the
-   feature need the v1.1 catalog. `Program.inCatalog` is a helper for the
+   feature need the v2 catalog. `Program.inCatalog` is a helper for the
    checker lane (the checker enforces the catalog).
-4. **Tiny v1.1 example**: `specV1_1` (adds the optional element, the
+4. **Tiny v2 example**: `specV2` (adds the optional element, the
    `priorAuthStatus` info, and the `"priorAuth"` catalog tag; no requirement
-   uses them) and `programV1_1` (status panel and request button in the order
+   uses them) and `programV2` (status panel and request button in the order
    composer). `ehr spec-export tiny-1.1` prints the spec.
 5. T0, T3, A2, A4 were re-checked with the new kind and action (new branch
    lemmas `requestPriorAuth_macro_safe`, `requestPriorAuth_commits`,
@@ -334,7 +334,7 @@ Such a request must use an ordinary human field Event.enter, as the existing
 HumanStepsByHuman property requires. Allowed non-human-only policy requests
 retain their convenience-action behavior. No property was weakened.
 
-Minimal compatibility: Tiny v1.1 exposes the required human request field,
+Minimal compatibility: Tiny v2 exposes the required human request field,
 TinyTests enters it before checking status/signing, and the T3 frame proof
 splits the preservation branch. The Tiny spec retains its never policy.
 View reasons and public-step service tests match the stricter behavior.
@@ -669,7 +669,7 @@ React does not need to infer these clinical fields.
 ## Content pass 2: five newly available rule families
 
 V1 now composes the reviewed feature mappings under `Ehr/Specs/Rules/` with
-all first-pass declarations. V1.1/V2 inherit the resulting spec. Event windows
+all first-pass declarations. V2/V3 inherit the resulting spec. Event windows
 and durable clocks are appended to CommitSpec; validators are conjoined with
 existing constraints; clinical entries, structured payloads and exact signing
 labels add hard stops. The content-owned Extends relation additionally requires

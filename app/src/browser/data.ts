@@ -1,3 +1,4 @@
+import { archivedReleaseId } from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 
 const programEntrySchema = z.object({
@@ -105,3 +106,14 @@ export const verdictsSchema = z.object({
     z.object({ status: z.string(), output: z.unknown().optional() }),
   ),
 });
+
+/** Historical replay uses its frozen contract; aliases change display names only. */
+export function programSpecPath(program: ProgramEntry): string {
+  if (program.run === "run1-P3")
+    return `/runs/run1-P3/trajectories/specs/${archivedReleaseId(program.release)}.json`;
+  if (program.path.startsWith("programs/benchmarks/releases/")) {
+    const prefix = program.path.split("/").slice(0, 4).join("/");
+    return `/${prefix}/spec.json`;
+  }
+  return `/releases/${program.release}/spec.json`;
+}

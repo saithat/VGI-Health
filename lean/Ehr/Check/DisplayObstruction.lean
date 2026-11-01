@@ -1,6 +1,6 @@
 import Ehr.Check.DomainObstruction
 import Ehr.Check.ContractSound
-import Ehr.Specs.V2
+import Ehr.Specs.V3
 
 set_option Elab.async false
 namespace Ehr.Check

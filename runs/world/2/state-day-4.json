@@ -34,7 +34,7 @@
       "P5": "normal"
     },
     "scriptedEvents": [
-      "vendor-release-v1.1-prior-auth",
+      "vendor-release-v2-prior-auth",
       "flu-week"
     ]
   },

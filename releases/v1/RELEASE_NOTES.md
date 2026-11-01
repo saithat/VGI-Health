@@ -7,7 +7,7 @@ Generated files: `cd lean && lake exe export-content`.
 The corrected CURES surgical exemption code is `surgery-7-day`, for a
 qualifying procedure at a listed facility and a nonrefillable supply of at
 most seven days used as directed (H&S §11165.4(c)(4)). It replaces
-`surgery-5-day`; no five-day hospital restriction is retained. v1.1 and v2
+`surgery-5-day`; no five-day hospital restriction is retained. v2 and v3
 inherit the correction. The ED, facility-administration, terminally ill hospice
 and timely-access descriptions were also checked against the statutory source;
 the timely-access branch includes an unavailable alternate authorized user,
@@ -22,7 +22,7 @@ adoption is tracked in CR-11.
 
 `canonical.json` is the full W1–W7 authoring template. The five role-specific deployment candidates are `personas/P1.json` … `personas/P5.json`; certify the matching candidate before deployment. These exports do not themselves carry a checker certificate.
 
-The updated baseline requires controlled-order details shown during signing (21 CFR 1311.140), plus vaccine manufacturer, administering provider and VIS edition date. Schedule II prescriptions require confirmed zero refills on every matching order line, using core's generic allowed-value constraint (21 CFR 1306.12(a)). Seed 16's confirmed default of three is blocked. The constraint is inherited unchanged by v1.1 and v2. VIS edition date is required compliance data.
+The updated baseline requires controlled-order details shown during signing (21 CFR 1311.140), plus vaccine manufacturer, administering provider and VIS edition date. Schedule II prescriptions require confirmed zero refills on every matching order line, using core's generic allowed-value constraint (21 CFR 1306.12(a)). Seed 16's confirmed default of three is blocked. The constraint is inherited unchanged by v2 and v3. VIS edition date is required compliance data.
 
 Every spec rule docstring is labeled `Law`, `Entrenched` (with a reason/source), `Hospital policy (not law)`, or `Product design property`. Existing barcode scans are entrenched under the Leapfrog BCMA standard; two identifiers support Joint Commission accreditation. Patient-ID re-entry, second-nurse checks and kg-only weight remain local policies. No guidance or accreditation rule was added.
 
@@ -33,15 +33,15 @@ Content tests establish capture and visibility gates, not actual VIS delivery or
 This release now inherits every one of the 124 `fit: spec-data` rules in the
 reviewed catalog (120 law, 4 entrenched), in addition to 29 existing catalog
 mappings. The v1 additions are split into CMS, Title 22, California statutes,
-federal prescription/vaccine, and entrenched modules. v1.1 imports v1; v2
-imports v1.1. Both concrete `Extends` proofs still use `decide`; their axiom
+federal prescription/vaccine, and entrenched modules. v2 imports v1; v3
+imports v2. Both concrete `Extends` proofs still use `decide`; their axiom
 prints contain only `propext`.
 
 The canonical now includes the planned scoped artifact screens, grouped
 prescription content on each actual order row, pinned controlled-signing/result
 review panels, separate refill denial, and a new-prescription path in W7.
 Specialist medication authorizations inherit ordinary signing, pre-op and
-alert safeguards; v2 antibiotic indication also applies to them. All existing
+alert safeguards; v3 antibiotic indication also applies to them. All existing
 requirements remain. In particular, the old naloxone education flag remains
 required alongside the new human outcome enum, preserving the stricter policy.
 

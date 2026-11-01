@@ -55,7 +55,7 @@ def replay(spec, program, events):
 
 def main():
     cases = [(f"releases/{release}/personas/P{i}.json", "persona")
-             for release in ("v1", "v1.1", "v2") for i in range(1, 6)]
+             for release in ("v1", "v2", "v3") for i in range(1, 6)]
     core, deferred = json.loads((ROOT / "lean/Ehr/Check/bad-program-profiles.json").read_text())
     expected = {f"programs/bad/{name}.json": prop for name, prop in core}
     cases += [(path, "bad") for path in expected]
@@ -69,7 +69,7 @@ def main():
         canonical = f"releases/{release}/canonical.json"
         args = [str(BINARY), "check", "--spec", sp,
                 "--program", path, "--canonical", canonical]
-        previous = {"v1.1": "v1", "v2": "v1.1"}.get(release)
+        previous = {"v2": "v1", "v3": "v2"}.get(release)
         prev = path.replace(f"releases/{release}/", f"releases/{previous}/") if previous else None
         if prev:
             args += ["--prev", prev]
@@ -104,7 +104,7 @@ def main():
     bad = [x for x in results if x["group"] == "bad"]
     reference_reason = "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     references = []
-    for release in ("v1", "v1.1", "v2"):
+    for release in ("v1", "v2", "v3"):
         path = f"releases/{release}/canonical.json"
         references.append({"program": path, "group": "reference", "status": "reference",
                            "reason": reference_reason, "programSha256": digest(path),

@@ -120,12 +120,12 @@ def serviceState : State :=
 #guard !hasOrderAt serviceState 1
 #guard orderLines serviceState == []
 #guard alertKeys facts serviceState .drugAllergy == []
-#guard (requestPriorAuth specV1_1 user .human serviceState).2 ==
+#guard (requestPriorAuth specV2 user .human serviceState).2 ==
   .blocked "human entry required: priorAuthRequest"
 -- Services can be entered through the same public interpreter, when the
 -- release spec declares their fields; they are not just constructed states.
 def serviceSpec : Spec :=
-  { specV1_1 with elements := specV1_1.elements ++
+  { specV2 with elements := specV2.elements ++
       [{ id := "orderKind", label := "Order kind", kind := .coded "order-kind",
          enteredBy := [.physician], prefill := .defaultConfirm,
          friction := .compliance, fhirTarget := "ServiceRequest.category" },
@@ -133,7 +133,7 @@ def serviceSpec : Spec :=
          enteredBy := [.physician], prefill := .defaultConfirm,
          friction := .compliance, fhirTarget := "ServiceRequest.code" }] }
 def serviceProgram : Program :=
-  { programV1_1 with screens := programV1_1.screens.map fun sc =>
+  { programV2 with screens := programV2.screens.map fun sc =>
       if sc.id == "order" then
         { sc with components := sc.components ++
           [{ id := "kindField", kind := .field "orderKind" .current .none },
@@ -151,9 +151,9 @@ def enteredService : State :=
 def confirmedRequest : State :=
   { serviceState with captured := serviceState.captured ++
     [{ element := priorAuthElement, slot := 0, value := .flag false, byHuman := true, confirmed := true, provenance? := some "human field" }] }
-#guard requestPriorAuth specV1_1 user .human confirmedRequest == (confirmedRequest, .ignored)
-#guard requestPriorAuth specV1_1 user .«macro» confirmedRequest == (confirmedRequest, .ignored)
-#guard requestPriorAuth specV1_1 user .human afterPA.1 == (afterPA.1, .ignored)
+#guard requestPriorAuth specV2 user .human confirmedRequest == (confirmedRequest, .ignored)
+#guard requestPriorAuth specV2 user .«macro» confirmedRequest == (confirmedRequest, .ignored)
+#guard requestPriorAuth specV2 user .human afterPA.1 == (afterPA.1, .ignored)
 -- The convenience action remains usable for a spec that authorizes it.
 def actionRequestSpec : Spec :=
   { version := "action-request", elements :=

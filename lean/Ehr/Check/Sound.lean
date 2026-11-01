@@ -53,7 +53,8 @@ theorem scalar_identity_required (facts : Facts) (user : User) (role : user.role
     requiredCommitsFor (Scalar.spec .identity .physician .shownOnCommit .drugAllergy .interruptive)
       (Scalar.program .physician) (Scalar.program .physician) facts user = ["recordReview"] := by
   simp [requiredCommitsFor, requiredCommits, commitButtons, Scalar.spec, Scalar.program,
-    Scalar.screen, Scalar.field, Scalar.button, Spec.commit?, commitRolePossible, roleOk, role, List.eraseDups_cons]
+    Scalar.screen, Scalar.field, Scalar.button, Spec.commit?, commitRolePossible, roleOk, role, List.eraseDups_cons,
+    presetScreen, Program.presetOwner]
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where
@@ -83,7 +84,7 @@ def emptyProgram : Program where
 theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
-    simp [requiredCommitsFor, requiredCommits, commitButtons, emptyProgram] at hc)
+    simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, emptyProgram] at hc)
 
 #print axioms satisfies_of_checked_completable
 #print axioms satisfies_of_checked_scalar

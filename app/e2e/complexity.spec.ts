@@ -14,10 +14,10 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
     }),
   ).toBeVisible();
   await expect(
-    chart.getByText("Release v1.1 · v2", { exact: true }),
+    chart.getByText("Release v2 · v2", { exact: true }),
   ).toBeVisible();
   await expect(
-    chart.getByText("Release v2 · v5", { exact: true }),
+    chart.getByText("Release v3 · v5", { exact: true }),
   ).toBeVisible();
   await chart
     .getByText("Chart data and measurement definitions", { exact: true })

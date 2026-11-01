@@ -610,7 +610,7 @@ inductive Action
   | markReviewed (info : InfoId)
   /-- Starts a new order line. -/
   | newOrderLine
-  /-- Requests prior authorization for the current order line (release v1.1).
+  /-- Requests prior authorization for the current order line (release v2).
   It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). -/
   | requestPriorAuth
   deriving DecidableEq, Repr, Inhabited
@@ -650,7 +650,7 @@ inductive Kind
   /-- A button that runs a macro. -/
   | «macro» (id : MacroId)
   | search (scope : String)
-  /-- Prior-authorization status of the current order line (release v1.1;
+  /-- Prior-authorization status of the current order line (release v2;
   catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. -/
   | priorAuth (info : InfoId)
   deriving DecidableEq, Repr, Inhabited

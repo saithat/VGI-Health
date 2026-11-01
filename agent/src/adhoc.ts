@@ -1,8 +1,8 @@
 /**
  * Re-run ONE night of an existing run for one persona (live demos: "run this
  * night again with Claude"), without touching the original run. The night's
- * mode follows the run's calendar (surface-feature before the v1.1 day,
- * migrate before the v2 day, else nightly) unless overridden.
+ * mode follows the run's calendar (surface-feature before the v2 day,
+ * migrate before the v3 day, else nightly) unless overridden.
  *
  * State is rebuilt from the run directory: the program used on day N, the
  * DayResults of days <= N (train only), earlier decision records (outcome-only
@@ -35,7 +35,7 @@ const manifestSchema = z.object({
   runId: z.string(),
   days: z.number().int(),
   world: z.string(),
-  releaseDays: z.object({ v1_1: z.number().int(), v2: z.number().int() }),
+  releaseDays: z.object({ v2: z.number().int(), v3: z.number().int() }),
 });
 
 export async function rerunNight(args: {
@@ -71,8 +71,8 @@ export async function rerunNight(args: {
   }
 
   const rd = manifest.releaseDays;
-  const inForceId = args.night >= rd.v2 ? 'v2' : args.night >= rd.v1_1 ? 'v1.1' : 'v1';
-  const auto: Exclude<NightMode, 'auto'> = args.night + 1 === rd.v1_1 ? 'surface-feature' : args.night + 1 === rd.v2 ? 'migrate' : 'nightly';
+  const inForceId = args.night >= rd.v3 ? 'v3' : args.night >= rd.v2 ? 'v2' : 'v1';
+  const auto: Exclude<NightMode, 'auto'> = args.night + 1 === rd.v2 ? 'surface-feature' : args.night + 1 === rd.v3 ? 'migrate' : 'nightly';
   const mode = !args.mode || args.mode === 'auto' ? auto : args.mode;
   const release = await loadRelease(inForceId, args.ehr);
 
@@ -87,8 +87,8 @@ export async function rerunNight(args: {
     holdout: makeHoldout(deps, persona, await world.schedule(args.night + 1, args.persona)),
   };
   let result: NightResult;
-  if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease('v1.1', args.ehr) });
-  else if (mode === 'migrate') result = await runMigration(deps, { ...input, next: await loadRelease('v2', args.ehr) });
+  if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease('v2', args.ehr) });
+  else if (mode === 'migrate') result = await runMigration(deps, { ...input, next: await loadRelease('v3', args.ehr) });
   else result = await runNight(deps, input);
   return { result, outDir };
 }

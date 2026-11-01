@@ -19,8 +19,8 @@
     "Ehr.Check.T8_old_obligations",
     "Ehr.Check.accepted_contracts",
     "Ehr.Check.T8_checked_old_obligations",
-    "Ehr.Check.T8_v1_to_v1_1",
-    "Ehr.Check.T8_v1_1_to_v2",
+    "Ehr.Check.T8_v1_to_v2",
+    "Ehr.Check.T8_v2_to_v3",
     "Ehr.Check.accepted_navigation",
     "Ehr.Check.cached_completion_eq"
   ],
