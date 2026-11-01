@@ -6,7 +6,7 @@ namespace Ehr.Render
 
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
-def uiSignCtx : Ctx := { uiRoomCtx with s := { uiRoomCtx.s with screen := "sign" } }
+def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
     { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"), label := "Weight", tag := "weight" }
@@ -18,8 +18,15 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+-- Input updates rebuild the dependent cache; a rooming view cannot leak
+-- into a sign state. The equality also holds for every arbitrary context.
+#guard uiRoomCtx.v.screen == uiRoomCtx.s.screen
+#guard uiSignCtx.v.screen == "sign"
+example (cx : Ctx) : cx.v = view cx.sp cx.prog cx.facts cx.user cx.s := cx.v_exact
+#print axioms Ctx.v_exact
+
 example : ("Patient", uiRoomCtx.disp.banner.name) ∈ uiScreenTest.banner ∧
-    ("DOB", uiRoomCtx.disp.banner.dob) ∈ uiScreenTest.banner :=
+    ("DOB", uiDate uiRoomCtx.disp.banner.dob) ∈ uiScreenTest.banner :=
   ⟨(D1_landmark _ _ _ _ _ _).2.1, (D1_landmark _ _ _ _ _ _).2.2.1⟩
 
 example : ∃ comp label display, UiPresent
@@ -28,24 +35,24 @@ example : ∃ comp label display, UiPresent
   exact D2_commit_review uiSignCtx uiReview (by decide) (by decide) uiSignItem
     (by decide) (by decide) (by decide)
 
-example : ∀ n, n ∈ uiAtomsList
-    ((renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s).workspace ++
-     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s).side ++
-     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s).modal.toList) →
+example : ∀ n, UiPresent
+    (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s) n ∨
+    n ∈ uiAtomsList
+      (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s).modal.toList →
     UiActionHonest uiSignCtx n := D3_all_buttons uiSignCtx
 
 example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user
     { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") }).modal =
       some (.section "drugAllergy" "Drug–allergy match"
-        [.text "Drug–allergy match", .button "drugAllergy" "Acknowledge" "ack" true none none]) := by
-  apply D4_interruptive_modal { uiRoomCtx with s := { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") } }
+        [.button "drugAllergy" "Acknowledge" "ack" true none none]) := by
+  apply D4_interruptive_modal { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") } }
     "drugAllergy" "amoxicillin"
     { id := "drugAllergy", label := "Drug–allergy match", cond := .drugAllergy, tier := .interruptive, commit := "signOrders" }
     rfl (by decide) rfl
 
 example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user
     { uiRoomCtx.s with popup? := some ("careGap", "due") }).modal = none := by
-  apply D4_passive_no_modal { uiRoomCtx with s := { uiRoomCtx.s with popup? := some ("careGap", "due") } }
+  apply D4_passive_no_modal { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with popup? := some ("careGap", "due") } }
     "careGap" "due"
     { id := "careGap", label := "Care gap due", cond := .careGap, tier := .passive, commit := "signOrders", screens := ["W1"] }
     rfl (by decide) rfl
@@ -66,7 +73,7 @@ example : UiPresent uiScreenTest
 example : uiLabel "" "Clinical entry" ≠ "" := uiLabel_nonempty _ _ (by decide)
 
 example : ∃ comp label display rows, UiPresent uiScreenTest
-    (.info comp label "allergyList" display rows) ∧ allergyCells (Fhir.allergyRow Fhir.tinyAllergy) ∈ rows := by
+    (.info comp label "allergyList" display rows) ∧ (allergyCells (Fhir.allergyRow Fhir.tinyAllergy) ∈ rows ∨ uiAllergySummary (Fhir.allergyRow Fhir.tinyAllergy) ∈ rows) := by
   apply T11_ui_allergy_fhir uiRoomCtx Tests.context Fhir.tinyBundle Fhir.tinyAllergy
   · exact Fhir.tiny_parse
   · change Fhir.tinyAllergy ∈ [Fhir.tinyPatient, Fhir.tinyAllergy, Fhir.tinyMed, Fhir.tinyWeight]; simp
@@ -76,7 +83,7 @@ example : ∃ comp label display rows, UiPresent uiScreenTest
 
 example : ∃ comp label display rows,
     UiPresent (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s)
-      (.info comp label "currentMeds" display rows) ∧ medCells (Fhir.medRow Fhir.tinyMed) ∈ rows := by
+      (.info comp label "currentMeds" display rows) ∧ (medCells (Fhir.medRow Fhir.tinyMed) ∈ rows ∨ uiMedSummary (Fhir.medRow Fhir.tinyMed) ∈ rows) := by
   apply T11_ui_med_fhir uiSignCtx Tests.context Fhir.tinyBundle Fhir.tinyMed
   · exact Fhir.tiny_parse
   · change Fhir.tinyMed ∈ [Fhir.tinyPatient, Fhir.tinyAllergy, Fhir.tinyMed, Fhir.tinyWeight]; simp
@@ -96,7 +103,7 @@ example : ∀ n, UiPresent uiScreenTest n → uiComp n ≠ some "signButton" := 
 
 -- A malformed program containing only the commit still gets its review rows.
 def uiMissingCtx : Ctx :=
-  { uiSignCtx with prog := { uiSignCtx.prog with screens :=
+  { uiSignCtx with viewCache := ⟨_, rfl⟩, prog := { uiSignCtx.prog with screens :=
     [{ id := "sign", title := "Sign", workflow := "W1", components := [uiSignItem.comp] }] } }
 
 example : ∃ comp label display, UiPresent
@@ -106,7 +113,7 @@ example : ∃ comp label display, UiPresent
 
 -- Passive alert presentation uses a satisfiable firing interpreter view.
 def uiPassiveCtx : Ctx :=
-  { tinyCtx with s := { tinyCtx.s with screen := "order" } }
+  { tinyCtx with viewCache := ⟨_, rfl⟩, s := { tinyCtx.s with screen := "order" } }
 def uiPassiveItem : ItemView :=
   itemView uiPassiveCtx.sp uiPassiveCtx.facts uiPassiveCtx.s (uiPassiveCtx.prog.compsOf "order")
     { id := "careGapAlert", kind := .alert "careGap" false, label := "Care gap", tag := "careGap" }
@@ -154,5 +161,102 @@ example : UiPresent
 #print axioms T11_ui_med_rows
 #print axioms T11_ui_allergy_fhir
 #print axioms T11_ui_med_fhir
+
+/-- A real interpreter fixture for shell relocation and current-episode orders. -/
+def uiShellCtx : Ctx :=
+  { uiRoomCtx with
+    viewCache := ⟨_, rfl⟩
+    prog := { uiRoomCtx.prog with start := "shell", screens :=
+      [{ id := "shell", title := "Shell regression", workflow := "W1", components :=
+        [{ id := "shell.banner", kind := .banner, label := "Patient banner" },
+         { id := "shell.nav", kind := .group false false, tag := "navigator", label := "Visit" },
+         { id := "shell.nav.next", kind := .button (.goto "next"), parent? := some "shell.nav", label := "Next screen" },
+         { id := "shell.sidebar", kind := .group true false, tag := "sidebar", label := "Clinical summary" },
+         { id := "shell.side.problems", kind := .table "problemList", parent? := some "shell.sidebar", label := "Active problems" },
+         { id := "shell.side.meds", kind := .table "currentMeds", parent? := some "shell.sidebar", label := "Medications" },
+         { id := "shell.side.allergies", kind := .panel "allergyList", parent? := some "shell.sidebar", label := "Allergies" },
+         { id := "shell.allergyReview", kind := .group false false, label := "Allergies" },
+         { id := "shell.allergyDetail", kind := .group false false, parent? := some "shell.allergyReview", label := "Allergies" },
+         { id := "shell.allergyRecords", kind := .panel "allergyList", parent? := some "shell.allergyDetail", label := "Allergies" },
+         { id := "shell.medication", kind := .group false false, label := "Medication" },
+         { id := "shell.drug", kind := .field "drug" (.fixed 0) .none, parent? := some "shell.medication", label := "Medication" },
+         { id := "shell.allProblems", kind := .table "problemList", label := "Full problem list" },
+         { id := "shell.orders", kind := .panel "orderSummary", label := "Order summary" },
+         { id := "shell.sign", kind := .button (.commit "signOrders"), label := "Sign" }] },
+       { id := "next", title := "Next screen", workflow := "W1", components := [] }] }
+    s := { uiRoomCtx.s with screen := "shell", expanded := ["shell.sidebar"], captured :=
+      [{ element := "drug", slot := 0, value := .code "amoxicillin", confirmed := true, byHuman := true },
+       { element := "dose", slot := 0, value := .qty 5000 .mg, confirmed := true, byHuman := true },
+       { element := "route", slot := 0, value := .code "PO", confirmed := true, byHuman := true },
+       { element := "freq", slot := 0, value := .code "bid", confirmed := true, byHuman := true },
+       { element := "duration", slot := 0, value := .text "7 days", confirmed := true, byHuman := true },
+       { element := "quantity", slot := 0, value := .qty 140 .none, confirmed := true, byHuman := true },
+       { element := "refills", slot := 0, value := .qty 0 .none, confirmed := true, byHuman := true },
+       { element := "prescriptionDirections", slot := 0, value := .text "Take by mouth twice daily", confirmed := true, byHuman := true },
+       { element := "abxIndication", slot := 0, value := .text "Otitis media", confirmed := true, byHuman := true },
+       { element := "controlledPrescriberName", slot := 0, value := .text "Alex Chen", confirmed := true, byHuman := true },
+       { element := "prescriberFederalRegistration", slot := 0, value := .text "AB1234567", confirmed := true, byHuman := true },
+       { element := "drug", slot := 1, value := .code "ibuprofen", confirmed := true, byHuman := true }] }
+    disp := { uiRoomCtx.disp with asOf := "2026-05-06", problems :=
+      [{ id := "active", name := "Hypertension", code := "htn", onset := "2026-05-06", abatement := "", status := "active" },
+       { id := "resolved", name := "Otitis media", code := "om", onset := "2025-05-06", abatement := "2025-06-01", status := "resolved" }] } }
+
+def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.disp uiShellCtx.user uiShellCtx.s
+
+#guard uiNavGroup { uiSignItem with comp := { uiSignItem.comp with kind := .group false true, tag := "nav" } }
+-- A non-collapsible group is open in the interpreter regardless of its saved
+-- startCollapsed bit. Exercise the full shell, not just tag classification.
+def uiNavSavedCollapsedCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.map fun c =>
+      if c.id == "shell.nav" then { c with kind := .group false true } else c } } }
+
+#guard (renderUi uiNavSavedCollapsedCtx.sp uiNavSavedCollapsedCtx.prog uiNavSavedCollapsedCtx.facts
+    uiNavSavedCollapsedCtx.disp uiNavSavedCollapsedCtx.user uiNavSavedCollapsedCtx.s).nav ==
+    [("Visit", [("shell.nav.next", "Next screen")])]
+#guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
+#guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
+#guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .info _ _ "patientBanner" _ _ | .section "shell.nav" _ _ | .section "shell.sidebar" _ _ | .button "shell.nav.next" _ _ _ _ _ => true
+  | _ => false)
+#guard (uiAtomsList uiShellScreen.side).any (fun n => match n with
+  | .info "shell.side.problems" _ "problemList" "list" rows => rows == [[("Record", "Hypertension (active)")]]
+  | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .info "shell.allProblems" _ "problemList" "table" rows => rows.length == 2
+  | _ => false)
+#guard (uiAtomsList uiShellScreen.side).any (fun n => match n with
+  | .button "shell.sidebar" "Collapse section" "toggle" _ _ _ => true
+  | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .info "shell.orders" _ "orderSummary" "table" rows => rows.length == 2 &&
+      rows.head!.lookup "Dose" == some "500.0 mg" &&
+      rows.head!.lookup "Directions" == some "Take by mouth twice daily" &&
+      rows.head!.lookup "Indication" == some "Otitis media" &&
+      rows[1]!.lookup "Prescriber" == some "Alex Chen" &&
+      rows[1]!.lookup "Registration" == some "AB1234567"
+  | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .field "shell.drug" "Enter Medication" _ _ _ _ _ _ _ => true | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .info "shell.allergyRecords" "Records" _ _ _ => true | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .section "shell.allergyDetail" "Details" _ => true | _ => false)
+#guard uiRows uiShellCtx "controlledSigningQuantity" == uiRows uiShellCtx "orderSummary"
+#guard uiDate "2026-05-06T13:28:42-07:00" == "May 6, 2026 13:28"
+#guard uiDate "2024-02-29" == "Feb 29, 2024"
+#guard uiDate "2025-02-29" == "2025-02-29"
+#guard uiDate "2026-05-06 start the new medication" == "2026-05-06 start the new medication"
+#guard uiDate "Not recorded" == "Not recorded"
+#guard uiReasonText uiRoomCtx "entry required: patientIdReentry" == "Re-enter patient ID (initials / sex / age) to sign"
+#guard !(uiReasonText uiRoomCtx "review required: allergyList must be shown").startsWith "review required: allergyList"
+
+example : ∃ comp label display, UiWorkspacePresent uiShellScreen
+    (.info comp label uiReview.info display (uiRows uiShellCtx uiReview.info)) :=
+  D2_workspace_required uiShellCtx uiReview (by decide)
+
+#print axioms T11_ui_full_info
+#print axioms D2_workspace_required
+#print axioms uiNav_mem
 
 end Ehr.Render

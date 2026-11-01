@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import spec from "../../releases/v2/spec.json";
+// Frozen full-profile v2 spec (git 1123612:releases/v2/spec.json, before the
+// temporary core rule profile). The mapper must handle every catalog element,
+// so it stays tested while the release exports use core.
+import spec from "./fixtures/spec-v2-full.json";
 import { mapCommit, systems, type CommitInput } from "../src/data/commitMapper";
 import type { Captured, Value } from "../../lean/generated/ehr-types";
 

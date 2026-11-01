@@ -18,8 +18,24 @@ def uiAtomsList : List UiNode → List UiNode
 termination_by ns => sizeOf ns
 end
 
-/-- Presence of a semantic leaf or container in the actual workspace. -/
+/-- Nav pairs carry real click component ids. This observer expands each pair
+into its semantic button meaning; it adds no rendered workspace node. -/
+def uiNavAtoms (nav : List (String × List (String × String))) : List UiNode :=
+  nav.flatMap fun (_, entries) => entries.map fun (id, label) =>
+    .button id label "nav" true none none
+
+/-- Observe the shell's clinical fields once. The banner is read-only. -/
+def uiBannerAtom (screen : UiScreen) : UiNode :=
+  .info "" "Patient banner" "patientBanner" "summary" [screen.banner]
+
+/-- Presence across workspace, side, real nav clicks, and the shell banner.
+Modals have their separate D4 presentation contract. -/
 def UiPresent (screen : UiScreen) (node : UiNode) : Prop :=
+  node ∈ uiAtomsList screen.workspace ++ uiAtomsList screen.side ++
+    uiNavAtoms screen.nav ++ [uiBannerAtom screen]
+
+/-- D2 retains the stricter workspace-only requirement for commit reviews. -/
+def UiWorkspacePresent (screen : UiScreen) (node : UiNode) : Prop :=
   node ∈ uiAtomsList screen.workspace
 
 /-- Identity of component-bearing semantic nodes. Sidebar and safety supplement
