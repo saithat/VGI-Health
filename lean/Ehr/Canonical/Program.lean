@@ -1,6 +1,6 @@
 import Ehr.Specs.V1
 import Ehr.Canonical.Rules
-import Ehr.Canonical.Features
+import Ehr.Canonical.Blueprint
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
 import Ehr.Canonical.W3Ed
@@ -14,7 +14,7 @@ import Ehr.Canonical.W7Refills
 
 The vendor's out-of-the-box UI program for spec v1. Every clinician starts with
 it on day 1; the overnight agent then personalizes it. It covers workflows
-W1–W7 (BRIEF section 5) on 43 screens, starting from the patient workspace.
+W1–W7 (BRIEF section 5) on 45 screens, starting from the patient workspace.
 -/
 
 namespace Ehr.Canonical
@@ -31,7 +31,9 @@ def home : Screen :=
          (.panel, "priorNotes", "Notes"), (.table, "currentMeds", "Medications"),
          (.panel, "allergyList", "Allergies"), (.table, "encounterHistory", "Encounters"),
          (.panel, "coverage", "Coverage")] ++
-      [group s "work" "Today's work" (collapsible := false)] ++
+      [table s "schedule" "scheduleTasks" "Today's work",
+       table s "openOrders" "openOrders" "Open orders",
+       group s "work" "Workflows" (collapsible := false)] ++
       ([("w1Rooming", "Clinic visit: start rooming"),
         ("w2Inbasket", "In-basket: results"),
         ("w7Queue", "In-basket: refill requests"),
@@ -65,7 +67,10 @@ def withRequiredLinks (s : Screen) : Screen :=
         | some el => match el.linkedFrom? with
           | some src => if el.prefill == .autoLinked then
               { c with kind := .field e slot (.linked src) } else c
-          | none => c
+          | none => match el.recordFact? with
+            | some fact => if el.prefill == .recordConfirm then
+                { c with kind := .field e slot (.fromRecord fact) } else c
+            | none => c
         | none => c
       | _ => c }
 
@@ -77,9 +82,9 @@ def canonicalV1 : Program where
   role := .physician
   specVersion := "v1"
   start := "home"
-  screens := (Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
-    W5.screens ++ W6.screens ++ W7.screens))).map (withRequiredLinks ∘ withWorkflowAlerts)
-  macros := W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
-    W6.macros ++ W7.macros
+  screens := (Blueprint.screens (Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
+    W5.screens ++ W6.screens ++ W7.screens)))).map (withRequiredLinks ∘ withWorkflowAlerts)
+  macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
+    W6.macros ++ W7.macros)
 
 end Ehr.Canonical

@@ -17,7 +17,7 @@ def artifactScreen (id workflow commit : String) : Screen :=
     id, workflow
     title := ((specV1.commit? commit).map (·.label)).getD commit
     components := shell id [] hospitalSidebar [] ++
-      (if issuanceCommits.contains commit then lineFields id "" .current ++ controlledFields id else []) ++
+      (if issuanceCommits.contains commit then orderComposer id { signScreen := id, askWeight := true } else []) ++
       [commitBtn id commit ((specV1.commit? commit).map (·.label) |>.getD commit)] }
 
 /-- Add each required field once, in open artifact sections. Existing inputs and
@@ -32,7 +32,7 @@ def withFields (s : Screen) : List Component :=
   let dependencies : List ElementId := ["dispenseQuantity", "dispenseDose", "dispenseFrequency", "liquidFormulation", "weight"]
   let absent := absent.filter dependencies.contains ++ absent.filter (fun e => !dependencies.contains e)
   if absent.isEmpty then [] else
-    group s.id "featureDocumentation" "Clinical decision and documentation" (collapsible := false) ::
+    group s.id "featureDocumentation" "Documentation" (collapsible := false) ::
     absent.map fun e =>
       let el := specV1.element? e
       field s.id ("feature." ++ e) e (el.map (·.label) |>.getD e)

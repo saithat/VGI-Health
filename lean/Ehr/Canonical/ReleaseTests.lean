@@ -1,3 +1,4 @@
+import Ehr.Canonical.BlueprintTests
 import Ehr.Canonical.Personas
 import Ehr.Canonical.BadTests
 import Ehr.Canonical.FeatureTests

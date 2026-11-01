@@ -1,0 +1,2038 @@
+{
+  "name": "VGI ICD-10-CM workflow subset",
+  "system": "http://hl7.org/fhir/sid/icd-10-cm",
+  "version": "FY2027",
+  "effectivePeriod": {
+    "start": "2026-10-01",
+    "end": "2027-09-30"
+  },
+  "license": "Public domain (US federal government ICD-10-CM release; not the WHO ICD-10 publication)",
+  "source": {
+    "publisher": "CMS / CDC NCHS",
+    "url": "https://www.cms.gov/files/zip/2027-code-descriptions-tabular-order.zip",
+    "file": "Code Descriptions/icd10cm_codes_2027.txt",
+    "sha256": "91c6c9d1117764ce72375a0f3a5493b1725dafbc1ab283b55799076c9e194965",
+    "retrieved": "2026-10-31"
+  },
+  "selection": {
+    "families": [
+      "E11",
+      "J45",
+      "K35",
+      "I50",
+      "I48",
+      "N18"
+    ],
+    "explicitCodes": [
+      "A41.9",
+      "R65.21",
+      "B20",
+      "B34.9",
+      "B97.89",
+      "B99.9",
+      "C02.9",
+      "C18.9",
+      "C34.90",
+      "C61",
+      "C95.90",
+      "D01.0",
+      "D01.1",
+      "D07.5",
+      "D10.9",
+      "D12.6",
+      "D12.8",
+      "D37.09",
+      "D40.0",
+      "D50.9",
+      "D64.9",
+      "E03.4",
+      "E03.9",
+      "E04.9",
+      "E66.9",
+      "E66.01",
+      "E78.00",
+      "E78.1",
+      "E78.2",
+      "E78.5",
+      "E88.810",
+      "F11.10",
+      "F11.20",
+      "F19.20",
+      "F17.210",
+      "F10.10",
+      "F41.0",
+      "F41.9",
+      "F43.9",
+      "F90.0",
+      "F90.9",
+      "F79",
+      "G30.0",
+      "G30.9",
+      "G40.909",
+      "G43.019",
+      "G47.00",
+      "G47.30",
+      "G47.33",
+      "G47.9",
+      "G80.9",
+      "I10",
+      "I11.0",
+      "I20.9",
+      "I21.09",
+      "I21.3",
+      "I21.4",
+      "I21.9",
+      "I25.10",
+      "I25.2",
+      "I26.99",
+      "I35.1",
+      "I63.9",
+      "I82.409",
+      "J00",
+      "J01.90",
+      "J02.0",
+      "J02.9",
+      "J06.9",
+      "J09.X2",
+      "J10.1",
+      "J11.1",
+      "J15.9",
+      "J18.9",
+      "J20.9",
+      "J30.1",
+      "J30.2",
+      "J30.89",
+      "J31.0",
+      "J32.9",
+      "J40",
+      "J41.0",
+      "J43.9",
+      "J44.0",
+      "J44.1",
+      "J44.9",
+      "J96.01",
+      "K02.9",
+      "K02.63",
+      "K03.6",
+      "K04.7",
+      "K04.90",
+      "K04.4",
+      "K05.10",
+      "K05.30",
+      "K05.6",
+      "K06.8",
+      "K08.3",
+      "K08.89",
+      "K01.1",
+      "K00.6",
+      "K08.0",
+      "K14.9",
+      "K21.9",
+      "K25.9",
+      "K29.70",
+      "K40.90",
+      "K42.9",
+      "K52.9",
+      "K59.00",
+      "K62.1",
+      "K63.5",
+      "K80.00",
+      "K80.20",
+      "K80.50",
+      "K81.0",
+      "K81.9",
+      "K85.90",
+      "K92.2",
+      "L03.90",
+      "L03.115",
+      "L03.116",
+      "L20.9",
+      "L23.9",
+      "L50.9",
+      "M10.9",
+      "M16.9",
+      "M17.9",
+      "M19.041",
+      "M19.042",
+      "M25.511",
+      "M25.561",
+      "M25.571",
+      "M41.129",
+      "M54.2",
+      "M54.50",
+      "M54.9",
+      "M62.838",
+      "M66.269",
+      "M75.101",
+      "M79.7",
+      "M81.0",
+      "M80.00XA",
+      "N10",
+      "N12",
+      "N30.00",
+      "N39.0",
+      "N40.0",
+      "O00.109",
+      "O02.0",
+      "O03.9",
+      "O03.4",
+      "O09.291",
+      "O09.292",
+      "O09.299",
+      "O15.00",
+      "O35.10X0",
+      "R00.0",
+      "R06.02",
+      "R07.9",
+      "R10.9",
+      "R10.11",
+      "R10.31",
+      "R11.2",
+      "R19.7",
+      "R21",
+      "R22.9",
+      "R25.2",
+      "R41.82",
+      "R42",
+      "R50.9",
+      "R51.9",
+      "R52",
+      "R55",
+      "R56.9",
+      "R63.4",
+      "R73.03",
+      "R73.9",
+      "R80.9",
+      "R93.1",
+      "R76.89",
+      "R79.89",
+      "G89.29",
+      "G89.4",
+      "H65.90",
+      "H66.90",
+      "H66.001",
+      "H66.002",
+      "H66.003",
+      "H92.09",
+      "S00.83XA",
+      "S01.81XA",
+      "S06.0X0A",
+      "S06.0X9A",
+      "S06.9XAA",
+      "S13.4XXA",
+      "S19.9XXA",
+      "S29.9XXA",
+      "S42.009A",
+      "S52.90XA",
+      "S62.109A",
+      "S63.006A",
+      "S63.509A",
+      "S72.009A",
+      "S82.899A",
+      "S22.39XA",
+      "S46.009A",
+      "S51.819A",
+      "S61.419A",
+      "S71.119A",
+      "S81.819A",
+      "S91.319A",
+      "S83.249A",
+      "S86.819A",
+      "S89.90XA",
+      "S93.409A",
+      "T14.8XXA",
+      "T14.90XA",
+      "T14.8XXS",
+      "T30.0",
+      "T21.10XA",
+      "T21.20XA",
+      "T78.40XA",
+      "T40.2X1A",
+      "Z00.00",
+      "Z00.01",
+      "Z00.121",
+      "Z00.129",
+      "Z01.818",
+      "Z02.89",
+      "Z23",
+      "Z30.2",
+      "Z33.1",
+      "Z34.90",
+      "Z48.815",
+      "Z48.89",
+      "Z51.81",
+      "Z52.3",
+      "Z55.0",
+      "Z55.9",
+      "Z56.0",
+      "Z56.9",
+      "Z59.9",
+      "Z59.819",
+      "Z59.82",
+      "Z60.2",
+      "Z60.3",
+      "Z60.4",
+      "Z65.3",
+      "Z65.4",
+      "Z65.8",
+      "Z72.0",
+      "Z72.89",
+      "Z79.01",
+      "Z79.4",
+      "Z79.84",
+      "Z79.891",
+      "Z85.038",
+      "Z86.69",
+      "Z87.59",
+      "Z88.0",
+      "Z88.2",
+      "Z90.49",
+      "Z94.0",
+      "Z94.81",
+      "Z95.1",
+      "Z95.2",
+      "Z98.51",
+      "Z68.30",
+      "Z68.41",
+      "Z76.0",
+      "Z76.82",
+      "Z91.89",
+      "M27.9"
+    ],
+    "note": "Representative diagnosis choices for fixture conditions and world outpatient, ED, inpatient, pediatric and surgical workflows. Fixture Conditions use SNOMED CT; this is not an automatic SNOMED-to-ICD crosswalk. Injury laterality, encounter suffixes, obstetric details, and coding specificity must be selected from the chart. Social findings such as employment/education are not necessarily diagnoses."
+  },
+  "codes": [
+    {
+      "code": "A41.9",
+      "label": "Sepsis, unspecified organism"
+    },
+    {
+      "code": "B20",
+      "label": "Human immunodeficiency virus [HIV] disease"
+    },
+    {
+      "code": "B34.9",
+      "label": "Viral infection, unspecified"
+    },
+    {
+      "code": "B97.89",
+      "label": "Other viral agents as the cause of diseases classified elsewhere"
+    },
+    {
+      "code": "B99.9",
+      "label": "Unspecified infectious disease"
+    },
+    {
+      "code": "C02.9",
+      "label": "Malignant neoplasm of tongue, unspecified"
+    },
+    {
+      "code": "C18.9",
+      "label": "Malignant neoplasm of colon, unspecified"
+    },
+    {
+      "code": "C34.90",
+      "label": "Malignant neoplasm of unspecified part of unspecified bronchus or lung"
+    },
+    {
+      "code": "C61",
+      "label": "Malignant neoplasm of prostate"
+    },
+    {
+      "code": "C95.90",
+      "label": "Leukemia, unspecified not having achieved remission"
+    },
+    {
+      "code": "D01.0",
+      "label": "Carcinoma in situ of colon"
+    },
+    {
+      "code": "D01.1",
+      "label": "Carcinoma in situ of rectosigmoid junction"
+    },
+    {
+      "code": "D07.5",
+      "label": "Carcinoma in situ of prostate"
+    },
+    {
+      "code": "D10.9",
+      "label": "Benign neoplasm of pharynx, unspecified"
+    },
+    {
+      "code": "D12.6",
+      "label": "Benign neoplasm of colon, unspecified"
+    },
+    {
+      "code": "D12.8",
+      "label": "Benign neoplasm of rectum"
+    },
+    {
+      "code": "D37.09",
+      "label": "Neoplasm of uncertain behavior of other specified sites of the oral cavity"
+    },
+    {
+      "code": "D40.0",
+      "label": "Neoplasm of uncertain behavior of prostate"
+    },
+    {
+      "code": "D50.9",
+      "label": "Iron deficiency anemia, unspecified"
+    },
+    {
+      "code": "D64.9",
+      "label": "Anemia, unspecified"
+    },
+    {
+      "code": "E03.4",
+      "label": "Atrophy of thyroid (acquired)"
+    },
+    {
+      "code": "E03.9",
+      "label": "Hypothyroidism, unspecified"
+    },
+    {
+      "code": "E04.9",
+      "label": "Nontoxic goiter, unspecified"
+    },
+    {
+      "code": "E11.00",
+      "label": "Type 2 diabetes mellitus with hyperosmolarity without nonketotic hyperglycemic-hyperosmolar coma (NKHHC)"
+    },
+    {
+      "code": "E11.01",
+      "label": "Type 2 diabetes mellitus with hyperosmolarity with coma"
+    },
+    {
+      "code": "E11.10",
+      "label": "Type 2 diabetes mellitus with ketoacidosis without coma"
+    },
+    {
+      "code": "E11.11",
+      "label": "Type 2 diabetes mellitus with ketoacidosis with coma"
+    },
+    {
+      "code": "E11.21",
+      "label": "Type 2 diabetes mellitus with diabetic nephropathy"
+    },
+    {
+      "code": "E11.22",
+      "label": "Type 2 diabetes mellitus with diabetic chronic kidney disease"
+    },
+    {
+      "code": "E11.29",
+      "label": "Type 2 diabetes mellitus with other diabetic kidney complication"
+    },
+    {
+      "code": "E11.311",
+      "label": "Type 2 diabetes mellitus with unspecified diabetic retinopathy with macular edema"
+    },
+    {
+      "code": "E11.319",
+      "label": "Type 2 diabetes mellitus with unspecified diabetic retinopathy without macular edema"
+    },
+    {
+      "code": "E11.3211",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy with macular edema, right eye"
+    },
+    {
+      "code": "E11.3212",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy with macular edema, left eye"
+    },
+    {
+      "code": "E11.3213",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy with macular edema, bilateral"
+    },
+    {
+      "code": "E11.3219",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3291",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "E11.3292",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "E11.3293",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "E11.3299",
+      "label": "Type 2 diabetes mellitus with mild nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3311",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy with macular edema, right eye"
+    },
+    {
+      "code": "E11.3312",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy with macular edema, left eye"
+    },
+    {
+      "code": "E11.3313",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy with macular edema, bilateral"
+    },
+    {
+      "code": "E11.3319",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3391",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "E11.3392",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "E11.3393",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "E11.3399",
+      "label": "Type 2 diabetes mellitus with moderate nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3411",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy with macular edema, right eye"
+    },
+    {
+      "code": "E11.3412",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy with macular edema, left eye"
+    },
+    {
+      "code": "E11.3413",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy with macular edema, bilateral"
+    },
+    {
+      "code": "E11.3419",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3491",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "E11.3492",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "E11.3493",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "E11.3499",
+      "label": "Type 2 diabetes mellitus with severe nonproliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3511",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, right eye"
+    },
+    {
+      "code": "E11.3512",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, left eye"
+    },
+    {
+      "code": "E11.3513",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, bilateral"
+    },
+    {
+      "code": "E11.3519",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.3521",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment involving the macula, right eye"
+    },
+    {
+      "code": "E11.3522",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment involving the macula, left eye"
+    },
+    {
+      "code": "E11.3523",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment involving the macula, bilateral"
+    },
+    {
+      "code": "E11.3529",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment involving the macula, unspecified eye"
+    },
+    {
+      "code": "E11.3531",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment not involving the macula, right eye"
+    },
+    {
+      "code": "E11.3532",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment not involving the macula, left eye"
+    },
+    {
+      "code": "E11.3533",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment not involving the macula, bilateral"
+    },
+    {
+      "code": "E11.3539",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with traction retinal detachment not involving the macula, unspecified eye"
+    },
+    {
+      "code": "E11.3541",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with combined traction retinal detachment and rhegmatogenous retinal detachment, right eye"
+    },
+    {
+      "code": "E11.3542",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with combined traction retinal detachment and rhegmatogenous retinal detachment, left eye"
+    },
+    {
+      "code": "E11.3543",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with combined traction retinal detachment and rhegmatogenous retinal detachment, bilateral"
+    },
+    {
+      "code": "E11.3549",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy with combined traction retinal detachment and rhegmatogenous retinal detachment, unspecified eye"
+    },
+    {
+      "code": "E11.3551",
+      "label": "Type 2 diabetes mellitus with stable proliferative diabetic retinopathy, right eye"
+    },
+    {
+      "code": "E11.3552",
+      "label": "Type 2 diabetes mellitus with stable proliferative diabetic retinopathy, left eye"
+    },
+    {
+      "code": "E11.3553",
+      "label": "Type 2 diabetes mellitus with stable proliferative diabetic retinopathy, bilateral"
+    },
+    {
+      "code": "E11.3559",
+      "label": "Type 2 diabetes mellitus with stable proliferative diabetic retinopathy, unspecified eye"
+    },
+    {
+      "code": "E11.3591",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, right eye"
+    },
+    {
+      "code": "E11.3592",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, left eye"
+    },
+    {
+      "code": "E11.3593",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, bilateral"
+    },
+    {
+      "code": "E11.3599",
+      "label": "Type 2 diabetes mellitus with proliferative diabetic retinopathy without macular edema, unspecified eye"
+    },
+    {
+      "code": "E11.36",
+      "label": "Type 2 diabetes mellitus with diabetic cataract"
+    },
+    {
+      "code": "E11.37X1",
+      "label": "Type 2 diabetes mellitus with diabetic macular edema, resolved following treatment, right eye"
+    },
+    {
+      "code": "E11.37X2",
+      "label": "Type 2 diabetes mellitus with diabetic macular edema, resolved following treatment, left eye"
+    },
+    {
+      "code": "E11.37X3",
+      "label": "Type 2 diabetes mellitus with diabetic macular edema, resolved following treatment, bilateral"
+    },
+    {
+      "code": "E11.37X9",
+      "label": "Type 2 diabetes mellitus with diabetic macular edema, resolved following treatment, unspecified eye"
+    },
+    {
+      "code": "E11.39",
+      "label": "Type 2 diabetes mellitus with other diabetic ophthalmic complication"
+    },
+    {
+      "code": "E11.40",
+      "label": "Type 2 diabetes mellitus with diabetic neuropathy, unspecified"
+    },
+    {
+      "code": "E11.41",
+      "label": "Type 2 diabetes mellitus with diabetic mononeuropathy"
+    },
+    {
+      "code": "E11.42",
+      "label": "Type 2 diabetes mellitus with diabetic polyneuropathy"
+    },
+    {
+      "code": "E11.43",
+      "label": "Type 2 diabetes mellitus with diabetic autonomic (poly)neuropathy"
+    },
+    {
+      "code": "E11.44",
+      "label": "Type 2 diabetes mellitus with diabetic amyotrophy"
+    },
+    {
+      "code": "E11.49",
+      "label": "Type 2 diabetes mellitus with other diabetic neurological complication"
+    },
+    {
+      "code": "E11.51",
+      "label": "Type 2 diabetes mellitus with diabetic peripheral angiopathy without gangrene"
+    },
+    {
+      "code": "E11.52",
+      "label": "Type 2 diabetes mellitus with diabetic peripheral angiopathy with gangrene"
+    },
+    {
+      "code": "E11.59",
+      "label": "Type 2 diabetes mellitus with other circulatory complications"
+    },
+    {
+      "code": "E11.610",
+      "label": "Type 2 diabetes mellitus with diabetic neuropathic arthropathy"
+    },
+    {
+      "code": "E11.618",
+      "label": "Type 2 diabetes mellitus with other diabetic arthropathy"
+    },
+    {
+      "code": "E11.620",
+      "label": "Type 2 diabetes mellitus with diabetic dermatitis"
+    },
+    {
+      "code": "E11.621",
+      "label": "Type 2 diabetes mellitus with foot ulcer"
+    },
+    {
+      "code": "E11.622",
+      "label": "Type 2 diabetes mellitus with other skin ulcer"
+    },
+    {
+      "code": "E11.628",
+      "label": "Type 2 diabetes mellitus with other skin complications"
+    },
+    {
+      "code": "E11.630",
+      "label": "Type 2 diabetes mellitus with periodontal disease"
+    },
+    {
+      "code": "E11.638",
+      "label": "Type 2 diabetes mellitus with other oral complications"
+    },
+    {
+      "code": "E11.641",
+      "label": "Type 2 diabetes mellitus with hypoglycemia with coma"
+    },
+    {
+      "code": "E11.649",
+      "label": "Type 2 diabetes mellitus with hypoglycemia without coma"
+    },
+    {
+      "code": "E11.65",
+      "label": "Type 2 diabetes mellitus with hyperglycemia"
+    },
+    {
+      "code": "E11.69",
+      "label": "Type 2 diabetes mellitus with other specified complication"
+    },
+    {
+      "code": "E11.8",
+      "label": "Type 2 diabetes mellitus with unspecified complications"
+    },
+    {
+      "code": "E11.9",
+      "label": "Type 2 diabetes mellitus without complications"
+    },
+    {
+      "code": "E11.A",
+      "label": "Type 2 diabetes mellitus without complications in remission"
+    },
+    {
+      "code": "E66.01",
+      "label": "Morbid (severe) obesity due to excess calories"
+    },
+    {
+      "code": "E66.9",
+      "label": "Obesity, unspecified"
+    },
+    {
+      "code": "E78.00",
+      "label": "Pure hypercholesterolemia, unspecified"
+    },
+    {
+      "code": "E78.1",
+      "label": "Pure hyperglyceridemia"
+    },
+    {
+      "code": "E78.2",
+      "label": "Mixed hyperlipidemia"
+    },
+    {
+      "code": "E78.5",
+      "label": "Hyperlipidemia, unspecified"
+    },
+    {
+      "code": "E88.810",
+      "label": "Metabolic syndrome"
+    },
+    {
+      "code": "F10.10",
+      "label": "Alcohol abuse, uncomplicated"
+    },
+    {
+      "code": "F11.10",
+      "label": "Opioid abuse, uncomplicated"
+    },
+    {
+      "code": "F11.20",
+      "label": "Opioid dependence, uncomplicated"
+    },
+    {
+      "code": "F17.210",
+      "label": "Nicotine dependence, cigarettes, uncomplicated"
+    },
+    {
+      "code": "F19.20",
+      "label": "Other psychoactive substance dependence, uncomplicated"
+    },
+    {
+      "code": "F41.0",
+      "label": "Panic disorder [episodic paroxysmal anxiety]"
+    },
+    {
+      "code": "F41.9",
+      "label": "Anxiety disorder, unspecified"
+    },
+    {
+      "code": "F43.9",
+      "label": "Reaction to severe stress, unspecified"
+    },
+    {
+      "code": "F79",
+      "label": "Unspecified intellectual disabilities"
+    },
+    {
+      "code": "F90.0",
+      "label": "Attention-deficit hyperactivity disorder, predominantly inattentive type"
+    },
+    {
+      "code": "F90.9",
+      "label": "Attention-deficit hyperactivity disorder, unspecified type"
+    },
+    {
+      "code": "G30.0",
+      "label": "Alzheimer's disease with early onset"
+    },
+    {
+      "code": "G30.9",
+      "label": "Alzheimer's disease, unspecified"
+    },
+    {
+      "code": "G40.909",
+      "label": "Epilepsy, unspecified, not intractable, without status epilepticus"
+    },
+    {
+      "code": "G43.019",
+      "label": "Migraine without aura, intractable, without status migrainosus"
+    },
+    {
+      "code": "G47.00",
+      "label": "Insomnia, unspecified"
+    },
+    {
+      "code": "G47.30",
+      "label": "Sleep apnea, unspecified"
+    },
+    {
+      "code": "G47.33",
+      "label": "Obstructive sleep apnea (adult) (pediatric)"
+    },
+    {
+      "code": "G47.9",
+      "label": "Sleep disorder, unspecified"
+    },
+    {
+      "code": "G80.9",
+      "label": "Cerebral palsy, unspecified"
+    },
+    {
+      "code": "G89.29",
+      "label": "Other chronic pain"
+    },
+    {
+      "code": "G89.4",
+      "label": "Chronic pain syndrome"
+    },
+    {
+      "code": "H65.90",
+      "label": "Unspecified nonsuppurative otitis media, unspecified ear"
+    },
+    {
+      "code": "H66.001",
+      "label": "Acute suppurative otitis media without spontaneous rupture of ear drum, right ear"
+    },
+    {
+      "code": "H66.002",
+      "label": "Acute suppurative otitis media without spontaneous rupture of ear drum, left ear"
+    },
+    {
+      "code": "H66.003",
+      "label": "Acute suppurative otitis media without spontaneous rupture of ear drum, bilateral"
+    },
+    {
+      "code": "H66.90",
+      "label": "Otitis media, unspecified, unspecified ear"
+    },
+    {
+      "code": "H92.09",
+      "label": "Otalgia, unspecified ear"
+    },
+    {
+      "code": "I10",
+      "label": "Essential (primary) hypertension"
+    },
+    {
+      "code": "I11.0",
+      "label": "Hypertensive heart disease with heart failure"
+    },
+    {
+      "code": "I20.9",
+      "label": "Angina pectoris, unspecified"
+    },
+    {
+      "code": "I21.09",
+      "label": "ST elevation (STEMI) myocardial infarction involving other coronary artery of anterior wall"
+    },
+    {
+      "code": "I21.3",
+      "label": "ST elevation (STEMI) myocardial infarction of unspecified site"
+    },
+    {
+      "code": "I21.4",
+      "label": "Non-ST elevation (NSTEMI) myocardial infarction"
+    },
+    {
+      "code": "I21.9",
+      "label": "Acute myocardial infarction, unspecified"
+    },
+    {
+      "code": "I25.10",
+      "label": "Atherosclerotic heart disease of native coronary artery without angina pectoris"
+    },
+    {
+      "code": "I25.2",
+      "label": "Old myocardial infarction"
+    },
+    {
+      "code": "I26.99",
+      "label": "Other pulmonary embolism without acute cor pulmonale"
+    },
+    {
+      "code": "I35.1",
+      "label": "Nonrheumatic aortic (valve) insufficiency"
+    },
+    {
+      "code": "I48.0",
+      "label": "Paroxysmal atrial fibrillation"
+    },
+    {
+      "code": "I48.11",
+      "label": "Longstanding persistent atrial fibrillation"
+    },
+    {
+      "code": "I48.19",
+      "label": "Other persistent atrial fibrillation"
+    },
+    {
+      "code": "I48.20",
+      "label": "Chronic atrial fibrillation, unspecified"
+    },
+    {
+      "code": "I48.21",
+      "label": "Permanent atrial fibrillation"
+    },
+    {
+      "code": "I48.3",
+      "label": "Typical atrial flutter"
+    },
+    {
+      "code": "I48.4",
+      "label": "Atypical atrial flutter"
+    },
+    {
+      "code": "I48.91",
+      "label": "Unspecified atrial fibrillation"
+    },
+    {
+      "code": "I48.92",
+      "label": "Unspecified atrial flutter"
+    },
+    {
+      "code": "I50.1",
+      "label": "Left ventricular failure, unspecified"
+    },
+    {
+      "code": "I50.20",
+      "label": "Unspecified systolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.21",
+      "label": "Acute systolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.22",
+      "label": "Chronic systolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.23",
+      "label": "Acute on chronic systolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.30",
+      "label": "Unspecified diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.31",
+      "label": "Acute diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.32",
+      "label": "Chronic diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.33",
+      "label": "Acute on chronic diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.40",
+      "label": "Unspecified combined systolic (congestive) and diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.41",
+      "label": "Acute combined systolic (congestive) and diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.42",
+      "label": "Chronic combined systolic (congestive) and diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.43",
+      "label": "Acute on chronic combined systolic (congestive) and diastolic (congestive) heart failure"
+    },
+    {
+      "code": "I50.810",
+      "label": "Right heart failure, unspecified"
+    },
+    {
+      "code": "I50.811",
+      "label": "Acute right heart failure"
+    },
+    {
+      "code": "I50.812",
+      "label": "Chronic right heart failure"
+    },
+    {
+      "code": "I50.813",
+      "label": "Acute on chronic right heart failure"
+    },
+    {
+      "code": "I50.814",
+      "label": "Right heart failure due to left heart failure"
+    },
+    {
+      "code": "I50.82",
+      "label": "Biventricular heart failure"
+    },
+    {
+      "code": "I50.83",
+      "label": "High output heart failure"
+    },
+    {
+      "code": "I50.84",
+      "label": "End stage heart failure"
+    },
+    {
+      "code": "I50.89",
+      "label": "Other heart failure"
+    },
+    {
+      "code": "I50.9",
+      "label": "Heart failure, unspecified"
+    },
+    {
+      "code": "I63.9",
+      "label": "Cerebral infarction, unspecified"
+    },
+    {
+      "code": "I82.409",
+      "label": "Acute embolism and thrombosis of unspecified deep veins of unspecified lower extremity"
+    },
+    {
+      "code": "J00",
+      "label": "Acute nasopharyngitis [common cold]"
+    },
+    {
+      "code": "J01.90",
+      "label": "Acute sinusitis, unspecified"
+    },
+    {
+      "code": "J02.0",
+      "label": "Streptococcal pharyngitis"
+    },
+    {
+      "code": "J02.9",
+      "label": "Acute pharyngitis, unspecified"
+    },
+    {
+      "code": "J06.9",
+      "label": "Acute upper respiratory infection, unspecified"
+    },
+    {
+      "code": "J09.X2",
+      "label": "Influenza due to identified novel influenza A virus with other respiratory manifestations"
+    },
+    {
+      "code": "J10.1",
+      "label": "Influenza due to other identified influenza virus with other respiratory manifestations"
+    },
+    {
+      "code": "J11.1",
+      "label": "Influenza due to unidentified influenza virus with other respiratory manifestations"
+    },
+    {
+      "code": "J15.9",
+      "label": "Unspecified bacterial pneumonia"
+    },
+    {
+      "code": "J18.9",
+      "label": "Pneumonia, unspecified organism"
+    },
+    {
+      "code": "J20.9",
+      "label": "Acute bronchitis, unspecified"
+    },
+    {
+      "code": "J30.1",
+      "label": "Allergic rhinitis due to pollen"
+    },
+    {
+      "code": "J30.2",
+      "label": "Other seasonal allergic rhinitis"
+    },
+    {
+      "code": "J30.89",
+      "label": "Other allergic rhinitis"
+    },
+    {
+      "code": "J31.0",
+      "label": "Chronic rhinitis"
+    },
+    {
+      "code": "J32.9",
+      "label": "Chronic sinusitis, unspecified"
+    },
+    {
+      "code": "J40",
+      "label": "Bronchitis, not specified as acute or chronic"
+    },
+    {
+      "code": "J41.0",
+      "label": "Simple chronic bronchitis"
+    },
+    {
+      "code": "J43.9",
+      "label": "Emphysema, unspecified"
+    },
+    {
+      "code": "J44.0",
+      "label": "Chronic obstructive pulmonary disease with (acute) lower respiratory infection"
+    },
+    {
+      "code": "J44.1",
+      "label": "Chronic obstructive pulmonary disease with (acute) exacerbation"
+    },
+    {
+      "code": "J44.9",
+      "label": "Chronic obstructive pulmonary disease, unspecified"
+    },
+    {
+      "code": "J45.20",
+      "label": "Mild intermittent asthma, uncomplicated"
+    },
+    {
+      "code": "J45.21",
+      "label": "Mild intermittent asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J45.22",
+      "label": "Mild intermittent asthma with status asthmaticus"
+    },
+    {
+      "code": "J45.30",
+      "label": "Mild persistent asthma, uncomplicated"
+    },
+    {
+      "code": "J45.31",
+      "label": "Mild persistent asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J45.32",
+      "label": "Mild persistent asthma with status asthmaticus"
+    },
+    {
+      "code": "J45.40",
+      "label": "Moderate persistent asthma, uncomplicated"
+    },
+    {
+      "code": "J45.41",
+      "label": "Moderate persistent asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J45.42",
+      "label": "Moderate persistent asthma with status asthmaticus"
+    },
+    {
+      "code": "J45.50",
+      "label": "Severe persistent asthma, uncomplicated"
+    },
+    {
+      "code": "J45.51",
+      "label": "Severe persistent asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J45.52",
+      "label": "Severe persistent asthma with status asthmaticus"
+    },
+    {
+      "code": "J45.901",
+      "label": "Unspecified asthma with (acute) exacerbation"
+    },
+    {
+      "code": "J45.902",
+      "label": "Unspecified asthma with status asthmaticus"
+    },
+    {
+      "code": "J45.909",
+      "label": "Unspecified asthma, uncomplicated"
+    },
+    {
+      "code": "J45.990",
+      "label": "Exercise induced bronchospasm"
+    },
+    {
+      "code": "J45.991",
+      "label": "Cough variant asthma"
+    },
+    {
+      "code": "J45.998",
+      "label": "Other asthma"
+    },
+    {
+      "code": "J96.01",
+      "label": "Acute respiratory failure with hypoxia"
+    },
+    {
+      "code": "K00.6",
+      "label": "Disturbances in tooth eruption"
+    },
+    {
+      "code": "K01.1",
+      "label": "Impacted teeth"
+    },
+    {
+      "code": "K02.63",
+      "label": "Dental caries on smooth surface penetrating into pulp"
+    },
+    {
+      "code": "K02.9",
+      "label": "Dental caries, unspecified"
+    },
+    {
+      "code": "K03.6",
+      "label": "Deposits [accretions] on teeth"
+    },
+    {
+      "code": "K04.4",
+      "label": "Acute apical periodontitis of pulpal origin"
+    },
+    {
+      "code": "K04.7",
+      "label": "Periapical abscess without sinus"
+    },
+    {
+      "code": "K04.90",
+      "label": "Unspecified diseases of pulp and periapical tissues"
+    },
+    {
+      "code": "K05.10",
+      "label": "Chronic gingivitis, plaque induced"
+    },
+    {
+      "code": "K05.30",
+      "label": "Chronic periodontitis, unspecified"
+    },
+    {
+      "code": "K05.6",
+      "label": "Periodontal disease, unspecified"
+    },
+    {
+      "code": "K06.8",
+      "label": "Other specified disorders of gingiva and edentulous alveolar ridge"
+    },
+    {
+      "code": "K08.0",
+      "label": "Exfoliation of teeth due to systemic causes"
+    },
+    {
+      "code": "K08.3",
+      "label": "Retained dental root"
+    },
+    {
+      "code": "K08.89",
+      "label": "Other specified disorders of teeth and supporting structures"
+    },
+    {
+      "code": "K14.9",
+      "label": "Disease of tongue, unspecified"
+    },
+    {
+      "code": "K21.9",
+      "label": "Gastro-esophageal reflux disease without esophagitis"
+    },
+    {
+      "code": "K25.9",
+      "label": "Gastric ulcer, unspecified as acute or chronic, without hemorrhage or perforation"
+    },
+    {
+      "code": "K29.70",
+      "label": "Gastritis, unspecified, without bleeding"
+    },
+    {
+      "code": "K35.200",
+      "label": "Acute appendicitis with generalized peritonitis, without perforation or abscess"
+    },
+    {
+      "code": "K35.201",
+      "label": "Acute appendicitis with generalized peritonitis, with perforation, without abscess"
+    },
+    {
+      "code": "K35.209",
+      "label": "Acute appendicitis with generalized peritonitis, without abscess, unspecified as to perforation"
+    },
+    {
+      "code": "K35.210",
+      "label": "Acute appendicitis with generalized peritonitis, without perforation, with abscess"
+    },
+    {
+      "code": "K35.211",
+      "label": "Acute appendicitis with generalized peritonitis, with perforation and abscess"
+    },
+    {
+      "code": "K35.219",
+      "label": "Acute appendicitis with generalized peritonitis, with abscess, unspecified as to perforation"
+    },
+    {
+      "code": "K35.30",
+      "label": "Acute appendicitis with localized peritonitis, without perforation or gangrene"
+    },
+    {
+      "code": "K35.31",
+      "label": "Acute appendicitis with localized peritonitis and gangrene, without perforation"
+    },
+    {
+      "code": "K35.32",
+      "label": "Acute appendicitis with perforation, localized peritonitis, and gangrene, without abscess"
+    },
+    {
+      "code": "K35.33",
+      "label": "Acute appendicitis with perforation, localized peritonitis, and gangrene, with abscess"
+    },
+    {
+      "code": "K35.80",
+      "label": "Unspecified acute appendicitis"
+    },
+    {
+      "code": "K35.890",
+      "label": "Other acute appendicitis without perforation or gangrene"
+    },
+    {
+      "code": "K35.891",
+      "label": "Other acute appendicitis without perforation, with gangrene"
+    },
+    {
+      "code": "K40.90",
+      "label": "Unilateral inguinal hernia, without obstruction or gangrene, not specified as recurrent"
+    },
+    {
+      "code": "K42.9",
+      "label": "Umbilical hernia without obstruction or gangrene"
+    },
+    {
+      "code": "K52.9",
+      "label": "Noninfective gastroenteritis and colitis, unspecified"
+    },
+    {
+      "code": "K59.00",
+      "label": "Constipation, unspecified"
+    },
+    {
+      "code": "K62.1",
+      "label": "Rectal polyp"
+    },
+    {
+      "code": "K63.5",
+      "label": "Polyp of colon"
+    },
+    {
+      "code": "K80.00",
+      "label": "Calculus of gallbladder with acute cholecystitis without obstruction"
+    },
+    {
+      "code": "K80.20",
+      "label": "Calculus of gallbladder without cholecystitis without obstruction"
+    },
+    {
+      "code": "K80.50",
+      "label": "Calculus of bile duct without cholangitis or cholecystitis without obstruction"
+    },
+    {
+      "code": "K81.0",
+      "label": "Acute cholecystitis"
+    },
+    {
+      "code": "K81.9",
+      "label": "Cholecystitis, unspecified"
+    },
+    {
+      "code": "K85.90",
+      "label": "Acute pancreatitis without necrosis or infection, unspecified"
+    },
+    {
+      "code": "K92.2",
+      "label": "Gastrointestinal hemorrhage, unspecified"
+    },
+    {
+      "code": "L03.115",
+      "label": "Cellulitis of right lower limb"
+    },
+    {
+      "code": "L03.116",
+      "label": "Cellulitis of left lower limb"
+    },
+    {
+      "code": "L03.90",
+      "label": "Cellulitis, unspecified"
+    },
+    {
+      "code": "L20.9",
+      "label": "Atopic dermatitis, unspecified"
+    },
+    {
+      "code": "L23.9",
+      "label": "Allergic contact dermatitis, unspecified cause"
+    },
+    {
+      "code": "L50.9",
+      "label": "Urticaria, unspecified"
+    },
+    {
+      "code": "M10.9",
+      "label": "Gout, unspecified"
+    },
+    {
+      "code": "M16.9",
+      "label": "Osteoarthritis of hip, unspecified"
+    },
+    {
+      "code": "M17.9",
+      "label": "Osteoarthritis of knee, unspecified"
+    },
+    {
+      "code": "M19.041",
+      "label": "Primary osteoarthritis, right hand"
+    },
+    {
+      "code": "M19.042",
+      "label": "Primary osteoarthritis, left hand"
+    },
+    {
+      "code": "M25.511",
+      "label": "Pain in right shoulder"
+    },
+    {
+      "code": "M25.561",
+      "label": "Pain in right knee"
+    },
+    {
+      "code": "M25.571",
+      "label": "Pain in right ankle and joints of right foot"
+    },
+    {
+      "code": "M27.9",
+      "label": "Disease of jaws, unspecified"
+    },
+    {
+      "code": "M41.129",
+      "label": "Adolescent idiopathic scoliosis, site unspecified"
+    },
+    {
+      "code": "M54.2",
+      "label": "Cervicalgia"
+    },
+    {
+      "code": "M54.50",
+      "label": "Low back pain, unspecified"
+    },
+    {
+      "code": "M54.9",
+      "label": "Dorsalgia, unspecified"
+    },
+    {
+      "code": "M62.838",
+      "label": "Other muscle spasm"
+    },
+    {
+      "code": "M66.269",
+      "label": "Spontaneous rupture of extensor tendons, unspecified lower leg"
+    },
+    {
+      "code": "M75.101",
+      "label": "Unspecified rotator cuff tear or rupture of right shoulder, not specified as traumatic"
+    },
+    {
+      "code": "M79.7",
+      "label": "Fibromyalgia"
+    },
+    {
+      "code": "M80.00XA",
+      "label": "Age-related osteoporosis with current pathological fracture, unspecified site, initial encounter for fracture"
+    },
+    {
+      "code": "M81.0",
+      "label": "Age-related osteoporosis without current pathological fracture"
+    },
+    {
+      "code": "N10",
+      "label": "Acute pyelonephritis"
+    },
+    {
+      "code": "N12",
+      "label": "Tubulo-interstitial nephritis, not specified as acute or chronic"
+    },
+    {
+      "code": "N18.1",
+      "label": "Chronic kidney disease, stage 1"
+    },
+    {
+      "code": "N18.2",
+      "label": "Chronic kidney disease, stage 2 (mild)"
+    },
+    {
+      "code": "N18.30",
+      "label": "Chronic kidney disease, stage 3 unspecified"
+    },
+    {
+      "code": "N18.31",
+      "label": "Chronic kidney disease, stage 3a"
+    },
+    {
+      "code": "N18.32",
+      "label": "Chronic kidney disease, stage 3b"
+    },
+    {
+      "code": "N18.4",
+      "label": "Chronic kidney disease, stage 4 (severe)"
+    },
+    {
+      "code": "N18.5",
+      "label": "Chronic kidney disease, stage 5"
+    },
+    {
+      "code": "N18.6",
+      "label": "End stage renal disease"
+    },
+    {
+      "code": "N18.9",
+      "label": "Chronic kidney disease, unspecified"
+    },
+    {
+      "code": "N30.00",
+      "label": "Acute cystitis without hematuria"
+    },
+    {
+      "code": "N39.0",
+      "label": "Urinary tract infection, site not specified"
+    },
+    {
+      "code": "N40.0",
+      "label": "Benign prostatic hyperplasia without lower urinary tract symptoms"
+    },
+    {
+      "code": "O00.109",
+      "label": "Unspecified tubal pregnancy without intrauterine pregnancy"
+    },
+    {
+      "code": "O02.0",
+      "label": "Blighted ovum and nonhydatidiform mole"
+    },
+    {
+      "code": "O03.4",
+      "label": "Incomplete spontaneous abortion without complication"
+    },
+    {
+      "code": "O03.9",
+      "label": "Complete or unspecified spontaneous abortion without complication"
+    },
+    {
+      "code": "O09.291",
+      "label": "Supervision of pregnancy with other poor reproductive or obstetric history, first trimester"
+    },
+    {
+      "code": "O09.292",
+      "label": "Supervision of pregnancy with other poor reproductive or obstetric history, second trimester"
+    },
+    {
+      "code": "O09.299",
+      "label": "Supervision of pregnancy with other poor reproductive or obstetric history, unspecified trimester"
+    },
+    {
+      "code": "O15.00",
+      "label": "Eclampsia complicating pregnancy, unspecified trimester"
+    },
+    {
+      "code": "O35.10X0",
+      "label": "Maternal care for (suspected) chromosomal abnormality in fetus, unspecified, not applicable or unspecified"
+    },
+    {
+      "code": "R00.0",
+      "label": "Tachycardia, unspecified"
+    },
+    {
+      "code": "R06.02",
+      "label": "Shortness of breath"
+    },
+    {
+      "code": "R07.9",
+      "label": "Chest pain, unspecified"
+    },
+    {
+      "code": "R10.11",
+      "label": "Right upper quadrant pain"
+    },
+    {
+      "code": "R10.31",
+      "label": "Right lower quadrant pain"
+    },
+    {
+      "code": "R10.9",
+      "label": "Unspecified abdominal pain"
+    },
+    {
+      "code": "R11.2",
+      "label": "Nausea with vomiting, unspecified"
+    },
+    {
+      "code": "R19.7",
+      "label": "Diarrhea, unspecified"
+    },
+    {
+      "code": "R21",
+      "label": "Rash and other nonspecific skin eruption"
+    },
+    {
+      "code": "R22.9",
+      "label": "Localized swelling, mass and lump, unspecified"
+    },
+    {
+      "code": "R25.2",
+      "label": "Cramp and spasm"
+    },
+    {
+      "code": "R41.82",
+      "label": "Altered mental status, unspecified"
+    },
+    {
+      "code": "R42",
+      "label": "Dizziness and giddiness"
+    },
+    {
+      "code": "R50.9",
+      "label": "Fever, unspecified"
+    },
+    {
+      "code": "R51.9",
+      "label": "Headache, unspecified"
+    },
+    {
+      "code": "R52",
+      "label": "Pain, unspecified"
+    },
+    {
+      "code": "R55",
+      "label": "Syncope and collapse"
+    },
+    {
+      "code": "R56.9",
+      "label": "Unspecified convulsions"
+    },
+    {
+      "code": "R63.4",
+      "label": "Abnormal weight loss"
+    },
+    {
+      "code": "R65.21",
+      "label": "Severe sepsis with septic shock"
+    },
+    {
+      "code": "R73.03",
+      "label": "Prediabetes"
+    },
+    {
+      "code": "R73.9",
+      "label": "Hyperglycemia, unspecified"
+    },
+    {
+      "code": "R76.89",
+      "label": "Other specified abnormal immunological findings in serum"
+    },
+    {
+      "code": "R79.89",
+      "label": "Other specified abnormal findings of blood chemistry"
+    },
+    {
+      "code": "R80.9",
+      "label": "Proteinuria, unspecified"
+    },
+    {
+      "code": "R93.1",
+      "label": "Abnormal findings on diagnostic imaging of heart and coronary circulation"
+    },
+    {
+      "code": "S00.83XA",
+      "label": "Contusion of other part of head, initial encounter"
+    },
+    {
+      "code": "S01.81XA",
+      "label": "Laceration without foreign body of other part of head, initial encounter"
+    },
+    {
+      "code": "S06.0X0A",
+      "label": "Concussion without loss of consciousness, initial encounter"
+    },
+    {
+      "code": "S06.0X9A",
+      "label": "Concussion with loss of consciousness of unspecified duration, initial encounter"
+    },
+    {
+      "code": "S06.9XAA",
+      "label": "Unspecified intracranial injury with loss of consciousness status unknown, initial encounter"
+    },
+    {
+      "code": "S13.4XXA",
+      "label": "Sprain of ligaments of cervical spine, initial encounter"
+    },
+    {
+      "code": "S19.9XXA",
+      "label": "Unspecified injury of neck, initial encounter"
+    },
+    {
+      "code": "S22.39XA",
+      "label": "Fracture of one rib, unspecified side, initial encounter for closed fracture"
+    },
+    {
+      "code": "S29.9XXA",
+      "label": "Unspecified injury of thorax, initial encounter"
+    },
+    {
+      "code": "S42.009A",
+      "label": "Fracture of unspecified part of unspecified clavicle, initial encounter for closed fracture"
+    },
+    {
+      "code": "S46.009A",
+      "label": "Unspecified injury of muscle(s) and tendon(s) of the rotator cuff of unspecified shoulder, initial encounter"
+    },
+    {
+      "code": "S51.819A",
+      "label": "Laceration without foreign body of unspecified forearm, initial encounter"
+    },
+    {
+      "code": "S52.90XA",
+      "label": "Unspecified fracture of unspecified forearm, initial encounter for closed fracture"
+    },
+    {
+      "code": "S61.419A",
+      "label": "Laceration without foreign body of unspecified hand, initial encounter"
+    },
+    {
+      "code": "S62.109A",
+      "label": "Fracture of unspecified carpal bone, unspecified wrist, initial encounter for closed fracture"
+    },
+    {
+      "code": "S63.006A",
+      "label": "Unspecified dislocation of unspecified wrist and hand, initial encounter"
+    },
+    {
+      "code": "S63.509A",
+      "label": "Unspecified sprain of unspecified wrist, initial encounter"
+    },
+    {
+      "code": "S71.119A",
+      "label": "Laceration without foreign body, unspecified thigh, initial encounter"
+    },
+    {
+      "code": "S72.009A",
+      "label": "Fracture of unspecified part of neck of unspecified femur, initial encounter for closed fracture"
+    },
+    {
+      "code": "S81.819A",
+      "label": "Laceration without foreign body, unspecified lower leg, initial encounter"
+    },
+    {
+      "code": "S82.899A",
+      "label": "Other fracture of unspecified lower leg, initial encounter for closed fracture"
+    },
+    {
+      "code": "S83.249A",
+      "label": "Other tear of medial meniscus, current injury, unspecified knee, initial encounter"
+    },
+    {
+      "code": "S86.819A",
+      "label": "Strain of other muscle(s) and tendon(s) at lower leg level, unspecified leg, initial encounter"
+    },
+    {
+      "code": "S89.90XA",
+      "label": "Unspecified injury of unspecified lower leg, initial encounter"
+    },
+    {
+      "code": "S91.319A",
+      "label": "Laceration without foreign body, unspecified foot, initial encounter"
+    },
+    {
+      "code": "S93.409A",
+      "label": "Sprain of unspecified ligament of unspecified ankle, initial encounter"
+    },
+    {
+      "code": "T14.8XXA",
+      "label": "Other injury of unspecified body region, initial encounter"
+    },
+    {
+      "code": "T14.8XXS",
+      "label": "Other injury of unspecified body region, sequela"
+    },
+    {
+      "code": "T14.90XA",
+      "label": "Injury, unspecified, initial encounter"
+    },
+    {
+      "code": "T21.10XA",
+      "label": "Burn of first degree of trunk, unspecified site, initial encounter"
+    },
+    {
+      "code": "T21.20XA",
+      "label": "Burn of second degree of trunk, unspecified site, initial encounter"
+    },
+    {
+      "code": "T30.0",
+      "label": "Burn of unspecified body region, unspecified degree"
+    },
+    {
+      "code": "T40.2X1A",
+      "label": "Poisoning by other opioids, accidental (unintentional), initial encounter"
+    },
+    {
+      "code": "T78.40XA",
+      "label": "Allergy, unspecified, initial encounter"
+    },
+    {
+      "code": "Z00.00",
+      "label": "Encounter for general adult medical examination without abnormal findings"
+    },
+    {
+      "code": "Z00.01",
+      "label": "Encounter for general adult medical examination with abnormal findings"
+    },
+    {
+      "code": "Z00.121",
+      "label": "Encounter for routine child health examination with abnormal findings"
+    },
+    {
+      "code": "Z00.129",
+      "label": "Encounter for routine child health examination without abnormal findings"
+    },
+    {
+      "code": "Z01.818",
+      "label": "Encounter for other preprocedural examination"
+    },
+    {
+      "code": "Z02.89",
+      "label": "Encounter for other administrative examinations"
+    },
+    {
+      "code": "Z23",
+      "label": "Encounter for immunization"
+    },
+    {
+      "code": "Z30.2",
+      "label": "Encounter for sterilization"
+    },
+    {
+      "code": "Z33.1",
+      "label": "Pregnant state, incidental"
+    },
+    {
+      "code": "Z34.90",
+      "label": "Encounter for supervision of normal pregnancy, unspecified, unspecified trimester"
+    },
+    {
+      "code": "Z48.815",
+      "label": "Encounter for surgical aftercare following surgery on the digestive system"
+    },
+    {
+      "code": "Z48.89",
+      "label": "Encounter for other specified surgical aftercare"
+    },
+    {
+      "code": "Z51.81",
+      "label": "Encounter for therapeutic drug level monitoring"
+    },
+    {
+      "code": "Z52.3",
+      "label": "Bone marrow donor"
+    },
+    {
+      "code": "Z55.0",
+      "label": "Illiteracy and low-level literacy"
+    },
+    {
+      "code": "Z55.9",
+      "label": "Problems related to education and literacy, unspecified"
+    },
+    {
+      "code": "Z56.0",
+      "label": "Unemployment, unspecified"
+    },
+    {
+      "code": "Z56.9",
+      "label": "Unspecified problems related to employment"
+    },
+    {
+      "code": "Z59.819",
+      "label": "Housing instability, housed unspecified"
+    },
+    {
+      "code": "Z59.82",
+      "label": "Transportation insecurity"
+    },
+    {
+      "code": "Z59.9",
+      "label": "Problem related to housing and economic circumstances, unspecified"
+    },
+    {
+      "code": "Z60.2",
+      "label": "Problems related to living alone"
+    },
+    {
+      "code": "Z60.3",
+      "label": "Acculturation difficulty"
+    },
+    {
+      "code": "Z60.4",
+      "label": "Social exclusion and rejection"
+    },
+    {
+      "code": "Z65.3",
+      "label": "Problems related to other legal circumstances"
+    },
+    {
+      "code": "Z65.4",
+      "label": "Victim of crime and terrorism"
+    },
+    {
+      "code": "Z65.8",
+      "label": "Other specified problems related to psychosocial circumstances"
+    },
+    {
+      "code": "Z68.30",
+      "label": "Body mass index [BMI] 30.0-30.9, adult"
+    },
+    {
+      "code": "Z68.41",
+      "label": "Body mass index [BMI] 40.0-44.9, adult"
+    },
+    {
+      "code": "Z72.0",
+      "label": "Tobacco use"
+    },
+    {
+      "code": "Z72.89",
+      "label": "Other problems related to lifestyle"
+    },
+    {
+      "code": "Z76.0",
+      "label": "Encounter for issue of repeat prescription"
+    },
+    {
+      "code": "Z76.82",
+      "label": "Awaiting organ transplant status"
+    },
+    {
+      "code": "Z79.01",
+      "label": "Long term (current) use of anticoagulants"
+    },
+    {
+      "code": "Z79.4",
+      "label": "Long term (current) use of insulin"
+    },
+    {
+      "code": "Z79.84",
+      "label": "Long term (current) use of oral hypoglycemic drugs"
+    },
+    {
+      "code": "Z79.891",
+      "label": "Long term (current) use of opiate analgesic"
+    },
+    {
+      "code": "Z85.038",
+      "label": "Personal history of other malignant neoplasm of large intestine"
+    },
+    {
+      "code": "Z86.69",
+      "label": "Personal history of other diseases of the nervous system and sense organs"
+    },
+    {
+      "code": "Z87.59",
+      "label": "Personal history of other complications of pregnancy, childbirth and the puerperium"
+    },
+    {
+      "code": "Z88.0",
+      "label": "Allergy status to penicillin"
+    },
+    {
+      "code": "Z88.2",
+      "label": "Allergy status to sulfonamides"
+    },
+    {
+      "code": "Z90.49",
+      "label": "Acquired absence of other specified parts of digestive tract"
+    },
+    {
+      "code": "Z91.89",
+      "label": "Other specified personal risk factors, not elsewhere classified"
+    },
+    {
+      "code": "Z94.0",
+      "label": "Kidney transplant status"
+    },
+    {
+      "code": "Z94.81",
+      "label": "Bone marrow transplant status"
+    },
+    {
+      "code": "Z95.1",
+      "label": "Presence of aortocoronary bypass graft"
+    },
+    {
+      "code": "Z95.2",
+      "label": "Presence of prosthetic heart valve"
+    },
+    {
+      "code": "Z98.51",
+      "label": "Tubal ligation status"
+    }
+  ]
+}

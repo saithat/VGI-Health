@@ -489,7 +489,7 @@ def expiry010 : ExpiryReq :=
 Allow a documented treatment refusal and route it for appropriate clinical handling instead of requiring an affirmative acceptance to complete every care path.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementTreatmentDecision : ElementSpec :=
-  { id := "treatmentDecision", label := "Treatment accepted or refused", kind := .coded "treatment-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.provision.type", validation? := some (.nonempty), defaultValue? := none }
+  { id := "treatmentDecision", label := "Treatment decision", kind := .coded "treatment-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.provision.type", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §482.13(b)(2). Catalog: cms-482.13-b2-treatment-refusal.
 Allow a documented treatment refusal and route it for appropriate clinical handling instead of requiring an affirmative acceptance to complete every care path.
@@ -507,7 +507,7 @@ def predicateEntry002 : EntryReq :=
 Make applicable advance directives available to treating staff and preserve a care path consistent with them.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementAdvanceDirectivePlan : ElementSpec :=
-  { id := "advanceDirectivePlan", label := "Plan consistent with applicable advance directive", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "advanceDirectivePlan", label := "Advance care plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §482.13(b)(3). Catalog: cms-482.13-b3-advance-directives.
 Make applicable advance directives available to treating staff and preserve a care path consistent with them.
@@ -519,7 +519,7 @@ def predicateEntry003 : EntryReq :=
 Do not authorize seclusion for a nonviolent, non-self-destructive patient.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementSeclusionIndication : ElementSpec :=
-  { id := "seclusionIndication", label := "Seclusion requires violent or self-destructive behavior", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "seclusionIndication", label := "Violent or self-destructive behavior", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: 42 CFR §482.13(e)(1)(ii). Catalog: cms-482.13-e1ii-seclusion-violent-only.
 Do not authorize seclusion for a nonviolent, non-self-destructive patient.
@@ -537,7 +537,7 @@ def predicateEntry004Eligibility : EntryReq :=
 Record the individualized choice of the least restrictive intervention effective for physical safety.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementLeastRestrictiveRationale : ElementSpec :=
-  { id := "leastRestrictiveRationale", label := "Individualized least restrictive effective intervention", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "leastRestrictiveRationale", label := "Least restrictive plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §482.13(e)(3). Catalog: cms-482.13-e3-least-restrictive.
 Record the individualized choice of the least restrictive intervention effective for physical safety.
@@ -549,7 +549,7 @@ def predicateEntry005 : EntryReq :=
 When emergency examination/treatment is refused after being offered with risks and benefits explained, document what was refused.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementRefusedEmergencyCare : ElementSpec :=
-  { id := "refusedEmergencyCare", label := "What was refused; offered care, risks and benefits explained", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "refusedEmergencyCare", label := "Refused care and counseling", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §489.24(d)(3). Catalog: cms-489.24-d3-treatment-refusal-record.
 When emergency examination/treatment is refused after being offered with risks and benefits explained, document what was refused.
@@ -561,7 +561,7 @@ def predicateEntry006 : EntryReq :=
 For an unstabilized transfer using the physician-certification branch, require a signed certification that expected medical benefits outweigh transfer risks, including a summary of the risks and benefits.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementUnstableTransferCertification : ElementSpec :=
-  { id := "unstableTransferCertification", label := "Signed benefit-over-risk certification and risks/benefits summary", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "unstableTransferCertification", label := "Transfer certification", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §489.24(e)(1)(ii)(B). Catalog: cms-489.24-e1iiB-transfer-certification.
 For an unstabilized transfer using the physician-certification branch, require a signed certification that expected medical benefits outweigh transfer risks, including a summary of the risks and benefits.
@@ -573,7 +573,7 @@ def predicateEntry007 : EntryReq :=
 For an EMTALA appropriate transfer, record receiving-facility agreement to accept the patient and provide appropriate treatment.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementReceivingFacilityAcceptance : ElementSpec :=
-  { id := "receivingFacilityAcceptance", label := "Receiving facility acceptance and treatment agreement", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "receivingFacilityAcceptance", label := "Receiving facility acceptance", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §489.24(e)(2)(ii)(B). Catalog: cms-489.24-e2iiB-receiving-acceptance.
 For an EMTALA appropriate transfer, record receiving-facility agreement to accept the patient and provide appropriate treatment.
@@ -585,7 +585,7 @@ def predicateEntry008 : EntryReq :=
 Block bedside-storage authorization for Schedule II, III and IV drugs.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementBedsideStoragePermitted : ElementSpec :=
-  { id := "bedsideStoragePermitted", label := "No Schedule II, III or IV bedside storage", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "bedsideStoragePermitted", label := "Bedside storage eligibility", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: 22 CCR §70263(l). Catalog: ca-title22-70263-bedside-controlled-ban.
 Block bedside-storage authorization for Schedule II, III and IV drugs.
@@ -603,7 +603,7 @@ def predicateEntry009Eligibility : EntryReq :=
 For a patient older than 13 placed in an approved pediatric-bed space, require pediatrician approval in unusual circumstances and record the reason.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementPediatricBedApproval : ElementSpec :=
-  { id := "pediatricBedApproval", label := "Pediatrician approval and unusual-circumstances reason", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "pediatricBedApproval", label := "Pediatrician approval", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 22 CCR §70537(d). Catalog: ca-title22-70537-pediatric-over13.
 For a patient older than 13 placed in an approved pediatric-bed space, require pediatrician approval in unusual circumstances and record the reason.
@@ -615,7 +615,7 @@ def predicateEntry010 : EntryReq :=
 Before giving oxygen to a newborn, require a written physician order.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementNewbornWrittenOxygenOrder : ElementSpec :=
-  { id := "newbornWrittenOxygenOrder", label := "Written physician oxygen order", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "ServiceRequest.intent", defaultValue? := none }
+  { id := "newbornWrittenOxygenOrder", label := "Written oxygen order", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "ServiceRequest.intent", defaultValue? := none }
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-order.
 Before giving oxygen to a newborn, require a written physician order.
@@ -681,7 +681,7 @@ def predicateEntry015Eligibility : EntryReq :=
 Provide an interpreter if the individual does not understand either the consent-form language or the language used by the person obtaining sterilization consent.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementSterilizationInterpreter : ElementSpec :=
-  { id := "sterilizationInterpreter", label := "Interpreter for form or spoken language not understood", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "sterilizationInterpreter", label := "Interpreter", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 22 CCR §70707.3(a)(3). Catalog: ca-title22-70707-3-sterilization-interpreter.
 Provide an interpreter if the individual does not understand either the consent-form language or the language used by the person obtaining sterilization consent.
@@ -693,7 +693,7 @@ def predicateEntry016 : EntryReq :=
 Recognize the procedure-related CURES exemption only for treatment meeting §11165.4(c)(4), at a listed facility, and a nonrefillable supply of at most seven days.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementProcedureCuresEligibility : ElementSpec :=
-  { id := "procedureCuresEligibility", label := "Procedure treatment at listed facility; nonrefillable supply at most 7 days", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "procedureCuresEligibility", label := "Procedure exemption eligibility", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: California Health & Safety Code §11165.4(c)(4). Catalog: ca-statutes-hsc-11165-4-procedure-seven-day.
 Recognize the procedure-related CURES exemption only for treatment meeting §11165.4(c)(4), at a listed facility, and a nonrefillable supply of at most seven days.
@@ -711,7 +711,7 @@ def predicateEntry017Eligibility : EntryReq :=
 Recognize the specific CURES exemption for buprenorphine-containing controlled substances prescribed, ordered, administered or furnished in a general acute care hospital ED.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementEdBuprenorphineEligibility : ElementSpec :=
-  { id := "edBuprenorphineEligibility", label := "Buprenorphine at general acute hospital ED", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "edBuprenorphineEligibility", label := "ED buprenorphine eligibility", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: California Health & Safety Code §11165.4(c)(3). Catalog: ca-statutes-hsc-11165-4-ed-buprenorphine.
 Recognize the specific CURES exemption for buprenorphine-containing controlled substances prescribed, ordered, administered or furnished in a general acute care hospital ED.
@@ -735,7 +735,7 @@ def predicateEntry019 : EntryReq :=
 When §741 applies, provide overdose-prevention/reversal-agent education to at least one patient-designated person, or a minor’s parent/guardian, consistent with the standard of care and subsection (b)’s exceptions.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementCaregiverOverdoseEducation : ElementSpec :=
-  { id := "caregiverOverdoseEducation", label := "Patient-designated person or minor guardian education / lawful outcome", kind := .coded "education-outcome", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "caregiverOverdoseEducation", label := "Caregiver education", kind := .coded "education-outcome", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Business & Professions Code §741(a)(3), (b)–(c). Catalog: ca-statutes-bpc-741-caregiver-education.
 When §741 applies, provide overdose-prevention/reversal-agent education to at least one patient-designated person, or a minor’s parent/guardian, consistent with the standard of care and subsection (b)’s exceptions.
@@ -747,7 +747,7 @@ def predicateEntry020 : EntryReq :=
 Before ordering HIV testing under the medical-care-provider pathway, advise the patient of the right to decline; subsection (a) does not apply to an independently requested test.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHivRightToDeclineExplained : ElementSpec :=
-  { id := "hivRightToDeclineExplained", label := "Right to decline explained before provider-initiated HIV test", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "hivRightToDeclineExplained", label := "Right to decline explained", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: California Health & Safety Code §120990(a)–(b). Catalog: ca-statutes-hsc-120990-hiv-right-decline.
 Before ordering HIV testing under the medical-care-provider pathway, advise the patient of the right to decline; subsection (a) does not apply to an independently requested test.
@@ -759,7 +759,7 @@ def predicateEntry021 : EntryReq :=
 If a patient declines a planned HIV test, record the decline in the medical file.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHivTestDecision : ElementSpec :=
-  { id := "hivTestDecision", label := "HIV test accepted or declined; record decline", kind := .coded "hiv-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.provision.type", validation? := some (.nonempty), defaultValue? := none }
+  { id := "hivTestDecision", label := "HIV test decision", kind := .coded "hiv-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.provision.type", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §120990(a). Catalog: ca-statutes-hsc-120990-hiv-declination.
 If a patient declines a planned HIV test, record the decline in the medical file.
@@ -771,7 +771,7 @@ def predicateEntry022 : EntryReq :=
 After a positive HIV test, identify recommended follow-up testing/care and give contact information for medical and psychological services.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHivPositiveFollowup : ElementSpec :=
-  { id := "hivPositiveFollowup", label := "Recommended tests/care and medical/psychological contacts", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "hivPositiveFollowup", label := "Positive result follow-up", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §120990(h). Catalog: ca-statutes-hsc-120990-positive-hiv-followup.
 After a positive HIV test, identify recommended follow-up testing/care and give contact information for medical and psychological services.
@@ -783,7 +783,7 @@ def predicateEntry023 : EntryReq :=
 For a negative HIV result when the provider determines high risk, advise the patient about periodic retesting.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHivNegativeRetest : ElementSpec :=
-  { id := "hivNegativeRetest", label := "Periodic retesting advice", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "hivNegativeRetest", label := "Retesting advice", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §120990(h). Catalog: ca-statutes-hsc-120990-negative-hiv-retest.
 For a negative HIV result when the provider determines high risk, advise the patient about periodic retesting.
@@ -795,7 +795,7 @@ def predicateEntry024 : EntryReq :=
 For a high-risk patient testing HIV-negative, provide HIV prevention/risk-reduction information including PrEP and PEP consistent with CDC guidance.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHivPreventionAdvice : ElementSpec :=
-  { id := "hivPreventionAdvice", label := "Prevention/risk reduction including PrEP and PEP", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "hivPreventionAdvice", label := "Prevention advice", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §120990(h). Catalog: ca-statutes-hsc-120990-negative-hiv-prevention.
 For a high-risk patient testing HIV-negative, provide HIV prevention/risk-reduction information including PrEP and PEP consistent with CDC guidance.
@@ -807,7 +807,7 @@ def predicateEntry025 : EntryReq :=
 Allow medical, vision or dental consent under §6922 when the minor is at least 15, lives separately from parents/guardian, and manages their own financial affairs.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementMinorConsentDecision : ElementSpec :=
-  { id := "minorConsentDecision", label := "Minor self-consent authority verified for this service", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.verification", defaultValue? := none }
+  { id := "minorConsentDecision", label := "Consent authority verified", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Consent.verification", defaultValue? := none }
 
 /-- Law: California Family Code §6922(a). Catalog: ca-statutes-fam-6922-independent-minor.
 Allow medical, vision or dental consent under §6922 when the minor is at least 15, lives separately from parents/guardian, and manages their own financial affairs.
@@ -885,7 +885,7 @@ def predicateEntry031Eligibility : EntryReq :=
 Before discharge, document the treating physician’s clinical-stability determination, including assessment of orientation to person/place/time.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessClinicalStability : ElementSpec :=
-  { id := "homelessClinicalStability", label := "Treating physician stability and orientation to person/place/time", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessClinicalStability", label := "Clinical stability", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(1). Catalog: ca-statutes-hsc-1262-5-homeless-stability.
 Before discharge, document the treating physician’s clinical-stability determination, including assessment of orientation to person/place/time.
@@ -897,7 +897,7 @@ def predicateEntry032 : EntryReq :=
 Document a meal offer before discharge, or that withholding the offer was medically indicated.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessMealOffer : ElementSpec :=
-  { id := "homelessMealOffer", label := "Meal offered or medically indicated withholding", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessMealOffer", label := "Meal", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(2). Catalog: ca-statutes-hsc-1262-5-homeless-meal.
 Document a meal offer before discharge, or that withholding the offer was medically indicated.
@@ -909,7 +909,7 @@ def predicateEntry033 : EntryReq :=
 When clothing is inadequate, document an offer of weather-appropriate clothing before discharge.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessClothingOffer : ElementSpec :=
-  { id := "homelessClothingOffer", label := "Weather-appropriate clothing offered", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessClothingOffer", label := "Clothing", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(3). Catalog: ca-statutes-hsc-1262-5-homeless-clothing.
 When clothing is inadequate, document an offer of weather-appropriate clothing before discharge.
@@ -921,7 +921,7 @@ def predicateEntry034 : EntryReq :=
 Document referral to a follow-up source when medically necessary before discharge.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessFollowupReferral : ElementSpec :=
-  { id := "homelessFollowupReferral", label := "Medically necessary follow-up referral", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessFollowupReferral", label := "Follow-up referral", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(4). Catalog: ca-statutes-hsc-1262-5-homeless-followup.
 Document referral to a follow-up source when medically necessary before discharge.
@@ -933,7 +933,7 @@ def predicateEntry035 : EntryReq :=
 When needed, document provision of the prescription before homeless discharge.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessPrescription : ElementSpec :=
-  { id := "homelessPrescription", label := "Needed prescription provided", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessPrescription", label := "Prescriptions", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(5). Catalog: ca-statutes-hsc-1262-5-homeless-prescription.
 When needed, document provision of the prescription before homeless discharge.
@@ -945,7 +945,7 @@ def predicateEntry036 : EntryReq :=
 If the hospital has an onsite pharmacy licensed and staffed to dispense outpatient medication, document an appropriate supply of all necessary medication if available.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessMedicationSupply : ElementSpec :=
-  { id := "homelessMedicationSupply", label := "Available necessary supply from licensed staffed onsite pharmacy", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessMedicationSupply", label := "Medication supply", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(5). Catalog: ca-statutes-hsc-1262-5-homeless-medication-supply.
 If the hospital has an onsite pharmacy licensed and staffed to dispense outpatient medication, document an appropriate supply of all necessary medication if available.
@@ -957,7 +957,7 @@ def predicateEntry037 : EntryReq :=
 Document offering or referring for screening for infections common to the region as determined by the local health department.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessInfectionScreen : ElementSpec :=
-  { id := "homelessInfectionScreen", label := "Regional infection screening offered or referred", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessInfectionScreen", label := "Infection screening", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(6). Catalog: ca-statutes-hsc-1262-5-homeless-infection-screen.
 Document offering or referring for screening for infections common to the region as determined by the local health department.
@@ -969,7 +969,7 @@ def predicateEntry038 : EntryReq :=
 Document an offer of vaccinations appropriate to the presenting condition before discharge.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessVaccinationOffer : ElementSpec :=
-  { id := "homelessVaccinationOffer", label := "Appropriate vaccinations offered", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessVaccinationOffer", label := "Vaccinations", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(7). Catalog: ca-statutes-hsc-1262-5-homeless-vaccination.
 Document an offer of vaccinations appropriate to the presenting condition before discharge.
@@ -981,7 +981,7 @@ def predicateEntry039 : EntryReq :=
 When the treating physician’s screening/evaluation indicates behavioral-health follow-up is needed, document treatment or referral to an appropriate provider before discharge.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessBehavioralFollowup : ElementSpec :=
-  { id := "homelessBehavioralFollowup", label := "Indicated behavioral treatment or referral", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessBehavioralFollowup", label := "Behavioral health follow-up", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(8). Catalog: ca-statutes-hsc-1262-5-homeless-behavioral-followup.
 When the treating physician’s screening/evaluation indicates behavioral-health follow-up is needed, document treatment or referral to an appropriate provider before discharge.
@@ -993,7 +993,7 @@ def predicateEntry040 : EntryReq :=
 Document coverage-eligibility screening and assistance to enroll in any affordable insurance for which the homeless patient is eligible.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessInsuranceAssistance : ElementSpec :=
-  { id := "homelessInsuranceAssistance", label := "Eligibility screening and enrollment assistance", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessInsuranceAssistance", label := "Coverage assistance", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(9). Catalog: ca-statutes-hsc-1262-5-homeless-insurance.
 Document coverage-eligibility screening and assistance to enroll in any affordable insurance for which the homeless patient is eligible.
@@ -1005,7 +1005,7 @@ def predicateEntry041 : EntryReq :=
 Document offering transportation to the identified destination when it is within 30 minutes’ travel or 30 miles of the hospital.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessTransportOffer : ElementSpec :=
-  { id := "homelessTransportOffer", label := "Transportation offered to identified destination", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessTransportOffer", label := "Transportation", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(o)(10). Catalog: ca-statutes-hsc-1262-5-homeless-transport.
 Document offering transportation to the identified destination when it is within 30 minutes’ travel or 30 miles of the hospital.
@@ -1017,7 +1017,7 @@ def predicateEntry042 : EntryReq :=
 Maintain the homeless-discharge log and discharge destination information required by §1262.5(q); preserve protocol-completion evidence in the log or medical record.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHomelessDischargeLog : ElementSpec :=
-  { id := "homelessDischargeLog", label := "Discharge destination and protocol-completion log", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "homelessDischargeLog", label := "Destination and completion log", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §1262.5(q). Catalog: ca-statutes-hsc-1262-5-homeless-log.
 Maintain the homeless-discharge log and discharge destination information required by §1262.5(q); preserve protocol-completion evidence in the log or medical record.
@@ -1029,7 +1029,7 @@ def predicateEntry043 : EntryReq :=
 If the admission advisement was not completed, keep the specific good-cause statement with the medical record.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHoldAdvisementGoodCause : ElementSpec :=
-  { id := "holdAdvisementGoodCause", label := "Specific good cause for incomplete advisement", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "holdAdvisementGoodCause", label := "Reason advisement incomplete", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Welfare & Institutions Code §5150(j)(5). Catalog: ca-statutes-wic-5150-advisement-good-cause.
 If the admission advisement was not completed, keep the specific good-cause statement with the medical record.
@@ -1041,7 +1041,7 @@ def predicateEntry044 : EntryReq :=
 Recognize the parent/guardian’s religious-belief/practice objection as the §125000(d) exception; do not falsely record the genetic test as completed.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementNewbornScreenDecision : ElementSpec :=
-  { id := "newbornScreenDecision", label := "Screen performed or parent/guardian religious objection", kind := .coded "newborn-screen-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.dataAbsentReason", validation? := some (.nonempty), defaultValue? := none }
+  { id := "newbornScreenDecision", label := "Newborn screening decision", kind := .coded "newborn-screen-decision", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.dataAbsentReason", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §125000(d). Catalog: ca-statutes-hsc-125000-newborn-religious-objection.
 Recognize the parent/guardian’s religious-belief/practice objection as the §125000(d) exception; do not falsely record the genetic test as completed.
@@ -1053,7 +1053,7 @@ def predicateEntry045 : EntryReq :=
 Use §4068(b)’s unused-portion ED discharge pathway only for a noncontrolled dangerous drug acquired by the hospital pharmacy.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementUnusedEdPortionEligibility : ElementSpec :=
-  { id := "unusedEdPortionEligibility", label := "Unused ED portion eligibility", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "unusedEdPortionEligibility", label := "Unused supply eligibility", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: California Business & Professions Code §4068(b)(1). Catalog: ca-statutes-bpc-4068-unused-ed-noncontrolled.
 Use §4068(b)’s unused-portion ED discharge pathway only for a noncontrolled dangerous drug acquired by the hospital pharmacy.
@@ -1107,7 +1107,7 @@ def predicateEntry049Eligibility : EntryReq :=
 For a practitioner exempt under §1301.22(c), include the hospital’s DEA number and the practitioner’s assigned internal code in place of an individual DEA number.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementInstitutionDeaInternalCode : ElementSpec :=
-  { id := "institutionDeaInternalCode", label := "Hospital DEA registration and assigned practitioner internal code", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "institutionDeaInternalCode", label := "Institutional DEA / internal code", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 21 CFR §1306.05(g). Catalog: federal-rx-1306-05-institution-code.
 For a practitioner exempt under §1301.22(c), include the hospital’s DEA number and the practitioner’s assigned internal code in place of an individual DEA number.
@@ -1119,7 +1119,7 @@ def predicateEntry050 : EntryReq :=
 Allow a multiple-Schedule-II prescription series only where applicable state law permits it.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementSeriesStatePermission : ElementSpec :=
-  { id := "seriesStatePermission", label := "Applicable state permits multiple Schedule II prescription series", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "seriesStatePermission", label := "State series permission", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Law: 21 CFR §1306.12(b)(1)(iv). Catalog: federal-rx-1306-12-state-permission.
 Allow a multiple-Schedule-II prescription series only where applicable state law permits it.
@@ -1137,7 +1137,7 @@ def predicateEntry051Eligibility : EntryReq :=
 Screen eligible patients using a validated suicide tool.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementValidatedSuicideScreen : ElementSpec :=
-  { id := "validatedSuicideScreen", label := "Validated screening tool and result", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "validatedSuicideScreen", label := "Screening tool and result", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 2, p. 24). Catalog: entrenched-npg-suicide-screen.
 Screen eligible patients using a validated suicide tool.
@@ -1149,7 +1149,7 @@ def predicateEntry052 : EntryReq :=
 Directly assess suicidal intent after positive screening.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementSuicidalIntentAssessment : ElementSpec :=
-  { id := "suicidalIntentAssessment", label := "Direct suicidal intent assessment", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "suicidalIntentAssessment", label := "Suicidal intent", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.08.01.01 EP 3, p. 24). Catalog: entrenched-npg-suicide-intent.
 Directly assess suicidal intent after positive screening.
@@ -1173,7 +1173,7 @@ def clinicalAlert54 : AlertSpec :=
 Provide suitable alternative pain-assessment tools when self-report is unsuitable.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementAlternativePainAssessment : ElementSpec :=
-  { id := "alternativePainAssessment", label := "Validated alternative assessment when self-report unsuitable", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "alternativePainAssessment", label := "Alternative pain assessment", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission public hospital pain FAQ 000001329; Screening vs. assessing pain, 2026). Catalog: entrenched-tjc-pain-alternative-tools.
 Provide suitable alternative pain-assessment tools when self-report is unsuitable.
@@ -1185,7 +1185,7 @@ def predicateEntry056 : EntryReq :=
 Document monitoring for patients at high risk from opioid treatment.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementHighRiskOpioidMonitoring : ElementSpec :=
-  { id := "highRiskOpioidMonitoring", label := "Appropriate high-risk opioid monitoring and findings", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "highRiskOpioidMonitoring", label := "Opioid monitoring", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission public hospital pain FAQ 000001329; Monitoring of post-operative patients on opiates; NPG.06.02.01 EP 6, 2026). Catalog: entrenched-tjc-opioid-high-risk-monitoring.
 Document monitoring for patients at high risk from opioid treatment.
@@ -1197,7 +1197,7 @@ def predicateEntry057 : EntryReq :=
 Require appropriate oncologic indication verification for daily oral methotrexate.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementDailyMethotrexateOncologyVerification : ElementSpec :=
-  { id := "dailyMethotrexateOncologyVerification", label := "Appropriate oncology indication verified for daily oral methotrexate", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
+  { id := "dailyMethotrexateOncologyVerification", label := "Daily oncology dose verified", kind := .flag, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", defaultValue? := none }
 
 /-- Entrenched: Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure. (ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 2(a)–(b), p. 4). Catalog: entrenched-ismp-mtx-daily-indication.
 Require appropriate oncologic indication verification for daily oral methotrexate.
@@ -1209,7 +1209,7 @@ def predicateEntry058 : EntryReq :=
 For violent or self-destructive restraint/seclusion, enforce the 4-hour order/renewal limit for patients aged 18 or older; apply more restrictive state limits.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementRestraintReleasePlan : ElementSpec :=
-  { id := "restraintReleasePlan", label := "Release restraint; document safety and observation plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "restraintReleasePlan", label := "Release and observation plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 42 CFR §482.13(e)(8)(i)(A). Catalog: cms-482.13-e8iA-adult-four-hours.
 For violent or self-destructive restraint/seclusion, enforce the 4-hour order/renewal limit for patients aged 18 or older; apply more restrictive state limits.
@@ -1221,7 +1221,7 @@ def predicateEntry059 : EntryReq :=
 Record and use the first detention time to calculate the §5150 period; transfer or arrival at the receiving facility does not restart the clock.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementDetentionReleasePlan : ElementSpec :=
-  { id := "detentionReleasePlan", label := "Release or route to separate lawful authority; record disposition", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "detentionReleasePlan", label := "Release disposition", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: California Welfare & Institutions Code §5150(a), (i)(1). Catalog: ca-statutes-wic-5150-hold-start.
 Record and use the first detention time to calculate the §5150 period; transfer or arrival at the receiving facility does not restart the clock.
@@ -1233,7 +1233,7 @@ def predicateEntry060 : EntryReq :=
 Track newborn oxygen orders for review, modification or discontinuation after 24 hours.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementOxygenStopPlan : ElementSpec :=
-  { id := "oxygenStopPlan", label := "Stop expired oxygen order; document assessment and escalation", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "oxygenStopPlan", label := "Stop and escalation plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-24h.
 Track newborn oxygen orders for review, modification or discontinuation after 24 hours.
@@ -1245,7 +1245,7 @@ def predicateEntry061 : EntryReq :=
 Do not approve filling or refilling an original Schedule III or IV prescription more than six months after its issue date.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementExpiredPrescriptionPlan : ElementSpec :=
-  { id := "expiredPrescriptionPlan", label := "Do not dispense expired prescription; request a new prescription", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
+  { id := "expiredPrescriptionPlan", label := "New prescription plan", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Observation.valueString", validation? := some (.nonempty), defaultValue? := none }
 
 /-- Law: 21 CFR §1306.22(a). Catalog: federal-rx-1306-22-six-months.
 Do not approve filling or refilling an original Schedule III or IV prescription more than six months after its issue date.
@@ -1257,7 +1257,7 @@ def predicateEntry062 : EntryReq :=
 For the direct-dispensing exception in §11158(b)(1), cap the Schedule II supply at 72 hours according to the practitioner’s directions.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementDirectSupplyDays : ElementSpec :=
-  { id := "directSupplyDays", label := "Calculated days supplied (maximum three days)", kind := .quantity .none, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationDispense.daysSupply", validation? := some (.and (.supplyDaysCeil "dispenseQuantity" "dispenseDose" "dispenseFrequency") (.quantityRange .none 0 30)), defaultValue? := none }
+  { id := "directSupplyDays", label := "Days supplied", kind := .quantity .none, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationDispense.daysSupply", validation? := some (.and (.supplyDaysCeil "dispenseQuantity" "dispenseDose" "dispenseFrequency") (.quantityRange .none 0 30)), defaultValue? := none }
 
 /-- Law: California Health & Safety Code §11158(b)(1). Catalog: ca-statutes-hsc-11158-direct-72-hour.
 For the direct-dispensing exception in §11158(b)(1), cap the Schedule II supply at 72 hours according to the practitioner’s directions.
@@ -1287,7 +1287,7 @@ def validationEntry002 : EntryReq :=
 Enable recording of preferred language using §170.207(g)(2), including a patient’s decision not to specify a language.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementPreferredLanguage : ElementSpec :=
-  { id := "preferredLanguage", label := "Preferred language or declined", kind := .coded "language-or-declined", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Patient.communication.language", validation? := some (.codeMember "urn:ietf:bcp:47-or-declined" "2026-10"), defaultValue? := none }
+  { id := "preferredLanguage", label := "Preferred language", kind := .coded "language-or-declined", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "Patient.communication.language", validation? := some (.codeMember "urn:ietf:bcp:47-or-declined" "2026-10"), defaultValue? := none }
 
 /-- Law: 45 CFR §170.315(a)(5)(i)(B). Catalog: federal-rx-170-315-preferred-language.
 Enable recording of preferred language using §170.207(g)(2), including a patient’s decision not to specify a language.
@@ -1341,7 +1341,7 @@ def validationEntry005 : EntryReq :=
 Insert a leading zero before the decimal point for medication amounts less than one.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementPrescribedAmountText : ElementSpec :=
-  { id := "prescribedAmountText", label := "Prescription amount (exact decimal text)", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.text", validation? := some (.decimal 3 false false), defaultValue? := none }
+  { id := "prescribedAmountText", label := "Prescription amount", kind := .text, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.text", validation? := some (.decimal 3 false false), defaultValue? := none }
 
 /-- Law: 45 CFR §170.315(b)(3)(ii)(F). Catalog: federal-rx-170-315-erx-leading-zero.
 Insert a leading zero before the decimal point for medication amounts less than one.
@@ -1395,7 +1395,7 @@ def validationEntry009 : EntryReq :=
 Default oral methotrexate orders to weekly dosing.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementOralMethotrexateFrequency : ElementSpec :=
-  { id := "oralMethotrexateFrequency", label := "Oral methotrexate frequency (weekly default)", kind := .coded "oral-mtx-frequency", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .defaultConfirm, humanOnly := false, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.timing.code", validation? := some (.codeMember "oral-methotrexate-frequency" "2026-10"), defaultValue? := some ("weekly") }
+  { id := "oralMethotrexateFrequency", label := "Methotrexate frequency", kind := .coded "oral-mtx-frequency", enteredBy := [.physician, .np, .rn, .surgeon], prefill := .defaultConfirm, humanOnly := false, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.timing.code", validation? := some (.codeMember "oral-methotrexate-frequency" "2026-10"), defaultValue? := some ("weekly") }
 
 /-- Entrenched: Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure. (ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 2(a)–(b), p. 4). Catalog: entrenched-ismp-mtx-weekly.
 Default oral methotrexate orders to weekly dosing.
@@ -1413,7 +1413,7 @@ def validationEntry010 : EntryReq :=
 Integrate a weight-based pediatric dosing calculator into ordering.
 Synthetic samples are test data, never clinician defaults (except the mandated weekly methotrexate default). -/
 def elementCalculatedPediatricDose : ElementSpec :=
-  { id := "calculatedPediatricDose", label := "Amoxicillin per-dose calculation (45 mg/kg, maximum 2000 mg)", kind := .quantity .mg, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.doseAndRate.doseQuantity", validation? := some (.doseByWeight "weight" 450 20000 .mg), defaultValue? := none }
+  { id := "calculatedPediatricDose", label := "Calculated dose (mg)", kind := .quantity .mg, enteredBy := [.physician, .np, .rn, .surgeon], prefill := .never, humanOnly := true, friction := .compliance, fhirTarget := "MedicationRequest.dosageInstruction.doseAndRate.doseQuantity", validation? := some (.doseByWeight "weight" 450 20000 .mg), defaultValue? := none }
 
 /-- Entrenched: CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated. (ASTP/ONC 2025 SAFER CPOE Guide RP 2.2, implementation guidance, p. 15). Catalog: entrenched-safer-pediatric-calculator.
 Integrate a weight-based pediatric dosing calculator into ordering.
@@ -1599,25 +1599,25 @@ def payloadInfo1 : InfoSpec :=
 Exclude room numbers from qualifying patient identifiers.
  -/
 def payloadInfo2 : InfoSpec :=
-  { id := "careIdentity", label := "Person-specific care identifiers", version := "", payload? := some { fields := [{ field := "name", ifAvailable := false }, { field := "dateOfBirth", ifAvailable := false }, { field := "mrn", ifAvailable := false }], identifiers := [.patient], rowFields := [], groupBy? := none } }
+  { id := "careIdentity", label := "Patient identifiers", version := "", payload? := some { fields := [{ field := "name", ifAvailable := false }, { field := "dateOfBirth", ifAvailable := false }, { field := "mrn", ifAvailable := false }], identifiers := [.patient], rowFields := [], groupBy? := none } }
 
 /-- Entrenched: CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated. (ASTP/ONC 2025 SAFER Test Results Reporting and Follow-Up Guide RP 2.7, implementation guidance, p. 18). Catalog: entrenched-safer-result-components-together.
 Report the components of a multicomponent test together.
  -/
 def payloadInfo3 : InfoSpec :=
-  { id := "groupedResultComponents", label := "Complete grouped result components", version := "", payload? := some { fields := [], identifiers := [.patient], rowFields := ["testId", "component", "value", "unit", "referenceRange", "abnormalFlag"], groupBy? := some ("testId") } }
+  { id := "groupedResultComponents", label := "Result components", version := "", payload? := some { fields := [], identifiers := [.patient], rowFields := ["testId", "component", "value", "unit", "referenceRange", "abnormalFlag"], groupBy? := some ("testId") } }
 
 /-- Entrenched: CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated. (ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.2, implementation guidance, p. 11). Catalog: entrenched-safer-patient-list-identifiers.
 Include at least two unique identifiers per patient-list row.
  -/
 def payloadInfo4 : InfoSpec :=
-  { id := "patientListIdentity", label := "Patient list: identity and selection", version := "", payload? := some { fields := [], identifiers := [.patient], rowFields := ["name", "dateOfBirth", "mrn"], groupBy? := none } }
+  { id := "patientListIdentity", label := "Patient list", version := "", payload? := some { fields := [], identifiers := [.patient], rowFields := ["name", "dateOfBirth", "mrn"], groupBy? := none } }
 
 /-- Entrenched: CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated. (ASTP/ONC 2025 SAFER Patient Identification Guide RP 1.6, p. 15). Catalog: entrenched-safer-patient-name-collision.
 Warn when patient search returns same or similar names.
  -/
 def payloadInfo5 : InfoSpec :=
-  { id := "patientSearchWarning", label := "Patient search identity warning", version := "", payload? := some { fields := [{ field := "similarNameWarning", ifAvailable := false }], identifiers := [], rowFields := [], groupBy? := none } }
+  { id := "patientSearchWarning", label := "Similar names", version := "", payload? := some { fields := [{ field := "similarNameWarning", ifAvailable := false }], identifiers := [], rowFields := [], groupBy? := none } }
 
 /-- Entrenched: CMS-required annual self-assessment using all eight 2025 SAFER Guides from CY2026 for eligible hospitals/CAHs in Medicare Promoting Interoperability; this practice is assessed, not individually mandated. (ASTP/ONC 2025 SAFER Patient Identification Guide RP 2.5, implementation guidance, p. 20). Catalog: entrenched-safer-patient-photo-banner.
 Display available patient photographs in supported EHR banners.
@@ -1629,19 +1629,19 @@ def payloadInfo6 : InfoSpec :=
 Keep patient weight visible during order entry.
  -/
 def payloadInfo7 : InfoSpec :=
-  { id := "orderingWeight", label := "Current patient weight", version := "", payload? := some { fields := [{ field := "weightKg", ifAvailable := false }, { field := "measuredAt", ifAvailable := false }], identifiers := [.patient], rowFields := [], groupBy? := none } }
+  { id := "orderingWeight", label := "Weight and date", version := "", payload? := some { fields := [{ field := "weightKg", ifAvailable := false }, { field := "measuredAt", ifAvailable := false }], identifiers := [.patient], rowFields := [], groupBy? := none } }
 
 /-- Law: California Health & Safety Code §11165.4(c)(3). Catalog: ca-statutes-hsc-11165-4-ed-buprenorphine.
 Recognize the specific CURES exemption for buprenorphine-containing controlled substances prescribed, ordered, administered or furnished in a general acute care hospital ED.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitAuthorizeEdBuprenorphineCuresExemption : CommitSpec :=
-  { id := "authorizeEdBuprenorphineCuresExemption", label := "Authorize ed buprenorphine cures exemption", roles := [.physician, .np, .surgeon] }
+  { id := "authorizeEdBuprenorphineCuresExemption", label := "Authorize ED CURES exemption", roles := [.physician, .np, .surgeon] }
 
 /-- Law: California Health & Safety Code §120990(a)–(b). Catalog: ca-statutes-hsc-120990-hiv-right-decline.
 Before ordering HIV testing under the medical-care-provider pathway, advise the patient of the right to decline; subsection (a) does not apply to an independently requested test.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitAuthorizeHivTest : CommitSpec :=
-  { id := "authorizeHivTest", label := "Authorize hiv test", roles := [.physician, .np, .surgeon] }
+  { id := "authorizeHivTest", label := "Authorize HIV test", roles := [.physician, .np, .surgeon] }
 
 /-- Law: California Family Code §6922(a). Catalog: ca-statutes-fam-6922-independent-minor.
 Allow medical, vision or dental consent under §6922 when the minor is at least 15, lives separately from parents/guardian, and manages their own financial affairs.
@@ -1683,7 +1683,7 @@ def commitAuthorizeMinorSubstanceCare : CommitSpec :=
 For direct Schedule II dispensing to initiate maintenance/detoxification treatment for OUD while arranging referral, dispense at most three days at one time.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitAuthorizeOudDirectDispensing : CommitSpec :=
-  { id := "authorizeOudDirectDispensing", label := "Authorize oud direct dispensing", roles := [.physician, .np, .surgeon] }
+  { id := "authorizeOudDirectDispensing", label := "Authorize OUD supply", roles := [.physician, .np, .surgeon] }
 
 /-- Law: 22 CCR §70537(d). Catalog: ca-title22-70537-pediatric-over13.
 For a patient older than 13 placed in an approved pediatric-bed space, require pediatrician approval in unusual circumstances and record the reason.
@@ -1695,7 +1695,7 @@ def commitAuthorizePediatricBed : CommitSpec :=
 Recognize the procedure-related CURES exemption only for treatment meeting §11165.4(c)(4), at a listed facility, and a nonrefillable supply of at most seven days.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitAuthorizeProcedureCuresExemption : CommitSpec :=
-  { id := "authorizeProcedureCuresExemption", label := "Authorize procedure cures exemption", roles := [.physician, .np, .surgeon] }
+  { id := "authorizeProcedureCuresExemption", label := "Authorize procedure CURES exemption", roles := [.physician, .np, .surgeon] }
 
 /-- Law: 42 CFR §482.13(e)(1)(ii). Catalog: cms-482.13-e1ii-seclusion-violent-only.
 Do not authorize seclusion for a nonviolent, non-self-destructive patient.
@@ -1725,7 +1725,7 @@ def commitCompleteAccessResponse : CommitSpec :=
 For an emergency oral Schedule II prescription partially filled under paragraph (b), stop remainder dispensing 72 hours after the prescription is issued.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitCompleteEmergencyScheduleIIPartial : CommitSpec :=
-  { id := "completeEmergencyScheduleIIPartial", label := "Complete emergency schedule iipartial", roles := [.physician, .np, .surgeon] }
+  { id := "completeEmergencyScheduleIIPartial", label := "Complete emergency partial fill", roles := [.physician, .np, .surgeon] }
 
 /-- Law: 42 CFR §482.24(c)(4)(viii). Catalog: cms-482.24-c4viii-complete-30days.
 Track completion of the medical record no later than 30 days after discharge.
@@ -1737,19 +1737,19 @@ def commitCompleteMedicalRecord : CommitSpec :=
 For a patient- or prescriber-requested Schedule II partial fill under paragraph (b), stop remainder dispensing 30 days after the written prescription’s issue date.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitCompleteScheduleIIPatientPartial : CommitSpec :=
-  { id := "completeScheduleIIPatientPartial", label := "Complete schedule iipatient partial", roles := [.physician, .np, .surgeon] }
+  { id := "completeScheduleIIPatientPartial", label := "Complete requested partial fill", roles := [.physician, .np, .surgeon] }
 
 /-- Law: 21 CFR §1306.13(a). Catalog: federal-rx-1306-13-shortage-72h.
 For a Schedule II partial fill because the pharmacy cannot supply the full quantity, require a new prescription before supplying a remainder beyond 72 hours after the first partial fill.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitCompleteScheduleIIShortage : CommitSpec :=
-  { id := "completeScheduleIIShortage", label := "Complete schedule iishortage", roles := [.physician, .np, .surgeon] }
+  { id := "completeScheduleIIShortage", label := "Complete shortage partial fill", roles := [.physician, .np, .surgeon] }
 
 /-- Law: California Welfare & Institutions Code §5150(a), (i)(1). Catalog: ca-statutes-wic-5150-hold-start.
 Record and use the first detention time to calculate the §5150 period; transfer or arrival at the receiving facility does not restart the clock.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitContinue5150Hold : CommitSpec :=
-  { id := "continue5150Hold", label := "Continue5150hold", roles := [.physician, .np, .surgeon] }
+  { id := "continue5150Hold", label := "Continue 5150 hold", roles := [.physician, .np, .surgeon] }
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-24h.
 Track newborn oxygen orders for review, modification or discontinuation after 24 hours.
@@ -1767,7 +1767,7 @@ def commitContinueViolentRestraint : CommitSpec :=
 Do not approve filling or refilling an original Schedule III or IV prescription more than six months after its issue date.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitDispenseScheduleIIItoV : CommitSpec :=
-  { id := "dispenseScheduleIIItoV", label := "Dispense schedule iiito v", roles := [.physician, .np, .surgeon] }
+  { id := "dispenseScheduleIIItoV", label := "Dispense Schedule III–V", roles := [.physician, .np, .surgeon] }
 
 /-- Law: California Business & Professions Code §4068(b)(1). Catalog: ca-statutes-bpc-4068-unused-ed-noncontrolled.
 Use §4068(b)’s unused-portion ED discharge pathway only for a noncontrolled dangerous drug acquired by the hospital pharmacy.
@@ -1779,7 +1779,7 @@ def commitDispenseUnusedEdPortion : CommitSpec :=
 Do not partially dispense a Schedule III–V prescription after six months from issue.
 Roles allow documentation only; this is not qualified-authorization or a license certificate. -/
 def commitPartialFillScheduleIIItoV : CommitSpec :=
-  { id := "partialFillScheduleIIItoV", label := "Partial fill schedule iiito v", roles := [.physician, .np, .surgeon] }
+  { id := "partialFillScheduleIIItoV", label := "Partial fill Schedule III–V", roles := [.physician, .np, .surgeon] }
 
 /-- Law: California Health & Safety Code §123130(a). Catalog: ca-statutes-hsc-123130-summary-deadline.
 If electing a statutory summary rather than full-record access, make it available within ten working days; only extraordinary length/recent-discharge grounds allow a notified extension, capped at 30 days.

@@ -33,7 +33,8 @@ def inbasket : Screen :=
   { id := s, title := "In-basket", workflow := "W2"
     components := frame s ++ [
       searchC s "basketSearch" "inbasket" "Search in-basket",
-      table s "items" "inbasketItems" "In-basket items",
+      table s "items" "inbasketItems" "Messages",
+      panel s "preview" "messagePreview" "Selected message",
       goto s "openResult" "w2Result" "Open result",
       goto s "refills" "w7Queue" "Refill requests folder"
     ] }
@@ -46,6 +47,7 @@ def result : Screen :=
     components := frame s ++ [
       table s "detail" "resultDetail" "Result",
       trend s "trend" "resultTrend" "Trend",
+      table s "trendValues" "resultTrend" "Dated values",
       field s "resultAction" "resultAction" "Action",
       field s "resultFollowUpOrder" "resultFollowUpOrder" "Follow-up test",
       goto s "message" "w2Message" "Message patient",
