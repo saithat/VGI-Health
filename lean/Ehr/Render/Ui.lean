@@ -170,6 +170,17 @@ def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String)
     it.comp.parent? == some parent.comp.id && parent.comp.label == label)
     then duplicate else label) fallback
 
+/-- An opted-in reconciliation slot retains its source caption and adds the
+corresponding current-medication name. Missing source rows add no context. -/
+def uiMedicationFieldLabel (cx : Ctx) (it : ItemView) (element : ElementId) : String :=
+  let suffix := if element == "medRecDecision" &&
+      (it.comp.tag.splitOn ".").contains "currentMedication" then
+    match cx.disp.meds[it.slot]? with
+    | some med => if med.name == "" then "" else " — " ++ med.name
+    | none => ""
+    else ""
+  it.comp.label ++ suffix
+
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
   let (_, _, baseUnit) := fieldKind kind
@@ -183,7 +194,7 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let value := if kind == .medicationDose &&
     it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
     then none else it.value?.map valueText
-  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
+  .field it.comp.id (uiTitledLabel cx it (uiMedicationFieldLabel cx it e) ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)

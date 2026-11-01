@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
 import { DisplayValue } from "../display";
+import { formatMedicationDirections } from "../clinical-display";
 import { ClinicalChart } from "./charts";
 import { MarGrid } from "./MarGrid";
 import "./presentations.css";
@@ -105,8 +106,20 @@ export function RecordTable({
                       {values.length ? (
                         values.map((value, n) => (
                           <span className="presentation-cell-value" key={n}>
-                            {isStatus(key, kind) ? (
+                            {key === "Text" ? (
+                              value
+                            ) : isStatus(key, kind) ? (
                               <SuppliedStatus value={value} />
+                            ) : node.infoId === "currentMeds" &&
+                              key === "Instructions" ? (
+                              <span title={value} aria-label={value}>
+                                {formatMedicationDirections(
+                                  row.find(
+                                    ([name]) => name === "Medication",
+                                  )?.[1] ?? "",
+                                  value,
+                                ) || "—"}
+                              </span>
                             ) : (
                               <DisplayValue value={value || "—"} />
                             )}
@@ -220,7 +233,9 @@ function NoteCards({ node }: { node: Info }) {
               >
                 <dt>{key}</dt>
                 <dd>
-                  {key === "Status" ? (
+                  {key === "Text" ? (
+                    value
+                  ) : key === "Status" ? (
                     <SuppliedStatus value={value} />
                   ) : (
                     <DisplayValue value={value || "—"} />

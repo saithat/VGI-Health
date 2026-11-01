@@ -152,3 +152,21 @@ This update supersedes the earlier muted application framing. Clinical informati
 The source of truth is `app/src/ehr/ui/theme.ts`: `clinicalTokens`, `clinicalCssVariables`, and `clinicalTheme`. CSS consumers use `--clinical-appbar`, `--clinical-appbar-hover`, `--clinical-activity`, `--clinical-sidebar`, `--clinical-section`, the existing `--clinical-{blue,green,yellow,red,violet,gray}-{ink,tint}` pairs, and `--clinical-persona-p1` through `--clinical-persona-p5`. `main.tsx` publishes them on the document root; standalone semantic screen previews receive them on the screen container. The presentation lane can consume these without owning a parallel palette.
 
 Research: [CST Provider View overview](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Workflow_Pages/Provider_View/Overview_of_Provider_View.htm) shows distinct toolbar, patient banner, activity tabs and left chart menu; [SIU Epic training](https://www.siumed.edu/sites/default/files/2021-08/EPIC%20Info-Inpatient%20Student%20Training%20Exercise%20Booklet.pdf) documents activity tabs and a navigator table of contents. Adopt the hierarchy and density, not a vendor's exact composition. No vendor assets are shipped. Detailed observations and self-review are in [our shared-shell research section](ehr-ui-research.md#shared-shell-visual-system-and-ui-browser).
+
+## Shared painter density and clinical captions — 1 Nov polish
+
+The orchestrator's follow-up supersedes the earlier spacing targets for the stock
+painter: 200 px navigator, 208 px summary rail, 8 px workspace/section gaps and
+section padding, 13 px section headings, 17 px workspace title, and 12 px fields
+and action text. Ordinary controls are at least 30 px high; scanner controls retain
+their larger target. Tables retain 28 px minimum data rows and 12 px text. The
+clinical text minimum remains 12 px and the palette/AA contrast pairs are unchanged.
+
+`clinical-display.ts` owns display-only terminology cleanup and tested sig grammar.
+It never converts doses or changes event values. Original terminology/code text
+stays in accessible row metadata and tooltips. Section captions use Title Case,
+field captions use sentence case, and contextual medication/route/frequency prompts
+replace generic code prompts. Empty info renders as a named accessibility note
+with one short line; an empty allergy list is not an NKA assertion. Adjacent
+navigation actions form bordered bars in their supplied order. Clinical Inspector
+chrome requires the explicit `inspect=1` query parameter.

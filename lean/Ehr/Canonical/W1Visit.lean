@@ -92,8 +92,9 @@ def medRec : Screen :=
       reviewBtn s "currentMeds" "Mark medications reviewed" (feedback := true),
       clinicalSection s "rows" "Reconcile medications"] ++
       ((List.range 4).map fun i =>
-        field s ("decision" ++ toString i) "medRecDecision"
-          s!"Medication {i + 1}: continue / stop / modify" (parent := some "rows") (slot := .fixed i)) ++
+        let c := field s ("decision" ++ toString i) "medRecDecision"
+          s!"Medication {i + 1}: continue / stop / modify" (parent := some "rows") (slot := .fixed i)
+        { c with tag := c.tag ++ ".context.currentMedication" }) ++
       tabStrip s "medTabs" "Medication history"
         [(.panel, "priorNotes", "Last plan"), (.table, "adherence", "Fill history")] ++ [
       goto s "next" "w1Hpi" "History / ROS"

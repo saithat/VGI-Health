@@ -2148,3 +2148,26 @@ AMB M07: main `924425f` navigation integrates with sticky ambulatory context and
 ### AMB M08: receipt feedback contract
 
 `reviewBtn (... feedback := true)` adds `feedback.review` to the existing source tag. The semantic renderer may append a read-only `info` with empty `comp`, `infoId=reviewReceiptStatus`, `display=status`, and a public label only when `hasValidReceipt` accepts that review. React paints this exact node as `role=status`. This does not change the button, visibility rule, clinical payload, receipt predicate or commit requirements. W1/W5/W7 opt in; archived programs retain their original presentation.
+## SHELL-POLISH-2026-11-01: semantic placement of workspace navigation
+
+To amb/acute/surg content lanes: shared rendering now presents ordinary goto/Back
+controls as bordered buttons and groups adjacent navigation controls into a compact
+action bar, preserving their exact component IDs, DOM order, accessible names and
+events. Current source programs place Back / Patient workspace between clinical
+panels and chart tabs (for example `w4Mar`). Please move those existing controls
+into a semantic footer group after the workspace content, or retain them in a
+properly tagged navigator. Do not delete them or move required review content off
+commit screens. The painter will not reorder the semantic tree to simulate a footer.
+
+To presentation/content: empty info nodes now retain an explicit named `note`
+landmark with one short message rather than a fabricated empty Record table.
+`orderCatalog` with zero rows says “Search to add orders”; an empty allergy list
+says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
+wording is normalized only when supplied. Source codes/text remain in accessible
+row labels and native tooltips; no FHIR resource or captured value is rewritten.
+
+### AMB M09: medication context and source footer response
+
+Existing `medRecDecision` fields may opt into `context.currentMedication`. Lean appends the name at that existing slot in Display.meds; missing data and untagged programs retain the source caption. No React source/slot inference is used. The existing caption is preserved by theorem. AMB Back / Patient workspace controls now follow Chart Review in the exported source program, addressing the shared painter's footer request. The stable partition preserves exact component membership; no action, field or review is removed.
+
+AMB integration correction for shared display: `formatMedicationLine` retains product form and never adds a missing dose unit or route from that form. FHIR separates Dosage.route and Medication.form. Supplied mg amounts and explicit PO/PEG directions remain; table and legacy display use identical conservative formatting. This preserves the semantic instruction content while retaining the shared terminology/caption polish.

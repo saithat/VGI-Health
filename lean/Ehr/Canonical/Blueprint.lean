@@ -184,6 +184,25 @@ def relatedLinks (source : List Screen) (s : Screen) (cs : List Component) : Lis
     if c.id == cid s.id "legalNav" || c.id == cid s.id "featureNavigation" then
       result.any (·.parent? == some c.id) else true
 
+/-- Only the existing ambulatory return controls are moved to the end. -/
+def ambulatoryReturn (s : Screen) (c : Component) : Bool :=
+  (c.id == cid s.id "back" && c.kind == .button .back) ||
+  (c.id == cid s.id "home" && c.kind == .button (.goto "home"))
+
+/-- Existing Back and patient-workspace controls follow Chart Review in
+ambulatory activities; the original action, id and availability are retained. -/
+def ambulatoryReturnControls (s : Screen) (cs : List Component) : List Component :=
+  if !["W1", "W2", "W5", "W7"].contains s.workflow then cs else
+  cs.filter (fun c => !ambulatoryReturn s c) ++ cs.filter (ambulatoryReturn s)
+
+/-- Footer placement retains precisely the original source components. -/
+@[simp] theorem mem_ambulatoryReturnControls (s : Screen) (cs : List Component) (c : Component) :
+    c ∈ ambulatoryReturnControls s cs ↔ c ∈ cs := by
+  unfold ambulatoryReturnControls
+  split
+  · rfl
+  · by_cases h : ambulatoryReturn s c = true <;> simp [h]
+
 /-- Fold every artifact into its reviewed workflow step; preserve every action
 and every clinical entry/review binding. The W7 composer and sign remain screens. -/
 def screens (source : List Screen) : List Screen :=
@@ -191,7 +210,7 @@ def screens (source : List Screen) : List Screen :=
     let cs := relatedLinks source s (clean (signature s))
     { s with components := (cs.filter fun c => !footer s c) ++
         ((source.filter fun a => a.id != s.id && host a.id == s.id).flatMap (artifactSection ∘ signature)) ++
-        cs.filter (footer s) }
+        ambulatoryReturnControls s (cs.filter (footer s)) }
 
 /-- Macro navigation follows the same relocation ledger as ordinary buttons. -/
 def macros (ms : List Macro) : List Macro := ms.map fun m =>

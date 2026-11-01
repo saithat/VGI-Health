@@ -1,11 +1,12 @@
 import type { ClinicalTone } from "./theme";
+import { formatClinicalRecord } from "./clinical-display";
 
 const iso =
   /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
 /** Presentation fallback only: never changes captured field values or ordering. */
 export function formatDisplayValue(value: string): string {
   const match = iso.exec(value);
-  if (!match) return value;
+  if (!match) return formatClinicalRecord(value);
   const [, year, month, day, hour, minute, second] = match;
   const calendar = new Date(`${year}-${month}-${day}T12:00:00Z`);
   // Reject impossible calendar dates instead of silently normalizing them.
@@ -31,10 +32,14 @@ export function DisplayValue({ value }: { value: string }) {
   const formatted = formatDisplayValue(value);
   return formatted === value ? (
     value
-  ) : (
+  ) : iso.test(value) ? (
     <time dateTime={value} title={value}>
       {formatted}
     </time>
+  ) : (
+    <span title={value} aria-label={value}>
+      {formatted}
+    </span>
   );
 }
 

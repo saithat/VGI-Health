@@ -59,10 +59,12 @@ def rooming : Screen :=
       reviewBtn s "allergyList" "Mark allergies reviewed" (parent := some "allergyGroup") (feedback := true),
       clinicalSection s "medRec" "Medication review",
       table s "meds" "currentMeds" "Medications" (parent := some "medRec"),
-      field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
-        (parent := some "medRec") (slot := .fixed 0),
-      field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
-        (parent := some "medRec") (slot := .fixed 1),
+      (let c := field s "decision0" "medRecDecision" "Medication 1: continue / stop / modify"
+        (parent := some "medRec") (slot := .fixed 0)
+       { c with tag := c.tag ++ ".context.currentMedication" }),
+      (let c := field s "decision1" "medRecDecision" "Medication 2: continue / stop / modify"
+        (parent := some "medRec") (slot := .fixed 1)
+       { c with tag := c.tag ++ ".context.currentMedication" }),
       reviewBtn s "currentMeds" "Mark medications reviewed" (parent := some "medRec") (feedback := true),
       goto s "next" "w5Growth" "Review growth"
     ] }

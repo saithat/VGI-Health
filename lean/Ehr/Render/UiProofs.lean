@@ -4,6 +4,11 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- Source field captions remain intact when a medication context is appended. -/
+theorem uiMedicationFieldLabel_preservesCaption (cx : Ctx) (it : ItemView) (element : ElementId) :
+    ∃ suffix, uiMedicationFieldLabel cx it element = it.comp.label ++ suffix := by
+  exact ⟨_, rfl⟩
+
 /-- Receipt feedback is tied to an opted-in review action and the core validity
 predicate; it cannot assert a review from a stale or missing receipt. -/
 theorem uiReviewStatus_sound (cx : Ctx) (it : ItemView) (n : UiNode)

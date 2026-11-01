@@ -32,6 +32,15 @@ import {
   ExplicitConfirmContext,
   ValueSetContext,
 } from "./clinical-metadata";
+import {
+  cleanClinicalText,
+  emptyInfoText,
+  fieldCaption,
+  fieldPlaceholder,
+  formatMedicationDirections,
+  formatMedicationLine,
+  sectionCaption,
+} from "./clinical-display";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -58,24 +67,44 @@ export function UiChildren({
   for (const node of nodes)
     if ("button" in node && node.button.role === "confirm")
       explicit.add(node.button.comp);
+  const groups: { nav: boolean; entries: { node: UiNode; index: number }[] }[] =
+    [];
+  nodes.forEach((node, index) => {
+    const nav = "button" in node && node.button.role === "nav";
+    const previous = groups.at(-1);
+    if (nav && previous?.nav) previous.entries.push({ node, index });
+    else groups.push({ nav, entries: [{ node, index }] });
+  });
+  const draw = (node: UiNode, i: number) => (
+    <UiNodeView
+      key={i}
+      node={node}
+      onEvent={onEvent}
+      confirmProvided={
+        "field" in node &&
+        nodes.some(
+          (other) =>
+            "button" in other &&
+            other.button.role === "confirm" &&
+            other.button.comp === node.field.comp,
+        )
+      }
+    />
+  );
   return (
     <ExplicitConfirmContext.Provider value={explicit}>
-      {nodes.map((node, i) => (
-        <UiNodeView
-          key={i}
-          node={node}
-          onEvent={onEvent}
-          confirmProvided={
-            "field" in node &&
-            nodes.some(
-              (other) =>
-                "button" in other &&
-                other.button.role === "confirm" &&
-                other.button.comp === node.field.comp,
-            )
-          }
-        />
-      ))}
+      {groups.map((group) =>
+        group.nav ? (
+          <div
+            className="clinical-navigation-bar"
+            key={group.entries[0]?.index}
+          >
+            {group.entries.map(({ node, index }) => draw(node, index))}
+          </div>
+        ) : (
+          group.entries.map(({ node, index }) => draw(node, index))
+        ),
+      )}
     </ExplicitConfirmContext.Provider>
   );
 }
@@ -95,7 +124,7 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
       className="clinical-section"
     >
       <div className="clinical-section-title">
-        <h2>{node.title}</h2>
+        <h2 title={node.title}>{sectionCaption(node.title)}</h2>
         {toggle && <ButtonNode node={toggle} onEvent={onEvent} />}
       </div>
       <Stack gap="sm" className="clinical-section-body">
@@ -136,8 +165,9 @@ export function TabsNode({ node, onEvent }: Props<"tabs">) {
             data-comp-id={node.id}
             data-event="selectTab"
             data-tab-index={index}
+            aria-label={label}
           >
-            {label}
+            {sectionCaption(label)}
           </Tabs.Tab>
         ))}
       </Tabs.List>
@@ -161,7 +191,9 @@ export function StepperNode({ node }: Props<"stepper">) {
           <span className="step-number" aria-hidden="true">
             {index + 1}
           </span>
-          <span className="step-label">{label}</span>
+          <span className="step-label" title={label}>
+            {sectionCaption(label)}
+          </span>
         </li>
       ))}
     </ol>
@@ -191,12 +223,13 @@ export function FieldNode({
           ? "scan"
           : undefined;
   const common = {
-    label: node.label,
+    label: fieldCaption(node.label),
     "aria-label": node.label,
     required: node.required,
     size: "xs" as const,
     "data-comp-id": node.comp,
     "data-event": "enter",
+    title: node.label,
     className: "clinical-control",
   };
   const options = node.kind
@@ -286,9 +319,12 @@ export function FieldNode({
           }}
           rightSection={<ClinicalIcon name="chevron" />}
           searchable
-          data={choices}
+          data={choices.map((choice) => ({
+            ...choice,
+            label: cleanClinicalText(choice.label),
+          }))}
           value={node.value}
-          placeholder="Select or search code"
+          placeholder={fieldPlaceholder(node.label, kind)}
           onChange={(value) => {
             send(value ?? "");
             setTypedCode("");
@@ -299,7 +335,7 @@ export function FieldNode({
             if (valueSet) setTypedCode(event.currentTarget.value);
             else if (options.length === 0) send(event.currentTarget.value);
           }}
-          nothingFoundMessage="Enter a code"
+          nothingFoundMessage="No matching options"
         />
       ) : kind === "textarea" ? (
         <Textarea
@@ -325,7 +361,7 @@ export function FieldNode({
                   ? "Scan or enter barcode"
                   : special === "cosign"
                     ? "Enter clinician ID"
-                    : "Enter value"
+                    : undefined
           }
           leftSection={
             special === "scan" ? (
@@ -368,7 +404,16 @@ export function FieldNode({
     </Box>
   );
 }
-function RecordValue({ label, value }: { label: string; value: string }) {
+function RecordValue({
+  label,
+  value,
+  medication,
+}: {
+  label: string;
+  value: string;
+  medication?: string | undefined;
+}) {
+  if (label === "Text") return <span>{value}</span>;
   const tone =
     /status|confirmation|review state|scheduled|administration|^\d{1,2}:\d{2}/i.test(
       label,
@@ -376,8 +421,17 @@ function RecordValue({ label, value }: { label: string; value: string }) {
       ? statusTone(value)
       : undefined;
   return (
-    <span className={tone ? `clinical-status status-${tone}` : undefined}>
-      <DisplayValue value={value} />
+    <span
+      title={value}
+      className={tone ? `clinical-status status-${tone}` : undefined}
+    >
+      <DisplayValue
+        value={
+          medication && label === "Instructions"
+            ? formatMedicationDirections(medication, value)
+            : value
+        }
+      />
     </span>
   );
 }
@@ -414,13 +468,14 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          {node.rows.length === 0 && (
-            <Table.Tr>
-              <Table.Td colSpan={headers.length}>No records on file</Table.Td>
-            </Table.Tr>
-          )}
           {node.rows.map((row, index) => (
-            <Table.Tr key={index}>
+            <Table.Tr
+              key={index}
+              aria-label={row
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(" · ")}
+              title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+            >
               {headers.map((header) => (
                 <Table.Td
                   key={header}
@@ -432,6 +487,11 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
                   <RecordValue
                     label={header}
                     value={row.find(([key]) => key === header)?.[1] ?? "—"}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([key]) => key === "Medication")?.[1]
+                        : undefined
+                    }
                   />
                 </Table.Td>
               ))}
@@ -491,11 +551,13 @@ function ChartRecordList({ node }: { node: NodeOf<"info"> }) {
               </article>
             ) : (
               <>
-                <span className="home-med-name">{value("Item")}</span>
-                <span className="home-med-sig">
-                  {value("Detail")
-                    .replace(/^Reported home medication;\s*/i, "")
-                    .replace(/;\s*date:\s*Unknown/gi, "")}
+                <span className="home-med-name">
+                  {formatMedicationLine(
+                    value("Item"),
+                    value("Detail")
+                      .replace(/^Reported home medication;\s*/i, "")
+                      .replace(/;\s*date:\s*Unknown/gi, ""),
+                  )}
                 </span>
                 <span className="clinical-status status-blue">reported</span>
                 {known(value("Status")) && (
@@ -544,6 +606,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       <StructuredInfo node={node} kind={presentation.kind} actions={actions} />
     );
   }
+  const empty = node.rows.length === 0;
   const values = node.rows
     .flatMap((row) =>
       row
@@ -565,12 +628,26 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       data-comp-id={node.comp || undefined}
       data-info-id={node.infoId}
     >
-      <Text component="h3" className="clinical-info-label" size="xs" fw={650}>
-        {node.label}
-      </Text>
-      {node.rows.length === 0 && node.display === "summary" ? (
-        <Text size="xs" c="dimmed">
-          No records on file
+      {!(empty && node.infoId === "orderCatalog") && (
+        <Text
+          component="h3"
+          className="clinical-info-label"
+          size="xs"
+          fw={650}
+          title={node.label}
+        >
+          {sectionCaption(node.label)}
+        </Text>
+      )}
+      {empty ? (
+        <Text
+          role="note"
+          aria-label={node.label}
+          className="clinical-empty"
+          size="xs"
+          c="dimmed"
+        >
+          {emptyInfoText(node.infoId)}
         </Text>
       ) : node.display === "list" &&
         (["encounterNotes", "priorNotes"].includes(node.infoId) ||
@@ -586,7 +663,13 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
         <ul aria-label={node.label} className="clinical-info-list">
           {node.rows.length === 0 && <li>No records on file</li>}
           {node.rows.map((row, index) => (
-            <li key={index}>
+            <li
+              key={index}
+              title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+              aria-label={row
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(" · ")}
+            >
               {row.map(([key, value], fieldIndex) => (
                 <span
                   key={key}
@@ -597,7 +680,15 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
                   {fieldIndex > 0 && (
                     <span className="record-label">{key}: </span>
                   )}
-                  <RecordValue label={key} value={value} />
+                  <RecordValue
+                    label={key}
+                    value={value}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([name]) => name === "Medication")?.[1]
+                        : undefined
+                    }
+                  />
                 </span>
               ))}
             </li>
@@ -609,8 +700,16 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
             row.map(([key, value]) => (
               <div key={`${index}-${key}`}>
                 <dt>{key}</dt>
-                <dd>
-                  <RecordValue label={key} value={value} />
+                <dd aria-label={value} title={value}>
+                  <RecordValue
+                    label={key}
+                    value={value}
+                    medication={
+                      node.infoId === "currentMeds"
+                        ? row.find(([name]) => name === "Medication")?.[1]
+                        : undefined
+                    }
+                  />
                 </dd>
               </div>
             )),
@@ -683,7 +782,9 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
   const primary = node.role === "primary";
   const reasonId = useId();
   return (
-    <div className={`clinical-action${primary ? " primary-action" : ""}`}>
+    <div
+      className={`clinical-action${primary ? " primary-action" : ""}${node.role === "nav" ? " clinical-navigation-action" : ""}`}
+    >
       <Tooltip
         label={node.blockedReason ?? "Unavailable"}
         disabled={node.enabled}
@@ -701,7 +802,9 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
                   ? "filled"
                   : node.role === "macro"
                     ? "light"
-                    : "subtle"
+                    : node.role === "nav"
+                      ? "default"
+                      : "subtle"
             }
             disabled={!node.enabled}
             color={

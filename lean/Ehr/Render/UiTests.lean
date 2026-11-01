@@ -18,6 +18,23 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Medication context uses only the declared source slot and retains its caption. -/
+def medicationContextCtx : Ctx :=
+  { uiRoomCtx with disp := { uiRoomCtx.disp with
+      meds := [{ (default : MedRow) with name := "Example medication 5 mg" }] } }
+def medicationContextItem : ItemView :=
+  { uiWeightItem with slot := 0, comp := { uiWeightItem.comp with
+    kind := .field "medRecDecision" (.fixed 0) .none, label := "Medication 1: continue / stop / modify",
+    tag := "context.currentMedication" } }
+#guard uiMedicationFieldLabel medicationContextCtx medicationContextItem "medRecDecision" != medicationContextItem.comp.label
+#guard (uiMedicationFieldLabel medicationContextCtx medicationContextItem "medRecDecision").endsWith
+  ((medicationContextCtx.disp.meds.head?).map (·.name) |>.getD "")
+#guard uiMedicationFieldLabel medicationContextCtx { medicationContextItem with slot := 999 } "medRecDecision" ==
+  medicationContextItem.comp.label
+#guard uiMedicationFieldLabel medicationContextCtx medicationContextItem "weight" == medicationContextItem.comp.label
+#guard uiMedicationFieldLabel medicationContextCtx { medicationContextItem with
+  comp := { medicationContextItem.comp with tag := "unmarked" } } "medRecDecision" == medicationContextItem.comp.label
+
 /-- Receipt feedback reflects the same validity checks used by core visibility. -/
 def reviewFeedbackReceipt : Receipt :=
   { info := "allergyList", dataVersion := (infoVersion uiRoomCtx.sp uiRoomCtx.facts "allergyList").getD 0,

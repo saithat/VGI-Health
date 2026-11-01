@@ -18,7 +18,7 @@ const descend = node => {
     if (node[key]) return [node, ...node[key].children.flatMap(descend)];
   return node.tabs ? [node, ...node.tabs.body.flatMap(descend)] : [node];
 };
-let screens = 0, references = 0, pickers = 0, reviewClicks = 0, invalidReviewCases = 0;
+let screens = 0, references = 0, pickers = 0, reviewClicks = 0, invalidReviewCases = 0, medicationCaptions = 0;
 const reviewCases = read(`${review}/review-cases.json`);
 for (const { persona, workflow } of reviewCases.cases) {
   const spec = read(`${root}/releases/v1/spec.json`);
@@ -70,6 +70,22 @@ for (const { persona, workflow } of reviewCases.cases) {
       assert.ok(dose.some(([key, value]) => key === 'Requested' && value === '10 mg'));
       assert.ok(dose.some(([key, value]) => key === 'Entered response' && value === '20.0 mg'));
       assert.equal(entered.state.commits.length, state.commits.length, 'A preview cannot sign a refill');
+    }
+    if (screen.id !== 'home') {
+      assert.equal(ui.workspace.at(-2)?.button?.comp, `${screen.id}.back`, 'Source Back belongs after Chart Review');
+      assert.equal(ui.workspace.at(-1)?.button?.comp, `${screen.id}.home`, 'Source patient-workspace return is last');
+    }
+    for (const component of screen.components.filter(component => component.kind?.field?.element === 'medRecDecision' && component.tag.split('.').includes('currentMedication'))) {
+      const slot = component.kind.field.slot.fixed?.n;
+      const medication = projection.display.meds[slot]?.name;
+      const field = nodes.find(node => node.field?.comp === component.id)?.field;
+      assert.equal(field?.label, component.label + (medication ? ` — ${medication}` : ''));
+      const entryInput = { ...base, state, event: { enter: { comp: component.id, value: { code: { c: 'continue' } } } } };
+      const entered = native('step', entryInput);
+      assert.deepEqual(call('step', entryInput), entered);
+      assert.equal(entered.result, 'ok');
+      assert.ok(entered.state.captured.some(value => value.element === 'medRecDecision' && value.slot === slot && value.value.code?.c === 'continue' && value.byHuman));
+      medicationCaptions++;
     }
     const reviewControls = screen.components.filter(component => component.kind?.button?.action?.markReviewed && component.tag.split('.').includes('feedback'));
     if (reviewControls.length) {
@@ -144,4 +160,4 @@ const bloodPressureInput = { bundle: bloodPressureBundle, context: { today: '202
 const bloodPressureOutput = native('facts', bloodPressureInput);
 assert.deepEqual(call('facts', bloodPressureInput), bloodPressureOutput);
 assert.equal(bloodPressureOutput.display.vitals.find(row => row.code === '85354-9').value, '128/82');
-console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves, ${reviewClicks} actual review clicks, ${invalidReviewCases} invalid-receipt probes; actual navigation, source facts and all semantic output agree.`);
+console.log(`Ambulatory native/WASM: ${screens} screens, ${pickers} pickers, ${references} reference curves, ${reviewClicks} actual review clicks, ${invalidReviewCases} invalid-receipt probes, ${medicationCaptions} source medication captions/entries; actual navigation, source facts and all semantic output agree.`);

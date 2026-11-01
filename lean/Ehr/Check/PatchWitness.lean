@@ -155,7 +155,9 @@ theorem blueprint_keeps_field (source : List Screen) (s : Screen) (c : Component
   have related := relatedLinks_keeps_field source s _ c clean e slot pf kind legal feature
   refine ⟨_, List.mem_map.mpr ⟨s, List.mem_filter.mpr ⟨screen, host⟩, rfl⟩, ?_⟩
   by_cases foot : Blueprint.footer s c
-  · exact List.mem_append_right _ (List.mem_filter.mpr ⟨related, foot⟩)
+  · apply List.mem_append_right
+    apply (Blueprint.mem_ambulatoryReturnControls s _ c).mpr
+    exact List.mem_filter.mpr ⟨related, foot⟩
   · apply List.mem_append_left
     apply List.mem_append_left
     exact List.mem_filter.mpr ⟨related, by simpa using foot⟩
