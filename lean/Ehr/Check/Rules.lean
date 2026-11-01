@@ -222,10 +222,32 @@ def openEncounterField (prog : Program) (screens : List ScreenId) (e kind : Stri
       (revealable scr.components comp ||
        (comp.visibility == .encounter kind && revealable scr.components { comp with visibility := .always }))
 
+/-- A role can select a formulary drug satisfying this commit's entry constraints. -/
+def doseDrugSelectable (spec : Spec) (role : Role) (c : CommitId) : Bool :=
+  (spec.element? drugElement).any fun el =>
+    el.enteredBy.contains role && (match el.kind with | .coded _ => true | _ => false) &&
+    formulary.any fun drug => !(drugDoseUnits drug.name).isEmpty &&
+      spec.entries.all (fun rq => rq.commit != c || rq.element != drugElement ||
+        entryValueAllowed el rq.allowed? (.code drug.name))
+
+/-- Every dose binding needs editable drug selection on its own slot. Fixed
+fields cannot rely on a current-slot field after that line is archived. -/
+def doseDependencyIssue (spec : Spec) (prog : Program) (c : CommitId)
+    (screens : List ScreenId) : Option (ScreenId × String) :=
+  (allComps prog).findSome? fun (screen, comp) =>
+    match fieldOf? comp.kind with
+    | some (e, slot, _) =>
+      if !(spec.element? e).any (fun el => el.kind == .medicationDose) then none
+      else if doseDrugSelectable spec prog.role c &&
+          openFieldOn prog screens drugElement (repairsSlot prog slot) then none
+      else some (screen.id, s!"commit {c}: dose field {comp.id} needs a reachable formulary drug selection on the same order slot ({repr slot})")
+    | none => none
+
 /-- Why commit `c` might not stay reachable, or `none` if the program passes
 the completability rules for `c` with commit screen `s`:
 - every screen reaches `s` by buttons the user can always show;
 - each entry requirement of `c` has a field reachable from `s`;
+- each medication-dose field has a reachable drug selector on its own slot;
 - each review requirement of `c` with a waiver has its info pinned on `s`, or
   a field for the waiver element reachable from `s`;
 - per-order-line requirements: every drug slot has a matching reachable field
@@ -241,6 +263,9 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
         | .encounter kind => openEncounterField prog fromS rq.element kind
         | _ => openFieldOn prog fromS rq.element (fun _ => true))) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
+    | none =>
+    match doseDependencyIssue spec prog c fromS with
+    | some issue => some issue
     | none =>
     let scrComps := prog.compsOf s
     let waivable := spec.reviews.filter fun rq => rq.commit == c && rq.waivedBy?.isSome
