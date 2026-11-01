@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "373cbc3954b70ae02bd7cc9de6e494d5c33741ce",
+  "sourceRevisionAtValidation": "774e7e7b39dd5ed58997b654025509e190891d56",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "0ff3cdb3b7befd7fb6e4a1d3f87b2aace4f71d4cb4cb0624dbf02f60e5672bd8",
-  "nativeBinarySha256": "2b234c92e74c54aac200565d80376493268cb3e74455a96ed63f45ac868db6ee",
+  "leanSourceHash": "138b2d7f74d8cd4f37a7b6bfe51591a306aee67ed61f557975d320229d418212",
+  "nativeBinarySha256": "72bccd58aa7b935f22bdc311c1daf8b5d98d98574b4b8e58baa8f7f1b0a2ae7f",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -13,14 +13,15 @@
     "screens": "EHR_AMB_UI_ROOT=/tmp/amb-review/ui APP_TEST_PORT=<free-port> pnpm --filter app exec playwright test ambulatory-realism.spec.ts --project=desktop --workers=1",
     "fidelity": "EHR_SCREEN_WORKERS=1 pnpm --filter app screen-check --ui <native-ui-files>",
     "archived": "pnpm trajectories --run run1-P3 --verify-only",
-    "fixtures": "node scripts/realism/ambulatory-fixtures.mjs --out /tmp/amb-review"
+    "fixtures": "node scripts/realism/ambulatory-fixtures.mjs --out /tmp/amb-review",
+    "nativeWasm": "node scripts/realism/check-ambulatory-wasm.mjs /tmp/amb-review"
   },
   "certification": {
     "personas": 15,
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "902030b004494a5797febf28251d2fbda87da111c13c519ddda113ef3a21a9ec"
+    "reportSha256": "c0d804ad1cd6a914b5569181327734a8a33f47cc646a878cb35d06424ff1196c"
   },
   "world2": {
     "world": "runs/world/2",
@@ -35,7 +36,7 @@
         "completed": 42,
         "tasks": 42,
         "clicks": 1095,
-        "klmDeciSec": 56745
+        "klmDeciSec": 56536
       },
       {
         "persona": "P1",
@@ -44,7 +45,7 @@
         "completed": 40,
         "tasks": 40,
         "clicks": 785,
-        "klmDeciSec": 44949
+        "klmDeciSec": 44872
       },
       {
         "persona": "P1",
@@ -53,7 +54,7 @@
         "completed": 35,
         "tasks": 35,
         "clicks": 621,
-        "klmDeciSec": 38054
+        "klmDeciSec": 38021
       },
       {
         "persona": "P1",
@@ -61,8 +62,8 @@
         "release": "v2",
         "completed": 40,
         "tasks": 40,
-        "clicks": 854,
-        "klmDeciSec": 46170
+        "clicks": 852,
+        "klmDeciSec": 46020
       },
       {
         "persona": "P1",
@@ -71,7 +72,7 @@
         "completed": 23,
         "tasks": 23,
         "clicks": 777,
-        "klmDeciSec": 44800
+        "klmDeciSec": 44778
       },
       {
         "persona": "P1",
@@ -80,7 +81,7 @@
         "completed": 41,
         "tasks": 41,
         "clicks": 826,
-        "klmDeciSec": 45604
+        "klmDeciSec": 45549
       },
       {
         "persona": "P1",
@@ -89,7 +90,7 @@
         "completed": 40,
         "tasks": 40,
         "clicks": 906,
-        "klmDeciSec": 47390
+        "klmDeciSec": 47181
       },
       {
         "persona": "P1",
@@ -97,8 +98,8 @@
         "release": "v3",
         "completed": 39,
         "tasks": 39,
-        "clicks": 782,
-        "klmDeciSec": 44773
+        "clicks": 778,
+        "klmDeciSec": 44519
       },
       {
         "persona": "P1",
@@ -107,7 +108,7 @@
         "completed": 39,
         "tasks": 39,
         "clicks": 663,
-        "klmDeciSec": 35337
+        "klmDeciSec": 35227
       },
       {
         "persona": "P1",
@@ -116,7 +117,7 @@
         "completed": 39,
         "tasks": 39,
         "clicks": 765,
-        "klmDeciSec": 40096
+        "klmDeciSec": 39920
       },
       {
         "persona": "P2",
@@ -125,7 +126,7 @@
         "completed": 22,
         "tasks": 22,
         "clicks": 1723,
-        "klmDeciSec": 95763
+        "klmDeciSec": 94080
       },
       {
         "persona": "P2",
@@ -134,7 +135,7 @@
         "completed": 18,
         "tasks": 18,
         "clicks": 1126,
-        "klmDeciSec": 63590
+        "klmDeciSec": 62589
       },
       {
         "persona": "P2",
@@ -143,7 +144,7 @@
         "completed": 18,
         "tasks": 18,
         "clicks": 1234,
-        "klmDeciSec": 67078
+        "klmDeciSec": 65956
       },
       {
         "persona": "P2",
@@ -152,7 +153,7 @@
         "completed": 13,
         "tasks": 13,
         "clicks": 946,
-        "klmDeciSec": 51929
+        "klmDeciSec": 51082
       },
       {
         "persona": "P2",
@@ -161,7 +162,7 @@
         "completed": 20,
         "tasks": 20,
         "clicks": 1480,
-        "klmDeciSec": 83299
+        "klmDeciSec": 81902
       },
       {
         "persona": "P2",
@@ -170,7 +171,7 @@
         "completed": 21,
         "tasks": 21,
         "clicks": 1806,
-        "klmDeciSec": 98655
+        "klmDeciSec": 96862
       },
       {
         "persona": "P2",
@@ -179,7 +180,7 @@
         "completed": 18,
         "tasks": 18,
         "clicks": 1245,
-        "klmDeciSec": 65811
+        "klmDeciSec": 64722
       },
       {
         "persona": "P2",
@@ -188,7 +189,7 @@
         "completed": 15,
         "tasks": 15,
         "clicks": 1493,
-        "klmDeciSec": 80285
+        "klmDeciSec": 78844
       },
       {
         "persona": "P2",
@@ -197,7 +198,7 @@
         "completed": 12,
         "tasks": 12,
         "clicks": 1088,
-        "klmDeciSec": 59345
+        "klmDeciSec": 58256
       },
       {
         "persona": "P2",
@@ -206,7 +207,7 @@
         "completed": 14,
         "tasks": 14,
         "clicks": 916,
-        "klmDeciSec": 48436
+        "klmDeciSec": 47545
       },
       {
         "persona": "P3",
@@ -305,7 +306,7 @@
         "completed": 22,
         "tasks": 22,
         "clicks": 670,
-        "klmDeciSec": 39905
+        "klmDeciSec": 39894
       },
       {
         "persona": "P4",
@@ -332,7 +333,7 @@
         "completed": 17,
         "tasks": 17,
         "clicks": 412,
-        "klmDeciSec": 22267
+        "klmDeciSec": 22179
       },
       {
         "persona": "P4",
@@ -341,7 +342,7 @@
         "completed": 19,
         "tasks": 19,
         "clicks": 616,
-        "klmDeciSec": 31229
+        "klmDeciSec": 31042
       },
       {
         "persona": "P4",
@@ -350,7 +351,7 @@
         "completed": 18,
         "tasks": 18,
         "clicks": 563,
-        "klmDeciSec": 30414
+        "klmDeciSec": 30337
       },
       {
         "persona": "P4",
@@ -359,7 +360,7 @@
         "completed": 17,
         "tasks": 17,
         "clicks": 600,
-        "klmDeciSec": 31822
+        "klmDeciSec": 31745
       },
       {
         "persona": "P4",
@@ -368,7 +369,7 @@
         "completed": 15,
         "tasks": 15,
         "clicks": 478,
-        "klmDeciSec": 30305
+        "klmDeciSec": 30151
       },
       {
         "persona": "P4",
@@ -377,7 +378,7 @@
         "completed": 12,
         "tasks": 12,
         "clicks": 401,
-        "klmDeciSec": 20483
+        "klmDeciSec": 20384
       },
       {
         "persona": "P4",
@@ -386,7 +387,7 @@
         "completed": 16,
         "tasks": 16,
         "clicks": 537,
-        "klmDeciSec": 29128
+        "klmDeciSec": 28963
       },
       {
         "persona": "P5",
@@ -395,7 +396,7 @@
         "completed": 18,
         "tasks": 18,
         "clicks": 531,
-        "klmDeciSec": 36040
+        "klmDeciSec": 35985
       },
       {
         "persona": "P5",
@@ -404,7 +405,7 @@
         "completed": 14,
         "tasks": 14,
         "clicks": 740,
-        "klmDeciSec": 40904
+        "klmDeciSec": 40816
       },
       {
         "persona": "P5",
@@ -413,7 +414,7 @@
         "completed": 19,
         "tasks": 19,
         "clicks": 505,
-        "klmDeciSec": 30504
+        "klmDeciSec": 30449
       },
       {
         "persona": "P5",
@@ -422,7 +423,7 @@
         "completed": 11,
         "tasks": 11,
         "clicks": 491,
-        "klmDeciSec": 25244
+        "klmDeciSec": 25057
       },
       {
         "persona": "P5",
@@ -431,7 +432,7 @@
         "completed": 17,
         "tasks": 17,
         "clicks": 426,
-        "klmDeciSec": 24755
+        "klmDeciSec": 24667
       },
       {
         "persona": "P5",
@@ -440,7 +441,7 @@
         "completed": 11,
         "tasks": 11,
         "clicks": 529,
-        "klmDeciSec": 30556
+        "klmDeciSec": 30336
       },
       {
         "persona": "P5",
@@ -449,7 +450,7 @@
         "completed": 14,
         "tasks": 14,
         "clicks": 361,
-        "klmDeciSec": 16964
+        "klmDeciSec": 16898
       },
       {
         "persona": "P5",
@@ -458,7 +459,7 @@
         "completed": 12,
         "tasks": 12,
         "clicks": 568,
-        "klmDeciSec": 30459
+        "klmDeciSec": 29953
       },
       {
         "persona": "P5",
@@ -467,7 +468,7 @@
         "completed": 11,
         "tasks": 11,
         "clicks": 308,
-        "klmDeciSec": 15442
+        "klmDeciSec": 15387
       },
       {
         "persona": "P5",
@@ -476,15 +477,16 @@
         "completed": 9,
         "tasks": 9,
         "clicks": 335,
-        "klmDeciSec": 17796
+        "klmDeciSec": 17576
       }
     ],
     "failures": []
   },
   "nativeButtons": {
-    "checked": 226,
-    "enabled": 218,
-    "disabledWithReason": 8
+    "checked": 237,
+    "enabled": 229,
+    "disabledWithReason": 8,
+    "includesLandingScreens": true
   },
   "browser": {
     "screens": 24,
@@ -497,7 +499,8 @@
     "fidelity": {
       "passed": 57,
       "intentionalViewportSkips": 3
-    }
+    },
+    "diagnosisPickerViews": 2
   },
   "archived": {
     "run": "run1-P3",
@@ -514,7 +517,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 199,
+    "appTests": 215,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -522,10 +525,20 @@
   },
   "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened.",
   "structuredPresentations": {
-    "upstream": "eb6703e",
-    "nativeWasmFixtures": 13,
-    "renderTheoremsCompared": 43,
-    "frozenStatementSha256": "a6f077a5991c17f5a39b312748c886233ad8fefc70382a36002a78a06c78f80d",
-    "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change."
+    "upstream": "6062379",
+    "nativeWasmFixtures": 15,
+    "renderTheoremsCompared": 45,
+    "frozenStatementSha256": "56623d0bff48423f9b129bef12eedba62b79f4a8f3f17b54b1969319e8ae4e23",
+    "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
+    "originalHeadersUnchanged": 107
+  },
+  "ambulatoryMetadata": {
+    "nativeWasmScreens": 26,
+    "pickers": 39,
+    "selectedReferenceCurves": 12,
+    "vendorReferenceCurves": 24,
+    "publishedSamples": 2916,
+    "unknownPopulationCase": true,
+    "referenceGeneratorReproduced": true
   }
 }

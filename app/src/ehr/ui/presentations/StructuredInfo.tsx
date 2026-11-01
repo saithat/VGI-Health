@@ -12,7 +12,8 @@ export type RowActions = ReadonlyMap<number, ReactNode>;
 /** Color decorates source text. It never determines a clinical value. */
 export function suppliedTone(value: string): string | undefined {
   const word = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
-  if (/^(overdue|critical|hh|ll|abnormal|a)$/.test(word)) return "red";
+  if (/^(overdue|critical|urgent|stat|hh|ll|abnormal|a)$/.test(word))
+    return "red";
   if (/^(low|l)$/.test(word)) return "blue";
   if (/^(high|h)$/.test(word)) return "amber";
   if (/^(given|complete|completed|signed|done)$/.test(word)) return "green";
@@ -23,7 +24,7 @@ export function suppliedTone(value: string): string | undefined {
   )
     return "amber";
   if (/^(refused|declined)$/.test(word)) return "violet";
-  if (/^(due|scheduled|pending|booked|ordered|unread)$/.test(word))
+  if (/^(due|scheduled|pending|booked|ordered|requested|unread)$/.test(word))
     return "blue";
   if (
     /^(future|stopped|discontinued|cancelled|canceled|unknown|not given|not-done)$/.test(
@@ -64,7 +65,8 @@ export function RecordTable({
   return (
     <div className="presentation-table-wrap">
       <table
-        className={`presentation-table table-${kind}`}
+        className={`presentation-table table-${kind}${actions?.size ? " with-row-actions" : ""}`}
+        data-columns={columns.length}
         aria-label={node.label}
       >
         <thead>

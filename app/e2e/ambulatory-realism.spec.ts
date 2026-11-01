@@ -64,6 +64,30 @@ for (const persona of ["P1", "P4"]) {
         animations: "disabled",
       });
       if (phase === "after") {
+        const diagnosis = screen.workspace
+          .flatMap(descendants)
+          .find(
+            (node) =>
+              "field" in node && node.field.comp.endsWith(".visitDiagnosis"),
+          );
+        if (diagnosis && "field" in diagnosis) {
+          const picker = page.locator(
+            `[data-comp-id="${diagnosis.field.comp}"][data-event="enter"]`,
+          );
+          await picker.evaluate((element) =>
+            element.scrollIntoView({ block: "center", behavior: "instant" }),
+          );
+          await picker.click();
+          await expect(page.getByRole("option").first()).toBeVisible();
+          await page.screenshot({
+            path: join(
+              output,
+              `${phase}-${persona}-${name.replace(".json", "-diagnosis-picker.png")}`,
+            ),
+            animations: "disabled",
+          });
+          await picker.press("Escape");
+        }
         const identity = screen.workspace
           .flatMap(descendants)
           .find((node) => "field" in node && node.field.kind === "identity");
