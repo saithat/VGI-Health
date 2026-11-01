@@ -2,7 +2,7 @@
 # Audit only Audit.SpecSurface's imports, serially; never build Ehr or EhrHeavy.
 set -euo pipefail
 cd "$(dirname "$0")/../lean"
-export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536
+export LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536
 mkdir -p .lake
 exec 9>.lake/audit-verification.lock
 flock -n 9 || { echo 'Another verification audit is running.' >&2; exit 1; }
@@ -18,6 +18,7 @@ commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(
 def fingerprint():
     files = sorted([*p('Ehr').rglob('*.lean'), *p('Audit').rglob('*.lean'),
                     p('Solution.lean'), p('Statements.lean'), p('CompletionObligations.lean'), p('comparator.json'),
+                    p('Ehr/Check/comparator.json'), p('Ehr/Check/completion-comparator.json'),
                     p('lakefile.toml'), p('lean-toolchain'), p('lake-manifest.json')])
     return hashlib.sha256(b''.join(str(f).encode() + b'\0' + f.read_bytes() for f in files)).hexdigest()
 before = fingerprint()
@@ -40,7 +41,7 @@ def build(module):
     if module == 'Audit.SpecSurface' or not dest.exists() or not stamp.exists() or stamp.read_text() != signature:
         dest.parent.mkdir(parents=True, exist_ok=True)
         print('Audit compile: ' + module, flush=True)
-        run = subprocess.run(['lean', '-j6', '-o', str(dest), str(src)], text=True,
+        run = subprocess.run(['lean', '-j4', '-o', str(dest), str(src)], text=True,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         (cache / 'last-module.log').write_text(run.stdout)
         if run.returncode or re.search(r'\bwarning:.*(?:sorry|declaration uses)', run.stdout):
@@ -61,14 +62,14 @@ assert all(set(a) <= {'propext', 'Classical.choice', 'Quot.sound'} for a in axio
 assert set(axioms) <= surfaces.keys(), 'Missing statement surface'
 assert before == fingerprint(), 'Lean sources changed during audit; rerun'
 assert commit == subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(), 'HEAD changed during audit; rerun'
+modules = {r['name']: r['module'] for r in records if r['kind'] == 'surface'}
 def source(name):
     short = name.rsplit('.', 1)[-1]
-    hits = [(f, i) for f in p('Ehr').rglob('*.lean') for i, line in enumerate(f.read_text().splitlines(), 1)
-            if re.match(r'(?:theorem|def|structure|inductive)\s+' + re.escape(short) + r'\b', line)
-            and 'ComparatorStatements' not in str(f)]
-    assert len(hits) == 1, (name, hits)
-    f, line = hits[0]
-    return f'[lean/{f}:{line}](../lean/{f}#L{line})'
+    f = p(modules[name].replace('.', '/') + '.lean')
+    hits = [i for i, line in enumerate(f.read_text().splitlines(), 1)
+            if re.match(r'(?:theorem|def|structure|inductive)\s+' + re.escape(short) + r'\b', line)]
+    assert len(hits) == 1, (name, f, hits)
+    return f'[lean/{f}:{hits[0]}](../lean/{f}#L{hits[0]})'
 groups, group_ids = [], {}
 for name, items in surfaces.items():
     key = tuple(items)
