@@ -31,20 +31,39 @@ export class Driver {
       commits: this.state.commits, popup: this.state.popup ?? null });
     return out.result;
   }
-  route(target) {
-    const queue = [[this.state.screen, []]], visited = new Set();
-    while (queue.length) {
-      const [id, path] = queue.shift();
-      if (id === target) return path;
-      if (visited.has(id)) continue;
-      visited.add(id);
-      const screen = this.program.screens.find(s => s.id === id);
-      for (const c of screen?.components ?? []) {
-        const next = action(c)?.goto?.screen;
-        if (next && !visited.has(next)) queue.push([next, [...path, c]]);
+  route(target, unavailable = new Set()) {
+    const walk = advanced => {
+      const queue = [[this.state.screen, [], this.state.history]], visited = new Set();
+      while (queue.length) {
+        const [id, path, history] = queue.shift();
+        if (id === target) return path;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const screen = this.program.screens.find(s => s.id === id);
+        for (const c of screen?.components ?? []) {
+          if (unavailable.has(c.id)) continue;
+          let next = action(c)?.goto?.screen;
+          let nextHistory = advanced ? [id, ...history] : history;
+          if (advanced && action(c) === 'back' && history.length) {
+            next = history[0]; nextHistory = history.slice(1);
+          }
+          if (advanced && c.kind?.macro) {
+            const macro = this.program.macros.find(m => m.id === c.kind.macro.id);
+            if (macro?.steps.length && macro.steps.every(s => s.goto)) {
+              let from = id;
+              nextHistory = history;
+              for (const step of macro.steps) { nextHistory = [from, ...nextHistory]; from = step.goto.screen; }
+              next = from;
+            }
+          }
+          if (next && !visited.has(next)) queue.push([next, [...path, c], nextHistory]);
+        }
       }
-    }
-    return null;
+      return null;
+    };
+    // Preserve ordinary paths; also understand navigation macros and actual
+    // back history when no ordinary route remains available.
+    return walk(false) ?? walk(true);
   }
   reveal(c, seen = new Set()) {
     if (this.view.items.some(i => i.comp.id === c.id && i.shown)) return true;
@@ -65,14 +84,22 @@ export class Driver {
       .filter(x => x.route !== null)
       .sort((a, b) => Number(b.s.workflow === workflow) - Number(a.s.workflow === workflow) || activeBinding(a.c) - activeBinding(b.c) || a.route.length - b.route.length);
     for (const { s, c } of candidates) {
-      const path = this.route(s.id);
-      let reached = true;
-      for (const navigation of path) {
-        if (!this.reveal(navigation)) { reached = false; break; }
-        const result = this.step({ click: { comp: navigation.id } }, `navigate toward ${description}`);
-        if (result !== 'ok') { reached = false; break; }
+      const unavailable = new Set();
+      const bound = this.program.screens.reduce((n, sc) => n + sc.components.length, 1);
+      for (let attempt = 0; attempt < bound; attempt++) {
+        const path = this.route(s.id, unavailable);
+        if (path === null) break;
+        let reached = true;
+        for (const navigation of path) {
+          if (!this.reveal(navigation)) { unavailable.add(navigation.id); reached = false; break; }
+          const result = this.step({ click: { comp: navigation.id } }, `navigate toward ${description}`);
+          if (result !== 'ok') { unavailable.add(navigation.id); reached = false; break; }
+        }
+        if (reached) {
+          if (this.reveal(c)) return c;
+          break;
+        }
       }
-      if (reached && this.reveal(c)) return c;
     }
     if (optional) return null;
     throw new Failure(`Workflow impossible: no reachable shown control for ${description}`);

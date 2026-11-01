@@ -79,7 +79,8 @@ manual dosing-weight input explicitly permitted by V1 remains a required entry.
 
 The driver binds **semantic intents** (`element=weight`, `commit=signOrders`,
 `info=allergyList`, `alert=drugAllergyOrder`) to the revision's actual controls.
-It traverses goto controls, opens ancestor groups and selects tabs, then relies
+It traverses goto controls, tries alternatives to hidden shortcuts, supports
+navigation macros/back history, opens ancestor groups and selects tabs, then relies
 on native `view` for visibility and native `step` for outcomes. No scenario names
 a canonical component or screen ID. A missing/hidden/unreachable control needed
 for a legitimate workflow fails with “Workflow impossible”. Layout/id mutation

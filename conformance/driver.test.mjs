@@ -65,3 +65,28 @@ test('semantic entry targets the active order line rather than a nearby fixed or
   d.enter('drug', code('metformin'));
   assert.equal(d.capture('drug').slot, d.state.currentSlot);
 });
+
+test('a hidden shortcut cannot mask an available alternate navigation path', { skip: !existsSync(binary) }, () => {
+  const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
+  const target = p.screens.find(s => s.components.some(c => c.kind?.field?.element === 'wristbandScan'));
+  p.screens.find(s => s.id === p.start).components.unshift({ id: 'probe-hidden-shortcut',
+    kind: { button: { action: { goto: { screen: target.id } } } }, label: 'Hidden shortcut', tab: 0,
+    visibility: { encounter: { kind: 'not-this-encounter' } }, size: 'normal', tag: 'probe' });
+  const d = new Driver(new Native(binary), sp, p, context('administerMed').facts);
+  prepare(d, context('administerMed')); d.finish('administerMed');
+  assert.ok(d.state.commits.includes('administerMed'));
+});
+
+test('semantic navigation supports a start screen whose navigation uses goto macros', { skip: !existsSync(binary) }, () => {
+  const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
+  for (const c of p.screens.find(s => s.id === p.start).components) {
+    const destination = c.kind?.button?.action?.goto?.screen;
+    if (!destination) continue;
+    const id = `probe-macro-${c.id}`;
+    p.macros.push({ id, label: c.label, steps: [{ goto: { screen: destination } }] });
+    c.kind = { macro: { id } };
+  }
+  const d = new Driver(new Native(binary), sp, p, context('administerMed').facts);
+  prepare(d, context('administerMed')); d.finish('administerMed');
+  assert.ok(d.state.commits.includes('administerMed'));
+});
