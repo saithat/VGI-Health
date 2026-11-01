@@ -14,7 +14,10 @@ const ehr = await loadEhrInterp();
 assert.ok(ehr.exports.includes('ehr_facts'));
 assert.ok(ehr.exports.includes('ehr_render'));
 assert.ok(ehr.exports.includes('ehr_render_ui'));
-const native = (command, input) => JSON.parse(execFileSync('lean/.lake/build/bin/ehr', [command], {
+// A runtime-only driver may call these exact exported API functions when the
+// aggregate CLI build is blocked by an unrelated test-module dependency.
+const nativeExecutable = process.env.EHR_RENDER_NATIVE ?? 'lean/.lake/build/bin/ehr';
+const native = (command, input) => JSON.parse(execFileSync(nativeExecutable, [command], {
   input: JSON.stringify(input), maxBuffer: 32 * 1024 * 1024,
 }));
 const context = data('context');
@@ -182,6 +185,7 @@ assert.ok(JSON.parse(ehr.call('ehr_render_ui', '{}')).error);
 for (const method of ['facts', 'render']) assert.ok(JSON.parse(ehr[method]('{}')).error);
 if (process.env.EHR_RENDER_SHARD_REPORT) {
   const wasmSha256 = createHash('sha256').update(readFileSync('app/public/ehr/ehr-interp.wasm')).digest('hex');
-  writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total: allStates.length, wasmSha256}));
+  const nativeSha256 = createHash('sha256').update(readFileSync(nativeExecutable)).digest('hex');
+  writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total: allStates.length, wasmSha256, nativeSha256}));
 }
 console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);

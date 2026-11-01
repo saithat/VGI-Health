@@ -77,6 +77,20 @@ changes are merge resolutions retaining both lanes' export checks.
   failed build; its already-started Comparator process is finishing independently.
   Logs: `/tmp/render-{final-build,targeted-build,comparator}.log`.
 - SDK symlinks still point to the authorized shared .tools SDK directories.
+- A performance regression on the folded orders screen is fixed: Ctx now stores
+  one view with a dependent proof that it equals the actual interpreter output.
+  State/program fixture updates explicitly rebuild that cache. No theorem
+  statement changed; all render modules, 35 Comparator contracts, and a kernel
+  check of the full render export pass. Only the permitted three axioms occur.
+  The exact same orders JSON takes 0.05 seconds instead of 40.06 seconds natively.
+- Current/legacy exports contain 9,843 / 4,382 variants (all 45 / 132 screens).
+  Rebuilt WASM matches all three regenerated native P1 samples. Before the cache
+  rebuild, final app build/lint/132 tests and 15 browser checks passed (3 intended
+  skips); world 92 tests passed. Differential shards and final assets remain.
+- The aggregate CLI imports the failing Sim test. A temporary runtime-only
+  native driver under `.tools/render-native` calls the exact exported Core/Render
+  API functions, without implementing any clinical logic. The differential runner
+  accepts its path through EHR_RENDER_NATIVE and records its binary hash.
 
 ## Exactly what is left
 

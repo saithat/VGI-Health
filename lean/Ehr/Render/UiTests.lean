@@ -6,7 +6,7 @@ namespace Ehr.Render
 
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
-def uiSignCtx : Ctx := { uiRoomCtx with s := { uiRoomCtx.s with screen := "sign" } }
+def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
     { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"), label := "Weight", tag := "weight" }
@@ -17,6 +17,13 @@ def uiReview : ReviewReq :=
   { commit := "signOrders", info := "allergyList", mode := .shownOrReceipt 720 [.physician, .np, .rn] }
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
+
+-- Input updates rebuild the dependent cache; a rooming view cannot leak
+-- into a sign state. The equality also holds for every arbitrary context.
+#guard uiRoomCtx.v.screen == uiRoomCtx.s.screen
+#guard uiSignCtx.v.screen == "sign"
+example (cx : Ctx) : cx.v = view cx.sp cx.prog cx.facts cx.user cx.s := cx.v_exact
+#print axioms Ctx.v_exact
 
 example : ("Patient", uiRoomCtx.disp.banner.name) ∈ uiScreenTest.banner ∧
     ("DOB", uiDate uiRoomCtx.disp.banner.dob) ∈ uiScreenTest.banner :=
@@ -38,14 +45,14 @@ example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp u
     { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") }).modal =
       some (.section "drugAllergy" "Drug–allergy match"
         [.button "drugAllergy" "Acknowledge" "ack" true none none]) := by
-  apply D4_interruptive_modal { uiRoomCtx with s := { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") } }
+  apply D4_interruptive_modal { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with popup? := some ("drugAllergy", "amoxicillin") } }
     "drugAllergy" "amoxicillin"
     { id := "drugAllergy", label := "Drug–allergy match", cond := .drugAllergy, tier := .interruptive, commit := "signOrders" }
     rfl (by decide) rfl
 
 example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user
     { uiRoomCtx.s with popup? := some ("careGap", "due") }).modal = none := by
-  apply D4_passive_no_modal { uiRoomCtx with s := { uiRoomCtx.s with popup? := some ("careGap", "due") } }
+  apply D4_passive_no_modal { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with popup? := some ("careGap", "due") } }
     "careGap" "due"
     { id := "careGap", label := "Care gap due", cond := .careGap, tier := .passive, commit := "signOrders", screens := ["W1"] }
     rfl (by decide) rfl
@@ -96,7 +103,7 @@ example : ∀ n, UiPresent uiScreenTest n → uiComp n ≠ some "signButton" := 
 
 -- A malformed program containing only the commit still gets its review rows.
 def uiMissingCtx : Ctx :=
-  { uiSignCtx with prog := { uiSignCtx.prog with screens :=
+  { uiSignCtx with viewCache := ⟨_, rfl⟩, prog := { uiSignCtx.prog with screens :=
     [{ id := "sign", title := "Sign", workflow := "W1", components := [uiSignItem.comp] }] } }
 
 example : ∃ comp label display, UiPresent
@@ -106,7 +113,7 @@ example : ∃ comp label display, UiPresent
 
 -- Passive alert presentation uses a satisfiable firing interpreter view.
 def uiPassiveCtx : Ctx :=
-  { tinyCtx with s := { tinyCtx.s with screen := "order" } }
+  { tinyCtx with viewCache := ⟨_, rfl⟩, s := { tinyCtx.s with screen := "order" } }
 def uiPassiveItem : ItemView :=
   itemView uiPassiveCtx.sp uiPassiveCtx.facts uiPassiveCtx.s (uiPassiveCtx.prog.compsOf "order")
     { id := "careGapAlert", kind := .alert "careGap" false, label := "Care gap", tag := "careGap" }
@@ -158,6 +165,7 @@ example : UiPresent
 /-- A real interpreter fixture for shell relocation and current-episode orders. -/
 def uiShellCtx : Ctx :=
   { uiRoomCtx with
+    viewCache := ⟨_, rfl⟩
     prog := { uiRoomCtx.prog with start := "shell", screens :=
       [{ id := "shell", title := "Shell regression", workflow := "W1", components :=
         [{ id := "shell.banner", kind := .banner, label := "Patient banner" },
@@ -199,7 +207,7 @@ def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCt
 -- A non-collapsible group is open in the interpreter regardless of its saved
 -- startCollapsed bit. Exercise the full shell, not just tag classification.
 def uiNavSavedCollapsedCtx : Ctx :=
-  { uiShellCtx with prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
     { sc with components := sc.components.map fun c =>
       if c.id == "shell.nav" then { c with kind := .group false true } else c } } }
 
