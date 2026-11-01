@@ -1,4 +1,5 @@
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
+import { RuleConformanceBadge } from "./RuleConformance";
 import { AppHeader } from "../ehr/ui/AppHeader";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
@@ -948,7 +949,9 @@ function VersionList({
               : "Certificate unavailable"}
         </Badge>
       </button>
+      <RuleConformanceBadge data={run.ruleConformance} persona={persona} revision={0} />
       {records.map((r) => {
+        // Behavioral conformance is recorded after deployment; certification remains the gate.
         const deployed = r.versionAfter !== r.versionBefore;
         const after = exactAt(r.versionAfter),
           before = exactAt(r.versionBefore);
@@ -1015,6 +1018,7 @@ function VersionList({
                 <Badge>{r.certification.result}</Badge>
               )}
             </button>
+            <RuleConformanceBadge data={run.ruleConformance} persona={persona} revision={r.versionAfter} />
             {rejected.map((rejection) => (
               <button
                 key={rejection.id}

@@ -1,4 +1,5 @@
 import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
+import { ruleConformanceSchema, type RuleConformance } from "./conformance-data";
 import {
   complexityReleaseLabels,
   historicalRunIds,
@@ -80,6 +81,7 @@ export interface RunData {
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
   complexity: ComplexityData | null;
+  ruleConformance?: RuleConformance | null;
   files?: string[];
 }
 export type ReadJson = (path: string) => Promise<unknown>;
@@ -179,6 +181,11 @@ export async function loadRun(
         run.complexity = complexity;
       } else if (file === "replay.json")
         run.replay = replaySchema.parse(await get(file));
+      else if (file === "conformance.json") {
+        const evidence = ruleConformanceSchema.parse(await get(file));
+        if (evidence.runId !== id) throw new Error("Rule conformance belongs to another run");
+        run.ruleConformance = evidence;
+      }
     }),
   );
   run.records.sort(
@@ -215,8 +222,12 @@ export async function loadRunSummary(
     (a, b) => a.night - b.night || a.persona.localeCompare(b.persona),
   );
   data.days.sort((a, b) => a.day - b.day);
+  const ruleConformance = data.files.includes("conformance.json")
+    ? ruleConformanceSchema.parse(await read(`/runs/${id}/conformance.json`)) : null;
+  if (ruleConformance && ruleConformance.runId !== id) throw new Error("Rule conformance belongs to another run");
   return {
     ...data,
+    ruleConformance,
     complexity:
       data.complexity && historicalRunIds.has(id)
         ? complexityReleaseLabels(data.complexity)

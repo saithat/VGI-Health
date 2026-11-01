@@ -20,6 +20,14 @@ if (!values.run) throw new Error('Usage: pnpm --filter agent report --run runs/<
 const directory = resolveUserPath(values.run);
 const manifest = await readJson(path.join(directory, 'manifest.json'), z.object({ runId: z.string(), days: z.number(), personas: z.array(z.string()), world: z.string(), ehr: z.object({ mode: z.literal('real') }), noAgentRequired:z.boolean().optional(), measurementProtocol: z.unknown().optional() }));
 const store = new RunStore(directory);
+const conformanceFile = path.join(directory, 'conformance.json');
+const conformance = existsSync(conformanceFile) ? await readJson(conformanceFile, z.object({
+  runId: z.string(), generatedAt: z.string(), deploymentGate: z.literal(false),
+  targets: z.array(z.object({ id: z.string(), kind: z.string(), passed: z.number(), failed: z.number(), notApplicable: z.number() })),
+})) : null;
+if (conformance && conformance.runId !== manifest.runId) throw new Error('Rule conformance belongs to another run');
+const ruleConformance = conformance ? { generatedAt: conformance.generatedAt, deploymentGate: false,
+  revisions: conformance.targets.filter(t => t.kind === 'deployed'), source: 'conformance.json' } : null;
 const world = await loadWorld(manifest.world);
 const ehr = recordingEhr(createEhr({ fake: false }), path.join(directory, 'metrics/ehr'));
 const rows = [];
@@ -71,11 +79,14 @@ for (const persona of manifest.personas) {
     nights: decisions.map((d) => ({ night: d.night, outcome: d.outcome, blindTest:d.measured.test?.day??null,testNote:d.flags.filter(f=>f.startsWith('test-unmeasured')), newCalibrationData:d.night%2===1, llmCalls: d.llmCalls.length, flags: d.flags })),
   });
 }
-const report = { runId: manifest.runId, worldSeed: world.manifest.seed, comparison: 'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
+const report = { runId: manifest.runId, ruleConformance, worldSeed: world.manifest.seed, comparison: 'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
 await writeJson(path.join(directory, 'metrics/smoke-summary.json'), report);
 console.log('| Persona | Candidates pass/reject | Deployed | Clicks before→after | Keys before→after | KLM s before→after | Incomplete |');
 console.log('|---|---:|---|---:|---:|---:|---:|');
 for (const r of rows) console.log(`| ${r.persona} | ${r.checkerAccepted}/${r.checkerRejected} | ${r.deployedVersions.map((v) => `v${v}`).join(', ')} | ${r.before.clicks}→${r.after.clicks} | ${r.before.keystrokes}→${r.after.keystrokes} | ${r.before.klmDeciSec / 10}→${r.after.klmDeciSec / 10} | ${r.incomplete.length} |`);
 console.log('Agent-only savings vs no-agent control (clicks / keys / KLM seconds):');
+console.log('Rule conformance (read-only; never a deployment gate):');
+if (ruleConformance) for (const revision of ruleConformance.revisions) console.log(`${revision.id}: ${revision.failed ? `${revision.failed} failures` : 'all pass'} (${revision.passed} passed, ${revision.notApplicable} not applicable)`);
+else console.log('Unavailable: run pnpm conformance --run <id> to record behavioral evidence.');
 for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.keystrokes} / ${r.noAgent.saving.klmDeciSec/10}`:'Unavailable'}; blind samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
 await writeJson(path.join(directory, 'metrics/provenance.json'), { runId: manifest.runId, comparison: report.comparison, scheduleDays: Array.from({ length: manifest.days }, (_, i) => `day-${pad2(i + 1)}`) });

@@ -75,7 +75,7 @@ export function table(report) {
 
 export async function runSuite({ targets, binary, runId = null, selected }) {
   const native = new Native(binary);
-  const scenarios = scenarioCatalog.filter(s => !selected || s.id.includes(selected));
+  const scenarios = scenarioCatalog.filter(s => !selected || selected.split(',').some(part => s.id.includes(part)));
   const report = { schemaVersion: 1, suite: 'held-out-core-rule-conformance', runId,
     generatedAt: new Date().toISOString(), independentOfChecker: true, deploymentGate: false,
     boundary: 'Native interpreter + FHIR projection. Does not exercise browser painter, persistence, or shell patient-selection wiring.',
@@ -102,7 +102,8 @@ export async function runSuite({ targets, binary, runId = null, selected }) {
         result.failed++;
         const d = native.lastDriver;
         report.results.push({ target: target.id, scenario: s.id, status: 'fail', observed: e.message,
-          scope: s.scope ?? 'exact-program', ...(d ? { facts: d.facts, user: d.input.user, trace: d.trace, finalState: d.state } : {}) });
+          scope: s.scope ?? 'exact-program', ...(d ? { facts: d.facts, user: d.input.user, trace: d.trace, finalState: d.state,
+            testedProgramSha256: digest(d.program) } : {}) });
       }
     }
     report.targets.push(result);

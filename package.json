@@ -7,7 +7,7 @@
   },
   "scripts": {
     "conformance": "node conformance/index.mjs",
-    "test:conformance": "node --test conformance/*.test.mjs",
+    "test:conformance": "node --experimental-strip-types --test conformance/*.test.mjs",
     "complexity": "node scripts/complexity/compute.mjs",
     "test:complexity": "node --test scripts/complexity/compute.test.mjs && pnpm --filter app exec playwright test complexity.spec.ts",
     "trajectories": "node scripts/trajectories/index.mjs",

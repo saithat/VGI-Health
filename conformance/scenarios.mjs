@@ -1,5 +1,5 @@
 import { Driver, Failure, assert, field, commit, info, alert } from './driver.mjs';
-import { entries, roles, personaCommits, reviews, linked, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
+import { entries, roles, personaCommits, reviews, linked, orderLine, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
 
 const hasElement = (target, id) => target.spec.elements.some(e => e.id === id);
 const supports = (target, id) => (personaCommits[target.persona] ?? Object.keys(entries).filter(c => roles[c].includes(target.program.role))).includes(id);
@@ -50,16 +50,26 @@ export function fixtures(native, target) {
 for (const [id, fields] of Object.entries(entries)) {
   for (const element of fields) {
     add(`entry.${id}.${element}`, `Core ${id}: ${element}`, linked[element]
-      ? `Enter ${linked[element]} once; ${element} carries the confirmed linked value`
+      ? `A configured link uses ${linked[element]}; a manual field remains required`
       : `Attempt ${id} before entering/confirming ${element}; hard stop names ${element}`,
-    t => supports(t, id) && hasElement(t, element), f => {
+    t => supports(t, id) && !(t.archived && !hasElement(t, element)), f => {
       const ctx = context(id);
       if (linked[element]) {
-        const d = f.prefix(ctx);
-        d.assertCaptured(element, sample(element, ctx, d));
-        assert(d.capture(element).provenance === `linked:${linked[element]}`, `Missing enter-once provenance for ${element}`);
-        d.finish(id);
-        return { d, observed: `${element} linked from ${linked[element]}; legitimate ${id} completed` };
+        const d = f.prefix(ctx, element);
+        const c = d.find(field(element), `element ${element}`);
+        if (c.kind.field.prefill?.linked) {
+          d.assertCaptured(element, sample(element, ctx, d));
+          assert(d.capture(element).provenance === `linked:${linked[element]}`, `Wrong declared-link provenance for ${element}`);
+          return { d, observed: `${element} confirmed from declared source ${linked[element]}` };
+        }
+        // V1 explicitly permits the canonical's separate dosing-weight entry.
+        return { d, observed: refusal(d, id, element) };
+      }
+      if (element === 'drug') {
+        const d = f.prefix(ctx, 'dose');
+        const result = d.enter('drug', code(''), { refusal: true });
+        assert(result?.blocked && d.capture('drug')?.value.code?.c === ctx.drug, 'Clearing the medication removed a required drug');
+        return { d, observed: 'Existing medication line cannot be replaced with an empty drug' };
       }
       const d = f.prefix(ctx, element);
       return { d, observed: refusal(d, id, element) };
@@ -146,12 +156,12 @@ export const patientBundle = (id = 'heldout-A', weightDate = '2026-11-02', unit 
     code: { coding: [{ system: 'http://loinc.org', code: '29463-7' }] }, effectiveDateTime: `${weightDate}T09:00:00Z`, valueQuantity: { value: 70, unit, code: unit } } },
 ] });
 add('weight.stale-record', 'Hospital current kg weight / FHIR abstraction', 'Yesterday’s weight cannot prefill today; fresh kg observation can', t => supports(t, 'signOrders'), f => {
-  const old = f.native.call('facts', { bundle: patientBundle('heldout-A', '2026-11-01'), context: { today: '2026-11-02', now: 600 } });
+  const old = f.native.call('facts', { bundle: patientBundle('heldout-A', '2026-11-01'), context: { today: '2026-11-02', now: 600, receipts: [], record: [] } });
   assert(old.facts.weightToday === undefined, 'Stale FHIR weight classified as today');
   const ctx = context('signOrders', { facts: old.facts }), d = f.driver(ctx);
   d.find(field('weight'), 'weight');
   assert(!d.capture('weight'), 'Yesterday’s weight prefilled as current');
-  const fresh = f.native.call('facts', { bundle: patientBundle(), context: { today: '2026-11-02', now: 600 } });
+  const fresh = f.native.call('facts', { bundle: patientBundle(), context: { today: '2026-11-02', now: 600, receipts: [], record: [] } });
   assert(JSON.stringify(fresh.facts.weightToday) === JSON.stringify([700, 'kg']), 'Fresh kg weight unavailable');
   prepare(d, ctx); d.finish('signOrders'); return { d, observed: 'Stale weight not prefilled; current human kg entry completes' };
 });
@@ -184,7 +194,8 @@ for (const [id, duration, exemption, allowed] of [
 ]) add(`cures.${id}`, 'Law: CURES / documented seven-day procedure exemption',
   allowed ? 'Eligible seven-day surgical exemption permits signing without report' : 'No eligible exemption: signing without CURES report refused',
   t => supports(t, 'signOrders') && t.program.role !== 'np', f => {
-    const ctx = context('signOrders', { drug: 'oxycodone', freq: 'q6h', duration, facts: { ...facts(), encounterKind: 'preop' } });
+    const ctx = context('signOrders', { drug: 'oxycodone', freq: 'q6h', duration,
+      facts: facts({ encounterKind: 'preop', record: [['surgicalProcedure', 'appendectomy'], ['facilityKind', 'general-acute-care'], ['directedSupplyDays', duration === '8-days' ? '8' : '7']] }) });
     const d = new Driver(f.native, f.target.spec, withoutPanel(f.target, 'curesReport'), ctx.facts);
     prepare(d, ctx);
     if (exemption) d.enter('curesExemptionReason', code(exemption), { refusal: !allowed });
@@ -207,12 +218,12 @@ for (const element of ['naloxoneOffer', 'naloxoneEducation']) for (const risk of
   });
 }
 
-add('v3.antibiotic-indication', 'Release v3 antibiotic indication', 'Each antibiotic requires a confirmed coded indication; legitimate antibiotic signing completes', t => supports(t, 'signOrders') && hasElement(t, 'abxIndication'), f => {
+add('v3.antibiotic-indication', 'Release v3 antibiotic indication', 'Each antibiotic requires a confirmed coded indication; legitimate antibiotic signing completes', t => supports(t, 'signOrders') && t.semanticRelease === 'v3', f => {
   const ctx = context('signOrders', { drug: 'amoxicillin' }), d = f.prefix(ctx, 'abxIndication');
   const observed = refusal(d, 'signOrders', 'abxIndication'); const good = f.prefix(ctx); good.finish('signOrders');
   return { d, observed: `${observed}; confirmed indication signed` };
 });
-add('v3.mar-indication-shown', 'Release v3 antibiotic MAR review', 'Antibiotic indication shown before administration, with no receipt substitution', t => supports(t, 'administerMed') && hasElement(t, 'abxIndication'), f => {
+add('v3.mar-indication-shown', 'Release v3 antibiotic MAR review', 'Antibiotic indication shown before administration, with no receipt substitution', t => supports(t, 'administerMed') && t.semanticRelease === 'v3', f => {
   const ctx = context('administerMed', { facts: facts({ medToGive: 'amoxicillin', receipts: [{ info: 'abxIndication', dataVersion: 0, time: 20000, role: 'rn', user: 'prior-nurse' }] }) }), d = f.driver(ctx);
   prepare(d, ctx, ['painScore', 'highAlertCosign']); d.atCommit('administerMed');
   assert(d.view.items.some(i => i.shown && info('abxIndication')(i.comp)), 'Antibiotic indication not shown at administration');
@@ -298,7 +309,8 @@ add('alerts.no-false-alarms', 'A2 false alarms', 'No allergy, interaction, care 
 const humanElements = ['patientIdReentry', 'wristbandScan', 'medScan', 'highAlertCosign', 'consentVerified', 'painScore', 'painReassessment', 'curesExemptionReason', 'naloxoneOffer', 'naloxoneEducation', 'priorAuthRequest'];
 for (const element of humanElements) for (const attack of ['macro', 'prefill']) add(`human-only.${element}.${attack}`, 'Human-only / never-prefill values', `${attack} cannot capture ${element}; real human can`,
   t => hasElement(t, element) && t.program.screens.some(s => s.components.some(field(element))), f => {
-    const ctx = context(element.includes('Scan') || element === 'highAlertCosign' || element === 'painScore' || element === 'painReassessment' ? 'administerMed' : 'signOrders');
+    const ctx = context(element.includes('Scan') || element === 'highAlertCosign' || element === 'painScore' || element === 'painReassessment' ? 'administerMed' : 'signOrders',
+      element === 'consentVerified' ? { facts: facts({ encounterKind: 'preop' }) } : {});
     const p = structuredClone(f.target.program);
     const sc = p.screens.find(s => s.components.some(field(element)));
     const c = sc.components.find(field(element));
@@ -353,3 +365,120 @@ add('design.banner', 'Core patient landmark / D1', 'Every reachable screen shows
   }
   return { d, observed: `Patient banner shown on ${count} reachable screens` };
 });
+
+add('workflow.empty-medication-signing', 'Workflow expectation: do not sign an empty medication episode',
+  'After ID and kg checks, signing with no selected medication should refuse', t => supports(t, 'signOrders'), f => {
+    const ctx = context('signOrders'), d = f.prefix(ctx, 'drug');
+    return { d, observed: refusal(d, 'signOrders', 'drug') };
+  }, { expectationBoundary: 'Stricter workflow expectation: per-line encoded entries are vacuous when no drug line exists. A failure does not establish an unsafe MedicationRequest write.' });
+
+function nextMedicationLine(d, ctx, omit = []) {
+  const screens = d.program.screens.filter(s => s.components.some(field('drug')));
+  const c = d.find(c => c.kind?.button?.action === 'newOrderLine' && screens.some(s => s.components.includes(c)), 'add medication order line');
+  const before = d.state.currentSlot;
+  assert(d.step({ click: { comp: c.id } }, 'add second medication line') === 'ok', 'Completed line could not advance');
+  assert(d.state.currentSlot === before + 1, 'New order line did not advance');
+  for (const e of orderLine) {
+    if (omit.includes(e)) continue;
+    const options = { slot: d.state.currentSlot, workflow: d.screen.workflow };
+    if (linked[e]) {
+      d.find(field(e, d.state.currentSlot), `linked element ${e}`, options);
+      if (d.capture(e, d.state.currentSlot)?.confirmed) continue;
+    }
+    d.enter(e, sample(e, ctx, d), options);
+  }
+}
+add('orders.incomplete-line-cannot-advance', 'Core completion from reachable states', 'Cannot advance an unfinished line; completing it leaves signing reachable', t => supports(t, 'signOrders'), f => {
+  const ctx = context('signOrders'), d = f.prefix(ctx, 'dose');
+  const c = d.find(c => c.kind?.button?.action === 'newOrderLine', 'add order line');
+  const before = d.state.currentSlot;
+  const r = d.step({ click: { comp: c.id } }, 'try stranding a line without its dose');
+  assert(r?.blocked && d.state.currentSlot === before, 'Unfinished line became unreachable');
+  const good = f.prefix(ctx); good.finish('signOrders'); return { d, observed: 'Incomplete line refused advancement; complete line signed' };
+});
+add('scheduleII.each-line-zero', 'Law: Schedule II zero refills on every line', 'A zero on line 1 cannot authorize nonzero refills on line 2', t => supports(t, 'signOrders'), f => {
+  const ctx = controlled(), d = f.prefix(ctx);
+  nextMedicationLine(d, ctx);
+  d.enter('refills', qty(30), { slot: d.state.currentSlot });
+  refusal(d, 'signOrders', 'refills');
+  d.enter('refills', qty(0), { slot: d.state.currentSlot }); d.finish('signOrders');
+  return { d, observed: 'Second Schedule II line with 3 refills blocked despite first-line zero; both zero completed' };
+});
+add('v3.antibiotic-each-line', 'Release v3 indication on every antibiotic line', 'First-line indication does not cover second antibiotic; both confirmed indications complete', t => supports(t, 'signOrders') && t.semanticRelease === 'v3', f => {
+  const ctx = context('signOrders', { drug: 'amoxicillin' }), d = f.prefix(ctx);
+  nextMedicationLine(d, ctx);
+  refusal(d, 'signOrders', 'abxIndication');
+  d.enter('abxIndication', code('skin-infection'), { slot: d.state.currentSlot }); d.finish('signOrders');
+  return { d, observed: 'Second antibiotic required its own indication; two complete lines signed' };
+});
+add('dose.native-units-positive', 'Unit-aware dose legitimate path', 'Insulin in units completes; insulin in mg is refused', t => supports(t, 'signOrders'), f => {
+  const ctx = context('signOrders', { drug: 'insulin lispro', unit: 'units', dose: 100 }), d = f.prefix(ctx, 'dose');
+  const r = d.enter('dose', qty(100, 'mg'), { refusal: true });
+  assert(r?.blocked, 'Insulin dose in mg accepted');
+  const good = f.prefix(ctx); good.finish('signOrders'); return { d, observed: 'Insulin mg refused; 10 units signed without conversion to mg' };
+});
+
+add('epcs.receipt-never-replaces-details', 'Law: EPCS details shown at signing', 'Even a fresh receipt cannot replace controlled prescription details', t => supports(t, 'signOrders'), f => {
+  const ctx = controlled(); ctx.facts.receipts = [{ info: 'orderSummary', dataVersion: 0, time: ctx.facts.now, role: f.target.program.role, user: f.target.program.owner }];
+  const d = new Driver(f.native, f.target.spec, withoutPanel(f.target, 'orderSummary'), ctx.facts);
+  prepare(d, ctx); return { d, observed: refusal(d, 'signOrders', 'orderSummary') };
+}, { scope: 'runtime-probe', probe: 'Suppress only order summary display; supply a fresh receipt' });
+
+for (const panel of ['allergyList', 'currentMeds']) for (const variant of ['valid', 'expired', 'wrong-version', 'wrong-role']) {
+  add(`receipt.${panel}.${variant}`, `Hospital ${panel} receipt validity`, variant === 'valid'
+    ? 'Fresh same-version permitted-role receipt can substitute for display' : `${variant} receipt cannot substitute for required display`, t => supports(t, 'signOrders'), f => {
+    const ctx = context('signOrders');
+    const receipt = { info: panel, dataVersion: panel === 'allergyList' ? 3 : 4, time: ctx.facts.now, role: f.target.program.role, user: 'prior-reviewer' };
+    if (variant === 'expired') receipt.time -= 241;
+    if (variant === 'wrong-version') receipt.dataVersion++;
+    if (variant === 'wrong-role') receipt.role = 'rn';
+    ctx.facts.receipts = [receipt];
+    const d = new Driver(f.native, f.target.spec, withoutPanel(f.target, panel), ctx.facts);
+    prepare(d, ctx);
+    if (variant === 'valid') { d.finish('signOrders'); return { d, observed: `${panel} fresh authorized receipt permitted signing` }; }
+    return { d, observed: refusal(d, 'signOrders', panel) };
+  }, { scope: 'runtime-probe', probe: 'Suppress only named panel to observe the receipt guard' });
+}
+
+add('alerts.changed-data-reinterrupts', 'A3 changed data requires a fresh acknowledgement', 'Same allergy key does not repeat; a new allergy version may interrupt again', t => supports(t, 'signOrders'), f => {
+  const ctx = context('signOrders', { drug: 'amoxicillin', facts: facts({ allergyClasses: ['penicillin'] }) }), d = f.prefix(ctx);
+  d.finish('signOrders');
+  const c = d.find(alert('drugAllergyOrder'), 'drug allergy alert');
+  d.step({ click: { comp: c.id } }, 'reopen acknowledged same-version alert'); assert(!d.state.popup, 'Same-version alert repeated');
+  d.input.facts.allergyVersion++;
+  d.step({ click: { comp: c.id } }, 'review updated allergy version');
+  assert(d.state.popup?.[0] === 'drugAllergyOrder', 'Updated allergy data did not request a new acknowledgement');
+  d.step({ ack: { alert: 'drugAllergyOrder' } }, 'acknowledge changed allergy data');
+  return { d, observed: 'Same data did not reinterrupt; new data version required a new acknowledgement' };
+});
+
+add('automation.commit-and-review', 'Human-only commits and reviews', 'Macro cannot sign or manufacture a review receipt', t => supports(t, 'signOrders'), f => {
+  const ctx = context('signOrders'), original = f.prefix(ctx);
+  original.atCommit('signOrders');
+  const d = original.fork(), p = structuredClone(d.program), sc = p.screens.find(s => s.id === d.state.screen);
+  const button = sc.components.find(commit('signOrders'));
+  p.macros.push({ id: 'heldout-commit-probe', label: 'Probe', steps: [{ click: { comp: button.id } }] });
+  sc.components.push({ id: 'heldout-commit-probe', kind: { macro: { id: 'heldout-commit-probe' } }, label: 'Probe', tab: 0, visibility: 'always', size: 'normal', tag: 'heldout-commit-probe' });
+  d.input.program = p;
+  const r = d.step({ click: { comp: 'heldout-commit-probe' } }, 'macro attempts signing');
+  assert(r?.blocked?.reason?.includes('human only: commit') && !d.state.commits.length, 'Macro signed orders');
+  const review = d.find(c => c.kind?.button?.action?.markReviewed?.info === 'allergyList', 'mark allergies reviewed');
+  const reviewScreen = p.screens.find(s => s.id === d.state.screen);
+  p.macros.push({ id: 'heldout-review-probe', label: 'Probe', steps: [{ click: { comp: review.id } }] });
+  reviewScreen.components.push({ id: 'heldout-review-probe', kind: { macro: { id: 'heldout-review-probe' } }, label: 'Probe', tab: 0, visibility: 'always', size: 'normal', tag: 'heldout-review-probe' });
+  const before = JSON.stringify(d.state.receipts);
+  const rr = d.step({ click: { comp: 'heldout-review-probe' } }, 'macro attempts review receipt');
+  assert(rr?.blocked?.reason?.includes('human only: review') && JSON.stringify(d.state.receipts) === before, 'Macro manufactured a review receipt');
+  original.finish('signOrders'); return { d, observed: 'Macro signing and review refused; original human workflow completed' };
+}, { scope: 'runtime-probe', probe: 'Inject macro buttons calling existing sign and review controls' });
+
+add('patient-switch.chart-scoping', 'Patient isolation in FHIR projection', 'Opening B with a stale A resource must reject or exclude A clinical data', () => true, f => {
+  const bundle = patientBundle('heldout-B');
+  bundle.entry.push({ resource: { resourceType: 'AllergyIntolerance', id: 'A-private-allergy', patient: { reference: 'Patient/heldout-A' },
+    meta: { versionId: '7' }, clinicalStatus: { coding: [{ code: 'active' }] }, code: { text: 'HELDOUT_A_PRIVATE_ALLERGY', coding: [{ code: 'penicillin' }] } } });
+  const projected = f.native.call('facts', { bundle, context: { today: '2026-11-02', now: 600, receipts: [], record: [] } });
+  const d = new Driver(f.native, f.target.spec, f.target.program, projected.facts);
+  assert(!JSON.stringify(projected.display.allergies).includes('HELDOUT_A_PRIVATE_ALLERGY'), 'FHIR projection displayed patient A allergy in patient B chart');
+  assert(!projected.facts.allergyClasses.includes('penicillin'), 'Patient A allergy altered B safety facts');
+  return { d, observed: 'Patient A clinical resource excluded from B projection' };
+}, { scope: 'adapter-probe', expectationBoundary: 'Defensive mixed-bundle test. Native init reset is tested separately; shell chart-loading/patient-selection integration is outside this no-browser suite.' });
