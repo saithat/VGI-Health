@@ -1816,10 +1816,16 @@ def infos : List InfoSpec := [
 
 A commit changes the record. Each has the roles that may do it. -/
 
-/-- Product design property.
-Sign medication orders (clinic, ED, pre-op, post-op, rounding, discharge
-prescriptions). -/
-def signOrders : CommitSpec := { id := "signOrders", label := "Sign orders", roles := prescribers }
+/-- Hospital policy (not law), owner decision 2026-10-31.
+Only physicians and surgeons sign pre-op orders. -/
+def preopSigningRoles : EncounterRoleRule :=
+  { encounter := "preop", roles := [.physician, .surgeon],
+    reason := "Pre-op orders are signed by a physician or surgeon" }
+
+/-- Sign orders, with the hospital's pre-op role restriction. -/
+def signOrders : CommitSpec :=
+  { id := "signOrders", label := "Sign orders", roles := prescribers,
+    encounterRoles? := some [preopSigningRoles] }
 /-- Product design property.
 Sign a visit or consult note. -/
 def signNote : CommitSpec := { id := "signNote", label := "Sign note", roles := prescribers }

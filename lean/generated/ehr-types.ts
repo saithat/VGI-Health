@@ -549,6 +549,15 @@ export interface ExpiryReq {
 }
 
 /**
+ * In this encounter kind, only these roles may perform the commit.
+ */
+export interface EncounterRoleRule {
+  encounter: string;
+  roles: Role[];
+  reason: string;
+}
+
+/**
  * A commit and the roles allowed to perform it.
  */
 export interface CommitSpec {
@@ -558,6 +567,10 @@ export interface CommitSpec {
   temporal?: TemporalReq[];
   expiry?: ExpiryReq[];
   actionLabel?: string;
+  /**
+   * No encounter-specific role restriction when absent. Matching rules all apply.
+   */
+  encounterRoles?: EncounterRoleRule[];
 }
 
 /**

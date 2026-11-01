@@ -1,7 +1,8 @@
 /**
  * pnpm --filter world gen --seed 1 --days 10 [--fixtures <index.json>] [--out <dir>]
  *
- * Writes runs/world/<seed>/state-day-<d>.json, day-<d>-<persona>.json
+ * Defaults to runs/world/2 (world revision, independent of seed); writes
+ * state-day-<d>.json, day-<d>-<persona>.json
  * (DaySchedule, validated against src/schema.ts) and manifest.json.
  */
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -52,7 +53,7 @@ function main(): void {
   const seed = intArg(args, "seed", 1);
   const days = intArg(args, "days", 10);
   const fixtures = resolve(arg(args, "fixtures") ?? defaultFixtures(root));
-  const outDir = resolve(arg(args, "out") ?? join(root, "runs", "world", String(seed)));
+  const outDir = resolve(arg(args, "out") ?? join(root, "runs", "world", "2"));
 
   const pop = loadPopulation(fixtures);
   const run = generateWorld(seed, days, pop.patients);

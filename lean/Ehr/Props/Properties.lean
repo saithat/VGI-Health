@@ -75,11 +75,11 @@ banner) is shown. -/
 def LandmarksShown (ep : Episode) : Prop :=
   Always ep fun s => ∀ l ∈ ep.spec.design.landmarks, InfoShown ep s l
 
-/-- Every element a required commit needs has a field on a screen at most
-`maxDepth` "go to" clicks from the start screen. -/
+/-- Every relevant entry has a field within the depth bound. Entries scoped
+only to encounters where this role cannot commit are not required. -/
 def RequiredWithinDepth (spec : Spec) (canonical prog : Program) : Prop :=
   ∀ c ∈ requiredCommits spec canonical prog, ∀ rq ∈ spec.entries, rq.commit = c →
-    ∃ sc ∈ allComps prog, (∃ f ∈ fieldOf? sc.2.kind, f.1 = rq.element) ∧
+    entryRelevantForRole spec prog.role rq = true → ∃ sc ∈ allComps prog, (∃ f ∈ fieldOf? sc.2.kind, f.1 = rq.element) ∧
       WithinClicks prog spec.design.maxDepth sc.1.id
 
 /-- **Property 1, well-formed.** Catalog components only, unique IDs (in the
@@ -253,14 +253,14 @@ def CommitsStayReachable (ep : Episode) (commits : List CommitId) : Prop :=
   Always ep fun s => ∀ c ∈ commits, c ∉ s.commits →
     ∃ es : List Event, c ∈ (ep.afterHuman s es).commits
 
-/-- **Property 6, completable.** For every patient record that allows the
-commit at all, each commit the program must support stays reachable from
+/-- **Property 6, completable.** For each patient record and user allowed to
+perform the commit in that encounter, the commit stays reachable from
 every reachable state: the user can always enter what is required, see what
 must be reviewed (or enter its waiver), and acknowledge alerts. Needs the
 checker. -/
 def Completable (spec : Spec) (canonical prog : Program) : Prop :=
   ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
-    CommitsStayReachable ⟨spec, prog, facts, user⟩ (requiredCommits spec canonical prog)
+    CommitsStayReachable ⟨spec, prog, facts, user⟩ (requiredCommitsFor spec canonical prog facts user)
 
 /-! ## 7. Units -/
 

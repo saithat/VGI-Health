@@ -56,8 +56,6 @@ def replay(spec, program, events):
 def main():
     cases = [(f"releases/{release}/personas/P{i}.json", "persona")
              for release in ("v1", "v1.1", "v2") for i in range(1, 6)]
-    cases += [(f"releases/{release}/canonical.json", "baseline")
-              for release in ("v1", "v1.1", "v2")]
     core, deferred = json.loads((ROOT / "lean/Ehr/Check/bad-program-profiles.json").read_text())
     expected = {f"programs/bad/{name}.json": prop for name, prop in core}
     cases += [(path, "bad") for path in expected]
@@ -84,7 +82,8 @@ def main():
         item = {"program": path, "group": group, "spec": sp,
                 "programSha256": digest(path), "specSha256": digest(sp),
                 "canonicalSha256": digest(canonical),
-                "previous": prev, "exitCode": run.returncode, "verdict": verdict}
+                "previous": prev, "exitCode": run.returncode, "verdict": verdict,
+                "status": "certified" if group == "persona" and run.returncode == 0 else "rejected"}
         if group == "bad":
             item["expectedProperty"] = expected[path]
             item["expectedPropertyRejected"] = (run.returncode == 1 and
@@ -103,15 +102,22 @@ def main():
         return 0
     personas = [x for x in results if x["group"] == "persona"]
     bad = [x for x in results if x["group"] == "bad"]
-    baselines = [x for x in results if x["group"] == "baseline"]
+    reference_reason = "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
+    references = []
+    for release in ("v1", "v1.1", "v2"):
+        path = f"releases/{release}/canonical.json"
+        references.append({"program": path, "group": "reference", "status": "reference",
+                           "reason": reference_reason, "programSha256": digest(path),
+                           "spec": f"releases/{release}/spec.json"})
+    results.extend(references)
     report = {
         "sourceRevision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "sourceDirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "binarySha256": digest(BINARY),
         "profile": "core",
         "fullProfileOnly": deferred,
-        "baselineAccepted": sum(x["exitCode"] == 0 for x in baselines),
-        "baselineCount": len(baselines),
+        "referenceCount": len(references),
+        "certifiedBaselineCount": sum(x["exitCode"] == 0 for x in personas),
         "personaAccepted": sum(x["exitCode"] == 0 for x in personas),
         "personaCount": len(personas),
         "badRejected": sum(x["exitCode"] == 1 for x in bad), "badCount": len(bad),
@@ -120,17 +126,21 @@ def main():
     }
     output = ROOT / "lean/Ehr/Check/certification-report.json"
     output.write_text(json.dumps(report, indent=2) + "\n")
-    verdicts = {x["program"]: {"status": "computed" if x["exitCode"] == 0 else "rejected",
-                "sha256": x["programSha256"], "output": x["verdict"]} for x in results}
+    verdicts = {x["program"]: {"status": x["status"],
+                "sha256": x["programSha256"], "output": x["verdict"]}
+                for x in results if x["group"] != "reference"}
+    for reference in references:
+        verdicts[reference["program"]] = {"status": "reference",
+            "sha256": reference["programSha256"], "output": reference_reason}
     for name in deferred:
         verdicts[f"programs/bad/{name}.json"] = {"status": "full-profile only"}
     artifact = {"checker": "lean ehr check", "profile": "core", "programs": verdicts}
     # The browser serves /verdicts.json from app/public; retain a root copy too.
     for path in [ROOT / "verdicts.json", ROOT / "app/public/verdicts.json"]:
         path.write_text(json.dumps(artifact, indent=2) + "\n")
-    print(f"Baselines {report['baselineAccepted']}/{len(baselines)}")
+    print(f"Vendor references: {len(references)} (not deployable)")
     print(f"Personas {report['personaAccepted']}/{len(personas)}; bad rejected {report['badRejected']}/{len(bad)}")
-    return 0 if all(x["exitCode"] == 0 for x in personas + baselines) and all(x["exitCode"] == 1 for x in bad) else 1
+    return 0 if all(x["exitCode"] == 0 for x in personas) and all(x["exitCode"] == 1 for x in bad) else 1
 
 
 if __name__ == "__main__":
