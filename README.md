@@ -10,6 +10,8 @@ Every night an AI agent redesigns each clinician's EHR screens to save them clic
 - Project status and open items: [`docs/STATUS.md`](docs/STATUS.md)
 - Proof status: [`TODO_PROOFS.md`](TODO_PROOFS.md)
 
+See [docs/VERIFICATION.md](docs/VERIFICATION.md) for what is proved, what is trusted, and the open gaps.
+
 ## Quick start
 Requires Node 22+ and pnpm 11 (`corepack enable`). `make run` opens the live
 clinician sign-in at **http://localhost:5173/**. The visible **Demo / replay**
