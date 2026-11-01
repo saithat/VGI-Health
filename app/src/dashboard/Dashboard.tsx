@@ -24,13 +24,24 @@ import "./dashboard.css";
 const Trajectories = lazy(() =>
   import("./Trajectories").then((m) => ({ default: m.Trajectories })),
 );
+const CompareTrajectories = lazy(() =>
+  import("./CompareTrajectories").then((m) => ({
+    default: m.CompareTrajectories,
+  })),
+);
 import { WorkflowComplexity, personas } from "./WorkflowComplexity";
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
 import { workloadAt, versionsFor } from "./workload";
 import { formatComplexity as fmt } from "./complexity-data";
 
-const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
+const views = [
+  "Evolution",
+  "Trajectories",
+  "Compare",
+  "Releases",
+  "Try to break it",
+];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
@@ -900,7 +911,12 @@ function VersionList({
     after: ReturnType<typeof exactAt>,
     before: ReturnType<typeof exactAt>,
   ) =>
-    after && before && typeof after.total.clicks==='number' && typeof before.total.clicks==='number' && !(after.coverage?.notComputed) && !(before.coverage?.notComputed)
+    after &&
+    before &&
+    typeof after.total.clicks === "number" &&
+    typeof before.total.clicks === "number" &&
+    !after.coverage?.notComputed &&
+    !before.coverage?.notComputed
       ? `${after.total.clicks - before.total.clicks > 0 ? "+" : ""}${fmt(after.total.clicks - before.total.clicks)} clicks${before.total.mouseTravelPx !== null && after.total.mouseTravelPx !== null ? ` / ${fmt(after.total.mouseTravelPx - before.total.mouseTravelPx)}px mouse` : " · pixel metrics not measured for archived runs"}`
       : "Unavailable";
   return (
@@ -1063,12 +1079,18 @@ export function Dashboard({
   interpFactory?: InterpFactory;
 }) {
   const query = new URLSearchParams(window.location.search);
-  const [requestedVersion] = useState(query.get("version"));
+  const [requestedVersion] = useState(
+    query.get("view")?.toLowerCase() === "compare"
+      ? null
+      : query.get("version"),
+  );
   const [requestedDay] = useState(Number(query.get("day") ?? "1"));
   const [view, setView] = useState(
-    views.includes(query.get("view") ?? "")
-      ? (query.get("view") ?? "Evolution")
-      : "Evolution",
+    query.get("view")?.toLowerCase() === "compare"
+      ? "Compare"
+      : views.includes(query.get("view") ?? "")
+        ? (query.get("view") ?? "Evolution")
+        : "Evolution",
   );
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [index, setIndex] = useState<ReturnType<typeof runIndexSchema.parse>>(
@@ -1147,12 +1169,13 @@ export function Dashboard({
     };
   }, [index, runId]);
   useEffect(() => {
-    if (runId)
-      window.history.replaceState(
-        null,
-        "",
-        `/dashboard?${new URLSearchParams({ run: runId, view, persona })}`,
-      );
+    if (!runId) return;
+    const params = new URLSearchParams(window.location.search);
+    params.set("run", runId);
+    params.set("view", view === "Compare" ? "compare" : view);
+    params.set("persona", persona);
+    if (view === "Compare") params.delete("version");
+    window.history.replaceState(null, "", `/dashboard?${params}`);
   }, [runId, view, persona]);
   const rejections = useMemo(() => (run ? getRejections(run) : []), [run]);
   const open = (next: Selection) => {
@@ -1211,7 +1234,21 @@ export function Dashboard({
           <select
             aria-label="Recorded run"
             value={runId}
-            onChange={(e) => setRunId(e.currentTarget.value)}
+            onChange={(e) => {
+              const params = new URLSearchParams(window.location.search);
+              for (const key of [
+                "left",
+                "right",
+                "workflow",
+                "comparison",
+                "day",
+                "revision",
+                "version",
+              ])
+                params.delete(key);
+              window.history.replaceState(null, "", `/dashboard?${params}`);
+              setRunId(e.currentTarget.value);
+            }}
           >
             {index.map((e) => (
               <option key={e.id} value={e.id}>
@@ -1236,11 +1273,11 @@ export function Dashboard({
             aria-current={view === name ? "page" : undefined}
             disabled={
               view === name ||
-              (name === "Trajectories" &&
+              ((name === "Trajectories" || name === "Compare") &&
                 !run?.files?.includes("trajectories/index.json"))
             }
             title={
-              name === "Trajectories" &&
+              (name === "Trajectories" || name === "Compare") &&
               !run?.files?.includes("trajectories/index.json")
                 ? "No trajectories recorded for this run"
                 : view === name
@@ -1308,6 +1345,15 @@ export function Dashboard({
             </p>
             {view === "Evolution" && (
               <>
+                {run.files?.includes("trajectories/index.json") && (
+                  <p className="trajectory-compare-entry">
+                    <a
+                      href={`/dashboard?${new URLSearchParams({ run: runId, persona, view: "compare" })}`}
+                    >
+                      Compare recorded trajectories across revisions →
+                    </a>
+                  </p>
+                )}
                 <WorkflowComplexity key={runId} run={run} persona={persona} />
                 <VersionList run={run} persona={persona} open={open} />
               </>
@@ -1327,6 +1373,23 @@ export function Dashboard({
                 <p role="status">
                   No trajectories recorded for this run. Select Evolution or
                   another run.
+                </p>
+              ))}
+            {view === "Compare" &&
+              (run.files?.includes("trajectories/index.json") ? (
+                <Suspense fallback={<p role="status">Loading comparison…</p>}>
+                  <CompareTrajectories
+                    key={`${runId}-${persona}`}
+                    run={run}
+                    persona={persona}
+                    onPersonaChange={setPersona}
+                    factory={interpFactory}
+                  />
+                </Suspense>
+              ) : (
+                <p role="status">
+                  No trajectories recorded for this run yet. Partial runs become
+                  comparable after trajectory indexing.
                 </p>
               ))}
             {view === "Releases" && (

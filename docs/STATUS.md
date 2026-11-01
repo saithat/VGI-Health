@@ -891,6 +891,56 @@ it does not claim to be a real new run. Playback gates: app build and lint,
 298 app unit tests (using `EHR_BIN` from the matching existing native build),
 and all six desktop/narrow trajectory tests against the production preview.
 
+
+### Compare two task trajectories
+
+`/dashboard?view=compare&run=run1-P3&persona=P3&workflow=W4` opens the shared
+side-by-side replay. Entry links also appear in Evolution, the single-task
+Trajectories view, and the UI browser's selected timeline card (“Compare with
+baseline”). Both players retain the fixed 1440×900 viewport and interaction
+animations; one transport advances one event per side and holds a completed
+side at its final state. Change links align the sides independently before the
+relevant event, after which Step continues one event on each side. Narrow
+screens stack the frames; fullscreen retains the shared transport.
+
+The default is the newest recorded task with a saved same-task baseline replay,
+with baseline on the left. This uses the saved patient, day and scheduled
+choices; daily canonical/no-agent controls and archived rev-0 controls are
+labelled separately. When no paired replay exists, the fallback is the earliest
+rev-0 day versus the latest day on the newest revision. Scheduled choices,
+patient and task-number matches guide that fallback when metadata is available.
+Each side has Day, Revision and Task selectors. URL `left`/`right` values are
+task IDs, with `:baseline` appended for a saved control, and persist on reload.
+For example, append `&left=d01-P3-W4-001&right=d10-P3-W4-001` for a cross-day
+comparison, or `&left=d04-P3-W4-001:baseline&right=d04-P3-W4-001` for a saved pair.
+
+The delta strip reports full trace clicks, scroll operations, keys and distinct
+event screens, plus recorded scroll/mouse pixels when available. Deltas are
+Right minus Left; negative values are green. Missing pixels remain unavailable.
+Cross-day comparisons and release differences are explicit; these are not
+presented as isolated agent savings. Readable changes reuse the timeline's
+immutable-program diff, grouped by deployed certified decisions (vendor rebases
+are labelled separately). Jump links use component/screen events; a missing
+screen aligns to the next shared action and its link explains that alignment.
+Changes absent from both traces are marked as not visited.
+
+Compare checks cover paired defaults, matching scheduled choices, both frame
+sizes after ten synchronized steps, trace/delta parity, day selection, bookmark
+reloads, shorter-side completion, change links and all three entry points.
+Screenshot: `app/shots/final/compare.png`. The live `core-10day` run was found in
+the main checkout initializing its rev-0 certificates; no recorded days or
+trajectory index were available at that check. The shared loader consumes
+indexed runs and daily canonical controls without an archive-ID special case.
+After integrating this app build, follow the existing build/rebind procedure
+for core-10day before certified replay; exact build-binding checks remain in
+force. Partial-index coverage uses the real archive trimmed to four days with
+its controls removed, and checks the automatic cross-day fallback.
+Compare validation: app build and lint passed; all 306 app unit tests passed
+with the matching native binary; all 14 compare/trajectory tests passed on
+desktop and narrow Chromium against the production preview. Run the browser
+gate with `APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test
+compare.spec.ts trajectories.spec.ts --workers=1` after building the app.
+
 Reconstruction calls production `loadFacts`, `taskEpisodes`, goal derivation,
 `init` and `step` through `scripts/trajectories/Contexts.lean`, outside `lean/`.
 It materializes Synthea fullUrl UUIDs, merges resources cumulatively per patient
