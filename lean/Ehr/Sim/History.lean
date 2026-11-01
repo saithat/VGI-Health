@@ -20,6 +20,72 @@ def forgetOutput (o : State × StepResult) : State × StepResult := (forgetHisto
 @[simp] theorem forget_withHistory (s : State) (h) :
     forgetHistory (withHistory s h) = forgetHistory s := rfl
 
+/- Event evidence and absolute time live in Facts, which is held fixed here.
+Only the Back-navigation list is erased; captures and clock are preserved. -/
+@[simp] theorem clinicalEval_history (facts s h p) :
+    clinicalEval facts (withHistory s h) p = clinicalEval facts s p := by
+  induction p <;> simp only [clinicalEval, *] <;> rfl
+
+@[simp] theorem clinicalApplies_history (facts s h) :
+    clinicalApplies facts (withHistory s h) = clinicalApplies facts s := by
+  funext p
+  simp only [clinicalApplies, clinicalEval_history]
+
+@[simp] theorem validationHolds_history (facts s h slot v) :
+    validationHolds facts (withHistory s h) slot v = validationHolds facts s slot v := by
+  funext rule
+  induction rule <;> simp only [validationHolds, *] <;> rfl
+
+@[simp] theorem elementValueValid_history (facts s h el slot v) :
+    elementValueValid facts (withHistory s h) el slot v = elementValueValid facts s el slot v := by
+  simp only [elementValueValid, validationHolds_history]
+
+@[simp] theorem validationsOk_history (sp facts s h) :
+    validationsOk sp facts (withHistory s h) = validationsOk sp facts s := by
+  simp only [validationsOk, elementValueValid_history]
+  rfl
+
+@[simp] theorem epochNow_history (facts s h) :
+    epochNow facts (withHistory s h) = epochNow facts s := rfl
+
+@[simp] theorem eventTime_history (facts s h ref planned) :
+    eventTime facts (withHistory s h) ref planned = eventTime facts s ref planned := by
+  simp only [eventTime, epochNow_history]
+
+@[simp] theorem temporalStatus_history (facts s h rq) :
+    temporalStatus facts (withHistory s h) rq = temporalStatus facts s rq := by
+  simp only [temporalStatus, clinicalApplies_history, eventTime_history, epochNow_history]
+
+@[simp] theorem expiryStatus_history (facts s h rq) :
+    expiryStatus facts (withHistory s h) rq = expiryStatus facts s rq := by
+  simp only [expiryStatus, clinicalApplies_history, epochNow_history]
+
+@[simp] theorem alertKeys_history (facts s h cond) :
+    alertKeys facts (withHistory s h) cond = alertKeys facts s cond := by
+  cases cond <;> simp only [alertKeys, clinicalEval_history] <;> rfl
+
+@[simp] theorem alertHolds_history (sp facts s h a) :
+    alertHolds sp facts (withHistory s h) a = alertHolds sp facts s a := by
+  simp only [alertHolds, alertKeys_history]
+
+@[simp] theorem whenHolds_history (facts s h w) :
+    whenHolds facts (withHistory s h) w = whenHolds facts s w := by
+  cases w <;> simp only [whenHolds, clinicalApplies_history] <;> rfl
+
+@[simp] theorem lineMatches_history (facts s h w slot drug) :
+    lineMatches facts (withHistory s h) w slot drug = lineMatches facts s w slot drug := by
+  cases w <;> simp only [lineMatches, clinicalApplies_history] <;> rfl
+
+@[simp] theorem entryMet_history (sp facts user s h rq) :
+    entryMet sp facts user (withHistory s h) rq = entryMet sp facts user s rq := by
+  simp only [entryMet, lineMatches_history, whenHolds_history]
+  rfl
+
+@[simp] theorem entryReason_history (sp facts user s h rq) :
+    entryReason sp facts user (withHistory s h) rq = entryReason sp facts user s rq := by
+  simp only [entryReason, lineMatches_history]
+  rfl
+
 @[simp] theorem layout_history (sp facts s cs n c h) :
     layoutShownAux sp facts (withHistory s h) cs n c = layoutShownAux sp facts s cs n c := by
   induction n generalizing c with
@@ -28,7 +94,7 @@ def forgetOutput (o : State × StepResult) : State × StepResult := (forgetHisto
 
 @[simp] theorem shownComp_history (sp prog facts s cid h) :
     shownComp? sp prog facts (withHistory s h) cid = shownComp? sp prog facts s cid := by
-  simp only [shownComp?, compShown, layoutShown, layout_history]
+  simp only [shownComp?, compShown, layoutShown, layout_history, alertHolds_history]
   rfl
 
 @[simp] theorem infoShown_history (sp prog facts s i h) :
@@ -36,14 +102,39 @@ def forgetOutput (o : State × StepResult) : State × StepResult := (forgetHisto
   simp only [infoShown, layoutShown, layout_history]
   rfl
 
+@[simp] theorem payloadFieldMet_history (facts s h slot fields availability) :
+    payloadFieldMet facts (withHistory s h) slot fields availability =
+      payloadFieldMet facts s slot fields availability := by
+  funext rq
+  simp only [payloadFieldMet, validationHolds_history]
+
+@[simp] theorem payloadComplete_history (payload contract facts s h) :
+    payloadComplete payload contract facts (withHistory s h) = payloadComplete payload contract facts s := by
+  simp only [payloadComplete, payloadFieldMet_history]
+
+@[simp] theorem displaysOk_history (sp prog facts s h cm) :
+    displaysOk sp prog facts (withHistory s h) cm = displaysOk sp prog facts s cm := by
+  simp only [displaysOk, displayActive, clinicalApplies_history, displayReqMet,
+    displayShown, actionLabelOk, layoutShown, layout_history, payloadComplete_history]
+  rfl
+
+@[simp] theorem extraGuard_history (sp prog facts s h cm) :
+    extraGuard sp prog facts (withHistory s h) cm = extraGuard sp prog facts s cm := by
+  simp only [extraGuard, temporalStatus_history, expiryStatus_history, validationsOk_history, displaysOk_history]
+
+@[simp] theorem obligationViews_history (sp facts s h) :
+    obligationViews sp facts (withHistory s h) = obligationViews sp facts s := by
+  simp only [obligationViews, temporalStatus_history, expiryStatus_history]
+
 @[simp] theorem guardBase_history (sp prog facts user s cm h) :
     guardBase sp prog facts user (withHistory s h) cm = guardBase sp prog facts user s cm := by
-  simp only [guardBase, reviewsOk, reviewMet, infoShown_history]
+  simp only [guardBase, entriesOk, entryMet_history, reviewsOk, reviewMet, whenHolds_history, infoShown_history, extraGuard_history]
   rfl
 
 @[simp] theorem guardReason_history (sp prog facts user s cm h) :
     guardReason sp prog facts user (withHistory s h) cm = guardReason sp prog facts user s cm := by
-  simp only [guardReason, reviewMet, infoShown_history]
+  simp only [guardReason, validationsOk_history, displaysOk_history, entryMet_history, entryReason_history,
+    reviewMet, whenHolds_history, infoShown_history, obligationViews_history, extraGuard_history]
   rfl
 
 @[simp] theorem resolveSlot_history (s h sl) : resolveSlot (withHistory s h) sl = resolveSlot s sl := by
@@ -60,15 +151,19 @@ def forgetOutput (o : State × StepResult) : State × StepResult := (forgetHisto
 
 @[simp] theorem withHistory_commits (s h) : (withHistory s h).commits = s.commits := rfl
 @[simp] theorem popupCandidates_history (sp prog facts s cm h) :
-    popupCandidates sp prog facts (withHistory s h) cm = popupCandidates sp prog facts s cm := rfl
+    popupCandidates sp prog facts (withHistory s h) cm = popupCandidates sp prog facts s cm := by
+  simp only [popupCandidates, alertKeys_history, canPopup, programPopsUp]
+  rfl
 @[simp] theorem alertsAcked_history (sp facts s cm h) :
-    alertsAcked sp facts (withHistory s h) cm = alertsAcked sp facts s cm := rfl
+    alertsAcked sp facts (withHistory s h) cm = alertsAcked sp facts s cm := by
+  simp only [alertsAcked, alertKeys_history]
+  rfl
 
 @[simp] theorem prefillField_history (sp facts s c h) :
     prefillField sp facts (withHistory s h) c = withHistory (prefillField sp facts s c) h := by
   cases hk : c.kind <;> simp only [prefillField, hk]
   all_goals try rfl
-  all_goals simp only [hasEntry_history, resolveSlot_history, prefillRecord_history]
+  all_goals simp only [hasEntry_history, resolveSlot_history, prefillValueValid, prefillRecord_history, elementValueValid_history]
   all_goals repeat' first | rfl | (split <;> try simp_all)
 
  theorem prefillFold_history (sp : Spec) (facts : Facts) (cs : List Component) (s : State) (h : List ScreenId) :
@@ -144,7 +239,9 @@ def backId (prog : Program) (cid : CompId) : Bool :=
       all_goals repeat' first | rfl | (split <;> try simp_all)
     | newOrderLine =>
       simp only [clickCore, hk]
-      have hc : currentLineComplete sp facts user (withHistory s h) = currentLineComplete sp facts user s := rfl
+      have hc : currentLineComplete sp facts user (withHistory s h) = currentLineComplete sp facts user s := by
+        simp only [currentLineComplete, lineMatches_history]
+        rfl
       rw [hc]
       by_cases hh : currentLineComplete sp facts user s = true
       · simp only [hh, ite_true]
@@ -163,7 +260,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
     forgetOutput (enterCore sp prog facts user actor (withHistory s h) cid v) =
       forgetOutput (enterCore sp prog facts user actor s cid v) := by
   simp only [enterCore, shownComp_history]
-  cases actor <;> simp only [resolveSlot_history, withHistory_captured]
+  cases actor <;> simp only [resolveSlot_history, withHistory_captured, elementValueValid_history]
   all_goals repeat' first | rfl | (split <;> try simp_all)
 
  theorem confirmCore_history (sp prog facts user actor s cid h) :
@@ -201,7 +298,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
   next scr => simp only [withHistory_screen]; repeat' first | rfl | (split <;> try simp_all)
   next query =>
     have hs : searchShown sp prog facts (withHistory s h) = searchShown sp prog facts s := by
-      simp only [searchShown, compShown, layoutShown, layout_history]; rfl
+      simp only [searchShown, compShown, layoutShown, layout_history, alertHolds_history]; rfl
     rw [hs]; repeat' first | rfl | (split <;> try simp_all)
 
 /-- Equal erased states differ only in the history assigned here. -/

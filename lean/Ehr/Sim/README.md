@@ -168,3 +168,11 @@ the solution export does. The trusted statement surface is `jointMinimum`,
 `init`/`step` plus their spec predicates. History equivalence and certificate
 acceptance are proved; Dijkstra's untrusted candidate is checked before return.
 Native CLI execution additionally relies on the Lean compiler/runtime.
+
+`State.history` contains only Back-navigation screen IDs. Temporal evidence,
+artifact versions, clinical observations, durable clocks and structured payloads
+live in the fixed `Facts` input; `State.clock` and captures remain in the search
+key. Thus `guardReason_history` is still true for the current core. Its proof
+uses explicit history-invariance lemmas for the recursive clinical and validation
+ASTs, temporal/expiry status, and display contracts, rather than reducing the
+entire guard at once. No heartbeat increase or theorem weakening is needed.

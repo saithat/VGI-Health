@@ -80,3 +80,25 @@ import Ehr.Sim.FactsTests
 #print axioms Ehr.Sim.taskStep_norm
 #print axioms Ehr.Sim.T9_taskSearch
 #print axioms Ehr.Sim.T9_jointMinimum
+
+/- History invariance for the five current core feature groups. -/
+#print axioms Ehr.Sim.clinicalEval_history
+#print axioms Ehr.Sim.clinicalApplies_history
+#print axioms Ehr.Sim.validationHolds_history
+#print axioms Ehr.Sim.elementValueValid_history
+#print axioms Ehr.Sim.validationsOk_history
+#print axioms Ehr.Sim.epochNow_history
+#print axioms Ehr.Sim.eventTime_history
+#print axioms Ehr.Sim.temporalStatus_history
+#print axioms Ehr.Sim.expiryStatus_history
+#print axioms Ehr.Sim.alertKeys_history
+#print axioms Ehr.Sim.alertHolds_history
+#print axioms Ehr.Sim.whenHolds_history
+#print axioms Ehr.Sim.lineMatches_history
+#print axioms Ehr.Sim.entryMet_history
+#print axioms Ehr.Sim.entryReason_history
+#print axioms Ehr.Sim.payloadFieldMet_history
+#print axioms Ehr.Sim.payloadComplete_history
+#print axioms Ehr.Sim.displaysOk_history
+#print axioms Ehr.Sim.extraGuard_history
+#print axioms Ehr.Sim.obligationViews_history
