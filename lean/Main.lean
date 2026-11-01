@@ -1,5 +1,6 @@
 import Ehr
 import Ehr.Api
+import Ehr.Cli.Check
 import Ehr.Cli.Sim
 import Ehr.Render.Cli
 
@@ -36,6 +37,7 @@ def specRegistry : List (String × Spec) :=
   [("tiny", Examples.Tiny.spec), ("tiny-1.1", Examples.Tiny.specV1_1),
    ("v1", Specs.V1.specV1), ("v1.1", Specs.V1_1.specV1_1), ("v2", Specs.V2.specV2)]
 
+
 /-- Usage text. -/
 def usage : String :=
   "usage: ehr <command>\n" ++
@@ -43,6 +45,8 @@ def usage : String :=
   "  step                     stdin StepInput  -> StepOutput\n" ++
   "  view                     stdin ViewInput  -> ScreenView\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
+  "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
+  "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
     ", ".intercalate (specRegistry.map (·.1)) ++ ")\n" ++
   "  cures-exemptions-export  shared CURES exemption codes (JSON)"
@@ -88,6 +92,8 @@ def main (args : List String) : IO UInt32 := do
   | ["step"] => stdinCommand StepInput StepOutput runStep
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
+  | "check" :: rest => Ehr.Cli.checkMain rest
+  | "deploy" :: rest => Ehr.Cli.deployMain rest
   | ["cures-exemptions-export"] =>
     IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
   | ["spec-export", name] =>

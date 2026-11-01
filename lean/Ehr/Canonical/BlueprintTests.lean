@@ -6,7 +6,7 @@ rather than a duplicate navigation predicate. Exported JSON is checked separatel
 by --run below. These are executable checks, not a checker certificate. -/
 namespace Ehr.Canonical
 
-#guard canonicalV1.screens.length == 45
+#guard canonicalV1.screens.length == (if Specs.ruleProfile == .full then 45 else 43)
 #guard Blueprint.relocations.length == 87
 #guard personaRoles.all fun (id, role) =>
   decide (Render.NavSane Specs.V1.specV1 (forPersona Specs.V1.specV1 canonicalV1 id role))
@@ -20,8 +20,9 @@ namespace Ehr.Canonical
 /-- Every source clinical field/commit survives relocation with the same ID,
 element, slot and action. Shell-only panels/navigation are intentionally replaced. -/
 def originalClinicalControlsRetained : Bool :=
-  let original := Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++
-    W3.screens ++ W4.screens ++ W5.screens ++ W6.screens ++ W7.screens))
+  let base := [home] ++ W1.screens ++ W2.screens ++
+    W3.screens ++ W4.screens ++ W5.screens ++ W6.screens ++ W7.screens
+  let original := if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base
   original.all fun source => source.components.all fun c =>
     match c.kind with
     | .field e slot _ => (canonicalV1.screen? (Blueprint.host source.id)).any fun sc =>

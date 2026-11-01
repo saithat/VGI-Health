@@ -1,3 +1,4 @@
+import Ehr.Specs.Profile
 import Ehr.Specs.ClinicalTables
 import Ehr.Core.Types
 import Ehr.Specs.Rules.Cms
@@ -2344,22 +2345,36 @@ def inheritedRuleReviews : List ReviewReq :=
 
 /-! ## The spec -/
 
-/-- Product design property.
-The hospital spec, version "v1". -/
-def specV1 : Spec where
+/-- The hand-written rules, plus the catalog when requested. -/
+def specForProfile (profile : RuleProfile) : Spec where
   version := "v1"
-  elements := (elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements ++ Rules.Features.elements).map Rules.Features.strengthenElement
-  infos := (infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos ++ ClinicalTables.infos).map ClinicalTables.withSchema
-  commits := (commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits ++ Rules.Features.commits).map Rules.Features.strengthenCommit
-  entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries ++ Rules.Features.entries ++
-    Rules.Features.newCommitIds.map (fun c => { commit := c, element := "patientIdReentry" })
-  reviews := reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews ++
-    Rules.Features.newCommitIds.flatMap (fun c =>
-      [{ commit := c, info := "allergyList", mode := .shownOnCommit },
-       { commit := c, info := "currentMeds", mode := .shownOnCommit }])
-  alerts := alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts ++ Rules.Features.alerts
+  elements := if profile == .full then
+    (elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements ++ Rules.Features.elements).map Rules.Features.strengthenElement
+    else elements
+  infos := ((if profile == .full then
+    infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos
+    else infos) ++ ClinicalTables.infos).map ClinicalTables.withSchema
+  commits := if profile == .full then
+    (commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits ++ Rules.Features.commits).map Rules.Features.strengthenCommit
+    else commits
+  entries := if profile == .full then
+    entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries ++ Rules.Features.entries ++
+      Rules.Features.newCommitIds.map (fun c => { commit := c, element := "patientIdReentry" })
+    else entries
+  reviews := if profile == .full then
+    reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews ++
+      Rules.Features.newCommitIds.flatMap (fun c =>
+        [{ commit := c, info := "allergyList", mode := .shownOnCommit },
+         { commit := c, info := "currentMeds", mode := .shownOnCommit }])
+    else reviews
+  alerts := if profile == .full then
+    alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts ++ Rules.Features.alerts
+    else alerts
   design := design
-  displays? := some Rules.Features.displays
+  displays? := if profile == .full then some Rules.Features.displays else none
+
+/-- The hospital spec with the selected rule profile. -/
+def specV1 : Spec := specForProfile ruleProfile
 
 /-! ## Self-checks
 

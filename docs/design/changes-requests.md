@@ -199,6 +199,39 @@ made every scheduled order in the canonical sets unsignable. This does not
 remove either entry requirement or any human confirmation. Consent, VIS,
 protocol checks and education remain checked flags.
 
+## Check integration findings after content `febb477`
+
+The 14 Lean seeds have landed. They all currently fail first on their shared
+canonical template's role-permission error (except seed 10, which fails an
+unknown-alert reference). CR-5's role-specific canonical exports and linked
+prefills are still required before intended first-failure regressions can run.
+
+The intended mutation-specific checks differ from the handoff in these cases:
+
+- Seed 3 uses an undeclared `weightLb` field: the violated existing clause is
+  `DeclaredWritesInSpec` (`writesOnly`), not `QuantityPrefillsKeepUnits`.
+- Seed 4 fails both `NoAlertSuppression` and `NoAutomationAttempts`; moving
+  the human-only rule earlier will give the requested `humanOnlyKept` label.
+- Seed 9 removes an alert component, but interruptive popups are generated
+  by the spec. Its actual violation is the macro commit attempt
+  (`humanOnlyKept`), not the current `AlertsFire` property.
+- Seed 10 has an unknown alert: `ReferencesResolve` fails (`wellFormed`).
+  `NoFalseAlarms` does not prohibit unknown non-firing alerts.
+- Seed 13 removes only the W1 CURES paths. Other workflow screens still have
+  the same report, exemption field and `signOrders` buttons, so `completeFor`
+  passes. Even deleting all CURES paths may not refute the current
+  `Completable`: its existential event list may change an opioid to a
+  non-controlled drug before signing. It does not preserve clinical choices.
+
+Please coordinate content and the owner on these differences. Check will not
+claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
+
+---
+
+## Core implementation status and integration requests (Oct 31)
+
+---
+
 ## Release integration requests (other lanes)
 
 - **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
@@ -292,6 +325,90 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
 
+---
+
+## Release integration requests (other lanes)
+
+- **CR-9 — medical-service prior-auth slots (core/agent).** The current
+  `requestPriorAuth` action requires a `drug` on the current slot. CMS-0057-F
+  covers medical items/services, not drugs. The shared-composer demo records
+  an optional ServiceRequest-target request but cannot yet represent an
+  imaging-only order slot. Add service-order identity to the core model before
+  claiming an imaging API implementation. Medication support anticipates
+  proposed CMS-0062-P. No content safety obligation depends on this feature.
+- **CR-10 — antibiotic indication data rows (render/app/world).** Content now
+  declares element/info `abxIndication`, the per-line coded value written to
+  `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
+  each captured antibiotic line's indication in the sign summary, and the
+  active medication's indication from the FHIR order on the MAR. Test facts
+  use `Facts.record[("abxIndication", "surgical-prophylaxis")]`. Show the
+  actual value, not just a heading. Core's `infoShown` proves panel visibility;
+  it does not establish populated FHIR content. Preserve T11 fidelity.
+- **CR-11 — coded terminology membership (core/check).** `ValueKind.coded`
+  currently accepts any nonempty code. `abxIndicationCodes` and
+  `curesExemptionCodes` are content value sets, not a proof of membership.
+  For full terminology enforcement, provide a generic spec value-set mapping
+  and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+- **CR-12 — agent prior-auth action schema (agent).** The real exported
+  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
+  `requestPriorAuth` action. The four request buttons fail at
+  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  action schema (and the `priorAuth` kind to the known union if desired), then
+  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  fields. This was found with actual exports; the existing 31 agent tests pass.
+- **CR-13 — pre-op encounter context (world/app/sim).** Set
+  `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
+  during pre-op ordering. Core passes `FactsContext.encounterKind` through
+  FHIR projection. Content no longer uses a separate `signPreOpOrders`
+  commit: W6 uses ordinary `signOrders`, with the pre-op consent/H&P/hold-meds
+  and anticoagulant requirements scoped by that episode fact. Test both
+  incomplete pre-op rejection and ordinary post-op success. World/app currently
+  have no `encounterKind` references; do not claim end-to-end pre-op enforcement
+  until callers supply this fact.
+
+## Check acceptance after content release merge (`6a47bbe`)
+
+Core's workflow-targeted passive alerts and record-source declarations are
+integrated into the checker. Tiny's corrected example now pins passive alerts
+on every W1 screen; the pin soundness proof uses `targetsScreen` too.
+
+Canonical v1 still fails the role declarations and dosingWeight links from
+check CR-5. Migrating pre-op requirements to ordinary `signOrders` adds a
+third genuine failure: W1/W3/W5/etc. signOrders screens lack
+`anticoagulantList`. For `Facts.encounterKind = preop`, those Sign buttons
+are still shown and the pre-op review applies. `CommitScreenShowsReviews`
+therefore requires the anticoagulant info on every shown signOrders screen,
+or the UI must make incompatible Sign buttons unavailable for that context.
+The checker cannot infer an encounter kind from a screen/workflow name.
+
+## T8 statement coordination (check)
+
+`Spec.Extends` preserves old prefixes while allowing new declarations and
+catalog tags. Thus full `Satisfies new ... p → Satisfies old ... p` is not
+monotone: a program using the new priorAuth kind is intentionally outside the
+old catalog. The other direction fails when new requirements are added.
+Please agree on preservation of **old safety obligations for compatible
+programs**, or strengthen the relation to preserve the vocabulary, before
+claiming a general Satisfies transport theorem. The concrete release-prefix
+proofs in content establish the additive relation only.
+
+### CR-6 checker containment
+
+The checker now conservatively rejects an **active** `requestPriorAuth`
+action under `humanOnlyKept` until its confirmed-capture preservation is
+fixed. Disabled actions (unknown element or disallowed program role) remain
+harmless; status components still use the shared catalog. This prevents a
+known counterexample to T1. Remove/refine this extra rule only after proving
+`EnteredOnce` and `HumanStepsByHuman` for the revised action. No property was
+weakened. Prior-auth request certification remains unfinished, explicitly.
+
+---
+
+
+
+---
+
 ## Sim validation → app: mock DecisionRecord screenCheck (2026-10-31)
 
 App build and lint pass after main merge `b0aad8b`, but `pnpm --filter app run test`
@@ -323,6 +440,12 @@ artifacts. Agent's 31 tests and world's 52 tests pass.
   the preserved consent role rule. An NP supplied a `preop` episode must stay
   blocked. Completability certification must honor valid persona/episode
   assignments; do not broaden consent permissions just to make it pass.
+
+---
+
+
+---
+
 ## World integration status
 
 Core fb1ed8c supplies the requested typed fields, service order kinds and generic
@@ -355,6 +478,44 @@ only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
 field and retains its never policy. This implements the existing literal
 HumanStepsByHuman/EnteredOnce requirements without weakening either property.
 Content's release program must expose the human field for such a declaration.
+
+### CR-6 integrated and containment removed (`c98cfaf`)
+
+The checker has now proved `requestPriorAuth_preserves_confirmed` and
+`requestPriorAuth_no_human_capture` in `Check/RequestSound.lean`, with axiom
+audits. The temporary active-request rejection is removed. The extended Tiny
+catalog/program acceptance regression passes with the revised action. Human
+never-policy requests use an explicit field, as core's new semantics require.
+The safety properties are unchanged.
+
+### Persona canonical diagnostic (`b366a59`)
+
+P3 (RN) passes every checker rule. P1/P2/P5 fail only the signOrders
+anticoagulant pin described above. P4 also lacks a reachable/permitted consent
+field for a preop episode. Links and role declarations now pass. These are
+facts about the current full quantified properties; check does not silently
+restrict their patient/episode domain.
+
+### Completability waiver edge case
+
+`completeVia` now checks that an unpinned review's waiver kind can always
+supply a nonempty value. Wristband/medication scan codes may be empty for
+records allowed by the current domain assumption; a matching empty scan is
+valid input but fails `waived`'s nonempty test. Such scans cannot be the sole
+waiver path. Text, code, quantity, flag, identity, cosign and other scan
+targets have nonempty witnesses. Canonical's coded CURES exemption is safe.
+
+### Content follow-up required for core `c98cfaf`
+
+The full build now fails exactly four guards in `Canonical/ReleaseTests.lean`
+(lines 14, 15, 25, 26): medication and service-order prior-auth paths still
+expect a click to create a never-policy capture. Please expose the ordinary
+`priorAuthRequest` human field in release composers and test entering it,
+then test the convenience click preserves that confirmed capture. Keep the
+never policy and safety properties; do not restore implicit capture on click.
+Checker request-action proofs now pass and the temporary rejection is gone.
+
+---
 
 ## Content response to checker acceptance requests
 
@@ -560,6 +721,21 @@ The full equality contract remains intact, with an additional DEA Schedule II
 correspondence assertion. Lean build and world build/lint/all 92 tests pass.
 Seed-1 ten-day regeneration produces no changes to `runs/world/1`.
 
+## Value-constraint integration in check
+
+The world reference fix brings core's `EntryReq.allowed` API into this lane.
+`EntryMetIn` now requires the **same** captured value to satisfy both its kind
+and the parsed allowed-value constraint. This strengthens the property to
+match the new guard; `entryMet_iff` is re-proved against that implementation.
+Completability also checks a common universally valid scalar value across
+constraints on the same element, with nonempty values for waiver elements.
+Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
+lists for record-dependent identity/scan/cosign values are conservatively
+rejected; no clinical permission or guard is relaxed. Zero-refill quantities
+are supported generically.
+
+---
+
 ## Content integration completion and remaining owners (2026-10-31)
 
 Content's Schedule II rule is implemented and regenerated in all three release specs. `lake build` passes the actual canonical/seed/release paths. This resolves the previous content blocker, not the production checker's certification obligations.
@@ -576,6 +752,72 @@ Content's Schedule II rule is implemented and regenerated in all three release s
 
 **W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.
 
+### Linked prefill type preservation
+
+Linked prefill copies values without conversion. Check now requires known
+source/target elements with equal kinds, including quantity units. A kg weight
+cannot silently become an mg dose. This also prevents malformed linked values
+from being archived behind `newOrderLine` and then becoming impossible to
+restore through a correctly typed input. Canonical's weight and diagnosis
+links have matching kinds. This is an extra conservative checker rule; no
+property or interpreter guard is weakened.
+
+Macro attempts to invoke a never/human-required prior-auth request are also
+rejected under `humanOnlyKept`, matching the revised human-entry API.
+
+### Archived fixed-slot writes and proof limits
+
+The completion audit found another repair obligation: after `newOrderLine`,
+a fixed-slot field can still modify an archived line, including a macro
+making its capture unconfirmed or a dose/frequency change triggering the
+naloxone requirement. A current-slot input cannot repair that older slot.
+`repairSlots` now includes fixed writers of per-line requirement elements
+and dose/frequency dependencies of per-line naloxone conditions. Each such
+slot needs reachable, revealable fields for the per-line requirements.
+The receipt-hidden archived-dose regression is rejected. This strengthens
+the checker and does not change any clinical requirement or interpreter guard.
+
+The proof status also distinguishes BRIEF T7 from replay validation. The
+finished T7-labelled lemmas prove a real successful navigation prefix and a
+failed checker rule, with an optional final triggering click. They do not
+prove that a cut path visits the violation or that every conservative
+rejection witnesses the named semantic property. Full T7 is still open.
+
+All original fourteen seeds have negative property proofs once the separate
+`bad13_preop_not_satisfies` diagnostic is included. That theorem explicitly
+uses the shared pre-op anticoagulant display defect, not the CURES mutation;
+the requested mutation-specific seed-13 completeness witness is still missing.
+`Ehr/Check/Seed13Escape.lean` now demonstrates the escape through real events:
+from the blocked W1 controlled order, visit W3, show its CURES tab, mark the
+report reviewed, return to W1, and sign the original controlled order using
+that fresh receipt. No drug change or safety exemption is used. Both the
+receipt and successful commit are permanent interpreter regressions.
+Seed 15 has its own controlled-detail display witness. The original expected
+labels for seeds 3, 9 and 10 also differ from their actual encoded defects:
+unknown field (`writesOnly`), attempted macro commit (`humanOnlyKept`), and
+unknown alert (`wellFormed`). Runtime-generated interruptive alerts survive
+removing a UI alert component, as required by the preserved safety model.
+
+**CHECK-REPLAY (core/app/check): property-specific replay evidence.** The public
+violation currently carries events and screen IDs but no patient/user
+witness. Check's fixed replay record has no pre-op encounter, so a real
+navigation path to the missing anticoagulant panel does not itself
+demonstrate the conditional pre-op review failure on that record. To finish
+BRIEF T7, agree how violations carry/reproduce the witness facts and user,
+and distinguish conservative static-rule rejections from runs demonstrating
+a named semantic failure. Check must additionally prove the latter for each
+supported finding; successful navigation alone is insufficient. This is a
+request for the owning API/app lanes, not a change to their files here.
+
+**T8 direct obstruction (content/check):**
+`Ehr/Check/MonotonicityObstruction.lean:T8_unqualified_false` now refutes the
+unqualified statement directly, without assuming general T1. An empty task
+family gains a status info and the new `priorAuth` catalog kind. The later
+program fully satisfies all twelve properties (completion is vacuous because
+there are no commits), yet fails the old catalog. The release meets the
+current `Spec.Extends`. Owner agreement on an old-vocabulary compatibility
+condition or an old-obligations projection is needed; asserting full T8 as
+written would be false. No property or Extends definition was changed here.
 ## App UI browser integration request (2026-10-31)
 
 The live offline EHR now uses the actual `ehr_facts`, init/step/view envelopes and
@@ -673,6 +915,121 @@ forbids weakening an existing rule. Content retains that flag and human
 naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
 education outcome alone therefore does not bypass the older stricter flag.
 
+## CHECK-2026-10-31: expanded canonical certification blockers (content/app)
+
+All fifteen release/persona candidates reject in the real `ehr check` CLI. Keep the properties unchanged. This pin audit enumerates missing nonwaivable reviews; conditionally applicable reviews still range over all patient records.
+
+### v1
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+### v1.1
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+### v2
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+Content must also resolve the previously proved NP pre-op consent obstruction without broadening legal role permissions or shrinking the property domain. P3 no longer certifies after the legal screen expansion; its first failure is `currentMeds` on `w3SuicideAssessment` / `signSuicideRiskAssessment`.
+
+App: `app/scripts/verdicts.mjs` invokes `ehr check` without required `--canonical`. Supply `releases/${program.release}/canonical.json`; a nonzero exit with valid violation JSON (exit 1) is a computed rejection, not a checker invocation failure. Check lane may regenerate `app/public/verdicts.json` after this owning-lane script correction.
 ## Sim follow-up on merged catalog (2026-10-31)
 
 The v1 refill rule now explicitly requires `drug`, `refillScheduleEligibility`
@@ -895,6 +1252,52 @@ WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
 
+## CHECK-CORE-CONTRACT-DOMAIN (new features)
+
+`Completable` quantifies over all records satisfying only `RecordAllowsScans`. Missing event evidence, absent code tables/payloads, and expired durable clocks are in that domain. UI events cannot create trusted external evidence. Therefore sample-based success cannot certify universal completion of an unconditional evidence-dependent commit. The checker now returns an explicit conservative `completable` finding for temporal/expiry/payload/validation contracts pending a total collection/refusal/repair construction. Core's hard stops and all five contract safety guarantees remain enforced and formally proved by `commitContracts`. Coordinate lawful completion goals/refusal commits and the evidence-domain contract before claiming general T1 for those constructs; do not pretend an expired original commit completed by taking a different commit.
+
+App regression after expanded content merge: `app/tests/app.test.tsx` expects 16 bad programs, but the permanent corpus is now 24. App build and lint pass; 89/90 tests pass with that sole stale-count failure. Update the owning-lane assertion to 24.
+
+## CHECK-T7: conservative rejection is not semantic falsity
+
+The existing `passiveScreensKept` safety rule rejects removal of even an unused,
+unreachable canonical workflow with no required commits. All twelve `Satisfies`
+properties can still hold: candidate screens are unchanged, no task disappears,
+and passive alerts target no candidate screen. `RejectionObstruction.lean`
+formalizes this example and the impossibility of unqualified semantic rejection
+soundness for the current checker. Preserve the safety rule. The public verdict
+needs to distinguish conservative certification failures from demonstrated
+semantic violations, or the trusted property must explicitly include workflow
+retention with owner approval. A replayable path alone proves neither. This is
+independent of the existing seed-13 escape and patient-witness API gap.
+
+### Concrete minimal app patch for approval or the owning lane
+
+In `app/scripts/verdicts.mjs`, immediately after `program.path` in the CLI
+argument array, add `"--canonical",` and
+`` `releases/${program.release}/canonical.json`, ``. Change the status expression
+to `result.status === 0 || (result.status === 1 && output && typeof output === "object" && "violation" in output) ? "computed" : "checker failed"`.
+In `app/tests/app.test.tsx`, change only the bad-program count assertion
+`toHaveLength(16)` to `toHaveLength(24)`; retain the actual permanent-corpus tests.
+No certification verdict is relabeled as accepted.
+
+Capture-dependent per-order-line clinical predicates require special completion
+handling: changing a captured predicate source can activate a requirement on any
+archived line, beyond the existing naloxone dose/frequency repair rule. The
+checker rejects that unsupported universal-repair claim while preserving the
+interpreter's conservative true/false/unknown applicability semantics. Record-only
+clinical predicates retain ordinary all-branches structural coverage. Exact
+`CommitSpec.actionLabel` declarations are also checked before completion claims.
+
+## CHECK-D5: newly merged semantic UI navigation contract
+
+The latest main adds core-model §10 and names D5 as a checker rule (unique group
+and item labels, at most 12 groups/items, no orphan screens). The current native
+Program/renderer interface does not yet expose the proposed `UiScreen.nav` tree.
+Render/core must provide its actual grouping function/type before check can
+certify D5 against the tree the app will paint. Do not certify a separate guessed
+navigation model or mistake screen-ID uniqueness for navigation-label uniqueness.
+This is additional pending integration beyond the five merged core features.
 ## Sim revalidation after five-feature Core merge (2026-10-31)
 
 Merged main `fe475fa` into sim (`f3a4d4d`); sim commits `fbe18d0` and `9ee5345`
@@ -1015,6 +1418,41 @@ has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
 `programs/bad/` now contains 24. Please update that source test to the current
 24-seed catalog (or derive the reviewed catalog expectation). Render did not
 edit app-owned tests or reduce catalog scope. The other 89 app tests pass.
+
+CHECK-D5 update after merging b26f772: renderer `uiNav` is now available, and
+check's `NavigationSane`/`accepted_navigation` use that exact function. The rule
+is enabled; the earlier missing-function dependency is resolved. Content/render
+must fix the actual navigation failures listed below; the twelve-entry limit
+and duplicate-label checks are not relaxed.
+- All five personas, all three releases (same screen inventory): workflow `W1` has 14 entries.
+- All five personas, all three releases (same screen inventory): workflow `W3` has 17 entries.
+- All five personas, all three releases (same screen inventory): workflow `W6` has 18 entries.
+
+## CHECK-EXTENDS-DISPLAYS: future expanded-contract inheritance
+
+The requested T8 projection now covers the actual older entry/review rules and
+static human/unit/alert predicates, directly from `check = ok`. The concrete
+v1→v1.1→v2 transitions have no `Spec.displays` contracts. When content adopts
+the new structured-display contracts, `Spec.Extends` also needs preservation of
+`(displays?.getD [])` as an old-obligations prefix: the existing relation does
+not constrain this new field. Do not claim that the current T8 projection is
+an inheritance theorem for all five new `extraGuard` contract families or for
+continuous phase display. Expanded contract inheritance remains separate from
+the proved per-commit safety theorem and needs this relation/projection work.
+
+## CHECK-SEED13: concrete proposed CURES mutation
+
+For content review (not an asserted proof of the present seed): remove CURES
+panels/review routes and exemption fields across every workflow, then make all
+drug edit fields `unlessReceipt allergyList`. A candidate counterexample enters
+and confirms the original controlled order, then creates a valid allergy-review
+receipt. Drug editors would then remain hidden during any `afterHuman` event
+list (events do not advance the clock); prefills cannot overwrite its existing
+drug capture, and macros use the same visibility checks. With all CURES and
+waiver routes removed, changing the original drug should no longer be an escape.
+Validate every panel/field/macro path before adopting this mutation. This changes
+only a bad fixture, not a hospital rule or the completion property. The current
+seed's cross-workflow escape remains reproducible until the owning lane changes it.
 ## CR-16 — content feature pass: adapters, output coverage, catalog gaps and app seed count
 
 Owner-requested second-pass rule data is in `Ehr.Specs.Rules.Features`, composed
@@ -1344,3 +1782,76 @@ rendering about 1.4 seconds in a Node WASM measurement. The app now computes
 legacy HTML and the inspection view lazily, with immutable snapshot inputs.
 Please continue profiling semantic rendering/structured-payload checks in Lean;
 UI logic remains there. No files under lean/ were edited for these changes.
+## CHECK-2026-11-01: current baseline and evidence-domain obstruction
+
+This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for
+current main. The native CLI now rejects **all 15 personas** in v1/v1.1/v2 first
+at `completable`, `recordCommunicationNeeds`: structured payload may be absent.
+The actual buttons are on `w1Rooming`, `w3Triage`, `w4Flowsheet`, `w5Rooming`,
+and `w6Consult` (role projections retain their authorized controls). The updated
+matrix, input hashes and public-interpreter navigation replays are reproducible
+with `python3 lean/Ehr/Check/certify.py`; it deliberately exits 1 while any
+canonical fails. The corpus is now **32**, not 24; all 32 reject and all returned
+navigation prefixes replay successfully. Content's eight new trusted-fact replay
+manifests also block their intended commits with no successful commit.
+
+**Core/content/owner contract decision required.** The inherited structured
+rule `Features.display002` (catalog `federal-rx-170-315-dsi-source-citation`, info
+`dsiSources`, phase W1/decision-support) activates when Facts.phase is absent.
+`RecordAllowsScans` admits records with no phase or infoPayloads. On that record,
+`displayReqMet` is false on every screen of every program, and no UI event can
+change Facts. Therefore every commit is blocked: any nonempty required task
+family fails Completable, regardless of field/review placement. The check-owned
+`DisplayObstruction.lean` proves this obstruction for all three releases and all
+persona roles, with no canonical kernel evaluation. Adding panels alone cannot
+fix it. Other missing temporal evidence and expired original clocks create
+related obstructions. Preserve all guards and rules; explicitly settle a trusted
+evidence precondition, real evidence-collection events, or another lawful task
+contract before claiming the baseline universally completable. Completing a
+refusal action does not establish completion of the blocked original action.
+
+**CHECK-EXTENDS-DISPLAYS is resolved for per-commit inheritance.** Content now
+preserves `displays?` exactly in Spec.Extends. Check's OldObligations and T8 now
+include old temporal, validator/default, expiry, display and signing-label
+contracts. Continuous phase-wide display coverage is still separate from this
+per-commit guarantee. No old obligation or safety rule has been weakened.
+
+
+## CHECK-CORE-2026-10-31: certification and day-1 smoke blockers
+
+The owner-selected core profile is active. No base rule, role permission,
+property or simulator implementation was changed. Native certification accepts
+P1/P2/P3/P5 in v1, v1.1 and v2, but not P4. `consentVerified.enteredBy` is
+`[surgeon, physician]`; `preOpExtraEntries` requires that input for `signOrders`
+in pre-op episodes. Completable quantifies over those episodes for NP too.
+`Check/DomainObstruction.lean` proves this impossibility. Content alone cannot
+supply an authorized NP input. Owner/core must resolve the task/episode domain
+or role model without broadening the safety permission to make a check pass.
+The shared `canonical.json` templates also retain RN-only inputs while declaring
+physician role; a single-role deployable baseline needs an explicit template /
+deployment convention that preserves the nursing persona source.
+
+Simulator smoke commands used the real native binary, `--spec v1` (also v1.1,
+v2), `--program releases/v1/personas/P1.json`,
+`--persona runs/world/1/personas/P1.json`,
+`--schedule runs/world/1/day-1-P1.json --world runs/world/1 --seed 7`, replacing
+release/persona for each of 15 runs. Completed/incomplete counts:
+
+| Release | P1 | P2 | P3 | P4 | P5 |
+|---|---:|---:|---:|---:|---:|
+| v1 | 36/6 | 22/0 | 38/0 | 22/0 | 14/4 |
+| v1.1 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v2 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+
+All three releases leave P1 refill-denial tasks `d01-P1-W7-027`, `028`, `033`
+incomplete: core has no `denyRefill` commit, and the simulator reports
+"no commit in spec ... for workflow Ehr.Workflow.W7". The v1-only incomplete
+W1 tasks are P1 `006`, `010`, `015` and P5 `008`, `010`, `016`, `018`; complaints
+include absent `orderKind`/`orderCode` (introduced in v1.1). P1 `010` makes one
+navigation click before giving up; the other listed W1 tasks make none.
+v1.1/v2 complete those W1 tasks. The smoke report preserves exact task choices
+and complaints; these observations are not a claim that every complaint caused
+a particular failure. P5 also reports an incompatible dose unit and fallback to
+an accepted value; clinical-choice fidelity needs review even when a task completes.
+P4's complete day-1 schedule does not discharge universal pre-op completability.
+See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
