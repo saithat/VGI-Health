@@ -1,0 +1,2717 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Mann, Lorena"
+    ],
+    [
+      "DOB",
+      "Oct 14, 1987"
+    ],
+    [
+      "MRN",
+      "14486708"
+    ],
+    [
+      "Age / sex",
+      "39 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Lena Wilson, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Community Health Plan"
+    ],
+    [
+      "Last encounter",
+      "EMER"
+    ],
+    [
+      "Last provider",
+      "Dr. Marcus Okafor, MD"
+    ],
+    [
+      "Last location",
+      "ED 01"
+    ],
+    [
+      "Encounter",
+      "Emergency Visit – Emergency Medicine"
+    ],
+    [
+      "Department",
+      "Emergency Medicine"
+    ],
+    [
+      "Allergies",
+      "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "entryHints": [
+    [
+      "w3Triage.weight",
+      "Recorded value: 164.0 lb. Enter the weight in kg."
+    ]
+  ],
+  "fieldSources": [
+    [
+      "w3Triage.weight",
+      "Source: Chart weight recorded today · chart as of 2026-11-02"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|edTrackBoard",
+          "Track Board"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Track Board"
+        ]
+      ]
+    ],
+    [
+      "Navigator",
+      [
+        [
+          "w3Triage.nav.w3TrackBoard",
+          "Track board"
+        ],
+        [
+          "w3Triage.nav.w3Provider",
+          "Provider note"
+        ],
+        [
+          "w3Triage.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3Triage.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3Triage.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w3Triage",
+  "side": [
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "allergyList",
+        "label": "Allergies",
+        "rows": [
+          [
+            [
+              "Record",
+              "Bee venom — Eruption of skin (disorder) (moderate)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Mold — Sneezing and itchy eyes (mild)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Dust mites — Sneezing and itchy eyes (mild)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Grass pollen — Sneezing and itchy eyes (mild)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Tree pollen — Sneezing and itchy eyes (mild)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Penicillin V — Rash (moderate)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Cow's milk — Wheezing (finding) (moderate)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Egg — Wheal (finding) (moderate)"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "currentMeds",
+        "label": "Active medications",
+        "rows": [
+          [
+            [
+              "Record",
+              "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort] — Take as needed."
+            ]
+          ],
+          [
+            [
+              "Record",
+              "NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir] — Take as needed."
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "problemList",
+        "label": "Problems",
+        "rows": [
+          [
+            [
+              "Record",
+              "Body mass index 30+ - obesity (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Anemia (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Asthma (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Prediabetes (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Past pregnancy history of miscarriage (situation) (active)"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "vitals",
+        "label": "Recent vitals",
+        "rows": [
+          [
+            [
+              "Record",
+              "Body weight 164 lb (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body Height 156.6 cm (Feb 11, 2026 05:12)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 83 /min (Feb 11, 2026 05:12)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 14 /min (Feb 11, 2026 05:12)"
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "sourceLabels": [
+    [
+      "record:weightToday",
+      "From chart — Weight (kg)"
+    ]
+  ],
+  "title": "Triage",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w3Triage.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.vitalsGroup",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.weight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Weight (kg)",
+              "pendingConfirm": true,
+              "provenance": "record:weightToday",
+              "required": true,
+              "unit": "kg",
+              "value": null
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.weight",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpSystolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP systolic",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpDiastolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP diastolic",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Heart rate",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respiratory rate",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.spo2",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "SpO₂",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Triage.painScore",
+                    "humanOnly": true,
+                    "kind": "code",
+                    "label": "Pain (0–10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                },
+                {
+                  "code": "7",
+                  "label": "7"
+                },
+                {
+                  "code": "8",
+                  "label": "8"
+                },
+                {
+                  "code": "9",
+                  "label": "9"
+                },
+                {
+                  "code": "10",
+                  "label": "10"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.vitalsGroup",
+        "title": "Triage vital signs"
+      }
+    },
+    {
+      "field": {
+        "comp": "w3Triage.triageAcuity",
+        "humanOnly": false,
+        "kind": "code",
+        "label": "Acuity (ESI)",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "field": {
+        "comp": "w3Triage.arrivalMode",
+        "humanOnly": false,
+        "kind": "code",
+        "label": "Arrival mode",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "field": {
+        "comp": "w3Triage.chiefComplaint",
+        "humanOnly": false,
+        "kind": "text",
+        "label": "Chief complaint",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": true,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "field": {
+        "comp": "w3Triage.isolationScreen",
+        "humanOnly": false,
+        "kind": "code",
+        "label": "Isolation screen",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.allergyGroup",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.allergies",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Records",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "Bee venom"
+                  ],
+                  [
+                    "Reaction",
+                    "Eruption of skin (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Mold"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Dust mites"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Animal dander"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Grass pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Tree pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Penicillin V"
+                  ],
+                  [
+                    "Reaction",
+                    "Rash"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Cow's milk"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheezing (finding)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Egg"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheal (finding)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.review.allergyList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark allergies reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w3Triage.allergyGroup",
+        "title": "Allergies"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "presentation": {
+              "children": [
+                {
+                  "info": {
+                    "comp": "w3Triage.chart.labResults",
+                    "display": "table",
+                    "infoId": "labResults",
+                    "label": "Results",
+                    "rows": [
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin A1c"
+                        ],
+                        [
+                          "Value",
+                          "5.84"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "4–5.6"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Glucose [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "86.89"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "70–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Urea nitrogen [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "19.03"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "7–20"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Creatinine [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "1.07"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0.6–1.3"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Calcium [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "9.63"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "8.5–10.2"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Sodium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "142.86"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "136–145"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Potassium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "4.01"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "3.5–5.1"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Chloride [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "108.5"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "98–107"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Carbon dioxide, total [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "25.19"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 11, 2026 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin A1c"
+                        ],
+                        [
+                          "Value",
+                          "6.02"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "4–5.6"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Glucose [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "88.16"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "70–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Urea nitrogen [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "9.37"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "7–20"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Creatinine [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "0.9"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0.6–1.3"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Calcium [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "9"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "8.5–10.2"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Sodium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "137.25"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "136–145"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Potassium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "3.83"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "3.5–5.1"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Chloride [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "104.47"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "98–107"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Carbon dioxide, total [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "21.5"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Leukocytes [#/volume] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "7.9906"
+                        ],
+                        [
+                          "Unit",
+                          "10*3/uL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "4.5–11"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Erythrocytes [#/volume] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "3.9851"
+                        ],
+                        [
+                          "Unit",
+                          "10*6/uL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin"
+                        ],
+                        [
+                          "Value",
+                          "15.859"
+                        ],
+                        [
+                          "Unit",
+                          "g/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "12–17.5"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hematocrit [Volume Fraction] of Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "37.546"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "MCV [Entitic mean volume] in Red Blood Cells by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "90.579"
+                        ],
+                        [
+                          "Unit",
+                          "fL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "MCH [Entitic mass] by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "29.463"
+                        ],
+                        [
+                          "Unit",
+                          "pg"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "MCHC [Entitic Mass/volume] in Red Blood Cells by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "35.585"
+                        ],
+                        [
+                          "Unit",
+                          "g/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Erythrocyte [DistWidth] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "44.388"
+                        ],
+                        [
+                          "Unit",
+                          "fL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Platelets [#/volume] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "195.64"
+                        ],
+                        [
+                          "Unit",
+                          "10*3/uL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "150–450"
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Platelet distribution width [Entitic volume] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "490.47"
+                        ],
+                        [
+                          "Unit",
+                          "fL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Platelet [Entitic mean volume] in Blood by Automated count"
+                        ],
+                        [
+                          "Value",
+                          "12.215"
+                        ],
+                        [
+                          "Unit",
+                          "fL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Feb 5, 2025 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin A1c"
+                        ],
+                        [
+                          "Value",
+                          "6.15"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "4–5.6"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Glucose [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "88.07"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "70–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Urea nitrogen [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "15.53"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "7–20"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Creatinine [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "0.89"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0.6–1.3"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Calcium [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "9.28"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "8.5–10.2"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Sodium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "138.34"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "136–145"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Potassium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "4.75"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "3.5–5.1"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Chloride [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "109.73"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "98–107"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Carbon dioxide, total [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "20.99"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Cholesterol [Mass/volume] in Serum or Plasma"
+                        ],
+                        [
+                          "Value",
+                          "159.76"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0–199"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Triglyceride [Mass/volume] in Serum or Plasma"
+                        ],
+                        [
+                          "Value",
+                          "131.82"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0–149"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+                        ],
+                        [
+                          "Value",
+                          "80.35"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Cholesterol in HDL [Mass/volume] in Serum or Plasma"
+                        ],
+                        [
+                          "Value",
+                          "53.04"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "40–1000"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 31, 2024 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin A1c"
+                        ],
+                        [
+                          "Value",
+                          "6.3"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "4–5.6"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Glucose [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "78.5"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "70–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Urea nitrogen [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "7.91"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "7–20"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Creatinine [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "1.52"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "0.6–1.3"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Calcium [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "8.75"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "8.5–10.2"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Sodium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "141.82"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "136–145"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Potassium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "4.78"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "3.5–5.1"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Chloride [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "108.84"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "98–107"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Carbon dioxide, total [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "23.9"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 25, 2023 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Hemoglobin A1c"
+                        ],
+                        [
+                          "Value",
+                          "6.14"
+                        ],
+                        [
+                          "Unit",
+                          "%"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "4–5.6"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Glucose [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "64.03"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          "L"
+                        ],
+                        [
+                          "Range",
+                          "70–99"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Urea nitrogen [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "15.94"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "7–20"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Creatinine [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "0.92"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "0.6–1.3"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Calcium [Mass/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "9.41"
+                        ],
+                        [
+                          "Unit",
+                          "mg/dL"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "8.5–10.2"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Sodium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "140.78"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "136–145"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Potassium [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "3.81"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          "3.5–5.1"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Chloride [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "110.48"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          "H"
+                        ],
+                        [
+                          "Range",
+                          "98–107"
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ],
+                      [
+                        [
+                          "Test",
+                          "Carbon dioxide, total [Moles/volume] in Blood"
+                        ],
+                        [
+                          "Value",
+                          "27.76"
+                        ],
+                        [
+                          "Unit",
+                          "mmol/L"
+                        ],
+                        [
+                          "Flag",
+                          ""
+                        ],
+                        [
+                          "Range",
+                          ""
+                        ],
+                        [
+                          "Recorded",
+                          "Jan 19, 2022 05:12"
+                        ],
+                        [
+                          "Status",
+                          "final"
+                        ]
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "kind": "results"
+            }
+          }
+        ],
+        "id": "w3Triage.chart",
+        "labels": [
+          "Results",
+          "Imaging",
+          "Notes",
+          "Encounters"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Next: provider evaluation",
+        "role": "nav"
+      }
+    }
+  ]
+}

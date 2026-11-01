@@ -1,0 +1,19 @@
+{
+  "source": "c9f30993",
+  "phase": "shell before semantic density integration",
+  "appTests": 296,
+  "browserFidelityAndLive": 63,
+  "browserRealismAndHistory": 10,
+  "buttonAudit": {
+    "works": 199,
+    "disabled-with-reason": 1,
+    "dead": 0,
+    "error": 0
+  },
+  "sourceClinicalLogicChanged": false,
+  "notes": [
+    "Read-only card flow is 3/2/1 columns at 1440/1024/720.",
+    "Live session controls dock in the measured status bar; no clinical button is covered.",
+    "The upcoming Summary/Index and expanded storyboard remain a content-lane integration dependency."
+  ]
+}
