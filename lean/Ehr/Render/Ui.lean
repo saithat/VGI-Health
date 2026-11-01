@@ -50,8 +50,9 @@ def medCells (r : MedRow) : List (String × String) :=
    ("Authored", uiDate r.authored), ("Prescriber", r.prescriber)]
 def noteCells (r : NoteRow) : List (String × String) :=
   [("Date", uiDate r.date), ("Type", r.noteType), ("Author", r.author),
-   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status),
-   ("Source date", uiDate r.sourceDate), ("Shift days", uiLabel r.shiftDays "Unknown")]
+   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status)] ++
+   (if r.sourceDate == "" then [] else [("Source date", uiDate r.sourceDate)]) ++
+   (if r.shiftDays == "" then [] else [("Shift days", r.shiftDays)])
 def historyCells (r : HistoryRow) : List (String × String) :=
   [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=

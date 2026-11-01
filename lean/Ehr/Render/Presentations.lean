@@ -143,13 +143,19 @@ def marCells (d : Display) : List (List (String × String)) :=
     [("Medication", a.medication), ("Dose", a.dose), ("Route", a.route),
      ("Frequency", ""), ("Order status", ""), (gridHour a.time, administrationText a)]
 
+/-- Labs retain their Results view; nursing collections use other source categories.
+Legacy rows with no category and explicitly vital-sign results remain included. -/
+def flowsheetObservation (r : ObservationRow) : Bool :=
+  !r.categories.contains "laboratory" || r.categories.contains "vital-signs"
+
 /-- Measures with different units remain different rows. Repeated observations
 at the same timestamp remain repeated cells; no value is replaced by a lookup. -/
 def flowsheetCells (d : Display) : List (List (String × String)) :=
-  let keys := (d.observations.map (fun r => (r.measure, r.unit))).eraseDups
+  let observations := d.observations.filter flowsheetObservation
+  let keys := (observations.map (fun r => (r.measure, r.unit))).eraseDups
   keys.map fun (measure, unit) =>
     [("Measure", measure), ("Unit", unit)] ++
-    (d.observations.filter (fun r => r.measure == measure && r.unit == unit)).map
+    (observations.filter (fun r => r.measure == measure && r.unit == unit)).map
       (fun r => (gridTime r.time, r.value ++
         (if r.status == "" || r.status == "final" then "" else " · " ++ r.status)))
 

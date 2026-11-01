@@ -1498,6 +1498,7 @@
           "text": "Blood pressure",
           "coding": [
             {
+              "system": "http://loinc.org",
               "code": "85354-9"
             }
           ]
@@ -1509,6 +1510,7 @@
               "text": "Systolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8480-6"
                 }
               ]
@@ -1516,7 +1518,7 @@
             "valueQuantity": {
               "value": 128,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1525,6 +1527,7 @@
               "text": "Diastolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8462-4"
                 }
               ]
@@ -1532,7 +1535,7 @@
             "valueQuantity": {
               "value": 76,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }
@@ -1560,6 +1563,7 @@
           "text": "Blood pressure",
           "coding": [
             {
+              "system": "http://loinc.org",
               "code": "85354-9"
             }
           ]
@@ -1571,6 +1575,7 @@
               "text": "Systolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8480-6"
                 }
               ]
@@ -1578,7 +1583,7 @@
             "valueQuantity": {
               "value": 126,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1587,6 +1592,7 @@
               "text": "Diastolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8462-4"
                 }
               ]
@@ -1594,7 +1600,7 @@
             "valueQuantity": {
               "value": 74,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }
@@ -1622,6 +1628,7 @@
           "text": "Blood pressure",
           "coding": [
             {
+              "system": "http://loinc.org",
               "code": "85354-9"
             }
           ]
@@ -1633,6 +1640,7 @@
               "text": "Systolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8480-6"
                 }
               ]
@@ -1640,7 +1648,7 @@
             "valueQuantity": {
               "value": 124,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1649,6 +1657,7 @@
               "text": "Diastolic",
               "coding": [
                 {
+                  "system": "http://loinc.org",
                   "code": "8462-4"
                 }
               ]
@@ -1656,7 +1665,7 @@
             "valueQuantity": {
               "value": 72,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }

@@ -517,6 +517,8 @@ structure ObservationRow where
   unit : String
   time : String
   status : String
+  /-- Source categories select the clinical collection; older rows have none. -/
+  categories : List String := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- The patient's records as the page shows them. Computed in Lean from the

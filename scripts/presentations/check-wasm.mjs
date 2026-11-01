@@ -14,6 +14,7 @@ for (const [kind, input] of corpus) {
   assert.deepEqual(result, native('render-ui', input), kind);
   const legacyInput = structuredClone(input);
   delete legacyInput.display.labResults;
+  for (const row of legacyInput.display.observations) delete row.categories;
   assert.deepEqual(JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(legacyInput))), native('render-ui', legacyInput), `${kind}: legacy display defaults`);
   if (kind === 'results' || kind === 'trend') {
     const rows = result.workspace[1].presentation.children[0].info.rows;
@@ -23,6 +24,12 @@ for (const [kind, input] of corpus) {
     assert.ok(!rows.some(row => has(row, 'Value', '120') && has(row, 'Unit', 'g/dL')));
     assert.ok(rows.some(row => has(row, 'Value', '<5')));
     assert.ok(rows.some(row => has(row, 'Value', 'No growth')));
+  }
+  if (kind === 'flowsheet') {
+    assert.ok(input.display.observations.some(row => row.categories.includes('laboratory')));
+    const rows = result.workspace[1].presentation.children[0].info.rows;
+    assert.ok(!rows.some(row => row.some(([key, value]) => key === 'Measure' && value === 'Hemoglobin')));
+    assert.ok(rows.some(row => row.some(([key, value]) => key === 'Measure' && value.includes('Systolic'))));
   }
   if (kind === 'inBasket') {
     const panes = result.workspace[1].section.children[0].columns.children;

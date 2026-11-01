@@ -655,6 +655,8 @@ def noteRow (r : Json) : NoteRow :=
     title := let title := str r "description"
       if title != "" then title else knownText (str (attachments.headD .null) "title")
     text := if attachments.isEmpty then "Note body unavailable (no attachments)"
+      else if attachments.length == 1 && str (attachments.headD .null) "title" == "" then
+        noteAttachmentText (attachments.headD .null)
       else "\n\n".intercalate (attachments.zipIdx.map fun (a, i) =>
         "Attachment " ++ toString (i + 1) ++
         (if str a "title" == "" then "" else ": " ++ str a "title") ++ "\n" ++ noteAttachmentText a)
@@ -911,21 +913,6 @@ def administrationRows (rs : List Json) : List AdministrationRow :=
   oldestFirst (·.time) ((ofType "MedicationAdministration" rs |>.filter
     (fun r => str r "status" != "entered-in-error")).map (administrationRow rs))
 
-/-- One clinical Observation, including integer and boolean assessments. -/
-def observationRow (r : Json) : ObservationRow :=
-  let (value, unit, _) := obsValue r
-  let value := if value != "" then value else
-    match field r "valueInteger" with
-    | .num n => toString n
-    | _ => match field r "valueBoolean" with
-      | .bool b => if b then "Yes" else "No"
-      | _ => "Not recorded"
-  { measure := ccText (field r "code"), value, unit, time := obsWhen r, status := str r "status" }
-
-/-- Each clinical Observation retains its own time, unit, value and status. -/
-def observationRows (rs : List Json) : List ObservationRow :=
-  oldestFirst (·.time) ((rs.filter isObservation).map observationRow)
-
 /-- Lab flag from source interpretation, else numeric comparison in Lean.
 The existing demo reference-range policy is unchanged. -/
 def labFlag (r : Json) : String :=
@@ -1078,6 +1065,46 @@ def labResultRowsFor (r : Json) : List LabResultRow :=
 /-- Full clinical result history. Latest-result aggregates remain a separate legacy API. -/
 def labResultRows (rs : List Json) : List LabResultRow :=
   newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
+
+/-- Only explicitly coded BP components can form a systolic/diastolic pair.
+FHIR slices are unordered; a component's array position never supplies its meaning. -/
+def observationBpValue? (r : Json) : Option (String × String) := do
+  let loinc := fun cc code => (codings cc).any
+    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
+  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
+      |>.any (fun key => field r key != .null)
+  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
+    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
+    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
+    let s := field systolic "valueQuantity"
+    let d := field diastolic "valueQuantity"
+    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" || qtyUnitText s != qtyUnitText d then none
+    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
+
+/-- Source values include assessments, absent reasons and censored quantities. -/
+def observationRow (r : Json) : ObservationRow :=
+  let (value, unit) := (observationBpValue? r).getD
+    (labResultValue r, qtyUnitText (field r "valueQuantity"))
+  { measure := ccText (field r "code"), value, unit, time := obsWhen r,
+    status := str r "status", categories := categoryCodes r }
+
+/-- Every assessment component retains its own value/unit and report context. -/
+def observationComponentRow (parent component : Json) : ObservationRow :=
+  let row := observationRow component
+  { row with
+    measure := ccText (field parent "code") ++ " • " ++ row.measure
+    time := obsWhen parent
+    status := str parent "status"
+    categories := categoryCodes parent }
+
+/-- Parent and component records are all retained, including repeated timestamps. -/
+def observationRowsFor (r : Json) : List ObservationRow :=
+  observationRow r :: (arr r "component").map (observationComponentRow r)
+
+/-- Each valid Observation retains its own time, category, value and components. -/
+def observationRows (rs : List Json) : List ObservationRow :=
+  oldestFirst (·.time) ((rs.filter isObservation).flatMap observationRowsFor)
 
 /-! ## Facts and display -/
 

@@ -16,3 +16,4 @@ import Ehr.Render.UiTests
 import Ehr.Render.PresentationTests
 import Ehr.Render.PresentationProofs
 import Ehr.Render.LabResultsTests
+import Ehr.Render.ObservationTests

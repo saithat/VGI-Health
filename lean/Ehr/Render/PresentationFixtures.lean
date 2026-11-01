@@ -90,8 +90,6 @@ def main (args : List String) : IO Unit := do
         if kind == .trackBoard then Fhir.str (Fhir.field r "class") "code" == "EMER" && subject == "Patient/" ++ selected
         else Fhir.str r "id" == "inpatient" && selected == "p1"
       else if rt == "Appointment" then kind == .schedule
-      else if rt == "Observation" && kind == .flowsheet then
-        subject == "Patient/" ++ selected && (Fhir.categoryCodes r).any (fun code => code == "vital-signs" || code == "exam")
       else subject == "" || subject == "Patient/" ++ selected
     let resources := resources.filter (fun r => Fhir.resourceType r == "Patient" && Fhir.str r "id" == selected) ++
       resources.filter (fun r => Fhir.resourceType r != "Patient" || Fhir.str r "id" != selected)
