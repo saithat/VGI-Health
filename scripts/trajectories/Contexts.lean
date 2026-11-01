@@ -27,18 +27,20 @@ def main (args : List String) : IO UInt32 := do
     let mut segments : List Json := []
     let mut offset := 0
     let mut divergence : Option Json := none
-    for ep in eps do
+    for (ep, idx) in eps.zipIdx do
       let f := { ep.facts with receipts := facts.receipts ++ state.receipts }
       let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med?
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
-      state := { init sp prog f user with clock := state.clock }
+      state := { (if Workspace.enabled prog && idx == 0 then Workspace.init prog else
+        { init sp prog f user with patientContext? := state.patientContext? }) with clock := state.clock }
       let initial := state
       let start := offset
       while !remaining.isEmpty && !ctx.done state do
         let some event := remaining.head? | break
         remaining := remaining.drop 1
+        state := if Workspace.enabled prog then Workspace.bind sp prog f user state else state
         let before := { state with clock := event.t - task.startMin * 600 }
-        let (after, result) := step sp prog f user .human before event.event
+        let (after, result) := if Workspace.enabled prog then Workspace.step sp prog f user before event.event else step sp prog f user .human before event.event
         if divergence.isNone && (before.screen != event.screen || result != event.result) then
           divergence := some (Json.mkObj [("eventIndex", toJson offset),
             ("expectedScreen", toJson event.screen), ("actualScreen", toJson before.screen),
@@ -46,7 +48,7 @@ def main (args : List String) : IO UInt32 := do
         state := after
         offset := offset + 1
       segments := segments ++ [Json.mkObj [("start", toJson start), ("end", toJson offset),
-        ("facts", toJson f), ("initialState", toJson initial), ("goalsMet", toJson (ctx.done state))]]
+        ("facts", toJson f), ("clinicalInit", toJson (Workspace.enabled prog && idx > 0)), ("initialState", toJson initial), ("goalsMet", toJson (ctx.done state))]]
     if !remaining.isEmpty && divergence.isNone then
       divergence := some (Json.mkObj [("eventIndex", toJson offset), ("reason", toJson "unconsumed events after all clinical episodes")])
     receipts := (task.patientId, state.receipts) :: receipts.filter (·.1 != task.patientId)

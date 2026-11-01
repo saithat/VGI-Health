@@ -1,3 +1,4 @@
+import ts from 'typescript';
 import { RELEASE_MODULES } from './release-config.js';
 /** Generated from the checked-in formal sources; never reads simulation holdouts. */
 import { readFileSync, readdirSync } from 'node:fs';
@@ -55,14 +56,12 @@ export function formalRuleContext(spec: Spec, program: Program): string {
     'All co-signatures are human-only. A simulated attending is not designer automation and never authorizes bypassing an active encounter-role rule.'].join('\n\n');
 }
 
-function programVocabulary(): string {
-  const types = read('lean/generated/ehr-types.ts');
-  return ['Slot', 'Prefill', 'Action', 'Visibility', 'Size', 'Kind', 'Component', 'ComponentDef', 'Screen', 'MacroStep', 'Macro', 'Program'].map((name) => {
-    const start = types.search(new RegExp(`export (?:type|interface) ${name}\\b`));
-    if (start < 0) throw new Error(`Missing generated program construct ${name}`);
-    const remaining = types.slice(start);
-    const next = remaining.slice(7).search(/\nexport (?:type|interface|const) /);
-    return next < 0 ? remaining : remaining.slice(0, next + 7).replace(/\/\*\*[\s\S]*?\*\/\s*$/, '');
+export function programVocabulary(): string {
+  const types=ts.createSourceFile('ehr-types.ts',read('lean/generated/ehr-types.ts'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TS);
+  return ['Slot','Prefill','Action','Visibility','Size','Kind','Component','ComponentDef','Screen','MacroStep','Macro','Program'].map(name=>{
+    const declaration=types.statements.find(node=>(ts.isInterfaceDeclaration(node)||ts.isTypeAliasDeclaration(node))&&node.name.text===name);
+    if(!declaration)throw new Error(`Missing generated program construct ${name}`);
+    return declaration.getText(types);
   }).join('\n');
 }
 
@@ -85,7 +84,7 @@ Program screens, start navigation, components, labels, grouping, tabs, visibilit
 Composite source templates use componentDefs and kind.use. The agent expands them into existing native kinds, then the real checker certifies the complete executable expansion. Source and expanded executable are saved separately and bound by hashes; the app and trajectory/complexity tools consume the certified executable. Native Lean Kind.use/Program.expand is still an upstream request; no new native semantic kind is invented here. Example: componentDefs [{name:"summary",params:["info"],body:[{id:"panel",kind:{panel:{info:"{{info}}"}},label:"Summary",tab:0,visibility:"always",size:"normal",tag:"summary"}]}], then kind {use:{name:"summary",args:[["info","currentMeds"]]}}. The use component id namespaces expanded ids. No nested use in template bodies.\n
 Presentation components are declared in the source Program's presentationComponents array: {name:"Review", key:"info" or "composite:summary", source:"...TSX..."}. They live at app/src/ehr/ui/custom/<owner>/v<N>/<Name>.tsx with a per-version manifest. A fail-closed compiler accepts a declarative TSX subset: named imports of Box/Stack/Group/Paper/Flex from @mantine/core, and UiNodeView plus type PresentationProps from @ehr/presentation. Export one pure function Review({node,onEvent}: PresentationProps), returning literal layout wrappers around exactly one <UiNodeView node={node} onEvent={onEvent} />. No other JavaScript is executed: the checked TSX lowers to a typed layout manifest. No functions, hooks, globals, dynamic expressions, spread props, DOM, network, storage, timers, unsafe HTML or remapped events. Layout props have a typed allowlist. This deliberately supports layout and density changes; arbitrary React logic and new semantic behavior are unavailable. The build-bound bundle includes source and compiled layout; the real complete-version ARIA/visibility/legibility/no-cover harness paints that bundle before atomic deployment. Example source: import {Paper} from '@mantine/core'; import {UiNodeView,type PresentationProps} from '@ehr/presentation'; export default function Review({node,onEvent}:PresentationProps){return <Paper p="xs" withBorder><UiNodeView node={node} onEvent={onEvent}/></Paper>;}\n
 ## Exact generated UI-program vocabulary\n\n\`\`\`typescript\n${programVocabulary()}\n\`\`\`\n\n## What you cannot change\n
-Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.\n
+Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. The shared patientSelection binding is immutable; never disable it. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.\n
 ## Enforced properties 1–13, A1–A4\n
 ${properties()}\n
 ## Design rules D1–D6\n

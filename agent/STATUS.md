@@ -1,3 +1,87 @@
+## Final urgent verification result
+
+Core fixes: 103 agent tests, 293 app tests, lint/typechecks, native build (365
+jobs), `make wasm-check`, and 5-persona × 3-day concurrent FAKE/REPLAY/resume all
+pass. The native consumer fixture indexes 15 tasks / 1,095 events plus matched
+baselines with zero mismatches; all 514 applicable conformance cases pass
+(486 explicitly not applicable). No model calls were made.
+
+**Remaining blocker: complexity did not finish successfully.** P2/P3/P5 finish;
+P1/P4 native benchmark searches exceed the original 180s limit and the generous
+600s retry. W2 reached seven clicks but timed out during independent keystroke
+search. No partial complexity report is published and no gate was weakened.
+See docs/design/changes-requests.md. This prevents claiming full-run readiness;
+resolve native minimum-search performance before relying on the full wrapper.
+The parallel run command below is prepared, but its 60–120-minute estimate does
+not include this unresolved search cost. Raw diagnostics remain under
+/tmp/vgi-parallel-consumer-complexity2.txt; fixture data is outside runs/.
+
+## Parallel run readiness — 2026-11-01
+
+The full wrapper uses five concurrent persona workers in ONE run directory.
+Initial deployments, days and nights run concurrently across personas, with
+barriers before the next phase/release. Programs, days, decisions, certificates,
+blind baselines and no-agent arms keep the original layout. A single coordinator
+writes the manifest/summary. Each worker has independent seed rejection state,
+screen checker, geometry cache and `screen-cache/<persona>` receipts. Recorded
+call IDs and native journals remain unique. Failures join the other workers before
+marking the run failed; `--resume --parallel` keeps their completed checkpoints.
+The recorded parallel mode must match on resume.
+
+`EHR_SCREEN_WORKERS=1` means one Chromium per persona, not one for the whole run.
+Five persona workers may therefore use five browsers. Workers use separate ports,
+temporary directories and cache directories. No build runs while browsers do.
+Fresh preflight has NO `ulimit -v` around `lake build`; the orchestrator's systemd
+scope supplies the memory cap. `make wasm-check` verifies Lean-source/WASM parity
+on both fresh and resumed paths; resume still performs no rebuild. Six Lean
+threads and the bounded Lean stack remain configured. Native commands (including
+popup rendering) have a ten-minute default deadline; override with positive
+`EHR_COMMAND_TIMEOUT_MS`. Timeout kills the native process group and records
+`infrastructure-error`, never a checker rejection or “no change”.
+
+The generated manual now extracts TypeScript declarations through the TypeScript
+parser, preserving inner docstrings and the complete Program interface. Its
+balanced-syntax regression includes `patientSelection?`; manual/hash regenerated.
+Fresh native trajectory replay also follows workspace selection/hydration and
+carries the selected patient across clinical episode resets. Recorded historical
+trajectories retain their original protocol. Complexity computes personas in
+parallel using isolated scratch inputs, after compiling its single helper.
+
+Exact full run (from this worktree, inside the existing systemd scope):
+
+```sh
+scripts/run-overnight.sh core-10day
+# Resume the same worker checkpoints/builds:
+scripts/run-overnight.sh core-10day --resume
+```
+
+Equivalent prepared agent command:
+
+```sh
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id core-10day \
+  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
+```
+
+Planning estimate: about 60–120 minutes plus preflight/postprocessing, rather than
+five serial persona totals. The wrapper runs conformance with explicit `--run-only`: every deployed revision
+and every applicable scenario, without repeating unrelated canonical references.
+Omit that flag to additionally check the complete 15-canonical reference matrix.
+The slowest worker governs each phase; cold full UI
+coverage can add substantial time (P5 currently exports 1,015 distinct trees).
+This is an estimate from the prior 43-minute single-persona run, not a measured
+five-persona live benchmark. No live-model run or probe was started.
+
+Verification distinguishes the deterministic 5-persona × 3-day FAKE/REPLAY /
+resume test from the native consumer contract fixture (one real task per persona
+per day, explicitly FAKE, with real native certificates and traces; no renderer
+certification or overnight-performance claim). The supplementary full-browser
+native probe hit the host temporary-file quota before completing; it was not
+presented as a successful run. Stale unit-test temporary files were cleaned up.
+No verification run data is committed.
+
 ## Physical interaction metrics — owner decision, 2026-11-01
 
 Verification: 15/15 current certified canonicals have complete real Chromium
@@ -277,7 +361,7 @@ pnpm --filter agent run-days --days 2 --backend codex \
 
 ```sh
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
-pnpm --filter agent run-days --days 10 --backend codex \
+pnpm --filter agent run-days --parallel --days 10 --backend codex \
   --service-tier fast --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id core-10day \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
@@ -309,7 +393,7 @@ pnpm --filter app build
 
 Indexers enforce `ulimit -v 8000000;` locally on each Lean/lake helper. Do not
 apply that virtual-address cap to the whole Node/Chromium runner: V8/WASM needs
-large reserved address space. One lake and one browser at a time; never build
+large reserved address space. One lake at a time; up to five persona browsers in parallel mode (one otherwise); never build
 while a browser/server is running.
 
 ## Left for the orchestrator

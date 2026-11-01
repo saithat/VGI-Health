@@ -139,14 +139,13 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
             schemaVersion: 1, id: task.id,
             context: { programPath: relative(progPath), specPath: relative(spPath), user: { id: prog.owner, role: prog.role },
               startMin: task.startMin, today: dateOf(task.day), fixtureFile: relative(path.join(path.dirname(fixtureIndexPath), fixture.file)), resources: extras,
-              segments: context.segments.map(({ initialState, ...segment }) => ({ ...segment, seed: { kind: 'init', clock: initialState.clock } })),
+              segments: context.segments.map(({ initialState,clinicalInit, ...segment }) => ({ ...segment, seed: { kind: 'init', clock: initialState.clock,...(clinicalInit?{clinical:true}:{}) } })),
             }, trace, nativeMismatch: context.nativeMismatch,
           };
           // Also verify that the compact init seed reconstructs the native seed exactly.
           let seedMismatch = null;
           for (const segment of context.segments) {
-            const initial = JSON.parse(interp.init(JSON.stringify(sp), JSON.stringify(prog), JSON.stringify(segment.facts), JSON.stringify(trajectory.context.user)));
-            initial.clock = segment.initialState.clock;
+            const initial=replayTrajectory(interp,trajectory,sp,prog,segment.start).state;
             if (!isDeepStrictEqual(initial, segment.initialState)) seedMismatch ??= { eventIndex: segment.start, reason: 'WASM/native initial state mismatch' };
           }
           const verification = await verifyTask(interp, trajectory, sp, prog);
@@ -209,13 +208,13 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     }
     for (const id of baseline) if (id !== 'all' && !tasks.some(t => t.id === id)) throw new Error(`Unknown baseline task ${id}`);
     if (!tasks.length) throw new Error('No recorded tasks');
-    const nativeModules = await Promise.all(['Ehr/Cli/Sim', 'Ehr/Sim/Policy', 'Ehr/Sim/Goals', 'Ehr/Core/Interp', 'Ehr/Render/Fhir'].map(async module => ({ module, sha256: await sha(path.join(leanDir, '.lake/build/lib/lean', `${module}.olean`)) })));
+    const nativeModules = await Promise.all(['Ehr/Cli/Sim', 'Ehr/Sim/Policy', 'Ehr/Sim/Goals', 'Ehr/Core/Interp','Ehr/Core/Workspace', 'Ehr/Render/Fhir'].map(async module => ({ module, sha256: await sha(path.join(leanDir, '.lake/build/lib/lean', `${module}.olean`)) })));
     const provenance = { nativeModules, world: relative(world), fixtureIndex: relative(fixtureIndexPath), geometryModelSha256:await sha(path.join(root,'app/src/metrics/geometry.ts')),adapterSha256: await sha(path.join(root, 'scripts/trajectories/Contexts.lean')), wasmSha256: await sha(path.join(root, 'app/public/ehr/ehr-interp.wasm')), nativeBinarySha256: await sha(binary), specs: [...specSources.values()] };
     const index = { schemaVersion: 1, runId,timingUsage:'not used; retained only in raw trace metrics', minimumDefinition: 'Recorded theoretical ideal-interface floor (Ehr.Sim.floorMetrics), not an exact minimum for this deployed UI. Mouse/scroll pixels use recorded Chromium geometry at 1440×900 when available; missing geometry is unavailable.', tasks };
     await write(path.join(output, 'index.json'), index);
     const verification = { schemaVersion: 1, runId, status: mismatches.length ? 'failed' : 'passed', tasks: tasks.length, events: eventCount, nativeEventsVerified: nativeEvents,
       wasmEventsVerified: wasmEvents, baselineTasks: tasks.filter(t => t.baseline).length, mismatches, provenance,
-      reconstruction: 'Native loadFacts merges fixture UUID resources and cumulative per-patient schedule resources; taskEpisodes derives clinical contexts; receipts carry across episodes and tasks; init resets each episode; clock = trace.t - startMin*600 before each step. Compare pre-event screen and exact step result. Historical specs are immutable snapshots.',
+      reconstruction: 'Native loadFacts merges fixture UUID resources and cumulative per-patient schedule resources; taskEpisodes derives clinical contexts; receipts carry across episodes and tasks; workspace selection and data arrival use production transitions; clinical episode resets carry the selected patient; clock = trace.t - startMin*600 before each step. Compare pre-event screen and exact step result. Historical specs are immutable snapshots.',
     };
     await write(path.join(output, 'verification.json'), verification);
     console.log(`${runId}: ${tasks.length} tasks, ${eventCount} events, ${mismatches.length} mismatches`);

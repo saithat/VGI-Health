@@ -66,14 +66,14 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     args: argv,
     options: {
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
-      'run-id': { type: 'string' }, resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
+      'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
       model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({
     days: intArg(values.days, 'days', 10),
-    resume: values.resume,
+    resume: values.resume,parallel:values.parallel,
     llm,
     worldDir: resolveUserPath(values.world ?? 'runs/world/2'),
     ...(values['runs-root'] ? { runsRoot: resolveUserPath(values['runs-root']) } : {}),

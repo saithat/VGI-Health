@@ -161,7 +161,7 @@ export async function main(args = process.argv.slice(2)) {
   const { values } = parseArgs({ args: args.filter(x => x !== '--'), options: {
     program: { type: 'string' }, spec: { type: 'string' }, run: { type: 'string' },
     binary: { type: 'string' }, out: { type: 'string' }, canonical: { type: 'boolean' }, scenario: { type: 'string' },
-    jobs: { type: 'string', default: '2' },
+    jobs: { type: 'string', default: '2' },'run-only':{type:'boolean',default:false},
   } });
   if (!!values.program !== !!values.spec) throw new Error('--program and --spec are required together');
   if (!values.program && !values.run && !values.canonical) throw new Error('Usage: pnpm conformance --program <file> --spec <file> | --run <id> | --canonical');
@@ -173,13 +173,17 @@ export async function main(args = process.argv.slice(2)) {
     const persona = /(?:^|[\/.-])(P[1-5])(?:[\/.-]|$)/.exec(programPath)?.[1] ?? (/^P[1-5]$/.test(program.owner) ? program.owner : undefined);
     targets = [{ id: `program/${program.id}/v${program.version}`, kind: 'program', persona, release: spec.version,
       semanticRelease: spec.version, revision: program.version, programPath, specPath, program, spec, certification: 'not evaluated by this behavioral runner' }];
-  } else targets = [...canonicals(), ...(values.run ? runTargets(values.run) : [])];
+  } else {
+    if(values['run-only']&&!values.run)throw new Error('--run-only requires --run');
+    targets=values['run-only']?runTargets(values.run):[...canonicals(),...(values.run?runTargets(values.run):[])];
+  }
   const jobs = Number(values.jobs);
   if (!Number.isInteger(jobs) || jobs < 1 || jobs > 16) throw new Error('--jobs must be 1–16');
   const report = await runParallel({ targets, binary: path.resolve(binary), runId: values.run ?? null, selected: values.scenario, jobs });
   const output = values.out ? path.resolve(values.out) : values.run
     ? path.join(root, 'runs', values.run, values.scenario ? 'conformance.partial.json' : 'conformance.json')
     : path.join(root, 'conformance/results', values.program ? 'program.json' : 'canonical.json');
+  report.scope=values['run-only']?'Every deployed revision in the selected run; all scenario gates retained':'Canonical references and selected run revisions';
   writeAtomic(output, report);
   writeFileSync(output.replace(/\.json$/, '') + '.md', table(report));
   console.log(table(report));

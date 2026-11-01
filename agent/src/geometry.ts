@@ -27,7 +27,7 @@ export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string
  const collected=new Map<string,GeometryAtlas>();
  return {mode:inner.mode,binary:inner.binary,check:i=>inner.check(i),deploy:i=>inner.deploy(i),renderScreens:i=>inner.renderScreens(i),minClicks:i=>inner.minClicks(i),runBatch:i=>inner.runBatch(i),specExport:i=>inner.specExport(i),async simulate(input){
   const result=await inner.simulate(input),hash=geometryProgramHash(input.program);
-  const key=geometryCacheKey(input.program)+`:${input.worldDir}:${input.schedule.day}`;let pending=cache.get(key);if(!pending){pending=provider(input);cache.set(key,pending);}
+  const key=geometryCacheKey(input.program)+`:${input.worldDir}:${sha256(stableStringify(input.schedule))}`;let pending=cache.get(key);if(!pending){pending=provider(input);cache.set(key,pending);}
   const captured=await pending;if(!captured)return result;
   const aliases:Record<string,string[]>={};
   for(const screen of expandProgram(input.program).screens)for(const component of screen.components){
@@ -42,7 +42,7 @@ export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string
   collected.set(geometryCacheKey(input.program),atlas);
   if(atlas.programHash!==hash)throw new Error('Geometry atlas belongs to another executable');
   await mkdir(path.join(dir,'geometry'),{recursive:true});await writeJson(path.join(dir,'geometry',`${hash}.${atlas.componentsSha256}.json`),atlas);await writeJson(path.join(dir,'geometry',`${hash}.json`),atlas);
-  return attachGeometry(result,atlas);
+  return attachGeometry(result,{...captured,componentsSha256:atlas.componentsSha256,aliases});
  }};
 }
 export async function loadGeometry(file:string){return geometryAtlasSchema.parse(JSON.parse(await readFile(file,'utf8')));}

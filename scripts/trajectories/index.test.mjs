@@ -65,3 +65,21 @@ test('real WASM determinism across three releases, episode resets and baseline t
   broken.trace[2].result = 'deliberately-corrupted';
   assert.equal((await verifyTask(interp, broken, await read(row.specPath), await read(row.programPath))).firstMismatch.eventIndex, 2);
 });
+
+test('replays workspace data arrival and preserves the selected patient across clinical episode resets',async()=>{
+ const {tinySpec,tinyProgram,tinyFacts}=await import('../../lean/generated/ehr-samples.ts');
+ const interp=await loadInterpreter(),program={...tinyProgram,patientSelection:true,start:'home',screens:[...tinyProgram.screens,{...tinyProgram.screens[0],id:'home',components:[]}]};
+ const facts={...tinyFacts,sourcePatientId:'fixture-patient',patientDirectory:{patients:[{id:'fixture-patient',name:'Fixture',mrn:'TEST'}],activities:[{info:'scheduleTasks',title:'Fixture list',rows:[{patient:'fixture-patient',fields:[],source:'fixture'}]}]}};
+ const user={id:program.owner,role:program.role},args=[JSON.stringify(tinySpec),JSON.stringify(program),JSON.stringify(facts),JSON.stringify(user)];
+ let state=JSON.parse(interp.init(...args));const trace=[];
+ const record=event=>{const screen=state.screen,output=JSON.parse(interp.step(...args,JSON.stringify(state),JSON.stringify(event)));trace.push({task:'fixture',t:0,screen,event,ops:[],result:output.result});state=output.state;};
+ record({click:{comp:'workspace.open|fixture-patient|0|scheduleTasks'}});
+ state=JSON.parse(interp.step(...args,JSON.stringify(state),JSON.stringify({scroll:{screen:state.screen}}))).state;
+ assert.notEqual(state.screen,'home');record({scroll:{screen:state.screen}});
+ const selected=state.patientContext;
+ state={...JSON.parse(interp.init(args[0],JSON.stringify({...program,patientSelection:false}),args[2],args[3])),patientContext:selected};
+ record({scroll:{screen:state.screen}});
+ const task={schemaVersion:1,id:'fixture',context:{user,startMin:0,segments:[{start:0,end:2,facts,seed:{kind:'init',clock:0},goalsMet:true},{start:2,end:3,facts,seed:{kind:'init',clock:0,clinical:true},goalsMet:true}]},trace};
+ const {replayTrajectory}=await import('../../app/src/dashboard/trajectory-replay.ts');const replay=replayTrajectory(interp,task,tinySpec,program);
+ assert.equal(replay.firstMismatch,null);assert.equal(replay.eventsVerified,3);assert.equal(replay.state.patientContext.patient,'fixture-patient');
+});

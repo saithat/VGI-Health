@@ -71,3 +71,14 @@ it('uses the measured workspace for the actual day without depending on task nam
  expect(pointerTravel(trace,workspace,2)['custom-name']?.mouseTravelPx).toBe(10);
  expect(pointerTravel(trace,workspace,2)['custom-name']?.missingTargets).toEqual([]);
 });
+
+it('captures different calibration partitions independently even on the same day',async()=>{
+ const {geometryEhr,geometryProgramHash}=await import('../src/geometry.js');const {createFakeEhr,fakeCanonical}=await import('../src/fake/ehr-fake.js');
+ const {fakeWorld,tmp}=await import('./helpers.js');const {loadWorld}=await import('../src/world.js');
+ const world=await loadWorld(await fakeWorld(1)),params=world.personas.get('P1'),schedule=await world.schedule(1,'P1');if(!params||!schedule)throw new Error('No fixture');
+ let captures=0;const program=fakeCanonical('v1');
+ const ehr=geometryEhr(createFakeEhr(),async input=>{captures++;return {...atlas,programHash:geometryProgramHash(input.program)};},await tmp('geometry-partition'));
+ const args={specVersion:'v1',program,persona:params,worldDir:world.dir,seed:1};
+ await ehr.simulate({...args,schedule});await ehr.simulate({...args,schedule:{...schedule,tasks:schedule.tasks.slice(0,1)}});
+ expect(captures).toBe(2);
+});

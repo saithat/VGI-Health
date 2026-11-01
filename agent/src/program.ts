@@ -34,7 +34,7 @@ export function applyToProgram(
     const first = parsed.error.issues[0];
     throw new Error(`patched program is not a valid Program: ${first ? `${first.path.join('.')}: ${first.message}` : 'invalid'}`);
   }
-  for (const key of ['id', 'owner', 'role', 'version', 'specVersion'] as const) {
+  for (const key of ['id', 'owner', 'role', 'version', 'specVersion','patientSelection'] as const) {
     if (parsed.data[key] !== program[key]) throw new Error(`Candidate may not change program metadata: ${key}`);
   }
   const out: Program = { ...parsed.data, version: next.version };

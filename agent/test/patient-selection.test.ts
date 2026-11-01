@@ -6,3 +6,9 @@ it('preserves the certified workspace selection requirement through agent parsin
   expect(canonical.patientSelection).toBe(true);
   expect(programSchema.parse(canonical).patientSelection).toBe(true);
 });
+
+it('rejects a designer patch that disables the shared patient binding',async()=>{
+ const {applyToProgram}=await import('../src/program.js');
+ const program=programSchema.parse(JSON.parse(readFileSync('../releases/v1/personas/P3.json','utf8')));
+ expect(()=>applyToProgram(program,[{op:'replace',path:'/patientSelection',value:false}],{version:1})).toThrow('patientSelection');
+});

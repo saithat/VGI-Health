@@ -34,7 +34,7 @@ import {exportPopupGeometry} from './geometry-popups.js';
  */
 import { expandProgram } from './composites.js';
 import { programSchema } from './schema.js';
-import { execFile } from 'node:child_process';
+import {runNative,nativeTimeout,type NativeResult} from './native-process.js';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -78,7 +78,7 @@ export interface EhrClient {
 
 export const DEFAULT_EHR_BIN = path.join(REPO_ROOT, 'lean', '.lake', 'build', 'bin', 'ehr');
 
-export function createEhr(opts: { fake?: boolean; binary?: string } = {}): EhrClient {
+export function createEhr(opts: { fake?: boolean; binary?: string; timeoutMs?:number } = {}): EhrClient {
   const fake = opts.fake ?? process.env['EHR_FAKE'] === '1';
   if (fake) {
     if (process.env['NODE_ENV'] !== 'test' && process.env['VITEST'] !== 'true') {
@@ -86,22 +86,10 @@ export function createEhr(opts: { fake?: boolean; binary?: string } = {}): EhrCl
     }
     return createFakeEhr();
   }
-  return new CliEhr(opts.binary ?? process.env['EHR_BIN'] ?? DEFAULT_EHR_BIN);
+  return new CliEhr(opts.binary ?? process.env['EHR_BIN'] ?? DEFAULT_EHR_BIN,opts.timeoutMs??nativeTimeout());
 }
 
-interface ExecResult { code: number; stdout: string; stderr: string }
-
-function run(binary: string, args: string[]): Promise<ExecResult> {
-  return new Promise((resolve, reject) => {
-    execFile(binary, args, { maxBuffer: 1 << 30, encoding: 'utf8' }, (error, stdout, stderr) => {
-      if (error && typeof error.code !== 'number') {
-        reject(new Error(`ehr ${args[0] ?? ''}: ${error.message}`));
-        return;
-      }
-      resolve({ code: error && typeof error.code === 'number' ? error.code : 0, stdout, stderr });
-    });
-  });
-}
+type ExecResult=NativeResult;
 
 function parseOut<T extends z.ZodType>(cmd: string, res: ExecResult, schema: T): z.infer<T> {
   let json: unknown;
@@ -120,7 +108,8 @@ function parseOut<T extends z.ZodType>(cmd: string, res: ExecResult, schema: T):
 
 class CliEhr implements EhrClient {
   readonly mode = 'real' as const;
-  constructor(readonly binary: string) {}
+  constructor(readonly binary: string,private readonly timeoutMs:number) {}
+  private run(args:string[]){return runNative(this.binary,args,{timeoutMs:this.timeoutMs});}
 
   private async withFiles<T>(files: Record<string, unknown>, fn: (paths: Record<string, string>) => Promise<T>): Promise<T> {
     if (!existsSync(this.binary)) {
@@ -146,14 +135,14 @@ class CliEhr implements EhrClient {
 
   check(i: CheckInput): Promise<Verdict> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await run(this.binary, ['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
+      const res = await this.run(['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
       return parseOut('check', res, verdictSchema);
     });
   }
 
   simulate(i: SimulateInput): Promise<DayResult> {
     return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule }, async (p) => {
-      const res = await run(this.binary, [
+      const res = await this.run([
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
       ]);
@@ -164,7 +153,7 @@ class CliEhr implements EhrClient {
 
   minClicks(i: MinClicksInput): Promise<MinClicksResult> {
     return this.withFiles({ program: i.program, schedule: i.schedule }, async (p) => {
-      const res = await run(this.binary, [
+      const res = await this.run([
         'min-clicks', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--schedule', p['schedule'] ?? '', '--world', i.worldDir,
       ]);
       if (res.code !== 0) throw new Error(`ehr min-clicks: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
@@ -174,7 +163,7 @@ class CliEhr implements EhrClient {
 
   deploy(i: DeployInput): Promise<DeployResult> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await run(this.binary, [
+      const res = await this.run([
         'deploy', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
         '--canonical', p['canonical'] ?? '', '--out', i.outDir,
       ]);
@@ -187,7 +176,7 @@ class CliEhr implements EhrClient {
   renderScreens(i: RenderInput): Promise<string[]> {
     return this.withFiles({ program: i.program, user: { id: i.program.owner, role: i.program.role }, ...(i.workspace ? { schedule: i.workspace.schedule } : {}) }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
-      const res = await run(this.binary, ['render-screens', ...(i.ui ? ['--ui'] : []), ...(i.workspace ? ['--schedule', p['schedule'] ?? '', '--world', i.workspace.worldDir] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
+      const res = await this.run(['render-screens', ...(i.ui ? ['--ui'] : []), ...(i.workspace ? ['--schedule', p['schedule'] ?? '', '--world', i.workspace.worldDir] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir});
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
@@ -200,7 +189,7 @@ class CliEhr implements EhrClient {
     try {
       const file = path.join(dir, 'batch.jsonl');
       await writeFile(file, cases.map((c) => JSON.stringify(c)).join('\n') + '\n');
-      const res = await run(this.binary, ['run-batch', file]);
+      const res = await this.run(['run-batch', file]);
       const out = res.stdout.split('\n').filter((l) => l.trim() !== '').map((l): unknown => JSON.parse(l));
       if (res.code !== 0) throw new Error(`ehr run-batch: exit ${res.code}: ${res.stderr.slice(0, 2000)} ${JSON.stringify(out.slice(0, 3))}`);
       return out;
@@ -211,7 +200,7 @@ class CliEhr implements EhrClient {
 
   async specExport(specVersion: string): Promise<Spec> {
     if (!existsSync(this.binary)) throw new Error(`ehr binary not found at ${this.binary}`);
-    const res = await run(this.binary, ['spec-export', specVersion]);
+    const res = await this.run(['spec-export', specVersion]);
     if (res.code !== 0) throw new Error(`ehr spec-export: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
     return parseOut('spec-export', res, specSchema);
   }

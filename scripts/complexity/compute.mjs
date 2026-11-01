@@ -15,7 +15,7 @@ const run = (bin, args, options = {}) => bin === 'lake'
   ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], {
     timeout: 180000, env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_STACK_SIZE_KB: '65536' }, ...options,
   })
-  : exec(bin, args, { timeout: 180000, ...options });
+  : exec(bin, args, { timeout: Number(process.env.EHR_COMMAND_TIMEOUT_MS ?? 600000), ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const write = (p, data) => writeFile(p, JSON.stringify(data,(key,value)=>/klm/i.test(key)?undefined:value,2) + '\n');
@@ -71,7 +71,8 @@ export async function compute({ runDir, canonical = true, releaseDirectory, cano
     };
     const cache = new Map();
     async function iteration(program, specVersion, version, sourcePath, world, day = null, night = null) {
-      const programPath = path.join(work, 'program.json');
+      const iterationWork=await mkdtemp(path.join(work,'iteration-'));
+      const programPath = path.join(iterationWork, 'program.json');
       await write(programPath, program);
       const specPath = path.join(releaseRoot, specVersion, 'spec.json');
       const spec = await read(specPath);
@@ -88,14 +89,14 @@ export async function compute({ runDir, canonical = true, releaseDirectory, cano
           const key = hash(JSON.stringify([program, specVersion, task, benchmark.fixedValues, world]));
           let measured = cache.get(key);
           if (!measured) {
-            const requestPath = path.join(work, 'request.json');
+            const requestPath = path.join(iterationWork, 'request.json');
             await write(requestPath, { root, world, spec: specPath, program: programPath, task, fixedValues: benchmark.fixedValues, bound: 20000 });
             const pending = run(helper, [requestPath], { cwd: root, maxBuffer: 32e6 });
             pending.child.stderr.on('data', chunk => process.stderr.write(chunk));
             const result = await pending;
             measured = JSON.parse(result.stdout);
             if (!measured.supported) throw new Error(`${benchmark.id}: unexpected unsupported task: ${measured.reason}`);
-            const taskPath = path.join(work, 'task.json');
+            const taskPath = path.join(iterationWork, 'task.json');
             await write(taskPath, task);
             const native = await run(binary, ['min-clicks', '--spec', specPath, '--program', programPath, '--task', taskPath, '--world', world], { cwd: root, maxBuffer: 32e6 });
             measured.native = JSON.parse(native.stdout);
@@ -145,8 +146,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory, cano
       runDir = path.resolve(runDir);
       const manifest = await read(path.join(runDir, 'manifest.json'));
       if (manifest.ehr.mode !== 'real') throw new Error('Cannot present fake runs as measured complexity');
-      const people = [];
-      for (const persona of manifest.personas) {
+      const pendingPeople = await Promise.allSettled(manifest.personas.map(async persona=>{
         let directory = path.join(runDir, 'programs', persona);
         if (!await exists(directory)) directory = path.join(runDir, persona);
         const files = (await readdir(directory)).filter(f => /^v\d+\.json$/.test(f)).sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
@@ -180,8 +180,11 @@ export async function compute({ runDir, canonical = true, releaseDirectory, cano
           if (rejected.length) markers.push({ kind: 'rejection', version: d.versionAfter, night: d.night, label: `Night ${d.night}: rejected proposals`, properties: [...new Set(rejected.map(c => c.check.property ?? 'unspecified'))] });
           if (d.release) markers.push({ kind: 'release', version: d.versionAfter, night: d.night, label: releaseLabel(d.release.id, manifest.runId), properties: [] });
         }
-        people.push({ persona, iterations, markers });
-      }
+        return { persona, iterations, markers };
+      }));
+      const failure=pendingPeople.find(result=>result.status==='rejected');
+      if(failure)throw failure.reason;
+      const people=pendingPeople.map(result=>{if(result.status!=='fulfilled')throw new Error('Missing complexity worker');return result.value;});
       const output = { schemaVersion: 1, runId: manifest.runId, ...provenance, personas: people };
       await mkdir(runDir, { recursive: true });
       const destination = path.join(runDir, 'complexity.json');

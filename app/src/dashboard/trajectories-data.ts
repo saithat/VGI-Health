@@ -94,7 +94,7 @@ export const trajectorySchema = z
             start: nat,
             end: nat,
             facts: z.unknown(),
-            seed: z.object({ kind: z.literal("init"), clock: nat }),
+            seed: z.object({ kind: z.literal("init"), clock: nat,clinical:z.boolean().optional() }),
             goalsMet: z.boolean(),
           }),
         )

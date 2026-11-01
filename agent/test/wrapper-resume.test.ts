@@ -20,14 +20,16 @@ it('resumes through the shell wrapper with real fingerprints after runs are copi
  const worker=path.join(workspace,'verify.mts');
  await writeFile(worker,`import {verifyResume} from '${REPO_ROOT}/agent/src/verify-resume.ts'; await verifyResume(${JSON.stringify(run)});`);
  const tsx=path.join(REPO_ROOT,'agent/node_modules/tsx/dist/cli.mjs'), log=path.join(workspace,'calls');
- await writeFile(path.join(tools,'pnpm'),`#!/bin/sh\nprintf '%s\\n' "$*" >> '${log}'\ncase "$*" in\n '--filter agent verify-resume --run core-10day') exec '${process.execPath}' '${tsx}' '${worker}';;\n *build*|*manual*) exit 99;;\n '--filter agent run-days '*) exit 0;;\n 'trajectories --run core-10day'|'complexity --run core-10day') exit 0;;\n *) exit 98;;\nesac\n`);
+ await writeFile(path.join(tools,'pnpm'),`#!/bin/sh\nprintf '%s\\n' "$*" >> '${log}'\ncase "$*" in\n '--filter agent verify-resume --run core-10day') exec '${process.execPath}' '${tsx}' '${worker}';;\n *build*|*manual*) exit 99;;\n '--filter agent run-days '*) exit 0;;\n 'trajectories --run core-10day'|'complexity --run core-10day'|'conformance --run core-10day --run-only --jobs 5') exit 0;;\n *) exit 98;;\nesac\n`);
  await chmod(path.join(tools,'pnpm'),0o755);
+ await writeFile(path.join(tools,'make'),`#!/bin/sh\nprintf '%s\\n' "make $*" >> '${log}'\nif [ "$*" = wasm-check ]; then exec '${process.execPath}' '${REPO_ROOT}/scripts/wasm-assets.mjs'; fi\nexit 98\n`);await chmod(path.join(tools,'make'),0o755);
+
  await writeFile(path.join(tools,'lake'),'#!/bin/sh\nexit 97\n');await chmod(path.join(tools,'lake'),0o755);
  try{
   expect(await runFingerprints(ehr,world)).toEqual(fingerprints);
   const result=spawnSync('bash',[path.join(workspace,'scripts/run-overnight.sh'),'core-10day','--resume'],{env:{...process.env,PATH:`${tools}:${process.env['PATH']??''}`},encoding:'utf8'});
   expect(result.stderr).toBe('');expect(result.status,result.stdout+result.stderr).toBe(0);
-  const calls=await readFile(log,'utf8');expect(calls).toContain('verify-resume');expect(calls).toContain('run-days');expect(calls).not.toContain('build');
+  const calls=await readFile(log,'utf8');expect(calls).toContain('verify-resume');expect(calls).toContain('run-days --parallel');expect(calls).toContain('make wasm-check');expect(calls).not.toContain('build');
   await writeJson(path.join(run,'manifest.json'),{world,ehr:{mode:'real',binary:DEFAULT_EHR_BIN},fingerprints:{...fingerprints,agent:'changed-gates'}});
   await expect(verifyResume(run)).rejects.toThrow('fingerprints changed');
   await writeJson(path.join(run,'manifest.json'),{world,ehr:{mode:'real',binary:DEFAULT_EHR_BIN},fingerprints:{...fingerprints,interactionModel:'changed-pointer-model'}});
