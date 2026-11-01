@@ -22,6 +22,7 @@ export interface JsonResponse {
   replayOf: { backend: string; model: string; source: string } | null;
   promptMatched: boolean | null;
   usage: unknown;
+  transcript?: unknown;
 }
 
 export interface JsonLlm {

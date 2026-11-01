@@ -111,12 +111,12 @@ export function buildSeeded(kind: SeededKind, p: Program, spec: Spec): Candidate
 /** Does a failed check look like a rejection of this kind of unsafe move? */
 export function rejectionKind(check: CheckResult): SeededKind | null {
   if (check.status !== 'fail') return null;
-  const prop = check.property ?? '';
-  const msg = check.message ?? '';
-  if (/review|shown/i.test(prop) && /allerg/i.test(msg)) return 'allergyHidden';
-  if (/human|prefill/i.test(prop) && /identity|patient.?id|re-?entry/i.test(msg)) return 'idReentryPrefilled';
-  if (/unit/i.test(prop) || /\blb\b|pound/i.test(msg)) return 'lbWeightAccepted';
-  return null;
+  const kinds: Record<string, SeededKind> = {
+    ReviewsBeforeCommit: 'allergyHidden', reviewsBeforeCommit: 'allergyHidden',
+    HumanOnlyKept: 'idReentryPrefilled', humanOnlyKept: 'idReentryPrefilled',
+    UnitsRight: 'lbWeightAccepted', unitsRight: 'lbWeightAccepted',
+  };
+  return kinds[check.property ?? ''] ?? null;
 }
 
 /** Pick at most one seeded candidate for tonight, per policy. */

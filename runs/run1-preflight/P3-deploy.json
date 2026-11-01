@@ -1,0 +1,20 @@
+{
+  "name": "P3-deploy",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "deploy",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "releases/v1/personas/P3.json",
+    "--prev",
+    "releases/v1/personas/P3.json",
+    "--canonical",
+    "releases/v1/personas/P3.json",
+    "--out",
+    "/tmp/vgi-run1-deploy"
+  ],
+  "exit": 0,
+  "ms": 160,
+  "stderr": "published /tmp/vgi-run1-deploy/P3/current.json (version 1)\n"
+}

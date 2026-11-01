@@ -100,3 +100,7 @@ wasm:
 
 wasm-check:
 	node scripts/wasm-assets.mjs
+
+.PHONY: rebind
+rebind:
+	pnpm --filter agent rebind --run $(RUN)
