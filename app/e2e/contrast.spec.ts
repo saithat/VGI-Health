@@ -1,10 +1,18 @@
 import { expect, test } from "@playwright/test";
 
+const roleScreens = [
+  ["P1", "w1Rooming", "w1Orders"],
+  ["P2", "w3TrackBoard", "w3Triage"],
+  ["P3", "w4Worklist", "w4Mar"],
+  ["P4", "w5Rooming", "w5Growth"],
+  ["P5", "w6PreOp", "w6PreOp"],
+] as const;
+
 for (const route of [
   "/browse",
   "/dashboard?run=run1-P3",
-  ...["P1", "P2", "P3"].map(
-    (persona) =>
+  ...roleScreens.map(
+    ([persona]) =>
       `/ehr?mode=replay&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
   ),
 ]) {
@@ -21,20 +29,16 @@ for (const route of [
       const persona = new URL(route, "http://localhost").searchParams.get(
         "persona",
       );
-      const entry =
-        persona === "P1"
-          ? "w1Rooming"
-          : persona === "P2"
-            ? "w3TrackBoard"
-            : "w4Worklist";
-      const destination =
-        persona === "P1" ? "w1Orders" : persona === "P2" ? "w3Triage" : "w4Mar";
+      const selected = roleScreens.find(([role]) => role === persona);
+      if (!selected) throw new Error(`No contrast screen for ${persona}`);
+      const [, entry, destination] = selected;
       await page
         .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
         .click();
-      await page
-        .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
-        .click();
+      if (entry !== destination)
+        await page
+          .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
+          .click();
     }
     const failures = await page.evaluate(() => {
       const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number);

@@ -25,6 +25,7 @@ test("canonical search returns semantic results and retains complete commit revi
   if (process.env.REALISM_SHOTS) {
     const folder = `shots/realism/shell/${process.env.REALISM_SHOTS}`;
     mkdirSync(folder, { recursive: true });
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-search.png`,
       animations: "disabled",

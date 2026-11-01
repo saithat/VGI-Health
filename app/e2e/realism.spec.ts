@@ -21,6 +21,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       ).toBeVisible();
     if (name === "browse" && process.env.REALISM_SHOTS !== "before")
       await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/${name}.png`,
       animations: "disabled",
@@ -54,6 +55,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/${screen}.png`,
       animations: "disabled",
@@ -66,11 +68,13 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     await expect(page.locator(".clinical-note-card").first()).toBeVisible();
     await page.locator(".clinical-note-card").first().scrollIntoViewIfNeeded();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
     await page.locator(".clinical-home-meds").first().scrollIntoViewIfNeeded();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/home-medications.png`,
       animations: "disabled",
@@ -82,6 +86,7 @@ test("shared shell and browser visual review", async ({ page }) => {
     );
     await page.evaluate((screen) => window.renderUi(screen), alert);
     await expect(page.getByRole("dialog")).toBeVisible();
+    await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/interruptive-alert.png`,
       animations: "disabled",
@@ -92,6 +97,7 @@ test("shared shell and browser visual review", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   if (process.env.REALISM_SHOTS !== "before")
     await expect(page.locator('[data-node-key="P3-5"]')).toBeVisible();
+  await page.mouse.move(1, 1);
   await page.screenshot({
     path: `${folder}/browse-narrow.png`,
     animations: "disabled",
