@@ -358,6 +358,8 @@ All **18** normal-chart semantic trees equal their photographed/certified `363db
 
 Visual self-review: the hourly MAR remains compact and the patient banner stays readable; dose/allergy/scan/result groups keep their existing hierarchy. The empty PRN administration panel still has a generic Record header in the presentation fallback, which could be compacted later; this is a display limitation, not a fabricated administration. [Current scoped identities and exact-tree reuse](../audits/acute-verification.json) bind this checkpoint; the selector checkpoint remains frozen separately.
 
+Hard-stop handoff (13:30 UTC / 06:30 PDT): code `8aa9a20` is pushed with all scoped acute gates passing. The complete prior broad audit stays frozen at `0883043`; the current six-profile rerun was stopped before RN2 completion to finish the handoff within the owner’s cutoff and is not represented as a new complete pass. The current broad receipt records its completed profile summaries and the current scoped evidence separately. `acute-clinical-browser.json` retains the complete current P2/P3 samples and their observed controls with zero dead controls or errors. Partial raw reports were restored to the last complete set; the local partial rows/log remain available in `/tmp`.
+
 ## Presentation lane: structured clinical widgets
 
 Research and implementation: 2026-11-01, `lane/present`. The stable integration API is [presentation-contract.md](presentation-contract.md). These are original drawings of public interaction and information patterns. Vendor screenshots were inspected in temporary files outside the repository; no vendor image, icon, logo, or copied screen composition is shipped.

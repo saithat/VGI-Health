@@ -91,6 +91,11 @@
       "status": "pass",
       "evidenceSha256": "0958338d7dd6da82b3dae7283b9e51216cd6625366b9687b47a18932e66e368a",
       "marker": "WASM assets current"
+    },
+    "app-agent-lint": {
+      "status": "pass",
+      "evidenceSha256": "d4ec28413fffdda45e4e8b46db25f7d5239fae8dea9d0e21fed41fe3ad02b533",
+      "evidence": "Both eslint commands completed in the sequential verification shell, which exited 0."
     }
   },
   "world": {
@@ -103,7 +108,8 @@
     "clicked": 357,
     "tabs": 228,
     "searches": 39,
-    "disabled": 23
+    "disabled": 23,
+    "reportSha256": "8863effde0b93d7315befe66be2cd250e9f2cb7c67f647a5ad42a6d98db616f9"
   },
   "api": {
     "bundles": 324,
@@ -427,5 +433,6 @@
     "app/src/ehr/ui/nodes.tsx": "a2ee8c7c497a2e6a29e0eccdc4f2513a8a9c7f7ccf3f013e12463700840d6987",
     "app/src/ehr/ui/Screen.tsx": "b8aa0c03ac70bd6c259d23d45bd37b5fec6c39597e80200ae45c6624e30bc4cd",
     "app/live/medplum.test.ts": "404d4f26dba7c8e8ecf9e14373bae49d9846498c4f6ef1a7e55c0e5cda02af70"
-  }
+  },
+  "implementedByRevision": "8aa9a205bf9e964f03f7d1ae867e90a2b7e9ed6f"
 }

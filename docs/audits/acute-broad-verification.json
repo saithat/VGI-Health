@@ -131,5 +131,59 @@
     "docs/audits/try-to-break-it.json": "72c68b32331c96adbe0f587d64825ee4dd4a5b98d4a157a27a2f1035bafe42b5",
     "docs/audits/performance-after.json": "28936f3b59871be190ac5fae7fed646345c08469804cd06b1bc359a2bb97e693"
   },
-  "fullAuditLogSha256": "f7a8ca189aa18a058ab6022695ef7bc012c6313c59c7af4e7a1a76a79f5a6c33"
+  "fullAuditLogSha256": "f7a8ca189aa18a058ab6022695ef7bc012c6313c59c7af4e7a1a76a79f5a6c33",
+  "artifactsAtRevision": "0883043",
+  "currentAcuteCodeRevision": "8aa9a20",
+  "currentAcuteVerification": {
+    "path": "docs/audits/acute-verification.json",
+    "sha256": "83f2f3afba1aebd23020938984f29399dff469ba2ac343d69a506eccb29c3854"
+  },
+  "currentAcuteBrowserEvidence": {
+    "path": "docs/audits/acute-clinical-browser.json",
+    "sha256": "7e4988db45ab96224a717a769b1f0da5c0d5b22ad4251f7c10900c5cf3335976"
+  },
+  "currentClinicalRerun": {
+    "completed": false,
+    "stopReason": "Stopped with time reserved for final regression, performance and pushed handoff before the owner hard stop at 13:30 UTC / 06:30 PDT; partial rerun is not claimed as a passing complete gate. Original complete audit remains frozen at 0883043.",
+    "stoppedAt": "2026-11-01T13:29:23.870959+00:00",
+    "completeProfileSummaries": [
+      {
+        "persona": "P1",
+        "configurations": 25,
+        "queuedOutsideBudget": 0
+      },
+      {
+        "persona": "P2",
+        "configurations": 15,
+        "queuedOutsideBudget": 0
+      },
+      {
+        "persona": "P3",
+        "configurations": 48,
+        "queuedOutsideBudget": 8
+      },
+      {
+        "persona": "P4",
+        "configurations": 23,
+        "queuedOutsideBudget": 0
+      },
+      {
+        "persona": "P5",
+        "configurations": 39,
+        "queuedOutsideBudget": 0
+      }
+    ],
+    "partialLogSha256": "1c2cd1f508044c28872fd5c79bd56783d3808b28ce2c3a2e4c08b2f25c0648ab",
+    "localPartialRows": "/tmp/acute-context-clinical-partial.json"
+  },
+  "currentFastRegression": {
+    "passed": true,
+    "codeRevision": "8aa9a20",
+    "evidenceSha256": "24b71cb46d464111afc3c4bfc45588cae38a24428b6c0a0919c7c6258bb63c58"
+  },
+  "currentPerformanceRerun": {
+    "completed": false,
+    "reason": "Stopped at owner hard cutoff; prior complete performance evidence remains frozen at 0883043.",
+    "logSha256": "be8e5c648940939dc5bf71c95ff16ca405dd9aa904c068be636a2a6d52fa8653"
+  }
 }
