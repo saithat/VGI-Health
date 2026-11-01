@@ -22,7 +22,8 @@
       "disabled-with-reason": 71,
       "dead": 0,
       "error": 0
-    }
+    },
+    "realismVisualReview": "Passed, full shared shell/browser/clinical review, including notes, home medications, modal and narrow browser"
   },
   "pairs": [
     {
