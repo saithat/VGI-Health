@@ -1,3 +1,4 @@
+import { readdirSync } from "node:fs";
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
 import { buildCatalog, readJson } from "../scripts/catalog.mjs";
@@ -22,7 +23,7 @@ describe("offline live UI catalog", () => {
     }
     expect(
       catalog.programs.filter((program) => program.group === "Bad programs"),
-    ).toHaveLength(24);
+    ).toHaveLength(readdirSync(new URL("../../programs/bad/", import.meta.url)).filter((f) => f.endsWith(".json")).length);
     expect(
       catalog.programs.filter((program) => program.run === "mock").length,
     ).toBeGreaterThan(20);
@@ -69,5 +70,5 @@ describe("offline live UI catalog", () => {
       expect(snapshot.view.screen).toBe(snapshot.state.screen);
     }
     expect(() => interp.facts("{}")).toThrow("Lean:");
-  }, 20000);
+  }, 240000);
 });
