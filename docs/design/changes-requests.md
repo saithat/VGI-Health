@@ -1875,12 +1875,14 @@ disabled reason. Retain actual clinical guard reasons; the audit must not invent
 patient evidence to make a commit clickable. Commit paths blocked by missing
 phase/temporal/source contracts remain content/core integration work.
 
-**Render lane:** export component click metadata for every nav and stepper entry
-that should navigate. The React painter must dispatch the exported component id;
-a screen destination alone is insufficient authority to invent a click. The
-inventory also records static nav/stepper destinations with a null component id
-when no click metadata exists. Re-run the slow Lean audit after landing exports
-and the committed WASM; no local Lean build is required.
+**Render lane status after main's d932551:** nav pairs now contain real goto
+component IDs. The app dispatches those IDs with Event.click, opens available
+groups by default and omits empty groups. Stepper overview pairs still contain
+screen destinations, so they remain static and are listed with null component
+IDs in the inventory. Supply click metadata or an explicitly informational or
+disabled treatment for those steps. No screen ID is converted into an invented
+click. The final audit uses the newly committed cached-view WASM without a Lean
+build.
 ## CHECK-2026-11-01: current baseline and evidence-domain obstruction
 
 This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for

@@ -656,10 +656,10 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           for (const label of staticEntries) {
             const title = label.trim().replace(/^\d+\s*/, "");
             const destinations = [
-              ...(snapshot.ui?.nav.flatMap(([, items]) => items) ?? []),
               ...(snapshot.ui?.workspace.flatMap((node) =>
                 "stepper" in node ? node.stepper.steps : [],
               ) ?? []),
+              ...(snapshot.ui?.nav.flatMap(([, items]) => items) ?? []),
             ];
             const destination =
               destinations.find(([, name]) => name === title)?.[0] ??

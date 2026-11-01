@@ -70,6 +70,33 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("dispatches exported nav component IDs and omits empty groups", () => {
+    const emit = vi.fn();
+    const model: UiScreen = {
+      banner: [],
+      title: "Chart",
+      nav: [
+        ["Navigator", [["actual.goto.component", "Open rooming"]]],
+        ["Empty group", []],
+      ],
+      workspace: [],
+      side: [],
+      modal: null,
+    };
+    render(
+      <MantineProvider>
+        <UiScreenView screen={model} onEvent={emit} />
+      </MantineProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open rooming", exact: true }),
+    );
+    expect(emit.mock.calls).toEqual([
+      [{ click: { comp: "actual.goto.component" } }],
+    ]);
+    expect(screen.queryByText("Empty group")).toBeNull();
+  });
+
   it("renders every UiNode constructor and all supplied records", () => {
     paint([
       {

@@ -127,11 +127,12 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
 }
 export function WorkflowNav({
   groups,
-  active,
+  onEvent,
 }: {
   groups: UiScreen["nav"];
-  active: string | undefined;
+  onEvent: Emit;
 }) {
+  const available = groups.filter(([, items]) => items.length > 0);
   return (
     <AppShell.Navbar
       component="nav"
@@ -144,26 +145,28 @@ export function WorkflowNav({
       </Text>
       <Accordion
         multiple
-        defaultValue={groups.flatMap(([, items], index) =>
-          items.some(([id]) => id === active) ? [String(index)] : [],
-        )}
+        defaultValue={available.map((_, index) => String(index))}
         chevronPosition="right"
         chevron={<ClinicalIcon name="chevron" />}
         variant="default"
         className="workflow-groups"
       >
-        {groups.map(([group, items], index) => (
+        {available.map(([group, items], index) => (
           <Accordion.Item key={group} value={String(index)}>
             <Accordion.Control>{group}</Accordion.Control>
             <Accordion.Panel>
               <ul className="workflow-links" aria-label={`${group} screens`}>
                 {items.map(([id, label]) => (
-                  <li
-                    key={id}
-                    aria-current={id === active ? "page" : undefined}
-                  >
-                    <span aria-hidden="true" className="nav-dot" />
-                    {label}
+                  <li key={id}>
+                    <button
+                      type="button"
+                      data-comp-id={id}
+                      data-event="click"
+                      onClick={() => onEvent({ click: { comp: id } })}
+                    >
+                      <span aria-hidden="true" className="nav-dot" />
+                      {label}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -212,7 +215,11 @@ export function UiScreenView({
         }}
       >
         <PatientBanner fields={bannerFields(screen)} />
-        <WorkflowNav key={active} groups={screen.nav} active={active} />
+        <WorkflowNav
+          key={`${active ?? ""}:${screen.title}`}
+          groups={screen.nav}
+          onEvent={onEvent}
+        />
         <AppShell.Main>
           <div className="clinical-workspace-heading">
             <div>
