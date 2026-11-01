@@ -1,0 +1,523 @@
+{
+  "sourceRevisionAtValidation": "d271ef925e3c1f6272ae80a2e3ee9952bd305aba",
+  "sourceDirtyAtValidation": true,
+  "leanSourceHash": "5f5eeb0bd9a1052cef83ad86970a0b98f5247709a20e65cc2bd26e5136856e3d",
+  "nativeBinarySha256": "674c2a74e3a3b63bcfab603f9955bdffb4212cfb4262c963aee2724616c66f79",
+  "commands": {
+    "build": "LEAN_NUM_THREADS=4 lake build",
+    "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
+    "comparator": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake comparator",
+    "certification": "python3 lean/Ehr/Check/certify.py",
+    "world2": "python3 scripts/realism/check-world2.py",
+    "nativeButtons": "node scripts/realism/audit-ambulatory-buttons.mjs /tmp/amb-review /tmp/amb-button-audit.json",
+    "screens": "EHR_AMB_UI_ROOT=/tmp/amb-review/ui APP_TEST_PORT=<free-port> pnpm --filter app exec playwright test ambulatory-realism.spec.ts --project=desktop --workers=1",
+    "fidelity": "EHR_SCREEN_WORKERS=1 pnpm --filter app screen-check --ui <native-ui-files>",
+    "archived": "pnpm trajectories --run run1-P3 --verify-only"
+  },
+  "certification": {
+    "personas": 15,
+    "certified": 15,
+    "bad": 18,
+    "rejected": 18,
+    "reportSha256": "f22857dd018cbe1118e5ff14e01fdeb7318d2b5faefa443afdfce7b9171c0132"
+  },
+  "world2": {
+    "world": "runs/world/2",
+    "release": "v1 days 1-3; v2 days 4-6; v3 days 7-10",
+    "completed": 1284,
+    "tasks": 1284,
+    "days": [
+      {
+        "persona": "P1",
+        "day": 1,
+        "release": "v1",
+        "completed": 42,
+        "tasks": 42,
+        "clicks": 1095,
+        "klmDeciSec": 56745
+      },
+      {
+        "persona": "P1",
+        "day": 2,
+        "release": "v1",
+        "completed": 40,
+        "tasks": 40,
+        "clicks": 785,
+        "klmDeciSec": 44949
+      },
+      {
+        "persona": "P1",
+        "day": 3,
+        "release": "v1",
+        "completed": 35,
+        "tasks": 35,
+        "clicks": 621,
+        "klmDeciSec": 38054
+      },
+      {
+        "persona": "P1",
+        "day": 4,
+        "release": "v2",
+        "completed": 40,
+        "tasks": 40,
+        "clicks": 854,
+        "klmDeciSec": 46170
+      },
+      {
+        "persona": "P1",
+        "day": 5,
+        "release": "v2",
+        "completed": 23,
+        "tasks": 23,
+        "clicks": 777,
+        "klmDeciSec": 44800
+      },
+      {
+        "persona": "P1",
+        "day": 6,
+        "release": "v2",
+        "completed": 41,
+        "tasks": 41,
+        "clicks": 826,
+        "klmDeciSec": 45604
+      },
+      {
+        "persona": "P1",
+        "day": 7,
+        "release": "v3",
+        "completed": 40,
+        "tasks": 40,
+        "clicks": 906,
+        "klmDeciSec": 47390
+      },
+      {
+        "persona": "P1",
+        "day": 8,
+        "release": "v3",
+        "completed": 39,
+        "tasks": 39,
+        "clicks": 782,
+        "klmDeciSec": 44773
+      },
+      {
+        "persona": "P1",
+        "day": 9,
+        "release": "v3",
+        "completed": 39,
+        "tasks": 39,
+        "clicks": 663,
+        "klmDeciSec": 35337
+      },
+      {
+        "persona": "P1",
+        "day": 10,
+        "release": "v3",
+        "completed": 39,
+        "tasks": 39,
+        "clicks": 765,
+        "klmDeciSec": 40096
+      },
+      {
+        "persona": "P2",
+        "day": 1,
+        "release": "v1",
+        "completed": 22,
+        "tasks": 22,
+        "clicks": 1723,
+        "klmDeciSec": 95763
+      },
+      {
+        "persona": "P2",
+        "day": 2,
+        "release": "v1",
+        "completed": 18,
+        "tasks": 18,
+        "clicks": 1126,
+        "klmDeciSec": 63590
+      },
+      {
+        "persona": "P2",
+        "day": 3,
+        "release": "v1",
+        "completed": 18,
+        "tasks": 18,
+        "clicks": 1234,
+        "klmDeciSec": 67078
+      },
+      {
+        "persona": "P2",
+        "day": 4,
+        "release": "v2",
+        "completed": 13,
+        "tasks": 13,
+        "clicks": 946,
+        "klmDeciSec": 51929
+      },
+      {
+        "persona": "P2",
+        "day": 5,
+        "release": "v2",
+        "completed": 20,
+        "tasks": 20,
+        "clicks": 1480,
+        "klmDeciSec": 83299
+      },
+      {
+        "persona": "P2",
+        "day": 6,
+        "release": "v2",
+        "completed": 21,
+        "tasks": 21,
+        "clicks": 1806,
+        "klmDeciSec": 98655
+      },
+      {
+        "persona": "P2",
+        "day": 7,
+        "release": "v3",
+        "completed": 18,
+        "tasks": 18,
+        "clicks": 1245,
+        "klmDeciSec": 65811
+      },
+      {
+        "persona": "P2",
+        "day": 8,
+        "release": "v3",
+        "completed": 15,
+        "tasks": 15,
+        "clicks": 1493,
+        "klmDeciSec": 80285
+      },
+      {
+        "persona": "P2",
+        "day": 9,
+        "release": "v3",
+        "completed": 12,
+        "tasks": 12,
+        "clicks": 1088,
+        "klmDeciSec": 59345
+      },
+      {
+        "persona": "P2",
+        "day": 10,
+        "release": "v3",
+        "completed": 14,
+        "tasks": 14,
+        "clicks": 916,
+        "klmDeciSec": 48436
+      },
+      {
+        "persona": "P3",
+        "day": 1,
+        "release": "v1",
+        "completed": 38,
+        "tasks": 38,
+        "clicks": 472,
+        "klmDeciSec": 56138
+      },
+      {
+        "persona": "P3",
+        "day": 2,
+        "release": "v1",
+        "completed": 51,
+        "tasks": 51,
+        "clicks": 677,
+        "klmDeciSec": 69208
+      },
+      {
+        "persona": "P3",
+        "day": 3,
+        "release": "v1",
+        "completed": 44,
+        "tasks": 44,
+        "clicks": 561,
+        "klmDeciSec": 51023
+      },
+      {
+        "persona": "P3",
+        "day": 4,
+        "release": "v2",
+        "completed": 41,
+        "tasks": 41,
+        "clicks": 561,
+        "klmDeciSec": 56004
+      },
+      {
+        "persona": "P3",
+        "day": 5,
+        "release": "v2",
+        "completed": 37,
+        "tasks": 37,
+        "clicks": 525,
+        "klmDeciSec": 55768
+      },
+      {
+        "persona": "P3",
+        "day": 6,
+        "release": "v2",
+        "completed": 32,
+        "tasks": 32,
+        "clicks": 492,
+        "klmDeciSec": 54312
+      },
+      {
+        "persona": "P3",
+        "day": 7,
+        "release": "v3",
+        "completed": 54,
+        "tasks": 54,
+        "clicks": 676,
+        "klmDeciSec": 65445
+      },
+      {
+        "persona": "P3",
+        "day": 8,
+        "release": "v3",
+        "completed": 38,
+        "tasks": 38,
+        "clicks": 504,
+        "klmDeciSec": 42346
+      },
+      {
+        "persona": "P3",
+        "day": 9,
+        "release": "v3",
+        "completed": 44,
+        "tasks": 44,
+        "clicks": 600,
+        "klmDeciSec": 52099
+      },
+      {
+        "persona": "P3",
+        "day": 10,
+        "release": "v3",
+        "completed": 45,
+        "tasks": 45,
+        "clicks": 624,
+        "klmDeciSec": 52272
+      },
+      {
+        "persona": "P4",
+        "day": 1,
+        "release": "v1",
+        "completed": 22,
+        "tasks": 22,
+        "clicks": 670,
+        "klmDeciSec": 39905
+      },
+      {
+        "persona": "P4",
+        "day": 2,
+        "release": "v1",
+        "completed": 20,
+        "tasks": 20,
+        "clicks": 743,
+        "klmDeciSec": 42009
+      },
+      {
+        "persona": "P4",
+        "day": 3,
+        "release": "v1",
+        "completed": 19,
+        "tasks": 19,
+        "clicks": 613,
+        "klmDeciSec": 32463
+      },
+      {
+        "persona": "P4",
+        "day": 4,
+        "release": "v2",
+        "completed": 17,
+        "tasks": 17,
+        "clicks": 412,
+        "klmDeciSec": 22267
+      },
+      {
+        "persona": "P4",
+        "day": 5,
+        "release": "v2",
+        "completed": 19,
+        "tasks": 19,
+        "clicks": 616,
+        "klmDeciSec": 31229
+      },
+      {
+        "persona": "P4",
+        "day": 6,
+        "release": "v2",
+        "completed": 18,
+        "tasks": 18,
+        "clicks": 563,
+        "klmDeciSec": 30414
+      },
+      {
+        "persona": "P4",
+        "day": 7,
+        "release": "v3",
+        "completed": 17,
+        "tasks": 17,
+        "clicks": 600,
+        "klmDeciSec": 31822
+      },
+      {
+        "persona": "P4",
+        "day": 8,
+        "release": "v3",
+        "completed": 15,
+        "tasks": 15,
+        "clicks": 478,
+        "klmDeciSec": 30305
+      },
+      {
+        "persona": "P4",
+        "day": 9,
+        "release": "v3",
+        "completed": 12,
+        "tasks": 12,
+        "clicks": 401,
+        "klmDeciSec": 20483
+      },
+      {
+        "persona": "P4",
+        "day": 10,
+        "release": "v3",
+        "completed": 16,
+        "tasks": 16,
+        "clicks": 537,
+        "klmDeciSec": 29128
+      },
+      {
+        "persona": "P5",
+        "day": 1,
+        "release": "v1",
+        "completed": 18,
+        "tasks": 18,
+        "clicks": 531,
+        "klmDeciSec": 36040
+      },
+      {
+        "persona": "P5",
+        "day": 2,
+        "release": "v1",
+        "completed": 14,
+        "tasks": 14,
+        "clicks": 740,
+        "klmDeciSec": 40904
+      },
+      {
+        "persona": "P5",
+        "day": 3,
+        "release": "v1",
+        "completed": 19,
+        "tasks": 19,
+        "clicks": 505,
+        "klmDeciSec": 30504
+      },
+      {
+        "persona": "P5",
+        "day": 4,
+        "release": "v2",
+        "completed": 11,
+        "tasks": 11,
+        "clicks": 491,
+        "klmDeciSec": 25244
+      },
+      {
+        "persona": "P5",
+        "day": 5,
+        "release": "v2",
+        "completed": 17,
+        "tasks": 17,
+        "clicks": 426,
+        "klmDeciSec": 24755
+      },
+      {
+        "persona": "P5",
+        "day": 6,
+        "release": "v2",
+        "completed": 11,
+        "tasks": 11,
+        "clicks": 529,
+        "klmDeciSec": 30556
+      },
+      {
+        "persona": "P5",
+        "day": 7,
+        "release": "v3",
+        "completed": 14,
+        "tasks": 14,
+        "clicks": 361,
+        "klmDeciSec": 16964
+      },
+      {
+        "persona": "P5",
+        "day": 8,
+        "release": "v3",
+        "completed": 12,
+        "tasks": 12,
+        "clicks": 568,
+        "klmDeciSec": 30459
+      },
+      {
+        "persona": "P5",
+        "day": 9,
+        "release": "v3",
+        "completed": 11,
+        "tasks": 11,
+        "clicks": 308,
+        "klmDeciSec": 15442
+      },
+      {
+        "persona": "P5",
+        "day": 10,
+        "release": "v3",
+        "completed": 9,
+        "tasks": 9,
+        "clicks": 335,
+        "klmDeciSec": 17796
+      }
+    ],
+    "failures": []
+  },
+  "nativeButtons": {
+    "checked": 226,
+    "enabled": 218,
+    "disabledWithReason": 8
+  },
+  "browser": {
+    "screens": 24,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "beforeScreens": 23,
+    "signatureViews": 2,
+    "fidelity": {
+      "passed": 57,
+      "intentionalViewportSkips": 3
+    }
+  },
+  "archived": {
+    "run": "run1-P3",
+    "tasks": 424,
+    "events": 14658,
+    "baselines": 3,
+    "baselineEvents": 137,
+    "mismatches": 0
+  },
+  "checks": {
+    "leanBuild": true,
+    "kernel": true,
+    "comparator": true,
+    "wasmCurrent": true,
+    "appBuild": true,
+    "appLint": true,
+    "appTests": 165,
+    "agentTests": 41,
+    "agentTypecheck": true,
+    "agentLint": true,
+    "seedTests": 7
+  },
+  "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened."
+}

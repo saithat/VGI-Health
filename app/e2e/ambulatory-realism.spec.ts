@@ -60,11 +60,21 @@ for (const persona of ["P1", "P4"]) {
           .flatMap(descendants)
           .find((node) => "field" in node && node.field.kind === "identity");
         if (identity && "field" in identity) {
-          await page
-            .locator(
-              `[data-comp-id="${identity.field.comp}"][data-event="enter"]`,
-            )
-            .scrollIntoViewIfNeeded();
+          const identityControl = page.locator(
+            `[data-comp-id="${identity.field.comp}"][data-event="enter"]`,
+          );
+          await identityControl.evaluate((element) =>
+            element.scrollIntoView({ block: "center", behavior: "instant" }),
+          );
+          await expect(identityControl).toBeInViewport({ ratio: 1 });
+          await page.evaluate(
+            () =>
+              new Promise<void>((resolve) =>
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => resolve()),
+                ),
+              ),
+          );
           await page.screenshot({
             path: join(
               output,

@@ -264,3 +264,110 @@ also checked against the [HL7 R4 MedicationDispense specification](https://hl7.o
 Forecast fields follow [HL7 R4 ImmunizationRecommendation](https://hl7.org/fhir/R4/immunizationrecommendation.html),
 including its point-in-time status and recommendation authority. No forecasting
 algorithm or clinical protocol thresholds are added by this UI work.
+
+### After effort measurement
+
+The final `ehr min-clicks` / `pnpm complexity` run preserves every ambulatory
+baseline metric above: clicks, independently minimized keystrokes, KLM, visited
+screens, required fields and popup counts. The full per-release comparison and
+binary/suite/report hashes are in [amb-realism-metrics.json](amb-realism-metrics.json).
+The full after report is [canonical-complexity.json](../../programs/benchmarks/canonical-complexity.json).
+
+An intermediate version exposed Sign Orders as a navigator destination and
+reduced W1/W5 minima by two clicks. Visual and effort review rejected that
+shortcut. The final left navigator lists clinical sections; Order Review and
+Sign Orders remain actions reached through the composer. In Basket navigation
+lists folders rather than processing stages. This preserves the baseline's
+ordinary extra review step, separate result-note return trip and refill response
+step. The new pediatric note activity relocates existing captures and templates;
+it does not add a second clinical note or automate a signature.
+
+| Release | Workflow | Before → after clicks | Before → after KLM seconds |
+| --- | --- | ---: | ---: |
+| v1/v2/v3 | W1 | 39 → 39 | 143.20 → 143.20 |
+| v1/v2/v3 | W2 | 7 → 7 | 21.45 → 21.45 |
+| v1/v2 | W5 | 48 → 48 | 175.45 → 175.45 |
+| v3 | W5 | 49 → 49 | 179.80 → 179.80 |
+| v1/v2/v3 | W7 | 12 → 12 | 27.50 → 27.50 |
+
+### Screen-by-screen visual review
+
+Every pair uses native Lean output and the same production painter at 1440×900.
+The before program is `add0d2e`; both phases receive the same existing world-2
+task/cohort sources, including actual seeded Appointment/Task/result records.
+The files follow `app/shots/realism/amb/{before,after}-<persona>-<screen>.png`.
+There is no before image for the new `w5Note`; its source fields previously lived
+on `w5Close`. Additional signature views show the safety footer on long screens.
+
+| Screen | Observed before → reviewed after |
+| --- | --- |
+| P1/P4 `home` | Empty day-list fallback → supplied, dated appointments with booked status preserved. The adjacent activity opens the chart encounter; rows are read-only under the shared contract. |
+| `w1Rooming` | Repeated workspace navigation and an intake form dominated by vitals → real section rail, complaint first, metric vitals, allergy review, screenings/pharmacy and health maintenance. |
+| `w1MedRec` | Generic Med rec → Medication Review, complete medication rows and explicit reconciliation/review actions; optional reports remain tabbed. |
+| `w1Hpi` | Short single-line note fields → separate multiline HPI and ROS editors, note tools and optional history tabs after the editors. An initial full history table above the editor was rejected because it displaced documentation. |
+| `w1Exam` | Undifferentiated exam/plan form → physical-exam and Assessment & Plan sections, diagnosis and a full-width narrative plan; optional problems can be expanded. |
+| `w1Orders` | Navigation mixed with composer actions → section rail and a focused full-width composer, retaining the preference list, dose entry, pharmacy confirmation, pending orders and separate review path. |
+| `w1Labs` | Loose ordering fields → named order details with diagnosis association, recent results and pending orders; return/sign actions remain real interpreter controls. |
+| `w1Verify` | Generic verification → Order Review with pending orders, allergy evidence and the baseline reconfirmation before Sign Orders. |
+| `w1Sign` | Crowded shell → full-width clinical review and a separate signature footer. Required orders, allergies, medications, dose check, CURES and applicable alerts remain before the human signature. |
+| `w1Close` | One closing form → note review, Level of Service, Follow-up and multiline Patient Instructions / AVS, then Sign Visit. |
+| `w2Inbasket` | Empty generic message view → actual folder counts, received/patient/subject/priority/status list, selected-message preview and Review result. UUID reference normalization fixed an initially empty supplied queue. |
+| `w2Result` | Empty detail fallback and unrelated analytes in a generic chart → the selected report's result, original range/flag/status/timestamps, and only the selected analyte's dated history; follow-up and Result Note actions stay adjacent. |
+| `w2Message` | Generic message input → Result Note templates and multiline patient communication, with an honest return-to-result action. |
+| `w5Rooming` | Duplicate growth chart above intake → complaint, kg weight and growth measurements, allergy review and medication reconciliation; Growth Charts remains its own activity. |
+| `w5Growth` | A raw series called Percentiles → dated growth measurements, separately named available percentiles, and last-visit context. No CDC/WHO curve or patient percentile is invented. |
+| `w5Note` | Documentation first appeared at visit close → a dedicated pre-order Visit Note with multiline HPI, ROS, exam, plan and anticipatory guidance. History reports follow the editors. |
+| `w5Orders` | Generic dose preview → current kg weight and its measurement provenance, mg/kg/dose basis, calculated mg preview, separately entered dose, frequency/day amount and configured checks. No preview accepts the dose for the clinician. |
+| `w5Sign` | Generic weight-only dose check → the same explicit kg/dose calculation at signing, full required reviews, alerts and human identity/signature. |
+| `w5Immunizations` | Vaccine and VIS fields mixed → complete history plus supplied forecast, administration details, a separately labeled VIS section, then Record immunization. |
+| `w5Close` | Clinical note mixed with charges → review of the previously composed note, Level of Service, Follow-up, multiline family instructions, Edit visit note and Sign Visit. |
+| `w7Queue` | Empty generic refill fallback → counted Rx Requests and the actual referenced prescription/sig/request date/status; no first-medication substitution. |
+| `w7Review` | Generic chart-review labels → request-specific context, last visit/labs/fill history/medication/note tabs, review receipts and Respond to request. |
+| `w7Decision` | Sparse context → requested/current/proposed comparison, actual request, labs/last visit/fills, protocol attestation, response fields and separate guarded approval/denial. Required reports stay expanded. |
+
+The review removed an optional duplicate full-chart rail in encounter workspaces.
+The program's `layout.focusedWorkspace` tag suppresses only synthesized default
+summaries in Lean; explicit side content, reported home medications and all
+required commit reviews remain. React draws the resulting tree. Narrative editor
+kinds also come from Lean; all entered text, newlines and confirmations use the
+existing interpreter events.
+
+The shared shell still needs its role/weight/isolation banner and activity-tab
+polish, and the tagged structured widgets will replace the generic drawing when
+the presentation lane is integrated. Those integration points are recorded in
+[changes-requests.md](changes-requests.md#amb-realism-integration-2026-11-01).
+
+### Verified ambulatory milestone
+
+The reproducible commands, source/runtime fingerprints and all 50 world-2 day
+totals are recorded in [amb-realism-validation.json](amb-realism-validation.json).
+The final baseline passes:
+
+- Lean default build, default-kernel `lake check`, core Comparator, and D1–D6
+  regression/proof builds, with only the existing three permitted axioms.
+- **15/15** persona certifications across all three releases, **18/18** core
+  bad programs rejected, and **1,284/1,284** world-2 tasks completed. No simulator
+  policy changed; the replay uses v1 on days 1–3, v2 on days 4–6 and v3 thereafter.
+- **226** native button controls audited (**218** enabled controls change actual
+  interpreter state; the other eight carry explicit blocking reasons). The
+  browser dispatch audit checks the exact declared events on all 24 screens.
+- **24** after screenshots, **23** before screenshots and two signature-footer
+  views. Desktop/narrow fidelity, record completeness, legibility, coverage,
+  overflow, keyboard/scanner/modal behavior and contrast: **57** browser checks
+  pass; three duplicate wide-viewport cases are intentionally skipped in the
+  narrow project. Signature capture waits for the identity control to be fully
+  in view so a scrolling frame cannot crop away the safety footer.
+- Regenerated WASM and `make wasm-check`; archived `run1-P3` **424** tasks /
+  **14,658** events plus **3** baselines / **137** events, **0 mismatches**. The
+  archived programs remain unchanged. Painter navigation and multiline editors
+  emit the same interpreter events and Value constructors.
+- App build/lint and **165** tests; agent typecheck/lint and **41**
+  tests; **7** seeder tests.
+
+The live-boundary review also removed resource/cohort IDs from displayed result
+group labels and MRNs. Actual accession/report names or source test codes identify
+result groups; artifact IDs remain in version bindings only. Fill-history review
+receipts bind to MedicationDispense records. An empty-chart review uses the
+versioned patient anchor, as the existing empty medication/allergy review does;
+it makes no claim of a fill or medication adherence, and does not answer the
+separate human protocol attestation.
