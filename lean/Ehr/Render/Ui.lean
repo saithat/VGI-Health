@@ -82,7 +82,11 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
     | "vitals" => cx.disp.vitals.map vitalCells
     | "problemList" => cx.disp.problems.map problemCells
-    | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
+    | "labs" | "labResults" | "resultTrend" =>
+      if !cx.disp.labResults.isEmpty then
+        let labels := (cx.disp.labResults.map (fun r => (r.name, r.code))).eraseDups
+        cx.disp.labResults.map (labResultCells labels)
+      else cx.disp.labs.flatMap fun r =>
         [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
          ("Recorded", uiDate r.date), ("Flag", (cx.disp.labFlags.lookup r.code).getD (if r.abnormal then "A" else ""))] ::
         r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),

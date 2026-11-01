@@ -117,11 +117,11 @@
    {"rows":
     [[["Record", "Heart rate 76 /min (today)"]],
      [["Record", "Respiratory rate 16 /min (today)"]],
-     [["Record", "Temperature 37 Cel (today)"]],
+     [["Record", "Temperature 37 °C (today)"]],
      [["Record", "Oxygen saturation 98 % (today)"]],
-     [["Record", "Pain score 2 {score} (today)"]],
-     [["Record", "Oral intake 240 mL (today)"]],
-     [["Record", "Urine output 400 mL (today)"]]],
+     [["Record", "Pain score 2 score (today)"]],
+     [["Record", "Blood pressure 124/72 mmHg (today)"]],
+     [["Record", "Body weight 82.4 kg (today)"]]],
     "label": "Recent vitals",
     "infoId": "vitals",
     "display": "list",
@@ -138,6 +138,6 @@
   ["Coverage", ""],
   ["Encounter", "EMER"],
   ["Attending", "Nora Shah, MD"],
-  ["Location", "ED 08"],
+  ["Location", "ED 04"],
   ["Allergies", "Amoxicillin — Hives (active)"],
   ["Code status", "Full code"]]}

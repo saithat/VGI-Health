@@ -12,6 +12,18 @@ const corpus = (await readFile(resolve(root, 'app/src/fixtures/presentations/api
 for (const [kind, input] of corpus) {
   const result = JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(input)));
   assert.deepEqual(result, native('render-ui', input), kind);
+  const legacyInput = structuredClone(input);
+  delete legacyInput.display.labResults;
+  assert.deepEqual(JSON.parse(wasm.call('ehr_render_ui', JSON.stringify(legacyInput))), native('render-ui', legacyInput), `${kind}: legacy display defaults`);
+  if (kind === 'results' || kind === 'trend') {
+    const rows = result.workspace[1].presentation.children[0].info.rows;
+    const has = (row, key, value) => row.some(([name, text]) => name === key && text === value);
+    assert.equal(rows.length, input.display.labResults.length);
+    assert.ok(rows.some(row => has(row, 'Value', '120') && has(row, 'Unit', 'g/L')));
+    assert.ok(!rows.some(row => has(row, 'Value', '120') && has(row, 'Unit', 'g/dL')));
+    assert.ok(rows.some(row => has(row, 'Value', '<5')));
+    assert.ok(rows.some(row => has(row, 'Value', 'No growth')));
+  }
   if (kind === 'inBasket') {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);

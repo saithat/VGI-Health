@@ -944,6 +944,141 @@ def labFlags (rs : List Json) : List (String × String) :=
     (latestBy obsWhen (labs.filter (fun r => firstCode (field r "code") == code))).map
       (fun r => (code, labFlag r))
 
+/-- Preserve every source interpretation concept, preferring standard flag codes. -/
+def labSourceFlags (r : Json) : String :=
+  " · ".intercalate (((arr r "interpretation").map fun cc =>
+    (((codings cc).map (str · "code")).find? (fun code => abnormalCodes.contains code || code == "N"))
+      |>.getD (ccText cc)).filter (· != ""))
+
+/-- A complex result keeps the comparator and unit alongside its recorded quantity. -/
+def labQuantityText (q : Json) : String :=
+  let value := qtyText q
+  let unit := qtyUnitText q
+  if value == "" then if unit == "" then "" else "Value not recorded (" ++ unit ++ ")"
+  else str q "comparator" ++ value ++ (if unit == "" then "" else " " ++ unit)
+
+/-- Retain sampled values and their supplied scale/timing as readable clinical data. -/
+def labSampledValue (s : Json) : String :=
+  let number := fun key => match field s key with | .num n => toString n | _ => ""
+  let entry := fun label value => if value == "" then "" else label ++ ": " ++ value
+  " · ".intercalate ([entry "Samples" (str s "data"), entry "Origin" (labQuantityText (field s "origin")),
+    entry "Factor" (number "factor"), entry "Period (ms)" (number "period"),
+    entry "Dimensions" (number "dimensions"), entry "Lower limit" (number "lowerLimit"),
+    entry "Upper limit" (number "upperLimit")].filter (· != ""))
+
+/-- Raw laboratory values retain comparators, signed values and qualitative results. -/
+def labResultValue (r : Json) : String :=
+  let quantity := field r "valueQuantity"
+  if quantity != .null then str quantity "comparator" ++ qtyText quantity
+  else if field r "valueCodeableConcept" != .null then ccText (field r "valueCodeableConcept")
+  else if str r "valueString" != "" then str r "valueString" else
+    match field r "valueInteger" with
+    | .num n => toString n
+    | _ => match field r "valueBoolean" with
+      | .bool b => if b then "Yes" else "No"
+      | _ =>
+        let range := field r "valueRange"
+        let ratio := field r "valueRatio"
+        let period := field r "valuePeriod"
+        let low := labQuantityText (field range "low")
+        let high := labQuantityText (field range "high")
+        if range != .null then
+          if low != "" && high != "" then low ++ "–" ++ high
+          else if low != "" then "Low: " ++ low else if high != "" then "High: " ++ high else "Range not recorded"
+        else if ratio != .null then
+          let numerator := labQuantityText (field ratio "numerator")
+          let denominator := labQuantityText (field ratio "denominator")
+          (if numerator == "" then "Numerator not recorded" else numerator) ++ " / " ++
+            (if denominator == "" then "Denominator not recorded" else denominator)
+        else if str r "valueDateTime" != "" then str r "valueDateTime"
+        else if str r "valueTime" != "" then str r "valueTime"
+        else if period != .null then str period "start" ++ " – " ++ str period "end"
+        else if field r "valueSampledData" != .null then labSampledValue (field r "valueSampledData")
+        else let reason := ccText (field r "dataAbsentReason")
+          if reason != "" then "Not available · " ++ reason
+          else if !(arr r "component").isEmpty then "See component results" else "Not recorded"
+
+/-- Units of the existing demo intervals; no numeric interval or clinical fact changes. -/
+def renderRefUnits : List (String × String) :=
+  [("2339-0", "mg/dL"), ("4548-4", "%"), ("6298-4", "mmol/L"),
+   ("2947-0", "mmol/L"), ("2069-3", "mmol/L"), ("2028-9", "mmol/L"),
+   ("38483-4", "mg/dL"), ("6299-2", "mg/dL"), ("49765-1", "mg/dL"),
+   ("2093-3", "mg/dL"), ("18262-6", "mg/dL"), ("2085-9", "mg/dL"),
+   ("2571-8", "mg/dL"), ("718-7", "g/dL"), ("6690-2", "10*3/uL"),
+   ("777-3", "10*3/uL"), ("33914-3", "mL/min/1.73m2")]
+
+/-- A configured display interval is used only with its recorded matching unit. -/
+def labDemoRangeCompatible (r : Json) : Bool :=
+  let unit := qtyUnitText (field r "valueQuantity")
+  unit != "" && renderRefUnits.lookup (firstCode (field r "code")) == some unit
+
+/-- Keep source range text, bounds and population qualifiers together. -/
+def labRangeText (unit : String) (rr : Json) : String :=
+  let quantity := fun q =>
+    if qtyText q == "" then
+      if qtyUnitText q == "" then "" else "Not recorded " ++ qtyUnitText q
+    else qtyText q ++ (if qtyUnitText q == "" || qtyUnitText q == unit then "" else " " ++ qtyUnitText q)
+  let low := quantity (field rr "low")
+  let high := quantity (field rr "high")
+  let bounds := if low != "" && high != "" then low ++ "–" ++ high
+    else if low != "" then "Low: " ++ low else if high != "" then "High: " ++ high else ""
+  let age := field rr "age"
+  let ageLow := quantity (field age "low")
+  let ageHigh := quantity (field age "high")
+  let ageText := if age == .null then "" else
+    if ageLow != "" && ageHigh != "" then "Age " ++ ageLow ++ "–" ++ ageHigh
+    else if ageLow != "" then "Age low: " ++ ageLow
+    else if ageHigh != "" then "Age high: " ++ ageHigh else "Age not recorded"
+  " · ".intercalate ([bounds, str rr "text", ccText (field rr "type"),
+    ", ".intercalate ((arr rr "appliesTo").map ccText), ageText].filter (· != ""))
+
+/-- Show each observation's own interval; incompatible demo units stay unknown. -/
+def labResultRange (r : Json) : String :=
+  let ranges := arr r "referenceRange"
+  if !ranges.isEmpty then "; ".intercalate (ranges.map (labRangeText (qtyUnitText (field r "valueQuantity"))))
+  else if labDemoRangeCompatible r then
+    match (labPoint r).range? with
+    | some (low, high) => fmtHundredths low ++ "–" ++ fmtHundredths high
+    | none => ""
+  else ""
+
+/-- An inferred display flag needs an exact quantity and an unambiguous unit context. -/
+def labResultFlag (r : Json) : String :=
+  let source := labSourceFlags r
+  if source != "" then source
+  else if str (field r "valueQuantity") "comparator" != "" then ""
+  else match arr r "referenceRange" with
+  | [] => if labDemoRangeCompatible r then labFlag r else ""
+  | [rr] =>
+    let unit := qtyUnitText (field r "valueQuantity")
+    let unitsMatch := fun q => qtyUnitText q == "" || qtyUnitText q == unit
+    if (qtyScaled (field rr "low") 2).isSome && (qtyScaled (field rr "high") 2).isSome &&
+        unitsMatch (field rr "low") && unitsMatch (field rr "high") &&
+        (arr rr "appliesTo").isEmpty && field rr "age" == .null &&
+        (field rr "type" == .null || firstCode (field rr "type") == "normal")
+    then labFlag r else ""
+  | _ => ""
+
+/-- One result retains its own raw value and metadata, never the latest row's unit. -/
+def labResultRow (r : Json) : LabResultRow :=
+  { code := firstCode (field r "code"), name := ccText (field r "code")
+    value := labResultValue r, unit := qtyUnitText (field r "valueQuantity"), date := obsWhen r
+    refRange := labResultRange r, flag := labResultFlag r, status := str r "status" }
+
+/-- Component values keep their names and units and inherit the report's time/status. -/
+def labComponentResultRow (parent component : Json) : LabResultRow :=
+  let row := labResultRow component
+  { row with name := ccText (field parent "code") ++ " • " ++ row.name
+             date := obsWhen parent, status := str parent "status" }
+
+/-- Retain the report row and every component, without merging same-time records. -/
+def labResultRowsFor (r : Json) : List LabResultRow :=
+  labResultRow r :: (arr r "component").map (labComponentResultRow r)
+
+/-- Full clinical result history. Latest-result aggregates remain a separate legacy API. -/
+def labResultRows (rs : List Json) : List LabResultRow :=
+  newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
+
 /-! ## Facts and display -/
 
 /-- The facts the spec needs. -/
@@ -991,7 +1126,7 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     history := historyRows rs
     schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
     marOrders := marOrderRows rs, administrations := administrationRows rs
-    observations := observationRows rs, labFlags := labFlags rs }
+    observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

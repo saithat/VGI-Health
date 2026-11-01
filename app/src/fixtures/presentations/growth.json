@@ -270,7 +270,9 @@
     "display": "list",
     "comp": ""}},
   {"info":
-   {"rows": [],
+   {"rows":
+    [[["Record", "Body weight 30.4 kg (today)"]],
+     [["Record", "Body height 135.6 cm (today)"]]],
     "label": "Recent vitals",
     "infoId": "vitals",
     "display": "list",
