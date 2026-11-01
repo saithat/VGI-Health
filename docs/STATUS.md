@@ -15,8 +15,10 @@ bad programs are rejected; world-2 completes 1,284/1,284 tasks; archived run1-P3
 verification reports zero mismatches (424 tasks, 14,658 events and three
 baselines). Default build: 63.45 seconds after merging main; cached repeat:
 0.13 seconds. Kernel checking, Comparator, WASM freshness and 293 app tests pass.
-The five conformance gap families pass all 93 applicable checks across the 15
-role views, including all patient-scoping cases (zero failures).
+The full 200-scenario conformance rerun has 1,575 passes and zero failures across
+the 15 role views. The five gap families pass all 93 applicable checks,
+including all patient-scoping cases. All eight archived revisions also pass
+their 347 applicable checks; the independent report bindings agree.
 `Statements.lean` is unchanged.
 
 Consolidated 2026-11-01. Active releases are v1/v2/v3; v1.1 appears only in archived runs. The rule profile is **core**. Clinicians use role-based pre-set views, landing patient lists and **Open chart** for in-UI patient selection. Only the AI agent modifies UI programs. New runs use **world/2**. Metrics are clicks, scroll count/distance and mouse travel; keystrokes are secondary and time is not an optimization metric.

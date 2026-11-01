@@ -3,8 +3,8 @@
 Both full commands completed against all 200 scenarios per input:
 
 ```sh
-pnpm conformance --canonical --jobs 8
-pnpm conformance --run run1-P3 --jobs 8
+pnpm conformance --canonical --jobs 15
+pnpm conformance --run run1-P3 --jobs 16
 node conformance/verify.mjs run1-P3
 ```
 
@@ -13,6 +13,10 @@ node conformance/verify.mjs run1-P3
 | 15 current canonicals | 1,575 | **0** | 1,425 |
 | 8 archived P3 revisions | 347 | **0** | 1,253 |
 | Combined run artifact | **1,922** | **0** | **2,678** |
+
+The imported-patient alias repair was rechecked with the regenerated native
+binary. Its own/foreign-note Lean examples and Patient Lookup browser regression
+also pass; the focused five-family rerun has 93 applicable passes and no failures.
 
 The [canonical JSON](results/canonical.json) and [matrix](results/canonical.md)
 are an independent full execution. The [run JSON](../runs/run1-P3/conformance.json)
