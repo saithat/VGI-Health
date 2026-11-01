@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createMockInterp, type Interp } from "../src/core/interp";
 import { createSession } from "../src/core/session";
 import {
@@ -30,6 +30,36 @@ function setup() {
 }
 
 describe("temporary JSON interpreter seam", () => {
+  it("reuses the semantic tree for a no-op and still publishes the interpreter result", () => {
+    const { interp } = setup();
+    const renderUi = vi.fn(() =>
+      JSON.stringify({
+        banner: [],
+        nav: [],
+        title: "Chart",
+        workspace: [],
+        side: [],
+        modal: null,
+      }),
+    );
+    const session = createSession(
+      { ...interp, renderUi },
+      mockSpec,
+      mockProgram,
+      mockFacts,
+      { id: "P1", role: "physician" },
+    );
+    const ui = session.getSnapshot().ui;
+    const updated = vi.fn();
+    session.subscribe(updated);
+    session.dispatch({ click: { comp: "unknown-no-op" } });
+    expect(session.getSnapshot().result).toBe("ignored");
+    expect(session.getSnapshot().ui).toBe(ui);
+    expect(renderUi).toHaveBeenCalledTimes(1);
+    expect(updated).toHaveBeenCalledOnce();
+    session.dispatch({ click: { comp: "rooming-next" } });
+    expect(renderUi).toHaveBeenCalledTimes(2);
+  });
   it("retains the accepted snapshot when a refreshed semantic tree cannot render", () => {
     const { interp } = setup();
     const wrapped: Interp = {

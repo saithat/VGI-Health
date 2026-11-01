@@ -378,6 +378,11 @@ theorem uiItem_honest (cx : Ctx) (it : ItemView) (hm : it ∈ cx.v.items)
     intro hp
     cases action <;> simp [actionRole] at hp
     exact ⟨it, hm, hs, rfl, _, hk⟩
+  case search scope =>
+    rcases hn with rfl | hn
+    · trivial
+    · split at hn <;> simp [uiAtoms] at hn
+      subst n; trivial
   case group coll start =>
     by_cases hg : uiNavGroup it = true
     · simp [hg] at hn
@@ -539,8 +544,10 @@ theorem D6_field_labels (cx : Ctx) (id label kind value unit provenance pending 
       · split at hi <;> simp [uiAtoms] at hi
     · split at hi <;> simp [uiAtoms] at hi
       split at hi <;> simp [uiAtoms] at hi
-    · obtain ⟨_, rfl, _⟩ := hi
-      exact uiLabel_nonempty _ _ (by decide)
+    · rcases hi with hi | hi
+      · obtain ⟨_, rfl, _⟩ := hi
+        exact uiLabel_nonempty _ _ (by decide)
+      · split at hi <;> simp [uiAtoms] at hi
   · simp [UiReadOnly] at hr
 
 /-- A shown Notes component retains every narrative and metadata field. -/

@@ -2,6 +2,8 @@ import { defineConfig } from "@playwright/test";
 const port = Number(process.env.APP_TEST_PORT ?? 4179);
 export default defineConfig({
   testDir: "./e2e",
+  // The longer control/performance audits use their own preview/timeout config.
+  testIgnore: "**/audit/**",
   outputDir: `test-results/${port}`,
   fullyParallel: false,
   workers: 1,

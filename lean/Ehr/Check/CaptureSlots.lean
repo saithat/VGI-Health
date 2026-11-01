@@ -115,6 +115,7 @@ private theorem enterCore_slots (sp p f u actor s cid v slots)
           exact field_slot p slots bound s comp member slot pf hk
       repeat' (first | exact h | split | dsimp only)
       all_goals exact store _ _ _
+    · cases v <;> exact h
     · exact h
 
 private theorem confirmCore_slots (sp p f u actor s cid slots) (h : DrugSlotsWithin slots s) :

@@ -84,6 +84,15 @@ def surgery : Json := json r#"{"resourceType":"Procedure","code":{"text":"Append
 
 #guard (Lean.fromJson? (json r#"{"patientId":"old","identity":{"initials":"AB","sex":"F","ageYears":40},"allergyVersion":0,"allergyClasses":[],"medsVersion":0,"currentMedClasses":[],"careGaps":[],"abnormalResult":false,"now":0,"receipts":[],"record":[]}"#) : Except String Facts).toOption.any (fun f => f.notesVersion == 0 && f.historyVersion == 0)
 #guard (Lean.fromJson? ((Lean.toJson parsed.facts).setObjVal! "notesVersion" (.str "bad")) : Except String Facts).isOk == false
+
+/-- Logical resource identity is not a medical record number. -/
+def patientWithoutMrn : Json := json r#"{"resourceType":"Patient","id":"opaque-resource-id"}"#
+#guard mrnOf patientWithoutMrn == ""
+#guard patientIdOf patientWithoutMrn == "opaque-resource-id"
+#guard parsed.display.banner.weight?.map (fun (weight, unit, _) => (weight, unit)) == parsed.facts.weightToday?
+#guard (output emptyBundle).display.banner.weight? == none
+#guard (bannerWeightOf "1900-01-01" (bundleResources clinical)) == none
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests

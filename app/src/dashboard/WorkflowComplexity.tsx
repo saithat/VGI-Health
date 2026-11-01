@@ -53,7 +53,11 @@ function pointsFor(
       version,
       spec:
         iteration?.specVersion ??
-        releaseLabel(run.programs.get(`programs/${persona}/v${version}.json`)?.specVersion ?? "—", run.manifest.runId),
+        releaseLabel(
+          run.programs.get(`programs/${persona}/v${version}.json`)
+            ?.specVersion ?? "—",
+          run.manifest.runId,
+        ),
       values:
         measure === "expert"
           ? (iteration?.workflows.map((w) => ({
@@ -204,7 +208,11 @@ function Chart({
                     strokeDasharray="3 4"
                   />
                   <text x={x(i)} y={16} textAnchor="middle">
-                    {releases.map((r) => r.release?.id).join(" / ")}
+                    {releases
+                      .map((r) =>
+                        releaseLabel(r.release?.id ?? "", run.manifest.runId),
+                      )
+                      .join(" / ")}
                   </text>
                 </>
               )}
@@ -221,13 +229,13 @@ function Chart({
                     fill={colors[workflows.indexOf(w.workflow) % colors.length]}
                   >
                     <title>
-                      v{p.version} · {w.workflow}: {fmt(w.value)}
+                      rev {p.version} · {w.workflow}: {fmt(w.value)}
                     </title>
                   </rect>
                 );
               })}
               <text x={x(i)} y={height - 12} textAnchor="middle">
-                v{p.version}
+                rev {p.version}
                 {p.total === null ? " · —" : ""}
               </text>
             </g>
@@ -390,7 +398,7 @@ export function WorkflowComplexity({
             .filter((m) => m.kind === "release")
             .map((m) => (
               <span key={`${m.version}-${m.label}`}>
-                Release {m.label} · v{m.version}
+                Release {m.label} · rev {m.version}
               </span>
             ))}
         </p>
@@ -421,7 +429,7 @@ export function WorkflowComplexity({
               {selected.map((p) => (
                 <tr key={p.version}>
                   <th scope="row">
-                    v{p.version}
+                    rev {p.version}
                     {p.version === 0 ? " · baseline" : ""}
                   </th>
                   <td>{p.spec}</td>

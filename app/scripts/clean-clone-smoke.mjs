@@ -28,11 +28,9 @@ try {
       failed.push(`${response.status()} ${response.url()}`);
   });
   for (const persona of ["P1", "P2", "P3", "P4", "P5"]) {
-    await page.goto(`${base}/?persona=${persona}`);
-    await expect(page.getByLabel("Persona", { exact: true })).toHaveValue(
-      persona,
-    );
-    const banner = page.locator(".ehr-banner").first();
+    await page.goto(`${base}/ehr?mode=replay&persona=${persona}`);
+    await expect(page.locator(".clinical-app")).toBeVisible();
+    const banner = page.locator(".clinical-banner").first();
     await expect(banner).toBeVisible();
     await expect(banner).toContainText(/MRN|DOB|born/i);
     await expect(page.getByRole("alert")).toHaveCount(0);
@@ -40,18 +38,22 @@ try {
   }
   await page.goto(`${base}/dashboard`);
   await expect(
-    page.getByRole("navigation", { name: "Dashboard views" }),
+    page.getByRole("navigation", { name: "Dashboard areas" }),
   ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Evolution", exact: true }),
   ).toBeVisible();
   await expect(page.getByRole("alert")).toHaveCount(0);
-  // Exercise a recorded EHR frame through the production preview's static runs.
+  // Open a real version in the EHR, loading its patient context on demand.
   await page
-    .getByRole("navigation", { name: "Dashboard views" })
-    .getByRole("button", { name: "Day replay", exact: false })
+    .getByRole("region", { name: "Version history" })
+    .getByRole("button")
+    .first()
     .click();
-  await expect(page.locator(".paired-screens .ehr-banner")).toHaveCount(2);
+  await page
+    .getByRole("button", { name: "Before / after on screen", exact: true })
+    .click();
+  await expect(page.locator(".paired-screens .ehr-shell")).toHaveCount(2);
   await expect(page.getByRole("alert")).toHaveCount(0);
   const wasm = await page.request.get(`${base}/ehr/ehr-interp.wasm`);
   expect(wasm.ok()).toBe(true);

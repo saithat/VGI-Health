@@ -9,9 +9,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
-// Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
+// Lean's mapped libraries need more virtual address space than resident memory.
+// Keep workers at four and bound the address-space reservation on shared hosts.
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
+  ? exec('bash', ['-c', 'ulimit -v 12000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');

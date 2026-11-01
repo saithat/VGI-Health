@@ -89,6 +89,7 @@ theorem enterCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
               · exfalso
                 simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
                 simp [Spec.isHumanOnly, hel, hnh.1] at hh
+    · cases v <;> exact MacroSafe.of_eq rfl rfl rfl rfl
     · exact MacroSafe.refl _ _
 
 theorem selectTabCore_safe (sp : Spec) (prog : Program) (facts : Facts) (s : State)
