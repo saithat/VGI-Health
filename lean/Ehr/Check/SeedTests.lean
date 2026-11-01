@@ -1,4 +1,5 @@
 import Ehr.Check.AdditionalBadProofs
+import Ehr.Check.MissingBadProofs
 import Ehr.Check.Check
 
 /-! Permanent seeded regressions. Until content's template passes on its own,
@@ -13,7 +14,10 @@ def rejectedWithReplay (p : Program) : Bool :=
   | none => false
   | some finding => (counterexample specV1 p finding).2.2
 
-#guard check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
+-- The expanded legal screens currently have missing pinned reviews (see
+-- CHECK-2026-10-31 in changes-requests.md). Keep the actual unsafe canonical
+-- rejected; restore acceptance only after the owning content lane repairs it.
+#guard rejectedWithReplay (forPersona specV1 canonicalV1 "P3" .rn)
 
 #guard Bad.programs.all (fun (_, p) => rejectedWithReplay p)
 
@@ -42,4 +46,12 @@ def mutationRejected (property : String) (p : Program) : Bool :=
 #guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
 #guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
 #guard mutationRejected "completable" Bad.scheduleIIRefills
+#guard mutationRejected "completable" Bad.noRestraintCarePlan
+#guard mutationRejected "completable" Bad.noOpTechnique
+#guard mutationRejected "completable" Bad.noVaccineProviderAddress
+#guard mutationRejected "completable" Bad.noAdministrationTime
+#guard mutationRejected "completable" Bad.noControlledStrength
+#guard mutationRejected "reviewsBeforeCommit" Bad.hiddenSigningNotice
+#guard mutationRejected "completable" Bad.noTelehealthConsent
+#guard mutationRejected "humanOnlyKept" Bad.defaultRefillEligibility
 end Ehr.Check.Tests

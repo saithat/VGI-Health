@@ -17,7 +17,10 @@
     "Ehr.Check.T7_counterexample_replays",
     "Ehr.Check.T7_rejection",
     "Ehr.Check.T8_old_obligations",
-    "Ehr.Check.accepted_contracts"
+    "Ehr.Check.accepted_contracts",
+    "Ehr.Check.T8_checked_old_obligations",
+    "Ehr.Check.T8_v1_to_v1_1",
+    "Ehr.Check.T8_v1_1_to_v2"
   ],
   "definition_names": [],
   "permitted_axioms": [

@@ -5,15 +5,20 @@ open Ehr Ehr.Props
 
 /-- A passive alert for a workflow with no task in this program. -/
 def unusedWorkflowSpec : Spec :=
-  { emptySpec with alerts := [{
+  { emptySpec with
+    commits := [{ id := "unused", label := "Optional task", roles := [.physician] }]
+    alerts := [{
       id := "optionalReminder", label := "Reminder", cond := .careGap,
-      tier := .passive, commit := "unused", screens := ["optionalWorkflow"] }] }
+      tier := .passive, commit := "unused", screens := ["optionalWorkflow"] }]
+    design := { emptySpec.design with catalog := ["banner", "alert"] } }
+
 
 /-- The reference has an extra, unreachable workflow screen with no commits. -/
 def unusedWorkflowCanonical : Program :=
   { emptyProgram with screens := emptyProgram.screens ++
       [{ id := "optional", title := "Optional", workflow := "optionalWorkflow",
-         components := [{ id := "optional.banner", kind := .banner }] }] }
+         components := [{ id := "optional.banner", kind := .banner },
+           { id := "optional.reminder", kind := .alert "optionalReminder" false }] }] }
 
 /-- With no tasks, the candidate genuinely satisfies all twelve properties.
 The checker accepts it when compared with a reference having the same workflows. -/

@@ -1,6 +1,11 @@
 import Ehr.Check.PinSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.MonotonicityObstruction
+import Ehr.Check.Monotonicity
+import Ehr.Check.ContractSound
+import Ehr.Check.ContractTests
+import Ehr.Check.EntryConstruction
+import Ehr.Check.RejectionObstruction
 import Ehr.Check.RequestSound
 import Ehr.Check.PartialSound
 import Ehr.Check.SeveritySound

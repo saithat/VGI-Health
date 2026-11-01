@@ -1122,3 +1122,31 @@ needs to distinguish conservative certification failures from demonstrated
 semantic violations, or the trusted property must explicitly include workflow
 retention with owner approval. A replayable path alone proves neither. This is
 independent of the existing seed-13 escape and patient-witness API gap.
+
+### Concrete minimal app patch for approval or the owning lane
+
+In `app/scripts/verdicts.mjs`, immediately after `program.path` in the CLI
+argument array, add `"--canonical",` and
+`` `releases/${program.release}/canonical.json`, ``. Change the status expression
+to `result.status === 0 || (result.status === 1 && output && typeof output === "object" && "violation" in output) ? "computed" : "checker failed"`.
+In `app/tests/app.test.tsx`, change only the bad-program count assertion
+`toHaveLength(16)` to `toHaveLength(24)`; retain the actual permanent-corpus tests.
+No certification verdict is relabeled as accepted.
+
+Capture-dependent per-order-line clinical predicates require special completion
+handling: changing a captured predicate source can activate a requirement on any
+archived line, beyond the existing naloxone dose/frequency repair rule. The
+checker rejects that unsupported universal-repair claim while preserving the
+interpreter's conservative true/false/unknown applicability semantics. Record-only
+clinical predicates retain ordinary all-branches structural coverage. Exact
+`CommitSpec.actionLabel` declarations are also checked before completion claims.
+
+## CHECK-D5: newly merged semantic UI navigation contract
+
+The latest main adds core-model §10 and names D5 as a checker rule (unique group
+and item labels, at most 12 groups/items, no orphan screens). The current native
+Program/renderer interface does not yet expose the proposed `UiScreen.nav` tree.
+Render/core must provide its actual grouping function/type before check can
+certify D5 against the tree the app will paint. Do not certify a separate guessed
+navigation model or mistake screen-ID uniqueness for navigation-label uniqueness.
+This is additional pending integration beyond the five merged core features.

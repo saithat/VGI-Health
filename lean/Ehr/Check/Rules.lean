@@ -264,6 +264,14 @@ def entryValuesPossible (spec : Spec) (c : CommitId) : Bool :=
           (!(spec.reviews.any fun review => review.commit == c && review.waivedBy? == some rq.element) || value.nonEmpty) &&
           reqs.all (fun other => other.element != rq.element || entryValueAllowed el other.allowed? value)
 
+/-- A capture-dependent predicate can change after a line is archived. Unlike
+record-only clinical facts, these dependencies are mutable within an episode. -/
+def clinicalUsesCapture : ClinicalPredicate → Bool
+  | .capturedCode .. => true
+  | .and a b | .or a b => clinicalUsesCapture a || clinicalUsesCapture b
+  | .not p => clinicalUsesCapture p
+  | _ => false
+
 /-- Additional contracts can depend on trusted evidence that no UI event
 creates. Until a total collection/refusal-path construction is proved, the
 checker must not certify universal completion from one sample record. This
@@ -272,7 +280,13 @@ def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Op
   match spec.commit? c with
   | none => some s!"commit {c}: no declared commit"
   | some cs =>
-    if !(cs.temporal?.getD []).isEmpty then
+    if spec.entries.any (fun rq => rq.commit == c && rq.perOrderLine &&
+        match rq.when with | .clinical p => clinicalUsesCapture p | _ => false) then
+      some s!"commit {c}: capture-dependent clinical predicates can activate requirements on archived lines; universal repair is not established"
+    else if cs.actionLabel?.any (fun label => (allComps prog).any (fun sc =>
+        commitOf? sc.2.kind == some c && sc.2.label != label)) then
+      some s!"commit {c}: a signing button does not use its required action label"
+    else if !(cs.temporal?.getD []).isEmpty then
       some s!"commit {c}: temporal evidence may be missing or overdue; universal collection/exception route is not established"
     else if !(cs.expiry?.getD []).isEmpty then
       some s!"commit {c}: durable order clock may be missing or expired; universal renewal/stop route is not established"

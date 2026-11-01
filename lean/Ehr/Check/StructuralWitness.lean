@@ -47,6 +47,18 @@ theorem humanPrefill_violation (sp : Spec) (p : Program) (sc : Screen × Compone
   intro h
   exact hp (h.1 sc hc (eid, slot, pf) (by simp [hf]) el (by simp [hel]) hh)
 
+/-- Exhibit a shown commit without deciding equality of complete view items.
+Only the component kind and its actual visibility are evaluated. -/
+theorem commitButtonShown_of_any (ep : Episode) (s : State) (commit : CommitId)
+    (h : (ep.prog.compsOf s.screen).any (fun c =>
+      c.kind == .button (.commit commit) &&
+        compShown ep.spec ep.facts s (ep.prog.compsOf s.screen) c) = true) :
+    CommitButtonShown ep s commit := by
+  obtain ⟨c, hc, ht⟩ := List.any_eq_true.mp h
+  simp only [Bool.and_eq_true, beq_iff_eq] at ht
+  exact ⟨itemView ep.spec ep.facts s (ep.prog.compsOf s.screen) c,
+    List.mem_map.mpr ⟨c, hc, rfl⟩, ht.2, ht.1⟩
+
 #print axioms indexedComp_mem
 #print axioms macroClick_violation
 #print axioms macroSet_violation

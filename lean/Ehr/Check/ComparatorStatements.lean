@@ -80,4 +80,22 @@ theorem accepted_contracts (sp : Spec) (prev : Option Program) (can p : Program)
     ∀ facts user, user.role = p.role → CommitContracts ⟨sp, p, facts, user⟩ := by
   sorry
 
+theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
+    {canonical p : Program} (he : new.Extends old)
+    (h : check new prev canonical p = .ok) :
+    ∀ facts user, user.role = p.role → OldObligations old ⟨new, p, facts, user⟩ := by
+  sorry
+
+theorem T8_v1_to_v1_1 {prev : Option Program} {canonical p : Program}
+    (hs : check Specs.V1_1.specV1_1 prev canonical p = .ok) :
+    ∀ facts user, user.role = p.role →
+      OldObligations Specs.V1.specV1 ⟨Specs.V1_1.specV1_1, p, facts, user⟩ := by
+  sorry
+
+theorem T8_v1_1_to_v2 {prev : Option Program} {canonical p : Program}
+    (hs : check Specs.V2.specV2 prev canonical p = .ok) :
+    ∀ facts user, user.role = p.role →
+      OldObligations Specs.V1_1.specV1_1 ⟨Specs.V2.specV2, p, facts, user⟩ := by
+  sorry
+
 end Ehr.Check
