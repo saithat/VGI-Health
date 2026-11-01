@@ -2,6 +2,8 @@
 .PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose -f infra/docker-compose.yml
+# Bound fresh Lean builds on shared development/judging machines.
+export LEAN_NUM_THREADS ?= 4
 APP_PORT ?= 5173
 LIVE_WORLD ?= runs/world/2
 LIVE_DAYS ?= 10
@@ -13,7 +15,7 @@ SEED_ARGS ?=
 # setup (project, client, personas -> .env), fixture load, and world worklist seed. Safe to re-run.
 install:
 	cd lean && lake build
-	pnpm install
+	pnpm install --frozen-lockfile
 	$(MAKE) wasm-check
 	$(MAKE) infra-up
 	$(MAKE) setup
