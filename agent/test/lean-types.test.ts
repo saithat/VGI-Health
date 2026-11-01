@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 /**
  * The hand-written validators in src/lean-types.ts against real JSON written
  * by Lean (lean/generated/ehr-samples.ts): every sample parses, and the round
