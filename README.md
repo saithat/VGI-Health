@@ -1,6 +1,6 @@
 # VGI Health
 
-An EHR whose screens adapt to each clinician's work. An overnight AI agent
+An EHR whose screens adapt to each clinician's work. An overnight (whenever the user is logged in since people have night shifts :) ) AI agent
 proposes UI changes; the Lean checker blocks changes that violate the hospital
 rules. The same Lean interpreter runs natively and in the browser as WebAssembly.
 
