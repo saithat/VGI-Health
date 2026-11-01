@@ -670,7 +670,7 @@ describe("semantic EHR painter", () => {
       { field: { ...field, kind: "code", value: "I10" } },
     ]);
     expect(screen.getByRole("list", { name: "list" })).toBeTruthy();
-    expect(screen.getByRole("img", { name: "trend trend" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "trend: trend" })).toBeTruthy();
     expect(screen.getByRole("table", { name: "trend" })).toBeTruthy();
     expect(
       screen.getByRole("combobox", { name: "Clinical value" }),
@@ -717,13 +717,7 @@ describe("semantic EHR painter", () => {
     expect(formatDisplayValue("1968-07-03")).toBe("03 Jul 1968");
     expect(formatDisplayValue("2024-02-29")).toBe("29 Feb 2024");
     const stamp = "2026-10-31T09:14:00-07:00";
-    expect(formatDisplayValue(stamp)).toBe(
-      new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(stamp)),
-    );
+    expect(formatDisplayValue(stamp)).toBe("31 Oct 2026 09:14:00-07:00");
     for (const value of [
       "2026-02-29",
       "2026-02-31T09:00:00Z",

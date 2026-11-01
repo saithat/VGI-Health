@@ -106,6 +106,7 @@
           "infoId": "inBasketMessages",
           "display": "table",
           "comp": "messages"}}]}}]}}],
+ "viewer": "Physician",
  "title": "In Basket",
  "side": [],
  "screen": "example",

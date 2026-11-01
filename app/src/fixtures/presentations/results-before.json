@@ -90,6 +90,7 @@
     "infoId": "labResults",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Physician",
  "title": "Laboratory Results",
  "side":
  [{"info":

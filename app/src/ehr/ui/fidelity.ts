@@ -172,32 +172,36 @@ export function expectedNodeAria(
           : []),
       ];
     }
-    case "info" in node:
+    case "info" in node: {
       if (node.info.display === "document")
         return [entry("region", node.info.label)];
       if (node.info.display === "status")
         return [entry("status", node.info.label)];
-      if (presentation) {
+      if (node.info.rows.length === 0) return [entry("note", node.info.label)];
+      const kind =
+        presentation ??
+        (node.info.display === "trend"
+          ? "trend"
+          : node.info.display === "list" &&
+              ["encounterNotes", "priorNotes"].includes(node.info.infoId)
+            ? "notes"
+            : undefined);
+      if (kind) {
         const controls = [...(placement?.rows.get(node.info) ?? [])]
           .sort(([left], [right]) => left - right)
           .flatMap(([, children]) =>
-            expectedChildrenAria(
-              children,
-              presentation,
-              placement,
-              inheritedConfirms,
-            ),
+            expectedChildrenAria(children, kind, placement, inheritedConfirms),
           );
-        if (presentation === "folderList" || presentation === "notes")
+        if (kind === "folderList" || kind === "notes")
           return nest(entry("list", node.info.label), controls);
         const names = new Set<string>();
-        if (presentation === "trend" || presentation === "growth") {
+        if (kind === "trend" || kind === "growth") {
           for (const row of node.info.rows) {
             const value = (key: string) =>
               row.find(([name]) => name === key)?.[1] ?? "";
             const numeric = (s: string) =>
               /^-?\d+(?:\.\d+)?$/.test(s.trim()) && Number.isFinite(Number(s));
-            if (presentation === "growth") {
+            if (kind === "growth") {
               if (!numeric(value("Age (months)"))) continue;
               if (numeric(value("Weight (kg)")))
                 names.add(`${node.info.label}: Weight (kg)`);
@@ -209,20 +213,20 @@ export function expectedNodeAria(
                 );
             } else if (numeric(value("Value")))
               names.add(
-                `${node.info.label}: ${value("Test") || value("Measure") || node.info.label}${value("Unit") ? ` (${value("Unit")})` : ""}`,
+                `${node.info.label}: ${value("Test") || value("Measure") || value("Vital sign") || node.info.label}${value("Unit") ? ` (${value("Unit")})` : ""}`,
               );
           }
         }
         return [
           ...[...names].map((name) => entry("img", name)),
           ...nest(entry("table", node.info.label), controls),
-          ...(presentation === "growth" &&
+          ...(kind === "growth" &&
           node.info.rows.some((row) =>
             row.some(([key, value]) => key === "Percentile" && value !== ""),
           )
             ? [entry("table", `${node.info.label} reference data`)]
             : []),
-          ...(presentation === "timeGrid" &&
+          ...(kind === "timeGrid" &&
           node.info.rows.some((row) =>
             row.some(
               ([key, value]) =>
@@ -239,24 +243,12 @@ export function expectedNodeAria(
             : []),
         ];
       }
-      if (node.info.rows.length === 0) return [entry("note", node.info.label)];
       return node.info.display === "summary"
         ? []
         : node.info.display === "list"
           ? [entry("list", node.info.label)]
-          : [
-              ...(node.info.display === "trend" &&
-              node.info.rows.some((row) =>
-                row.some(
-                  ([key, value]) =>
-                    /value|result|weight/i.test(key) &&
-                    Number.isFinite(Number.parseFloat(value)),
-                ),
-              )
-                ? [entry("img", `${node.info.label} trend`)]
-                : []),
-              entry("table", node.info.label),
-            ];
+          : [entry("table", node.info.label)];
+    }
     case "alert" in node:
       return [entry("alert", node.alert.label)];
     case "button" in node:

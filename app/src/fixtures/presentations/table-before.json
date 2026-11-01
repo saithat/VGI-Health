@@ -26,6 +26,7 @@
     "infoId": "currentMeds",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Physician",
  "title": "Medication Review",
  "side":
  [{"info":

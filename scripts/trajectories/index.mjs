@@ -121,7 +121,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
         const { spec, file: specPath } = await specFor(program.specVersion);
         const nativePath = path.join(work, 'contexts.json');
         const extract = async (scheduleFile, programFile, specFile, recordingFile) => {
-          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
+          await exec('bash', ['-c', 'ulimit -v 8000000; exec lean "$@"', 'lean', '-j4', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
             cwd: root, timeout: 180000, maxBuffer: 4e6,
             env: { ...process.env, LEAN_NUM_THREADS: '4', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
           });
