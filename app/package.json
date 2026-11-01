@@ -15,7 +15,9 @@
     "verdicts": "node scripts/verdicts.mjs",
     "test:live": "vitest run --config vitest.live.config.ts",
     "test:replay": "playwright test live-ehr.spec.ts",
-    "shots": "node scripts/shots.mjs"
+    "shots": "node scripts/shots.mjs",
+    "audit:buttons": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts",
+    "test:buttons": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts --grep \"app shell\""
   },
   "dependencies": {
     "@mantine/core": "^8.3.17",

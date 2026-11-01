@@ -7,6 +7,7 @@ import type {
 import type { UiScreen } from "../ehr/ui/types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
+import { installButtonAudit } from "./buttonAudit";
 
 /** Opaque interpreter state. No runtime certification or tree validation.
  * The release pipeline validates JSON and checks rendered screens offline.
@@ -73,6 +74,20 @@ export function createSession(
     snapshot = nextSnapshot;
     listeners.forEach((listener) => listener());
   }
+  const checkpoints: { args: typeof args; state: string }[] = [];
+  installButtonAudit({
+    program,
+    snapshot: () => ({ state: snapshot.state, result: snapshot.result, ui: snapshot.ui, view: snapshot.view }),
+    checkpoint: () => checkpoints.push({ args, state: stateJson }) - 1,
+    restore(id) {
+      const saved = checkpoints[id];
+      if (!saved) throw new Error("Unknown audit checkpoint");
+      args = saved.args;
+      stateJson = saved.state;
+      snapshot = readSnapshot();
+      listeners.forEach((listener) => listener());
+    },
+  });
   return {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {

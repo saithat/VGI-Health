@@ -1,3 +1,4 @@
+import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
@@ -160,4 +161,19 @@ export function testPoints(run: RunData, persona: string) {
       r.measured.test ? [{ ...r.measured.test, version: r.versionAfter }] : [],
     )
     .sort((a, b) => a.day - b.day);
+}
+
+
+const breakCapabilitySchema = z.object({ available: z.boolean(), backend: z.string().nullable(), reason: z.string().nullable() });
+export async function breakCapability() {
+  const response = await fetch("/__dev/try-to-break-it");
+  if (!response.ok) throw new Error("Live attempts require the local Vite server.");
+  return breakCapabilitySchema.parse(await response.json());
+}
+const liveBreakSchema = z.object({ request: z.string(), persona: z.string(), agentSays: z.string(), verdict: z.enum(["pass", "fail", "invalid-patch"]), property: z.string().nullable(), message: z.string().nullable(), counterexample: checkResultSchema.shape.counterexample, candidate: z.object({ summary: z.string(), patch: jsonPatchSchema }).nullable() });
+export async function submitBreakAttempt(persona: string, request: string, run: string) {
+  const response = await fetch("/__dev/try-to-break-it", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ persona, request, run }) });
+  const body: unknown = await response.json();
+  if (!response.ok) throw new Error(z.object({ error: z.string() }).parse(body).error);
+  return liveBreakSchema.parse(body);
 }

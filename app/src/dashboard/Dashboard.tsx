@@ -7,6 +7,8 @@ import type {
 } from "../../../agent/src/schema";
 import {
   loadRun,
+  breakCapability,
+  submitBreakAttempt,
   defaultRunSchema,
   readRunJson,
   runIndexSchema,
@@ -590,8 +592,10 @@ function Releases({
 function BreakPanel({
   run,
   replay,
+  persona,
 }: {
   run: RunData;
+  persona: string;
   replay: (rejection: Rejection) => void;
 }) {
   const attacks = getRejections(run).filter(
@@ -600,6 +604,23 @@ function BreakPanel({
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<Rejection | null>(null);
   const attack = attacks.find((a) => a.id === selected) ?? attacks[0];
+  const [capability, setCapability] = useState({ available: false, reason: "Checking local agent…" });
+  const [request, setRequest] = useState("");
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState("");
+  useEffect(() => { void breakCapability().then(c => setCapability({ available: c.available, reason: c.reason ?? "" })).catch(e => setCapability({ available: false, reason: String(e) })); }, []);
+  async function attempt() {
+    setPending(true);
+    setMessage("Running agent and checker…");
+    try {
+      const response = await submitBreakAttempt(persona, request, run.manifest.runId);
+      setMessage(`${response.verdict}: ${response.property ?? ""} ${response.message ?? response.agentSays}`);
+      const record = [...run.records].reverse().find(r => r.persona === persona);
+      if (record && response.candidate) setResult({ id: "live-attempt", label: response.request, summary: response.candidate.summary, record: { ...record, versionBefore: record.versionAfter }, check: { status: response.verdict, property: response.property, message: response.message, counterexample: response.counterexample, screens: null, verdict: null }, patch: response.candidate.patch, targets: [] });
+    } catch (error) { setMessage(error instanceof Error ? error.message : String(error)); }
+    finally { setPending(false); }
+  }
+
   return (
     <>
       <p>
@@ -607,8 +628,13 @@ function BreakPanel({
         counterexample on the EHR.
       </p>
       <p className="dash-note">
-        Recorded checks only. No new agent or checker request is submitted.
+        Recorded examples are always available. {capability.available ? "Live attempts use the local authenticated agent and real checker." : capability.reason}
       </p>
+      {capability.available && run.manifest.ehr.mode === "real" && <form onSubmit={e => { e.preventDefault(); void attempt(); }}>
+        <label>Live request <textarea value={request} maxLength={2000} onChange={e => setRequest(e.currentTarget.value)} /></label>
+        <button type="submit" disabled={pending || !request.trim()} title={pending ? "An attempt is running" : !request.trim() ? "Enter a request first" : undefined}>Run live attempt</button>
+      </form>}
+      {message && <p role="status">{message}</p>}
       <form
         className="break-form"
         onSubmit={(e) => {
@@ -620,7 +646,7 @@ function BreakPanel({
           Recorded proposal{" "}
           <select
             value={attack?.id ?? ""}
-            disabled={!attacks.length}
+            disabled={!attacks.length} title={!attacks.length ? "No recorded proposals in this run" : undefined}
             onChange={(e) => {
               setSelected(e.currentTarget.value);
               setResult(null);
@@ -633,7 +659,7 @@ function BreakPanel({
             ))}
           </select>
         </label>
-        <button type="submit" disabled={!attack}>
+        <button type="submit" disabled={!attack} title={!attack ? "No recorded proposal available" : undefined}>
           Show recorded verdict
         </button>
       </form>
@@ -981,6 +1007,7 @@ export function Dashboard({
               <BreakPanel
                 key={runId}
                 run={run}
+                persona={persona}
                 replay={(rejection) => {
                   open({ record: rejection.record, rejection });
                   setScreenMode("counterexample");
