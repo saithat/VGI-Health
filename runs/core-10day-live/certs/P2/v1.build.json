@@ -1,11 +1,5 @@
 {
-  "schemaVersion": 1,
-  "ehrSha256": "95caf8573b161d8d149b33b9d2d9dd74c78a5ba8122c59e1dd484dbdbc815f3e",
-  "wasmSha256": "1e3c1db4deb56467f0005ea11b908df56495fbbe7555b2540d111492a27af71d",
-  "appSha256": "71e844bfb3cb5120aa86e5bb06cde0c9985e84ef944125b4ea6670d387a65e2e",
-  "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
-  "programSha256": "028761474acf42f9c4b9b55e04066d20a5e4b809a81c08a16c2c51d84808e1df",
-  "certificateSha256": "a8dfc856b2b7a16121632611789600caa20a5a15aa0a2f3cf05e4e90c08f29a3",
-  "certificationInputsSha256": "d2c21c1d4178519a9a279bd2841d8392588198a88a38d37c5bfcc99f55c1b456",
-  "sourceProgramSha256": "028761474acf42f9c4b9b55e04066d20a5e4b809a81c08a16c2c51d84808e1df"
+  "status": "bound",
+  "current": "v1.build.1.json",
+  "timestamp": "2026-11-01T23:21:20.656Z"
 }

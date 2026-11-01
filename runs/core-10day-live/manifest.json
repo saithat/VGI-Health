@@ -60,7 +60,7 @@
   "runId": "core-10day-live",
   "createdAt": "2026-11-01T21:48:34.599Z",
   "resumes": [],
-  "days": 3,
+  "days": 4,
   "personas": [
     "P1",
     "P2",
@@ -82,17 +82,17 @@
     "v2": 4,
     "v3": 7
   },
-  "warning": "stopped/partial: 3 of 10 days",
+  "warning": "stopped/partial: 4 of 10 days",
   "daysPlanned": 10,
-  "daysCompleted": 3,
+  "daysCompleted": 4,
   "nightsCompleted": 3,
   "sourceRun": "core-10day",
   "sourceDirectory": "/home/saithat/Projects/VGI-Health/runs/core-10day",
   "sourceStatus": "running",
-  "stopReason": "Missing comparison arm: no-agent/days/day-04/P1.json",
-  "partialNote": "stopped/partial: 3 of 10 days",
-  "note": "stopped/partial: 3 of 10 days",
-  "publishedAt": "2026-11-01T23:14:33.028Z",
-  "snapshotSha256": "e2866933ab0f42d8d7b3aa41a1f4dd1a0c63a511e2ee96099a973e4fc1fea2e8",
-  "originalArchive": "/home/saithat/Projects/run-tmp/publish-core-10day-live-2EzpDz.previous"
+  "stopReason": "ENOENT: no such file or directory, open '/home/saithat/Projects/VGI-Health/runs/core-10day/decisions/night-04/P1.json'",
+  "partialNote": "stopped/partial: 4 of 10 days",
+  "note": "stopped/partial: 4 of 10 days",
+  "publishedAt": "2026-11-01T23:24:14.607Z",
+  "snapshotSha256": "a3587859f031fd1686c5c3aee1855aab7176371693520835539adadfb99c3681",
+  "originalArchive": "/home/saithat/Projects/run-tmp/publish-core-10day-live-s3FaWN.previous"
 }
