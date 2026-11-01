@@ -1,3 +1,4 @@
+import { clinicalDate } from "../data/clinicalDate";
 import { z } from "zod";
 import type {
   Event,
@@ -176,7 +177,7 @@ export async function createLiveSession(
   bundle: Bundle,
   user: LiveUser,
   initialContext?: LiveContext,
-  workspaceDate = new Date().toISOString().slice(0, 10),
+  workspaceDate = clinicalDate(),
 ) {
   const elements = z
     .object({ elements: z.array(elementSchema) })

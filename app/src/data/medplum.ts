@@ -1,3 +1,4 @@
+import { clinicalDate } from "./clinicalDate";
 import { ClientStorage, MemoryStorage, MedplumClient } from "@medplum/core";
 import type {
   Bundle,
@@ -344,6 +345,24 @@ export async function loadListContext(user: LiveUser, today: string): Promise<Bu
   const persona = user.persona === "RN2" ? "P3" : user.persona;
   const lists = (await searchResources("List", { date: today, _tag: `urn:vgi:world:realism|${persona}` }))
     .filter((r) => r.resourceType === "List");
+  if (!lists.length) {
+    const work = await loadWorklist(user, today);
+    const actor = resourceRef(user.practitioner).reference ?? "";
+    const messages = await searchResources("Communication", { recipient: actor });
+    const members = [...work.resources, ...messages];
+    const groups: [string, Resource[]][] = [
+      ["clinic-schedule", members.filter(r => r.resourceType === "Appointment")],
+      ["ed-census", members.filter(r => r.resourceType === "Encounter" && r.class.code === "EMER")],
+      ["my-patients", members.filter(r => r.resourceType === "Encounter" && r.class.code === "IMP")],
+      ["unit-census", members.filter(r => r.resourceType === "Encounter" && r.class.code === "IMP")],
+      ["or-schedule", members.filter(r => r.resourceType === "ServiceRequest")],
+      ["consults", members.filter(r => r.resourceType === "ServiceRequest")],
+      ["inbasket", members.filter(r => r.resourceType === "Task" || r.resourceType === "Communication")],
+    ];
+    const snapshots: Resource[] = groups.filter(([,rows]) => rows.length).map(([code,rows]) => ({ resourceType: "List", id: `live-${persona}-${code}`, status: "current", mode: "snapshot", date: today, code: { coding: [{ code }] }, meta: { tag: [{ system: "urn:vgi:world:realism", code: persona }] }, entry: rows.map(r => ({ item: resourceRef(r) })) }));
+    const patients = await searchPatients("");
+    return { resourceType: "Bundle", type: "collection", entry: [...snapshots, ...members, ...patients, ...work.locations].map(resource => ({resource})) };
+  }
   const references = [...new Set(lists.flatMap((r) => r.entry?.flatMap((e) => e.item.reference ? [e.item.reference] : []) ?? []))];
   const types: ResourceType[] = ["Appointment", "Encounter", "ServiceRequest", "Task", "Communication"];
   const members = await Promise.all(references.map(async (reference) => {
@@ -474,7 +493,7 @@ export interface Worklist {
 }
 export async function loadWorklist(
   user: LiveUser,
-  today = new Date().toLocaleDateString("en-CA"),
+  today = clinicalDate(),
 ): Promise<Worklist> {
   const actor = resourceRef(user.practitioner).reference ?? "";
   const persona = user.persona;
