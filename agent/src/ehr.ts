@@ -177,9 +177,9 @@ class CliEhr implements EhrClient {
   }
 
   renderScreens(i: RenderInput): Promise<string[]> {
-    return this.withFiles({ program: i.program }, async (p) => {
+    return this.withFiles({ program: i.program, user: { id: i.program.owner, role: i.program.role } }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
-      const res = await run(this.binary, ['render-screens', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
+      const res = await run(this.binary, ['render-screens', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });

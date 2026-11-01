@@ -1,0 +1,48 @@
+{
+  "name": "bad-05-self-cosign",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/05-self-cosign.json",
+    "--prev",
+    "programs/bad/05-self-cosign.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 125,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w4Worklist",
+        "w4Mar",
+        "w4Admin"
+      ],
+      "property": "humanOnlyKept",
+      "message": "field w4Admin.highAlertCosign on screen w4Admin prefills highAlertCosign, which a human must enter every time",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w4Worklist"
+          }
+        },
+        {
+          "click": {
+            "comp": "w4Worklist.nav.w4Mar"
+          }
+        },
+        {
+          "click": {
+            "comp": "w4Mar.openDue"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w4Worklist\", \"w4Mar\", \"w4Admin\"],\n  \"property\": \"humanOnlyKept\",\n  \"message\":\n  \"field w4Admin.highAlertCosign on screen w4Admin prefills highAlertCosign, which a human must enter every time\",\n  \"counterexample\":\n  [{\"click\": {\"comp\": \"home.work.w4Worklist\"}},\n   {\"click\": {\"comp\": \"w4Worklist.nav.w4Mar\"}},\n   {\"click\": {\"comp\": \"w4Mar.openDue\"}}]}}\n",
+  "stderr": ""
+}

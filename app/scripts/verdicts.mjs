@@ -29,6 +29,8 @@ for (const program of (await buildCatalog()).programs) {
       `releases/${program.release}/spec.json`,
       "--program",
       program.path,
+      "--canonical",
+      `releases/${program.release}/personas/${program.persona}.json`,
     ],
     {
       cwd: root,

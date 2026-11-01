@@ -21,3 +21,7 @@ infra/synthea/output/
 playwright-report/
 test-results/
 
+
+# Playwright recording intermediates
+docs/recordings/.video-*/
+docs/recordings/*-error.png

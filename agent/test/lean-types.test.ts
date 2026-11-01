@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { REPO_ROOT } from '../src/util.js';
 /**
  * The hand-written validators in src/lean-types.ts against real JSON written
  * by Lean (lean/generated/ehr-samples.ts): every sample parses, and the round
@@ -21,6 +23,13 @@ describe('validators vs Lean-written samples', () => {
     same(dayScheduleSchema.parse(sampleDay), sampleDay);
     for (const e of sampleEvents) same(eventSchema.parse(e), e);
     expect(sampleTask.id.length).toBeGreaterThan(0);
+  });
+
+  it('real vendor specs round-trip without dropping constrained values', () => {
+    for (const version of ['v1', 'v1.1', 'v2']) {
+      const spec: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/spec.json`, 'utf8'));
+      same(specSchema.parse(spec), spec);
+    }
   });
 
   it('patched programs keep Lean encoding: null options from an LLM are dropped, not emitted', () => {

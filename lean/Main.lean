@@ -1,4 +1,6 @@
-import Ehr
+import Ehr.Examples.Tiny
+import Ehr.Specs.V1_1
+import Ehr.Specs.V2
 import Ehr.Api
 import Ehr.Cli.Check
 import Ehr.Render.Cli

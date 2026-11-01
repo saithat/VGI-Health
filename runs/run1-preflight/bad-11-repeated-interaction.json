@@ -1,0 +1,42 @@
+{
+  "name": "bad-11-repeated-interaction",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/11-repeated-interaction.json",
+    "--prev",
+    "programs/bad/11-repeated-interaction.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 146,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w1Rooming",
+        "w1Orders"
+      ],
+      "property": "noRepeatInterruptions",
+      "message": "A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w1Rooming"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Rooming.nav.w1Orders"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w1Rooming\", \"w1Orders\"],\n  \"property\": \"noRepeatInterruptions\",\n  \"message\":\n  \"A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign\",\n  \"counterexample\":\n  [{\"click\": {\"comp\": \"home.work.w1Rooming\"}},\n   {\"click\": {\"comp\": \"w1Rooming.nav.w1Orders\"}}]}}\n",
+  "stderr": ""
+}

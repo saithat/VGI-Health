@@ -1,0 +1,15 @@
+{
+  "run": "run1-P3",
+  "persona": "P3",
+  "viewport": [
+    1440,
+    900
+  ],
+  "recordings": [
+    {
+      "file": "05-bad-program.mp4",
+      "duration": 74.666667,
+      "bytes": 1597740
+    }
+  ]
+}
