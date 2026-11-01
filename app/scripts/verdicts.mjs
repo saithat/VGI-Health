@@ -45,7 +45,15 @@ for (const program of (await buildCatalog()).programs) {
     output = result.stdout || result.stderr || result.error?.message;
   }
   verdicts[program.path] = {
-    status: result.status === 0 ? "computed" : "checker failed",
+    status:
+      result.status === 0
+        ? "computed"
+        : result.status === 1 &&
+            typeof output === "object" &&
+            output !== null &&
+            "violation" in output
+          ? "rejected"
+          : "checker failed",
     sha256,
     output,
   };
