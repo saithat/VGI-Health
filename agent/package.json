@@ -15,7 +15,8 @@
     "manual": "tsx src/manual.ts",
     "report": "tsx src/report.ts",
     "dry-run": "tsx src/dry-run.ts",
-    "rebind": "tsx src/rebind.ts"
+    "rebind": "tsx src/rebind.ts",
+    "verify-resume": "tsx src/verify-resume.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

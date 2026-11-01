@@ -346,47 +346,28 @@ desktop/mobile dashboard smoke and a production static/offline smoke.
 
 ### Agent loop
 
-1. **Screen-check failure fallbacks.** If migration passes `ehr check` but fails
-   screen-check, continue to canonical-plus-customizations fallback. If a
-   surfaced feature fails screen-check, recertify the unchanged program.
-2. **Optional repair policy (owner).** Decide whether failing screens should
-   feed back into the repair loop like checker counterexamples; this was not
-   requested or implemented.
-3. **Real CLI integration.** Adapt `agent/src/ehr.ts` and its pinned
-   `agent/test/ehr-adapter.test.ts` contract to real `check`, `simulate`,
-   `min-clicks`, `deploy` and `render-screens` commands. Confirm spec argument
-   formats with their owning lanes; the assumed adapter uses module versions.
-4. **Generated types/validators.** Replace the remaining `MinClicksResult`,
-   v2 `FutureKind`/prior-auth and any needed Html mirrors when matching Lean
-   exports are available; replace handwritten zod validators if Lean emits
-   them. Check the generated kind shape rather than assuming the fake's
-   `{priorAuthStatus: {scope: …}}` is authoritative.
-5. **Real world/content integration.** World now exports the assumed native
-   layout and tests the actual agent loader, and releases/specs/canonicals are
-   published. Complete an end-to-end agent run using them; the old notes that
-   these outputs do not exist are superseded. Confirm release paths and
-   formats in the operational reference below.
-6. **Record the demo.** Commit a real 10-day × 5-persona Claude or Codex run
-   under `runs/<run-id>/`, against the real checker, simulator, world and
-   canonicals. Pre-record try-to-break-it for the exact demo request text:
-   replay keys use persona + request hash. The fake world lacks imaging and
-   specialty orders, so it cannot demonstrate the P1 v2 surfacing story.
-7. **Verify seeded bad moves.** Confirm the `triageWeightLb` prefill is rejected
-   as `UnitsRight`; preferably derive all three seeded patches by diffing the
-   published bad programs against canonical. A passing seeded proposal must
-   stay undeployed and flagged `OWNER REVIEW`.
-8. **Replay entrypoints (infra coordination).** `make run`/`make install` now
-   exist; finish wiring the recorded real run as the keyless demo default.
-   Current dashboard selection falls back to labeled mock examples.
-9. **Owner design review.** Review release-only nights; acceptance thresholds;
-   the 50% predicted-saving threshold; night+2 test measurement; user-revert
-   probability/timing; and min-clicks aggregation (exact policies below).
-10. **Integrity and scale follow-ups.** Codex's read-only empty-directory
-    sandbox can still read guessed absolute paths; train-only prompts are the
-    enforced integrity boundary. Reassess prompt size with real canonicals:
-    fake propose calls used ~16k input / 5k output tokens; real programs have
-    25–30 screens and 150+ fields. Dependency additions across lanes can
-    conflict in the shared lockfile; resolve against main and reinstall.
+Requested code is implemented and tested; the detailed current handoff and exact
+commands are in [agent/STATUS.md](../agent/STATUS.md). Remaining operational work
+belongs to the orchestrator: one real smoke night, then the full world/2 run.
+No simulation nights with a live backend were run during the review fixes.
+
+Real native check/simulate/min-clicks/deploy/render, source-compiled composites,
+sandboxed presentations, build binding/rebind, exact-tree screen caching,
+certified-only simulation, completion gates and canonical fallback are wired.
+Migration or feature deployment failure falls back to the exact certified
+persona canonical; failure of that fallback aborts. Codex is confined with bwrap,
+explicit model selection and transcript auditing. A single authorized tiny live
+probe verified the invocation; all simulation verification uses fake/replay.
+
+Headline evaluation uses blind even days and both a canonical arm and a no-agent
+fork carried through recertify/fallback. Even nights reuse old calibration data;
+unmeasured/superseded versions stay unavailable. Per-day sample/completion counts
+remain visible. Wrapper resume verifies existing builds plus source/harness/world
+fingerprints and never rebuilds; copied run JSON is excluded from app identity.
+
+Future optional work includes native composite syntax/proofs and deciding
+whether visual assertion failures should enter a model repair loop. Neither is
+needed for the current declarative compiler and fail-closed screen gates.
 
 ### World generator
 
@@ -423,15 +404,15 @@ and determinism checks below when upstream types or formulary values change.
 
 | Piece | File(s) | Notes |
 |---|---|---|
-| Backends behind one interface | `src/agent.ts` (`AgentBackend.proposeCandidates` / `chooseCandidates`), `src/backends/*` | `claude`: `@anthropic-ai/sdk`, `claude-opus-5-5` (override with `AGENT_MODEL`), structured JSON output via `output_config.format`, adaptive thinking, effort `high` (`AGENT_EFFORT`), server-side refusal fallback (`fallbacks: "default"`), streaming, cached system prompt, key from `ANTHROPIC_API_KEY`. `codex`: `codex exec --output-schema … --sandbox read-only --ephemeral -o … -`, run from an empty temp dir (`CODEX_MODEL`, else the model in `~/.codex/config.toml`). `replay`: reads `<run>/llm/<callId>.json` and reports whether today's prompt matches the recording byte for byte. Every call (full system prompt, user prompt, response, model, served-by model) is recorded. Every decision record names its backend and model (for replay, the original backend and model too). |
+| Backends behind one interface | `src/agent.ts` (`AgentBackend.proposeCandidates` / `chooseCandidates`), `src/backends/*` | `claude`: `@anthropic-ai/sdk`, `claude-opus-5-5` (override with `AGENT_MODEL`), structured JSON output via `output_config.format`, adaptive thinking, effort `high` (`AGENT_EFFORT`), server-side refusal fallback (`fallbacks: "default"`), streaming, cached system prompt, key from `ANTHROPIC_API_KEY`. `codex`: isolated `codex exec --json -m <resolved-model> --output-schema … --sandbox read-only --ephemeral -o … -` under bwrap, exposing only runtime/TLS files and its private request directory. The resolved CLI/env/config model is always explicit; served model is recorded only when JSON events expose it. `replay`: reads `<run>/llm/<callId>.json` and reports whether today's prompt matches the recording byte for byte. Every call (full system prompt, user prompt, response, model, served-by model) is recorded. Every decision record names its backend and model (for replay, the original backend and model too). |
 | Schemas | `src/schema.ts`, `src/lean-types.ts` | Candidate: an RFC 6902 patch plus id, summary, moveType, rationale, targets, predicted savings, `seeded`/`seededKind`. Patch paths may use `[id=…]` / `[tag=…]` selectors (and `[id=…]+` to insert after an element); they are resolved to plain indexes before each op runs. DecisionRecord covers every field in BRIEF §10 (details below). Lean formats use the **generated** `lean/generated/ehr-types.ts`, with hand-written zod validators typed `z.ZodType<Generated>` and round-trip tested against `ehr-samples.ts`. |
 | `ehr` adapter | `src/ehr.ts`, `src/fake/*` | Wraps `check`, `simulate`, `min-clicks`, `deploy`, `run-batch`, and `spec-export`, passing JSON through temp files and stdout. `EHR_FAKE=1` switches to a clearly labeled fake (structural heuristics plus a crude cost model) for tests. |
 | Nightly loop | `src/night.ts` | All 9 steps of BRIEF §9 (listed below). |
 | Modes | `src/modes.ts` | `surface-feature` (v2), `migrate` (v3), `try-to-break-it`. |
 | Tempting bad proposals | `src/seeded.ts` | Allergy list moved into an unopened tab, patient-ID re-entry pre-filled, weight pre-filled from a pound source. Built generically from program structure. One is injected per night only while that kind has not yet been rejected in the run (`--seed-policy until-each-rejected`, the default; also `every-night` and `none`). Injected candidates are labeled `seeded: true`. They are never eligible for deployment. If one ever passes the checker, the record is flagged `OWNER REVIEW`. |
-| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v2 day (Day 4), migrate before the v3 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, a test measurement is added from day night+2. |
+| Orchestrator | `src/run.ts`, `src/store.ts` | Each work-day: login (loads `programs/<P>/deployed.json`), simulate the shift, logout, then the night. The night is surface-feature before the v2 day (Day 4), migrate before the v3 day (Day 7), and nightly otherwise. Only certified versions are deployed, and they take effect at the next login. After the run, accepted versions are matched to their next actual blind even-day measurement; superseded versions remain explicitly unmeasured. |
 | Re-run one night | `src/adhoc.ts` | Rebuilds a night's state from a run directory and re-runs it into `<run>/adhoc/…`. For live demos. |
-| Tests | `test/*.test.ts` (31 tests, vitest, `EHR_FAKE=1`) | One fake night per persona gives a valid record (via the replay backend). Rejected candidates are logged with counterexamples. No validation or test data appears in any captured prompt. Also covered: release modes, try-to-break-it, the adapter contract (stub binary), validators against Lean samples, and JSON Patch. |
+| Tests | `test/*.test.ts` (82 tests, vitest, fake/replay simulation backends plus native certificate and real-fingerprint regressions) | One fake night per persona gives a valid record (via the replay backend). Rejected candidates are logged with counterexamples. No validation or test data appears in any captured prompt. Also covered: release modes, try-to-break-it, the adapter contract (stub binary), validators against Lean samples, and JSON Patch. |
 
 #### Nightly loop steps (`src/night.ts`)
 1. **Observe.** `summarizeTrain` builds evidence from TRAIN days only: time sinks by screen, redundant prompts, unused receipts, buried-info searches, alert popups and overrides, backtracks, the complaint log, per-workflow averages, % above floor, and order mix.
@@ -439,13 +420,13 @@ and determinism checks below when upstream types or formulary values change.
 4. **Pre-screen.** `ehr check` on each candidate. Passing candidates also get `ehr simulate` on the last 2 train days, old versus new program.
 5. **Choose.** The LLM picks one candidate or a set with no overlapping patches, and gives a rationale against the alternatives. If its answer is unusable, the loop falls back deterministically.
 6. **Certify** the merged program. On failure, the counterexample goes back to the LLM, up to 3 repairs, and every attempt is logged.
-7. **Validate.** Day d+1 is replayed on the old and new versions through an opaque `Holdout`.
+7. **Validate.** Replay a held-out task partition of the most recent PAST odd calibration day with an independent seed through `Holdout`. Odd days 1/3/5/7/9 calibrate; even days 2/4/6/8/10 are blind headline measurements and never select changes. Require full validation completion and no completion regression.
 8. **Simulated user response.**
 9. **Record and deploy** with `ehr deploy`.
 
 #### Release modes (`src/modes.ts`)
 - **`surface-feature` (v2).** Re-checks the program against v2. The LLM decides, from this persona's own traces, whether and where to surface the panel. Candidates are checked, validated, and deployed. If the panel is not surfaced, the unchanged program is recertified under v2.
-- **`migrate` (v3).** Re-checks against v3. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is canonical v3 plus each earlier customization that still applies and passes; the user is flagged.
+- **`migrate` (v3).** Re-checks against v3. On failure, the LLM gets the release notes, the spec diff, the Lean spec module text, the vendor's canonical changes, the counterexample, and the customization history, and proposes a minimal patch (≤ 3 attempts, with counterexample feedback). If that fails, the fallback is the exact certified v3 persona canonical; the user is flagged. This also applies when deployment or screen infrastructure fails. If canonical check/validation/screen/deploy fails, abort loudly.
 - **`try-to-break-it`.** The LLM implements a free-text request as one candidate. The loop runs check and returns the verdict and counterexample. Nothing is deployed.
 
 #### Decision record fields
@@ -518,21 +499,21 @@ outcome `screen-check-failed`.
 1. **Release nights are dedicated to the release.** Night 3 is surface-feature only and night 6 is migrate only; there is no separate optimization pass those nights. This keeps one record per persona per night (BRIEF §10).
 2. **Acceptance rules.**
    - Nightly: the validation replay must have strictly lower KLM time, clicks + keystrokes + scrolls must not increase, completed tasks must not decrease, and the stability budget must hold.
-   - Surface-feature: accept unless the day gets more than 5% slower.
-   - Migration: gated on the certificate only. The validation replay is recorded but not gating, because conformance is mandatory.
+   - Surface-feature: require full completion, no completion regression, and no more than 5% slower.
+   - Migration: require check, full validation completion/no regression and current whole-version screen gates. Compare against the certified release canonical; fall back to that exact canonical on any deployment failure, and abort if it cannot pass.
 3. **"Prediction held"** means the measured validation KLM saving is at least 50% of the predicted one.
-4. **Test measurement** uses day night+2 only, replayed on the old and new versions. Its busy/quiet label is recorded; reporting per load is left to the dashboard (`summary.json` has per-day load and metrics).
+4. **Test measurement** uses the next actual blind even day on which the accepted version was measured. Superseded/out-of-window versions are explicitly unmeasured; night 9 is measured on day 10. Reports show each day’s task/completion count and compare both the active-release persona canonical and the deterministic no-agent recertify/fallback fork, with identical schedules and seeds. Agent-only savings use the no-agent arm; canonical differences include vendor/fork drift.
 5. **Simulated user revert** happens at night step 8, before deploy. Probability = min(0.3, 0.05 + 0.03 × components moved), seeded per (world seed, night, persona).
 6. **Min clicks** are reported as the per-workflow mean over the last train day's tasks, for workflows whose minimum changed.
 
 ### Integration pitfalls
 
 - **Lean `Option` fields are omitted keys** (`parent?`, `hotkey?`, `copyOf?`, `linkedFrom?`, `waivedBy?`, …), never `null` in output. A JSON-Patch `replace` on an absent key fails, as RFC 6902 requires. Use `add`. The system prompt tells the LLM this.
-- **Patch selectors** `[id=…]` / `[tag=…]` (and `+` for "after") resolve just before each op. The stored patch keeps selectors, so it stays portable across versions; migration fallback re-applies history patches onto the new canonical program.
-- **Integrity.** Prompts are built only in `src/prompts.ts`, from train-only inputs. Day d+1 is reachable only through `Holdout.validate`, which returns aggregates to the loop. Do not pass DayResults of later days, or validation/test metrics, into history or prompts. The test in `test/night.test.ts` injects `LEAKCHECK-day-N` markers and will catch it.
+- **Patch selectors** `[id=…]` / `[tag=…]` (and `+` for "after") resolve just before each op. The stored patch keeps selectors, so it stays portable across versions; migration fallback uses the exact new certified persona canonical without replaying customization patches.
+- **Integrity.** Prompts are built only in `src/prompts.ts`, from train-only inputs. The held-out partition of past odd days is reachable only through `Holdout.validate`; even-day schedules/results never enter selection prompts. Do not pass DayResults of later days, or validation/test metrics, into history or prompts. The test in `test/night.test.ts` injects `LEAKCHECK-day-N` markers and will catch it.
 - **Determinism.** Seeds derive from the world seed (simulate: `seed*1000+day`; user revert: hash of world seed, night, persona), not the run id, so replay runs reproduce decisions exactly. Recorded prompts are compared byte for byte (`promptMatched`). Do not put timestamps or run ids in prompts.
 - **Claude.** Opus 5.5 cannot disable thinking and rejects forced `tool_choice`. The backend uses `output_config.format` (JSON schema), `thinking: {type:'adaptive'}`, effort `high`, and `fallbacks:'default'` with beta `server-side-fallback-2026-07-01`, via `client.beta.messages.stream(...).finalMessage()`. Patch values travel as `valueJson` strings, because strict schemas cannot express arbitrary JSON.
-- **Codex** runs from an empty temp dir with `--sandbox read-only --ephemeral`, so it does not start inside the repo, where later days' traces live.
+- **Codex** runs under a bwrap filesystem with a private request directory and auth-only CODEX_HOME. Repository, home, world and release files are unavailable. Shell/web tools are disabled; filesystem/tool events reject the response, while todo/error metadata is recognized.
 - **Lockfile.** Merges with other lanes conflict on `pnpm-lock.yaml`. Take main's (`git checkout --theirs pnpm-lock.yaml`), run `pnpm install`, and commit.
 - **TS config.** The agent uses `moduleResolution: Bundler` so the generated `lean/generated/ehr-types.ts` (no `"type":"module"` above it) type-checks under `verbatimModuleSyntax`.
 - **The fake ehr is a crude stand-in.** Its "checker" is a set of structural heuristics, not the verified checker. Never present `EHR_FAKE=1` runs as certified. The manifest and certificates say FAKE.
