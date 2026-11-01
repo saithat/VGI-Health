@@ -14,6 +14,9 @@ const binary = process.env.EHR_BIN ?? path.join(root, '.cache/conformance/ehr');
 const read = file => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 test('semantic driver survives complete id renaming, reordered components, closed groups and non-default tabs', { skip: !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
+  // run-batch deliberately exposes the clinical projection, while workspace
+  // selection uses public init/step/render-ui. Exercise that projection here.
+  p.patientSelection = false;
   const names = new Map(p.screens.flatMap(s => [[s.id, `screen-${s.id.length}-${s.id}`], ...s.components.map((c, i) => [c.id, `control-${s.id}-${i}`])]));
   p.start = names.get(p.start);
   for (const s of p.screens) {
