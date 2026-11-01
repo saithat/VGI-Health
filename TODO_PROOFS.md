@@ -43,7 +43,7 @@ conservatively by `additionalCompletionIssue`; these are not proofs of semantic
 falsity. Capture-dependent per-line clinical conditions additionally need an
 archived-line repair construction.
 
-Seed proofs: all eight new legal regressions (17–24) have mutation-specific
+Parked seed proofs: all eight new legal regressions (17–24) have mutation-specific
 negative proof implementations. The original seed-13 CURES completeness claim
 still has an actual cross-workflow escape; its existing negative theorem uses the
 separate pre-op review defect. Seed 16 still needs its intended stranded-refills
@@ -66,3 +66,27 @@ No unfinished render proof remains.
 D5: `accepted_navigation` proves unique labels, twelve-group/item limits and
 no orphan screen on the actual `Render.uiNav` tree. It is an additional
 Comparator challenge, independent of unfinished general T1.
+
+## Parked for iteration speed (2026-10-31)
+
+`EhrHeavy.lean` is opt-in and excluded from `lake build`. Set `ruleProfile`
+to `.full`, then run `lake build EhrHeavy` to attempt the parked suite.
+The file lists every `Check/Seed*Proof`, `BadProofs`, `MacroBadProofs`,
+`AdditionalBadProofs`, `LocalBadProofs` and `MissingBadProofs` module, plus
+catalog-only legal/feature/workflow tests and the full-display corollaries.
+General checker, interpreter, deploy and renderer theorems remain in `Ehr`.
+Three Tiny rejection theorems stay in the default build with clean axiom audits.
+
+Known unfinished/stale modules: `MacroBadProofs` and its `Seed*Proof` dependents
+use fixed source indexes from the old expanded screens; `BadProofs` and
+`AdditionalBadProofs` still have whole-program witnesses from before review
+pinning; `MissingBadProofs` depends on those modules. Their full-profile build
+is not claimed green. Seed 16's intended semantic completion proof remains
+unfinished. Seed 13 now removes every CURES report/review/exemption route;
+`Seed13Escape` retains the old W1-only mutation to document its receipt escape.
+The old `bad13_preop_not_satisfies` witness is stale after review pinning and
+must not be presented as a proof of the new seed's CURES defect.
+
+Core certification is still blocked for NP pre-op episodes by the preserved
+consent role rule (`np_preop_obstruction`, retained and kernel checked in the
+default build). No safety rule, property domain or role permission was changed.

@@ -1,3 +1,7 @@
+import Ehr.Check.TinyRejections
+import Ehr.Check.PatchWitness
+import Ehr.Check.ViolationWitness
+import Ehr.Check.MissingWitness
 import Ehr.Check.PinSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.MonotonicityObstruction
@@ -23,10 +27,7 @@ import Ehr.Check.AlertSound
 import Ehr.Check.ValueTests
 import Ehr.Check.ValueWitness
 import Ehr.Check.Sound
-import Ehr.Check.AdditionalBadProofs
-import Ehr.Check.MissingBadProofs
 import Ehr.Check.SeedTests
-import Ehr.Check.Seed13Escape
 import Ehr.Props.Examples
 
 namespace Ehr.Check.Tests

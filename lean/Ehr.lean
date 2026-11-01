@@ -32,7 +32,7 @@ import Ehr.Render
 import Ehr.Sim.PolicyTests
 import Ehr.Core.Tests
 import Ehr.Sim.MinClicksTests
-import Ehr.Canonical.BadTests
-import Ehr.Canonical.ReleaseTests
-import Ehr.Sim.IntegrationTests
-import Ehr.Sim.Audit
+import Ehr.Sim.TaskMinimumTests
+import Ehr.Sim.FactsTests
+import Ehr.Canonical.CoreReleaseTests
+import Ehr.Check.SimAudit

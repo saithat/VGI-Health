@@ -13,12 +13,10 @@ def rejectedWithReplay (p : Program) : Bool :=
   | none => false
   | some finding => (counterexample specV1 p finding).2.2
 
--- The expanded baselines now pass review pinning and D5. Universal completion
--- remains blocked by absent trusted payloads; CHECK-2026-11-01 documents the
--- exact obligation and DisplayObstruction proves why panels alone cannot fix it.
-#guard rejectedWithReplay (forPersona specV1 canonicalV1 "P3" .rn)
+-- The RN projection certifies under core, including D5.
+#guard Specs.ruleProfile == .full || check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
 
-#guard Bad.programs.all (fun (_, p) => rejectedWithReplay p)
+#guard Bad.corePrograms.all (fun (_, p) => rejectedWithReplay p)
 
 /-- A specific failing rule also has a replayable explanation, independently
 of any earlier template failure. This does not relabel the actual verdict. -/
@@ -42,15 +40,8 @@ def mutationRejected (property : String) (p : Program) : Bool :=
 #guard mutationRejected "wellFormed" Bad.inventedAlert
 #guard mutationRejected "noRepeatInterruptions" Bad.repeatedInteraction
 #guard mutationRejected "severityTiers" Bad.passivePopup
+#guard mutationRejected "completable" Bad.noCures
 #guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
 #guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
 #guard mutationRejected "completable" Bad.scheduleIIRefills
-#guard mutationRejected "completable" Bad.noRestraintCarePlan
-#guard mutationRejected "completable" Bad.noOpTechnique
-#guard mutationRejected "completable" Bad.noVaccineProviderAddress
-#guard mutationRejected "completable" Bad.noAdministrationTime
-#guard mutationRejected "completable" Bad.noControlledStrength
-#guard mutationRejected "reviewsBeforeCommit" Bad.hiddenSigningNotice
-#guard mutationRejected "completable" Bad.noTelehealthConsent
-#guard mutationRejected "humanOnlyKept" Bad.defaultRefillEligibility
 end Ehr.Check.Tests

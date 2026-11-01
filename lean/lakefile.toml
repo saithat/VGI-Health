@@ -23,3 +23,7 @@ name = "Solution"
 [[lean_exe]]
 name = "export-content"
 root = "Ehr.Tools.ExportContent"
+
+# Opt-in whole-program kernel proofs and regulation-catalog regressions.
+[[lean_lib]]
+name = "EhrHeavy"

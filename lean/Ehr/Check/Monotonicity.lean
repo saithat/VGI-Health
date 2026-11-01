@@ -7,7 +7,7 @@ import Ehr.Check.MonotonicityObstruction
 import Ehr.Specs.V2
 
 namespace Ehr.Check
-open Ehr Ehr.Props
+open Ehr Ehr.Props Ehr.Proofs
 
 /-- Every original review survives an additive hospital release. -/
 theorem extends_reviews {new old : Spec} (h : new.Extends old) :
@@ -82,10 +82,10 @@ theorem extends_contracts {old : Spec} (ep : Episode) (he : ep.spec.Extends old)
     intro el member
     exact defaults el (elements member)
   · simp only [displaysOk] at display
-    have all := (Bool.and_eq_true.mp display).1
+    have all := (Bool.and_eq_true_iff.mp display).1
     intro rq member
     exact List.all_eq_true.mp all rq (he.2.2.2.2.2.2.1 ▸ member)
-  · exact (Bool.and_eq_true.mp display).2
+  · exact (Bool.and_eq_true_iff.mp display).2
 
 /-- T8: a program satisfying the installed release meets every inherited entry,
 review, human-action, unit and alert obligation on every installed execution.

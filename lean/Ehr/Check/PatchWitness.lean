@@ -157,8 +157,9 @@ theorem blueprint_keeps_field (source : List Screen) (s : Screen) (c : Component
 
 /-- The source-list argument of the actual canonical constructor, before folding. -/
 def canonicalSource : List Screen :=
-  Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++
-    W4.screens ++ W5.screens ++ W6.screens ++ W7.screens))
+  let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++
+    W4.screens ++ W5.screens ++ W6.screens ++ W7.screens
+  if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base
 
 /-- Alerts and link annotation retain a field with no declared source/link. -/
 theorem canonical_keeps_plain_field (c : Component)
@@ -169,8 +170,15 @@ theorem canonical_keeps_plain_field (c : Component)
     HasComponent canonicalV1 c := by
   obtain ⟨s, hs, hc⟩ := member
   refine ⟨_, List.mem_map.mpr ⟨s, hs, rfl⟩, ?_⟩
+  have split : c ∈ s.components.take 1 ∨ c ∈ s.components.drop 1 := by
+    rw [← List.mem_append, List.take_append_drop]
+    exact hc
+  have kept : c ∈ (withRequiredReviews s).components := by
+    rcases split with h | h
+    · exact List.mem_append_left _ (List.mem_append_left _ h)
+    · exact List.mem_append_right _ h
   apply List.mem_map.mpr
-  refine ⟨c, List.mem_append_left _ hc, ?_⟩
+  refine ⟨c, List.mem_append_left _ kept, ?_⟩
   change (match c.kind with
     | .field eid sl _ => match Specs.V1.specV1.element? eid with
       | some el => match el.linkedFrom? with

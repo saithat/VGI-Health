@@ -74,6 +74,19 @@ def withRequiredLinks (s : Screen) : Screen :=
         | none => c
       | _ => c }
 
+/-- Keep every required review visible before its commit, including reviews
+that apply only to another encounter type. The guard still checks applicability. -/
+def withRequiredReviews (s : Screen) : Screen :=
+  let missing := s.components.zipIdx.flatMap fun (c, n) => match c.kind with
+    | .button (.commit k) => (Specs.V1.specV1.reviews.filter fun r => r.commit == k &&
+        !((s.components.take n).any fun c => showsInfo r.info c.kind &&
+          c.parent?.isNone && c.visibility == .always && c.size != .tiny)).map (·.info)
+    | _ => []
+  let panels := missing.eraseDups.map fun id =>
+    panel s.id ("requiredReview." ++ id) id
+      ((Specs.V1.specV1.info? id).map (·.label) |>.getD id)
+  { s with components := s.components.take 1 ++ panels ++ s.components.drop 1 }
+
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
   id := "canonical"
@@ -82,8 +95,10 @@ def canonicalV1 : Program where
   role := .physician
   specVersion := "v1"
   start := "home"
-  screens := (Blueprint.screens (Features.screens (Rules.screens ([home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
-    W5.screens ++ W6.screens ++ W7.screens)))).map (withRequiredLinks ∘ withWorkflowAlerts)
+  screens := (Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
+    W5.screens ++ W6.screens ++ W7.screens
+    if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base)).map
+      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews)
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)
 

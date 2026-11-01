@@ -81,13 +81,15 @@ def repeatedInteraction : Program := seed 11 <|
 /-- 12: Request a popup for a passive care-gap reminder. -/
 def passivePopup : Program := seed 12 <| (base 12).updateScreen "w1Rooming" fun s =>
   s.updateComp "w1Rooming.careGaps" fun c => { c with kind := .alert "careGapsInline" true }
-/-- 13: Remove all W1 CURES review and exemption paths. -/
+/-- 13: Remove every CURES report, review and exemption field. Removing only
+W1 left a valid receipt path through another workflow and was not a bad program. -/
 def noCures : Program := seed 13 <|
-  ((base 13).updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures")
-  |>.updateScreen "w1Orders" fun s =>
-    { s with components := s.components.filter fun c =>
-        !["w1Orders.orderInfo.curesReport", "w1Orders.review.curesReport"].contains c.id &&
-        c.id != "w1Orders.controlled" && c.parent? != some "w1Orders.controlled" }
+  { base 13 with screens := (base 13).screens.map fun s =>
+      { s with components := s.components.filter fun c => match c.kind with
+          | .panel "curesReport" | .table "curesReport" | .trend "curesReport"
+          | .button (.markReviewed "curesReport")
+          | .field "curesExemptionReason" _ _ => false
+          | _ => true } }
 /-- 14: A high-MME opioid macro claims a naloxone offer. -/
 def macroNaloxone : Program := seed 14 <|
   ((base 14).addMacro {
@@ -210,6 +212,20 @@ def programs : List (String × Program) :=
    ("27-expired-controlled-fill", expiredControlledFill), ("28-underage-minor-consent", underageMinorConsent),
    ("29-invalid-birth-date", invalidBirthDate), ("30-daily-methotrexate-default", dailyMethotrexateDefault),
    ("31-hidden-result-components", hiddenResultComponents), ("32-misleading-signing-label", misleadingSigningLabel)]
+/-- Catalog-only defects. Keep these seeds for full-profile runs. -/
+def fullProfileOnly : List String := (programs.drop 16).map (·.1)
+
+/-- Defects in the hand-written workflows remain active in core. -/
+def corePrograms : List (String × Program) :=
+  programs.filter fun (name, _) => !fullProfileOnly.contains name
+
+/-- The property each core mutation must fail, even if another rule fails first. -/
+def coreExpectedProperties : List String :=
+  ["reviewsBeforeCommit", "humanOnlyKept", "writesOnly", "humanOnlyKept",
+   "humanOnlyKept", "units", "completable", "humanOnlyKept", "humanOnlyKept",
+   "wellFormed", "noRepeatInterruptions", "severityTiers", "completable",
+   "humanOnlyKept", "reviewsBeforeCommit", "completable"]
+
 #guard programs.length == 32
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
