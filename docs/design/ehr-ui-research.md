@@ -1453,3 +1453,36 @@ Self-review caught a tall archived toolbar obscuring content during scrolling;
 the desktop navigation now scrolls with the document rather than pinning over
 records. No source control was hidden to solve it. Clinical font minimum remains
 12 px. Source/ARIA equality, text contrast and visibility are checked independently.
+
+### Read-only revision history and in-EHR selection (1 Nov)
+
+[Ink & Switch, Malleable Software](https://www.inkandswitch.com/essay/malleable-software/)
+discusses accessible version history, branch comparisons, and generated logic
+that remains visible. VGI uses those inspection patterns: the selected revision
+card compares the actual recorded programs, lists section/activity positions,
+record-prefill changes and quick actions in clinician words, and exposes the final
+certified patch separately from rejected proposals. No patch is applied in the
+browser. A kept night explicitly says the previous revision was retained.
+
+The screenshot `app/shots/realism/punch/timeline-diff.png` shows the same branching
+centerpiece with a wider, readable comparison card. Before/after positions are
+shown together in compact blocks; a keyboard-scrollable list retains all changes.
+Rejected candidates show the failed property, a plain explanation and the exact
+checker message/proposed patch behind a disclosure.
+
+“Re-check against current release” uses the existing local attempt endpoint's
+check-only branch. It invokes native `ehr check`, with the immutable revision as
+its own stability reference and the current role baseline as canonical. The
+current release constant is shared with live baseline login. Native `spec-export`
+must match the checked-in current spec before the checker can report a verdict.
+No migration, deployment, application, reversal or run-data write occurs; temporary
+adapter inputs are removed. The button says “Check only: nothing is changed”.
+Native tests verify passing/current and rejecting/historical cases, source hashes
+unchanged, path/persona restrictions and no access to authored mock revisions.
+
+The browser's external patient picker and inspector switcher are removed. EHR
+links carry persona, program and chart day only. Timeline days follow the
+committed simulation calendar (including the weekend), independent of patient
+selection. Patient opening and list-versus-chart semantics remain owned by the
+Lean content/transport lane; the precise historical-program integration request
+is in `changes-requests.md`.

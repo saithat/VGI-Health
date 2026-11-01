@@ -13,7 +13,11 @@ const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
 // This is a bounded control-configuration audit, not exhaustive state search.
 // Clinical state reachability and every task remain gates in Lean/world-2.
 const maxStatesPerPersona = Number(process.env.AUDIT_MAX_STATES ?? 48);
-if (!Number.isInteger(maxStatesPerPersona) || maxStatesPerPersona < 1 || maxStatesPerPersona > 48)
+if (
+  !Number.isInteger(maxStatesPerPersona) ||
+  maxStatesPerPersona < 1 ||
+  maxStatesPerPersona > 48
+)
   throw new Error("AUDIT_MAX_STATES must be an integer from 1 to 48");
 const gotoKind = z.object({
   button: z.object({
@@ -271,6 +275,9 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       await freshGoto("/browse");
       await page.getByRole("heading", { name: "Open a clinical UI" }).waitFor();
       await page.locator('[data-node-key="P3-5"]').waitFor();
+      await page
+        .getByLabel("Before and after changes", { exact: true })
+        .waitFor();
     });
     // Sample catalog links across the vendor reference, projections and run versions.
     audit.screen = "replay inspector";
@@ -299,14 +306,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         .getByRole("button", { name: "Inspector", exact: true })
         .click();
     });
-    await audit.allShell(async () => {
-      await freshGoto("/ehr?mode=replay&audit=buttons&inspect=1&persona=P1");
-      await page.locator(".clinical-app").waitFor();
-      await page
-        .getByRole("button", { name: "Inspector", exact: true })
-        .click();
-      await page.locator(".patient-switcher summary").click();
-    });
+
     // Both real and authored runs: every persona, with sampled version/release rows.
     for (const run of ["run1-P3", "mock"]) {
       audit.program = run;
