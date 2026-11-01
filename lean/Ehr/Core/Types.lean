@@ -148,15 +148,6 @@ structure ElementSpec where
   defaultValue? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
-/-- A piece of information the UI can display. -/
-structure InfoSpec where
-  id : InfoId
-  label : String
-  /-- Name of the fact that versions this info (e.g. `"allergyVersion"`),
-  or `""` if it is not versioned. -/
-  version : String
-  deriving DecidableEq, Repr, Inhabited
-
 /-- Closed patient/episode dimensions. Values retain their source coding. -/
 inductive ClinicalField
   | service | payer | setting | homelessness | pregnancy | capacity | consent
@@ -200,6 +191,95 @@ inductive ClinicalPredicate
   | and (left right : ClinicalPredicate)
   | or (left right : ClinicalPredicate)
   | not (predicate : ClinicalPredicate)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Identifier categories with semantic meaning, independent of HTML layout. -/
+inductive IdentifierCategory
+  | patient | encounter | order | drug | product | prescriber | pharmacy
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadFieldReq where
+  field : String
+  /-- False availability explicitly skips this field; absent/unknown requires it. -/
+  ifAvailable : Bool := false
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Required fields and identifier categories, on every row when requested. -/
+structure PayloadContract where
+  fields : List PayloadFieldReq := []
+  identifiers : List IdentifierCategory := []
+  rowFields : List String := []
+  groupBy? : Option String := none
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadIdentifier where
+  category : IdentifierCategory
+  system : String
+  value : String
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadRow where
+  id : String
+  slot : Nat
+  fields : List (String × String)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted current-version data, not a declaration that a placeholder exists. -/
+structure InfoPayload where
+  info : InfoId
+  patient : String
+  artifactKey : String
+  artifact : String
+  version : Nat
+  fields : List (String × String) := []
+  identifiers : List PayloadIdentifier := []
+  availability : List (String × Bool) := []
+  rows : List PayloadRow := []
+  deriving DecidableEq, Repr, Inhabited
+
+structure WorkflowPhase where
+  workflow : String
+  phase : String
+  deriving DecidableEq, Repr, Inhabited
+
+inductive DisplayScope
+  | commit (id : CommitId)
+  | phase (workflow name : String)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- An independent display contract; no review receipt or waiver bypasses it. -/
+structure DisplayReq where
+  info : InfoId
+  scope : DisplayScope
+  when? : Option ClinicalPredicate := none
+  pinned : Bool := false
+  /-- Confirmed flags on each row's slot drive selection emphasis. -/
+  selectionElement? : Option ElementId := none
+  deriving DecidableEq, Repr, Inhabited
+
+structure SelectedPayloadRow where
+  row : PayloadRow
+  selected : Bool
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadGroup where
+  key : String
+  rows : List SelectedPayloadRow
+  deriving DecidableEq, Repr, Inhabited
+
+structure PayloadView where
+  source : InfoPayload
+  groups : List PayloadGroup
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A piece of information the UI can display. -/
+structure InfoSpec where
+  id : InfoId
+  label : String
+  /-- Name of the fact that versions this info (e.g. `"allergyVersion"`),
+  or `""` if it is not versioned. -/
+  version : String
+  payload? : Option PayloadContract := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A named clinical or documentation event (completion and filing are distinct). -/
@@ -348,6 +428,7 @@ structure CommitSpec where
   roles : List Role
   temporal? : Option (List TemporalReq) := none
   expiry? : Option (List ExpiryReq) := none
+  actionLabel? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- When a requirement applies. -/
@@ -467,6 +548,7 @@ structure Spec where
   reviews : List ReviewReq
   alerts : List AlertSpec
   design : DesignRules
+  displays? : Option (List DisplayReq) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## UI programs
@@ -673,6 +755,8 @@ structure Facts where
   clinical? : Option ClinicalFacts := none
   codeTables? : Option (List CodeTable) := none
   orderClocks? : Option (List OrderClock) := none
+  infoPayloads? : Option (List InfoPayload) := none
+  phase? : Option WorkflowPhase := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -761,6 +845,8 @@ inductive StepResult
 
 /-- One component as the app should paint it. -/
 structure ItemView where
+  payload? : Option PayloadView := none
+  pinned? : Option Bool := none
   validationError? : Option String := none
   comp : Component
   /-- Counts as shown: on screen, ancestors open, visibility holds, not tiny,

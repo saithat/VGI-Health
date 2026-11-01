@@ -545,22 +545,6 @@ def expiryStatus (facts : Facts) (s : State) (rq : ExpiryReq) : ObligationStatus
       | _ => .missing
     | _ => .missing
 
-/-- Additional commit contracts. Kept separate from entries/review receipts. -/
-def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
-  match sp.commit? c with
-  | none => false
-  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
-      validationsOk sp facts s && defaultsOk sp prog &&
-      (cs.expiry?.getD []).all (fun rq => expiryStatus facts s rq == .met)
-
-/-- All event obligations, including ones on screens without a commit button. -/
-def obligationViews (sp : Spec) (facts : Facts) (s : State) : List ObligationView :=
-  sp.commits.flatMap fun cs =>
-    ((cs.temporal?.getD []).map fun rq =>
-      { commit := cs.id, requirement := rq.id, status := temporalStatus facts s rq }) ++
-    ((cs.expiry?.getD []).map fun rq =>
-      { commit := cs.id, requirement := rq.id, status := expiryStatus facts s rq })
-
 /-! ## Order lines -/
 
 /-- The order lines: each captured drug with its slot (prefilled or not). -/
@@ -680,6 +664,113 @@ def depthAux (comps : List Component) : Nat → Component → Nat
       match comps.find? (·.id == pid) with
       | none => 0
       | some p => depthAux comps fuel p + 1
+
+/-- Unique, patient-bound, current-version payload; missing data fails closed. -/
+def infoPayload (facts : Facts) (i : InfoId) : Option InfoPayload := do
+  let [p] := (facts.infoPayloads?.getD []).filter (·.info == i) | none
+  let [b] := (facts.artifactBindings?.getD []).filter (·.key == p.artifactKey) | none
+  if p.patient == facts.patientId && !p.artifact.isEmpty && p.artifact == b.artifact &&
+      p.version == b.version then some p else none
+
+def payloadField (fields : List (String × String)) (id : String) : Option String :=
+  match fields.filter (·.1 == id) with
+  | [(_, value)] => if value.trimAscii.toString.isEmpty then none else some value
+  | _ => none
+
+def fieldRequired (p : InfoPayload) (r : PayloadFieldReq) : Bool :=
+  !r.ifAvailable || (match p.availability.filter (·.1 == r.field) with
+    | [(_, false)] => false | _ => true)
+
+/-- Every required field/identifier and every contracted row field is present.
+Grouping derives from actual row values, never a free-form HTML promise. -/
+def payloadComplete (p : InfoPayload) (contract : PayloadContract) : Bool :=
+  contract.fields.all (fun r => !fieldRequired p r || (payloadField p.fields r.field).isSome) &&
+    contract.identifiers.all (fun cat => p.identifiers.any (fun i => i.category == cat &&
+      !i.system.trimAscii.toString.isEmpty && !i.value.trimAscii.toString.isEmpty)) &&
+    (p.rows.map (·.id)).eraseDups.length == p.rows.length &&
+    p.rows.all (fun row => !row.id.isEmpty && contract.rowFields.all (fun f => (payloadField row.fields f).isSome) &&
+      contract.groupBy?.all (fun f => (payloadField row.fields f).isSome))
+
+/-- Absent phase context conservatively activates phase requirements. -/
+def displayScopeActive (facts : Facts) (commit : Option CommitId) : DisplayScope → Bool
+  | .commit c => commit == some c
+  | .phase workflow name => facts.phase?.all (fun p => p.workflow == workflow && p.phase == name)
+
+def displayActive (facts : Facts) (s : State) (commit : Option CommitId) (r : DisplayReq) : Bool :=
+  displayScopeActive facts commit r.scope && r.when?.all (clinicalApplies facts s)
+
+/- Review/display use exactly the same component kinds and layout visibility. -/
+/-- The component kind displays this info. -/
+def showsInfo (i : InfoId) : Kind → Bool
+  | .panel j | .table j | .trend j | .priorAuth j => j == i
+  | .banner => i == bannerInfo
+  | _ => false
+
+def displayShown (sp : Spec) (prog : Program) (facts : Facts) (s : State) (r : DisplayReq) : Bool :=
+  let comps := prog.compsOf s.screen
+  comps.any fun c => showsInfo r.info c.kind && layoutShown sp facts s comps c &&
+    (!r.pinned || (c.parent?.isNone && c.visibility == .always))
+
+def displayReqMet (sp : Spec) (prog : Program) (facts : Facts) (s : State) (r : DisplayReq) : Bool :=
+  displayShown sp prog facts s r &&
+    match sp.info? r.info, infoPayload facts r.info with
+    | some inf, some payload =>
+      match inf.payload? with
+      | some contract => payloadComplete payload contract &&
+        (r.selectionElement?.isNone || (payload.rows.map (·.slot)).eraseDups.length == payload.rows.length)
+      | none => false
+    | _, _ => false
+
+/-- Labels are exact semantic action contracts, checked on every shown button. -/
+def actionLabelOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
+  match (sp.commit? c).bind (·.actionLabel?) with
+  | none => true
+  | some expected =>
+    let comps := prog.compsOf s.screen
+    let buttons := comps.filter (fun b => b.kind == .button (.commit c) && layoutShown sp facts s comps b)
+    !expected.isEmpty && !buttons.isEmpty && buttons.all (·.label == expected)
+
+def displaysOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
+  (sp.displays?.getD []).all (fun r => !displayActive facts s (some c) r || displayReqMet sp prog facts s r) &&
+    actionLabelOk sp prog facts s c
+
+/-- Grouped rows with explicit confirmed selection, for the owning renderer. -/
+def payloadView (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Option PayloadView := do
+  let payload ← infoPayload facts i
+  let contract ← (sp.info? i).bind (·.payload?)
+  let groupKey := fun row : PayloadRow => contract.groupBy?.bind (payloadField row.fields) |>.getD ""
+  let selection := (sp.displays?.getD []).filter (fun r => r.info == i &&
+    (displayActive facts s none r || match r.scope with
+      | .commit c => displayActive facts s (some c) r
+      | _ => false))
+  let selected := fun row : PayloadRow => selection.any fun r => r.selectionElement?.any fun e =>
+    validationCapture s row.slot e == some (.flag true)
+  let keys := if contract.groupBy?.isNone then [""] else (payload.rows.map groupKey).eraseDups
+  pure { source := payload, groups := keys.map fun key =>
+    { key, rows := (payload.rows.filter (fun r => groupKey r == key)).map (fun row => { row, selected := selected row }) } }
+
+def infoPinned (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Bool :=
+  (sp.displays?.getD []).any fun r => r.info == i && r.pinned &&
+    (displayActive facts s none r || match r.scope with
+      | .commit c => displayActive facts s (some c) r
+      | _ => false)
+
+/-- Additional commit contracts. Kept separate from entries/review receipts. -/
+def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
+  match sp.commit? c with
+  | none => false
+  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
+      validationsOk sp facts s && defaultsOk sp prog &&
+      (cs.expiry?.getD []).all (fun rq => expiryStatus facts s rq == .met) &&
+      displaysOk sp prog facts s c
+
+/-- All event obligations, including ones on screens without a commit button. -/
+def obligationViews (sp : Spec) (facts : Facts) (s : State) : List ObligationView :=
+  sp.commits.flatMap fun cs =>
+    ((cs.temporal?.getD []).map fun rq =>
+      { commit := cs.id, requirement := rq.id, status := temporalStatus facts s rq }) ++
+    ((cs.expiry?.getD []).map fun rq =>
+      { commit := cs.id, requirement := rq.id, status := expiryStatus facts s rq })
 
 #guard parseTenths "72.5" == some 725
 #guard freqPerDay "Q6H" == some 4 && freqPerDay "prn" == none

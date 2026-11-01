@@ -34,12 +34,6 @@ def shownComp? (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : C
   let comps := prog.compsOf s.screen
   comps.find? fun c => c.id == cid && compShown sp facts s comps c
 
-/-- The component kind displays this info. -/
-def showsInfo (i : InfoId) : Kind → Bool
-  | .panel j | .table j | .trend j | .priorAuth j => j == i
-  | .banner => i == bannerInfo
-  | _ => false
-
 /-- The info is shown on the current screen. -/
 def infoShown (sp : Spec) (prog : Program) (facts : Facts) (s : State) (i : InfoId) : Bool :=
   let comps := prog.compsOf s.screen
@@ -198,6 +192,7 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
   else if !validationsOk sp facts s then "value validation failed"
   else if !defaultsOk sp prog then "required default missing or incorrect"
+  else if !displaysOk sp prog facts s c then "structured display or action label required"
   else
     match sp.entries.find? (fun rq => rq.commit == c && !entryMet sp facts user s rq) with
     | some rq => entryReason sp facts user s rq

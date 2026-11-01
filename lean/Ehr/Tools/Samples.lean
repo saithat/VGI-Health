@@ -45,6 +45,12 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "signingPayloadContract" "PayloadContract" Ehr.CoreTests.StructuredDisplay.contract,
+  mk "signingPayload" "InfoPayload" Ehr.CoreTests.StructuredDisplay.payload,
+  mk "signingDisplayRequirement" "DisplayReq" Ehr.CoreTests.StructuredDisplay.requirement,
+  mk "signingDisplayView" "ScreenView" (view Ehr.CoreTests.StructuredDisplay.tinySpec
+    Ehr.CoreTests.StructuredDisplay.tinyProgram Ehr.CoreTests.StructuredDisplay.context
+    Tiny.user Ehr.CoreTests.StructuredDisplay.selected),
   mk "orderExpiry" "ExpiryReq" Ehr.CoreTests.OrderExpiry.requirement,
   mk "calendarMonthOrder" "OrderClock" Ehr.CoreTests.OrderExpiry.monthOrder,
   mk "validatedNarrative" "ElementSpec" Ehr.CoreTests.ValueValidation.narrative,

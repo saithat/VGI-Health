@@ -465,4 +465,64 @@ def monthOrder : OrderClock :=
 #guard roundTrips requirement && roundTrips monthOrder
 end OrderExpiry
 
+namespace StructuredDisplay
+
+def contract : PayloadContract :=
+  { fields := [{ field := "notice" }, { field := "attachment", ifAvailable := true }]
+    identifiers := [.patient, .prescriber, .drug]
+    rowFields := ["strength", "form", "quantity", "directions"], groupBy? := some "drugClass" }
+def payload : InfoPayload :=
+  { info := "controlled", patient := facts.patientId, artifactKey := "assessment", artifact := "a", version := 2
+    fields := [("notice", "Signing has legal effect")], availability := [("attachment", false)]
+    identifiers := [{ category := .patient, system := "MRN", value := "patient-1" },
+                    { category := .prescriber, system := "NPI", value := "prescriber-1" },
+                    { category := .drug, system := "RxNorm", value := "drug-1" }]
+    rows := [{ id := "rx-1", slot := 0, fields := [("strength", "5 mg"), ("form", "tablet"),
+      ("quantity", "10"), ("directions", "one daily"), ("drugClass", "scheduleII")] }] }
+def requirement : DisplayReq :=
+  { info := "controlled", scope := .commit "signOrders", pinned := true, selectionElement? := some "ready" }
+def tinySpec : Spec :=
+  { EventWindow.tinySpec with
+    elements := [], infos := [{ id := "controlled", label := "Controlled signing", version := "", payload? := some contract }]
+    commits := [{ id := "signOrders", label := "Sign", roles := [.physician], actionLabel? := some "Sign and transmit" }]
+    displays? := some [requirement] }
+def tinyProgram : Program :=
+  { program with start := "display", screens :=
+    [{ id := "display", title := "Signing", workflow := "W1", components :=
+      [{ id := "details", kind := .table "controlled" },
+       { id := "sign", kind := .button (.commit "signOrders"), label := "Sign and transmit" }] }] }
+def context : Facts := { EventWindow.context with infoPayloads? := some [payload] }
+def initial : State := init tinySpec tinyProgram context user
+def selected : State := { initial with captured :=
+  [{ element := "ready", slot := 0, value := .flag true, byHuman := true, confirmed := true }] }
+#guard payloadComplete payload contract
+#guard commitGuard tinySpec tinyProgram context user selected "signOrders"
+#guard (step tinySpec tinyProgram context user .human selected (.click "sign")).1.commits == ["signOrders"]
+#guard !payloadComplete { payload with fields := [] } contract
+#guard !payloadComplete { payload with availability := [] } contract
+#guard !payloadComplete { payload with identifiers := [] } contract
+#guard !payloadComplete { payload with rows := payload.rows.map (fun r => { r with fields := [("strength", "5 mg")] }) } contract
+#guard !commitGuard tinySpec tinyProgram { context with infoPayloads? := some [{ payload with version := 1 }] }
+  user selected "signOrders"
+#guard !commitGuard tinySpec tinyProgram { context with infoPayloads? := some [{ payload with fields := [] }] }
+  user selected "signOrders"
+#guard !commitGuard tinySpec { tinyProgram with screens := tinyProgram.screens.map (fun sc =>
+  { sc with components := sc.components.map (fun c => if c.id == "sign" then { c with label := "Continue" } else c) }) }
+  context user selected "signOrders"
+#guard (payloadView tinySpec context selected "controlled").map (fun p => p.groups.map (·.key)) == some ["scheduleII"]
+#guard (payloadView tinySpec context selected "controlled").map (fun p => p.groups.all (fun g => g.rows.all (·.selected))) == some true
+#guard (payloadView tinySpec context initial "controlled").map (fun p => p.groups.any (fun g => g.rows.any (·.selected))) == some false
+#guard (view tinySpec tinyProgram context user selected).items.any (fun i => i.payload?.isSome && i.pinned? == some true)
+#guard !displayReqMet tinySpec { tinyProgram with screens := tinyProgram.screens.map (fun sc =>
+  { sc with components := sc.components.map (fun c => if c.id == "details" then { c with size := .tiny } else c) }) }
+  context selected requirement
+-- Phase requirements activate on every commit in that phase, not just signOrders.
+#guard displayActive { context with phase? := some { workflow := "W1", phase := "signing" } }
+  selected (some "anotherCommit") { requirement with scope := .phase "W1" "signing" }
+#guard !displayActive { context with phase? := some { workflow := "W1", phase := "rooming" } }
+  selected (some "signOrders") { requirement with scope := .phase "W1" "signing" }
+#guard displayActive context selected none { requirement with scope := .phase "W1" "signing" }
+#guard roundTrips contract && roundTrips payload && roundTrips requirement
+end StructuredDisplay
+
 end Ehr.CoreTests

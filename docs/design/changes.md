@@ -473,3 +473,30 @@ lawful-exception routes are separate commits; backend auto-stop or release is
 still a scheduler duty. GenTS and Tiny guards cover cutoff boundaries, transfers,
 renewals, max lifetime, reassessment and January-31 → February-28 behavior.
 No property or theorem statement changed in this group.
+
+## Rules catalog: structured-display (10 rules, M)
+
+`InfoSpec.payload` declares required fields, semantic identifier categories,
+per-row fields and grouping. `InfoPayload` binds real data to patient and current
+artifact/version; a visible placeholder is insufficient. `DisplayReq` scopes
+that contract to a commit or trusted workflow phase, independently of review
+receipts/waivers. Missing phase context conservatively activates phase rules.
+Conditional available fields are skipped only with explicit false availability;
+unknown availability requires the field. Rows have unique IDs, and selection
+contracts additionally require unique slots. Required values are nonblank.
+
+`PayloadView` returns the actual source and groups computed from row values;
+confirmed per-slot flags determine selection emphasis. `ItemView.payload` and
+`pinned` expose this structured data to the renderer. Pinned display contracts
+require legible, always-visible top-level components. `CommitSpec.actionLabel`
+requires the exact semantic label on every shown signing button. The strengthened
+guard checks payload, visibility and labels together and reports a display hard
+stop. GenTS exports the full typed contract and Tiny examples, including missing
+fields/identifiers/rows, stale versions, bad labels, selection and phase scope.
+
+Core supplies the contract/view and commit enforcement. The owning renderer must
+paint PayloadView's groups/selection/pinned state; checker phase-path coverage
+must ensure continuous presence on every screen in a phase (including initial
+and navigation screens). Those cross-lane integrations are explicitly requested;
+this commit does not claim their completion. All original proof statements are
+unchanged in this group, including receipt and page-tree theorems.

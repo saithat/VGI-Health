@@ -596,3 +596,23 @@ expired, renewal/refusal and stop routes; ensure every affected order action is
 guarded, including refills and renewed/transfer contexts. Agent/app preserve the
 new types and expose overdue obligations. Backend must separately perform actual
 auto-stop/release; the core guard proves no scheduler execution. Tiny: OrderExpiry.
+
+### Structured-display adoption (10-rule group)
+
+Content: pair InfoSpec.payload with Spec.displays scoped to .commit or
+.phase workflow name; set required identifier categories/row fields/groupBy,
+conditional available fields, pinned, and optional selectionElement (confirmed
+flag on each row's slot). Set CommitSpec.actionLabel for critical actions. A
+receipt/waiver cannot satisfy a DisplayReq. Render/FHIR supplies patient/current-
+version InfoPayloads through Facts.infoPayloads and artifactBindings, explicit
+availability, and trusted Facts.phase. Unknown phase activates phase requirements.
+Render must paint ItemView.payload's complete source, computed groups, per-row
+selected flags and pinned state; do not render an empty named panel as success.
+Keep EPCS details/notice pinned throughout signing. App/agent must preserve all
+fields and exact action labels. Check must require contracted payload bindings,
+correct labels, grouping and visibility at each affected commit and every phase
+screen (including start/navigation/return paths), covering known/unknown context
+and refusal routes. Phase tags are trusted context, never freely changed program
+navigation tags. Per-record completeness beyond the supplied finite rows belongs
+to the L-group design. Tiny examples: CoreTests.StructuredDisplay. Backend EPCS
+identity and authenticated transmission remain separate duties.

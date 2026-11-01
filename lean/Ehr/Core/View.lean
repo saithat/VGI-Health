@@ -67,7 +67,15 @@ def itemView (sp : Spec) (facts : Facts) (s : State) (comps : List Component)
     | .field e _ _ => capturedAt? s e slot
     | .priorAuth _ => capturedAt? s priorAuthElement slot
     | _ => none
-  { validationError? := match c.kind, cap with
+  { payload? := match c.kind with
+      | .panel i | .table i | .trend i | .priorAuth i => payloadView sp facts s i
+      | .banner => payloadView sp facts s bannerInfo
+      | _ => none
+    pinned? := match c.kind with
+      | .panel i | .table i | .trend i | .priorAuth i => some (infoPinned sp facts s i)
+      | .banner => some (infoPinned sp facts s bannerInfo)
+      | _ => none
+    validationError? := match c.kind, cap with
       | .field e _ _, some x =>
         match sp.element? e with
         | some el => if elementValueValid facts s el slot x.value then none else some "value validation failed"

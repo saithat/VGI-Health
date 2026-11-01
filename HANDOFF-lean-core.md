@@ -181,3 +181,12 @@ exact expiry boundaries, independent renewal/reassessment/max-lifetime checks,
 and verified calendar-month date arithmetic with trusted timezone resolution.
 Remaining core implementation: structured-display, followed by final integration
 verification and WASM assets. Owning-lane adoption requests remain explicit.
+
+Order-expiry-clock b61b61c and structured-display: build, kernel check,
+Comparator, axiom audits and generated-sample strict tsc pass. All five M groups
+are implemented, in required count order. Structured display includes actual
+payload/version checks, scoped/pinned visibility, row grouping/selection and
+critical-action labels. Owning renderer/checker/content adoption is requested
+in changes-requests.md; it is not claimed complete by the core lane.
+Remaining core work: final evidence/timezone hardening, integration verification,
+WASM rebuild/install/manifest and final handoff cleanup.

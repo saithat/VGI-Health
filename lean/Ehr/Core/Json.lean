@@ -19,8 +19,10 @@ This module also holds the two simulation types that carry raw FHIR JSON
 namespace Ehr
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  Role, UnitKind, PrefillPolicy, Friction, ValueKind, Validation, CodeTable, ElementSpec, InfoSpec,
+  Role, UnitKind, PrefillPolicy, Friction, ValueKind, Validation, CodeTable, ElementSpec,
   ClinicalField, ClinicalObservation, ClinicalAge, ClinicalFacts, ClinicalPredicate,
+  IdentifierCategory, PayloadFieldReq, PayloadContract, PayloadIdentifier, PayloadRow,
+  InfoPayload, WorkflowPhase, DisplayScope, DisplayReq, SelectedPayloadRow, PayloadGroup, PayloadView, InfoSpec,
   EventRef, TimeMetric, TemporalReq, ArtifactBinding, EventEvidence, BusinessCalendar,
   ObligationStatus, ObligationView, ClockAnchor, ClockStamp, MonthCutoff, ClockRenewal,
   OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,

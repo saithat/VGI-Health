@@ -183,19 +183,6 @@ export interface ElementSpec {
 }
 
 /**
- * A piece of information the UI can display.
- */
-export interface InfoSpec {
-  id: InfoId;
-  label: string;
-  /**
-   * Name of the fact that versions this info (e.g. `"allergyVersion"`),
-   * or `""` if it is not versioned.
-   */
-  version: string;
-}
-
-/**
  * Closed patient/episode dimensions. Values retain their source coding.
  */
 export type ClinicalField =
@@ -253,6 +240,117 @@ export type ClinicalPredicate =
   | { and: { left: ClinicalPredicate; right: ClinicalPredicate } }
   | { or: { left: ClinicalPredicate; right: ClinicalPredicate } }
   | { not: { predicate: ClinicalPredicate } };
+
+/**
+ * Identifier categories with semantic meaning, independent of HTML layout.
+ */
+export type IdentifierCategory =
+  | "patient"
+  | "encounter"
+  | "order"
+  | "drug"
+  | "product"
+  | "prescriber"
+  | "pharmacy";
+/** All values of `IdentifierCategory`. */
+export const IdentifierCategoryValues = ["patient", "encounter", "order", "drug", "product", "prescriber", "pharmacy"] as const;
+
+export interface PayloadFieldReq {
+  field: string;
+  /**
+   * False availability explicitly skips this field; absent/unknown requires it.
+   */
+  ifAvailable: boolean;
+}
+
+/**
+ * Required fields and identifier categories, on every row when requested.
+ */
+export interface PayloadContract {
+  fields: PayloadFieldReq[];
+  identifiers: IdentifierCategory[];
+  rowFields: string[];
+  groupBy?: string;
+}
+
+export interface PayloadIdentifier {
+  category: IdentifierCategory;
+  system: string;
+  value: string;
+}
+
+export interface PayloadRow {
+  id: string;
+  slot: number;
+  fields: [string, string][];
+}
+
+/**
+ * Trusted current-version data, not a declaration that a placeholder exists.
+ */
+export interface InfoPayload {
+  info: InfoId;
+  patient: string;
+  artifactKey: string;
+  artifact: string;
+  version: number;
+  fields: [string, string][];
+  identifiers: PayloadIdentifier[];
+  availability: [string, boolean][];
+  rows: PayloadRow[];
+}
+
+export interface WorkflowPhase {
+  workflow: string;
+  phase: string;
+}
+
+export type DisplayScope =
+  | { commit: { id: CommitId } }
+  | { phase: { workflow: string; name: string } };
+
+/**
+ * An independent display contract; no review receipt or waiver bypasses it.
+ */
+export interface DisplayReq {
+  info: InfoId;
+  scope: DisplayScope;
+  when?: ClinicalPredicate;
+  pinned: boolean;
+  /**
+   * Confirmed flags on each row's slot drive selection emphasis.
+   */
+  selectionElement?: ElementId;
+}
+
+export interface SelectedPayloadRow {
+  row: PayloadRow;
+  selected: boolean;
+}
+
+export interface PayloadGroup {
+  key: string;
+  rows: SelectedPayloadRow[];
+}
+
+export interface PayloadView {
+  source: InfoPayload;
+  groups: PayloadGroup[];
+}
+
+/**
+ * A piece of information the UI can display.
+ */
+export interface InfoSpec {
+  id: InfoId;
+  label: string;
+  /**
+   * Name of the fact that versions this info (e.g. `"allergyVersion"`),
+   * or `""` if it is not versioned.
+   */
+  version: string;
+  payload?: PayloadContract;
+}
 
 /**
  * A named clinical or documentation event (completion and filing are distinct).
@@ -436,6 +534,7 @@ export interface CommitSpec {
   roles: Role[];
   temporal?: TemporalReq[];
   expiry?: ExpiryReq[];
+  actionLabel?: string;
 }
 
 /**
@@ -585,6 +684,7 @@ export interface Spec {
   reviews: ReviewReq[];
   alerts: AlertSpec[];
   design: DesignRules;
+  displays?: DisplayReq[];
 }
 
 /**
@@ -849,6 +949,8 @@ export interface Facts {
   clinical?: ClinicalFacts;
   codeTables?: CodeTable[];
   orderClocks?: OrderClock[];
+  infoPayloads?: InfoPayload[];
+  phase?: WorkflowPhase;
 }
 
 /**
@@ -967,6 +1069,8 @@ export type StepResult =
  * One component as the app should paint it.
  */
 export interface ItemView {
+  payload?: PayloadView;
+  pinned?: boolean;
   validationError?: string;
   comp: Component;
   /**
