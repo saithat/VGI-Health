@@ -1,26 +1,50 @@
-# Certified Adaptive Clinical Interfaces
+# VGI Health · an EHR that learns your routine
 
-Every night an AI agent redesigns each clinician's EHR screens to save them clicks. A Lean checker, proven correct, certifies every version before anyone logs in. The app's screen logic is the verified Lean code itself, compiled to WebAssembly.
+Every night, an AI agent proposes a faster screen for each clinician. The hospital
+sets the safety rules; a Lean checker rejects changes that break them. Less
+clicking, with the patient banner, allergy review and human safety steps protected.
 
-- Project spec: [`BRIEF.md`](BRIEF.md)
-- Core data formats and interpreter semantics: [`docs/design/core-model.md`](docs/design/core-model.md)
-- Design changes: [`docs/design/changes.md`](docs/design/changes.md)
-- Rules catalog: [`docs/rules/catalog.md`](docs/rules/catalog.md)
-- Regulatory research: [`docs/regulations.md`](docs/regulations.md)
-- Project status and open items: [`docs/STATUS.md`](docs/STATUS.md)
-- Proof status: [`TODO_PROOFS.md`](TODO_PROOFS.md)
+**See it:** sign in as a doctor or nurse, work with synthetic patients in a real
+Medplum EHR, then compare an original screen with its overnight redesign. Open a
+rejected proposal to see exactly why the shortcut was refused.
+
+**What is verified:** the screen interpreter itself is written in Lean and runs
+in the browser as WebAssembly. Proofs cover commit guards, review receipts,
+human-only steps, and checker implications for 12 of 13 properties. General
+completion remains an extra assumption. Browser drawing and FHIR writes are
+tested; clinical correctness and completeness of the hospital rules are not proved.
+The current release uses the owner-selected **core** rule profile.
+
+- [3–4 minute demo, exact clicks, and 30-second pitch](docs/DEMO.md)
+- [Verification: proofs, trusted code, and open gaps](docs/VERIFICATION.md)
+- [Project brief](BRIEF.md) · [Status](docs/STATUS.md) · [Proof work](TODO_PROOFS.md)
+- [Core model](docs/design/core-model.md) · [Design changes](docs/design/changes.md)
+  · [Rules catalog](docs/rules/catalog.md) · [Rule sources](docs/regulations.md)
 
 ## Quick start
-Requires Node 22+ and pnpm 11 (`corepack enable`). `make run` opens the live
-clinician sign-in at **http://localhost:5173/**. The visible **Demo / replay**
-link and dashboard work without Docker, an API key, Lean or Emscripten:
+Install **Node 22.18+**, **pnpm 11.8.0** (`corepack enable`),
+[elan](https://github.com/leanprover/elan) on your PATH, a C toolchain (`cc`/`make`),
+and **Docker with Docker Compose** and a running daemon. Installation downloads
+packages and images. Elan automatically fetches the pinned Lean 4.35.0 toolchain;
+Lean builds default to four workers. Emscripten and an AI API key are not needed.
 
 ```sh
 git clone https://github.com/saithat/VGI-Health.git
 cd VGI-Health
-pnpm install
-make run
+make install && make run
 ```
+
+Open **http://localhost:5173/** and click a persona to sign in. `make install`
+starts Medplum, loads the committed synthetic patients and seeds worklists.
+It generates a private, gitignored `.env` with local credentials; **no secret or
+manual `.env` step is required for a new stack**. If another checkout already
+uses the named `vgi-medplum` stack, copy its `.env` locally before installing to
+preserve the shared persona passwords. Never commit it.
+
+After install, live local work and offline replay need no internet or API key.
+The **Demo / replay** link opens the offline catalog. For just that catalog and
+the recorded dashboard without Docker or Lean, use `pnpm install && make run`
+(the committed WASM assets still run the EHR logic).
 
 UI browser: **http://localhost:5173/browse**. Open any of the canonical releases,
 P1–P5 projections, bad programs or recorded program versions with one of the
@@ -34,9 +58,9 @@ live state, blockers and commits; checker verdicts remain “verdict not compute
 until the native checker CLI is available (`pnpm --filter app verdicts`).
 
 Dashboard: **http://localhost:5173/dashboard**. Its recorded run selection prefers
-the longest replayable real run, then newest timestamp; currently it falls back
-to the labeled authored `runs/mock` examples. Only this mock dashboard replay
-uses a fixture interpreter. Override selection with `VGI_RUN=mock make run`.
+the longest replayable real run, then newest timestamp; the committed
+`run1-P3` is a real ten-day recording. Labeled authored `runs/mock` examples
+remain available. Only mock dashboard replay uses a fixture interpreter. Override selection with `VGI_RUN=mock make run`.
 Use `make run APP_PORT=5187` if 5173 is occupied.
 
 For remote access from your MacBook, both `pnpm --filter app dev` and `make run`
@@ -48,11 +72,10 @@ Serve routes are left alone. Newly created routes stop with the app. Use
 Tailscale failures leave the local app available.
 
 WASM is committed; `make wasm-check` verifies freshness. Developers rebuilding
-it use `wasm/setup.sh && make wasm`. Full Medplum installation remains optional:
-install Docker Compose and [elan](https://github.com/leanprover/elan), then run
-`make install`. Medplum API: **:8103**; admin: **http://localhost:3000/**.
+it use `wasm/setup.sh && make wasm`. The standard `make install` also loads
+the local Medplum data. Medplum API: **:8103**; admin: **http://localhost:3000/**.
 
-For live clinical work, start the local backend once:
+To repeat individual backend setup steps (already included in `make install`):
 
 ```sh
 make infra-up
@@ -74,7 +97,8 @@ appointments, or OR cases and consults. Empty worklists mean no matching current
 FHIR records; the app does not invent appointments. Search patients, select the
 encounter and optional Task/MAR order/available admission bed, then **Open canonical
 EHR**. **Start new encounter** creates a real encounter for the selected patient.
-LIVE uses the canonical v2 persona projection. The Lean WASM interpreter owns every
+LIVE uses a recorded deployed persona version when available, otherwise
+the canonical v2 persona projection. The Lean WASM interpreter owns every
 clinical screen, guard and alert.
 
 The worklist date defaults to the local calendar date. For the seeded simulation,
@@ -157,7 +181,10 @@ Verify a clean clone: `scripts/clean-clone-test.sh` (Linux `timeout`, `setsid`,
 `curl`, Playwright system libraries). It clones **local HEAD**, installs, serves
 on **5189**, and runs Chromium with external requests blocked. It reuses the
 named `vgi-medplum` stack and copies local `.env` to preserve credentials; it
-never resets or stops Medplum. Set `CLEAN_CLONE_PORT` or `KEEP_CLONE=1` as needed.
+never resets or stops Medplum. It prints install and startup wall times and
+limits Lean to four workers.
+Set `CLEAN_CLONE_PORT` or `KEEP_CLONE=1` as needed. See
+[clean-clone evidence](docs/CLEAN-CLONE.md) for the measured result and limits.
 
 Trusted: Lean/Emscripten, Node/React/browser, Docker/Medplum, Synthea, and the
 owner-reviewed specs. The mock run illustrates the demo; it does not establish

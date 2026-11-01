@@ -65,16 +65,22 @@ range. Both ends of the per-kg range are clamped at the cap, so a heavy teen's
 capped dose is accepted. An absolute overdose fires even without a kg weight;
 the per-kg check still requires a nonzero kg weight and a known range. -/
 def doseOutOfRange (facts : Facts) (s : State) (slot : Nat) (d : String) : Bool :=
-  match lookupDrug d, lineDoseMgTenths? s slot with
-  | some di, some dose =>
-    (decide (0 < di.maxDoseMgTenths) && decide (di.maxDoseMgTenths < dose)) ||
-      match weightKgTenths? facts s with
-      | some w =>
-        decide (0 < di.maxMgPerKgTenths) && decide (0 < w) &&
-          (decide (10 * dose < cappedDoseBound di (di.minMgPerKgTenths * w)) ||
-           decide (cappedDoseBound di (di.maxMgPerKgTenths * w) < 10 * dose))
-      | none => false
-  | _, _ => false
+  let native := (s.captured.filter (fun x => x.element == doseElement && x.slot == slot)).any fun x =>
+    match x.value with
+    | .qty dose unit => (drugDoseUnits d).any fun rule => rule.unit == unit &&
+        ((0 < rule.minTenths && dose < rule.minTenths) ||
+         (0 < rule.maxTenths && rule.maxTenths < dose))
+    | _ => false
+  native || match lookupDrug d, lineDoseMgTenths? s slot with
+    | some di, some dose =>
+      (decide (0 < di.maxDoseMgTenths) && decide (di.maxDoseMgTenths < dose)) ||
+        match weightKgTenths? facts s with
+        | some w =>
+          decide (0 < di.maxMgPerKgTenths) && decide (0 < w) &&
+            (decide (10 * dose < cappedDoseBound di (di.minMgPerKgTenths * w)) ||
+             decide (cappedDoseBound di (di.maxMgPerKgTenths * w) < 10 * dose))
+        | none => false
+    | _, _ => false
 
 /-- A captured weight in lb. -/
 def isLbWeight (x : Captured) : Bool :=

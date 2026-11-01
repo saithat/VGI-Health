@@ -354,6 +354,8 @@ describe("semantic EHR painter", () => {
     ["identity", "AA/M/58", null, { text: { s: "AA/M/58" } }],
     ["flag", true, null, { flag: { b: true } }],
     ["qty", "83.46", "kg", { qty: { tenths: 835, unit: "kg" } }],
+    ["qty", "180", "mcg", { qty: { tenths: 1800, unit: "mcg" } }],
+    ["qty", "5000", "units", { qty: { tenths: 50000, unit: "units" } }],
   ] as const)(
     "maps %s values to the exact Lean constructor",
     (kind, raw, unit, expected) => {

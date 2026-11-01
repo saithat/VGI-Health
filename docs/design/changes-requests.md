@@ -1965,6 +1965,8 @@ See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
 
 ## SIM-WORLD2-DOSE-2026-10-31: incompatible medication units need core/content change
 
+**Resolved:** all 1,284 world-2 tasks now complete. The report below describes the original obstruction.
+
 World choices and formulary correctly use units for heparin and insulin, and
 mcg for inhaled albuterol. `Specs/V1.lean` declares `dose` as `quantity mg`
 (and labels it Dose (mg)); `doseUnit` is a separate coded input. Insulin/heparin
@@ -1988,7 +1990,14 @@ blocked task ID and its exact drug/dose/unit choices. The per-day table is in
 `docs/STATUS.md`. No service-order release mismatch remains.
 
 
+Resolved by the check lane: native-unit dose kind, per-slot formulary/selector
+validation, unit-aware composer and UCUM FHIR writes. The same 1,284 tasks now
+complete with zero incomplete; see `lean/Ehr/Sim/validation-world2.json` and
+`docs/STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
+
 ## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
+
+**Resolved:** all three active specs now round-trip through the agent schema exactly.
 
 Agent lane: `agent/src/lean-types.ts` `whenSchema` rejects
 `releases/v1/spec.json` `entries[16].when = {drugClass:{cls:"scheduleII"}}`.
@@ -2002,3 +2011,7 @@ Requested change: adopt current generated Lean types/validators at the agent
 boundary, preserving all spec fields and Schedule II constraints. New-run defaults
 now select world 2, but this separate schema mismatch must be fixed before an
 actual overnight agent run. Native `ehr simulate` reads the spec successfully.
+
+Resolved by the check lane: the generated-type boundary now accepts and preserves
+`drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
+All three active specs round-trip exactly; agent tests and typecheck pass.

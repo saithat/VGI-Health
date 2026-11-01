@@ -102,18 +102,6 @@ def hasGoodEntry (facts : Facts) (user : User) (s : State) (el : ElementSpec)
     x.element == el.id && (match slot with | some n => x.slot == n | none => true) &&
       capturedSatisfies facts user el x && entryValueAllowed el allowed x.value
 
-/-- An entry requirement is met. Per-order-line: every order line matching
-`when` has a good entry on its slot. Otherwise: if `when` holds, some slot has
-a good entry. An element missing from the spec is never met. -/
-def entryMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryReq) : Bool :=
-  match sp.element? rq.element with
-  | none => false
-  | some el =>
-    if rq.perOrderLine then
-      (orderLines s).all fun p => !lineMatches facts s rq.when p.1 p.2 || hasGoodEntry facts user s el (some p.1) rq.allowed?
-    else
-      !whenHolds facts s rq.when || hasGoodEntry facts user s el none rq.allowed?
-
 /-- A value is non-empty: a non-empty code, text, or user; a checked flag; or
 any quantity. -/
 def Value.nonEmpty : Value → Bool
@@ -122,6 +110,36 @@ def Value.nonEmpty : Value → Bool
   | .text t => !t.isEmpty
   | .flag b => b
   | .user u => !u.isEmpty
+
+/-- An attestation is a valid, confirmed human capture by an authorized role. -/
+def humanWaiverMet (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (waiver : Option ElementId) : Bool :=
+  waiver.any fun id => (sp.element? id).any fun el =>
+    el.enteredBy.contains user.role && s.captured.any fun x =>
+      x.element == id && x.byHuman && x.confirmed && x.value.nonEmpty &&
+      valueSatisfies facts user el.kind x.value
+
+/-- Only scalar text/flag attestations can be waived. Units, cosigns and per-line
+captures always keep their direct checks. -/
+def entryWaiver (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryReq) : Bool :=
+  !rq.perOrderLine && (sp.element? rq.element).any (fun el => match el.kind with
+    | .text | .flag => true | _ => false) && humanWaiverMet sp facts user s rq.waivedBy?
+
+/-- An entry requirement is met. Per-order-line: every order line matching
+`when` has a good entry on its slot. Otherwise: if `when` holds, some slot has
+a good entry. An element missing from the spec is never met. -/
+def entryDirectMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryReq) : Bool :=
+  match sp.element? rq.element with
+  | none => false
+  | some el =>
+    if rq.perOrderLine then
+      (orderLines s).all fun p => !lineMatches facts s rq.when p.1 p.2 || hasGoodEntry facts user s el (some p.1) rq.allowed?
+    else
+      !whenHolds facts s rq.when || hasGoodEntry facts user s el none rq.allowed?
+
+/-- An entry is directly captured or replaced by its declared human attestation. -/
+def entryMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryReq) : Bool :=
+  entryWaiver sp facts user s rq || entryDirectMet sp facts user s rq
 
 /-- The waiver element was entered by a human in this episode, is confirmed,
 and is non-empty. -/
@@ -145,26 +163,50 @@ def roleOk (sp : Spec) (user : User) (c : CommitId) : Bool :=
   | some cs => cs.roles.contains user.role
   | none => false
 
-/-- The encounter's role restrictions permit this user to commit. -/
-def encounterRolesOk (sp : Spec) (facts : Facts) (user : User) (c : CommitId) : Bool :=
-  (sp.commit? c).any fun cs => cs.encounterRoleAllowed facts.encounterKind? user.role
+/-- The declared cosign route is available to this role. -/
+def encounterRouteAvailable (sp : Spec) (role : Role) (rule : EncounterRoleRule) : Bool :=
+  rule.cosign?.any fun id => (sp.element? id).any fun el =>
+    el.enteredBy.contains role && el.kind == .cosign && el.humanOnly
 
-/-- Both the ordinary role list and the encounter's role restrictions permit the commit. -/
-def commitRoleOk (sp : Spec) (facts : Facts) (user : User) (c : CommitId) : Bool :=
-  roleOk sp user c && encounterRolesOk sp facts user c
+/-- A permitted route exists, possibly requiring an attending response. -/
+def commitRolePossible (sp : Spec) (facts : Facts) (user : User) (c : CommitId) : Bool :=
+  roleOk sp user c && (sp.commit? c).any fun cs => (cs.encounterRoles?.getD []).all fun rule =>
+    !encounterMatches facts.encounterKind? rule.encounter || rule.roles.contains user.role ||
+      encounterRouteAvailable sp user.role rule
 
-/-- The first matching encounter rule that forbids this user, for the blocked reason. -/
-def encounterRoleFailure? (sp : Spec) (facts : Facts) (user : User)
+/-- Matching restrictions require either the user's own role or a human cosign. -/
+def encounterRolesOk (sp : Spec) (facts : Facts) (user : User) (s : State) (c : CommitId) : Bool :=
+  (sp.commit? c).any fun cs => (cs.encounterRoles?.getD []).all fun rule =>
+    !encounterMatches facts.encounterKind? rule.encounter || rule.roles.contains user.role ||
+      (encounterRouteAvailable sp user.role rule && humanWaiverMet sp facts user s rule.cosign?)
+
+/-- The ordinary role and the encounter's own-signature or cosign route both hold. -/
+def commitRoleOk (sp : Spec) (facts : Facts) (user : User) (s : State) (c : CommitId) : Bool :=
+  roleOk sp user c && encounterRolesOk sp facts user s c
+
+/-- The first matching encounter restriction without a completed permitted route. -/
+def encounterRoleFailure? (sp : Spec) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : Option EncounterRoleRule :=
   (sp.commit? c).bind fun cs => (cs.encounterRoles?.getD []).find? fun rule =>
-    encounterMatches facts.encounterKind? rule.encounter && !rule.roles.contains user.role
+    encounterMatches facts.encounterKind? rule.encounter && !rule.roles.contains user.role &&
+      !(encounterRouteAvailable sp user.role rule && humanWaiverMet sp facts user s rule.cosign?)
 
-/-- A requirement scoped to a forbidden encounter never applies to this role.
-Other conditions remain conservatively relevant. Unknown commits are not exempt. -/
+/-- A forbidden encounter adds no obligation. A cosign route replaces only
+its explicitly attested scalar entries; every other entry remains required. -/
 def entryRelevantForRole (sp : Spec) (role : Role) (rq : EntryReq) : Bool :=
   match rq.when with
   | .encounter kind => (sp.commit? rq.commit).all fun cs =>
-      cs.encounterRoleAllowed (some kind) role
+      if cs.encounterRoleAllowed (some kind) role then true else
+      let routes := cs.encounterRoles?.getD []
+      let possible := routes.all fun rule =>
+        !encounterMatches (some kind) rule.encounter || rule.roles.contains role ||
+          encounterRouteAvailable sp role rule
+      let scalar := !rq.perOrderLine && (sp.element? rq.element).any (fun el =>
+        match el.kind with | .text | .flag => true | _ => false)
+      let attested := scalar && rq.waivedBy?.isSome && routes.any (fun rule =>
+        encounterMatches (some kind) rule.encounter && rule.cosign? == rq.waivedBy? &&
+          encounterRouteAvailable sp role rule)
+      possible && !attested
   | _ => true
 
 /-- All entry requirements for `c` are met. -/
@@ -178,7 +220,7 @@ def reviewsOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : Comm
 /-- Guard items 1–3: role, entries, reviews. -/
 def guardBase (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : Bool :=
-  commitRoleOk sp facts user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
+  commitRoleOk sp facts user s c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
     extraGuard sp prog facts s c
 
 /-- The full commit guard: role, entries, reviews, and interruptive alerts
@@ -212,8 +254,12 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
 def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
-  else if let some rule := encounterRoleFailure? sp facts user c then rule.reason
-  else if !validationsOk sp facts s then "value validation failed"
+  else if let some rule := encounterRoleFailure? sp facts user s c then rule.reason
+  else if !validationsOk sp facts s then
+    if sp.elements.any (fun el => el.kind == .medicationDose && s.captured.any (fun x =>
+      x.element == el.id && !doseValueValid s x.slot x.value)) then
+      "dose unit must match the selected formulary drug and dose unit selector"
+    else "value validation failed"
   else if !defaultsOk sp prog then "required default missing or incorrect"
   else if !displaysOk sp prog facts s c then "structured display or action label required"
   else

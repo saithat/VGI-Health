@@ -162,7 +162,7 @@ interruptive alert for the commit is acknowledged for each key it fires for. -/
 theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔
-      commitRoleOk sp facts user c = true ∧
+      commitRoleOk sp facts user s c = true ∧
       (∀ rq ∈ sp.entries, rq.commit = c → entryMet sp facts user s rq = true) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
@@ -199,7 +199,7 @@ theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : Use
 
 /-- Plain-logic entry requirements, including the allowed-value check on the
 same confirmed capture. Per-line requirements use that medication line's slot. -/
-def EntryValuesMet (sp : Spec) (facts : Facts) (user : User) (s : State)
+def EntryDirectValuesMet (sp : Spec) (facts : Facts) (user : User) (s : State)
     (rq : EntryReq) : Prop :=
   match sp.element? rq.element with
   | none => False
@@ -214,12 +214,12 @@ def EntryValuesMet (sp : Spec) (facts : Facts) (user : User) (s : State)
           capturedSatisfies facts user el x = true ∧ entryValueAllowed el rq.allowed? x.value = true
 
 /-- The executable entry guard is exactly its value-constrained logical form. -/
-theorem entryMet_iff_values (sp : Spec) (facts : Facts) (user : User) (s : State)
-    (rq : EntryReq) : entryMet sp facts user s rq = true ↔ EntryValuesMet sp facts user s rq := by
+theorem entryDirectMet_iff_values (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (rq : EntryReq) : entryDirectMet sp facts user s rq = true ↔ EntryDirectValuesMet sp facts user s rq := by
   cases hel : sp.element? rq.element with
-  | none => simp [entryMet, EntryValuesMet, hel]
+  | none => simp [entryDirectMet, EntryDirectValuesMet, hel]
   | some el =>
-    simp only [entryMet, EntryValuesMet, hel]
+    simp only [entryDirectMet, EntryDirectValuesMet, hel]
     split
     · simp only [List.all_eq_true, Bool.or_eq_true, Bool.not_eq_true', hasGoodEntry,
         List.any_eq_true, Bool.and_eq_true, beq_iff_eq]
@@ -246,13 +246,22 @@ theorem entryMet_iff_values (sp : Spec) (facts : Facts) (user : User) (s : State
         · obtain ⟨x, hx, he, hv, ha⟩ := h hw
           exact Or.inr ⟨x, hx, ⟨he, hv⟩, ha⟩
 
+/-- A direct capture or an authorized human attestation meets the entry. -/
+def EntryValuesMet (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (rq : EntryReq) : Prop :=
+  entryWaiver sp facts user s rq = true ∨ EntryDirectValuesMet sp facts user s rq
+
+theorem entryMet_iff_values (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (rq : EntryReq) : entryMet sp facts user s rq = true ↔ EntryValuesMet sp facts user s rq := by
+  simp [entryMet, EntryValuesMet, Bool.or_eq_true, entryDirectMet_iff_values]
+
 /-- Stronger plain-logic T0 guard equivalence: allowed values are checked on
 all applicable entries, including every matching medication order line.
 The original Comparator statement remains available as commitGuard_iff. -/
 theorem commitGuard_iff_values (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔
-      commitRoleOk sp facts user c = true ∧
+      commitRoleOk sp facts user s c = true ∧
       (∀ rq ∈ sp.entries, rq.commit = c → EntryValuesMet sp facts user s rq) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
@@ -265,9 +274,10 @@ captured value that satisfies it. -/
 theorem entryMet_witness (sp : Spec) (facts : Facts) (user : User) (s : State)
     (rq : EntryReq) (el : ElementSpec) (hel : sp.element? rq.element = some el)
     (hper : rq.perOrderLine = false) (hwhen : whenHolds facts s rq.when = true)
-    (h : entryMet sp facts user s rq = true) :
+    (h : entryMet sp facts user s rq = true)
+    (hnot : entryWaiver sp facts user s rq = false) :
     ∃ x ∈ s.captured, x.element = el.id ∧ capturedSatisfies facts user el x = true := by
-  simp only [entryMet, hel, hper, hwhen] at h
+  simp only [entryMet, hnot, Bool.false_or, entryDirectMet, hel, hper, hwhen] at h
   simp only [Bool.false_eq_true, ↓reduceIte, Bool.not_true, Bool.false_or, hasGoodEntry,
     List.any_eq_true, Bool.and_eq_true, beq_iff_eq] at h
   obtain ⟨x, hx, ⟨⟨hxe, _⟩, hsat⟩, _⟩ := h
@@ -315,12 +325,15 @@ theorem T0_entry_values_allowed (sp : Spec) (prog : Program) (facts : Facts) (us
     (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits)
     (rq : EntryReq) (hrq : rq ∈ sp.entries) (hc : rq.commit = c)
     (hper : rq.perOrderLine = false) (hwhen : whenHolds facts s rq.when = true)
-    (el : ElementSpec) (hel : sp.element? rq.element = some el) :
+    (el : ElementSpec) (hel : sp.element? rq.element = some el)
+    (hnot : entryWaiver sp facts user s rq = false) :
     ∃ x ∈ s.captured, x.element = el.id ∧ EntryCaptureValid el rq x := by
   have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
   have he := ((commitGuard_iff_values sp prog facts user s c).1 hg).2.1 rq hrq hc
-  simp only [EntryValuesMet, hel, hper, Bool.false_eq_true, ↓reduceIte] at he
-  obtain ⟨x, hx, hxe, hsat, ha⟩ := he hwhen
+  have hd : EntryDirectValuesMet sp facts user s rq :=
+    he.resolve_left (by simp [hnot])
+  simp only [EntryDirectValuesMet, hel, hper, Bool.false_eq_true, ↓reduceIte] at hd
+  obtain ⟨x, hx, hxe, hsat, ha⟩ := hd hwhen
   exact ⟨x, hx, hxe, capturedSatisfies_values facts user el rq x hsat ha⟩
 
 /-- **T0, per order line.** Every matching medication line has its own capture
@@ -336,8 +349,10 @@ theorem T0_entry_values_perLine (sp : Spec) (prog : Program) (facts : Facts) (us
     ∃ x ∈ s.captured, x.element = el.id ∧ x.slot = slot ∧ EntryCaptureValid el rq x := by
   have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
   have he := ((commitGuard_iff_values sp prog facts user s c).1 hg).2.1 rq hrq hc
-  simp only [EntryValuesMet, hel, hper, ↓reduceIte] at he
-  obtain ⟨x, hx, hxe, hs, hsat, ha⟩ := he (slot, d) hline hmatch
+  have hd : EntryDirectValuesMet sp facts user s rq :=
+    he.resolve_left (by simp [entryWaiver, hper])
+  simp only [EntryDirectValuesMet, hel, hper, ↓reduceIte] at hd
+  obtain ⟨x, hx, hxe, hs, hsat, ha⟩ := hd (slot, d) hline hmatch
   exact ⟨x, hx, hxe, hs, capturedSatisfies_values facts user el rq x hsat ha⟩
 
 /-- **T0 (units and human-only steps).** If a step adds commit `c`, then for
@@ -350,12 +365,13 @@ theorem T0_entry_values (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits)
     (rq : EntryReq) (hrq : rq ∈ sp.entries) (hc : rq.commit = c)
     (hper : rq.perOrderLine = false) (hwhen : whenHolds facts s rq.when = true)
-    (el : ElementSpec) (hel : sp.element? rq.element = some el) :
+    (el : ElementSpec) (hel : sp.element? rq.element = some el)
+    (hnot : entryWaiver sp facts user s rq = false) :
     ∃ x ∈ s.captured, x.element = el.id ∧ x.confirmed = true ∧
       (needsHuman el = true → x.byHuman = true) ∧
       (∀ u, el.kind = .quantity u → ∃ t, x.value = .qty t u) := by
   obtain ⟨x, hx, he, hconf, hhum, hunit, _⟩ :=
-    T0_entry_values_allowed sp prog facts user actor s e c hnew hafter rq hrq hc hper hwhen el hel
+    T0_entry_values_allowed sp prog facts user actor s e c hnew hafter rq hrq hc hper hwhen el hel hnot
   exact ⟨x, hx, he, hconf, hhum, hunit⟩
 
 /-- A value that satisfies a cosign requirement names a different user. -/
@@ -382,7 +398,7 @@ theorem T3_cosign_distinct (sp : Spec) (prog : Program) (facts : Facts) (user : 
       ∃ u, x.value = .user u ∧ u ≠ user.id := by
   have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
   have hent := ((commitGuard_iff sp prog facts user s c).1 hg).2.1 rq hrq hc
-  obtain ⟨x, hx, hxe, hsat⟩ := entryMet_witness sp facts user s rq el hel hper hwhen hent
+  obtain ⟨x, hx, hxe, hsat⟩ := entryMet_witness sp facts user s rq el hel hper hwhen hent (by simp [entryWaiver, hel, hk])
   simp only [capturedSatisfies, Bool.and_eq_true, Bool.or_eq_true, Bool.not_eq_true'] at hsat
   obtain ⟨⟨_, hval⟩, hhum⟩ := hsat
   have hnh : needsHuman el = true := by simp [needsHuman, hk]
@@ -438,7 +454,7 @@ example : let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := fals
   exact T0_entry_values_allowed { CoreTests.ScheduleII.constrainedSpec with entries := [rq] }
     CoreTests.ScheduleII.constrainedProgram facts user .human CoreTests.ScheduleII.good
     (.click "sign") "signOrders" (by decide) (by decide) rq (by decide) rfl rfl
-    (by decide) CoreTests.ScheduleII.refills (by decide)
+    (by decide) CoreTests.ScheduleII.refills (by decide) (by decide)
 
 /-- A confirmed default of three remains blocked for a Schedule II line. -/
 example : commitGuard CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram

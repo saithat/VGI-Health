@@ -185,7 +185,7 @@ def lineFields (s : ScreenId) (pre : String) (slot : Slot) (parent : Option Stri
     field s (pre ++ n) e l (parent := some (pre ++ sec)) (slot := slot)
   [g "medication" "Medication",
    f "medication" "drug" "drug" "Medication",
-   f "medication" "dose" "dose" "Dose (mg)",
+   f "medication" "dose" "dose" "Dose",
    f "medication" "doseUnit" "doseUnit" "Dose unit",
    f "medication" "route" "route" "Route",
    f "medication" "freq" "freq" "Frequency",

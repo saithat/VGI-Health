@@ -1,659 +1,96 @@
 {
-  "profile": "core",
-  "binarySha256": "3951096664a18f98b7e7d1234d8429efb5514ced12beb534a436e153ffa5a202",
-  "results": [
-    {
-      "persona": "P1",
-      "release": "v1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "641d0c456762f8d82a5c00c56a0cbd3d9d3b15ae94a312e365c5e2e9496206ae",
-      "completed": 39,
-      "incomplete": 3,
-      "seconds": 0.609,
-      "failures": [
-        {
-          "task": "d01-P1-W1-006",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "drug": "hydrocodone-acetaminophen",
-                "doseTenths": 50,
-                "unit": "mg",
-                "route": "PO",
-                "freq": "q6h",
-                "prn": true,
-                "supplyDays": 30
-              },
-              {
-                "drug": "oxycodone",
-                "doseTenths": 50,
-                "unit": "mg",
-                "route": "PO",
-                "freq": "q6h",
-                "prn": true,
-                "supplyDays": 30
-              },
-              {
-                "kind": "imaging",
-                "code": "mri-lumbar-spine-without-contrast",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "persistent-low-back-pain"
-              },
-              {
-                "kind": "procedure",
-                "code": "physical-therapy-evaluation",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "persistent-low-back-pain"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "ros",
-              "exam",
-              "assessmentPlan",
-              "painAgreementReview",
-              "functionalAssessment"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        },
-        {
-          "task": "d01-P1-W1-010",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "drug": "tramadol",
-                "doseTenths": 500,
-                "unit": "mg",
-                "route": "PO",
-                "freq": "q6h",
-                "prn": true,
-                "supplyDays": 30
-              },
-              {
-                "kind": "imaging",
-                "code": "mri-lumbar-spine-without-contrast",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "persistent-low-back-pain"
-              },
-              {
-                "kind": "procedure",
-                "code": "physical-therapy-evaluation",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "persistent-low-back-pain"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "ros",
-              "exam",
-              "assessmentPlan",
-              "painAgreementReview",
-              "functionalAssessment"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": [
-            {
-              "event": {
-                "click": {
-                  "comp": "home.work.w6OpNote"
-                }
-              },
-              "ops": [
-                "point",
-                "click"
-              ],
-              "result": "ok",
-              "screen": "home",
-              "t": 126012,
-              "task": "d01-P1-W1-010"
-            }
-          ]
-        },
-        {
-          "task": "d01-P1-W1-015",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "kind": "procedure",
-                "code": "screening-colonoscopy",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "colorectal-cancer-screening"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "pmh",
-              "socialHistory",
-              "familyHistory",
-              "ros",
-              "exam",
-              "medRec",
-              "assessmentPlan",
-              "depressionScreen"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        }
-      ],
-      "complaints": [
-        "element orderKind is not in the spec",
-        "element orderCode is not in the spec",
-        "entry required: patientIdReentry",
-        "entry required: chiefComplaint",
-        "d01-P1-W1-006: no reachable unmet goal; incomplete",
-        "d01-P1-W1-010: no reachable unmet goal; incomplete",
-        "d01-P1-W1-015: no reachable unmet goal; incomplete"
-      ]
-    },
-    {
-      "persona": "P2",
-      "release": "v1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "3b42b34576749001eef1857e9f86aebea13bfdfd2194757a4aa7dd53b6efc960",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.674,
-      "failures": [],
-      "complaints": [
-        "choice for dose does not fit the spec (Ehr.Value.qty 68000 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value",
-        "naloxone response unspecified; modeling offered-declined"
-      ]
-    },
-    {
-      "persona": "P3",
-      "release": "v1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
-      "completed": 38,
-      "incomplete": 0,
-      "seconds": 0.763,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P4",
-      "release": "v1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "61116e2fd451270632c83cc04f850843feca6721dbfb938b7becae9e4cea3279",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.421,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P5",
-      "release": "v1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "7e5dc712763c62731c245c2d492f5d99789c21c29990a2bac238737dcb312f67",
-      "completed": 14,
-      "incomplete": 4,
-      "seconds": 0.32,
-      "failures": [
-        {
-          "task": "d01-P5-W1-008",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "kind": "imaging",
-                "code": "ultrasound-right-upper-quadrant",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "symptomatic-cholelithiasis"
-              },
-              {
-                "kind": "procedure",
-                "code": "laparoscopic-cholecystectomy",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "symptomatic-cholelithiasis"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "exam",
-              "imagingReview",
-              "assessmentPlan",
-              "surgicalPlanning",
-              "consentDiscussion"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        },
-        {
-          "task": "d01-P5-W1-010",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "kind": "imaging",
-                "code": "ultrasound-right-upper-quadrant",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "symptomatic-cholelithiasis"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "exam",
-              "imagingReview",
-              "assessmentPlan"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        },
-        {
-          "task": "d01-P5-W1-016",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "kind": "imaging",
-                "code": "ultrasound-abdominal-wall",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "umbilical-hernia"
-              },
-              {
-                "drug": "warfarin",
-                "doseTenths": 50,
-                "unit": "mg",
-                "route": "PO",
-                "freq": "daily",
-                "prn": false,
-                "holdReason": "planned-surgery"
-              },
-              {
-                "kind": "procedure",
-                "code": "open-umbilical-hernia-repair",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "umbilical-hernia"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "exam",
-              "imagingReview",
-              "assessmentPlan",
-              "surgicalPlanning",
-              "consentDiscussion"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        },
-        {
-          "task": "d01-P5-W1-018",
-          "workflow": "W1",
-          "choices": {
-            "orders": [
-              {
-                "kind": "imaging",
-                "code": "ultrasound-abdominal-wall",
-                "drug": "",
-                "doseTenths": 0,
-                "unit": "none",
-                "route": "",
-                "freq": "",
-                "prn": false,
-                "indication": "inguinal-hernia"
-              }
-            ],
-            "administer": [],
-            "ackResult": false,
-            "immunizations": [],
-            "noteSections": [
-              "hpi",
-              "exam",
-              "imagingReview",
-              "assessmentPlan"
-            ]
-          },
-          "lastProblems": [],
-          "lastEvents": []
-        }
-      ],
-      "complaints": [
-        "element orderKind is not in the spec",
-        "element orderCode is not in the spec",
-        "entry required: patientIdReentry",
-        "entry required: chiefComplaint",
-        "d01-P5-W1-008: no reachable unmet goal; incomplete",
-        "d01-P5-W1-010: no reachable unmet goal; incomplete",
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value",
-        "d01-P5-W1-016: no reachable unmet goal; incomplete",
-        "d01-P5-W1-018: no reachable unmet goal; incomplete"
-      ]
-    },
-    {
-      "persona": "P1",
-      "release": "v1.1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "de3673fa2153f3d23efb6fb32394dbaa34ba1479c83180c5ada573a5b3872a13",
-      "completed": 42,
-      "incomplete": 0,
-      "seconds": 0.706,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P2",
-      "release": "v1.1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "5c87207da35bd5fc86c2cf14f5f80c1fbfde5bdf2bde03ef5fc657740077f610",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.7,
-      "failures": [],
-      "complaints": [
-        "choice for dose does not fit the spec (Ehr.Value.qty 68000 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value",
-        "naloxone response unspecified; modeling offered-declined"
-      ]
-    },
-    {
-      "persona": "P3",
-      "release": "v1.1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "013cb39a1f4bbe1e2e8cfae1c2e6a0b634e1a0aff3f7a22feba44b6619f6e868",
-      "completed": 38,
-      "incomplete": 0,
-      "seconds": 0.696,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P4",
-      "release": "v1.1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "1ce3d89c137d4cd82f2eb967cbdfc7d81d9ee77eb7449e28665ff67e23755015",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.472,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P5",
-      "release": "v1.1",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "d1f7d8f3cecb5d5717cf95efc89537fc0e7928dc2f94eef31a9789da8492df9e",
-      "completed": 18,
-      "incomplete": 0,
-      "seconds": 0.304,
-      "failures": [],
-      "complaints": [
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value"
-      ]
-    },
-    {
-      "persona": "P1",
-      "release": "v2",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "bf342eabd94409f1aabc7621b5c14ee02722862f0e74a4d5a20d2e23c269fe61",
-      "completed": 42,
-      "incomplete": 0,
-      "seconds": 0.684,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P2",
-      "release": "v2",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "03d2e60d6fd55eff7eaf37b674da1caa5973a588f9cda7a05d5eb3af2b689cc2",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.746,
-      "failures": [],
-      "complaints": [
-        "choice for dose does not fit the spec (Ehr.Value.qty 68000 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 40 (Ehr.UnitKind.units)); using any accepted value",
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value",
-        "naloxone response unspecified; modeling offered-declined"
-      ]
-    },
-    {
-      "persona": "P3",
-      "release": "v2",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "e840c6b93d78b9701d7900215af36bccaba4c9a14c96c3f30dc8343460ad6b55",
-      "completed": 38,
-      "incomplete": 0,
-      "seconds": 0.658,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P4",
-      "release": "v2",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "ffb32107c809dfe15f3f3f8c96a67490a52a62d8252250820d1e8a531ec02fe9",
-      "completed": 22,
-      "incomplete": 0,
-      "seconds": 0.426,
-      "failures": [],
-      "complaints": []
-    },
-    {
-      "persona": "P5",
-      "release": "v2",
-      "day": 1,
-      "world": "runs/world/1",
-      "seed": 7,
-      "programSha256": "d2230af80428d985f4b4caf441632fa1115b8a44c54e454e99935e8adbb62e34",
-      "completed": 18,
-      "incomplete": 0,
-      "seconds": 0.313,
-      "failures": [],
-      "complaints": [
-        "choice for dose does not fit the spec (Ehr.Value.qty 50000 (Ehr.UnitKind.units)); using any accepted value"
-      ]
-    }
-  ],
-  "preopTasks": [
-    {
-      "id": "d10-P5-W6-001",
-      "day": 10,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d10-P5-W6-004",
-      "day": 10,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d02-P5-W6-003",
-      "day": 2,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d02-P5-W6-005",
-      "day": 2,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d02-P5-W6-008",
-      "day": 2,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d02-P5-W6-011",
-      "day": 2,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d03-P5-W6-004",
-      "day": 3,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d04-P5-W6-002",
-      "day": 4,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d04-P5-W6-004",
-      "day": 4,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d06-P5-W6-001",
-      "day": 6,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d06-P5-W6-004",
-      "day": 6,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d06-P5-W6-007",
-      "day": 6,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d08-P5-W6-002",
-      "day": 8,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d08-P5-W6-004",
-      "day": 8,
-      "persona": "P5",
-      "workflow": "W6"
-    },
-    {
-      "id": "d08-P5-W6-007",
-      "day": 8,
-      "persona": "P5",
-      "workflow": "W6"
-    }
-  ],
-  "preopTaskCounts": {
-    "P1": 0,
-    "P2": 0,
-    "P3": 0,
-    "P4": 0,
-    "P5": 15
+  "world": "runs/world/2",
+  "seed": 7,
+  "binarySha256": "5384c694493786953b1d029a5f0a8d0a05903e0b4de0bd2c89ce8f62bf4a9d78",
+  "releaseDays": {
+    "v1_1": 4,
+    "v2": 7
   },
-  "day1PreopTaskCount": 0
+  "schedules": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "release": "v1",
+      "specSha256": "66d7b6dd50c083f9c75ea058c9a499c8075062b170774e8cb885bbb5864208c8",
+      "personaSha256": "c7ee80538c60768c79df9343fb78cb0e35434b5080d287317b64589a9da0af78",
+      "programSha256": "6891397f9b2b3576e84adde4e0bae2643c7f7f0daa2a013202b5bec3c03e0275",
+      "scheduleSha256": "401eaf83555f53c80c5515b625628883e243d9f7446238e6b2930902e86d16bd",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 42,
+      "completed": 42,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P2",
+      "release": "v1",
+      "specSha256": "66d7b6dd50c083f9c75ea058c9a499c8075062b170774e8cb885bbb5864208c8",
+      "personaSha256": "2f294a6348e5993881ebea5f713f48365d7291c1a3b84529b3ebda8bf683c62d",
+      "programSha256": "c347574c90eccaed60de27ff23ce42d699259939e3a4c72b8a21beadb514e0a1",
+      "scheduleSha256": "3e9ee7cd3afc876f9bf99b4abb7c3baac0c18f2ef0a898c95e2d897209737b62",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 22,
+      "completed": 22,
+      "complaints": [
+        "d01-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-008: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-014: naloxone response unspecified; modeling offered-declined",
+        "d01-P2-W3-022: naloxone response unspecified; modeling offered-declined"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P3",
+      "release": "v1",
+      "specSha256": "66d7b6dd50c083f9c75ea058c9a499c8075062b170774e8cb885bbb5864208c8",
+      "personaSha256": "deb9e05ce82989fdd306007cb55eaa729884d1940f7ad1ca6cb8c04f5f936109",
+      "programSha256": "ec245b06b5ff93dce804daae74039f95dd97029393ac8aa8bd5be207a05d1684",
+      "scheduleSha256": "27d04178e6d452ea01daba5bdb74e5c22d23dc2885e7e556845dc22daf952a3e",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 38,
+      "completed": 38,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P4",
+      "release": "v1",
+      "specSha256": "66d7b6dd50c083f9c75ea058c9a499c8075062b170774e8cb885bbb5864208c8",
+      "personaSha256": "ec41e39754aab522936df16a7dcf1f97086d88a7046df95ea0821f9f4549faa1",
+      "programSha256": "f5f7b3b86b4400abe80db4f303bdaea9a342197bd5bd3f12258a4d6074a77c17",
+      "scheduleSha256": "5c801b030231f21cbb6acc5d022dc6b9d08a436453734452f14c0aa8ad7eee40",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 22,
+      "completed": 22,
+      "complaints": []
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "release": "v1",
+      "specSha256": "66d7b6dd50c083f9c75ea058c9a499c8075062b170774e8cb885bbb5864208c8",
+      "personaSha256": "0773f61ac0c957cb7a9795298b1b94bba4aeb4acfd9e28335f2f2a657fd1e2ac",
+      "programSha256": "8e7f553cc5283a15ca338fe002c60f261ca70a0dff378fedb3d98ec8204ecb02",
+      "scheduleSha256": "76985fb033591518433d22d0fd57675aa20d27e8846317044ce3cf4c1baeb9de",
+      "preopTasks": [],
+      "incomplete": 0,
+      "tasks": 18,
+      "completed": 18,
+      "complaints": []
+    }
+  ],
+  "incomplete": [],
+  "floorViolations": [],
+  "interruptionViolations": [],
+  "determinism": true,
+  "summary": {
+    "schedules": 5,
+    "tasks": 142,
+    "completed": 142,
+    "incomplete": 0
+  }
 }

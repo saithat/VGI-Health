@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
  * by Lean (lean/generated/ehr-samples.ts): every sample parses, and the round
  * trip is exact (so programs the agent writes back are in Lean's encoding).
  */
+import { readFileSync } from 'node:fs';
 import {
   sampleCertificate, sampleDay, sampleEvents, sampleTask, tinyProgram, tinySpec,
 } from '../../lean/generated/ehr-samples.js';
@@ -27,9 +28,13 @@ describe('validators vs Lean-written samples', () => {
   it('preserves optional encounter role policy and accepts legacy commits', () => {
     const reason = 'Pre-op orders are signed by a physician or surgeon';
     const withPolicy = { ...tinySpec, commits: tinySpec.commits.map((commit) => ({
-      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason }],
+      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason, cosign: 'attendingCosign' }],
     })) };
     same(specSchema.parse(withPolicy), withPolicy);
+    const withAttestation = { ...withPolicy, entries: withPolicy.entries.map(entry => ({
+      ...entry, waivedBy: 'attendingCosign',
+    })) };
+    same(specSchema.parse(withAttestation), withAttestation);
     same(specSchema.parse(tinySpec), tinySpec);
   });
 
@@ -60,4 +65,11 @@ describe('validators vs Lean-written samples', () => {
     expect(added).toEqual({ id: 'new-panel', kind: { panel: { info: 'allergyList' } }, label: 'Allergies', tab: 0, visibility: 'always', size: 'normal', tag: 'allergyList' });
     expect(JSON.stringify(program)).not.toContain('null');
   });
+});
+
+it.each(['v1', 'v1.1', 'v2'])('preserves the entire active %s spec, including dose and signing policies', release => {
+  const spec = JSON.parse(readFileSync(new URL(`../../releases/${release}/spec.json`, import.meta.url), 'utf8'));
+  same(specSchema.parse(spec), spec);
+  expect(spec.entries.some((r: { allowed?: string[] }) => r.allowed?.includes('0'))).toBe(true);
+  expect(spec.elements.find((e: { id: string }) => e.id === 'dose').kind).toBe('medicationDose');
 });

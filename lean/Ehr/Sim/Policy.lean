@@ -1,3 +1,4 @@
+import Ehr.Sim.Attending
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
 
@@ -108,8 +109,12 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
 /-- Execute an event with elapsed KLM time applied before the event. This lets
 an interruption expire a receipt before a commit is attempted. -/
 def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : List Op) : EpisodeResult :=
+  let attending := attendingResponse ctx.sp ctx.prog ctx.facts ctx.user r.state e
+  let (wait, rng) := if attending then draw r.rng 5 else (0, r.rng)
+  let delay := if attending then wait + 1 else 0
+  let ops := if attending then [] else ops
   let (ms, dev) := klmFold r.lastDevice ops
-  let elapsed := r.elapsedMs + ms
+  let elapsed := r.elapsedMs + ms + delay * 60000
   let before := { r.state with clock := elapsed / 100 }
   let (after, result) := step ctx.sp ctx.prog ctx.facts ctx.user .human before e
   let complaints := match e, result with
@@ -121,9 +126,12 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
     state := after
     trace := r.trace ++ [{
       task := task.id, t := task.startMin * 600 + elapsed / 100,
-      screen := before.screen, event := e, ops, result }]
+      screen := before.screen, event := e, ops, result,
+      actor? := if attending then some "simulated-attending" else none,
+      responseDelayMinutes? := if attending then some delay else none }]
     complaints := r.complaints ++ complaints
     elapsedMs := elapsed
+    rng := rng
     lastDevice := dev }
 
 /-- Scroll to fields below a twelve-component fold, ten rows per page. -/
@@ -263,7 +271,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
-      tasks := day.tasks ++ [metrics task.id r.trace complete]
+      tasks := day.tasks ++ [{ metrics task.id r.trace complete with
+        wallTimeMinutes? := some ((r.elapsedMs + 59999) / 60000) }]
       floor := day.floor ++ [floor]
       complaints := (day.complaints ++ r.complaints).eraseDups }
   return day

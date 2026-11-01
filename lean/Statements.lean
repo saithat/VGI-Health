@@ -38,7 +38,7 @@ interruptive alert for the commit is acknowledged for each key it fires for. -/
 theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔
-      commitRoleOk sp facts user c = true ∧
+      commitRoleOk sp facts user s c = true ∧
       (∀ rq ∈ sp.entries, rq.commit = c → entryMet sp facts user s rq = true) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
@@ -56,7 +56,8 @@ theorem T0_entry_values (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits)
     (rq : EntryReq) (hrq : rq ∈ sp.entries) (hc : rq.commit = c)
     (hper : rq.perOrderLine = false) (hwhen : whenHolds facts s rq.when = true)
-    (el : ElementSpec) (hel : sp.element? rq.element = some el) :
+    (el : ElementSpec) (hel : sp.element? rq.element = some el)
+    (hnot : entryWaiver sp facts user s rq = false) :
     ∃ x ∈ s.captured, x.element = el.id ∧ x.confirmed = true ∧
       (needsHuman el = true → x.byHuman = true) ∧
       (∀ u, el.kind = .quantity u → ∃ t, x.value = .qty t u) := by

@@ -39,6 +39,7 @@ Only the Back-navigation list is erased; captures and clock are preserved. -/
 @[simp] theorem elementValueValid_history (facts s h el slot v) :
     elementValueValid facts (withHistory s h) el slot v = elementValueValid facts s el slot v := by
   simp only [elementValueValid, validationHolds_history]
+  rfl
 
 @[simp] theorem valueGoalMet_history (sp facts user s h) :
     valueGoalMet sp facts user (withHistory s h) = valueGoalMet sp facts user s := by
@@ -84,7 +85,7 @@ Only the Back-navigation list is erased; captures and clock are preserved. -/
 
 @[simp] theorem entryMet_history (sp facts user s h rq) :
     entryMet sp facts user (withHistory s h) rq = entryMet sp facts user s rq := by
-  simp only [entryMet, lineMatches_history, whenHolds_history]
+  simp only [entryMet, entryWaiver, humanWaiverMet, entryDirectMet, lineMatches_history, whenHolds_history]
   rfl
 
 @[simp] theorem entryReason_history (sp facts user s h rq) :
@@ -246,7 +247,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
     | newOrderLine =>
       simp only [clickCore, hk]
       have hc : currentLineComplete sp facts user (withHistory s h) = currentLineComplete sp facts user s := by
-        simp only [currentLineComplete, lineMatches_history]
+        simp only [currentLineComplete, lineMatches_history, elementValueValid_history]
         rfl
       rw [hc]
       by_cases hh : currentLineComplete sp facts user s = true
@@ -324,6 +325,7 @@ def macroSafe (prog : Program) (steps : List MacroStep) : Bool :=
 @[simp] theorem macroValue_history (sp prog facts s cid str h) :
     macroValue sp prog facts (withHistory s h) cid str = macroValue sp prog facts s cid str := by
   simp only [macroValue, shownComp_history]
+  rfl
 
  theorem macroStep_history (sp prog facts user s st h)
     (hsafe : macroSafe prog [st] = true) :

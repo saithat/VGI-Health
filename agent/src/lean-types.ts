@@ -38,7 +38,7 @@ function dropNulls<T extends z.ZodType>(keys: readonly string[], schema: T) {
 export const roleSchema: z.ZodType<L.Role> = z.enum(['physician', 'np', 'rn', 'surgeon']);
 export const unitKindSchema: z.ZodType<L.UnitKind> = z.enum(['kg', 'lb', 'g', 'mg', 'mcg', 'mL', 'mgPerKg', 'units', 'none']);
 const valueKindSchema: z.ZodType<L.ValueKind> = z.union([
-  z.enum(['text', 'flag', 'identity', 'cosign']),
+  z.enum(['text', 'flag', 'identity', 'cosign', 'medicationDose']),
   z.object({ quantity: z.object({ unit: unitKindSchema }) }),
   z.object({ coded: z.object({ valueSet: str }) }),
   z.object({ scan: z.object({ target: str }) }),
@@ -63,14 +63,19 @@ const reviewModeSchema: z.ZodType<L.ReviewMode> = z.union([
 export const specSchema: z.ZodType<L.Spec> = z.object({
   version: str,
   elements: z.array(elementSpecSchema),
-  infos: z.array(z.object({ id: str, label: str, version: str })),
+  // Preserve Lean-owned payload contracts; the native checker validates them.
+  infos: z.array(z.looseObject({ id: str, label: str, version: str })),
   commits: z.array(dropNulls(['encounterRoles'], z.object({
     id: str, label: str, roles: z.array(roleSchema),
-    encounterRoles: z.array(z.object({
-      encounter: str, roles: z.array(roleSchema), reason: str,
-    })).exactOptional(),
+    encounterRoles: z.array(dropNulls(['cosign'], z.object({
+      encounter: str, roles: z.array(roleSchema), reason: str, cosign: str.exactOptional(),
+    }))).exactOptional(),
   }))),
-  entries: z.array(dropNulls(['allowed'], z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), allowed: z.array(str).exactOptional() }))),
+  entries: z.array(dropNulls(['allowed', 'waivedBy'], z.object({
+    commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(),
+    allowed: z.array(str).exactOptional(), waivedBy: str.exactOptional(),
+  }))),
+
   reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.object({
     id: str, label: str,
@@ -129,7 +134,7 @@ export const componentSchema: z.ZodType<Component> = dropNulls(['parent', 'hotke
   label: str.default(''),
   parent: str.exactOptional(),
   tab: nat.default(0),
-  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) })]).default('always'),
+  visibility: z.union([z.literal('always'), z.object({ unlessReceipt: z.object({ info: str }) }), z.object({ encounter: z.object({ kind: str }) })]).default('always'),
   size: z.enum(['normal', 'compact', 'tiny']).default('normal'),
   hotkey: str.exactOptional(),
   tag: str.default(''),
@@ -199,7 +204,7 @@ export const personaParamsSchema: z.ZodType<L.PersonaParams> = z.object({
 });
 const taskMetricsSchema: z.ZodType<L.TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
-  klmDeciSec: nat, completed: z.boolean(),
+  klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
 export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   day: nat,
@@ -208,6 +213,7 @@ export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   trace: z.array(z.object({
     task: str, t: nat, screen: str, event: eventSchema,
     ops: z.array(z.enum(['click', 'key', 'scroll', 'scan', 'point', 'think', 'wait'])), result: stepResultSchema,
+    actor: str.exactOptional(), responseDelayMinutes: nat.exactOptional(),
   })),
   tasks: z.array(taskMetricsSchema),
   floor: z.array(taskMetricsSchema),

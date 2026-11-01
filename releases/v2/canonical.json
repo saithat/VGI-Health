@@ -1477,7 +1477,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w1Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w1Orders.dose"},
@@ -2541,6 +2541,17 @@
      "label": "Signature",
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w1Sign.signature.signOrders"},
+    {"visibility": {"encounter": {"kind": "preop"}},
+     "tag": "w1Sign.attendingCosign",
+     "tab": 0,
+     "size": "normal",
+     "label": "Attending co-signature (pre-op orders)",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "attendingCosign"}},
+     "id": "w1Sign.attendingCosign"},
     {"visibility": "always",
      "tag": "w1Sign.patientIdReentry",
      "tab": 0,
@@ -4020,7 +4031,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3OrderSets.row10.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "dose"}},
@@ -4201,7 +4212,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3OrderSets.row11.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "dose"}},
@@ -4566,7 +4577,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w3Orders.dose"},
@@ -5060,6 +5071,17 @@
      "label": "Signature",
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w3Sign.signature.signOrders"},
+    {"visibility": {"encounter": {"kind": "preop"}},
+     "tag": "w3Sign.attendingCosign",
+     "tab": 0,
+     "size": "normal",
+     "label": "Attending co-signature (pre-op orders)",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "attendingCosign"}},
+     "id": "w3Sign.attendingCosign"},
     {"visibility": "always",
      "tag": "w3Sign.patientIdReentry",
      "tab": 0,
@@ -6931,7 +6953,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w5Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w5Orders.dose"},
@@ -7416,6 +7438,17 @@
      "label": "Signature",
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w5Sign.signature.signOrders"},
+    {"visibility": {"encounter": {"kind": "preop"}},
+     "tag": "w5Sign.attendingCosign",
+     "tab": 0,
+     "size": "normal",
+     "label": "Attending co-signature (pre-op orders)",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "attendingCosign"}},
+     "id": "w5Sign.attendingCosign"},
     {"visibility": "always",
      "tag": "w5Sign.patientIdReentry",
      "tab": 0,
@@ -8903,7 +8936,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w6Orders.dose"},
@@ -9402,7 +9435,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row10.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "dose"}},
@@ -9583,7 +9616,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row11.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "dose"}},
@@ -9764,7 +9797,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row12.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 12}}, "prefill": "none", "element": "dose"}},
@@ -9945,7 +9978,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row13.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 13}}, "prefill": "none", "element": "dose"}},
@@ -10398,6 +10431,17 @@
      "label": "Signature",
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w6Sign.signature.signOrders"},
+    {"visibility": {"encounter": {"kind": "preop"}},
+     "tag": "w6Sign.attendingCosign",
+     "tab": 0,
+     "size": "normal",
+     "label": "Attending co-signature (pre-op orders)",
+     "kind":
+     {"field":
+      {"slot": {"fixed": {"n": 0}},
+       "prefill": "none",
+       "element": "attendingCosign"}},
+     "id": "w6Sign.attendingCosign"},
     {"visibility": "always",
      "tag": "w6Sign.patientIdReentry",
      "tab": 0,

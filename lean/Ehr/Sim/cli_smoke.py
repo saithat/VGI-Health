@@ -51,7 +51,7 @@ def check_schedule(job, args):
     waits = {task: 0 for task in completed}
     for event in output["trace"]:
         enter = event["event"].get("enter", {})
-        cosign_wait = int("user" in enter.get("value", {}))
+        cosign_wait = int("user" in enter.get("value", {}) and event.get("actor") != "simulated-attending")
         waits[event["task"]] += event["ops"].count("wait") - cosign_wait
     for task, count in waits.items():
         if completed[task] and count != expected[task]:
