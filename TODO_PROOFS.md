@@ -228,13 +228,9 @@ repairs while later entries, reviews, receipts and alerts are handled. The
 existing scalar/fixed-line/receipt/finite-alert/macro fragments remain proved.
 Closing this one soundness bug does not establish unrestricted T1.
 
-Proof-reference follow-up outside this lane's requested `Check/**` scope:
-`lean/CompletionObligations.lean` still contains the old `refuted` theorem, and
-`lean/Audit/SpecSurface.lean` still names the old acceptance counterexample.
-Their minimal updates are prepared; neither stale reference is a claim about
-the repaired checker. Default build, kernel replay and all three Comparator
-challenges pass with the new rejection theorem. The opt-in general-target
-library and generated audit must be updated before claiming those targets pass.
+The opt-in `CompletionObligations` target now records this rejection and keeps
+`AcceptedCompletion` unproved. Audit references use the rejection theorem names;
+the stale `refuted` claim and acceptance-counterexample references are removed.
 
 ## Receipt-aware review completion extension
 
