@@ -38,3 +38,9 @@ always starts a fresh complete census. Clinical traversal deduplicates the
 rendered control configuration, not arbitrary histories or off-screen expansion
 order. Supplemental form preparation enters ordinary synthetic data through
 visible controls; it never invents identity, barcode, or second-clinician evidence.
+
+The queue schedules one observed checkpoint for each newly exposed screen,
+control, enabled state, tab body, field-confirm action, or modal. Patient table
+text and removed controls alone do not trigger another traversal. Already queued
+controls are tested from their saved state, so many data variants cannot multiply
+the same click case. Popup links also collect console/page errors and HTTP errors.

@@ -23,9 +23,20 @@ export class Audit {
     });
     page.on("popup", async (popup) => {
       popup.on("pageerror", (error) => this.errors.push(error.message));
+      popup.on("console", (message) => {
+        if (message.type() === "error") this.errors.push(message.text());
+      });
+      popup.on("response", (response) => {
+        if (response.status() >= 400)
+          this.errors.push(
+            `Popup HTTP ${response.status()}: ${response.url()}`,
+          );
+      });
       try {
         await popup.waitForLoadState("domcontentloaded", { timeout: 10000 });
         this.popups.push(popup.url());
+      } catch (error) {
+        this.errors.push(`Popup failed to load: ${String(error)}`);
       } finally {
         await popup.close();
       }

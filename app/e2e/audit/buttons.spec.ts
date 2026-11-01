@@ -37,6 +37,31 @@ function controlShape(nodes: UiNode[]): unknown[] {
   });
 }
 
+function controlKeys(nodes: UiNode[]): string[] {
+  return nodes.flatMap((node) => {
+    if ("button" in node) {
+      const b = node.button;
+      const event = b.role === "confirm" || b.role === "ack" ? b.role : "click";
+      return [`${b.comp}:${event}:${b.enabled}`];
+    }
+    if ("field" in node) {
+      const f = node.field;
+      return [
+        `${f.comp}:form:${f.kind}`,
+        ...(f.pendingConfirm ? [`${f.comp}:confirm:true`] : []),
+      ];
+    }
+    if ("tabs" in node)
+      return [
+        ...node.tabs.labels.map((_, index) => `${node.tabs.id}:tab:${index}`),
+        ...controlKeys(node.tabs.body),
+      ];
+    if ("section" in node) return controlKeys(node.section.children);
+    if ("columns" in node) return controlKeys(node.columns.children);
+    return [];
+  });
+}
+
 test("app shell: every shell control has an effect or an explained disabled state", async ({
   page: initialPage,
 }) => {
@@ -689,12 +714,35 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           modal: controlShape(snapshot.ui?.modal ? [snapshot.ui.modal] : []),
         });
       const discovered = new Set<string>();
+      const scheduled = new Set<string>();
+      const reachableKeys = (
+        snapshot: ReturnType<ButtonAuditSession["snapshot"]>,
+      ) => {
+        const ui = snapshot.ui;
+        const nodes = ui?.modal
+          ? [ui.modal]
+          : [...(ui?.workspace ?? []), ...(ui?.side ?? [])];
+        return [
+          "screen",
+          ...controlKeys(nodes),
+          ...(ui?.modal
+            ? []
+            : (ui?.nav.flatMap(([, links]) =>
+                links.map(([comp]) => `${comp}:click:true`),
+              ) ?? [])),
+        ].map((key) => `${snapshot.state.screen}:${key}`);
+      };
       const enqueue = async (
         snapshot: ReturnType<ButtonAuditSession["snapshot"]>,
       ) => {
         const key = variantOf(snapshot);
-        if (discovered.has(key)) return;
+        const keys = reachableKeys(snapshot);
+        // Breadth first, once per visible control / enabled state. A second
+        // patient-value variant with exactly the same controls adds no coverage.
+        if (discovered.has(key) || keys.every((key) => scheduled.has(key)))
+          return;
         discovered.add(key);
+        keys.forEach((key) => scheduled.add(key));
         queue.push(
           await page.evaluate(
             () => window.__buttonAuditSession?.checkpoint() ?? -1,
@@ -712,6 +760,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
         if (!snapshot) throw new Error("Missing audit session");
         const screen = snapshot.state.screen;
+        reachableKeys(snapshot).forEach((key) => scheduled.add(key));
         const variant = variantOf(snapshot);
         discovered.add(variant);
         if (seenScreens.has(variant)) continue;
