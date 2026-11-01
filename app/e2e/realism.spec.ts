@@ -104,9 +104,9 @@ test("shared shell and browser visual review", async ({ page }) => {
       (p) => p.id === "sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
     if (!patient) throw new Error("Missing source note-review patient");
-    await enterPatientChart(page, patient.mrn ?? patient.name);
+    if (!(await enterPatientChart(page, patient.mrn ?? patient.name))) await page.locator('[data-comp-id="home.work.w1Rooming"][data-event]').click();
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
-    const note = page.locator('[data-info-id="encounterNotes"] li').first();
+    const note = page.locator('[data-info-id="encounterNotes"] li, [data-info-id="priorNotes"] li').first();
     await expect(note).toBeVisible();
     const semantic = await page.evaluate(
       () => window.__buttonAuditSession?.snapshot().ui,
@@ -120,14 +120,14 @@ test("shared shell and browser visual review", async ({ page }) => {
       observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
     ).toEqual(expectedAria(semantic));
     const expectedBodies = infoNodes([...semantic.side, ...semantic.workspace])
-      .filter((info) => info.infoId === "encounterNotes")
+      .filter((info) => ["encounterNotes", "priorNotes"].includes(info.infoId))
       .flatMap((info) =>
         info.rows.map((row) => row.find(([key]) => key === "Text")?.[1] ?? ""),
       );
     expect(
       await page
         .locator(
-          '[data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body',
+          '[data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body, [data-info-id="priorNotes"] .presentation-note-body dd, [data-info-id="priorNotes"] .clinical-note-body',
         )
         .allTextContents(),
     ).toEqual(expectedBodies);
@@ -137,7 +137,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       path: `${folder}/chart-notes.png`,
       animations: "disabled",
     });
-    await page.locator(".clinical-home-meds").first().scrollIntoViewIfNeeded();
+    await page.locator(".clinical-home-meds, [data-info-id=currentMeds]").first().scrollIntoViewIfNeeded();
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/home-medications.png`,

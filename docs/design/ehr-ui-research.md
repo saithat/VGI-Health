@@ -1494,3 +1494,20 @@ chrome captions now remain visible alongside the source groups in one wrapping
 row; the clinical heading/search row is shorter. This recovers vertical chart
 space without removing content. The final comparison set contains the ten
 requested clinical screens and one additional interruptive-alert pair.
+
+Final shell verification (before the patient-selection transport merges): 282 app
+and 93 agent tests passed; 61 desktop/narrow browser checks passed, covering native
+ARIA fidelity, visibility, contrast, history diffs and real check-only verdicts.
+The final sampled canonical audit recorded 1,366 working controls, 36 explained
+disabled controls and zero dead controls/errors. The separate shell audit recorded
+352 working controls, 71 explained disabled controls and zero dead/errors. Archived
+run1-P3 verification retained 0 mismatches across 424 tasks / 14,658 events and
+three baselines / 137 events. Native/WASM source freshness passed. Exact source,
+audit and screenshot provenance is in `docs/audits/visual-history/verification.json`.
+
+Part 3 remains an explicit integration dependency at this deadline: the final
+patient-selection source/assets snapshot is not on `origin/main` yet. The browser
+picker, inspector switcher and patient parameters in user-facing links are removed;
+the prepared replay/live integration must still be merged and checked once the
+content lane publishes it. No private/generated work from that lane was copied
+into this branch to bypass its publication gates.
