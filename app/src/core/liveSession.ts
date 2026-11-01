@@ -380,7 +380,9 @@ export async function createLiveSession(
             patient,
             encounter,
             worldContext: directoryBundle,
-            ...(priorContext?.encounter.id === encounter.id && priorContext.bed
+            ...(priorContext &&
+            priorContext.encounter.id === encounter.id &&
+            priorContext.bed
               ? { bed: priorContext.bed }
               : {}),
             ...(task ? { task } : {}),
