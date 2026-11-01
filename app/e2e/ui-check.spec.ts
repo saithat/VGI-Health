@@ -171,6 +171,12 @@ for (const file of fixtures)
       const geometry=await captureGeometry(page,screen.screen??resolve(file).split("/").at(-1)?.replace(".json","")??file,`${file}:${sha}`);
       mkdirSync(process.env.EHR_GEOMETRY_DIR,{recursive:true});writeFileSync(resolve(process.env.EHR_GEOMETRY_DIR,`${sha}.json`),JSON.stringify(geometry));
     }
+    // `*-geometry.json` files are synthetic probes (agent/src/geometry-popups.ts):
+    // they force an alert popup open only to measure pointer positions, even when
+    // the alert's condition is false, so they are not reachable program states.
+    // They are measured above but not held to the fidelity checks below; every
+    // reachable state exported by Lean's render-screens still is.
+    if (/-geometry\.json$/.test(file)) return;
     expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
       expectedAria(screen),
     );
