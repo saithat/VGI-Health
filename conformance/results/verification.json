@@ -1,182 +1,153 @@
 {
-  "generatedAt": "2026-11-01T16:36:19.080Z",
+  "generatedAt": "2026-11-01T17:58:37.647Z",
   "summary": {
     "targets": 23,
-    "scenarios": 195,
-    "passed": 1767,
-    "failed": 80,
-    "notApplicable": 2638
+    "scenarios": 200,
+    "passed": 1922,
+    "failed": 0,
+    "notApplicable": 2678
   },
-  "nativeSha256": "a8d7b3d83142d8e719e247868dc1d888690f606d0a016d7a38fc7bac53ba925d",
+  "canonical": {
+    "targets": 15,
+    "scenarios": 200,
+    "passed": 1575,
+    "failed": 0,
+    "notApplicable": 1425
+  },
+  "nativeSha256": "2cce77e126d2914a2052d3a1c7b50b0124fbd5eb9e2ef97a4aa15da53ce161ab",
   "inputBindings": [
     {
       "target": "canonical/v1/P1",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v1/P2",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v1/P3",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v1/P4",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v1/P5",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v2/P1",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v2/P2",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v2/P3",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v2/P4",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v2/P5",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v3/P1",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v3/P2",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v3/P3",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v3/P4",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "canonical/v3/P5",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
     },
     {
       "target": "run1-P3/P3/v0",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v1",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v2",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v3",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v4",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v5",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v6",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     },
     {
       "target": "run1-P3/P3/v7",
-      "programAndSpecMatch": true
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
     }
   ],
-  "caseCoverage": "195 unique scenarios for each of 23 inputs; all exact-program result hashes match source values",
-  "freshCheckerAudit": {
-    "accepted": 15,
-    "rejected": 0,
-    "usedAsBehavioralOracle": false
+  "caseCoverage": "200 unique scenarios per input; original program/spec bindings verified",
+  "independentCanonicalRunsAgree": true,
+  "previousFiveGapFamilies": {
+    "scenarioIds": [
+      "entry.signOrders.dosingWeight",
+      "cures.procedure-eight-day",
+      "cures.unknown-exemption",
+      "workflow.empty-medication-signing",
+      "patient-switch.chart-scoping",
+      "weight.linked-source-refresh",
+      "refill.denial-via-approval-action"
+    ],
+    "passed": 83,
+    "failed": 0,
+    "notApplicable": 78
   },
-  "evidenceBatches": [
-    {
-      "generatedAt": "2026-11-01T16:34:50.831Z",
-      "scenarios": 194,
-      "nativeCalls": 25367,
-      "jobs": 4
-    },
-    {
-      "generatedAt": "2026-11-01T16:31:14.423Z",
-      "scenarios": 1,
-      "nativeCalls": 126,
-      "jobs": 1
-    }
-  ],
-  "failureScenarios": {
-    "entry.signOrders.dosingWeight": 9,
-    "cures.procedure-eight-day": 9,
-    "cures.unknown-exemption": 9,
-    "workflow.empty-medication-signing": 12,
-    "patient-switch.chart-scoping": 23,
-    "weight.linked-source-refresh": 12,
-    "refill.denial-via-approval-action": 6
-  },
-  "validation": {
-    "afterMainMerge": "78ce2f6c36056fa7f722d4192b07da34ec3936c0",
-    "unchangedProgramAndSpecInputs": 23,
-    "positiveScenarioFailures": 0,
-    "suiteTests": {
-      "passed": 16,
-      "failed": 0,
-      "skipped": 0,
-      "command": "pnpm test:conformance"
-    },
-    "dashboardTests": {
-      "passed": 16,
-      "failed": 0,
-      "files": [
-        "data.test.ts",
-        "dashboard.test.tsx",
-        "rule-conformance.test.tsx"
-      ]
-    },
-    "typecheck": {
-      "agent": "pass",
-      "app": "pass"
-    },
-    "lint": {
-      "agentReport": "pass",
-      "modifiedDashboardTypeScript": "pass"
-    },
-    "servedDashboardEvidence": {
-      "runSummaryIncludesConformance": true,
-      "productionSchemaTargets": 23,
-      "deployedRevisionBadges": 8,
-      "failuresPerArchivedRevision": 1,
-      "temporaryPreviewStopped": true
-    },
-    "standaloneCurrentCLI": {
-      "program": "releases/v3/personas/P3.json",
-      "spec": "releases/v3/spec.json",
-      "summary": {
-        "targets": 1,
-        "scenarios": 195,
-        "passed": 41,
-        "failed": 1,
-        "notApplicable": 153
-      },
-      "matchesCombinedCanonicalResults": true
-    }
-  },
-  "validatedAt": "2026-11-01T16:45:56.927Z"
+  "positiveScenarioFailures": 0,
+  "failureScenarios": {}
 }
